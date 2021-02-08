@@ -16,7 +16,15 @@ configuration:
   name: port
   required: true
   type: 0
-- defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
   display: Fetch notable events ES query
   name: fetchQuery
   required: false
@@ -30,18 +38,29 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  hidden: false
+  name: incoming_mirror
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Use system proxy settings
-  name: proxy
+- defaultvalue: 'true'
+  display: Use Splunk Clock Time For Fetch
+  name: useSplunkTime
   required: false
   type: 8
-- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only if different than Demisto server). Relevant only for fetching notable events.
-  name: timezone
-  required: false
-  type: 0
 - defaultvalue: 'false'
   display: Parse Raw part of notable events
   name: parseNotableEventsRaw
@@ -52,19 +71,19 @@ configuration:
   name: replaceKeys
   required: false
   type: 8
-- display: Extract Fields - CSV fields that will be parsed out of _raw notable events
-  name: extractFields
+- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180. For UTC, set 0. (set only if different than Demisto server). Relevant only for fetching & mirroring notable events. 
+  name: timezone
   required: false
-  type: 12
-- defaultvalue: 'true'
-  display: Use Splunk Clock Time For Fetch
-  name: useSplunkTime
+  type: 0
+- additionalinfo: How far back in time to go when performing the first fetch, or when
+    creating a mapping using the Select Schema option.
+  defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  hidden: false
+  name: fetch_time
   required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: unsecure
-  required: false
-  type: 8
+  type: 0
 - defaultvalue: earliest_time
   display: Earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch)
   name: earliest_fetch_time_fieldname
@@ -75,6 +94,10 @@ configuration:
   name: latest_fetch_time_fieldname
   required: false
   type: 0
+- display: Extract Fields - CSV fields that will be parsed out of _raw notable events
+  name: extractFields
+  required: false
+  type: 12
 - display: The app context of the namespace
   name: app
   required: false
@@ -85,15 +108,6 @@ configuration:
   type: 4
 - display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
-  required: false
-  type: 0
-- additionalinfo: How far back in time to go when performing the first fetch, or when
-    creating a mapping using the Select Schema option.
-  defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
-  hidden: false
-  name: fetch_time
   required: false
   type: 0
 - display: Use Python requests handler
@@ -110,12 +124,6 @@ configuration:
   name: type_field
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Use CIM Schemas for Mapping
-  name: use_cim
-  required: false
-  type: 8
-  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -619,12 +627,47 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/splunksdk:1.0.0.15975
+  - arguments:
+      - default: false
+        description: The remote event id
+        isArray: false
+        name: id
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '0'
+        description: UTC timestamp in seconds. The incident is only updated if it was
+          modified after the last update time.
+        isArray: false
+        name: lastUpdate
+        required: false
+        secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-remote-data
+  - arguments:
+      - default: false
+        description: Date string representing the local time. The incident is only returned
+          if it was modified after the last update time.
+        isArray: false
+        name: lastUpdate
+        required: false
+        secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update.
+      Note that this method is here for debugging purposes. get-modified-remote-data
+      is used as part of a Mirroring feature, which is available from version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  dockerimage: demisto/splunksdk:1.0.0.11989
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   ismappable: true
+  isremotesyncin: true
   runonce: false
   script: '-'
   subtype: python2
