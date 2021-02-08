@@ -897,7 +897,7 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
                     'incident_name')
     last_update = '2020-11-18T13:16:52.005381+02:00'
     params = {
-        'sysparm_limit': '10000',
+        'sysparm_limit': '100',
         'sysparm_offset': '0',
         'sysparm_query': 'sys_updated_on>2020-11-18 11:16:52',
         'sysparm_fields': 'sys_id',
