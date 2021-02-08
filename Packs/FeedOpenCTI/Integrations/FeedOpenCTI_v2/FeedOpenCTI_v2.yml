@@ -217,10 +217,14 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Indicator key to update.
       isArray: false
       name: key
+      predefined:
+        - 'score'
+        - 'description'
       required: true
       secret: false
     - default: false
