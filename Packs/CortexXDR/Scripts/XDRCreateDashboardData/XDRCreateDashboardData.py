@@ -115,14 +115,14 @@ def main():
             res = demisto.executeCommand('createList', {'listName': list_name, 'listData': xdr_data_lists[key]})
             if isError(res):
                 return_error(f'Error occurred while trying to create the list {list_name}: {get_error(res)}')
-            created_lists.append({'List name': list_name, 'Items':len(xdr_data_lists[key])})
+            created_lists.append({'List name': list_name, 'Items': len(xdr_data_lists[key])})
 
         end_time = time.time()
-
+        elapsed = round(end_time - start_time, 2)
         return_results(CommandResults(
-            readable_output= f'Collecting data for {len(incidents)} XDR incidents successfully in {end_time - start_time} seconds.'
-                             f'\nthe script created the following lists:'
-            f'\n{tableToMarkdown("",created_lists,["List name","Items"])}'
+            readable_output=f'Collecting data for {len(incidents)} XDR incidents successfully in {elapsed} seconds.'
+                            f'\nthe script created the following lists:'
+                            f'\n{tableToMarkdown("", created_lists, ["List name", "Items"])}'
         ))
 
     except Exception as e:
