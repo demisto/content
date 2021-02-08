@@ -9,7 +9,71 @@
     "categories": [
         "Network Security"
     ],
-    "tags": ["Data Leak", "Data Loss"],
-    "useCases": ["Exfiltration"],
-    "keywords": []
+    "tags": [
+        "Data Leak",
+        "Data Loss"
+    ],
+    "useCases": [
+        "Exfiltration"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        }
+    },
+    "displayedImages": [
+        "Gmail",
+        "Active_Directory_Query",
+        "CommonScripts",
+        "CommonTypes",
+        "GmailSingleUser",
+        "MicrosoftGraphMail",
+        "CommonPlaybooks",
+        "EWSMailSender",
+        "MailSenderNew",
+        "EWS",
+        "MicrosoftGraphListener"
+    ]
 }
