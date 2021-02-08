@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '0cd3d3cc-08c6-43d3-87f9-29a95d368999'
     type: start
     task:
-      id: '0'
+      id: '0cd3d3cc-08c6-43d3-87f9-29a95d368999'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '40de40a5-7381-4328-84ac-ce7a46b28af4'
     type: regular
     task:
-      id: '1'
+      id: '40de40a5-7381-4328-84ac-ce7a46b28af4'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 'b6af9816-3abb-473e-b00f-d3a3bfee423c'
     type: regular
     task:
-      id: '2'
+      id: 'b6af9816-3abb-473e-b00f-d3a3bfee423c'
       version: -1
       name:
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'bfdd1626-3f52-43c4-891d-700483027363'
     type: title
     task:
-      id: '3'
+      id: 'bfdd1626-3f52-43c4-891d-700483027363'
       version: -1
       name: Test Done
       type: title
@@ -93,3 +93,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: A GitLab Integration Testing Playbook

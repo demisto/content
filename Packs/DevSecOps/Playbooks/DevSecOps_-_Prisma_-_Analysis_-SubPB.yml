@@ -1,6 +1,5 @@
-id: d81cf7e4-7701-41d8-8d36-3685d4379bad
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+id: DevSecOps - Prisma - Analysis -SubPB
+version: -1
 name: DevSecOps - Prisma - Analysis -SubPB
 description: Prisma Task Analysis Playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -306,11 +306,15 @@ inputs:
   value: {}
   required: false
   description: Prisma Cloud Check Run Summary
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Prisma_Cloud_Check_Run_Title
   value: {}
   required: false
   description: Prisma Cloud Check Run Title
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: aa2b9fba-1143-4820-82f2-a4b899ddde46
+tests:
+- GitLab-test-playbook
+- LGTM-test-playbook
+- playbook-MinIO-Test
+fromversion: 1.0.0

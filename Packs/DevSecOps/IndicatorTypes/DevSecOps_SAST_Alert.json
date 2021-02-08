@@ -1,0 +1,12 @@
+{
+    "regex": null,
+    "details": "SAST Alert",
+    "disabled": false,
+    "shouldPublish": true,
+    "shouldCommit": true,
+    "expiration": 0,
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "system": false,
+    "id": "SAST Alert"
+}

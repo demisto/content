@@ -1,6 +1,5 @@
-id: e0271a37-6934-4c20-823b-69d9f8ac137a
+id: DevSecOps - Fetch PR - Triage
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - Fetch PR - Triage
 description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -1714,11 +1714,12 @@ tasks:
     task:
       id: 24c651e8-77a9-44bb-8f23-0c24bcbba0ba
       version: -1
-      name: Wait for PR Closure
+      name: GenericPolling
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -2360,6 +2361,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2391,6 +2393,10 @@ inputs:
     simple: "false"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 4ac23472-9a21-4685-8836-a849659b022d
+tests:
+- GitLab-test-playbook
+- LGTM-test-playbook
+- playbook-MinIO-Test
+fromversion: 1.0.0

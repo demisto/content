@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '74820c1f-957c-4eaf-8f60-71b68ff8b891'
     type: start
     task:
-      id: '0'
+      id: '74820c1f-957c-4eaf-8f60-71b68ff8b891'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '39c09ed1-88ea-42e7-a095-81ebc2f5f831'
     type: regular
     task:
-      id: '1'
+      id: '39c09ed1-88ea-42e7-a095-81ebc2f5f831'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '80c99571-8846-4d96-8c48-c179c2abdb1d'
     type: regular
     task:
-      id: '2'
+      id: '80c99571-8846-4d96-8c48-c179c2abdb1d'
       version: -1
       name: minio-make-bucket
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'df325a14-79ea-4ed4-bfcd-1dc0a0c91841'
     type: condition
     task:
-      id: '3'
+      id: 'df325a14-79ea-4ed4-bfcd-1dc0a0c91841'
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,10 +107,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 'b11e267a-e4d8-449f-bd9c-c780bfcc4fa4'
     type: regular
     task:
-      id: '4'
+      id: 'b11e267a-e4d8-449f-bd9c-c780bfcc4fa4'
       version: -1
       name: minio-remove-bucket
       description: ''
@@ -130,10 +130,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '9e480cd1-1d9a-4da5-a176-40ce051fc4b0'
     type: condition
     task:
-      id: '5'
+      id: '9e480cd1-1d9a-4da5-a176-40ce051fc4b0'
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,10 +164,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 'cc665566-d5e4-45e7-a332-69a6473133db'
     type: regular
     task:
-      id: '6'
+      id: 'cc665566-d5e4-45e7-a332-69a6473133db'
       version: -1
       name: minio-list-buckets
       description: ''
@@ -187,10 +187,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'c88248c0-4f7b-483e-be7c-48b4e35020c6'
     type: condition
     task:
-      id: '7'
+      id: 'c88248c0-4f7b-483e-be7c-48b4e35020c6'
       version: -1
       name: Verify Outputs
       type: condition
@@ -216,10 +216,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: '11d7a494-9938-4678-a831-75de26c0e6fa'
     type: regular
     task:
-      id: '8'
+      id: '11d7a494-9938-4678-a831-75de26c0e6fa'
       version: -1
       name: minio-list-objects
       description: ''
@@ -239,10 +239,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '36b905ab-0fbf-4ebf-9044-9758ec3b1fd7'
     type: condition
     task:
-      id: '9'
+      id: '36b905ab-0fbf-4ebf-9044-9758ec3b1fd7'
       version: -1
       name: Verify Outputs
       type: condition
@@ -268,10 +268,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: 'd2c55e1f-8a42-4ead-8d3e-8f213951ba11'
     type: regular
     task:
-      id: '10'
+      id: 'd2c55e1f-8a42-4ead-8d3e-8f213951ba11'
       version: -1
       name: minio-get-object
       description: ''
@@ -291,10 +291,10 @@ tasks:
     skipunavailable: false
   '11':
     id: 11
-    taskid: '11'
+    taskid: '8eac5b4d-df9d-4ce7-84b0-381b9446528b'
     type: regular
     task:
-      id: '11'
+      id: '8eac5b4d-df9d-4ce7-84b0-381b9446528b'
       version: -1
       name: minio-stat-object
       description: ''
@@ -314,10 +314,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: 'ffff2ee1-49bc-44f1-a3d6-e69c5ee91e0f'
     type: regular
     task:
-      id: '12'
+      id: 'ffff2ee1-49bc-44f1-a3d6-e69c5ee91e0f'
       version: -1
       name: minio-remove-object
       description: ''
@@ -337,10 +337,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: '25a8e90c-9771-4e93-a091-fda580bb4853'
     type: condition
     task:
-      id: '13'
+      id: '25a8e90c-9771-4e93-a091-fda580bb4853'
       version: -1
       name: Verify Outputs
       type: condition
@@ -371,10 +371,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: 'e5885ff1-eb9d-4c94-9331-e08fb72753aa'
     type: regular
     task:
-      id: '14'
+      id: 'e5885ff1-eb9d-4c94-9331-e08fb72753aa'
       version: -1
       name: minio-fput-object
       description: ''
@@ -394,10 +394,10 @@ tasks:
     skipunavailable: false
   '15':
     id: 15
-    taskid: '15'
+    taskid: 'd299807f-bfc9-41bb-9839-76848c7dd7b9'
     type: regular
     task:
-      id: '15'
+      id: 'd299807f-bfc9-41bb-9839-76848c7dd7b9'
       version: -1
       name: minio-put-object
       description: ''
@@ -417,10 +417,10 @@ tasks:
     skipunavailable: false
   '16':
     id: '16'
-    taskid: '16'
+    taskid: 'd424cfac-a1c0-4afd-906d-fd099d0a3b25'
     type: title
     task:
-      id: '16'
+      id: 'd424cfac-a1c0-4afd-906d-fd099d0a3b25'
       version: -1
       name: Test Done
       type: title
@@ -437,3 +437,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: A MinIO Integration Testing Playbook

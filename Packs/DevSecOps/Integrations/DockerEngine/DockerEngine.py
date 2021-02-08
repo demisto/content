@@ -260,7 +260,7 @@ class Client:
         params = assign_params(h=h, w=w)
 
         headers = self._headers
-        headers['Content-Type'] = 'application/octet-stream' 
+        headers['Content-Type'] = 'application/octet-stream'
         headers['Accept'] = 'text/plain'
 
         response = self._http_request('post', f'containers/{id_}/resize', params=params, headers=headers)

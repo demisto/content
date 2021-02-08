@@ -8,7 +8,8 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
     def get_projects_request(self, repository_storage, last_activity_before, min_access_level, simple, sort, membership, search_namespaces, archived, search, id_before, last_activity_after, starred, id_after, owned, order_by, statistics, visibility, with_custom_attributes, with_issues_enabled, with_merge_requests_enabled, with_programming_language):
-        params = assign_params(repository_storage=repository_storage, last_activity_before=last_activity_before, min_access_level=min_access_level, simple=simple, sort=sort, membership=membership, search_namespaces=search_namespaces, archived=archived, search=search, id_before=id_before, last_activity_after=last_activity_after, starred=starred, id_after=id_after, owned=owned, order_by=order_by, statistics=statistics, visibility=visibility, with_custom_attributes=with_custom_attributes, with_issues_enabled=with_issues_enabled, with_merge_requests_enabled=with_merge_requests_enabled, with_programming_language=with_programming_language)
+        params = assign_params(repository_storage=repository_storage, last_activity_before=last_activity_before, min_access_level=min_access_level, simple=simple, sort=sort, membership=membership, search_namespaces=search_namespaces, archived=archived, search=search, id_before=id_before, last_activity_after=last_activity_after,
+                               starred=starred, id_after=id_after, owned=owned, order_by=order_by, statistics=statistics, visibility=visibility, with_custom_attributes=with_custom_attributes, with_issues_enabled=with_issues_enabled, with_merge_requests_enabled=with_merge_requests_enabled, with_programming_language=with_programming_language)
         headers = self._headers
         response = self._http_request('get', 'projects', params=params, headers=headers)
         return response
@@ -92,7 +93,8 @@ def get_projects_command(client, args):
     with_merge_requests_enabled = argToBoolean(args.get('with_merge_requests_enabled', False))
     with_programming_language = str(args.get('with_programming_language', ''))
 
-    response = client.get_projects_request(repository_storage, last_activity_before, min_access_level, simple, sort, membership, search_namespaces, archived, search, id_before, last_activity_after, starred, id_after, owned, order_by, statistics, visibility, with_custom_attributes, with_issues_enabled, with_merge_requests_enabled, with_programming_language)
+    response = client.get_projects_request(repository_storage, last_activity_before, min_access_level, simple, sort, membership, search_namespaces, archived, search, id_before,
+                                           last_activity_after, starred, id_after, owned, order_by, statistics, visibility, with_custom_attributes, with_issues_enabled, with_merge_requests_enabled, with_programming_language)
     command_results = CommandResults(
         outputs_prefix='GitLab.Projects',
         outputs_key_field='',

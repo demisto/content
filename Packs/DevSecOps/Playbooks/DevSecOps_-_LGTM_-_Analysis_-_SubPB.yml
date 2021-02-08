@@ -1,6 +1,5 @@
-id: fc5c8ee6-8f63-4900-8b19-1a37dcab2b23
+id: DevSecOps - LGTM - Analysis - SubPB
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DevSecOps - LGTM - Analysis - SubPB
 description: A CodeQL Code Analysis Playbook
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -1698,6 +1698,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1723,6 +1724,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -1809,22 +1811,22 @@ inputs:
     simple: g
   required: false
   description: Git Platform
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Organization
   value: {}
   required: false
   description: Git Project Organization
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Repository
   value: {}
   required: false
   description: Git Repository
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LGTM Task ID
   value: {}
   required: false
   description: LGTM Task ID
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: LGTM.project_details.languages.grade
   description: The grade of the code for this language.
@@ -1842,4 +1844,8 @@ outputs:
   type: unknown
 - contextPath: LGTM.code_review_result.languages.alerts.query.properties
   type: unknown
-sourceplaybookid: 4ac23472-9a21-4685-8836-a849659b022d
+tests:
+- GitLab-test-playbook
+- LGTM-test-playbook
+- playbook-MinIO-Test
+fromversion: 1.0.0

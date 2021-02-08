@@ -16,7 +16,8 @@ class Client(BaseClient):
         return response
 
     def add_project_request(self, repository, language, mode, commit, date, worker_label):
-        params = assign_params(repository=repository, language=language, mode=mode, commit=commit, date=date, worker_label=worker_label)
+        params = assign_params(repository=repository, language=language, mode=mode,
+                               commit=commit, date=date, worker_label=worker_label)
 
         headers = self._headers
         headers['Content-Type'] = 'application/x-yaml'
@@ -79,7 +80,8 @@ class Client(BaseClient):
 
         headers = self._headers
 
-        response = self._http_request('get', f'projects/{project_id}/settings/analysis-configuration', params=params, headers=headers, resp_type='text')
+        response = self._http_request(
+            'get', f'projects/{project_id}/settings/analysis-configuration', params=params, headers=headers, resp_type='text')
 
         return response
 

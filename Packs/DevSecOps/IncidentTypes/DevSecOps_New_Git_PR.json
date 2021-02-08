@@ -1,16 +1,7 @@
 {
     "id": "New Git PR",
     "version": -1,
-    "modified": "2020-09-09T17:25:41.353539309+04:00",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "New Git PR",
     "prevName": "New Git PR",
@@ -26,8 +17,7 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
-    "reputationCalc": 0
+    "reputationCalc": 0,
+    "fromVersion": "5.0.0"
 }

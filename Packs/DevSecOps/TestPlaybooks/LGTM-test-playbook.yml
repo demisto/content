@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'ae71dbb7-4dce-4ef8-93f7-b70edc92ccd4'
     type: start
     task:
-      id: '0'
+      id: 'ae71dbb7-4dce-4ef8-93f7-b70edc92ccd4'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 'b222d4bb-7cad-41a0-9eac-e1b18be9ff04'
     type: regular
     task:
-      id: '1'
+      id: 'b222d4bb-7cad-41a0-9eac-e1b18be9ff04'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '28f5676c-6ae4-4ede-bfda-6aee1c1ddac4'
     type: regular
     task:
-      id: '2'
+      id: '28f5676c-6ae4-4ede-bfda-6aee1c1ddac4'
       version: -1
       name: lgtm-add-project
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: 3
-    taskid: '3'
+    taskid: 'aa12ffa1-8c8f-4f70-b6ac-27e8693923af'
     type: regular
     task:
-      id: '3'
+      id: 'aa12ffa1-8c8f-4f70-b6ac-27e8693923af'
       version: -1
       name: lgtm-get-alerts
       description: ''
@@ -96,10 +96,10 @@ tasks:
     skipunavailable: false
   '4':
     id: '4'
-    taskid: '4'
+    taskid: '0e2b8e09-9fba-446c-92d4-9ec3b1a0d9e9'
     type: condition
     task:
-      id: '4'
+      id: '0e2b8e09-9fba-446c-92d4-9ec3b1a0d9e9'
       version: -1
       name: Verify Outputs
       type: condition
@@ -130,10 +130,10 @@ tasks:
     skipunavailable: false
   '5':
     id: 5
-    taskid: '5'
+    taskid: 'abafb980-c66f-4505-92ef-6a172e1f84e5'
     type: regular
     task:
-      id: '5'
+      id: 'abafb980-c66f-4505-92ef-6a172e1f84e5'
       version: -1
       name: lgtm-get-analysis
       description: ''
@@ -153,10 +153,10 @@ tasks:
     skipunavailable: false
   '6':
     id: '6'
-    taskid: '6'
+    taskid: '91beb7cd-48b6-4162-bd98-c4b9e3b600d2'
     type: condition
     task:
-      id: '6'
+      id: '91beb7cd-48b6-4162-bd98-c4b9e3b600d2'
       version: -1
       name: Verify Outputs
       type: condition
@@ -232,10 +232,10 @@ tasks:
     skipunavailable: false
   '7':
     id: 7
-    taskid: '7'
+    taskid: 'cd302772-f129-4e9c-af9b-989a71a59827'
     type: regular
     task:
-      id: '7'
+      id: 'cd302772-f129-4e9c-af9b-989a71a59827'
       version: -1
       name: lgtm-get-analysis-for-commit
       description: ''
@@ -255,10 +255,10 @@ tasks:
     skipunavailable: false
   '8':
     id: '8'
-    taskid: '8'
+    taskid: '8fba826c-d7d5-48bc-b6cd-b940a5b80a24'
     type: condition
     task:
-      id: '8'
+      id: '8fba826c-d7d5-48bc-b6cd-b940a5b80a24'
       version: -1
       name: Verify Outputs
       type: condition
@@ -334,10 +334,10 @@ tasks:
     skipunavailable: false
   '9':
     id: 9
-    taskid: '9'
+    taskid: 'f58f2b8e-6896-4c59-93f8-787c898125bd'
     type: regular
     task:
-      id: '9'
+      id: 'f58f2b8e-6896-4c59-93f8-787c898125bd'
       version: -1
       name: lgtm-get-code-review
       description: ''
@@ -357,10 +357,10 @@ tasks:
     skipunavailable: false
   '10':
     id: '10'
-    taskid: '10'
+    taskid: '4cbcd66e-fbd1-43c3-8d6b-7548b106080d'
     type: condition
     task:
-      id: '10'
+      id: '4cbcd66e-fbd1-43c3-8d6b-7548b106080d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -441,10 +441,10 @@ tasks:
     skipunavailable: false
   '11':
     id: 11
-    taskid: '11'
+    taskid: '64a9f011-894d-476c-bdd4-84961a6d69bd'
     type: regular
     task:
-      id: '11'
+      id: '64a9f011-894d-476c-bdd4-84961a6d69bd'
       version: -1
       name: lgtm-get-project
       description: ''
@@ -464,10 +464,10 @@ tasks:
     skipunavailable: false
   '12':
     id: '12'
-    taskid: '12'
+    taskid: 'bc7e0e99-fe71-4830-9b90-429d32c17bec'
     type: condition
     task:
-      id: '12'
+      id: 'bc7e0e99-fe71-4830-9b90-429d32c17bec'
       version: -1
       name: Verify Outputs
       type: condition
@@ -503,10 +503,10 @@ tasks:
     skipunavailable: false
   '13':
     id: 13
-    taskid: '13'
+    taskid: 'be38e283-5740-4b89-8cef-b496352bdb38'
     type: regular
     task:
-      id: '13'
+      id: 'be38e283-5740-4b89-8cef-b496352bdb38'
       version: -1
       name: lgtm-get-project-by-url-identifier
       description: ''
@@ -526,10 +526,10 @@ tasks:
     skipunavailable: false
   '14':
     id: '14'
-    taskid: '14'
+    taskid: 'f3af246a-f467-440f-a399-83771c2dfc4b'
     type: condition
     task:
-      id: '14'
+      id: 'f3af246a-f467-440f-a399-83771c2dfc4b'
       version: -1
       name: Verify Outputs
       type: condition
@@ -565,10 +565,10 @@ tasks:
     skipunavailable: false
   '15':
     id: 15
-    taskid: '15'
+    taskid: 'c08d2b53-f22c-4939-a528-7ecdc0256128'
     type: regular
     task:
-      id: '15'
+      id: 'c08d2b53-f22c-4939-a528-7ecdc0256128'
       version: -1
       name: lgtm-get-project-config
       description: ''
@@ -588,10 +588,10 @@ tasks:
     skipunavailable: false
   '16':
     id: 16
-    taskid: '16'
+    taskid: '1907738b-5d23-4f8c-859b-544b2afee07b'
     type: regular
     task:
-      id: '16'
+      id: '1907738b-5d23-4f8c-859b-544b2afee07b'
       version: -1
       name: lgtm-get-projects
       description: ''
@@ -611,10 +611,10 @@ tasks:
     skipunavailable: false
   '17':
     id: '17'
-    taskid: '17'
+    taskid: '758c4825-fffd-4928-b170-16838a842f80'
     type: condition
     task:
-      id: '17'
+      id: '758c4825-fffd-4928-b170-16838a842f80'
       version: -1
       name: Verify Outputs
       type: condition
@@ -660,10 +660,10 @@ tasks:
     skipunavailable: false
   '18':
     id: 18
-    taskid: '18'
+    taskid: '67e43e80-004c-41d9-a6d8-8ce1e65c3d37'
     type: regular
     task:
-      id: '18'
+      id: '67e43e80-004c-41d9-a6d8-8ce1e65c3d37'
       version: -1
       name: lgtm-get-version
       description: ''
@@ -683,10 +683,10 @@ tasks:
     skipunavailable: false
   '19':
     id: '19'
-    taskid: '19'
+    taskid: 'c3edcf10-9dfc-458e-be71-a58104c1b223'
     type: condition
     task:
-      id: '19'
+      id: 'c3edcf10-9dfc-458e-be71-a58104c1b223'
       version: -1
       name: Verify Outputs
       type: condition
@@ -712,10 +712,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: '359f107b-e0b1-4021-a05b-c4cdb98c9bc2'
     type: regular
     task:
-      id: '20'
+      id: '359f107b-e0b1-4021-a05b-c4cdb98c9bc2'
       version: -1
       name: lgtm-request-analysis
       description: ''
@@ -735,10 +735,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: '97846a59-48df-400c-9501-925bdbb4f3f6'
     type: condition
     task:
-      id: '21'
+      id: '97846a59-48df-400c-9501-925bdbb4f3f6'
       version: -1
       name: Verify Outputs
       type: condition
@@ -779,10 +779,10 @@ tasks:
     skipunavailable: false
   '22':
     id: 22
-    taskid: '22'
+    taskid: '0eba7d5d-b64d-49e5-8e51-f87ae781687b'
     type: regular
     task:
-      id: '22'
+      id: '0eba7d5d-b64d-49e5-8e51-f87ae781687b'
       version: -1
       name: lgtm-request-review
       description: ''
@@ -802,10 +802,10 @@ tasks:
     skipunavailable: false
   '23':
     id: '23'
-    taskid: '23'
+    taskid: '3cfa8082-60bb-46bd-87d4-e6335382dfd3'
     type: condition
     task:
-      id: '23'
+      id: '3cfa8082-60bb-46bd-87d4-e6335382dfd3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -841,10 +841,10 @@ tasks:
     skipunavailable: false
   '24':
     id: 24
-    taskid: '24'
+    taskid: 'd5fe6a9b-3d15-4669-a173-7eecb7b20052'
     type: regular
     task:
-      id: '24'
+      id: 'd5fe6a9b-3d15-4669-a173-7eecb7b20052'
       version: -1
       name: lgtm-create-query-job
       description: ''
@@ -864,10 +864,10 @@ tasks:
     skipunavailable: false
   '25':
     id: '25'
-    taskid: '25'
+    taskid: '3ea1be7c-622e-4aad-ae8e-2eedd52f4052'
     type: condition
     task:
-      id: '25'
+      id: '3ea1be7c-622e-4aad-ae8e-2eedd52f4052'
       version: -1
       name: Verify Outputs
       type: condition
@@ -893,10 +893,10 @@ tasks:
     skipunavailable: false
   '26':
     id: 26
-    taskid: '26'
+    taskid: '1d25c4f3-a595-4096-849c-447e881799ae'
     type: regular
     task:
-      id: '26'
+      id: '1d25c4f3-a595-4096-849c-447e881799ae'
       version: -1
       name: lgtm-get-query-job
       description: ''
@@ -916,10 +916,10 @@ tasks:
     skipunavailable: false
   '27':
     id: '27'
-    taskid: '27'
+    taskid: '856ae90c-3a11-4f71-a34f-c3c1afe94c31'
     type: condition
     task:
-      id: '27'
+      id: '856ae90c-3a11-4f71-a34f-c3c1afe94c31'
       version: -1
       name: Verify Outputs
       type: condition
@@ -945,10 +945,10 @@ tasks:
     skipunavailable: false
   '28':
     id: 28
-    taskid: '28'
+    taskid: '03fd9689-41bc-49c9-8357-2432ccb135c7'
     type: regular
     task:
-      id: '28'
+      id: '03fd9689-41bc-49c9-8357-2432ccb135c7'
       version: -1
       name: lgtm-get-query-job-results-for-project
       description: ''
@@ -968,10 +968,10 @@ tasks:
     skipunavailable: false
   '29':
     id: '29'
-    taskid: '29'
+    taskid: '541339ae-ce26-4d74-b7a1-d428028fc6e4'
     type: condition
     task:
-      id: '29'
+      id: '541339ae-ce26-4d74-b7a1-d428028fc6e4'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1022,10 +1022,10 @@ tasks:
     skipunavailable: false
   '30':
     id: 30
-    taskid: '30'
+    taskid: '80cc991c-66d3-40e5-8d01-a0432b9a6d8b'
     type: regular
     task:
-      id: '30'
+      id: '80cc991c-66d3-40e5-8d01-a0432b9a6d8b'
       version: -1
       name: lgtm-get-query-job-results-overview
       description: ''
@@ -1045,10 +1045,10 @@ tasks:
     skipunavailable: false
   '31':
     id: '31'
-    taskid: '31'
+    taskid: 'd2408739-8cde-4aca-a633-b26bb38663db'
     type: condition
     task:
-      id: '31'
+      id: 'd2408739-8cde-4aca-a633-b26bb38663db'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1099,10 +1099,10 @@ tasks:
     skipunavailable: false
   '32':
     id: '32'
-    taskid: '32'
+    taskid: '94888873-9c20-4dc2-92b1-eba46addb3b2'
     type: title
     task:
-      id: '32'
+      id: '94888873-9c20-4dc2-92b1-eba46addb3b2'
       version: -1
       name: Test Done
       type: title
@@ -1119,3 +1119,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: An LGTM Integration Testing Playbook

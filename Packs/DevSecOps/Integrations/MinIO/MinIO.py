@@ -104,7 +104,7 @@ def list_objects_command(client, args):
     return command_results
 
 
-def get_object_command (client, args):
+def get_object_command(client, args):
     response = []
 
     bucket_name = str(args.get('bucket_name'))
