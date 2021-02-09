@@ -86,11 +86,13 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
+TARGET_MAILBOX = 'receivedBy'
 
 # context paths
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
-    ITEM_ID, MESSAGE_ID
-)
+CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
+                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(
     ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID
 )
