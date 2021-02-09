@@ -674,6 +674,8 @@ elif demisto.command() == 'tenable-io-list-scans':
     demisto.results(get_scans_command())
 elif demisto.command() == 'tenable-io-launch-scan':
     demisto.results(launch_scan_command())
+elif demisto.command() == 'tenable-io-launch-scans':
+    demisto.results(launch_scans_command())
 elif demisto.command() == 'tenable-io-get-scan-report':
     demisto.results(get_report_command())
 elif demisto.command() == 'tenable-io-get-vulnerability-details':
