@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: msgraph-apps-auth-test
       description: Removes any credentials stored in the integration..
-      script: MicrosoftGraphApplications||msgraph-apps-auth-test
+      script: MicrosoftGraphApplications|||msgraph-apps-auth-test
       type: regular
       iscommand: true
       brand: MicrosoftGraphApplications
@@ -68,7 +68,7 @@ tasks:
       version: -1
       name: msgraph-apps-service-principal-list
       description: Retrieve a list of service principals.
-      script: '|||msgraph-apps-service-principal-list'
+      script: MicrosoftGraphApplications|||msgraph-apps-service-principal-list
       type: regular
       iscommand: true
       brand: ""
