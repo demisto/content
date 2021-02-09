@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -103,7 +103,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -128,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 910
+          "y": 735
         }
       }
     note: false
@@ -157,36 +157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 36ff0243-6b98-477f-8a2f-eabcbec125e6
-    type: regular
-    task:
-      id: 36ff0243-6b98-477f-8a2f-eabcbec125e6
-      version: -1
-      name: Test authentication
-      description: Tests the OAuth2.0 authorization process.
-      script: '|||o365-auditlog-auth-test'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -209,7 +180,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -235,7 +206,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 765,
         "width": 810,
         "x": 50,
         "y": 50
