@@ -14,6 +14,12 @@ INDICATOR_TYPES = {
 }
 
 
+def get_dbot_score_data(indicator, indicator_type, source, score):
+    db_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
+                                integration_name=source, score=score).to_context()
+    return db_score.get(Common.DBotScore.CONTEXT_PATH, db_score.get(CONTEXT_PATH, db_score))
+
+
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
@@ -22,14 +28,12 @@ def iterate_indicator_entry(indicator, entry):
     for source in sources:
         if not source:
             source = DEFAULT_SOURCE
-        dbot_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
-                                      integration_name=source, score=entry["score"]).to_context()
-        dbot_score = {CONTEXT_PATH: dbot_score.get(Common.DBotScore.CONTEXT_PATH, dbot_score)}
+        dbot_score = get_dbot_score_data(indicator, indicator_type, source, entry["score"])
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Indicator DBot Score', dbot_score.get(CONTEXT_PATH, dbot_score)),
-            outputs=dbot_score
+            readable_output=tableToMarkdown('Indicator DBot Score', dbot_score),
+            outputs={CONTEXT_PATH: dbot_score}
         ).to_context()
-        context_entry_results = command_results.pop('EntryContext').get(CONTEXT_PATH)
+        context_entry_results = command_results.pop('EntryContext')[CONTEXT_PATH]
         yield context_entry_results, command_results
 
 
