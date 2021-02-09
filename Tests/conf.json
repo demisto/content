@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Microsoft Teams Management",
-            "playbookID": "Microsoft Teams Management - Test"
+            "playbookID": "Microsoft Teams Management - Test",
+            "is_mockable": false
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -3273,7 +3274,6 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728",
         "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "PAN-OS DAG Configuration Test": "Issue 19205",
         "palo_alto_firewall_test_pb": "Issue 27501",
