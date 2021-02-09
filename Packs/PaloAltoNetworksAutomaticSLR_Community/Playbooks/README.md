@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Palo Alto Networks Automatic SLR (Community)
+* Palo Alto Networks Automatic SLR
 
 ### Scripts
 * Set (Built In)

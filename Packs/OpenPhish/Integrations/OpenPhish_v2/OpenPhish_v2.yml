@@ -3,6 +3,11 @@ commonfields:
   id: OpenPhish_v2
   version: -1
 configuration:
+- defaultvalue: false
+  display: Use HTTPS connection
+  name: https
+  required: false
+  type: 8
 - display: Database refresh interval (hours)
   name: fetchIntervalHours
   defaultvalue: 1
@@ -25,7 +30,7 @@ name: OpenPhish_v2
 display: OpenPhish v2
 defaultEnabled: false
 script:
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   commands:
     - name: url
       arguments:

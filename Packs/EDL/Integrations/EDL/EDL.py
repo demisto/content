@@ -21,7 +21,7 @@ class Handler:
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
-PAGE_SIZE: int = 200
+PAGE_SIZE: int = 2000
 DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
