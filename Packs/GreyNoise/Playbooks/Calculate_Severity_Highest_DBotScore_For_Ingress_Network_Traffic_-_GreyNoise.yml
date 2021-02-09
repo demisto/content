@@ -605,5 +605,5 @@ outputs:
   type: unknown
 quiet: true
 tests:
-- GreyNoise-test
+- No tests
 fromversion: 5.0.0

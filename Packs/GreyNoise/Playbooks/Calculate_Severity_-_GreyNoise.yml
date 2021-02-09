@@ -1314,5 +1314,5 @@ outputs:
   description: Critical user-groups involved in the incident.
   type: unknown
 tests:
-- GreyNoise-test
+- No tests
 fromversion: 5.0.0

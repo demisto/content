@@ -243,5 +243,5 @@ outputs:
 - contextPath: GreyNoise.IP.address
   description: The IP address of the scanning device IP.
 tests:
-- GreyNoise-test
+- No tests
 fromversion: 5.0.0
