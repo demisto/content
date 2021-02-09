@@ -10,7 +10,6 @@
     "id": "GreatHorn Phishing",
     "locked": false,
     "name": "GreatHorn Phishing",
-    "playbookId": "GreatHornGetEventStatus",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
