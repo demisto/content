@@ -356,4 +356,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- OpenCTI Feed v2 Test
