@@ -1,94 +1,116 @@
-id: OpenCTI_Feed_v2_Test
-name: OpenCTI_Feed_v2_Test
-version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+id: OpenCTI Feed v2 Test
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: OpenCTI Feed v2 Test
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: a00ae0a8-cf80-4388-8b9b-153735e3d384
     type: start
     task:
-      id: '0'
+      id: a00ae0a8-cf80-4388-8b9b-153735e3d384
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fcc41f37-3e16-42c1-852c-5375a9a6ebf5
     type: regular
     task:
-      id: '1'
+      id: fcc41f37-3e16-42c1-852c-5375a9a6ebf5
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4badbd9a-89ea-4c0e-85bd-767919eac840
     type: regular
     task:
-      id: '2'
+      id: 4badbd9a-89ea-4c0e-85bd-767919eac840
       version: -1
       name: opencti-get-indicators
-      description: ''
       script: '|||opencti-get-indicators'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      indicator_types: {}
+      last_id: {}
+      limit:
+        simple: "10"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0495ef10-0d1b-4b07-8800-d9d113911259
     type: condition
     task:
-      id: '3'
+      id: 0495ef10-0d1b-4b07-8800-d9d113911259
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -105,180 +127,263 @@ tasks:
             value:
               simple: OpenCTI.LastRunID
             iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 89e3d3d3-c41f-43c8-89b6-9f6e03f8399c
     type: regular
     task:
-      id: '4'
+      id: 89e3d3d3-c41f-43c8-89b6-9f6e03f8399c
       version: -1
       name: opencti-reset-fetch-indicators
-      description: ''
       script: '|||opencti-reset-fetch-indicators'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "8"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: 5
-    taskid: '5'
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 79a1aad2-a397-42ac-81a5-ebc5de525969
     type: regular
     task:
-      id: '5'
+      id: 79a1aad2-a397-42ac-81a5-ebc5de525969
       version: -1
       name: opencti-indicator-delete
-      description: ''
       script: '|||opencti-indicator-delete'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
-    scriptarguments: {}
+      - "10"
+    scriptarguments:
+      id:
+        simple: ${OpenCTI.Indicator.id}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: fa441c60-10cd-452a-8e53-5e70be77fb20
     type: regular
     task:
-      id: '6'
+      id: fa441c60-10cd-452a-8e53-5e70be77fb20
       version: -1
       name: opencti-indicator-field-update
-      description: ''
       script: '|||opencti-indicator-field-update'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${OpenCTI.Indicator.id}
+      key:
+        simple: score
+      value:
+        simple: "10"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 20c09d54-360a-47fd-8442-3ea3112b912e
     type: condition
     task:
-      id: '7'
+      id: 20c09d54-360a-47fd-8442-3ea3112b912e
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: OpenCTI.Indicator.id
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 08d9b2e0-1df3-4ebd-8e16-bfbee12fabb6
     type: regular
     task:
-      id: '8'
+      id: 08d9b2e0-1df3-4ebd-8e16-bfbee12fabb6
       version: -1
       name: opencti-indicator-create-update
-      description: ''
       script: '|||opencti-indicator-create-update'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
+    scriptarguments:
+      created_by: {}
+      data:
+        simple: '{"value": "BadHost-TestPlaybook"}'
+      description:
+        simple: Test playbook bad hostname indicator
+      external_references_source_name: {}
+      external_references_url: {}
+      id: {}
+      label:
+        simple: testplaybook
+      marking:
+        simple: TLP:GREEN
+      score:
+        simple: "70"
+      type:
+        simple: HostName
+      update: {}
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d189002c-5f64-4352-8f90-dc598691ffa4
     type: condition
     task:
-      id: '9'
+      id: d189002c-5f64-4352-8f90-dc598691ffa4
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: OpenCTI.Indicator.id
             iscontext: true
-    view: '{"position": {"x": 50, "y": 1800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: '10'
-    taskid: '10'
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0288f0a8-bde4-4f3f-8185-f25a5dc63afa
     type: title
     task:
-      id: '10'
+      id: 0288f0a8-bde4-4f3f-8185-f25a5dc63afa
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
