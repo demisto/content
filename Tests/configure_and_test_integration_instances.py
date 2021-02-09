@@ -228,9 +228,9 @@ def options_handler():
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
-                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
+                        default='/__w/content-private/content-private/content/artifacts/packs')
     parser.add_argument('--content_root', help='Path to the content root.',
-                        default='/home/runner/work/content-private/content-private/content')
+                        default='/__w/content-private/content-private/content')
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
                         default='./Tests/filter_file.txt')

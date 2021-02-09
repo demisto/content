@@ -41,7 +41,7 @@ def download_private_id_set_from_gcp(public_storage_bucket):
     """
 
     storage_id_set_path = 'content/private_id_set.json'
-    private_artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
+    private_artifacts_path = '/__w/content-private/content-private/content/artifacts'
     private_id_set_path = private_artifacts_path + '/private_id_set.json'
 
     if not os.path.exists(private_artifacts_path):
