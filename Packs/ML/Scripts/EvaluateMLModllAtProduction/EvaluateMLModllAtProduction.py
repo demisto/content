@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np  # type: ignore
 import pandas as pd
 
 from CommonServerPython import *
