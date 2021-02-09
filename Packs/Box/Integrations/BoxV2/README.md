@@ -35,7 +35,7 @@ From the General Settings menu, you may also obtain your *User ID* for the servi
     | search_user_id | Auto-detect user IDs based on their email address. | False |
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
-    | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | max_fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
