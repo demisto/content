@@ -1,13 +1,9 @@
-import datetime
 import hashlib
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import datetime
 from dateutil.tz import tzutc
 
+
 # M4d Propz @Richie
-
-
 def gen_svc_obj_name(cluster_name, port):
     # service, address, and inbound nat rule object name for K8s service
     #    13 chars  13 chars  4 chars  6 chars   10 chars
@@ -60,25 +56,26 @@ def gen_security_policy_rule_name(k8s_rule_name):
 
 
 def gen_dag_match_criteria(network_policy, direction, namespace):
-    """Extract a list of DAG tags from Network Policy."""
+    # Extract a list of DAG tags from Network Policy
     tags = []
     if direction == "src":
         try:
-            ingress_spec = network_policy["raw_object"]["spec"]["ingress"]
-            from_ = ingress_spec[0].get("from", '')
+            ingress_spec = network_policy["spec"]["ingress"]
+            from_ = ingress_spec[0].get("from")
             if not from_:
                 from_ = ingress_spec[0]["_from"]
             for selector in from_:
                 for k, v in selector.items():
                     if k in ["namespaceSelector", "podSelector"]:
-                        labels = v["matchLabels"]
-                        for k_, v_ in labels.items():
-                            tags.append(f"{namespace}.{k_}.{v_}")
+                        if v is not None:
+                            labels = v["matchLabels"]
+                            for k_, v_ in labels.items():
+                                tags.append(f"{namespace}.{k_}.{v_}")
         except KeyError:
             pass
     if direction == "dst":
         try:
-            labels = network_policy["raw_object"]["spec"]["podSelector"]["matchLabels"]
+            labels = network_policy["spec"]["podSelector"]["matchLabels"]
             for k_, v_ in labels.items():
                 tags.append(f"{namespace}.{k_}.{v_}")
         except KeyError:
@@ -88,9 +85,11 @@ def gen_dag_match_criteria(network_policy, direction, namespace):
 
 
 def gen_service_objects(network_policy):
+    # example : tcp-53
+    # Generate service object name from Network Policy "ports"
     services = []
     try:
-        ports = network_policy["raw_object"]["spec"]["ingress"][0]["ports"]
+        ports = network_policy["spec"]["ingress"][0]["ports"]
         for port in ports:
             port_number = port.get("port")
             protocol = port.get("protocol", "tcp").lower()
@@ -102,10 +101,12 @@ def gen_service_objects(network_policy):
 
 
 def get_ip_blocks(network_policy, direction):
+    # example : 192.168.0.0/24
+    # Generate CIDR address object from Network Policy
     ip_blocks = []
     if direction == "src":
         try:
-            from_ = network_policy["raw_object"]["spec"]["ingress"][0]["from"]
+            from_ = network_policy["spec"]["ingress"][0]["from"]
             for selector in from_:
                 for k, v in selector.items():
                     if k in ["ipBlock"]:
@@ -120,76 +121,145 @@ def get_ip_blocks(network_policy, direction):
 
 
 def get_appid(network_policy):
-    labels = network_policy["raw_object"]["metadata"].get("labels")
+    # example : dns
+    # Extract app-id from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
     if labels:
         appid = labels.get("np.panw.com/appid")
         return appid
     return
 
 
+def get_vulnerability(network_policy):
+    # example : strict
+    # Extract vulnerability profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        vuln_profile = labels.get("np.panw.com/vuln-protection")
+        return vuln_profile
+    return
+
+
+def get_antispyware(network_policy):
+    # example : strict
+    # Extract antispyware profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        anti_spyware = labels.get("np.panw.com/anti-spyware")
+        return anti_spyware
+    return
+
+
+def get_antivirus(network_policy):
+    # example : default
+    # Extract antivirus profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        av = labels.get("np.panw.com/antivirus")
+        return av
+    return
+
+
+def get_urlfiltering(network_policy):
+    # example : default
+    # Extract url-filtering profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        urlfiltering = labels.get("np.panw.com/url-filtering")
+        return urlfiltering
+    return
+
+
+def get_fileblocking(network_policy):
+    # example : default
+    # Extract file-blocking profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        fb = labels.get("np.panw.com/file-blocking")
+        return fb
+    return
+
+
+def get_datafiltering(network_policy):
+    # example : default
+    # Extract data-filtering profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        df = labels.get("np.panw.com/data-filtering")
+        return df
+    return
+
+
+def get_logprofile(network_policy):
+    # example : Panorama
+    # Extract log-forwarding profile from Network Policy annotations.
+    labels = network_policy["metadata"].get("labels")
+    if labels:
+        lp = labels.get("np.panw.com/log-profile")
+        return lp
+    return
+
+
 # XSOAR Code
-def analyzeIngress(specIngress):
-    pass
+def AnalyzePolicy(cluster_name: str, raw_object: dict):
 
-
-def analyzeEgress(specEgress):
-    pass
-
-
-def setApplication():
-    pass
-
-
-def setDynamicAddressGroups():
-    pass
-
-
-def AnalyzePolicy(cluster_name: str, net_policy_json: dict):
-    services = []
-    sources = []
-    destinations = []
-    applications = []
-
-    # Does it
-    namespace = net_policy_json["raw_object"]["metadata"]["namespace"]
-    policy_name = net_policy_json["raw_object"]["metadata"]["name"]
+    namespace = raw_object["metadata"]["namespace"]
+    policy_name = raw_object["metadata"]["name"]
 
     # Up to 63 characters total
-    namespace = f"xsoar.k8s.cl_{cluster_name}.ns_{namespace}"
+    namespace = f"{namespace}"
     fqrn = f"{namespace}.{policy_name}"
     rule_name = gen_security_policy_rule_name(fqrn)
-    rule_description = fqrn
+    rule_description = f"{fqrn}\n\nThis rule was generated via XSOAR automation and should NOT be edited directly."
 
     # Get CIDR addresses
-    dst_ip_blocks = []
-    src_ip_blocks = get_ip_blocks(net_policy_json, "src")
+    dst_ip_blocks = []  # not currently supporint dst cidr
+    src_ip_blocks = get_ip_blocks(raw_object, "src")
 
     # Generate DAG objects
     src_dag_name = f"{rule_name}.src"
     src_dag_description = fqrn
-    src_dag_match = gen_dag_match_criteria(net_policy_json, "src", namespace)
-    src_dag = {
-        "Name": src_dag_name,
-        "Match": src_dag_match,
-        "Description": src_dag_description,
-    }
+    src_dag_match = gen_dag_match_criteria(raw_object, "src", namespace)
+    src_dag = {}
+    if len(src_dag_match) > 0:
+        src_dag = {
+            "Name": src_dag_name,
+            "Match": src_dag_match,
+            "Description": src_dag_description,
+        }
     dst_dag_name = f"{rule_name}.dst"
     dst_dag_description = fqrn
-    dst_dag_match = gen_dag_match_criteria(net_policy_json, "dst", namespace)
-    dst_dag = {
-        "Name": dst_dag_name,
-        "Match": dst_dag_match,
-        "Description": dst_dag_description,
-    }
+    dst_dag_match = gen_dag_match_criteria(raw_object, "dst", namespace)
+    dst_dag = {}
+    if len(dst_dag_match) > 0:
+        dst_dag = {
+            "Name": dst_dag_name,
+            "Match": dst_dag_match,
+            "Description": dst_dag_description,
+        }
 
     # Generate service objects
-    service_objects = gen_service_objects(net_policy_json)
+    services = gen_service_objects(raw_object)
 
     # Get NGFW metadata labels
-    appid = get_appid(net_policy_json)
+    appid = get_appid(raw_object)
+    vulnerability = get_vulnerability(raw_object)
+    antivirus = get_antivirus(raw_object)
+    urlfiltering = get_urlfiltering(raw_object)
+    fileblocking = get_fileblocking(raw_object)
+    datafiltering = get_datafiltering(raw_object)
+    logprofile = get_logprofile(raw_object)
+    antispyware = get_antispyware(raw_object)
 
-    src = ", ".join([src_dag_name] + src_ip_blocks)
-    dst = ", ".join([dst_dag_name] + dst_ip_blocks)
+    if len(src_dag_match) > 0:
+        src = ", ".join([src_dag_name] + src_ip_blocks)
+    else:
+        src = ", ".join(src_ip_blocks)
+
+    if len(dst_dag_match) > 0:
+        dst = ", ".join([dst_dag_name] + dst_ip_blocks)
+    else:
+        dst = ", ".join(dst_ip_blocks)
 
     results = {
         "ConvertedPolicy": {
@@ -202,46 +272,46 @@ def AnalyzePolicy(cluster_name: str, net_policy_json: dict):
                 "ToZone": "any",
                 "Application": appid,
                 "Src": src,
-                "Dst": dst
+                "Dst": dst,
+                "Description": rule_description,
+                "VulnerabilityProfile": vulnerability,
+                "AntiSpywareProfile": antispyware,
+                "AntivirusProfile": antivirus,
+                "UrlFilteringProfile": urlfiltering,
+                "FileBlockingProfile": fileblocking,
+                "DataFilteringProfile": datafiltering,
+                "LogProfile": logprofile
             },
             "DAG": [src_dag, dst_dag],
-            "Services": service_objects,
+            "Services": services,
         }
     }
     return results
 
 
 def main():
-    # network_policy = demisto.args()["KubernetesNetworkPolicy"]
-
-    # There can be multiple clusters defined in Panorama, which one(s) do we care about?
-    DEFAULT_CLUSTER = "dev-cluster"
-
-   # results = AnalyzePolicy(DEFAULT_CLUSTER, NET_POL2)
-
-    arg_network_policy = demisto.args().get('KubernetesNetworkPolicy', '')
-    arg_cluster_name = demisto.args().get('ClusterName', '')
+    arg_network_policy = demisto.args().get("KubernetesNetworkPolicy", "")
+    arg_cluster_name = demisto.args().get("ClusterName", "")
     # Some sources provide only the raw_object
     try:
         network_policy = json.loads(arg_network_policy)
     except Exception as e:
         raise
 
-    if not network_policy.get('raw_object', ''):
-        json_annotation = json.loads(network_policy.get('metadata').get(
-            'annotations').get('kubectl.kubernetes.io/last-applied-configuration'))
-        network_policy = {'raw_object': json_annotation}
+    if network_policy.get("raw_object"):
+        network_policy = network_policy.get("raw_object")
     results = AnalyzePolicy(arg_cluster_name, network_policy)
 
-    # demisto.results(results)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['json'],
-        'HumanReadable': results,
-        'EntryContext': results
-    })
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "Contents": results,
+            "ReadableContentsFormat": formats["json"],
+            "HumanReadable": results,
+            "EntryContext": results,
+        }
+    )
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
