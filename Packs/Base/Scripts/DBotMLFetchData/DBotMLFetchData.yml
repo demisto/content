@@ -146,7 +146,7 @@ tags:
 - ml
 timeout: 100µs
 type: python
-dockerimage: demisto/fetch-data:1.0.0.14842
+dockerimage: demisto/fetch-data:1.0.0.10185
 tests:
 - No test
 deprecated: true
