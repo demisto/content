@@ -134,7 +134,7 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
         output_model_evaluation(y_test=y_true, y_pred=y_pred_dict, res=res_threshold,
                                 context_field='EvaluateMLModllAtProduction')
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    if not y_pred_prob_is_given or not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):
+    if not y_pred_prob_is_given or not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):  # type: ignore
         res = get_ml_model_evaluation(y_true, y_pred_dict, target_accuracy=0, target_recall=0)
         human_readable = '\n'.join(['## Results for No Threshold',
                                     'The following results were achieved by using no threshold (threshold equals 0)'])

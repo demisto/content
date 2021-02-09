@@ -300,7 +300,7 @@ def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, pref
     if len(vectors) == 0:
         mean_vector = np.zeros(size)
     else:
-        mean_vector = np.mean(vectors, axis=0)
+        mean_vector = np.mean(vectors, axis=0)  # type: ignore
     res = {'{}_{}'.format(prefix, str(i)): mean_vector[i].item() for i in range(len(mean_vector))}
     return res
 
