@@ -3207,6 +3207,11 @@
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
+        },
+        {
+            "integrations": "OpenCTI Feed v2",
+            "playbookID": "OpenCTI Feed v2 Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
