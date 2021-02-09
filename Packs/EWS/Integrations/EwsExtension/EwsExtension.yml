@@ -209,107 +209,156 @@ script:
     name: ews-global-junk-rules-set
   - arguments:
     - default: false
-      description: |
-        The sender_address parameter filters the results by the sender's email address. You can specify multiple values separated by commas.
+      description: 'The sender_address parameter filters the results by the sender''s
+        email address. You can specify multiple values separated by commas.
+
+        '
       isArray: true
       name: sender_address
       required: false
       secret: false
     - default: false
-      description: |
-        The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.
+      description: 'The recipient_address parameter filters the results by the recipient''s
+        email address. You can specify multiple values separated by commas.
+
+        '
       isArray: true
       name: recipient_address
       required: false
       secret: false
     - default: false
-      description: |
-        The from_ip parameter filters the results by the source IP address.
-        For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.
+      description: 'The from_ip parameter filters the results by the source IP address.
+
+        For incoming messages, the value of from_ip is the public IP address of the
+        SMTP email server that sent the message.
+
         For outgoing messages from Exchange Online, the value is blank.
+
+        '
       isArray: true
       name: from_ip
       required: false
       secret: false
     - default: false
-      description: |
-        The to_ip parameter filters the results by the destination IP address.
-        For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain.
+      description: 'The to_ip parameter filters the results by the destination IP
+        address.
+
+        For outgoing messages, the value of to_ip is the public IP address in the
+        resolved MX record for the destination domain.
+
         For incoming messages to Exchange Online, the value is blank.
+
+        '
       isArray: true
       name: to_ip
       required: false
       secret: false
     - default: false
-      description: |
-        The message_id parameter filters the results by the Message-ID header field of the message.
-        This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.
-        The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.
-        Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
+      description: 'The message_id parameter filters the results by the Message-ID
+        header field of the message.
+
+        This value is also known as the Client ID. The format of the Message-ID depends
+        on the messaging server that sent the message.
+
+        The value should be unique for each message. However, not all messaging servers
+        create values for the Message-ID in the same way.
+
+        Be sure to include the full Message ID string (which may include angle brackets)
+        and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").
+
+        '
       isArray: false
       name: message_id
       required: false
       secret: false
     - default: false
-      description: |
-        The message_trace_id parameter can be used with the recipient address to uniquely identify a message trace and obtain more details.
-        A message trace ID is generated for every message that's processed by the system.
+      description: 'The message_trace_id parameter can be used with the recipient
+        address to uniquely identify a message trace and obtain more details.
+
+        A message trace ID is generated for every message that''s processed by the
+        system.
+
+        '
       isArray: false
       name: message_trace_id
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: |
-        The page number of the results you want to view.
+      description: 'The page number of the results you want to view.
+
         Can be an integer between 1 and 1000. The default value is 1.
+
+        '
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: |
-        The maximum number of entries per page.
+      description: 'The maximum number of entries per page.
+
         Can be an integer between 1 and 5000.
+
+        '
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: |
-        The start date of the date range.
-        Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy,
-        enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or you can enter the date and time of day.
-        If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
-        Valid input for this parameter is from 10 days - now ago. The default value is 48 hours ago.
+      description: 'The start date of the date range.
+
+        Use the short date format that''s defined in the Regional Options settings
+        on the computer where you''re running the command. For example, if the computer
+        is configured to use the short date format mm/dd/yyyy,
+
+        enter 09/01/2018 to specify September 1, 2018. You can enter the date only,
+        or you can enter the date and time of day.
+
+        If you enter the date and time of day, enclose the value in quotation marks
+        ("), for example, "09/01/2018 5:00 PM".
+
+        Valid input for this parameter is from 10 days - now ago. The default value
+        is 48 hours ago.
+
+        '
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: |
-        The end date of the date range.
-        Use the short date format that's defined in the Regional Options settings on the computer where you're running the command.
-        For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.
+      description: 'The end date of the date range.
+
+        Use the short date format that''s defined in the Regional Options settings
+        on the computer where you''re running the command.
+
+        For example, if the computer is configured to use the short date format mm/dd/yyyy,
+        enter 09/01/2018 to specify September 1, 2018.
+
         You can enter the date only, or you can enter the date and time of day.
-        If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".
-        Valid input for this parameter is from start_date - now. The default value is now.
+
+        If you enter the date and time of day, enclose the value in quotation marks
+        ("), for example, "09/01/2018 5:00 PM".
+
+        Valid input for this parameter is from start_date - now. The default value
+        is now.
+
+        '
       isArray: false
       name: end_date
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |
-        The status of the message. Can be one of the following:
-          * GettingStatus: The message is waiting for status update.
-          * Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.
-          * Pending: Message delivery is underway or was deferred and is being retried.
-          * Delivered: The message was delivered to its destination.
-          * Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.
-          * Quarantined: The message was quarantined.
-          * FilteredAsSpam: The message was marked as spam.
+      description: "The status of the message. Can be one of the following:\n  * GettingStatus:\
+        \ The message is waiting for status update.\n  * Failed: Message delivery\
+        \ was attempted and it failed or the message was filtered as spam or malware,\
+        \ or by transport rules.\n  * Pending: Message delivery is underway or was\
+        \ deferred and is being retried.\n  * Delivered: The message was delivered\
+        \ to its destination.\n  * Expanded: There was no message delivery because\
+        \ the message was addressed to a distribution group and the membership of\
+        \ the distribution was expanded.\n  * Quarantined: The message was quarantined.\n\
+        \  * FilteredAsSpam: The message was marked as spam.\n"
       isArray: false
       name: status
       predefined:
@@ -323,10 +372,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
-      If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
-      This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.
+    description: 'Searches message data for the last 10 days. If you run this command
+      without any arguments, only data from the last 48 hours is returned.
+
+      If you enter a start date that is older than 10 days, you will receive an error
+      and the command will return no results.
+
+      This command returns a maximum of 1,000,000 results, and will timeout on very
+      large queries. If your query returns too many results, consider splitting it
+      up using shorter start_date and end_date intervals.'
     execution: false
     name: ews-message-trace-get
     outputs:
@@ -375,9 +429,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: |-
-        This argument is available only in on-premises Exchange.
-        You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.
+      description: 'This argument is available only in on-premises Exchange.
+
+        You identify the domain controller by its fully qualified domain name (FQDN).
+        For example, dc01.contoso.com.'
       isArray: false
       name: domain_controller
       required: false
@@ -389,662 +444,663 @@ script:
       name: identity
       required: false
       secret: false
-    outputs:
-      - contextPath: EWS.FederationTrust.AdminDisplayName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ApplicationIdentifier
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ApplicationUri
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.DistinguishedName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ExchangeObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ExchangeVersion
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.Guid
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.Id
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.Identity
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.IsValid
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.MetadataEpr
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.MetadataPollInterval
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.MetadataPutEpr
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.NamespaceProvisioner
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ObjectCategory
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ObjectClass
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.ObjectState
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Archived
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Critical
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.SubjectKeyIdentifier
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.KeyUsages
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.CertificateAuthority
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.HasPathLengthConstraint
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.PathLengthConstraint
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Handle.value
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.HasPrivateKey
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgCertificate.Issuer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.NotAfter
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.OrgCertificate.NotBefore
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.OrgCertificate.PrivateKey
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.SerialNumber
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Subject
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgCertificate.Thumbprint
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgCertificate.Version
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgNextCertificate
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgNextPrivCertificate
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Archived
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Critical
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.SubjectKeyIdentifier
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.KeyUsages
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Handle.value
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.HasPrivateKey
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Issuer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotAfter
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotBefore
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PrivateKey
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SerialNumber
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Subject
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Thumbprint
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrevCertificate.Version
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.OrgPrevPrivCertificate
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrgPrivCertificate
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OrganizationId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.OriginatingServer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.PSComputerName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.PSShowComputerName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.PolicyReferenceUri
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.RunspaceId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TimesOfUnmatchPartner
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertReference
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Archived
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Critical
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.SubjectKeyIdentifier
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.KeyUsages
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Handle.value
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.HasPrivateKey
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Issuer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotAfter
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotBefore
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PrivateKey
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.KeyExchangeAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MaxSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MinSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.SkipSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.SignatureAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SerialNumber
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Subject
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Thumbprint
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Version
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerEpr
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerMetadataEpr
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertReference
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Archived
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Critical
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.SubjectKeyIdentifier
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.KeyUsages
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Handle.value
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.HasPrivateKey
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Issuer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotAfter
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotBefore
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PrivateKey
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.SignatureAlgorithm
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SerialNumber
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.FriendlyName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.Value
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Subject
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.FriendlyName
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.Value
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.RawData
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Thumbprint
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Version
-        description: ''
-        type: Number
-      - contextPath: EWS.FederationTrust.TokenIssuerType
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.TokenIssuerUri
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.WebRequestorRedirectEpr
-        description: ''
-        type: String
-      - contextPath: EWS.FederationTrust.WhenChanged
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.WhenChangedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.WhenCreated
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationTrust.WhenCreatedUTC
-        description: ''
-        type: Date
     deprecated: false
     description: Use the ews-federation-trust-get command to view the federation trust
       configured for the Exchange organization.
     execution: false
     name: ews-federation-trust-get
+    outputs:
+    - contextPath: EWS.FederationTrust.AdminDisplayName
+      description: Admin Display Name
+      type: String
+    - contextPath: EWS.FederationTrust.ApplicationIdentifier
+      description: Application Identifier
+      type: String
+    - contextPath: EWS.FederationTrust.ApplicationUri
+      description: Application Uri
+      type: String
+    - contextPath: EWS.FederationTrust.DistinguishedName
+      description: Distinguishe dName
+      type: String
+    - contextPath: EWS.FederationTrust.ExchangeObjectId
+      description: Exchange Object Id
+      type: String
+    - contextPath: EWS.FederationTrust.ExchangeVersion
+      description: Exchange Version
+      type: String
+    - contextPath: EWS.FederationTrust.Guid
+      description: Guid
+      type: String
+    - contextPath: EWS.FederationTrust.Id
+      description: Id
+      type: String
+    - contextPath: EWS.FederationTrust.Identity
+      description: Identity
+      type: String
+    - contextPath: EWS.FederationTrust.IsValid
+      description: Is Valid
+      type: Boolean
+    - contextPath: EWS.FederationTrust.MetadataEpr
+      description: Metadata Epr
+      type: String
+    - contextPath: EWS.FederationTrust.MetadataPollInterval
+      description: Metadata Poll Interval
+      type: Date
+    - contextPath: EWS.FederationTrust.MetadataPutEpr
+      description: Metadata Put Epr
+      type: Unknown
+    - contextPath: EWS.FederationTrust.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.NamespaceProvisioner
+      description: Namespace Provisioner
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectCategory
+      description: Object Category
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectClass
+      description: Object Class
+      type: String
+    - contextPath: EWS.FederationTrust.ObjectState
+      description: Object State
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Archived
+      description: Archived
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Critical
+      description: Critical
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject Key Identifier
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.KeyUsages
+      description: Key Usages
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.EnhancedKeyUsages.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.CertificateAuthority
+      description: Certificate Authority
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.HasPathLengthConstraint
+      description: Has Path Length Constraint
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Extensions.PathLengthConstraint
+      description: Path Length Constraint
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Handle.value
+      description: ''
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.HasPrivateKey
+      description: Has Private Key
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgCertificate.Issuer
+      description: Issuer
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.IssuerName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.NotAfter
+      description: Not After
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgCertificate.NotBefore
+      description: Not Before
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgCertificate.PrivateKey
+      description: Private Key
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key Exchange Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Max Size
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Min Size
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.PublicKey.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.SerialNumber
+      description: Serial Number
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SignatureAlgorithm.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Subject
+      description: Subject
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgCertificate.SubjectName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgCertificate.Thumbprint
+      description: Thumbprint
+      type: String
+    - contextPath: EWS.FederationTrust.OrgCertificate.Version
+      description: Version
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgNextCertificate
+      description: Org Next Certificate
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgNextPrivCertificate
+      description: Org Next Priv Certificate
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Archived
+      description: Archived
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Critical
+      description: Critical
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject Key Identifier
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.KeyUsages
+      description: Key Usages
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Extensions.EnhancedKeyUsages.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Handle.value
+      description: ''
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.HasPrivateKey
+      description: Has Private Key
+      type: Boolean
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Issuer
+      description: Issuer
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.IssuerName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotAfter
+      description: Not After
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.NotBefore
+      description: Not Before
+      type: Date
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PrivateKey
+      description: Private Key
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key Exchange Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Max Size
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Min Size
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.PublicKey.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SerialNumber
+      description: Serial Number
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SignatureAlgorithm.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Subject
+      description: Subject
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.SubjectName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Thumbprint
+      description: Thumbprint
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrevCertificate.Version
+      description: Version
+      type: Number
+    - contextPath: EWS.FederationTrust.OrgPrevPrivCertificate
+      description: Org Prev Priv Certificate
+      type: String
+    - contextPath: EWS.FederationTrust.OrgPrivCertificate
+      description: Org Priv Certificate
+      type: String
+    - contextPath: EWS.FederationTrust.OrganizationId
+      description: Organization Id
+      type: String
+    - contextPath: EWS.FederationTrust.OriginatingServer
+      description: Originating Server
+      type: String
+    - contextPath: EWS.FederationTrust.PSComputerName
+      description: PS Computer Name
+      type: String
+    - contextPath: EWS.FederationTrust.PSShowComputerName
+      description: PS Show Computer Name
+      type: Boolean
+    - contextPath: EWS.FederationTrust.PolicyReferenceUri
+      description: Policy Reference Uri
+      type: String
+    - contextPath: EWS.FederationTrust.RunspaceId
+      description: Runspace Id
+      type: String
+    - contextPath: EWS.FederationTrust.TimesOfUnmatchPartner
+      description: Times Of Unmatch Partner
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertReference
+      description: Token Issuer Cert Reference
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Archived
+      description: Archived
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Critical
+      description: Critical
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject Key Identifier
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Extensions.KeyUsages
+      description: Key Usages
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Handle.value
+      description: ''
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.HasPrivateKey
+      description: Has Private Key
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Issuer
+      description: Issuer
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.IssuerName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotAfter
+      description: Not After
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.NotBefore
+      description: Not Before
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PrivateKey
+      description: Private Key
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key Exchange Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Max Size
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Min Size
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.PublicKey.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SerialNumber
+      description: Serial Number
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SignatureAlgorithm.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Subject
+      description: Subject
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.SubjectName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Thumbprint
+      description: Thumbprint
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerCertificate.Version
+      description: Version
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerEpr
+      description: Token Issuer Epr
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerMetadataEpr
+      description: Token Issuer Metadata Epr
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertReference
+      description: Token Issuer Prev Cert Reference
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Archived
+      description: Archived
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Critical
+      description: Critical
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.SubjectKeyIdentifier
+      description: Subject Key Identifier
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Extensions.KeyUsages
+      description: Key Usages
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Handle.value
+      description: ''
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.HasPrivateKey
+      description: Has Private Key
+      type: Boolean
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Issuer
+      description: Issuer
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.IssuerName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotAfter
+      description: Not After
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.NotBefore
+      description: Not Before
+      type: Date
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PrivateKey
+      description: Private Key
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedKeyValue.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.EncodedParameters.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.KeyExchangeAlgorithm
+      description: Key Exchange Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MaxSize
+      description: Max Size
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.MinSize
+      description: Min Size
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.LegalKeySizes.SkipSize
+      description: SkiPSize
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Key.SignatureAlgorithm
+      description: Signature Algorithm
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.PublicKey.Oid.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SerialNumber
+      description: Serial Number
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.FriendlyName
+      description: Friendly Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SignatureAlgorithm.Value
+      description: Value
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Subject
+      description: Subject
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.FriendlyName
+      description: Friendly Name
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.Oid.Value
+      description: Value
+      type: Unknown
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.SubjectName.RawData
+      description: Raw Data
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Thumbprint
+      description: Thumbprint
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerPrevCertificate.Version
+      description: Version
+      type: Number
+    - contextPath: EWS.FederationTrust.TokenIssuerType
+      description: Token Issuer Type
+      type: String
+    - contextPath: EWS.FederationTrust.TokenIssuerUri
+      description: Token Issuer Uri
+      type: String
+    - contextPath: EWS.FederationTrust.WebRequestorRedirectEpr
+      description: Web Requestor Redirect Epr
+      type: String
+    - contextPath: EWS.FederationTrust.WhenChanged
+      description: When Changed
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenChangedUTC
+      description: When Changed UTC
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenCreated
+      description: When Created
+      type: Date
+    - contextPath: EWS.FederationTrust.WhenCreatedUTC
+      description: When Created UTC
+      type: Date
   - arguments:
     - default: false
-      description: |-
-        This argument is available only in on-premises Exchange.
-        You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.
+      description: 'This argument is available only in on-premises Exchange.
+
+        You identify the domain controller by its fully qualified domain name (FQDN).
+        For example, dc01.contoso.com.'
       isArray: false
       name: domain_controller
       required: false
@@ -1056,101 +1112,104 @@ script:
       name: identity
       required: false
       secret: false
-    - default: false
-      description: The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each 
-        accepted domain that's federated. The status is returned with each domain in the Domains property.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: The IncludeExtendedDomainInfo switch specifies that the command
+        query Microsoft Federation Gateway for the status of each accepted domain
+        that's federated. The status is returned with each domain in the Domains property.
       isArray: false
       name: include_extended_domain_info
-      required: false
-      secret: false
-      defaultValue: 'false'
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    outputs:
-      - contextPath: EWS.FederationConfiguration.AccountNamespace
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.DefaultDomain
-        description: ''
-        type: Unknown
-      - contextPath: EWS.FederationConfiguration.DelegationTrustLink
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.DistinguishedName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.Domains
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.Enabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationConfiguration.ExchangeObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.ExchangeVersion
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.Guid
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.Id
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.Identity
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.IsValid
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationConfiguration.Name
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.ObjectCategory
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.ObjectClass
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.ObjectState
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.OrganizationContact
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.OrganizationId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.OriginatingServer
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.PSComputerName
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.PSShowComputerName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.FederationConfiguration.RunspaceId
-        description: ''
-        type: String
-      - contextPath: EWS.FederationConfiguration.WhenChanged
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationConfiguration.WhenChangedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationConfiguration.WhenCreated
-        description: ''
-        type: Date
-      - contextPath: EWS.FederationConfiguration.WhenCreatedUTC
-        description: ''
-        type: Date
+      required: false
+      secret: false
     deprecated: false
-    description: Use the ews-federation-configuration-get command to retrieve the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact and status.
+    description: Use the ews-federation-configuration-get command to retrieve the
+      Exchange organization's federated organization identifier and related details,
+      such as federated domains, organization contact and status.
     execution: false
     name: ews-federation-configuration-get
+    outputs:
+    - contextPath: EWS.FederationConfiguration.AccountNamespace
+      description: Account Namespace
+      type: String
+    - contextPath: EWS.FederationConfiguration.DefaultDomain
+      description: Default Domain
+      type: Unknown
+    - contextPath: EWS.FederationConfiguration.DelegationTrustLink
+      description: Delegation Trust Link
+      type: String
+    - contextPath: EWS.FederationConfiguration.DistinguishedName
+      description: Distinguished Name
+      type: String
+    - contextPath: EWS.FederationConfiguration.Domains
+      description: Domains
+      type: String
+    - contextPath: EWS.FederationConfiguration.Enabled
+      description: Enabled
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.ExchangeObjectId
+      description: Exchange Object Id
+      type: String
+    - contextPath: EWS.FederationConfiguration.ExchangeVersion
+      description: Exchange Version
+      type: String
+    - contextPath: EWS.FederationConfiguration.Guid
+      description: Guid
+      type: String
+    - contextPath: EWS.FederationConfiguration.Id
+      description: Id
+      type: String
+    - contextPath: EWS.FederationConfiguration.Identity
+      description: Identity
+      type: String
+    - contextPath: EWS.FederationConfiguration.IsValid
+      description: Is Valid
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.Name
+      description: Name
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectCategory
+      description: Object Category
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectClass
+      description: Object Class
+      type: String
+    - contextPath: EWS.FederationConfiguration.ObjectState
+      description: Object State
+      type: String
+    - contextPath: EWS.FederationConfiguration.OrganizationContact
+      description: Organization Contact
+      type: String
+    - contextPath: EWS.FederationConfiguration.OrganizationId
+      description: Organization Id
+      type: String
+    - contextPath: EWS.FederationConfiguration.OriginatingServer
+      description: Originating Server
+      type: String
+    - contextPath: EWS.FederationConfiguration.PSComputerName
+      description: PS Computer Name
+      type: String
+    - contextPath: EWS.FederationConfiguration.PSShowComputerName
+      description: PS Show Computer Name
+      type: Boolean
+    - contextPath: EWS.FederationConfiguration.RunspaceId
+      description: Runspace Id
+      type: String
+    - contextPath: EWS.FederationConfiguration.WhenChanged
+      description: When Changed
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenChangedUTC
+      description: When Changed UTC
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenCreated
+      description: When Created
+      type: Date
+    - contextPath: EWS.FederationConfiguration.WhenCreatedUTC
+      description: When Created UTC
+      type: Date
   - arguments:
     - default: false
       description: |-
@@ -1161,148 +1220,151 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Identity parameter specifies the remote domain that you want to view. You can use Guid, Id and any other identifier.
+      description: The Identity parameter specifies the remote domain that you want
+        to view. You can use Guid, Id and any other identifier.
       isArray: false
       name: identity
       required: false
       secret: false
-    outputs:
-      - contextPath: EWS.RemoteDomain.AdminDisplayName
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.AllowedOOFType
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.AutoForwardEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.AutoReplyEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.ByteEncoderTypeFor7BitCharsets
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.CharacterSet
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ContentType
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.DeliveryReportEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.DisplaySenderName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.DistinguishedName
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.DomainName
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ExchangeObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ExchangeVersion
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.Guid
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.Id
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.Identity
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.IsInternal
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.IsValid
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.LineWrapSize
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.MeetingForwardNotificationEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.MessageCountThreshold
-        description: ''
-        type: Number
-      - contextPath: EWS.RemoteDomain.NDRDiagnosticInfoEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.NDREnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.Name
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.NonMimeCharacterSet
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ObjectCategory
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ObjectClass
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.ObjectState
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.OrganizationId
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.OriginatingServer
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.PSComputerName
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.PSShowComputerName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.PreferredInternetCodePageForShiftJis
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.RequiredCharsetCoverage
-        description: ''
-        type: Unknown
-      - contextPath: EWS.RemoteDomain.RunspaceId
-        description: ''
-        type: String
-      - contextPath: EWS.RemoteDomain.TNEFEnabled
-        description: ''
-        type: Unknown
-      - contextPath: EWS.RemoteDomain.TargetDeliveryDomain
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.TrustedMailInboundEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.TrustedMailOutboundEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.UseSimpleDisplayName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.RemoteDomain.WhenChanged
-        description: ''
-        type: Date
-      - contextPath: EWS.RemoteDomain.WhenChangedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.RemoteDomain.WhenCreated
-        description: ''
-        type: Date
-      - contextPath: EWS.RemoteDomain.WhenCreatedUTC
-        description: ''
-        type: Date
     deprecated: false
-    description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
+    description: View the configuration information for the remote domains configured
+      in your organization. This command is available only in the Exchange Online
+      PowerShell V2 module.
     execution: false
     name: ews-remote-domain-get
+    outputs:
+    - contextPath: EWS.RemoteDomain.AdminDisplayName
+      description: Admin Display Name
+      type: String
+    - contextPath: EWS.RemoteDomain.AllowedOOFType
+      description: Allowed OOF Type
+      type: String
+    - contextPath: EWS.RemoteDomain.AutoForwardEnabled
+      description: Auto Forward Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.AutoReplyEnabled
+      description: Auto Reply Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.ByteEncoderTypeFor7BitCharsets
+      description: Byte Encoder Type For7 Bit Charsets
+      type: String
+    - contextPath: EWS.RemoteDomain.CharacterSet
+      description: Character Set
+      type: String
+    - contextPath: EWS.RemoteDomain.ContentType
+      description: Content Type
+      type: String
+    - contextPath: EWS.RemoteDomain.DeliveryReportEnabled
+      description: Delivery Report Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.DisplaySenderName
+      description: Display Sender Name
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.DistinguishedName
+      description: Distinguished Name
+      type: String
+    - contextPath: EWS.RemoteDomain.DomainName
+      description: Domain Name
+      type: String
+    - contextPath: EWS.RemoteDomain.ExchangeObjectId
+      description: Exchange Object Id
+      type: String
+    - contextPath: EWS.RemoteDomain.ExchangeVersion
+      description: Exchange Version
+      type: String
+    - contextPath: EWS.RemoteDomain.Guid
+      description: Guid
+      type: String
+    - contextPath: EWS.RemoteDomain.Id
+      description: Id
+      type: String
+    - contextPath: EWS.RemoteDomain.Identity
+      description: Identity
+      type: String
+    - contextPath: EWS.RemoteDomain.IsInternal
+      description: Is Internal
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.IsValid
+      description: Is Valid
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.LineWrapSize
+      description: Line WraPSize
+      type: String
+    - contextPath: EWS.RemoteDomain.MeetingForwardNotificationEnabled
+      description: Meeting Forward Notification Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.MessageCountThreshold
+      description: Message Count Threshold
+      type: Number
+    - contextPath: EWS.RemoteDomain.NDRDiagnosticInfoEnabled
+      description: NDR Diagnostic Info Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.NDREnabled
+      description: NDR Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.Name
+      description: Name
+      type: String
+    - contextPath: EWS.RemoteDomain.NonMimeCharacterSet
+      description: Non Mime Character Set
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectCategory
+      description: Object Category
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectClass
+      description: Object Class
+      type: String
+    - contextPath: EWS.RemoteDomain.ObjectState
+      description: Object State
+      type: String
+    - contextPath: EWS.RemoteDomain.OrganizationId
+      description: Organization Id
+      type: String
+    - contextPath: EWS.RemoteDomain.OriginatingServer
+      description: Originating Server
+      type: String
+    - contextPath: EWS.RemoteDomain.PSComputerName
+      description: PS Computer Name
+      type: String
+    - contextPath: EWS.RemoteDomain.PSShowComputerName
+      description: PS Show Computer Name
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.PreferredInternetCodePageForShiftJis
+      description: Preferred Internet Code Page For Shift Jis
+      type: String
+    - contextPath: EWS.RemoteDomain.RequiredCharsetCoverage
+      description: Required Charset Coverage
+      type: Unknown
+    - contextPath: EWS.RemoteDomain.RunspaceId
+      description: Runspace Id
+      type: String
+    - contextPath: EWS.RemoteDomain.TNEFEnabled
+      description: TNEF Enabled
+      type: Unknown
+    - contextPath: EWS.RemoteDomain.TargetDeliveryDomain
+      description: Target Delivery Domain
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.TrustedMailInboundEnabled
+      description: Trusted Mail Inbound Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.TrustedMailOutboundEnabled
+      description: Trusted Mail Outbound Enabled
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.UseSimpleDisplayName
+      description: Use Simple Display Name
+      type: Boolean
+    - contextPath: EWS.RemoteDomain.WhenChanged
+      description: When Changed
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenChangedUTC
+      description: When Changed UTC
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenCreated
+      description: When Created
+      type: Date
+    - contextPath: EWS.RemoteDomain.WhenCreatedUTC
+      description: When Created UTC
+      type: Date
   - arguments:
     - default: false
       description: The Identity parameter specifies the mailbox you want to view.
@@ -1311,347 +1373,349 @@ script:
       required: false
       secret: false
     - default: false
-      description: The OrganizationalUnit parameter filters the results based on the object's location in Active Directory.
+      description: The OrganizationalUnit parameter filters the results based on the
+        object's location in Active Directory.
       isArray: false
       name: organizational_unit
       required: false
       secret: false
     - default: false
+      defaultValue: 10
       description: Maximum number of users to get. 0 is all.
       isArray: false
       name: limit
-      defaultValue: 10
       required: false
       secret: false
-    outputs:
-      - contextPath: EWS.User.AccountDisabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.AllowUMCallsFromNonUsers
-        description: ''
-        type: String
-      - contextPath: EWS.User.ArchiveRelease
-        description: ''
-        type: String
-      - contextPath: EWS.User.AssistantName
-        description: ''
-        type: String
-      - contextPath: EWS.User.AuthenticationPolicy
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.CanHaveCloudCache
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.City
-        description: ''
-        type: String
-      - contextPath: EWS.User.CloudCacheAccountType
-        description: ''
-        type: String
-      - contextPath: EWS.User.CloudCacheProvider
-        description: ''
-        type: Number
-      - contextPath: EWS.User.CloudCacheRemoteEmailAddress
-        description: ''
-        type: String
-      - contextPath: EWS.User.CloudCacheScope
-        description: ''
-        type: Number
-      - contextPath: EWS.User.CloudCacheUserName
-        description: ''
-        type: String
-      - contextPath: EWS.User.Company
-        description: ''
-        type: String
-      - contextPath: EWS.User.ConsumerNetID
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.CountryOrRegion
-        description: ''
-        type: String
-      - contextPath: EWS.User.DefaultMailboxWorkloadsMask
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.Department
-        description: ''
-        type: String
-      - contextPath: EWS.User.DesiredMailboxWorkloads
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.DesiredMailboxWorkloadsGracePeriod
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.DesiredMailboxWorkloadsModified
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.DisplayName
-        description: ''
-        type: String
-      - contextPath: EWS.User.DistinguishedName
-        description: ''
-        type: String
-      - contextPath: EWS.User.ExchangeObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.User.ExchangeVersion
-        description: ''
-        type: String
-      - contextPath: EWS.User.ExternalDirectoryObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.User.Fax
-        description: ''
-        type: String
-      - contextPath: EWS.User.FirstName
-        description: ''
-        type: String
-      - contextPath: EWS.User.GeoCoordinates
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.Guid
-        description: ''
-        type: String
-      - contextPath: EWS.User.HomePhone
-        description: ''
-        type: String
-      - contextPath: EWS.User.Id
-        description: ''
-        type: String
-      - contextPath: EWS.User.Identity
-        description: ''
-        type: String
-      - contextPath: EWS.User.Initials
-        description: ''
-        type: String
-      - contextPath: EWS.User.IsCloudCache
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsCloudCacheBlocked
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsCloudCacheProvisioningComplete
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsDirSynced
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsInactiveMailbox
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsLinked
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsSecurityPrincipal
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsSoftDeletedByDisable
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsSoftDeletedByRemove
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.IsValid
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.LastName
-        description: ''
-        type: String
-      - contextPath: EWS.User.LegacyExchangeDN
-        description: ''
-        type: String
-      - contextPath: EWS.User.LegalAgeGroup
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.LinkedMasterAccount
-        description: ''
-        type: String
-      - contextPath: EWS.User.MailboxLocations
-        description: ''
-        type: String
-      - contextPath: EWS.User.MailboxProvisioningConstraint
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.MailboxRegion
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.MailboxRegionLastUpdateTime
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.MailboxRegionSuffix
-        description: ''
-        type: String
-      - contextPath: EWS.User.MailboxRelease
-        description: ''
-        type: String
-      - contextPath: EWS.User.MailboxWorkloads
-        description: ''
-        type: String
-      - contextPath: EWS.User.Manager
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.MicrosoftOnlineServicesID
-        description: ''
-        type: String
-      - contextPath: EWS.User.MobilePhone
-        description: ''
-        type: String
-      - contextPath: EWS.User.Name
-        description: ''
-        type: String
-      - contextPath: EWS.User.NetID
-        description: ''
-        type: String
-      - contextPath: EWS.User.Notes
-        description: ''
-        type: String
-      - contextPath: EWS.User.ObjectCategory
-        description: ''
-        type: String
-      - contextPath: EWS.User.ObjectClass
-        description: ''
-        type: String
-      - contextPath: EWS.User.ObjectState
-        description: ''
-        type: String
-      - contextPath: EWS.User.Office
-        description: ''
-        type: String
-      - contextPath: EWS.User.OrganizationId
-        description: ''
-        type: String
-      - contextPath: EWS.User.OrganizationalUnit
-        description: ''
-        type: String
-      - contextPath: EWS.User.OriginatingServer
-        description: ''
-        type: String
-      - contextPath: EWS.User.PSComputerName
-        description: ''
-        type: String
-      - contextPath: EWS.User.PSShowComputerName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.Pager
-        description: ''
-        type: String
-      - contextPath: EWS.User.Phone
-        description: ''
-        type: String
-      - contextPath: EWS.User.PhoneticDisplayName
-        description: ''
-        type: String
-      - contextPath: EWS.User.PostalCode
-        description: ''
-        type: String
-      - contextPath: EWS.User.PreviousRecipientTypeDetails
-        description: ''
-        type: String
-      - contextPath: EWS.User.RecipientType
-        description: ''
-        type: String
-      - contextPath: EWS.User.RecipientTypeDetails
-        description: ''
-        type: String
-      - contextPath: EWS.User.RemotePowerShellEnabled
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.ResetPasswordOnNextLogon
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.RunspaceId
-        description: ''
-        type: String
-      - contextPath: EWS.User.SKUAssigned
-        description: ''
-        type: Boolean
-      - contextPath: EWS.User.SamAccountName
-        description: ''
-        type: String
-      - contextPath: EWS.User.SeniorityIndex
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.Sid
-        description: ''
-        type: String
-      - contextPath: EWS.User.SimpleDisplayName
-        description: ''
-        type: String
-      - contextPath: EWS.User.StateOrProvince
-        description: ''
-        type: String
-      - contextPath: EWS.User.StreetAddress
-        description: ''
-        type: String
-      - contextPath: EWS.User.StsRefreshTokensValidFrom
-        description: ''
-        type: Date
-      - contextPath: EWS.User.TelephoneAssistant
-        description: ''
-        type: String
-      - contextPath: EWS.User.Title
-        description: ''
-        type: String
-      - contextPath: EWS.User.UMDialPlan
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.UMDtmfMap
-        description: ''
-        type: String
-      - contextPath: EWS.User.UpgradeDetails
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.UpgradeMessage
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.UpgradeRequest
-        description: ''
-        type: String
-      - contextPath: EWS.User.UpgradeStage
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.UpgradeStageTimeStamp
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.UpgradeStatus
-        description: ''
-        type: String
-      - contextPath: EWS.User.UserAccountControl
-        description: ''
-        type: String
-      - contextPath: EWS.User.UserPrincipalName
-        description: ''
-        type: String
-      - contextPath: EWS.User.WebPage
-        description: ''
-        type: String
-      - contextPath: EWS.User.WhenChanged
-        description: ''
-        type: Date
-      - contextPath: EWS.User.WhenChangedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.User.WhenCreated
-        description: ''
-        type: Date
-      - contextPath: EWS.User.WhenCreatedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.User.WhenSoftDeleted
-        description: ''
-        type: Unknown
-      - contextPath: EWS.User.WindowsEmailAddress
-        description: ''
-        type: String
-      - contextPath: EWS.User.WindowsLiveID
-        description: ''
-        type: String
-      - contextPath: EWS.User.DirectReports
-        description: ''
-        type: String
     deprecated: false
-    description: Use the ews-user-list command to view existing user objects in your organization.
+    description: Use the ews-user-list command to view existing user objects in your
+      organization.
     execution: false
     name: ews-user-list
+    outputs:
+    - contextPath: EWS.User.AccountDisabled
+      description: Account Disabled
+      type: Boolean
+    - contextPath: EWS.User.AllowUMCallsFromNonUsers
+      description: Allow U M Calls From Non Users
+      type: String
+    - contextPath: EWS.User.ArchiveRelease
+      description: Archive Release
+      type: String
+    - contextPath: EWS.User.AssistantName
+      description: Assistant Name
+      type: String
+    - contextPath: EWS.User.AuthenticationPolicy
+      description: Authentication Policy
+      type: Unknown
+    - contextPath: EWS.User.CanHaveCloudCache
+      description: Can Have Cloud Cache
+      type: Boolean
+    - contextPath: EWS.User.City
+      description: City
+      type: String
+    - contextPath: EWS.User.CloudCacheAccountType
+      description: Cloud Cache Account Type
+      type: String
+    - contextPath: EWS.User.CloudCacheProvider
+      description: Cloud Cache Provider
+      type: Number
+    - contextPath: EWS.User.CloudCacheRemoteEmailAddress
+      description: Cloud Cache Remote Email Address
+      type: String
+    - contextPath: EWS.User.CloudCacheScope
+      description: Cloud Cache Scope
+      type: Number
+    - contextPath: EWS.User.CloudCacheUserName
+      description: Cloud Cache User Name
+      type: String
+    - contextPath: EWS.User.Company
+      description: Company
+      type: String
+    - contextPath: EWS.User.ConsumerNetID
+      description: Consumer Net I D
+      type: Unknown
+    - contextPath: EWS.User.CountryOrRegion
+      description: Country Or Region
+      type: String
+    - contextPath: EWS.User.DefaultMailboxWorkloadsMask
+      description: Default Mailbox Workloads Mask
+      type: Unknown
+    - contextPath: EWS.User.Department
+      description: Department
+      type: String
+    - contextPath: EWS.User.DesiredMailboxWorkloads
+      description: Desired Mailbox Workloads
+      type: Unknown
+    - contextPath: EWS.User.DesiredMailboxWorkloadsGracePeriod
+      description: Desired Mailbox Workloads Grace Period
+      type: Unknown
+    - contextPath: EWS.User.DesiredMailboxWorkloadsModified
+      description: Desired Mailbox Workloads Modified
+      type: Unknown
+    - contextPath: EWS.User.DisplayName
+      description: Display Name
+      type: String
+    - contextPath: EWS.User.DistinguishedName
+      description: Distinguished Name
+      type: String
+    - contextPath: EWS.User.ExchangeObjectId
+      description: Exchange Object Id
+      type: String
+    - contextPath: EWS.User.ExchangeVersion
+      description: Exchange Version
+      type: String
+    - contextPath: EWS.User.ExternalDirectoryObjectId
+      description: External Directory Object Id
+      type: String
+    - contextPath: EWS.User.Fax
+      description: Fax
+      type: String
+    - contextPath: EWS.User.FirstName
+      description: First Name
+      type: String
+    - contextPath: EWS.User.GeoCoordinates
+      description: Geo Coordinates
+      type: Unknown
+    - contextPath: EWS.User.Guid
+      description: Guid
+      type: String
+    - contextPath: EWS.User.HomePhone
+      description: Home Phone
+      type: String
+    - contextPath: EWS.User.Id
+      description: Id
+      type: String
+    - contextPath: EWS.User.Identity
+      description: Identity
+      type: String
+    - contextPath: EWS.User.Initials
+      description: Initials
+      type: String
+    - contextPath: EWS.User.IsCloudCache
+      description: Is Cloud Cache
+      type: Boolean
+    - contextPath: EWS.User.IsCloudCacheBlocked
+      description: Is Cloud Cache Blocked
+      type: Boolean
+    - contextPath: EWS.User.IsCloudCacheProvisioningComplete
+      description: Is Cloud Cache Provisioning Complete
+      type: Boolean
+    - contextPath: EWS.User.IsDirSynced
+      description: Is Dir Synced
+      type: Boolean
+    - contextPath: EWS.User.IsInactiveMailbox
+      description: Is Inactive Mailbox
+      type: Boolean
+    - contextPath: EWS.User.IsLinked
+      description: Is Linked
+      type: Boolean
+    - contextPath: EWS.User.IsSecurityPrincipal
+      description: Is Security Principal
+      type: Boolean
+    - contextPath: EWS.User.IsSoftDeletedByDisable
+      description: Is Soft Deleted By Disable
+      type: Boolean
+    - contextPath: EWS.User.IsSoftDeletedByRemove
+      description: Is Soft Deleted By Remove
+      type: Boolean
+    - contextPath: EWS.User.IsValid
+      description: Is Valid
+      type: Boolean
+    - contextPath: EWS.User.LastName
+      description: Last Name
+      type: String
+    - contextPath: EWS.User.LegacyExchangeDN
+      description: Legacy Exchange D N
+      type: String
+    - contextPath: EWS.User.LegalAgeGroup
+      description: Legal Age Group
+      type: Unknown
+    - contextPath: EWS.User.LinkedMasterAccount
+      description: Linked Master Account
+      type: String
+    - contextPath: EWS.User.MailboxLocations
+      description: Mailbox Locations
+      type: String
+    - contextPath: EWS.User.MailboxProvisioningConstraint
+      description: Mailbox Provisioning Constraint
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegion
+      description: Mailbox Region
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegionLastUpdateTime
+      description: Mailbox Region Last Update Time
+      type: Unknown
+    - contextPath: EWS.User.MailboxRegionSuffix
+      description: Mailbox Region Suffix
+      type: String
+    - contextPath: EWS.User.MailboxRelease
+      description: Mailbox Release
+      type: String
+    - contextPath: EWS.User.MailboxWorkloads
+      description: Mailbox Workloads
+      type: String
+    - contextPath: EWS.User.Manager
+      description: Manager
+      type: Unknown
+    - contextPath: EWS.User.MicrosoftOnlineServicesID
+      description: Microsoft Online Services I D
+      type: String
+    - contextPath: EWS.User.MobilePhone
+      description: Mobile Phone
+      type: String
+    - contextPath: EWS.User.Name
+      description: Name
+      type: String
+    - contextPath: EWS.User.NetID
+      description: Net I D
+      type: String
+    - contextPath: EWS.User.Notes
+      description: Notes
+      type: String
+    - contextPath: EWS.User.ObjectCategory
+      description: Object Category
+      type: String
+    - contextPath: EWS.User.ObjectClass
+      description: Object Class
+      type: String
+    - contextPath: EWS.User.ObjectState
+      description: Object State
+      type: String
+    - contextPath: EWS.User.Office
+      description: Office
+      type: String
+    - contextPath: EWS.User.OrganizationId
+      description: Organization Id
+      type: String
+    - contextPath: EWS.User.OrganizationalUnit
+      description: Organizational Unit
+      type: String
+    - contextPath: EWS.User.OriginatingServer
+      description: Originating Server
+      type: String
+    - contextPath: EWS.User.PSComputerName
+      description: PS Computer Name
+      type: String
+    - contextPath: EWS.User.PSShowComputerName
+      description: PS Show Computer Name
+      type: Boolean
+    - contextPath: EWS.User.Pager
+      description: Pager
+      type: String
+    - contextPath: EWS.User.Phone
+      description: Phone
+      type: String
+    - contextPath: EWS.User.PhoneticDisplayName
+      description: Phonetic Display Name
+      type: String
+    - contextPath: EWS.User.PostalCode
+      description: Postal Code
+      type: String
+    - contextPath: EWS.User.PreviousRecipientTypeDetails
+      description: Previous Recipient Type Details
+      type: String
+    - contextPath: EWS.User.RecipientType
+      description: Recipient Type
+      type: String
+    - contextPath: EWS.User.RecipientTypeDetails
+      description: Recipient Type Details
+      type: String
+    - contextPath: EWS.User.RemotePowerShellEnabled
+      description: Remote Power Shell Enabled
+      type: Boolean
+    - contextPath: EWS.User.ResetPasswordOnNextLogon
+      description: Reset Password On Next Logon
+      type: Boolean
+    - contextPath: EWS.User.RunspaceId
+      description: Runspace Id
+      type: String
+    - contextPath: EWS.User.SKUAssigned
+      description: S K U Assigned
+      type: Boolean
+    - contextPath: EWS.User.SamAccountName
+      description: Sam Account Name
+      type: String
+    - contextPath: EWS.User.SeniorityIndex
+      description: Seniority Index
+      type: Unknown
+    - contextPath: EWS.User.Sid
+      description: Sid
+      type: String
+    - contextPath: EWS.User.SimpleDisplayName
+      description: Simple Display Name
+      type: String
+    - contextPath: EWS.User.StateOrProvince
+      description: State Or Province
+      type: String
+    - contextPath: EWS.User.StreetAddress
+      description: Street Address
+      type: String
+    - contextPath: EWS.User.StsRefreshTokensValidFrom
+      description: Sts Refresh Tokens Valid From
+      type: Date
+    - contextPath: EWS.User.TelephoneAssistant
+      description: Telephone Assistant
+      type: String
+    - contextPath: EWS.User.Title
+      description: Title
+      type: String
+    - contextPath: EWS.User.UMDialPlan
+      description: U M Dial Plan
+      type: Unknown
+    - contextPath: EWS.User.UMDtmfMap
+      description: U M Dtmf Map
+      type: String
+    - contextPath: EWS.User.UpgradeDetails
+      description: Upgrade Details
+      type: Unknown
+    - contextPath: EWS.User.UpgradeMessage
+      description: Upgrade Message
+      type: Unknown
+    - contextPath: EWS.User.UpgradeRequest
+      description: Upgrade Request
+      type: String
+    - contextPath: EWS.User.UpgradeStage
+      description: Upgrade Stage
+      type: Unknown
+    - contextPath: EWS.User.UpgradeStageTimeStamp
+      description: Upgrade Stage Time Stamp
+      type: Unknown
+    - contextPath: EWS.User.UpgradeStatus
+      description: Upgrade Status
+      type: String
+    - contextPath: EWS.User.UserAccountControl
+      description: User Account Control
+      type: String
+    - contextPath: EWS.User.UserPrincipalName
+      description: User Principal Name
+      type: String
+    - contextPath: EWS.User.WebPage
+      description: Web Page
+      type: String
+    - contextPath: EWS.User.WhenChanged
+      description: When Changed
+      type: Date
+    - contextPath: EWS.User.WhenChangedUTC
+      description: When Changed UTC
+      type: Date
+    - contextPath: EWS.User.WhenCreated
+      description: When Created
+      type: Date
+    - contextPath: EWS.User.WhenCreatedUTC
+      description: When Created UTC
+      type: Date
+    - contextPath: EWS.User.WhenSoftDeleted
+      description: When Soft Deleted
+      type: Unknown
+    - contextPath: EWS.User.WindowsEmailAddress
+      description: Windows Email Address
+      type: String
+    - contextPath: EWS.User.WindowsLiveID
+      description: Windows Live I D
+      type: String
+    - contextPath: EWS.User.DirectReports
+      description: Direct Reports
+      type: String
   - arguments:
     - default: false
       description: The Identity parameter specifies the mailbox you want to view.
@@ -1660,88 +1724,91 @@ script:
       required: false
       secret: false
     - default: false
-      description: The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). This argument is available only in on-premises Exchange.
+      description: The DomainController parameter specifies the domain controller
+        that's used by this cmdlet to read data from or write data to Active Directory.
+        You identify the domain controller by its fully qualified domain name (FQDN).
+        This argument is available only in on-premises Exchange.
       name: domain_controller
       required: false
       secret: false
     - default: false
+      defaultValue: 10
       description: Maximum number of users to get. 0 is all.
       isArray: false
       name: limit
-      defaultValue: 10
       required: false
       secret: false
-    outputs:
-      - contextPath: EWS.MailboxAuditBypassAssociation.AuditBypassEnabled
-        description: Whatever the audit bypass is enabled.
-        type: Boolean
-      - contextPath: EWS.MailboxAuditBypassAssociation.DistinguishedName
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeVersion
-        description: The version of the exchanged server.
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.Guid
-        description: A unique identifier.
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.Id
-        description: A unique identifier.
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.Identity
-        description: The unique identity.
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.IsValid
-        description: ''
-        type: Boolean
-      - contextPath: EWS.MailboxAuditBypassAssociation.Name
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectCategory
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectClass
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectId
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectState
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.OrganizationId
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.OriginatingServer
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.PSComputerName
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.PSShowComputerName
-        description: ''
-        type: Boolean
-      - contextPath: EWS.MailboxAuditBypassAssociation.RunspaceId
-        description: ''
-        type: String
-      - contextPath: EWS.MailboxAuditBypassAssociation.WhenChanged
-        description: ''
-        type: Date
-      - contextPath: EWS.MailboxAuditBypassAssociation.WhenChangedUTC
-        description: ''
-        type: Date
-      - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreated
-        description: ''
-        type: Date
-      - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
-        description: ''
-        type: Date
     deprecated: false
     description: Use the Get-User command to view existing user objects in your organization.
     execution: false
     name: ews-mailbox-audit-bypass-association-list
+    outputs:
+    - contextPath: EWS.MailboxAuditBypassAssociation.AuditBypassEnabled
+      description: Whatever the audit bypass is enabled.
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.DistinguishedName
+      description: Distinguished Name
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeObjectId
+      description: Exchange Object Id
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeVersion
+      description: The version of the exchanged server.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Guid
+      description: A unique identifier.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Id
+      description: A unique identifier.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.Identity
+      description: The unique identity.
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.IsValid
+      description: Is Valid
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.Name
+      description: Name
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectCategory
+      description: Object Category
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectClass
+      description: Object Class
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectId
+      description: Object Id
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.ObjectState
+      description: Object State
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.OrganizationId
+      description: Organization Id
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.OriginatingServer
+      description: Originating Server
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.PSComputerName
+      description: PS Computer Name
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.PSShowComputerName
+      description: PS Show Computer Name
+      type: Boolean
+    - contextPath: EWS.MailboxAuditBypassAssociation.RunspaceId
+      description: Runspace Id
+      type: String
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenChanged
+      description: When Changed
+      type: Date
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenChangedUTC
+      description: When Changed UTC
+      type: Date
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreated
+      description: When Created
+      type: Date
+    - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
+      description: When Created UTC
+      type: Date
   dockerimage: demisto/powershell-ubuntu:7.1.1.16151
   feed: false
   isfetch: false

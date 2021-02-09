@@ -971,7 +971,7 @@ class ExchangeOnlineClient {
             }
             if ($limit -gt 0)
             {
-                return Get-User @cmd_params -ResultSize $limit
+                return Get-User @cmd_params -ResultSize $limit -WarningAction:SilentlyContinue
             }
             else
             {
@@ -1020,7 +1020,7 @@ class ExchangeOnlineClient {
             if ($limit -gt 0){
                 $cmd_params.ResultSize = $limit
             }
-            return Get-MailboxAuditBypassAssociation @cmd_params -WarningAction SilentlyContinue
+            return Get-MailboxAuditBypassAssociation @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.CloseSession()
         }
@@ -1063,7 +1063,7 @@ class ExchangeOnlineClient {
             if ($domain_controller) {
                 $cmd_params.DomainController = $domain_controller
             }
-            return Get-RemoteDomain @cmd_params
+            return Get-RemoteDomain @cmd_params -WarningAction:SilentlyContinue
         }
         finally {
             $this.CloseSession()
