@@ -223,8 +223,8 @@ script:
       isArray: false
       name: key
       predefined:
-        - 'score'
-        - 'description'
+      - 'score'
+      - 'description'
       required: true
       secret: false
     - default: false
@@ -277,10 +277,10 @@ script:
       isArray: false
       name: marking
       predefined:
-        - 'TLP:WHITE'
-        - 'TLP:GREEN'
-        - 'TLP:AMBER'
-        - 'TLP:RED'
+      - 'TLP:WHITE'
+      - 'TLP:GREEN'
+      - 'TLP:AMBER'
+      - 'TLP:RED'
       required: false
       secret: false
     - default: false
@@ -290,9 +290,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: External References.
+      description: External References URL. In order to use external references, external_references_url
+        and external_references_source_name are madatory.
       isArray: false
-      name: external_references
+      name: external_references_url
+      required: false
+      secret: false
+    - default: false
+      description: External References Source Name. In order to use external references,
+        external_references_url and external_references_source_name are madatory.
+      isArray: false
+      name: external_references_source_name
       required: false
       secret: false
     - default: false

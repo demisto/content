@@ -38,14 +38,14 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
     result = []
     if 'ALL' in indicator_list:
         # Replaces "ALL" for all types supported on XSOAR.
-        result = ['user-account', 'domain', 'email-address', 'file-md5', 'file-sha1', 'file-sha256', 'hostname',
-                  'ipv4-addr', 'ipv6-addr', 'registry-key-value', 'url']
+        result = ['User-Account', 'Domain-Name', 'Email-Addr', 'StixFile', 'X-OpenCTI-Hostname', 'IPv4-Addr',
+                  'IPv6-Addr', 'Registry Key', 'Url']
         # Checks for additional types not supported by XSOAR, and adds them.
         for indicator in indicator_list:
             if not XSOHR_TYPES.get(indicator.lower(), ''):
                 result.append(indicator)
     else:
-        result = [XSOHR_TYPES.get(indicator.lower(), '') for indicator in indicator_list]
+        result = [XSOHR_TYPES.get(indicator.lower(), indicator) for indicator in indicator_list]
     return result
 
 
@@ -209,18 +209,26 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
     # TODO object - creator id - how to get it ?
     created_by = args.get("created_by")
 
+    marking = None
     if marking_name := args.get("marking"):
         mark_obj = MarkingDefinition(client)
         marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
 
+    label = None
     if label_name := args.get("label"):
         label_obj = Label(client)
         label = label_obj.create(value=label_name).get('id')
 
-    # TODO object - needs: source_name and url
-    if external_references := args.get("external_references"):
+    external_references = None
+    external_references_source_name = args.get('external_references_source_name')
+    external_references_url = args.get('external_references_url')
+    if external_references_url and external_references_source_name:
         external_references_object = ExternalReference(client)
-        external_references = external_references_object.create(source_name=source_name, url=url).get('id')
+        external_references = external_references_object.create(source_name=external_references_source_name,
+                                                                url=external_references_url).get('id')
+    elif external_references_url or external_references_source_name:
+        return_error("Missing argument. In order to use external references, "
+                     "external_references_url and external_references_source_name are madatory.")
 
     description = args.get("description")
     score = int(args.get("score", '50'))
@@ -231,6 +239,7 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
     except Exception:
         return_error("Data argument type should be json")
+
     data['type'] = indicator_type
     result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
                                                  createdBy=created_by, objectMarking=marking,
@@ -242,6 +251,7 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
         readable_output = f'Indicator created successfully with id: {id}'
     else:
         return_error("Can't create indicator.")
+
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
         outputs_key_field='id',
