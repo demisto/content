@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label
+from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,17 +11,17 @@ urllib3.disable_warnings()
 logging.getLogger().setLevel(logging.ERROR)
 
 XSOHR_TYPES = {
-    'user-account': "Account",
-    'domain': "Domain",
-    'email-address': "Email",
-    'file-md5': "File",
-    'file-sha1': "File",
-    'file-sha256': "File",
-    'hostname': "Host",
-    'ipv4-addr': "IP",
-    'ipv6-addr': "IPv6",
+    'user-account': "User-Account",
+    'domain': "Domain-Name",
+    'email-address': "Email-Addr",
+    'file-md5': "StixFile",
+    'file-sha1': "StixFile",
+    'file-sha256': "StixFile",
+    'hostname': "X-OpenCTI-Hostname",
+    'ipv4-addr': "IPv4-Addr",
+    'ipv6-addr': "IPv6-Addr",
     'registry-key-value': "Registry Key",
-    'url': "URL"
+    'url': "Url"
 }
 KEY_TO_CTI_NAME = {
     'description': 'x_opencti_description',
@@ -45,7 +45,7 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
             if not XSOHR_TYPES.get(indicator.lower(), ''):
                 result.append(indicator)
     else:
-        result = [indicator.lower() for indicator in indicator_list]
+        result = [XSOHR_TYPES.get(indicator.lower(), '') for indicator in indicator_list]
     return result
 
 
@@ -208,16 +208,20 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
     indicator_type = args.get("type")
     # TODO object - creator id - how to get it ?
     created_by = args.get("created_by")
-    # TODO marking id - how to getit ?
-    mark = MarkingDefinition(client)
-    marking = args.get("marking")
-    marking_object = mark.create(definition='TLP:RED', definition_type='TLP')
-    # TODO object - label id - how to get it ?
-    label = args.get("label")
-    label_obj = Label(client)
-    l = label_obj.create(value='demisto_yellow', color='yellow')
+
+    if marking_name := args.get("marking"):
+        mark_obj = MarkingDefinition(client)
+        marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
+
+    if label_name := args.get("label"):
+        label_obj = Label(client)
+        label = label_obj.create(value=label_name).get('id')
+
     # TODO object - needs: source_name and url
-    external_references = args.get("external_references")
+    if external_references := args.get("external_references"):
+        external_references_object = ExternalReference(client)
+        external_references = external_references_object.create(source_name=source_name, url=url).get('id')
+
     description = args.get("description")
     score = int(args.get("score", '50'))
     # TODO: update is not working
@@ -229,8 +233,8 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
         return_error("Data argument type should be json")
     data['type'] = indicator_type
     result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
-                                                 createdBy=created_by, objectMarking=marking_object.get('id'),
-                                                 objectLabel=l.get('id'), externalReferences=external_references,
+                                                 createdBy=created_by, objectMarking=marking,
+                                                 objectLabel=label, externalReferences=external_references,
                                                  simple_observable_description=description,
                                                  x_opencti_score=score, update=update, observableData=data,
                                                  )

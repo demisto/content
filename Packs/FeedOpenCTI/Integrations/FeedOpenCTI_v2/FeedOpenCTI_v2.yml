@@ -271,14 +271,20 @@ script:
       name: created_by
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Indicator marking.
       isArray: false
       name: marking
+      predefined:
+        - 'TLP:WHITE'
+        - 'TLP:GREEN'
+        - 'TLP:AMBER'
+        - 'TLP:RED'
       required: false
       secret: false
     - default: false
-      description: Indicator label.
+      description: Indicator label name.
       isArray: false
       name: label
       required: false
