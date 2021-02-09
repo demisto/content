@@ -17,6 +17,7 @@ INDICATOR_TYPES = {
 def get_dbot_score_data(indicator, indicator_type, source, score):
     db_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
                                 integration_name=source, score=score).to_context()
+    # we are using Common.DBotScore.CONTEXT_PATH for 5.5.0+ and CONTEXT_PATH for 5.0.0
     return db_score.get(Common.DBotScore.CONTEXT_PATH, db_score.get(CONTEXT_PATH, db_score))
 
 
