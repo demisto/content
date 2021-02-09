@@ -20,7 +20,7 @@ name: XDRCreateDashboardData
 script: '-'
 subtype: python3
 system: false
-timeout: '0'
+timeout: 500ns
 type: python
 dockerimage: demisto/python3:3.9.1.15759
 runas: DBotWeakRole
