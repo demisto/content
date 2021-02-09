@@ -24,8 +24,13 @@ def iterate_indicator_entry(indicator, entry):
             source = DEFAULT_SOURCE
         dbot_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
                                       integration_name=source, score=entry["score"]).to_context()
-        dbot_score = dbot_score.get(Common.DBotScore.CONTEXT_PATH, dbot_score)
-        yield dbot_score, CommandResults(readable_output=tableToMarkdown('Indicator DBot Score', dbot_score))
+        dbot_score = {CONTEXT_PATH: dbot_score.get(Common.DBotScore.CONTEXT_PATH, dbot_score)}
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Indicator DBot Score', dbot_score.get(CONTEXT_PATH, dbot_score)),
+            outputs=dbot_score
+        ).to_context()
+        context_entry_results = command_results.pop('EntryContext').get(CONTEXT_PATH)
+        yield context_entry_results, command_results
 
 
 def main():
@@ -45,7 +50,7 @@ def main():
         dbot_scores = []
         for entry in data:
             for dbot_score, results in iterate_indicator_entry(indicator, entry):
-                return_results(results)
+                demisto.results(results)
                 dbot_scores.append(dbot_score)
         dbot_scores = dbot_scores if len(dbot_scores) > 1 or not dbot_scores else dbot_scores[0]
         appendContext(CONTEXT_PATH, dbot_scores)
