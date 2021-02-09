@@ -17,7 +17,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Applications integration to manage authorized application.
+description: Use the Microsoft Graph Applications integration to manage authorized
+  application.
 display: Microsoft Graph Applications
 name: MicrosoftGraphApplications
 script:
