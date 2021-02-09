@@ -545,8 +545,12 @@ End {
                 foreach ($raw_value in $raw_values)
                 {
                     if ($null -ne $raw_value)
-                    {
-                        if ($raw_value -is [int] -or $raw_value -is [string] -or $raw_value -is [int] -or $raw_value -is [Double])
+                    {   try{
+                            $typeValue = $raw_value.getTypeCode().value__
+                            $is_number = ($typeValue -ge 5 -and $typeValue -le 15)
+                        } catch { $is_number = $false}
+
+                        if ($raw_value -is [string] -or $is_number)
                         {
                             $value = $raw_value.ToString()
                         }
