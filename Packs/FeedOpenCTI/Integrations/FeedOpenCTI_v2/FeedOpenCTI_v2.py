@@ -205,7 +205,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     )
 
 
-def indicator_create_or_update_command(client, args: dict) -> CommandResults:
+def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandResults:
     """ Create or update indicator at opencti
 
         Args:
@@ -229,7 +229,7 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
     if label_name := args.get("label"):
         label_obj = Label(client)
         label = label_obj.create(value=label_name).get('id')
-
+    # TODO: check if it works
     external_references = None
     external_references_source_name = args.get('external_references_source_name')
     external_references_url = args.get('external_references_url')
@@ -245,13 +245,14 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
     score = int(args.get("score", '50'))
     # TODO: update is not working
     update = argToBoolean(args.get("update", False))
+    # TODO: how user will know what to write at data
     data = {}
     try:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
     except Exception:
         return_error("Data argument type should be json")
 
-    data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)
+    data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
     result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
                                                  createdBy=created_by, objectMarking=marking,
                                                  objectLabel=label, externalReferences=external_references,
