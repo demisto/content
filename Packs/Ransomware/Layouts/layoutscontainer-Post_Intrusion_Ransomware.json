@@ -284,7 +284,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "encryptedfileowner",
+                                "fieldId": "ransomwareencryptedfileowner",
                                 "height": 53,
                                 "id": "52797410-e24a-11ea-9181-67efc6f97427",
                                 "index": 2,
@@ -294,7 +294,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "approximatenumberofencryptedendpoints",
+                                "fieldId": "ransomwareapproximatenumberofencryptedendpoints",
                                 "height": 53,
                                 "id": "b9a45c90-e5fb-11ea-966d-8987c9f60217",
                                 "index": 2,
@@ -386,7 +386,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "ransomwareonionurl",
+                                "fieldId": "ransomwareonionaddress",
                                 "height": 53,
                                 "id": "7e301120-29b9-11eb-be0b-bd2aae6831f7",
                                 "index": 4,
