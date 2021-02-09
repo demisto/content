@@ -359,8 +359,8 @@ script:
 
     function updateResource() {
         var resourceName = args.resourceName;
-        var newIncident = {
-            [resourceName]: {
+        var newResource = {};
+        newResource[resourceName] = {
                 Category: args.category,
                 Description: [
                     args.description
@@ -368,52 +368,52 @@ script:
                 Service: args.service,
                 Title: args.title,
             }
-        };
+
         if (args.customFields !== undefined){
             fields = JSON.parse(args.customFields);
             for (var field in fields) {
-                newIncident[resourceName][field] = fields[field]
+                newResource[resourceName][field] = fields[field]
             }
         }
         if (args.impact) {
-            newIncident[resourceName]['Impact'] = args.impact;
+            newResource[resourceName]['Impact'] = args.impact;
         }
         if (args.urgency) {
-            newIncident[resourceName]['Urgency'] = args.urgency;
+            newResource[resourceName]['Urgency'] = args.urgency;
         }
         if (args.alertStatus) {
-            newIncident[resourceName]['AlertStatus'] = args.alertStatus;
+            newResource[resourceName]['AlertStatus'] = args.alertStatus;
         }
         if (args.area) {
-            newIncident[resourceName]['Area'] = args.area;
+            newResource[resourceName]['Area'] = args.area;
         }
         if (args.assignmentGroup) {
-            newIncident[resourceName]['AssignmentGroup'] = args.assignmentGroup;
+            newResource[resourceName]['AssignmentGroup'] = args.assignmentGroup;
         }
         if (args.affectedCI) {
-            newIncident[resourceName]['AffectedCI'] = args.affectedCI;
+            newResource[resourceName]['AffectedCI'] = args.affectedCI;
         }
         if (args.company) {
-            newIncident[resourceName]['Company'] = args.company;
+            newResource[resourceName]['Company'] = args.company;
         }
         if (args.category) {
-            newIncident[resourceName]['Category'] = args.category;
+            newResource[resourceName]['Category'] = args.category;
         }
         if (args.phase) {
-            newIncident[resourceName]['Phase'] = args.phase;
+            newResource[resourceName]['Phase'] = args.phase;
         }
         if (args.status) {
-            newIncident[resourceName]['Status'] = args.status;
+            newResource[resourceName]['Status'] = args.status;
         }
         if (args.subarea) {
-            newIncident[resourceName]['Subarea'] = args.subarea;
+            newResource[resourceName]['Subarea'] = args.subarea;
         }
-        var res = doPost('/'+resourceName+'/'+args.incidentId, newIncident);
+        var res = doPost('/'+resourceName+'/'+args.incidentId, newResource);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
             throw 'Failed to update resource. Error Response: ' + res.Messages;
         }
-        hrIncident = parsedRes[resourceName];
+        hrResource = parsedRes[resourceName];
 
         var entryContext = {
             'HPSM.Resources': [parsedRes[resourceName]],
@@ -431,15 +431,15 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Updated Resource ' + parsedRes[resourceName][args.resourceKey], hrIncident),
+            HumanReadable: tableToMarkdown('Updated Resource ' + parsedRes[resourceName][args.resourceKey], hrResource),
             EntryContext: entryContext
         };
     } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
     function createResource() {
         var resourceName = args.resourceName;
-        var newIncident = {
-            [resourceName]: {
+        var newResource = {};
+        newResource[resourceName] = {
                 Category: args.category,
                 Description: [
                     args.description
@@ -447,52 +447,51 @@ script:
                 Service: args.service,
                 Title: args.title,
             }
-        };
         if (args.customFields !== undefined){
             fields = JSON.parse(args.customFields);
             for (var field in fields) {
-                newIncident[resourceName][field] = fields[field]
+                newResource[resourceName][field] = fields[field]
             }
         }
         if (args.impact) {
-            newIncident[resourceName]['Impact'] = args.impact;
+            newResource[resourceName]['Impact'] = args.impact;
         }
         if (args.urgency) {
-            newIncident[resourceName]['Urgency'] = args.urgency;
+            newResource[resourceName]['Urgency'] = args.urgency;
         }
         if (args.alertStatus) {
-            newIncident[resourceName]['AlertStatus'] = args.alertStatus;
+            newResource[resourceName]['AlertStatus'] = args.alertStatus;
         }
         if (args.area) {
-            newIncident[resourceName]['Area'] = args.area;
+            newResource[resourceName]['Area'] = args.area;
         }
         if (args.assignmentGroup) {
-            newIncident[resourceName]['AssignmentGroup'] = args.assignmentGroup;
+            newResource[resourceName]['AssignmentGroup'] = args.assignmentGroup;
         }
         if (args.affectedCI) {
-            newIncident[resourceName]['AffectedCI'] = args.affectedCI;
+            newResource[resourceName]['AffectedCI'] = args.affectedCI;
         }
         if (args.company) {
-            newIncident[resourceName]['Company'] = args.company;
+            newResource[resourceName]['Company'] = args.company;
         }
         if (args.category) {
-            newIncident[resourceName]['Category'] = args.category;
+            newResource[resourceName]['Category'] = args.category;
         }
         if (args.phase) {
-            newIncident[resourceName]['Phase'] = args.phase;
+            newResource[resourceName]['Phase'] = args.phase;
         }
         if (args.status) {
-            newIncident[resourceName]['Status'] = args.status;
+            newResource[resourceName]['Status'] = args.status;
         }
         if (args.subarea) {
-            newIncident[resourceName]['Subarea'] = args.subarea;
+            newResource[resourceName]['Subarea'] = args.subarea;
         }
-        var res = doPost('/'+resourceName, newIncident);
+        var res = doPost('/'+resourceName, newResource);
         var parsedRes = JSON.parse(res);
         if (parsedRes.ReturnCode !== 0) {
             throw 'Failed to create resource. Error Response: ' + res.Messages;
         }
-        hrIncident = parsedRes[resourceName];
+        hrResource = parsedRes[resourceName];
 
         var entryContext = {
             'HPSM.Resources': [parsedRes[resourceName]],
@@ -510,7 +509,7 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Created Resource ' + parsedRes[resourceName][args.resourceKey], hrIncident),
+            HumanReadable: tableToMarkdown('Created Resource ' + parsedRes[resourceName][args.resourceKey], hrResource),
             EntryContext: entryContext
         };
     } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
@@ -542,26 +541,27 @@ script:
 
     function getResourceById() {
         var resourceName = args.resourceName;
-        var incident = doGet('/'+resourceName+'/'+ args.resourceId);
-        incident = JSON.parse(incident);
-        hrIncident = incident.Incident;
+        var resource = doGet('/'+resourceName+'/'+ args.resourceId);
+        resource = JSON.parse(resource);
+        hrResource = resource[resourceName];
+
         var entryContext = {
-            'HPSM.Resources': [incident.Incident],
+            'HPSM.Resources': [resource[resourceName]],
             Ticket: [
                 {
-                    ID: incident.Incident.IncidentID,
-                    Creator: incident.Incident.OpenedBy,
-                    Assignee: incident.Incident.Assignee,
-                    State: incident.Incident.Status
+                    ID: resource[resourceName]['IncidentID'],
+                    Creator: resource[resourceName]['OpenedBy'],
+                    Assignee: resource[resourceName]['Assignee'],
+                    State: resource[resourceName]['Status']
                 }
             ]
         };
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: incident,
+            Contents: resource,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Resource ' + args.incidentId, hrIncident),
+            HumanReadable: tableToMarkdown('Resource ' + args.resourceId, hrResource),
             EntryContext: entryContext
         };
     }
