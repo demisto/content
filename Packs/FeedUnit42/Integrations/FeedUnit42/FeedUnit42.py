@@ -330,7 +330,6 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 indicator = {
                     "value": indicator_val,
                     "type": 'MITRE ATT&CK',
-                    "score": 1,
                     "fields": {
                         "firstseenbysource": relation_object.get('created'),
                         "indicatoridentification": relation_object.get('id'),

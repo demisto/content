@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Feed
+  id: Unit42 Feed copy
   version: -1
 configuration:
 - display: API Key
@@ -88,8 +88,8 @@ configuration:
   required: false
   type: 8
 description: Unit42 feed of published IOCs, which contains known malicious indicators.
-display: Unit42 Feed
-name: Unit42 Feed
+display: Unit42 Feed copy
+name: Unit42 Feed copy
 script:
   commands:
   - arguments:
