@@ -1,36 +1,33 @@
 contentitemexportablefields:
   contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: fbc62e49-d012-44d3-804f-2d02413326f4
     propagationLabels:
     - all
-id: Panorama - Update PAN-OS Policy from Kubernetes Network Policy
+    toServerVersion: ""
+id: 58fd5b7a-1301-4b65-85be-f350edc29f7a
 inputs:
-- description: All Kubernetes network policies with this label will be picked up by
-    the playbook.
-  key: KubernetesPolicyLabel
-  playbookInputQuery:
-  required: true
-  value:
-    simple: PanoramaPolicy
 - description: ""
   key: DeviceGroup
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value:
     simple: demisto
 - description: ""
   key: ClusterName
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value:
     simple: gke_cps-containers-dev_us-central1-c_gunjan-cn-xsoar
 - description: True if the playbook should automatically commit after pushing the
     policy changes, False otherwise. Default is False.
   key: AutoCommit
-  playbookInputQuery:
+  playbookInputQuery: null
   required: true
   value:
     simple: "False"
-name: Panorama - Update PAN-OS Policy from Kubernetes Network Policy
+name: PAN-OS Update Policy from Kubernetes Network Policy
 outputs: []
 starttaskid: "0"
 tasks:
@@ -39,7 +36,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "15"
+      - "33"
     note: false
     quietmode: 0
     separatecontext: false
@@ -50,7 +47,6 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: 0a58beca-2997-45ee-8f85-83bc5a3be746
     timertriggers: []
     type: start
@@ -64,21 +60,32 @@ tasks:
   "4":
     id: "4"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
     note: false
     quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      id: 04171c56-32b3-49cc-8704-56e07ba02180
-      iscommand: false
-      name: Done
-      type: title
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 24ef58c6-ab69-4014-8cd1-ca4c3a3d7dc1
+      iscommand: true
+      name: Close incident
+      script: Builtin|||closeInvestigation
+      type: regular
       version: -1
-      description: ''
-    taskid: 04171c56-32b3-49cc-8704-56e07ba02180
+    taskid: 24ef58c6-ab69-4014-8cd1-ca4c3a3d7dc1
     timertriggers: []
-    type: title
+    type: regular
     view: |-
       {
         "position": {
@@ -99,18 +106,18 @@ tasks:
       ClusterName:
         simple: ${inputs.ClusterName}
       KubernetesNetworkPolicy:
-        simple: ${incident.details}
+        simple: ${incident.kubernetesnetworkpolicy}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 60d9d2fc-6ad3-42d7-82e5-9d1553e1a593
+      id: 92b4ae3f-84f5-4a72-8fa7-2661aedf5195
       iscommand: false
       name: Derive PAN-OS objects from Kubernetes policy
       script: 732fe79e-48ac-4e61-ab3d-bb68323c7adc
       type: regular
       version: -1
-    taskid: 60d9d2fc-6ad3-42d7-82e5-9d1553e1a593
+    taskid: 92b4ae3f-84f5-4a72-8fa7-2661aedf5195
     timertriggers: []
     type: regular
     view: |-
@@ -197,7 +204,6 @@ tasks:
       name: Analyze Network Policy
       type: title
       version: -1
-      description: ''
     taskid: 81e01ef7-3b82-41ba-8531-22f3f7a34353
     timertriggers: []
     type: title
@@ -206,47 +212,6 @@ tasks:
         "position": {
           "x": 387.5,
           "y": 225
-        }
-      }
-  "8":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Panorama.SecurityRule.Name
-          operator: isEqualString
-          right:
-            iscontext: true
-            value:
-              simple: ${ConvertedPolicy.Rule.Name}
-      label: "yes"
-    id: "8"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "13"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1561f28e-6d28-4ded-8258-a68b0be4015a
-      iscommand: false
-      name: Does rule exist?
-      type: condition
-      version: -1
-    taskid: 1561f28e-6d28-4ded-8258-a68b0be4015a
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 857.5,
-          "y": 1700
         }
       }
   "9":
@@ -265,7 +230,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "11"
+      - "4"
       "yes":
       - "10"
     note: false
@@ -316,204 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 492.5,
+          "x": 580,
           "y": 2570
-        }
-      }
-  "11":
-    id: "11"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "4"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: b13465d3-3446-4f09-8edb-b6a8e0a3eb9b
-      iscommand: false
-      name: Manual commit
-      type: regular
-      version: -1
-    taskid: b13465d3-3446-4f09-8edb-b6a8e0a3eb9b
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 62.5,
-          "y": 2570
-        }
-      }
-  "12":
-    id: "12"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      device-group:
-        complex:
-          root: inputs.device-group
-      dst: {}
-      pre_post: {}
-      rulename:
-        simple: ${ConvertedPolicy.Rule.Name}
-      where:
-        simple: top
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Panorama
-      description: Changes the location of a policy rule.
-      id: 669f8270-bc92-4592-8c07-5ff0721032b7
-      iscommand: true
-      name: panorama-move-rule
-      script: Panorama|||panorama-move-rule
-      type: regular
-      version: -1
-    taskid: 669f8270-bc92-4592-8c07-5ff0721032b7
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 820,
-          "y": 2230
-        }
-      }
-  "13":
-    id: "13"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "6"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: aef16fca-24a9-4938-8ad2-3ed5ed8543cb
-      iscommand: false
-      name: Update OR delete
-      type: regular
-      version: -1
-    taskid: aef16fca-24a9-4938-8ad2-3ed5ed8543cb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1130,
-          "y": 1930
-        }
-      }
-  "14":
-    id: "14"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      device-group:
-        simple: ${inputs.DeviceGroup}
-      pre_post:
-        simple: post-rulebase
-      tag: {}
-      using:
-        simple: Panorama-CN-Lior
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns a list of predefined Security Rules.
-      id: 4e95169e-81ce-4a2d-8c8d-5420d8c4d1e3
-      iscommand: true
-      name: List rules in post rulebase
-      script: '|||panorama-list-rules'
-      type: regular
-      version: -1
-    taskid: 4e95169e-81ce-4a2d-8c8d-5420d8c4d1e3
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 857.5,
-          "y": 1525
-        }
-      }
-  "15":
-    id: "15"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 516e0b2a-554e-4ac6-889f-9321616f3adb
-      iscommand: false
-      name: delete  context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 516e0b2a-554e-4ac6-889f-9321616f3adb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 387.5,
-          "y": 35
-        }
-      }
-  "16":
-    id: "16"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "27"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      device-group:
-        simple: ${inputs.DeviceGroup}
-      tag: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Returns a list of address groups.
-      id: ebdadd62-fa8e-46c2-8831-1a94cc9a8d35
-      iscommand: true
-      name: List existing DAGs
-      script: '|||panorama-list-address-groups'
-      type: regular
-      version: -1
-    taskid: ebdadd62-fa8e-46c2-8831-1a94cc9a8d35
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 940
         }
       }
   "17":
@@ -533,7 +302,6 @@ tasks:
       name: DAG Creation
       type: title
       version: -1
-      description: ''
     taskid: 39184869-204a-43ba-81fa-7a65813ce2b0
     timertriggers: []
     type: title
@@ -561,7 +329,6 @@ tasks:
       name: Rule creation
       type: title
       version: -1
-      description: ''
     taskid: ccae8dbc-41e6-4ea6-8905-7714d9a139b1
     timertriggers: []
     type: title
@@ -611,7 +378,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 1220
+          "y": 1260
         }
       }
   "24":
@@ -638,12 +405,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4b4c2782-d8e3-496f-8cfc-d59ff2910fdc
+      id: e5ded543-bcd1-47e6-8290-26174a78d8a5
       iscommand: false
       name: Any DAGs in the policy?
       type: condition
       version: -1
-    taskid: 4b4c2782-d8e3-496f-8cfc-d59ff2910fdc
+    taskid: e5ded543-bcd1-47e6-8290-26174a78d8a5
     timertriggers: []
     type: condition
     view: |-
@@ -670,7 +437,6 @@ tasks:
       name: Create PAN-OS Dynamic Address Groups
       type: title
       version: -1
-      description: ''
     taskid: 71f13900-19a2-4ac5-8adb-4daf81326028
     timertriggers: []
     type: title
@@ -679,30 +445,6 @@ tasks:
         "position": {
           "x": 880,
           "y": 860
-        }
-      }
-  "27":
-    id: "27"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 407a4eaa-77d8-4902-8165-e35eb9fccf9a
-      iscommand: false
-      name: Delete pre-existing DAGs that need to be recreated
-      type: regular
-      version: -1
-    taskid: 407a4eaa-77d8-4902-8165-e35eb9fccf9a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 1080
         }
       }
   "28":
@@ -758,7 +500,6 @@ tasks:
       name: Service Creation
       type: title
       version: -1
-      description: ''
     taskid: 5979a78e-fa9e-4751-826c-22247e920326
     timertriggers: []
     type: title
@@ -855,6 +596,276 @@ tasks:
           "y": 1010
         }
       }
+  "32":
+    id: "32"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 49d5a81a-db85-48b9-865b-972c18ebe491
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 49d5a81a-db85-48b9-865b-972c18ebe491
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 277.5,
+          "y": 2930
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      country: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegroup:
+        simple: ${inputs.DeviceGroup}
+      devicehash: {}
+      devicename: {}
+      duration: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      kubernetesclustername:
+        simple: ${inputs.ClusterName}
+      kubernetesnamespace: {}
+      kubernetesnetworkpolicy: {}
+      kubernetesnetworkpolicyname: {}
+      kubernetesresourceversion: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      mobiledevicemodel: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      owner: {}
+      parentprocessid: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subtype: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 05b6fcd3-e993-4714-8ebb-77a8def99450
+      iscommand: true
+      name: Set incident fields
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 05b6fcd3-e993-4714-8ebb-77a8def99450
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 10
+        }
+      }
 version: -1
 view: |-
   {
@@ -864,14 +875,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2945,
-        "width": 1870,
+        "height": 3130,
+        "width": 1380,
         "x": -120,
         "y": -135
       }
     }
   }
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
-description: 6.0.0
