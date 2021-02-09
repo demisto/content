@@ -106,7 +106,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Classification of the device. Possible values: unknown, benign, malicious.
+      description: "Classification of the device. Possible values: unknown, benign, malicious."
       isArray: false
       name: classification
       predefined:
