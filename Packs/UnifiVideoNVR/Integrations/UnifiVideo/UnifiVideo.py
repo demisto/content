@@ -23,12 +23,12 @@ if demisto.command() == 'unifivideo-get-camera-list':
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     output = []
     for camera in uva.cameras:
-        output.append(camera.name)
+        context_output.append(camera.name)
     results = [
         CommandResults(
             outputs_prefix='UnifiVideo.Cameras',
-            readable_output=tableToMarkdown("Camera list",output, headers=["Camera name"],removeNull=True),
-            outputs=output
+            readable_output=tableToMarkdown("Camera list",context_output, headers=["Camera name"],removeNull=True),
+            outputs=context_output
         )]
     return_results(results)
 
@@ -57,13 +57,16 @@ if demisto.command() == 'unifivideo-ir-leds':
 
 if demisto.command() == 'unifivideo-get-recording':
     recording_id = args['recording_id']
+    snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
+    recording_file_name = 'recording-' + recording_id + '-' + args['frame'] + '.mp4'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
-    uva.recordings[recording_id].download('/tmp/recording.mp4')
+    for rec in uva.get_recordings():
+        if rec._id == recording_id:
+            rec.download('/tmp/recording.mp4')
     f = open("/tmp/recording.mp4", "rb")
     output = f.read()
-    filename = "recording.mp4"
+    filename = recording_file_name
     file = fileResult(filename=filename, data=output)
-    file['Type'] = entryTypes['video']
     demisto.results(file)
     if "frame" in demisto.args():
         vc = cv2.VideoCapture('/tmp/recording.mp4')
@@ -83,7 +86,7 @@ if demisto.command() == 'unifivideo-get-recording':
         vc.release()
         f = open("/tmp/snapshot.jpg", "rb")
         output = f.read()
-        filename = "snapshot.jpg"
+        filename = snapshot_file_name
         file = fileResult(filename=filename, data=output)
         file['Type'] = entryTypes['image']
         demisto.results(file)
@@ -92,7 +95,9 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
     recording_id = args['recording_id']
     snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
-    uva.recordings[recording_id].download('/tmp/recording.mp4')
+    for rec in uva.get_recordings():
+        if rec._id == recording_id:
+            rec.download('/tmp/recording.mp4')
     if "frame" in args:
         vc = cv2.VideoCapture('/tmp/recording.mp4')
         c = 1
@@ -163,11 +168,11 @@ if demisto.command() == 'fetch-incidents':
     inc = []
     day_ago = datetime.now() - timedelta(days=1)
     start_time = day_ago
-    if last_run and last_run.has_key('start_time'):
-        start_time = last_run.get('start_time')
+    if last_run:
+            start_time = last_run.get('start_time')
     if not isinstance(start_time, datetime):
         start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
-    for rec in uva.recordings:
+    for rec in uva.get_recordings():
         incident = {}
         datetime_object = datetime.strptime(str(rec.start_time), '%Y-%m-%d %H:%M:%S')
         for camera in uva.cameras:
