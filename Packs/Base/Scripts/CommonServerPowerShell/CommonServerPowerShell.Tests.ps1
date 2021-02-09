@@ -133,7 +133,7 @@ Describe 'Check-UtilityFunctions' {
         It "Empty list without a name" {
             TableToMarkdown @() | Should -Be "**No entries.**`n"
         }
-        It "A list with one element and no name" -tag this {
+        It "A list with one element and no name" {
             TableToMarkdown $OneElementObject | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
         }
         It "A list with two elements and no name" {

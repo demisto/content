@@ -546,6 +546,8 @@ End {
                 {
                     if ($null -ne $raw_value)
                     {   try{
+                            <# PWSH Type Code of numbers are 5 to 15. So we will handle them with ToString
+                            and the rest are Json Serializble #>
                             $typeValue = $raw_value.getTypeCode().value__
                             $is_number = ($typeValue -ge 5 -and $typeValue -le 15)
                         } catch { $is_number = $false}
