@@ -16,9 +16,9 @@ from typing import Dict, Tuple, Union, Optional
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
+    should_install_content_pack
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
 
@@ -123,13 +123,8 @@ sys.path.append(CONTENT_DIR)
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
-AMI_BUILDS = {}
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
-if os.path.isfile('./Tests/ami_builds.json'):
-    with open('./Tests/ami_builds.json', 'r') as ami_builds_file:
-        # get versions to check if tests are runnable on those envs
-        AMI_BUILDS = json.load(ami_builds_file)
 
 if os.path.isfile('./Tests/id_set.json'):
     with open('./Tests/id_set.json', 'r') as conf_file:
@@ -764,12 +759,11 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
-    test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(
-            from_v=test_conf.get('fromversion', '0.0'),
-            server_v=server_version,
-            to_v=test_conf.get('toversion', '99.99.99')))), None)
+    test_conf = next((test_conf for test_conf in test_conf_lst if
+                      (test_conf.get('playbookID') == test_id and is_runnable_in_server_version(
+                          from_v=test_conf.get('fromversion', '0.0'),
+                          server_v=server_version,
+                          to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -986,8 +980,10 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
 
 
 def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
-    """Filters out test playbooks, which are not XSOAR supported or not relevant for tests (DeprecatedContent,
-        NonSupported)
+    """Filters out test playbooks, which belong to one of the following packs:
+        - Non XSOAR supported packs
+        - DeprecatedContent, NonSupported packs
+        - Deprecated packs
 
         Args:
             tests (set): Tests set to remove the tests to ignore from
@@ -1002,30 +998,61 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
         if content_pack_name_list:
             id_set_test_playbook_pack_name = content_pack_name_list[0]
 
-            # We don't want to test playbooks from Non-certified partners.
-            if not should_test_content_pack(id_set_test_playbook_pack_name):
-                tests_that_should_not_be_tested.add(test)
+            # We don't want to test playbooks that are not XSOAR supported, belong to the ignored packs or from
+            # deprecated packs.
+            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name)
+            if not should_test:
+                tests_that_should_not_be_tested.add(f'{test}: {reason}')
 
     if tests_that_should_not_be_tested:
         logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
             '\n'.join(tests_that_should_not_be_tested)))
-        tests.difference_update(tests_that_should_not_be_tested)
+        tests_names = set([test.split(':')[0] for test in tests_that_should_not_be_tested])
+        tests.difference_update(tests_names)
     return tests
 
 
 def filter_tests(tests: set, id_set: json) -> set:
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs.
+    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs c. tests of
+    deprecated packs.
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
     Returns:
-        (set): Set of tests without ignored and non supported tests.
+        (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
-    tests_without_ignored = remove_ignored_tests(tests, id_set)
+    tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported
+
+
+def filter_installed_packs(packs_to_install: set) -> set:
+    """
+    Filter only the packs that should get installed by the following conditions:
+        - Content pack is not in skipped packs
+        - Content pack is not deprecated
+    Args:
+        packs_to_install (set): Set of installed packs collected so far.
+    Returns:
+        (set): Set of packs without ignored, skipped and deprecated-packs.
+    """
+
+    packs_that_should_not_be_installed = set()
+    packs_that_should_be_installed = set()
+    for pack in packs_to_install:
+        should_install, reason = should_install_content_pack(pack)
+        if not should_install:
+            packs_that_should_not_be_installed.add(f'{pack}: {reason}')
+        else:
+            packs_that_should_be_installed.add(pack)
+    if packs_that_should_not_be_installed:
+        logging.debug('The following packs are should not be installed and therefore not collected: \n{} '.format(
+            '\n'.join(packs_that_should_not_be_installed)))
+
+    return packs_that_should_be_installed
 
 
 def is_documentation_changes_only(files_string: str) -> bool:
@@ -1047,7 +1074,8 @@ def is_documentation_changes_only(files_string: str) -> bool:
         return False
 
 
-def get_test_list_and_content_packs_to_install(files_string, branch_name, minimum_server_version='0',
+def get_test_list_and_content_packs_to_install(files_string,
+                                               branch_name,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
@@ -1110,7 +1138,7 @@ def get_test_list_and_content_packs_to_install(files_string, branch_name, minimu
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+    packs_to_install = filter_installed_packs(packs_to_install)
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
@@ -1171,6 +1199,11 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
             max_to_version = max(max_to_version, LooseVersion(to_version))
 
     for artifacts in id_set.values():
+
+        # Ignore the Packs list in the ID set
+        if isinstance(artifacts, dict):
+            break
+
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
                 if artifact_details.get('file_path') in all_modified_files_paths:
@@ -1193,41 +1226,29 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
-def create_filter_envs_file(from_version: str, to_version: str, two_before_ga: str = None, one_before_ga: str = None,
-                            ga: str = None, documentation_changes_only: bool = False):
+def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
     Args:
         from_version: Server from_version
         to_version: Server to_version
-        two_before_ga: Server version two_before_ga
-        one_before_ga: Server version one_before_ga (5.0)
-        ga: Server Version ga (6.0)
         documentation_changes_only: If the build is for documentations changes only - no need to create instances.
 
     """
-    # always run master and PreGA
-    one_before_ga = one_before_ga or AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
-    ga = ga or AMI_BUILDS.get('GA', '0').split('-')[0]
-    """
-    The environment naming is being phased out due to it being difficult to follow. In this case,
-    Demisto 6.0 is the GA, Demisto PreGA is (5.5), Demisto GA is one before GA (5.0), Demisto one
-    before GA is two before GA (4.5)
-    """
     envs_to_test = {
-        'Demisto PreGA': True,
-        'Demisto Marketplace': True,
-        'Demisto GA': is_runnable_in_server_version(from_version, one_before_ga, to_version),
-        'Demisto 6.0': is_runnable_in_server_version(from_version, ga, to_version),
+        'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
+        'Server Master': True,
+        'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
+        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
     }
 
     if documentation_changes_only:
         # No need to create the instances.
         envs_to_test = {
-            'Demisto PreGA': False,
-            'Demisto Marketplace': False,
-            'Demisto GA': False,
-            'Demisto 6.0': False,
+            'Server 5.5': False,
+            'Server Master': False,
+            'Server 5.0': False,
+            'Server 6.0': False,
         }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./Tests/filter_envs.json", "w") as filter_envs_file:
@@ -1255,7 +1276,7 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
+        packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
@@ -1280,10 +1301,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
         logging.debug(f'Files string: {files_string}')
-        minimum_server_version = AMI_BUILDS.get('OneBefore-GA', '0').split('-')[0]
 
-        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name,
-                                                                             minimum_server_version)
+        tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 
     tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
@@ -1297,8 +1316,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
-    if not is_nightly:
-        # No need to print all content packs and all tests in nightly
+    if is_nightly:
+        logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
+        logging.debug('Collected the following packs to install:\n{0}\n'.format('\n'.join(packs_to_install)))
+
+    else:
         if tests_string:
             logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
         else:

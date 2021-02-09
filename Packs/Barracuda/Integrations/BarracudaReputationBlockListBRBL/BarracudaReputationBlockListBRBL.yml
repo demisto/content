@@ -25,29 +25,29 @@ script:
     - contextPath: Barracuda.IP
       description: IP details
       type: String
-    - contextPath: DbotScore.Indicator
-      description: The indicator itself
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
       type: String
-    - contextPath: DbotScore.Score
-      description: Score
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: Number
-    - contextPath: DbotScore.Type
-      description: Type of the indicator
+    - contextPath: DBotScore.Type
+      description: The indicator type.
       type: String
-    - contextPath: DbotScore.Vendor
-      description: Vendor information
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: The IP address.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
+      description: For malicious files, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: String
     description: Get IP Reputation
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.13358
   runonce: false
   subtype: python3
 fromversion: 6.0.0

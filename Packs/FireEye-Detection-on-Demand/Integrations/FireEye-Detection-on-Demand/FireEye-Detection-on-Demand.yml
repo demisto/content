@@ -1,0 +1,268 @@
+commonfields:
+  id: FireEye Detection on Demand
+  version: -1
+name: FireEye Detection on Demand
+display: FireEye Detection on Demand
+category: Forensics & Malware Analysis
+description: FireEye Detection On Demand is a threat detection service delivered as
+  an API for integration into the SOC workflow, SIEM analytics, data repositories,
+  or web applications, etc. It delivers flexible file and content analysis to identify
+  malicious behavior wherever the enterprise needs it.
+configuration:
+- display: "DoD hostname"
+  name: url
+  defaultvalue: https://feapi.marketplace.apps.fireeye.com
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+  additionalinfo: "Visit https://fireeye.dev/docs/detection-on-demand for more information\
+    \ on generating API keys"
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  subtype: python3
+  commands:
+  - name: fireeye-dod-get-hashes
+    arguments:
+    - name: md5_hashes
+      default: true
+      description: One or more comma separated MD5 hashes to get the reputation of.
+      isArray: true
+      required: true
+      secret: false
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: File.Malicious.Vendor
+      description: "N/A"
+    - contextPath: File.MD5
+      description: The MD5 hash of the file
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.sha256
+      description: The sha256 value of the file
+      type: String
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.signature_name
+      description: The name of the virus signature
+      type: String
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.is_malicious
+      description: True/False if the file is malicious
+      type: Number
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.verdict
+      description: The overall verdict of all analysis engines
+      type: String
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.file_extension
+      description: The extension of the file
+      type: String
+    - contextPath: FireEyeDoD.engine_results.cache_lookup.weight
+      description: How important this engine result is to determining malicious activity
+      type: Number
+    - contextPath: FireEyeDoD.engine_results.dynamic_analysis.verdict
+      description: This particular engine's verdict on whether or not the file is
+        malicious
+      type: String
+    - contextPath: FireEyeDoD.engine_results.av_lookup.verdict
+      description: This particular engine's verdict on whether or not the file is
+        malicious
+      type: String
+    - contextPath: FireEyeDoD.engine_results.avs_lookup.verdict
+      description: This particular engine's verdict on whether or not the file is
+        malicious
+      type: String
+    - contextPath: FireEyeDoD.engine_results.dti_lookup.verdict
+      description: This particular engine's verdict on whether or not the file is
+        malicious
+      type: String
+    - contextPath: FireEyeDoD.md5
+      description: The MD5 hash of the file
+      type: String
+    - contextPath: FireEyeDoD.is_malicious
+      description: True/False if the file is malicious
+      type: Number
+    description: Queries FireEye Detection on Demand reports for the provided md5
+      hashes
+  - name: fireeye-dod-submit-file
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit.
+    - name: password
+      required: false
+      description: Password to be used by the detection engine to decrypt a password
+        protected file.
+    - name: param
+      required: false
+      description: Command line parameter(s) to be used by detection engine when running
+        the file. Mainly applicable to .exe files. For example, setting param to "start
+        -h localhost -p 5555" will make the detection engine run a file named "malicious.exe"
+        as "malicious.exe start -h localhost -p 5555".
+    - name: screenshot
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Extract screenshot of screen activity during dynamic analysis if
+        true, which later can be downloaded with artifacts api
+    - name: video
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Extract video activity during dynamic analysis if true, which later
+        can be downloaded with artifacts api
+    - name: fileExtraction
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Extract dropped files from vm during dynamic analysis if true,
+        which later can be downloaded with artifacts api
+    - name: memoryDump
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Extract memory dump files from vm during dynamic analysis if true,
+        which later can be downloaded with artifacts api
+    - name: pcap
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      description: Extract pcap files from vm during dynamic analysis if true, which
+        later can be downloaded with artifacts api
+    outputs:
+    - contextPath: FireEyeDoD.Scan.report_id
+      description: The report ID can be used to query the status and results of the
+        file submission
+    - contextPath: FireEyeDoD.Scan.status
+      description: The current status of the file submission
+    - contextPath: FireEyeDoD.Scan.filename
+      description: The name of the file that was submitted
+    description: Submits file to FireEye Detection on Demand for analysis
+  - name: fireeye-dod-submit-urls
+    arguments:
+    - name: urls
+      required: true
+      default: true
+      isArray: true
+      description: A comma separated list of URLs to scan.  Maximum of 10 per request.
+    outputs:
+    - contextPath: FireEyeDoD.Scan.report_id
+      description: The ID of the report
+    - contextPath: FireEyeDoD.Scan.status
+      description: The status of the file submission.  Will be "DONE" when all engines
+        are finished.
+    description: Submits URLs to FireEye Detection on Demand for analysis
+  - name: fireeye-dod-get-reports
+    arguments:
+    - name: report_ids
+      description: A comma separated list of one or more report IDs to fetch.
+      required: true
+      isArray: true
+    - name: extended_report
+      description: If True, additional information will be returned
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+    - name: get_screenshot
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether or not to get screenshot artifacts from the report
+      defaultValue: "False"
+    - name: get_artifact
+      auto: PREDEFINED
+      predefined:
+      - all
+      - screenshot
+      description: Which report artifacts to retrieve (if any)
+    outputs:
+    - contextPath: FireEyeDoD.Scan.report_id
+      description: The ID of the report
+      type: String
+    - contextPath: FireEyeDoD.Scan.overall_status
+      description: The overall status of all of the engines
+      type: String
+    - contextPath: FireEyeDoD.Scan.is_malicious
+      description: True/False if the file is malicious
+      type: Number
+    - contextPath: FireEyeDoD.Scan.started_at
+      description: The UTC time the scan was started
+      type: Date
+    - contextPath: FireEyeDoD.Scan.completed_at
+      description: The UTC time the scan was completed
+      type: Date
+    - contextPath: FireEyeDoD.Scan.duration
+      description: How long, in seconds, the scan took to complete.
+      type: Number
+    - contextPath: FireEyeDoD.Scan.file_name
+      description: The name of the submitted file
+      type: String
+    - contextPath: FireEyeDoD.Scan.file_size
+      description: The size of the file in bytes
+      type: Number
+    - contextPath: FireEyeDoD.Scan.file_extension
+      description: The extension of the submitted file.  If a URL was submitted, this
+        will be empty.
+      type: String
+    - contextPath: FireEyeDoD.Scan.md5
+      description: The MD5 hash of the submitted file
+      type: String
+    - contextPath: FireEyeDoD.Scan.sha256
+      description: The sha256 hash of the submitted file
+      type: String
+    - contextPath: FireEyeDoD.Scan.signature_name
+      description: List of signatures extracted by all engines
+      type: String
+    description: Retrieves one or more reports of file scans
+  - name: fireeye-dod-get-report-url
+    arguments:
+    - name: report_id
+      description: The ID of the report to fetch
+      required: true
+    - name: expiration
+      required: false
+      default: true
+      description: Expiration (in hours) for browser viewable report pre-signed URL
+        link. Default value is 72 hours.  Minimum is 1 hour, and maximum is 8760 hours
+        (365 days).
+      defaultValue: "72"
+    description: Generates a pre-signed URL for a report
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

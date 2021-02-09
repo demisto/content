@@ -1,36 +1,38 @@
 from __future__ import print_function
 
 import argparse
-import os
-import uuid
-import json
 import ast
+import json
+import logging
+import os
 import subprocess
 import sys
+import uuid
 import zipfile
 from datetime import datetime
+from distutils.version import LooseVersion
 from enum import IntEnum
 from pprint import pformat
-from time import sleep
 from threading import Thread
-from distutils.version import LooseVersion
-import logging
-from typing import List
+from time import sleep
+from typing import List, Tuple
 
-from Tests.scripts.utils.log_util import install_logging
-
-from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
+from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml,\
-    str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import FileType
-from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
-from Tests.test_content import extract_filtered_tests, get_server_numeric_version
-from Tests.update_content_data import update_content
+
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration
+from Tests.scripts.utils.log_util import install_logging
+from Tests.test_content import extract_filtered_tests, get_server_numeric_version
+from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
+from Tests.tools import run_with_proxy_configured
+from Tests.update_content_data import update_content
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -40,6 +42,9 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+}
+DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
+    'docker.run.internal.asuser': 'true'
 }
 MARKET_PLACE_CONFIGURATION = {
     'content.pack.verify': 'false',
@@ -55,41 +60,18 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
-class SimpleSSH(SSHClient):
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-
-    def __init__(self, host, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
-        self.run_environment = Build.run_environment
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            super().__init__()
-            self.load_system_host_keys()
-            self.set_missing_host_key_policy(AutoAddPolicy())
-            if self.run_environment == Running.CIRCLECI_RUN:
-                self.connect(hostname=host, username=user, timeout=60.0)
-            elif self.run_environment == Running.WITH_OTHER_SERVER:
-                if key_file_path.startswith('~'):
-                    key_file_path = key_file_path.replace('~', os.getenv('HOME'), 1)
-                    self.connect(hostname=host, port=port, username=user, key_filename=key_file_path, timeout=60.0)
-
-    def exec_command(self, command, *_other):
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            _, _stdout, _stderr = super(SimpleSSH, self).exec_command(command)
-            return _stdout.read(), _stderr.read()
-        else:
-            return run_command(command, is_silenced=False), None
-
-
 class Server:
 
-    def __init__(self, host, user_name, password):
+    def __init__(self, internal_ip, port, user_name, password):
         self.__ssh_client = None
         self.__client = None
-        self.host = host
+        self.internal_ip = internal_ip
+        self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
 
     def __str__(self):
-        return self.host
+        return self.internal_ip
 
     @property
     def client(self):
@@ -99,7 +81,9 @@ class Server:
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+                                                 verify_ssl=False,
+                                                 username=self.user_name,
                                                  password=self.password)
         return self.__client
 
@@ -110,13 +94,8 @@ class Server:
             self.exec_command('sudo systemctl restart demisto')
 
     def exec_command(self, command):
-        if self.__ssh_client is None:
-            self.__init_ssh()
-        self.__ssh_client.exec_command(command)
-
-    def __init_ssh(self):
-        self.__ssh_client = SimpleSSH(host=self.host.replace('https://', '').replace('http://', ''),
-                                      key_file_path=Build.key_file_path, user='ec2-user')
+        subprocess.check_output(f'ssh {SSH_USER}@{self.internal_ip} {command}'.split(),
+                                stderr=subprocess.STDOUT)
 
 
 def get_id_set(id_set_path) -> dict:
@@ -141,20 +120,25 @@ class Build:
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
+        self._proxy = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
         self.ami_env = options.ami_env
-        self.servers, self.server_numeric_version = self.get_servers(options.ami_env)
+        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
+        self.servers = [Server(internal_ip,
+                               port,
+                               self.username,
+                               self.password) for internal_ip, port in self.server_to_port_mapping.items()]
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
+        self.unmockable_integrations = conf['unmockable_integrations']
         id_set_path = options.id_set_path if options.id_set_path else ID_SET_PATH
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
@@ -162,6 +146,20 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+
+    @property
+    def proxy(self) -> MITMProxy:
+        """
+        A property method that should create and return a single proxy instance through out the build
+        Returns:
+            The single proxy instance that should be used in this build.
+        """
+        if not self._proxy:
+            self._proxy = MITMProxy(self.servers[0].internal_ip,
+                                    logging_module=logging,
+                                    build_number=self.ci_build_number,
+                                    branch_name=self.branch_name)
+        return self._proxy
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -198,12 +196,12 @@ class Build:
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        servers = determine_servers_urls(env_conf, ami_env)
+        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
         if Build.run_environment == Running.CIRCLECI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return servers, server_numeric_version
+        return server_to_port_mapping, server_numeric_version
 
 
 def options_handler():
@@ -211,8 +209,8 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA". The server url is determined by the AMI environment.')
+                                          '"Server Master", "Server 5.0". '
+                                          'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -440,7 +438,12 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, placeholders_map, logging_module=logging):
+def set_integration_params(build,
+                           integrations,
+                           secret_params,
+                           instance_names,
+                           placeholders_map,
+                           logging_module=logging):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -453,6 +456,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     this function has completed execution and gone out of scope.
 
     Arguments:
+        build: Build object
         integrations: (list of dicts)
             List of integration objects whose 'params' attribute will be populated in this function.
         secret_params: (list of dicts)
@@ -471,7 +475,6 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
-
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -499,6 +502,14 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
+            if integration['name'] not in build.unmockable_integrations:
+                integration['params'].update({'proxy': True})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=True')
+            else:
+                integration['params'].update({'proxy': False})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=False')
 
     return True
 
@@ -823,35 +834,31 @@ def get_env_conf():
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
-            "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
+            "Role": "Server Master"  # e.g. 'Server Master'
         }]
     elif Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
-            "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
+            "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
 
 
-def determine_servers_urls(env_results, ami_env):
+def map_server_to_port(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
             env_results.json in server
-        ami_env: (str)
+        instance_role: (str)
             The amazon machine image environment whose IP we should connect to.
 
     Returns:
         (lst): The server url list to connect to
     """
 
-    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
-
-    server_urls = []
-    for dns in instances_dns:
-        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
-        server_urls.append(server_url)
-    return server_urls
+    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
+                      instance_role in env.get('Role', '')}
+    return ip_to_port_map
 
 
 def get_json_file(path):
@@ -860,46 +867,26 @@ def get_json_file(path):
 
 
 def configure_servers_and_restart(build):
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-        configurations = DOCKER_HARDENING_CONFIGURATION
-        configure_types = ['docker hardening']
-        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-            configure_types.append('marketplace')
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+    manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+    for server in build.servers:
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
+            if is_redhat_instance(server.internal_ip):
+                configurations = DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN
+            else:
+                configurations = DOCKER_HARDENING_CONFIGURATION
+            configure_types = ['docker hardening']
+            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+                configure_types.append('marketplace')
+                configurations.update(MARKET_PLACE_CONFIGURATION)
 
-        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
-        for server in build.servers:
+            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
-        if manual_restart:
-            input('restart your server and then press enter.')
-        else:
-            logging.info('Done restarting servers. Sleeping for 1 minute')
-            sleep(60)
-
-
-def restart_server(server):
-    try:
-        logging.info('Restarting servers to apply server config ...')
-
-        # copy from .demisto_bashrc stop_server && start_server
-        command = 'sudo systemctl restart demisto'
-        SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path,
-                  user='ec2-user').exec_command(command)
-    except Exception:
-        logging.exception('New SSH restart demisto failed')
-        restart_server_legacy(server)
-
-
-def restart_server_legacy(server):
-    try:
-        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                     '"sudo systemctl restart demisto"'
-        subprocess.check_output(
-            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-    except subprocess.CalledProcessError:
-        logging.exception('Legacy SSH restart demisto failed')
+    if manual_restart:
+        input('restart your server and then press enter.')
+    else:
+        logging.info('Done restarting servers. Sleeping for 1 minute')
+        sleep(60)
 
 
 def get_tests(build: Build) -> List[str]:
@@ -984,7 +971,7 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
-        kwargs = {'client': server.client, 'host': server.host}
+        kwargs = {'client': server.client, 'host': server.internal_ip}
         if service_account:
             kwargs['service_account'] = service_account
         if pack_path:
@@ -1044,10 +1031,13 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+        new_ints_params_set = set_integration_params(build,
+                                                     new_integrations,
+                                                     build.secret_conf['integrations'],
                                                      instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+        ints_to_configure_params_set = set_integration_params(build,
+                                                              integrations_to_configure,
                                                               build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
@@ -1100,7 +1090,23 @@ def configure_modified_and_new_integrations(build: Build,
     return modified_modules_instances, new_modules_instances
 
 
-def instance_testing(build: Build, all_module_instances, pre_update):
+def instance_testing(build: Build,
+                     all_module_instances: list,
+                     pre_update: bool,
+                     use_mock: bool = True) -> Tuple[set, set]:
+    """
+    Runs 'test-module' command for the instances detailed in `all_module_instances`
+    Args:
+        build: An object containing the current build info.
+        all_module_instances: The integration instances that should be tested
+        pre_update: Whether this instance testing is before or after the content update on the server.
+        use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
+        private content build which aren't using the mocks.
+
+    Returns:
+        A set of the successful tests containing the instance name and the integration name
+        A set of the failed tests containing the instance name and the integration name
+    """
     update_status = 'Pre' if pre_update else 'Post'
     failed_tests = set()
     successful_tests = set()
@@ -1110,13 +1116,15 @@ def instance_testing(build: Build, all_module_instances, pre_update):
         logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
-
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
-        testing_client = build.servers[0].reconnect_client()
         # If there is a failure, __test_integration_instance will print it
-        success, _ = __test_integration_instance(testing_client, instance)
+        if integration_of_instance not in build.unmockable_integrations and use_mock:
+            success = test_integration_with_mock(build, instance, pre_update)
+        else:
+            testing_client = build.servers[0].reconnect_client()
+            success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
         else:
@@ -1125,12 +1133,46 @@ def instance_testing(build: Build, all_module_instances, pre_update):
     return successful_tests, failed_tests
 
 
+def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
+    """
+    Runs 'test-module' for given integration with mitmproxy
+    In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
+    Args:
+        build: An object containing the current build info.
+        instance: A dict containing the instance details
+        pre_update: Whether this instance testing is before or after the content update on the server.
+
+    Returns:
+        The result of running the 'test-module' command for the given integration.
+        If a record was executed - will return the result of the 'test--module' with the record mode only.
+    """
+    testing_client = build.servers[0].reconnect_client()
+    integration_of_instance = instance.get('brand', '')
+    logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
+    has_mock_file = build.proxy.has_mock_file(integration_of_instance)
+    success = False
+    if has_mock_file:
+        with run_with_mock(build.proxy, integration_of_instance) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
+    if not success and not pre_update:
+        logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
+        with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
+    return success
+
+
 def update_content_till_v6(build: Build):
     threads_list = []
     # For each server url we install content
     for thread_index, server in enumerate(build.servers):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': server.client, 'server': server.host, 'ami_name': build.ami_env})
+                   kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
         threads_list.append(t)
 
     run_threads_list(threads_list)
@@ -1241,6 +1283,7 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
     sleep(60)
 
 
+@run_with_proxy_configured
 def test_integrations_post_update(build: Build, new_module_instances: list, modified_module_instances: list) -> tuple:
     """
     Runs 'test-module on all integrations for post-update check
@@ -1279,6 +1322,7 @@ def update_content_on_servers(build: Build) -> bool:
     return installed_content_packs_successfully
 
 
+@run_with_proxy_configured
 def configure_and_test_integrations_pre_update(build: Build, new_integrations, modified_integrations) -> tuple:
     """
     Configures integration instances that exist in the current version and for each integration runs 'test-module'.
@@ -1328,10 +1372,11 @@ def install_packs_pre_update(build: Build) -> bool:
 
 
 def main():
-    install_logging('Install Content And Configure Integrations On Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = Build(options_handler())
 
     configure_servers_and_restart(build)
+    disable_instances(build)
     installed_content_packs_successfully = install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
@@ -1345,7 +1390,6 @@ def main():
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,
                                                                              modified_module_instances)
-    disable_instances(build)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations)

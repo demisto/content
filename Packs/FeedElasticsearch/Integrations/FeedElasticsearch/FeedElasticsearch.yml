@@ -114,10 +114,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Source field that contains the indicator value in the index
-  display: |-
-    ┉┉┉┉┉ Generic Feed Configuration ┉┉┉┉┉
-
-    Indicator Value Field
+  display: Indicator Value Field
   hidden: false
   name: src_val
   required: false
@@ -178,7 +175,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.11003
+  dockerimage: demisto/elasticsearch:1.0.0.14274
   feed: true
   isfetch: false
   longRunning: false

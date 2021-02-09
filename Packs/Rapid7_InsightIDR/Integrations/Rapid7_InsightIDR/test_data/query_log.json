@@ -1,0 +1,29 @@
+
+{
+    "logs": [
+      "b7b33bce-58f1-42db-a36a-f452aa240d73"
+    ],
+    "events": [
+      {
+        "labels": [],
+        "timestamp": 1583009183456,
+        "sequence_number": 3234730521598636000,
+        "log_id": "b7b33bce-58f1-42db-a36a-f452aa240d73",
+        "message": "{\"http.addr\" : \"176.9.8.97\",\"http.timestamp\" : \"2020-02-29 20:53:34.530862\",\"http.method\" : \"GET\",\"http.path\" : \"/resources/contact-us.php\",\"http.status\" : \"500\",\"http.bytes\" : 4046,\"http.referer\" : \"www.google.ie\",\"http.agent\" : \"Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25\",\"http.host\" : \"eu-prod-3\",\"http.responsetime\" : 11843}",
+        "links": [
+          {
+            "rel": "Context",
+            "href": "https://eu.api.insight.rapid7.com/log_search/query/context/3234730521598636032?per_page=50×tamp=1583009183456&log_keys=b7b33bce-58f1-42db-a36a-f452aa240d73&context_type=SURROUND"
+          }
+        ]
+      }
+    ],
+    "leql": {
+      "statement": "where(http.status)",
+      "during": {
+        "from": 1583009182433,
+        "to": 1585601175000,
+        "time_range": "Last 30 Days"
+      }
+    }
+  }

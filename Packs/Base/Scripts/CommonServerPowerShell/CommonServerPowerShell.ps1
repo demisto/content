@@ -268,14 +268,26 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        # When Demisto Version is greater equal then "6.0.0".  integration_context will be under "context" attribute.
+        if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+            $integration_context = $integration_context.context
+        }
+
+        return $integration_context
     }
 
     SetIntegrationContext ($Value) {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ value = $Value } })
+        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{
+            value = $Value
+            version =  @{
+                "version" = -1
+                "sequenceNumber" = -1
+                "primaryTerm" = -1
+            } } })
     }
 }
 
@@ -533,14 +545,20 @@ End {
                 foreach ($raw_value in $raw_values)
                 {
                     if ($null -ne $raw_value)
-                    {
-                        if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
+                    {   try{
+                            <# PWSH Type Code of numbers are 5 to 15. So we will handle them with ToString
+                            and the rest are Json Serializble #>
+                            $typeValue = $raw_value.getTypeCode().value__
+                            $is_number = ($typeValue -ge 5 -and $typeValue -le 15)
+                        } catch { $is_number = $false}
+
+                        if ($raw_value -is [string] -or $is_number)
                         {
-                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
+                            $value = $raw_value.ToString()
                         }
                         else
                         {
-                            $value = $raw_value.ToString()
+                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
                         }
                     }
                     else
@@ -561,3 +579,102 @@ End {
     }
 }
 Set-Alias -Name ConvertTo-Markdown -Value TableToMarkdown
+
+function ConvertTo-Boolean
+{
+  param
+  (
+    [Parameter(Mandatory=$false)][string] $value
+  )
+  switch ($value)
+  {
+    "y" { return $true; }
+    "yes" { return $true; }
+    "true" { return $true; }
+    "t" { return $true; }
+    1 { return $true; }
+    "n" { return $false; }
+    "no" { return $false; }
+    "false" { return $false; }
+    "f" { return $false; }
+    0 { return $false; }
+  }
+}
+
+function FileResult([string]$file_name, [string]$data, [string]$file_type) {
+    if (!$file_type) {
+        $file_type = [EntryTypes]::file
+    }
+    $temp = $demisto.UniqueFile()
+    Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
+
+    return @{
+        "Contents" = ''
+        "ContentsFormat" = [EntryFormats]::text.ToString()
+        "Type" = 3
+        "File" = $file_name
+        "FileID" = $temp
+    }
+}
+
+function DemistoVersionGreaterEqualThen([string]$version) {
+    $demisto_version = $demisto.DemistoVersion().version
+    $version_pattern = "\d{1,2}\.\d{1,2}\.\d{1,2}"
+    $demisto_version = (Select-string -Pattern $version_pattern -InputObject $demisto_version).Matches[0].Value
+    $version = (Select-string -Pattern $version_pattern -InputObject $version).Matches[0].Value
+
+    return [version]::Parse($demisto_version) -ge  [version]::Parse($version)
+}
+
+function ParseDateRange{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $date_str
+    )
+    $now = $date = Get-Date
+    $number, $unit_name = $date_str.Split()
+    try{
+        $number = -([int]$number)
+    } catch [System.Management.Automation.RuntimeException]{
+        throw "No number given in '$date_str'"
+    }
+    if ($null -eq $unit_name){
+        throw "Time unit not given in '$date_str'"
+    }
+    if (!($unit_name.GetType() -eq [String])) {
+        throw "Too many arguemnts in '$date_str'"
+    }
+    if ($unit_name.Contains("minute")){
+        $date = $date.AddMinutes($number)
+    } elseif ($unit_name.Contains("hour")) {
+        $date = $date.AddHours($number)
+    } elseif ($unit_name.Contains("day")){
+        $date = $date.AddDays($number)
+    } elseif ($unit_name.Contains("week")) {
+        $date = $date.AddDays($number * 7)
+    } elseif ($unit_name.Contains("month")) {
+        $date = $date.AddMonths($number)
+    } elseif ($unit_name.Contains("year")) {
+        $date = $date.AddYears($number)
+    } else {
+        throw "Could not process time unit '$unit_name'. Available are: minute, hour, day, week, month, year."
+    }
+    return $date, $now
+    <#
+    .DESCRIPTION
+    Gets a string represents a date range ("3 day", "2 years" etc) and return the time on the past according to
+    the date range.
+
+    .PARAMETER date_str
+     a date string in a human readable format as "3 days", "5 years".
+     Available units: minute, hour, day, week, month, year.
+
+    .EXAMPLE
+    ParseDateRange("3 days") (current date it 04/01/21)
+    Date(01/01/21)
+    #>
+}

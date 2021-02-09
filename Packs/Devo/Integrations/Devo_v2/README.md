@@ -375,8 +375,7 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 ##### Human Readable Output
 N/A
 
-## Additional Information
----
+
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
 [![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU "Devo Demisto Demo")
 
