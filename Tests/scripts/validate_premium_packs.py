@@ -224,22 +224,22 @@ def main():
 
     # Get the first host by the ami env
     hosts, _ = Build.get_servers(ami_env=options.ami_env)
-    host = hosts[0]
+    internal_ip, tunnel_port = list(hosts.items())[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = Server(host=host, user_name=username, password=password)
+    server = Server(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)
     if paid_packs:
-        logging.info(f"Verifying premium packs in {server.host}")
+        logging.info(f"Verifying premium packs in {server.internal_ip}")
         paid_packs_are_identical = verify_server_paid_packs_by_index(paid_packs, index_data["packs"])
         log_message_if_statement(statement=paid_packs_are_identical,
-                                 error_message=f"Test failed on host: {server.host}.",
-                                 success_message=f"All premium packs in host: {server.host} are valid")
+                                 error_message=f"Test failed on host: {server.internal_ip}.",
+                                 success_message=f"All premium packs in host: {server.internal_ip} are valid")
         if not paid_packs_are_identical:
             exit_code = 1
     else:
-        logging.critical(f"Missing all premium packs in host: {server.host}")
+        logging.critical(f"Missing all premium packs in host: {server.internal_ip}")
         exit_code = 1
 
     # Deleting GCS PATH before exit
