@@ -84,6 +84,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -93,6 +94,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -121,19 +123,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: ''
-  name: feedExpirationPolicy
-  type: 17
-  required: false
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-- display: ''
-  name: feedExpirationInterval
-  type: 1
-  required: false
 description: Ingest indicator feeds from OpenCTI.
 display: OpenCTI Feed v2
 name: OpenCTI Feed v2

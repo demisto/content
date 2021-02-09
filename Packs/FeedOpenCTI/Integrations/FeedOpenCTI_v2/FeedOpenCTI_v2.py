@@ -239,7 +239,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
                                                                 url=external_references_url).get('id')
     elif external_references_url or external_references_source_name:
         return_error("Missing argument. In order to use external references, "
-                     "external_references_url and external_references_source_name are madatory.")
+                     "external_references_url and external_references_source_name are mandatory.")
 
     description = args.get("description")
     score = int(args.get("score", '50'))
