@@ -175,7 +175,9 @@ Describe 'Check-UtilityFunctions' {
             $ArrLst = [System.Collections.ArrayList]::new()
             $ArrLst.Add("a string")
             $ArrLst.Add("another string")
-            @{"arraylist" = $ArrLst} | TableToMarkdown | Should -Match "another string"
+            $tbl = @{"arraylist" = $ArrLst} | TableToMarkdown
+            $tbl | Should -Match "a string"
+            $tbl | Should -Match "another string"
         }
     }
     Context "Test stringEscapeMD" {
