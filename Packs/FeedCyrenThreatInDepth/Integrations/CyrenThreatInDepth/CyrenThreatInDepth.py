@@ -349,6 +349,18 @@ class Client(BaseClient):
             raise
 
 
+def store_offset_in_context(offset: int) -> int:
+    integration_context = demisto.getIntegrationContext()
+    integration_context["offset"] = offset
+    demisto.setIntegrationContext(integration_context)
+    return offset
+
+
+def get_offset_from_context() -> int:
+    integration_context = demisto.getIntegrationContext()
+    return integration_context.get("offset")
+
+
 def test_module_command(client: Client) -> str:
     try:
         entries = client.fetch_entries(0, 10)
@@ -380,8 +392,24 @@ def get_indicators_command(client: Client, args: Dict) -> CommandResults:
     human_readable = tableToMarkdown("Indicators from Cyren Threat InDepth:", indicators,
                                      headers=["value", "type", "rawJSON", "score"])
     return CommandResults(readable_output=human_readable,
-                          outputs=dict(),
                           raw_response=indicators)
+
+
+def reset_offset_command(client: Client, args: Dict) -> CommandResults:
+    offset = int(args.get("offset", -1))
+    offset_stored = get_offset_from_context()
+    offset_api = int(client.get_offsets().get("endOffset", -1))
+    if offset < 0 or offset > offset_api:
+        offset = offset_api
+
+    store_offset_in_context(offset)
+
+    offset_stored_text = offset_stored or "not set before"
+    readable_output = (
+        f"Reset Cyren Threat InDepth {client.feed_name} feed client offset to {offset} "
+        f"(API provided max offset of {offset_api}, was {offset_stored_text})."
+    )
+    return CommandResults(readable_output=readable_output, raw_response=offset)
 
 
 def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List[Dict], int]:
@@ -396,11 +424,10 @@ def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List
 
 
 def fetch_indicators_command(client: Client, initial_count: int, max_indicators: int, update_context: bool) -> List[Dict]:
-    integration_context = demisto.getIntegrationContext()
-    offset = integration_context.get("offset")
+    offset = get_offset_from_context()
     count = max_indicators
     if not offset:
-        offset = client.get_offsets().get("endOffset")
+        offset = int(client.get_offsets().get("endOffset", -1))
         if initial_count > 0:
             offset = offset - initial_count + 1
             count = max_indicators + initial_count
@@ -413,8 +440,7 @@ def fetch_indicators_command(client: Client, initial_count: int, max_indicators:
     demisto.debug(f"about to ingest {len(indicators)} for {client.feed_name}")
 
     if update_context:
-        integration_context["offset"] = max_offset
-        demisto.setIntegrationContext(integration_context)
+        store_offset_in_context(max_offset)
 
     return indicators
 
@@ -437,6 +463,7 @@ def main():
     demisto.info(f"using feed {feed_name}, max {max_indicators}")
     commands: Dict[str, Callable] = {
         "cyren-threat-indepth-get-indicators": get_indicators_command,
+        "cyren-threat-indepth-reset-client-offset": reset_offset_command,
     }
 
     command = demisto.command()

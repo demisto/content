@@ -9,7 +9,8 @@ import demistomock as demisto
 
 from CyrenThreatInDepth import (
     Client, fetch_indicators_command, get_indicators_command,
-    test_module_command as _test_module_command, BASE_URL
+    test_module_command as _test_module_command, BASE_URL,
+    reset_offset_command
 )
 
 
@@ -921,3 +922,87 @@ def test_test_module_ok(requests_mock, ip_reputation):
     client = _create_client("ip_reputation")
 
     assert "ok" == _test_module_command(client)
+
+
+@pytest.mark.parametrize("offset_data, context_data, offset, expected_text, expected_offset", [
+    (
+        dict(startOffset=1, endOffset=1000), dict(), None,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 900,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 900 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        900
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 1000,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 1001,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), None,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 900,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 900 (API provided max offset of 1000, was 500).",
+        900
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 1000,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 1001,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+])
+def test_reset_offset_command(requests_mock, offset_data, context_data, offset, expected_text, expected_offset):
+    """
+    Given:
+        - different stored offset configurations and desired offset parameters
+
+    When:
+        - running the reset offset command
+
+    Then:
+        - I am told what happened in a human-readable form
+        - the new context has been stored in the integration context
+
+    """
+
+    demisto.setIntegrationContext(context_data)
+    feed = "ip_reputation"
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
+                      json=offset_data, request_headers=_expected_headers())
+    client = _create_client(feed)
+
+    args = dict()
+    if offset is not None:
+        args["offset"] = offset
+
+    result = reset_offset_command(client, args)
+
+    assert result.readable_output == expected_text
+    assert demisto.getIntegrationContext() == dict(offset=expected_offset)

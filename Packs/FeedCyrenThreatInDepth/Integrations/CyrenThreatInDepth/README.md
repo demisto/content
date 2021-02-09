@@ -15,8 +15,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 - Malware URL Intelligence
 - Malware File Intelligence
 
-
-
 ## Configure Cyren Threat InDepth Threat Intelligence Feed on XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -46,7 +44,9 @@ indicators. Your current offset defaults at the globally known maximum offset on
 is being stored and updated for you in the integration instance context. The integration then uses the
 "Maximum number of indicators" parameter as the count in each request. It is recommended to set it to
 a high enough value so that you get all the feed indicators for maximum product value, to handle bursts
-etc.(the value cannot be higher than 100.000 and it will be capped at that value if you set a higher one).
+etc. (the value cannot be higher than 100.000 and it will be capped at that value if you set a higher one).
+
+In case you want to want to reset the offset value, use the `cyren-threat-indepth-reset-client-offset` command.
 
 ## Commands
 
@@ -89,3 +89,37 @@ Indicators from Cyren Threat InDepth:
 ## Additional Information
 
 Contact us: paltoalto-cortex-xsoar@cyren.com
+
+### Reset Client Offset
+
+This command allows you to update the stored client offset for the feed API.
+
+##### Required Permissions
+
+- A valid API JWT token and a matching feed name
+
+##### Base Command
+
+`cyren-threat-indepth-reset-client-offset`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| offset | *Optional* The offset you want to use as your baseline for future fetches (if not provided, the global max offset from the API is used) | False |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`!cyren-threat-indepth-reset-client-offset`
+`!cyren-threat-indepth-reset-client-offset offset = 34234234`
+
+##### Human Readable Output
+
+Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).
+
+## Additional Information
+
+Contact us: paloalto-cortex-xsoar@cyren.com
