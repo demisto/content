@@ -62,7 +62,7 @@ def test_instances(secret_conf_path, server, username, password):
         validate_test = integration.get('validate_test', True)
 
         if has_integration:
-            instance_id, failure_message, _ = __create_integration_instance(
+            instance_id, failure_message = __create_integration_instance(
                 server, username, password, integration_name, integration_instance_name,
                 integration_params, is_byoi, validate_test=validate_test)
             if failure_message == 'No configuration':
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     if options.instance_tests:
         with open('./env_results.json', 'r') as json_file:
             env_results = json.load(json_file)
-            server = SERVER_URL.format(env_results[0]["InstanceDNS"])
+            server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl,
                        options.buildNumber)
