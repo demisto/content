@@ -11,11 +11,8 @@ from datetime import datetime
 import requests
 from requests.exceptions import HTTPError
 
-# disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Header names transformation maps
-# Format: {'OldName': 'NewName'}
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
     'ScanStart': 'StartTime',
@@ -41,7 +38,6 @@ ASSET_VULNS_NAMES_MAP = {
     'Count': 'VulnerabilityOccurences'
 }
 
-# Output Headers / Context Keys
 GET_SCANS_HEADERS = [
     'FolderId',
     'Id',
@@ -140,7 +136,6 @@ severity_to_text = [
     'High',
     'Critical']
 
-# Read integration parameters
 BASE_URL = demisto.params()['url']
 ACCESS_KEY = demisto.params()['access-key']
 SECRET_KEY = demisto.params()['secret-key']
@@ -157,9 +152,8 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 
-# Utility methods
 def flatten(d):
-    r = {}  # type: ignore
+    r = {}
     for k, v in d.iteritems():
         if isinstance(v, dict):
             r.update(flatten(v))
@@ -244,8 +238,6 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
 
 def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
-    # trans_map - { 'OldKey': 'NewKey', ...}
-    # camelize - change all keys from snake_case to CamelCase
     def snake_to_camel(snake_str):
         components = snake_str.split('_')
         return ''.join(map(lambda x: x.decode('utf-8').title(), components))
@@ -296,7 +288,6 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
     if endpoint:
         endpoint = '/' + endpoint
     full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
-
     for i in range(5):
         try:
             res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=kwargs)
@@ -371,7 +362,6 @@ def send_asset_vuln_request(asset_id, date_range):
     return res.json()
 
 
-# Command methods
 def test_module():
     send_scan_request()
     return 'ok'
@@ -380,7 +370,6 @@ def test_module():
 def get_scans_command():
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        # str(YYYY-MM-DD) to int(timestamp)
         last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
@@ -481,14 +470,12 @@ def args_to_request_params(hostname, ip, date_range):
 
     indicator = hostname if hostname else ip
 
-    # Query filter parameters to be passed in request
     params = {
-        "filter.0.filter": "host.target",  # filter by host target
-        "filter.0.quality": "eq",  # operator
-        "filter.0.value": indicator  # value
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": indicator
     }
 
-    # Add date_range filter if provided (timeframe to retrieve results, in days)
     if date_range:
         if not date_range.isdigit():
             return_error("Invalid date range: {}".format(date_range))
@@ -529,8 +516,6 @@ def get_scan_status_command():
         'Status': scan_details['info']['status']
     }
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
-
-# TEST
 
 
 def pause_scan_command():
@@ -585,7 +570,6 @@ def pause_scans_command():
     return results
 
 
-# TEST
 def resume_scan_command():
     scan_id = demisto.getArg('scanId')
     scan_details = send_scan_request(scan_id)
@@ -642,22 +626,17 @@ def get_scan_templates():
         endpoint = BASE_URL + "editor/scan/templates"
         response = requests.request("GET", endpoint, headers=AUTH_HEADERS, verify=USE_SSL)
         response.raise_for_status()
-        # print(response.json())
         demisto.info("Ran request sucessfully")
         return response
     except HTTPError:
-        # print(response.status_code)
         demisto.error(traceback.format_exc())
         sys.exit(0)
 
 
-# Request/Response methods
-# kwargs: request parameters
 def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignore_license_error=False, **kwargs):
     if endpoint and (len(endpoint_base) > 0):
         endpoint = '/' + endpoint
     full_url = "{0}{1}{2}".format(BASE_URL, endpoint_base, endpoint)
-    # print(full_url)
 
     for i in range(5):
         try:
@@ -684,13 +663,11 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
 
 def add_tags():
     payloads = demisto.getArg('payload')
-    # payloads = json.loads(payloads)
 
     response = send_request(payload=payloads, endpoint="values", method="POST")
     return response
 
 
-# Command selector
 if demisto.command() == 'test-module':
     demisto.results(test_module())
 elif demisto.command() == 'tenable-io-list-scans':
