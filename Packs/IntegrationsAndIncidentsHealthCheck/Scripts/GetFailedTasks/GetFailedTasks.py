@@ -39,7 +39,7 @@ def get_tenant_name():
     return tenant_name
 
 
-def get_failed_tasks_output(tasks, incident):
+def get_failed_tasks_output(tasks: list, incident: dict):
     if not tasks:
         return [], 0
 
@@ -68,7 +68,7 @@ def get_failed_tasks_output(tasks, incident):
     return task_outputs, number_of_error_entries
 
 
-def get_incident_data(incident, tenant_name, rest_api_instance_to_use):
+def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use: str):
     if tenant_name:
         uri = f'acc_{tenant_name}/investigation/{str(incident["id"])}/workplan/tasks'
     else:
