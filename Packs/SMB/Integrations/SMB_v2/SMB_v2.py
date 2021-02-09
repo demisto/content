@@ -120,8 +120,15 @@ def list_dir(client: SMBClient, args: dict):
 
     client.create_session(hostname, username, password)
     entries = list(scandir(path))
-    files = [entry.name for entry in entries if entry.is_file()]
-    dirs = [entry.name for entry in entries if entry.is_dir()]
+
+    files = []
+    dirs = []
+
+    for entry in entries:
+        if entry.is_file():
+            files.append(entry.name)
+        if entry.is_dir():
+            dirs.append(entry.name)
 
     context = {
         'SharedFolder': path,

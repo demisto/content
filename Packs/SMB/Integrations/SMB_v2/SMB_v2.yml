@@ -179,4 +179,4 @@ script:
   subtype: python3
 tests:
 - SMB_v2-Test
-fromversion: 5.5.0
+fromversion: 5.0.0
