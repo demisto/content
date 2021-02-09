@@ -1,4 +1,4 @@
-hen a ransomware attack is detected, for example by your endpoint protection service, this pack can help you better understand your position and exposure against the threat actor group by collecting the needed information from your environment, performing the required investigation steps, containing the incident, and visualizing the data with its custom **Post Intrusion Ransomware** layout.
+When a ransomware attack is detected, for example by your endpoint protection service, this pack can help you better understand your position and exposure against the threat actor group by collecting the needed information from your environment, performing the required investigation steps, containing the incident, and visualizing the data with its custom **Post Intrusion Ransomware** layout.
 ## What does this pack do?
 The main features of the semi-automated **Post Intrusion Ransomware Investigation** playbook included in the pack are:
 - Performs automated user and host data enrichment.
