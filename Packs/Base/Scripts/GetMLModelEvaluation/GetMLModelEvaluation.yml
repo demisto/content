@@ -58,7 +58,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/dl:1.4
+dockerimage: demisto/ml:1.0.0.15569
 tests:
 - No test
 fromversion: 4.5.0
