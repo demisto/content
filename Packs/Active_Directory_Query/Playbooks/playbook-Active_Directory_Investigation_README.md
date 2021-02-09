@@ -15,8 +15,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* setIncident
 * ad-disable-account
+* setIncident
 
 ## Playbook Inputs
 ---

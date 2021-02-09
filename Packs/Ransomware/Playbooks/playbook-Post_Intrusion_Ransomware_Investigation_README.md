@@ -1,19 +1,17 @@
-Post Intrusion Ransomware Investigation Playbook provides a baseline for investigating Ransomware incidents.
-In such a complex incident, knowing is half the battle.
-This playbook will help you better understand your position and exposure against the threat actor group by collecting the needed information from your environment, performing the required investigation steps, containing the incident, and visualizing the data with its custom Post Intrusion Ransomware Investigation incident layout.
-The main features of this semi-automated playbook are:
- - Automated Users and Hosts data enrichment.
- - Automated endpoint isolation and user revocation.
- - Guidance to retrieve the necessary files to identify the ransomware strain and data enrichment.
- - Extract indicators from the ransomware note, including Cryptocurrency addresses and Onion URLs.
- - Guidance to further Recommended investigation steps such as Endpoint Forensics, searching for more infected endpoints, Users investigation.
- -  Active Directory forensics. 
- - Automated block for malicious indicators 
+Provides the first step in the investigation of ransomware attacks.
+ The playbook requires the ransom note and an example of an encrypted file (<1MB) to try to identify the ransomware and find a recovery tool via the online database.
+ You will be guided with further investigation steps throughout the playbook, some of the key features are:
 
-Playbook Settings and Mapping:
-For the operation of the playbook, the following data should be mapped to the relevant incident field.
-Username - Users (Incident field)
-Hostname  -Hosts (Incident field)
+- Encrypted file owner investigation
+ - Endpoint forensic investigation
+ - Active Directory investigation
+ - Timeline of the breach investigation
+ - Indicator and account enrichment
+
+Playbook settings and mapping:
+ For the operation of the playbook, the following data should be mapped to the relevant incident fields:
+ Username - Users (incident field)
+ Hostname - Hosts (incident field)
 
 
 
@@ -23,14 +21,14 @@ Hostname  -Hosts (Incident field)
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Isolate Endpoint - Generic
-* Detonate File - Generic
-* Account Enrichment - Generic v2.1
-* file_enrichment_-_file_reputation
-* Block Indicators - Generic v2
-* Endpoint Enrichment - Generic v2.1
-* f8c30530-5ac8-416e-83d0-d7198a5ae50f
 * Extract Indicators From File - Generic v2
+* Endpoint Enrichment - Generic v2.1
+* Isolate Endpoint - Generic
+* Active Directory Investigation
+* file_enrichment_-_file_reputation
+* Account Enrichment - Generic v2.1
+* Block Indicators - Generic v2
+* Detonate File - Generic
 
 ### Integrations
 * Rasterize
@@ -40,10 +38,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* rasterize-email
 * relatedIncidents
-* setIndicators
+* rasterize-email
 * setIncident
+* setIndicators
 * send-mail
 * ad-disable-account
 
@@ -52,9 +50,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoIsolation | This input determines if to perform auto-isolation for the infected endpoint.<br/>Values:<br/>- True<br/>- False  | False | Optional |
-| NotificationEmail | The Email address to notify if there is a possibility of the malware spreading and infecting other endpoints.<br/>Can be a CSV list. |  | Optional |
-| EmailBody | The notification message content. | During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.<br/>To get more information, go to this incident in Demisto: ${incident.id} | Optional |
+| AutoIsolation | Determines whether to perform auto-isolation for the infected endpoint.<br/>Values:<br/>- True<br/>- False. This is the default.  | False | Optional |
+| NotificationEmail | The email addresses to notify if there is a possibility of the malware spreading and infecting other endpoints.<br/>Can be a CSV list. |  | Optional |
+| EmailBody | The malware notification message content. | During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.<br/>To get more information, go to this incident in XSOAR: ${incident.id}. | Optional |
 
 ## Playbook Outputs
 ---
@@ -62,4 +60,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Post Intrusion Ransomware Investigation](https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Ransomware/doc_files/Post_Intrusion_Ransomware_Investigation.png)
+![Post Intrusion Ransomware Investigation v2](https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Ransomware/doc_files/Post_Intrusion_Ransomware_Investigation.png)
