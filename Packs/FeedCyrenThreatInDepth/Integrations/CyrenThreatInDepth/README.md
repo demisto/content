@@ -86,10 +86,6 @@ Indicators from Cyren Threat InDepth:
 |---|---|---|---|
 | http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu | URL | `payload: {"action": "+", "type": "url", "identifier": "f59ef036-a790-5193-b942-24a8618c936a", "first_seen": "2020-10-25T13:41:36.000Z", "last_seen": "2021-01-05T13:54:41.000Z", "detection": {"category": ["phishing"], "detection_ts": "2020-10-25T13:41:36.000Z"}, "meta": {"port": 80, "protocol": "http"}, "relationships": [{"relationship_type": "resolves to", "relationship_ts": "2020-10-25T13:41:36.000Z", "ip": "217.70.142.108", "related_entity_category": "phishing", "relationship_description": "resolves to phishing ip"}], "detection_methods": ["URL Categorization"], "url": "http://nu4vs0m.u5jkzm4r.i2wd30t.bpbp9c7d.b7ni2cio.auz8x15h.freshoff.eu"} offset: 57006380 timestamp: 2021-01-05T14:00:48.919Z` | 3 |
 
-## Additional Information
-
-Contact us: paltoalto-cortex-xsoar@cyren.com
-
 ### Reset Client Offset
 
 This command allows you to update the stored client offset for the feed API.
