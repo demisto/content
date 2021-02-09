@@ -134,10 +134,6 @@ references:
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --suffix _4_5
 
-#  restore_cache: &restore_cache
-#    restore_cache:
-#      key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -208,12 +204,6 @@ references:
         else
           demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
         fi
-
-  infrastructure_testing: &infrastructure_testing
-    run:
-      name: Infrastructure testing
-      when: always
-      command: |
         python3 -m pytest ./Utils/tests/old_content_branch_test.py -v
 
   create_id_set: &create_id_set
@@ -293,130 +283,82 @@ references:
                 exit 0
 
 jobs:
-  Setup Environment:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - checkout
-#      - *restore_cache
-      - *prepare_environment
-      - *infrastructure_testing
-      - save_cache:
-          paths:
-            - venv
-            - node_modules
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
-      - *get_contribution_pack
-      - *add_ssh_keys
-      - *persist_to_workspace
 
   Run Unit Testing And Lint:
     <<: *container_config
     resource_class: medium
     <<: *environment
     steps:
-      - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-            - setup_remote_docker
-#            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *run_unit_testing_and_lint
-            - store_test_results:
-                path: ./unit-tests
-            - run:
-                name: Slack Notifier
-                shell: /bin/bash
-                command: |
-                  ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
-                when: always
-            - *store_artifacts
+      - checkout
+      - setup_remote_docker
+      - *add_ssh_keys
+      - *prepare_environment
+      - *run_unit_testing_and_lint
+      - store_test_results:
+          path: ./unit-tests
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
+          when: always
+      - *store_artifacts
   Run Validations:
     <<: *container_config
     resource_class: medium
     <<: *environment
     steps:
-      - *attach_workspace
-      - unless:
-          condition: << pipeline.parameters.instance_tests >>
-          steps:
-#            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - *secrets
-            - *create_id_set
-            - *validate_files_and_yaml
-            - run:
-                name: Content Docs Site
-                when: always
-                command: |
-                  ./Documentation/docs_site_update.sh
-            - run:
-                name: Spell Checks
-                command: |
-                  python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-            - run:
-                name: Check if CircleCI's config file is up to date
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-                    echo "Skipping, Should not run on contributor's branch."
-                    exit 0
-                  fi
-                  # Checks if there's any diff from master
-                  if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
-                      # Checks if part of the branch's changes
-                      if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
-                          echo ".circleci/config.yml has been changed. Merge from master"
-                          exit 1
-                      else
-                          echo ".circleci/config.yml is part of the branch changes, proceeding"
-                          exit 0
-                      fi
-                  else
-                      echo ".circleci/config.yml is up to date!"
-                  fi
-            - run:
-                name: Verify Base Branch for Contribution
-                when: always
-                command: |
-                  if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-                    then
-                      python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
-                  fi
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.instance_tests >>
-              - equal:
-                  - master
-                  - << pipeline.git.branch >>
-          steps:
-            - run:
-                name: validate content-test-conf branch merged
-                shell: /bin/bash
-                when: always
-                command: |
-                  # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-                  UNDERSCORE_CIRCLE_BRANCH=${CIRCLE_BRANCH//\//_}
-                  wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_CIRCLE_BRANCH.zip" --no-check-certificate -q
-                  if [ "$?" != "0" ]; then
-                    echo "No such branch in content-test-conf: $UNDERSCORE_CIRCLE_BRANCH"
-                    exit 0
-                  else
-                    echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
+      - checkout
+      - *add_ssh_keys
+      - *prepare_environment
+      - *secrets
+      - *create_id_set
+      - *validate_files_and_yaml
+      - run:
+          name: Content Docs Site
+          when: always
+          command: |
+            ./Documentation/docs_site_update.sh
+      - run:
+          name: Spell Checks
+          command: |
+            python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
+          name: Check if CircleCI's config file is up to date
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping, Should not run on contributor's branch."
+              exit 0
+            fi
+            # Checks if there's any diff from master
+            if [[ `git diff origin/master -- .circleci/config.yml` ]]; then
+                # Checks if part of the branch's changes
+                if [[ -z `git diff origin/master..."$CIRCLE_BRANCH" --name-only | grep .circleci/config.yml` ]]; then
+                    echo ".circleci/config.yml has been changed. Merge from master"
                     exit 1
-                  fi
+                else
+                    echo ".circleci/config.yml is part of the branch changes, proceeding"
+                    exit 0
+                fi
+            else
+                echo ".circleci/config.yml is up to date!"
+            fi
+      - run:
+          name: Verify Base Branch for Contribution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
+
   Create Instances:
     <<: *container_config
     resource_class: medium
     <<: *environment
     steps:
       - checkout
-#      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
@@ -470,10 +412,7 @@ jobs:
             python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
             rm $GCS_PATH
           when: always
-      - run:
-          name: Store Artifacts to GCS
-          command: ./Tests/scripts/upload_artifacts.sh
-          when: always
+
       - run:
           name: Create Instance
           when: on_success
@@ -557,50 +496,62 @@ jobs:
                   fi
             - *destroy_instances
             - *store_artifacts
+            - *persist_to_workspace
+
+
+  Is Successful Build:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Store Artifacts to GCS
+                command: ./Tests/scripts/upload_artifacts.sh
+                when: always
+            - *destroy_instances
+            - *store_artifacts
 workflows:
   version: 2
   commit:
     jobs:
-      - Setup Environment
       - Create Instances:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
-      - Run Unit Testing And Lint:
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
+      - Run Unit Testing And Lint
+      - Run Validations
       - Server 4_5:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
           requires:
             - Create Instances
+      - Is Successful Build:
+          requires:
+            - Create Instances
+            - Run Unit Testing And Lint
+            - Run Validations
+            - Server 4_5
 
-  nightly:
-    triggers:
-      - schedule:
-          # should trigger every day at 12 AM UTC (3 AM Israel Time)
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - Setup Environment:
-          context: nightly_env
-      - Create Instances:
-          context: nightly_env
-      - Run Unit Testing And Lint:
-          context: nightly_env
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Server 4_5:
-          requires:
-            - Create Instances
-          context: nightly_env
