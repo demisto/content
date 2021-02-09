@@ -17,7 +17,7 @@
             "display_name": "Compliance"
         },
         "SplunkPy": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Splunk"
         },
         "Phishing": {
@@ -33,7 +33,7 @@
             "display_name": "Malware"
         },
         "CVESearch": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "CVE Search"
         }
     },
