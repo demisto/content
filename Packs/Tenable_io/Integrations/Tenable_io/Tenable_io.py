@@ -393,8 +393,7 @@ def launch_scan_command():
     res = send_scan_request(scan_id, 'launch', 'POST', alt_targets=targets)
     res.update({
         'id': scan_id,
-        'targets': targets,
-        'status': 'pending'
+        'targets': targets
     })
 
     return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res),
@@ -410,8 +409,7 @@ def launch_scans_command():
 
         res = send_scan_request(scan_id, 'launch', 'POST')
         res.update({
-            'id': scan_id,
-            'status': 'pending'
+            'id': scan_id
         })
 
         results.append(get_entry_for_object('The requested scan was launched successfully',
