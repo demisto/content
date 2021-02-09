@@ -1,19 +1,17 @@
-description: "Post Intrusion Ransomware Investigation playbook provides a baseline\
-  \ for investigating ransomware incidents.\nThis playbook will help you better understand your position\
-  \ and exposure against the threat actor group by collecting the needed information\
-  \ from your environment, performing the required investigation steps, containing\
-  \ the incident, and visualizing the data with its custom Post Intrusion Ransomware\
-  \ Investigation incident layout.\nThe main features of this semi-automated playbook\
-  \ are:\n - Automated user and host data enrichment.\n - Automated endpoint isolation\
-  \ and user revocation.\n - Guidance to retrieve the necessary files to identify\
-  \ the ransomware strain.\n - Extract indicators from the ransomware\
-  \ note, including cryptocurrency addresses and onion URLs.\n - Guidance to further\
-  \ recommended investigation steps such as endpoint forensics, searching for more\
-  \ infected endpoints, and investigation of the infected user activity.\n -  Active Directory forensics. \n -\
-  \ Automated block of malicious indicators. \n\nPlaybook settings and mapping:\n\
-  For the operation of the playbook, the following data should be mapped to the relevant\
-  \ incident fields:\nUsername - Users (Incident field)\nHostname - Hosts (Incident\
-  \ field)\n\n\n\n"
+description: "Provides the first step in the investigation of ransomware attacks.\n
+The playbook requires the ransom note and an example of an encrypted file (<1MB) to try to identify the ransomware and find a recovery tool via the online database.\n
+You will be guided with further investigation steps throughout the playbook, some of the key features are:\n
+
+- Encrypted file owner investigation\n
+- Endpoint forensic investigation\n
+- Active Directory investigation\n
+- Timeline of the breach investigation\n
+- Indicator and account enrichment\n
+
+Playbook settings and mapping:\n
+For the operation of the playbook, the following data should be mapped to the relevant incident fields:\n
+Username - Users (incident field)\n
+Hostname - Hosts (incident field)\n\n\n\n"
 id: Post Intrusion Ransomware Investigation v2
 inputs:
 - description: "Determines whether to perform auto-isolation for the infected\
