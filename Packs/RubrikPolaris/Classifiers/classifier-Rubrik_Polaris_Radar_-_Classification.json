@@ -1,0 +1,32 @@
+{
+    "brands": null,
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "c3e38fe1-e429-4836-8050-a8d399518fe8",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {
+        "RubrikRadar": "Rubrik Radar"
+    },
+    "locked": false,
+    "logicalVersion": 1,
+    "mapping": null,
+    "name": "Rubrik Polaris Radar - Classification",
+    "nameRaw": "Rubrik Polaris Radar - Classification",
+    "packID": "",
+    "sortValues": null,
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {
+        "complex": null,
+        "simple": "incidentClassification"
+    },
+    "type": "classification",
+    "unclassifiedCases": null,
+    "version": -1
+}

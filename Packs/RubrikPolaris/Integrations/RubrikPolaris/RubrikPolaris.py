@@ -1,0 +1,491 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+import json
+import urllib3
+import traceback
+from typing import Tuple, List, Dict, Generic, AnyStr
+from datetime import date
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+
+''' CONSTANTS '''
+
+DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+FETCH_TIME = 5
+
+
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    """Client class to interact with the Rubrik Polaris API
+
+    This Client implements API calls, and does not contain any Demisto logic.
+    Should only do requests and return data.
+
+    It inherits from BaseClient defined in CommonServer Python.
+    """
+
+    def get_api_token(self) -> str:
+
+        username = demisto.params().get('username', False)
+        password = demisto.params().get('password', False)
+
+        auth_data = {
+            "username": username,
+            "password": password,
+        }
+
+        authentication_api = "/session"
+
+        response = self._http_request(
+            url_suffix=authentication_api,
+            method='POST',
+            json_data=auth_data
+        )
+
+        return response["access_token"]
+
+    def gql_query(self, query: str, variables: dict) -> dict:
+
+        query_api = "/graphql"
+
+        api_token = self.get_api_token()
+        self._headers["Authorization"] = f"Bearer {api_token}"
+
+        query_body = {
+            "query": query,
+            "variables": variables
+
+        }
+
+        response = self._http_request(
+            url_suffix=query_api,
+            method='POST',
+            json_data=query_body
+        )
+
+        return response
+
+
+''' HELPER FUNCTIONS '''
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: RubrikPolaris client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    try:
+        client.get_api_token()
+    except DemistoException as e:
+        errorMessage = str(e)
+        if 'Verify that the server URL parameter' in errorMessage:
+            return """We were unable to connect to the provided\
+            Polaris Account. Verify it has been entered correctly."""
+        elif 'Unauthorized' in errorMessage:
+            return "Incorrect email address or password."
+        else:
+            raise e
+    return "ok"
+
+
+def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
+
+    # Returns an obj with the previous run in it.
+    last_run = demisto.getLastRun().get('last_fetch', None)
+
+    # next_fetch = last_run.get('last_fetch', None)
+
+    if last_run is None:
+        # if missing, set the next fetch time to 5 minutes
+        last_run_obj = datetime.now()
+        last_run = last_run_obj.strftime(DATE_TIME_FORMAT)
+        # next_fetch = (datetime.now() - timedelta(minutes=5)).strftime(DATE_TIME_FORMAT)
+    else:
+        last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
+
+    # TODO  ONLY USED FOR TESTING
+    # last_run = "2020-12-28T21:29:12.548Z"
+    # last_run_obj = datetime.now() - timedelta(minutes=10)
+
+    if last_run_obj > (datetime.now() - timedelta(minutes=FETCH_TIME)):
+        # It has not been 5 minutes since the last fetch
+        # return blank values and skip the fetch
+        return "", []
+    else:
+
+        query = """query RadarEvents($filters: ActivitySeriesFilterInput) {
+                    activitySeriesConnection(filters: $filters) {
+                        edges {
+                            node {
+                                id
+                                fid
+                                activitySeriesId
+                                lastUpdated
+                                lastActivityType
+                                lastActivityStatus
+                                objectId
+                                objectName
+                                objectType
+                                severity
+                                progress
+                                cluster {
+                                    id
+                                    name
+                                }
+                                activityConnection {
+                                    nodes {
+                                        id
+                                        message
+                                        time
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }"""
+
+        variables = {
+            "filters": {
+                "lastActivityType": [
+                    "Anomaly"
+                ],
+                "startTime_gt": last_run
+            },
+        }
+
+        radar_events = client.gql_query(query, variables)
+
+        # Placeholder to save all anamaly events detected
+        incidents = []
+        current_time = datetime.now()
+
+        for event in radar_events["data"]["activitySeriesConnection"]["edges"]:
+
+            # Extra data from the Rubrik API event and save in a XSoar friendly format
+            process_incident = {}
+            process_incident["incidentClassification"] = "RubrikRadar"
+            process_incident["message"] = []
+
+            for key, value in event["node"].items():
+                # Simplify the message data
+                if key == "activityConnection":
+                    for m in value["nodes"]:
+                        process_incident["message"].append({
+                            "message": m["message"],
+                            "id": m["id"],
+                            "time": m["time"]
+
+                        })
+
+                else:
+                    process_incident[key] = value
+
+            if process_incident["lastActivityStatus"] == "Success":
+                process_incident["eventCompleted"] = "True"
+            else:
+                process_incident["eventCompleted"] = "False"
+
+            incidents.append({
+                "name": f'Rubrik Radar Anomaly - {process_incident["id"]}',
+                "occurred": current_time.strftime(DATE_TIME_FORMAT),
+                "rawJSON": json.dumps(process_incident)
+            })
+
+        return current_time.strftime(DATE_TIME_FORMAT), incidents
+
+
+def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    incident = demisto.incident().get("CustomFields")
+
+    # activitySeriesId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    activitySeriesId = args.get('activitySeriesId', None)
+    if not activitySeriesId:
+        activitySeriesId = incident.get("activityseriesid")
+
+    query = """query AnomalyEventSeriesDetailsQuery($activitySeriesId: UUID!, $clusterUuid: UUID!) {
+                    activitySeries(activitySeriesId: $activitySeriesId, clusterUuid: $clusterUuid) {
+                        activityConnection {
+                            nodes {
+                                    id
+                                    message
+                                    time
+                            }
+                        }
+                        progress
+                        lastUpdated
+                        lastActivityStatus
+                    }
+                }
+                    """
+
+    variables = {
+        "clusterUuid": incident.get("cdmclusterid"),
+        "activitySeriesId": activitySeriesId
+    }
+
+    radar_update_events = client.gql_query(query, variables)
+
+    context = {
+        "ClusterID": incident.get("cdmclusterid"),
+        "ActivitySeriesId": activitySeriesId,
+        "Message": radar_update_events["data"]["activitySeries"]["activityConnection"]["nodes"]
+    }
+
+    if radar_update_events["data"]["activitySeries"]["lastActivityStatus"] == "Success":
+        context["EventComplete"] = "True"
+    else:
+        context["EventComplete"] = "False"
+
+    return CommandResults(
+        outputs_prefix='Rubrik.Radar',
+        outputs_key_field='ActivitySeriesId',
+        outputs=context
+    )
+
+
+def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    incident = demisto.incident().get("CustomFields")
+
+    # activitySeriesId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    # TODO - HANDLE NO VALUE BEING FOUND
+    objectName = args.get('objectName', None)
+    if not objectName:
+        objectName = incident.get("objectname")
+    # TODO - SET A LIMIT HERE?
+    searchTimePeriod = args.get('searchTimePeriod', None)
+    if not searchTimePeriod:
+        searchTimePeriod = 7
+    else:
+        # Convert the provided argument into an int
+        searchTimePeriod = int(searchTimePeriod)
+    object_details = {}
+
+    object_details_query = """query ObjectsListQuery($day: String!, $timezone: String!) {
+                            policyObjConnection(day: $day, timezone: $timezone) {
+                                edges {
+                                    node {
+                                        snapshotFid
+                                        snapshotTimestamp
+                                        objectStatus {
+                                            latestSnapshotResult {
+                                                snapshotTime
+                                                snapshotFid
+                                            }
+                                        }
+                                        snappable {
+                                            name
+                                            id
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    """
+
+    # Get todays current day
+    search_day = date.today()
+
+    object_details_variable = {
+        "day": search_day.strftime("%Y-%m-%d"),
+        "timezone": "UTC"
+    }
+
+    sonar_object_detail = client.gql_query(object_details_query, object_details_variable)
+
+    # Check the sonar_object_detail for the provided object name and
+    # store its details for subsequent API call
+    for sonar_object in sonar_object_detail["data"]["policyObjConnection"]["edges"]:
+
+        if sonar_object["node"]["snappable"]["name"] == objectName:
+            object_details["id"] = sonar_object["node"]["snappable"]["id"]
+            object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotTime"]
+            object_details["snapshot_fid"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotFid"]
+
+    # If the provided object does not have any sensitive hits for today, look for
+    # results from the searchTimePeriod. If results are found, stop the search
+    # TODO TEST THIS LOGIC
+    if len(object_details) == 0:
+        for d in range(1, searchTimePeriod):
+            past_search_day = search_day - timedelta(days=d)
+
+            object_details_variable["day"] = past_search_day.strftime("%Y-%m-%d")
+
+            sonar_object_detail = client.gql_query(object_details_query, object_details_variable)
+
+            for sonar_object in sonar_object_detail["data"]["policyObjConnection"]["edges"]:
+                if sonar_object["node"]["snappable"]["name"] is objectName:
+                    object_details["id"] = sonar_object["node"]["snappable"]["id"]
+                    object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotTime"]
+                    object_details["snapshot_fid"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotFid"]
+
+            if len(object_details) == 1:
+                break
+
+    sensitive_hits_query = """query ObjectDetailQuery($snappableFid: String!, $snapshotFid: String!) {
+                policyObj(snappableFid: $snappableFid, snapshotFid: $snapshotFid) {
+                    id
+                    rootFileResult {
+                        hits {
+                            totalHits
+                    }
+                    analyzerGroupResults {
+                        analyzerGroup {
+                            name
+                        }
+                        analyzerResults {
+                            hits {
+                                totalHits
+                            }
+                            analyzer {
+                                name
+                            }
+                        }
+                            hits {
+                            totalHits
+                        }
+                    }
+                    filesWithHits {
+                        totalHits
+                    }
+                    openAccessFiles {
+                        totalHits
+                    }
+                    openAccessFolders {
+                        totalHits
+                    }
+                    openAccessFilesWithHits {
+                        totalHits
+                    }
+                    staleFiles {
+                        totalHits
+                    }
+                    staleFilesWithHits {
+                        totalHits
+                    }
+                    openAccessStaleFiles {
+                        totalHits
+                    }
+                    }
+                }
+            }
+                """
+
+    sensitive_hits_variables = {
+        "snappableFid": object_details["id"],
+        "snapshotFid": object_details["snapshot_fid"]
+    }
+
+    demisto.info(sensitive_hits_variables)
+    # TODO - Handle errors like errors:[map[extensions:map[code:500 trace:map[operation:/api/graphql
+    # spanId:uoH6A/2xDM8= traceId:/64k4L3xe74eS9LyVe3rjg==]] locations:[map[column:17 line:2]]
+    sensitive_hits = client.gql_query(sensitive_hits_query, sensitive_hits_variables)
+
+    policy_hits = {}
+    for h in sensitive_hits["data"]["policyObj"]["rootFileResult"]["analyzerGroupResults"]:
+        policy_name = h["analyzerGroup"]["name"]
+        policy_hits[policy_name] = {}
+
+        for a in h["analyzerResults"]:
+            analzer_name = a["analyzer"]["name"]
+            analyzer_hits = str(a["hits"]["totalHits"])
+            policy_hits[policy_name][analzer_name] = analyzer_hits
+
+    context = {}
+    root = sensitive_hits["data"]["policyObj"]["rootFileResult"]
+    context["id"] = sensitive_hits["data"]["policyObj"]["id"]
+    context["totalHits"] = root["hits"]["totalHits"]
+    context["policy_hits"] = policy_hits
+    context["filesWithHits"] = root["filesWithHits"]["totalHits"]
+    context["openAccessFiles"] = root["openAccessFiles"]["totalHits"]
+    context["openAccessFolders"] = root["openAccessFolders"]["totalHits"]
+    context["openAccessFilesWithHits"] = root["openAccessFilesWithHits"]["totalHits"]
+    context["staleFiles"] = root["staleFiles"]["totalHits"]
+    context["staleFilesWithHits"] = root["staleFilesWithHits"]["totalHits"]
+    context["openAccessStaleFiles"] = root["openAccessStaleFiles"]["totalHits"]
+
+    return CommandResults(
+        outputs_prefix='Rubrik.Sonar',
+        outputs_key_field='Id',
+        outputs=context
+    )
+
+
+''' MAIN FUNCTION '''
+
+
+def main() -> None:
+    """main function, parses params and runs command functions
+
+    :return:
+    :rtype:
+    """
+
+    polaris_account = demisto.params().get('polaris_account', False)
+    polaris_domain_name = "my.rubrik.com"
+    polaris_base_url = f"https://{polaris_account}.{polaris_domain_name}/api"
+
+    headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Accept': 'application/json, text/plain'
+    }
+
+    client = Client(
+        base_url=polaris_base_url,
+        headers=headers,
+        verify=False
+    )
+
+    demisto.info(f'Command being called is {demisto.command()}')
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
+        elif demisto.command() == 'fetch-incidents':
+            current_time, incidents = fetch_incidents(client)
+            # A blank current_time is returned when it has not been 5 minutes
+            # since the last fetch
+            if current_time != "":
+                demisto.setLastRun({
+                    'last_fetch': current_time
+                })
+            demisto.incidents(incidents)
+
+        elif demisto.command() == 'rubrik-radar-analysis-status':
+            return_results(rubrik_radar_analysis_status_command(client, demisto.args()))
+        elif demisto.command() == 'rubrik-sonar-sensitive-hits':
+            return_results(rubrik_sonar_sensitive_hits_command(client, demisto.args()))
+
+    # Log exceptions and return errors
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+''' ENTRY POINT '''
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

@@ -1,0 +1,21 @@
+{
+    "id": 132150131,
+    "fid": "dbc40930-2897-56d0-80c0-0992f06e43bc",
+    "activitySeriesId": "d3048f3d-ec32-5a95-8214-b45960498289",
+    "lastUpdated": "2020-12-23T12:43:46.371Z",
+    "lastActivityType": "Anomaly",
+    "lastActivityStatus": "Success",
+    "objectId": "VirtualMachine:::7644cc5f-f718-4177-8630-1fe4428fa1c6-vm-34511",
+    "objectName": "sh1-radar01",
+    "objectType": "VmwareVm",
+    "severity": "Critical",
+    "progress": "100%",
+    "cluster": {
+        "id": "9f5b9f6c-57a1-4e17-b48c-a610ba1bf979",
+        "name": "shrd1-rbk01"
+    },
+    "message": {
+        "text": "Detected anomalous filesystem activity with High confidence and High levels of encryption (File Change: 1655 Added, 36 Modified, 1650 Removed)",
+        "id": "36a4c91c-0774-457b-879d-8f0e31dd8bfe"
+    }
+}

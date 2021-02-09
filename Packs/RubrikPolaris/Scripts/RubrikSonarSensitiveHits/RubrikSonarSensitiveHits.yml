@@ -1,0 +1,17 @@
+comment: Shows the Rubrik Polaris Sonar data classification results.
+commonfields:
+  id: RubrikSonarSensitiveHits
+  version: -1
+dockerimage: demisto/python3:3.8.6.14516
+enabled: true
+name: RubrikSonarSensitiveHits
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- field-change-triggered
+type: python
