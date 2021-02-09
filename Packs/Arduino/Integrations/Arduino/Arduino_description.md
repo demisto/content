@@ -7,6 +7,7 @@
 
 ---
 
+```c
 #include <SPI.h>
 #include <WiFi.h>
 #include "arduino_secrets.h"
@@ -128,5 +129,6 @@ void handle_text(WiFiClient *client, String *received){
    */
    client->print(*received);
 }
+```
 
 ---
