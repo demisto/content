@@ -595,7 +595,7 @@
                     "clusterNodeConnection": {
                         "nodes": [
                             {
-                                "ipAddress": "172.24.77.11"
+                                "ipAddress": "8.8.8.8"
                             }
                         ]
                     },
