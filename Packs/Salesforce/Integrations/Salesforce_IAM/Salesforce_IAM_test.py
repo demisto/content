@@ -1,7 +1,6 @@
 import demistomock as demisto
+from IAMApiModule import *
 from Salesforce_IAM import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command
-
-from CommonServerPython import IAMActions, IAMErrors
 
 
 def mock_client():
