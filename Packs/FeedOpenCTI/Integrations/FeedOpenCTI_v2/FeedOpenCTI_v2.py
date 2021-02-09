@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 # Disable info logging from the api
 logging.getLogger().setLevel(logging.ERROR)
 
-XSOHR_TYPES = {
+XSOHR_TYPES_TO_OPENCTI = {
     'user-account': "User-Account",
     'domain': "Domain-Name",
     'email-address': "Email-Addr",
@@ -22,6 +22,17 @@ XSOHR_TYPES = {
     'ipv6-addr': "IPv6-Addr",
     'registry-key-value': "Registry Key",
     'url': "Url"
+}
+OPENCTI_TYPES_TO_XSOAR = {
+    "User-Account": 'User-Account',
+    "Domain-Name": 'Domain',
+    "Email-Addr": 'Email-Address',
+    "StixFile": "File",
+    "X-OpenCTI-Hostname": 'HostName',
+    "IPv4-Addr": 'IPV4-Addr',
+    "IPv6-Addr": 'IPV6-Addr',
+    "Registry Key": 'Registry-Key-Value',
+    "Url": 'URL'
 }
 KEY_TO_CTI_NAME = {
     'description': 'x_opencti_description',
@@ -42,10 +53,10 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
                   'IPv6-Addr', 'Registry Key', 'Url']
         # Checks for additional types not supported by XSOAR, and adds them.
         for indicator in indicator_list:
-            if not XSOHR_TYPES.get(indicator.lower(), ''):
+            if not XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), ''):
                 result.append(indicator)
     else:
-        result = [XSOHR_TYPES.get(indicator.lower(), indicator) for indicator in indicator_list]
+        result = [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator) for indicator in indicator_list]
     return result
 
 
@@ -82,7 +93,7 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
     for item in observables.get('entities'):
         indicator = {
             "value": item['observable_value'],
-            "type": XSOHR_TYPES.get(item['entity_type'], item['entity_type']),
+            "type": OPENCTI_TYPES_TO_XSOAR.get(item['entity_type'], item['entity_type']),
             "rawJSON": item,
             "fields": {
                 "tags": [tag.get('value') for tag in item.get('objectLabel')],
@@ -181,8 +192,8 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     value = args.get("value")
     result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
 
-    if id := result.get('id'):
-        readable_output = f'Indicator updated successfully with id: {id}'
+    if result.get('id'):
+        readable_output = 'Indicator updated successfully.'
     else:
         return_error("Can't update indicator.")
     return CommandResults(
@@ -240,7 +251,7 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
     except Exception:
         return_error("Data argument type should be json")
 
-    data['type'] = indicator_type
+    data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)
     result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
                                                  createdBy=created_by, objectMarking=marking,
                                                  objectLabel=label, externalReferences=external_references,
@@ -248,7 +259,7 @@ def indicator_create_or_update_command(client, args: dict) -> CommandResults:
                                                  x_opencti_score=score, update=update, observableData=data,
                                                  )
     if id := result.get('id'):
-        readable_output = f'Indicator created successfully with id: {id}'
+        readable_output = f'Indicator created successfully. New Indicator id: {id}'
     else:
         return_error("Can't create indicator.")
 
@@ -278,7 +289,7 @@ def main():
         max_fetch = 500
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'))
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
         command = demisto.command()
         demisto.info("Command being called is {}".format(command))
 
@@ -311,9 +322,7 @@ def main():
             return_results(indicator_create_or_update_command(client, args))
 
     except Exception as e:
-        return_error(
-            f"Error [{e}]"
-        )
+        return_error(f"Error [{e}]")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
