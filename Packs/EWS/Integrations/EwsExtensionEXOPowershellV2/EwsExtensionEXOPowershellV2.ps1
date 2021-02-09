@@ -34,10 +34,10 @@ class ExchangeOnlinePowershellV2Client {
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue > $null
     }
     DisconnectSession() {
-        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue > $null
     }
     [PSObject]GetEXOCASMailbox(
         [string]$identity,

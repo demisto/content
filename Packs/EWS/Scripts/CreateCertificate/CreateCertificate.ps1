@@ -18,17 +18,17 @@ function CreateCertificate
         "NotAfter" = (Get-Date).AddDays($Days)
         "Password" = $Password
     }
-    if ($FriendlyName -ne $null){
+    if (![string]::IsNullOrEmpty($FriendlyName)){
         $cmd_args.FriendlyName = $FriendlyName
     }
-    if ($Country){
+    if (![string]::IsNullOrEmpty($Country)){
         $cmd_args.Country = $Country
     }
-    if ($StateOrProvince){
+    if (![string]::IsNullOrEmpty($StateOrProvince)){
         $cmd_args.StateOrProvince = $StateOrProvince
     }
 
-    New-SelfSignedCertificate @cmd_args | Out-Null
+    New-SelfSignedCertificate @cmd_args -WarningAction:SilentlyContinue | Out-Null
 }
 
 function Main()
@@ -44,7 +44,7 @@ function Main()
     try
     {
         CreateCertificate -OutputPath $pfx_path -Password $password -Days $dargs.days -FriendlyName $dargs.friendly_name -Country $dargs.country -StateOrProvince $dargs.state_or_province
-        openssl pkcs12 -in $pfx_path -out $public_key_cert_path -nokeys -clcerts -password pass:$plain_pass
+        openssl pkcs12 -in $pfx_path -out $public_key_cert_path -nokeys -clcerts -password pass:$plain_pass | Out-Null
         $File = [System.IO.File]::ReadAllBytes($pfx_path);
         # returns the base64 string
         $base_64_encoded = [System.Convert]::ToBase64String($File);
