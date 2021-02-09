@@ -1,174 +1,401 @@
-"""HelloWorld Integration for Cortex XSOAR - Unit Tests file
+"""Armis Integration for Cortex XSOAR - Unit Tests file
 
-This file contains the Unit Tests for the HelloWorld Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
-
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld
-
-Coverage
---------
-
-There should be at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests should be self contained and should not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the HelloWorld API. This way we
-can have full control of the API behavior and focus only on testing the logic
-inside the integration code.
-
-We recommend to use outputs from the API calls and use them to compare the
-results when possible. See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
+This file contains the Pytest Tests for the Armis Integration
 """
+import time
 
-import json
+import pytest
+
+import CommonServerPython
 
 
-def test_start_scan(requests_mock):
-    """Tests helloworld-scan-start command function.
-
-    Configures requests_mock instance to generate the appropriate start_scan
-    API response when the correct start_scan API request is performed. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, scan_start_command
-
-    mock_response = {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
+def test_untag_device_success(requests_mock):
+    from Armis import Client, untag_device_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
         }
-    )
-
-    args = {
-        'hostname': 'example.com'
     }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
 
-    response = scan_start_command(client, args)
+    requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={})
 
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING',
-        'hostname': 'example.com'
+    client = Client('secret-example', 'https://test.com/api/v1')
+    assert untag_device_command(client, '1', 'test-tag') == 'Untagging successful'
+
+
+def test_untag_device_failure(requests_mock):
+    from Armis import Client, untag_device_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
     }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
 
+    requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={}, status_code=400)
 
-def test_untag_device(requests_mock):
-    pass
+    client = Client('secret-example', 'https://test.com/api/v1')
+    with pytest.raises(CommonServerPython.DemistoException):
+        untag_device_command(client, '1', 'test-tag')
 
 
 def test_tag_device(requests_mock):
-    pass
+    from Armis import Client, tag_device_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+
+    requests_mock.post('https://test.com/api/v1/devices/1/tags/', json={})
+
+    client = Client('secret-example', 'https://test.com/api/v1')
+    assert tag_device_command(client, '1', ['test-tag']) == 'Tagging successful'
 
 
 def test_update_alert_status(requests_mock):
-    pass
+    from Armis import Client, update_alert_status_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+
+    requests_mock.patch('https://test.com/api/v1/alerts/1/', json={})
+
+    client = Client('secret-example', 'https://test.com/api/v1')
+    assert update_alert_status_command(client, '1', 'UNHANDLED') == 'Alert status updated successfully'
 
 
 def test_search_alerts(requests_mock):
-    pass
+    from Armis import Client, search_alerts_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+
+    url = 'https://test.com/api/v1/search/?aql='
+    url += '+'.join([
+        'in%3Aalerts',
+        'timeFrame%3A%223+days%22',
+        'riskLevel%3AHigh%2CMedium',
+        'status%3AUNHANDLED%2CRESOLVED',
+        'type%3A%22Policy+Violation%22',
+        'alertId%3A%281%29',
+    ])
+
+    mock_results = {
+        'data': {
+            'results': []
+        }
+    }
+
+    requests_mock.get(url, json=mock_results)
+
+    client = Client('secret-example', 'https://test.com/api/v1')
+    response = search_alerts_command(
+        client,
+        ['Policy Violation'],
+        ['High', 'Medium'],
+        ['UNHANDLED', 'RESOLVED'],
+        '1',
+        '3 days'
+    )
+    assert response == 'No results found'
+
+    example_alerts = [
+        {
+            "activityIds": [
+                19625045,
+                19625223,
+                19625984,
+                19626169,
+                19626680,
+                19626818,
+                19628162,
+                19628359
+            ],
+            "activityUUIDs": [
+                "1-uS23YBAAAC-vCTQOhA",
+                "7eut23YBAAAC-vCTkOhB",
+                "Oes13HYBAAAC-vCTcel0",
+                "T-tU3HYBAAAC-vCTyunu",
+                "mevb3HYBAAAC-vCT9-nn",
+                "uev33HYBAAAC-vCTa-mg",
+                "P-u33XYBAAAC-vCTlOpq",
+                "SevT3XYBAAAC-vCTA-o_"
+            ],
+            "alertId": 1,
+            "connectionIds": [
+                845993,
+                846061,
+                846157,
+                846308
+            ],
+            "description": "Smart TV started connection to Corporate Network",
+            "deviceIds": [
+                165722,
+                532
+            ],
+            "severity": "Medium",
+            "status": "Unhandled",
+            "time": "2021-01-07T06:39:13.320893+00:00",
+            "title": "Smart TV connected to Corporate network",
+            "type": "System Policy Violation"
+        }
+    ]
+    mock_results['data']['results'] = example_alerts
+
+    requests_mock.get(url, json=mock_results)
+    response = search_alerts_command(
+        client,
+        ['Policy Violation'],
+        ['High', 'Medium'],
+        ['UNHANDLED', 'RESOLVED'],
+        '1',
+        '3 days'
+    )
+    assert response.outputs == example_alerts
 
 
 def test_search_alerts_by_aql(requests_mock):
-    pass
+    from Armis import Client, search_alerts_by_aql_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+
+    url = 'https://test.com/api/v1/search/?aql='
+    url += '+'.join([
+        'in%3Aalerts',
+        'timeFrame%3A%223+days%22',
+        'riskLevel%3AHigh%2CMedium',
+        'status%3AUNHANDLED%2CRESOLVED',
+        'type%3A%22Policy+Violation%22',
+    ])
+
+    mock_results = {
+        'data': {
+            'results': []
+        }
+    }
+
+    requests_mock.get(url, json=mock_results)
+
+    client = Client('secret-example', 'https://test.com/api/v1')
+    response = search_alerts_by_aql_command(
+        client,
+        'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
+    )
+    assert response == 'No alerts found'
+
+    example_alerts = [
+        {
+            "activityIds": [
+                19625045,
+                19625223,
+                19625984,
+                19626169,
+                19626680,
+                19626818,
+                19628162,
+                19628359
+            ],
+            "activityUUIDs": [
+                "1-uS23YBAAAC-vCTQOhA",
+                "7eut23YBAAAC-vCTkOhB",
+                "Oes13HYBAAAC-vCTcel0",
+                "T-tU3HYBAAAC-vCTyunu",
+                "mevb3HYBAAAC-vCT9-nn",
+                "uev33HYBAAAC-vCTa-mg",
+                "P-u33XYBAAAC-vCTlOpq",
+                "SevT3XYBAAAC-vCTA-o_"
+            ],
+            "alertId": 1,
+            "connectionIds": [
+                845993,
+                846061,
+                846157,
+                846308
+            ],
+            "description": "Smart TV started connection to Corporate Network",
+            "deviceIds": [
+                165722,
+                532
+            ],
+            "severity": "Medium",
+            "status": "Unhandled",
+            "time": "2021-01-07T06:39:13.320893+00:00",
+            "title": "Smart TV connected to Corporate network",
+            "type": "System Policy Violation"
+        }
+    ]
+    mock_results['data']['results'] = example_alerts
+
+    requests_mock.get(url, json=mock_results)
+    response = search_alerts_by_aql_command(
+        client,
+        'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
+    )
+    assert response.outputs == example_alerts
 
 
 def test_search_devices(requests_mock):
-    pass
+    from Armis import Client, search_devices_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
+        }
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
+
+    url = 'https://test.com/api/v1/search/?aql=in%3Adevices+timeFrame%3A%223+days%22+deviceId%3A%281%29'
+    mock_results = {
+        'data': {
+            'results': []
+        }
+    }
+
+    requests_mock.get(url, json=mock_results)
+
+    client = Client('secret-example', 'https://test.com/api/v1')
+    response = search_devices_command(client, None, '1', None, None, None, None, '3 days')
+    assert response == 'No devices found'
+
+    example_alerts = [
+        {
+            "accessSwitch": None,
+            "category": "Network Equipment",
+            "dataSources": [
+                {
+                    "firstSeen": "2021-01-15T03:26:56+00:00",
+                    "lastSeen": "2021-01-16T18:16:32+00:00",
+                    "name": "Meraki",
+                    "types": [
+                        "WLC"
+                    ]
+                }
+            ],
+            "firstSeen": "2021-01-15T03:26:56+00:00",
+            "id": 1,
+            "ipAddress": None,
+            "ipv6": None,
+            "lastSeen": "2021-01-16T18:16:32+00:00",
+            "macAddress": "f8:ca:59:53:91:ce",
+            "manufacturer": "NetComm Wireless",
+            "model": "NetComm device",
+            "name": "Aussie Broadband 0079",
+            "operatingSystem": None,
+            "operatingSystemVersion": None,
+            "riskLevel": 5,
+            "sensor": {
+                "name": "win-wap-tom-Upstairs",
+                "type": "Access Point"
+            },
+            "site": {
+                "location": "51 Longview Court, Thomastown Vic 3074",
+                "name": "Winslow Workshop - Thomastown"
+            },
+            "tags": [
+                "Access Point",
+                "Off Network",
+                "SSID=Aussie Broadband 0079"
+            ],
+            "type": "Access Point Interface",
+            "user": "",
+            "visibility": "Full"
+        }
+    ]
+    mock_results['data']['results'] = example_alerts
+
+    requests_mock.get(url, json=mock_results)
+    response = search_devices_command(client, None, '1', None, None, None, None, '3 days')
+    assert response.outputs == example_alerts
 
 
 def test_search_devices_by_aql(requests_mock):
-    pass
-
-
-def test_fetch_incidents(requests_mock):
-    """Tests the fetch-incidents command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, fetch_incidents
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
-        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1581944401', json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
+    from Armis import Client, search_devices_by_aql_command
+    mock_token = {
+        'data': {
+            'access_token': 'example',
+            'expiration_utc': time.ctime(time.time() + 10000)
         }
-    )
+    }
+    requests_mock.post('https://test.com/api/v1/access_token/?secret_key=secret-example', json=mock_token)
 
-    last_run = {
-        'last_fetch': 1581944401  # Mon Feb 17 2020
+    url = 'https://test.com/api/v1/search/?aql=in%3Adevices+timeFrame%3A%223+days%22+deviceId%3A%281%29'
+    mock_results = {
+        'data': {
+            'results': []
+        }
     }
 
-    _, new_incidents = fetch_incidents(
-        client=client,
-        max_results=2,
-        last_run=last_run,
-        alert_status='ACTIVE',
-        min_severity='Low',
-        alert_type=None,
-        first_fetch_time='3 days',
-    )
+    requests_mock.get(url, json=mock_results)
 
-    assert new_incidents == [
+    client = Client('secret-example', 'https://test.com/api/v1')
+    response = search_devices_by_aql_command(client, 'timeFrame:"3 days" deviceId:(1)')
+    assert response == 'No devices found'
+
+    example_alerts = [
         {
-            'name': 'Hello World Alert 100',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical, this is XSOAR severity (already converted)
-        },
-        {
-            'name': 'Hello World Alert 200',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
+            "accessSwitch": None,
+            "category": "Network Equipment",
+            "dataSources": [
+                {
+                    "firstSeen": "2021-01-15T03:26:56+00:00",
+                    "lastSeen": "2021-01-16T18:16:32+00:00",
+                    "name": "Meraki",
+                    "types": [
+                        "WLC"
+                    ]
+                }
+            ],
+            "firstSeen": "2021-01-15T03:26:56+00:00",
+            "id": 1,
+            "ipAddress": None,
+            "ipv6": None,
+            "lastSeen": "2021-01-16T18:16:32+00:00",
+            "macAddress": "f8:ca:59:53:91:ce",
+            "manufacturer": "NetComm Wireless",
+            "model": "NetComm device",
+            "name": "Aussie Broadband 0079",
+            "operatingSystem": None,
+            "operatingSystemVersion": None,
+            "riskLevel": 5,
+            "sensor": {
+                "name": "win-wap-tom-Upstairs",
+                "type": "Access Point"
+            },
+            "site": {
+                "location": "51 Longview Court, Thomastown Vic 3074",
+                "name": "Winslow Workshop - Thomastown"
+            },
+            "tags": [
+                "Access Point",
+                "Off Network",
+                "SSID=Aussie Broadband 0079"
+            ],
+            "type": "Access Point Interface",
+            "user": "",
+            "visibility": "Full"
         }
     ]
+    mock_results['data']['results'] = example_alerts
+
+    requests_mock.get(url, json=mock_results)
+    response = search_devices_by_aql_command(client, 'timeFrame:"3 days" deviceId:(1)')
+    assert response.outputs == example_alerts
