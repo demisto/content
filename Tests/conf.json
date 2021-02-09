@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Microsoft Teams Management",
-            "playbookID": "Microsoft Teams Management - Test"
+            "playbookID": "Microsoft Teams Management - Test",
+            "is_mockable": false
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -205,7 +206,7 @@
             "integrations": "CloudConvert",
             "playbookID": "CloudConvert-test",
             "fromversion": "5.0.0",
-            "timeout": 2000
+            "timeout": 3000
         },
         {
             "integrations": "Cisco Firepower",
@@ -923,7 +924,7 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
-            "timeout": 1400
+            "timeout": 3600
         },
         {
             "integrations": "Tenable.sc",
@@ -2118,7 +2119,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 115,
-            "pid_threshold": 60
+            "pid_threshold": 80
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2131,7 +2132,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 100,
-            "pid_threshold": 60
+            "pid_threshold": 80
         },
         {
             "integrations": "duo",
@@ -3206,6 +3207,10 @@
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
             "playbookID": "Audit Log - Test"
+        },
+        {
+            "integrations": "Nutanix Hypervisor",
+            "playbookID": "Nutanix-test"
         }
     ],
     "skipped_tests": {
@@ -3274,13 +3279,17 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728",
         "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "PAN-OS DAG Configuration Test": "Issue 19205",
         "palo_alto_firewall_test_pb": "Issue 27501",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
-        "pyEWS_Test": "Issue 27942"
+        "pyEWS_Test": "Issue 27942",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Test Playbook McAfee ATD": "Issue 33409",
+        "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
+        "Test Playbook McAfee ATD Upload File": "Issue 33408",
+        "Extract Indicators From File - Generic v2 - Test": "Issue 30071"
     },
     "skipped_integrations": {
 
@@ -3381,7 +3390,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "TAXIIFeed": "Until next SDK release, fix for build will be issued there."
     },
     "nightly_integrations": [
         "Lastline v2",
