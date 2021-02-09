@@ -12,7 +12,7 @@ Playbook settings and mapping:\n
 For the operation of the playbook, the following data should be mapped to the relevant incident fields:\n
 Username - Users (incident field)\n
 Hostname - Hosts (incident field)\n\n\n\n"
-id: Post Intrusion Ransomware Investigation v2
+id: Post Intrusion Ransomware Investigation
 inputs:
 - description: "Determines whether to perform auto-isolation for the infected\
     \ endpoint.\nValues:\n- True\n- False. This is the default. "
@@ -36,7 +36,7 @@ inputs:
     simple: |-
       During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
       To get more information, go to this incident in XSOAR: ${incident.id}.
-name: Post Intrusion Ransomware Investigation v2
+name: Post Intrusion Ransomware Investigation
 outputs: []
 starttaskid: "0"
 tasks:
