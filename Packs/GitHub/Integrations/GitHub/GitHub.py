@@ -32,7 +32,7 @@ PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
-                 'Assignees', 'Labels']
+                 'Assignees', 'Labels', 'User']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -226,7 +226,8 @@ def issue_format(issue):
         'Created_at': issue.get('created_at'),
         'Updated_at': issue.get('updated_at'),
         'Closed_at': issue.get('closed_at'),
-        'Closed_by': closed_by
+        'Closed_by': closed_by,
+        'User': issue.get('user').get('login')  if issue.get('user') else ''
     }
     return form
 
