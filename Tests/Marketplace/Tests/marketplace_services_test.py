@@ -8,6 +8,7 @@ from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
+from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
@@ -31,6 +32,11 @@ CHANGELOG_DATA_MULTIPLE_VERSIONS = {
         "displayName": "1.1.0 - 64321",
         "released": "2021-01-20T12:10:55Z"
     }
+}
+TEST_METADATA = {
+    "description": "description",
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-11-24T08:08:35Z",
 }
 
 
@@ -130,6 +136,38 @@ class TestMetadataParsing:
                                                           downloads_count=10)
 
         assert parsed_metadata['price'] == expected
+
+    def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a new pack (created less than 30 days ago)
+        Then: add "New" tag
+        """
+        dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+
+    def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a pack that was created more than 30 days ago
+        Then: remove "New" tag
+        """
+        dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
+        if 'New' not in dummy_pack_metadata['tags']:
+            dummy_pack_metadata['tags'].append('New')
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
@@ -713,26 +751,35 @@ This is visible
         return str(temp_changelog_file)
 
     @staticmethod
+    def dummy_pack_metadata(metadata_data):
+        temp_metadata_file = os.path.join(os.getcwd(), 'dummy_metadata.json')
+        with open(temp_metadata_file, 'w', ) as changelog_file:
+            changelog_file.write(json.dumps(metadata_data))
+        return str(temp_metadata_file)
+
+    @staticmethod
     def mock_os_path_join(path, *paths):
-        if not str(path).startswith('changelog'):
+        if not str(path).startswith('changelog') and not str(path).startswith('metadata'):
             if paths:
                 return path + '/' + '/'.join(paths)
             return path
 
         path_to_non_existing_changelog = 'dummy_path'
+        if path == 'metadata':
+            return TestChangelogCreation.dummy_pack_metadata(TEST_METADATA)
         if path == 'changelog_init_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
         if path == 'changelog_new_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
-        if path == 'changelog_not_exist':
+        if path == 'changelog_not_exist' or path == 'metadata_not_exist':
             return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")
-    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
-        ('changelog_init_exist', '2020-12-21T12:10:55Z'),
-        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    @pytest.mark.parametrize('is_metadata_exist, expected_date', [
+        ('metadata', '2020-04-14T00:00:00Z'),
+        ('metadata_not_exist', '2020-11-04T13:34:14Z')
     ])
-    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_metadata_exist, expected_date):
         """
            Given:
                - existing 1.0.0 changelog, pack created_date
@@ -747,9 +794,9 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
-        if is_changelog_exist == 'changelog_init_exist':
-            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        pack_created_date = dummy_pack._get_pack_creation_date(is_metadata_exist)
+        if is_metadata_exist == 'metadata':
+            os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
         assert pack_created_date == expected_date
 
     @freeze_time("2020-11-04T13:34:14.75Z")
