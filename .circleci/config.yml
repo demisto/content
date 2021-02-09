@@ -200,9 +200,9 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter --no-mypy
         else
-          demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
+          demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter --no-mypy
         fi
         python3 -m pytest ./Utils/tests/old_content_branch_test.py -v
 
