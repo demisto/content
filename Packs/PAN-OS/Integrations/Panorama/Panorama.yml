@@ -16,7 +16,8 @@ configuration:
   name: key
   required: true
   type: 4
-- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select
+    the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
@@ -30,7 +31,9 @@ configuration:
   name: template
   required: false
   type: 0
-- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
+- additionalinfo: If selected, when running the !url command, the command will execute
+    using pan-os with PAN_DB (with applied filters). The URL filtering categories
+    determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
@@ -218,14 +221,15 @@ script:
     name: panorama
   - arguments:
     - default: false
-      description: The firewall managed by Panorama from which to retrieve the predefined threats.
+      description: The firewall managed by Panorama from which to retrieve the predefined
+        threats.
       isArray: false
       name: target
       required: false
       secret: false
     deprecated: false
-    description: Gets the predefined threats list from a Firewall or Panorama and stores it
-      as a JSON file in the context.
+    description: Gets the predefined threats list from a Firewall or Panorama and
+      stores it as a JSON file in the context.
     execution: false
     name: panorama-get-predefined-threats-list
     outputs:
@@ -263,10 +267,10 @@ script:
       description: SSDeep hash of the file.
       type: string
   - deprecated: false
-    description: Commits a configuration to the Palo Alto firewall or Panorama, but does
-      not validate if the commit was successful. Committing to Panorama does not push
-      the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group
-      command.
+    description: Commits a configuration to the Palo Alto firewall or Panorama, but
+      does not validate if the commit was successful. Committing to Panorama does
+      not push the configuration to the firewalls. To push the configuration, run
+      the panorama-push-to-device-group command.
     execution: false
     name: panorama-commit
     outputs:
@@ -622,7 +626,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Type of session rejection. Possible values are: "drop", "alert", "block-ip", "reset-both", "reset-client", and "reset-server". Default is "drop".'
+      description: 'Type of session rejection. Possible values are: "drop", "alert",
+        "block-ip", "reset-both", "reset-client", and "reset-server". Default is "drop".'
       isArray: false
       name: drop_mode
       predefined:
@@ -2499,13 +2504,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation.
+      description: The Device Name on which the PCAP is stored. For further information,
+        see the Panorama XML API Documentation.
       isArray: false
       name: deviceName
       required: false
       secret: false
     - default: false
-      description: The Session ID of the PCAP. For further information, see the Panorama XML API Documentation.
+      description: The Session ID of the PCAP. For further information, see the Panorama
+        XML API Documentation.
       isArray: false
       name: sessionID
       required: false
@@ -2641,7 +2648,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
+    description: Registers users to a tag. This command is only available for PAN-OS
+      version 9.x and above.
     execution: false
     name: panorama-register-user-tag
     outputs:
@@ -2665,7 +2673,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Unregisters users from a tag. This command is only available for PAN-OS version 9.x and above.
+    description: Unregisters users from a tag. This command is only available for
+      PAN-OS version 9.x and above.
     execution: false
     name: panorama-unregister-user-tag
   - arguments:
@@ -3445,9 +3454,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the static route to add. The argument is limited to a maximum
-        of 31 characters, is case-sensitive, and supports letters, numbers, spaces,
-        hyphens, and underscores.
+      description: The name of the static route to add. The argument is limited to
+        a maximum of 31 characters, is case-sensitive, and supports letters, numbers,
+        spaces, hyphens, and underscores.
       isArray: false
       name: static_route
       required: true
@@ -4400,6 +4409,34 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
+  - arguments:
+    - default: false
+      description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration paramater.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: The template stack to use when running the command.
+      isArray: false
+      name: template_stack
+      required: false
+      secret: false
+    deprecated: false
+    description: Show the user ID interface configuration
+    execution: false
+    name: panorama-show-user-id-interfaces-config
+    outputs:
+    - contextPath: Panorama.UserInterfaces.Name
+      description: The name of the user interface.
+      type: String
+    - contextPath: Panorama.UserInterfaces.Network.layer3.member
+      description: The interface network layer3 member
+      type: String
+    - contextPath: Panorama.UserInterfaces.Network.log-setting
+      description: The interface network log settings.
+      type: String
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
