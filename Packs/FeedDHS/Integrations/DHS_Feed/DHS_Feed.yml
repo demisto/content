@@ -1,0 +1,175 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: DHS Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: 'https://taxii.dhs.gov:8443'
+  display: Base URL
+  name: base_url
+  required: true
+  type: 0
+- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
+  display: Key File as Text
+  name: key
+  required: true
+  type: 4
+- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
+  display: Certificate File as Text
+  name: crt
+  required: true
+  type: 12
+- display: Feed Type
+  name: collection
+  required: true
+  type: 15
+  options:
+  - AIS
+  - CISCP
+- additionalinfo: The Traffic Light Protocol (TLP) fetch from feed.
+  display: Filter by Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- defaultvalue: 1 day
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. The determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, so only indicators that are
+    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
+    are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
+description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
+display: 'DHS Feed'
+name: 'DHS Feed'
+script:
+  commands:
+  - arguments:
+    - defaultValue: 20
+      default: true
+      description: The maximum number of indicators to return. Default is 20.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
+      description: 'The TLP color by which to filter the results. Possible values: "RED", "AMBER", "GREEN", "WHITE".'
+      isArray: false
+      name: tlp_color
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the indicators.
+    execution: false
+    name: dhs-get-indicators
+    outputs:
+    - contextPath: DHS.type
+      description: The indicator type (e.g., IP, Domain, Email, URL, File).
+      type: String
+    - contextPath: DHS.value
+      description: The indicator.
+      type: string
+    - contextPath: DHS.tlp
+      description: The traffic light protocol.
+      type: string
+  dockerimage: demisto/xml-feed:1.0.0.15261
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests
