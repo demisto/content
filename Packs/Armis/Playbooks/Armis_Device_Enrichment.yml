@@ -1,6 +1,5 @@
-id: 309cd8ae-0654-4acb-8bca-2e886ad0eabb
-version: 20
-vcShouldKeepItemLegacyProdMachine: false
+id: Armis Device Enrichment
+version: -1
 name: Armis Device Enrichment
 description: Enrich Armis Alert with Device in context details
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -42,6 +42,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -189,6 +190,7 @@ tasks:
       id: 8ddf98ea-3c70-4cd5-8b9d-0e1207feeef6
       version: -1
       name: Is Alert ID Valid?
+      description: Check if the Alert ID is valid
       type: condition
       iscommand: false
       brand: ""
@@ -272,9 +274,11 @@ inputs:
     simple: ${incident.armisalertid}
   required: true
   description: Getting the alert ID which triggered the call for the playbook
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Device ID
   description: Device ID
   type: string
-sourceplaybookid: crowdstrike_endpoint_enrichment
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

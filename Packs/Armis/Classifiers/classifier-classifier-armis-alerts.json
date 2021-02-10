@@ -1,36 +1,19 @@
 {
-	"brands": [
-		""
-	],
-	"defaultIncidentType": "Armis Alert",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "947edc29-f0b5-4289-8c1e-208a9d975f26_custom",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Anomaly Detection": "Armis Alert",
-		"Policy Violation": "Armis Alert",
-		"System Policy Violation": "Armis Alert"
-	},
-	"locked": false,
-	"logicalVersion": 3,
-	"mapping": null,
-	"name": "classifier-armis-alerts",
-	"nameRaw": "classifier-armis-alerts",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Armis Alert",
+    "description": "",
+    "feed": false,
+    "id": "947edc29-f0b5-4289-8c1e-208a9d975f26_custom",
+    "keyTypeMap": {
+        "Anomaly Detection": "Armis Alert",
+        "Policy Violation": "Armis Alert",
+        "System Policy Violation": "Armis Alert"
+    },
+    "name": "classifier-armis-alerts",
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
