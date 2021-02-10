@@ -229,7 +229,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
     if label_name := args.get("label"):
         label_obj = Label(client)
         label = label_obj.create(value=label_name).get('id')
-    # TODO: check if it works
+
     external_references = None
     external_references_source_name = args.get('external_references_source_name')
     external_references_url = args.get('external_references_url')
@@ -279,6 +279,8 @@ def main():
 
     api_key = params.get('apikey')
     base_url = params.get('base_url')
+    demisto.info(f"Params apikey {api_key}")
+    demisto.info(f"Params base url {base_url}")
     if base_url.endswith('/'):
         base_url = base_url[:-1]
     indicator_types = params.get('indicator_types')
@@ -292,7 +294,7 @@ def main():
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error')
         command = demisto.command()
-        demisto.info("Command being called is {}".format(command))
+        demisto.info(f"Command being called is {command}")
 
         # Switch case
         if command == "fetch-indicators":
