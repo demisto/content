@@ -33,7 +33,7 @@ def check_if_form_is_filled(pr_number, github_token, verify_ssl):
     if contrib_pr:
         return True
 
-    df = pd.read_csv(path_to_csv, encoding='utf8')
+    df = pd.read_csv(path_to_csv, encoding='utf8', error_bad_lines=False)
     pr_numbers = df['Pull Request Number'].value_counts()
     print(pr_numbers)
 
