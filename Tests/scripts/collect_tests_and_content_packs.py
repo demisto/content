@@ -337,7 +337,8 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
-
+    modified_files_str = "\n".join(modified_files)
+    print(f'\n modified_files on find_tests_and_content_packs_for_modified_files is: {modified_files_str}\n')
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
@@ -420,6 +421,7 @@ def collect_content_packs_to_install(id_set: Dict, integration_ids: set, playboo
         if playbook_name in playbook_names:
             playbook_pack = playbook_object.get('pack')
             if playbook_pack:
+                print(f'\n')
                 logging.info(f'Found playbook {playbook_name} in pack {playbook_pack} - adding to packs to install')
                 packs_to_install.add(playbook_pack)
             else:
@@ -461,11 +463,12 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     updated_playbook_names = set([])
     catched_scripts, catched_playbooks = set([]), set([])
     changed_api_modules = set([])
-
+    print(f'\nOn line 465, updated_playbook_names is: {updated_playbook_names}\n')
     script_to_version = {}
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
+        print(f'\nOn line 470, updated_playbook_names is: {updated_playbook_names}\nfile_path is: {file_path} \n')
         if collect_helpers.checked_type(file_path, collect_helpers.SCRIPT_REGEXES + YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
@@ -479,6 +482,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         elif collect_helpers.checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
+            print(f'\nOn line 484, updated_playbook_names is: {updated_playbook_names}\nfile_path is: {file_path} \n')
             playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
 
         elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
@@ -504,6 +508,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
 
+
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
@@ -518,6 +523,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
                                updated_playbook_names, catched_playbooks, tests_set)
+        print(f'\nOn line 525, updated_playbook_names is: {updated_playbook_names}\n. playbook_id is: {playbook_id} \n')
 
     for new_script in updated_script_names:
         script_names.add(new_script)
