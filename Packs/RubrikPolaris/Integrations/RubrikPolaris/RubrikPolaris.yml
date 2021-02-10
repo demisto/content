@@ -36,7 +36,7 @@ configuration:
   type: 0
 description: Create a new incident when a Polaris Radar anomaly event is detected
   and determine if any Sonar data classification hits were found on that object.
-display: Rubrik Polaris (Partner Contribution)
+display: Rubrik Polaris
 name: RubrikPolaris
 script:
   commands:
