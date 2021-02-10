@@ -2038,7 +2038,7 @@ Initiate a new endpoint script execution action using a script from the script l
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
-| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Required | 
+| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Optional |
 | timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
 
 

@@ -2795,7 +2795,7 @@ def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     try:
-        parameters = json.loads(args.get('parameters', ''))
+        parameters = json.loads(args.get('parameters', '{}'))
     except json.decoder.JSONDecodeError as e:
         raise ValueError(f'The parameters argument is not in valid JSON structure. {e}')
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
@@ -2827,7 +2827,7 @@ def get_script_execution_status_command(client: Client, args: Dict) -> Tuple[str
     action_id = args.get('action_id')
     response = client.get_script_execution_status(action_id)
     reply = response.get('reply')
-    reply['action_id'] = action_id
+    reply['action_id'] = int(action_id)
     return (
         tableToMarkdown(f'Script Execution Status - {action_id}', reply),
         {
@@ -2842,7 +2842,7 @@ def get_script_execution_results_command(client: Client, args: Dict) -> Tuple[st
     response = client.get_script_execution_results(action_id)
     results = response.get('reply', {}).get('results')
     context = {
-        'action_id': action_id,
+        'action_id': int(action_id),
         'results': results,
     }
     return (

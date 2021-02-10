@@ -2252,7 +2252,7 @@ script:
         For example, {"param1":"param1_value","param2":"param2_value"}'
       isArray: false
       name: parameters
-      required: true
+      required: false
       secret: false
     - default: false
       description: Integer represents the timeout in seconds for this execution.
