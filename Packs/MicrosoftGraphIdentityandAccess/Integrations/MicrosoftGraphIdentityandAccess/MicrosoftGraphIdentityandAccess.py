@@ -79,18 +79,13 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-post-directoryroles?view=graph-rest-1.0&tabs=http
         """
-        try:
-            return self.ms_client.http_request(
-                'POST',
-                'v1.0/directoryRoles',
-                json_data={'roleTemplateId': template_id}
-            )
-        except Exception as exc:
-            if 'A conflicting object with one or more of the specified property values is present in the directory.' in str(exc):
-                raise DemistoException(f'template_id "{template_id}" already active.')
-            raise exc
+        return self.ms_client.http_request(
+            'POST',
+            'v1.0/directoryRoles',
+            json_data={'roleTemplateId': template_id}
+        )
 
-    def add_member_to_role(self, role_object_id: str, user_id: str) -> bool:
+    def add_member_to_role(self, role_object_id: str, user_id: str):
         """Adds a member to a specific role.
 
         Args:
@@ -112,13 +107,11 @@ class Client:
         self.ms_client.http_request(
             'POST',
             f'v1.0/directoryRoles/{role_object_id}/members/$ref',
-            headers={'Content-Type': 'application/json'},
             json_data=body,
             return_empty_response=True
         )
-        return True
 
-    def remove_member_from_role(self, role_object_id: str, user_id: str) -> bool:
+    def remove_member_from_role(self, role_object_id: str, user_id: str):
         """Removing a member from a specific role.
 
         Args:
@@ -139,7 +132,6 @@ class Client:
             f'v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref',
             return_empty_response=True
         )
-        return True
 
 
 ''' COMMAND FUNCTIONS '''
@@ -168,7 +160,7 @@ def test_connection(client: Client) -> str:
 def reset_auth() -> CommandResults:
     set_integration_context({})
     return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to '
+        readable_output='Authorization was reset successfully. Run **!msgraph-identity-auth-start** to '
                         'start the authentication process.'
     )
 
@@ -268,13 +260,14 @@ def main():
         command = demisto.command()
         params = demisto.params()
         args = demisto.args()
+        handle_proxy()
         client = Client(
             app_id=params['app_id'],
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the msgraph-identity--auth-start command instead.')
+            return_results('The test module is not functional, run the msgraph-identity-auth-start command instead.')
         elif command == 'msgraph-identity-auth-start':
             return_results(start_auth(client))
         elif command == 'msgraph-identity-auth-complete':

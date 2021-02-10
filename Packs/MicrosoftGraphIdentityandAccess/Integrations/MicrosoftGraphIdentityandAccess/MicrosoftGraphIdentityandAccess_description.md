@@ -1,7 +1,7 @@
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
-In order to connect to the AMicrosoft Graph Identity & Access using either Cortex XSOAR Graph App or the Self-Deployed Graph App:
+In order to connect to the Microsoft Graph Identity & Access using either Cortex XSOAR Graph App or the Self-Deployed Graph App:
 1. Fill in the required parameters.
 2. Run the ***!msgraph-identity-auth-start*** command.
 3. Follow the instructions that appear.
