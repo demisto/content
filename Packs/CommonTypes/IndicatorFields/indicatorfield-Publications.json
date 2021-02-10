@@ -9,7 +9,7 @@
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "Title",
+   "key": "title",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -21,7 +21,7 @@
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "Source",
+   "key": "source",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -33,7 +33,7 @@
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "Link",
+   "key": "link",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -45,7 +45,7 @@
    "fieldCalcScript": "",
    "isDefault": true,
    "isReadOnly": false,
-   "key": "Timestamp",
+   "key": "timestamp",
    "required": false,
    "script": "",
    "selectValues": null,
@@ -55,9 +55,7 @@
  ],
  "content": true,
  "defaultRows": [
-  {
-
-  }
+  {}
  ],
  "editForm": true,
  "group": 2,
