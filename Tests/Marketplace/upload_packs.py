@@ -170,13 +170,12 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
         # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
-            logging.info(os.listdir(index_pack_path))
             for d in os.scandir(index_pack_path):
                 logging.info(os.path.join(pack_name, d.path))
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
                 if any(x in os.path.join(d.path) for x in METADATA_TO_REMOVE):
-                    logging.info("Found a pack")
+                    logging.info(f"Removing meta from private index - {d.path}")
                     os.remove(d.path)
 
         # skipping index update in case hidden is set to True
@@ -303,12 +302,12 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     iam_metadata = glob.glob(f"{index_folder_path}/IAM/metadata-*.json")
     for iam_meta in iam_metadata:
         if any(x in iam_meta for x in METADATA_TO_REMOVE):
-            logging.info("Found a pack")
+            logging.info(f"Removing - {iam_meta}")
             os.remove(iam_meta)
     hwp_metadata = glob.glob(f"{index_folder_path}/HelloWorldPremium/metadata-*.json")
     for hwp_meta in hwp_metadata:
         if any(x in hwp_meta for x in METADATA_TO_REMOVE):
-            logging.info("Found a pack")
+            logging.info(f"Removing - {hwp_meta}")
             os.remove(hwp_meta)
 
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
