@@ -297,6 +297,20 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
+
+    ### REMOVE AFTER SUCCESSFUL RUN
+    logging.info("Starting to remove old meta files")
+    iam_metadata = glob.glob(f"{index_folder_path}/IAM/metadata-*.json")
+    for iam_meta in iam_metadata:
+        if any(x in iam_meta for x in METADATA_TO_REMOVE):
+            logging.info("Found a pack")
+            os.remove(iam_meta)
+    hwp_metadata = glob.glob(f"{index_folder_path}/HelloWorldPremium/metadata-*.json")
+    for hwp_meta in hwp_metadata:
+        if any(x in hwp_meta for x in METADATA_TO_REMOVE):
+            logging.info("Found a pack")
+            os.remove(hwp_meta)
+
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
