@@ -21,19 +21,20 @@ if demisto.command() == 'test-module':
 
 if demisto.command() == 'unifivideo-get-camera-list':
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
-    output = []
+    context_output = []
     for camera in uva.cameras:
         context_output.append(camera.name)
     results = [
         CommandResults(
             outputs_prefix='UnifiVideo.Cameras',
-            readable_output=tableToMarkdown("Camera list",context_output, headers=["Camera name"],removeNull=True),
+            readable_output=tableToMarkdown("Camera list", context_output, headers=["Camera name"], removeNull=True),
             outputs=context_output
         )]
     return_results(results)
 
 if demisto.command() == 'unifivideo-get-snapshot':
     camera_name = args['camera_name']
+    output = bytes()
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).snapshot("/tmp/snapshot.png")
     f = open("/tmp/snapshot.png", "rb")
@@ -69,7 +70,7 @@ if demisto.command() == 'unifivideo-get-recording':
     file = fileResult(filename=filename, data=output)
     demisto.results(file)
     if "frame" in demisto.args():
-        vc = cv2.VideoCapture('/tmp/recording.mp4')
+        vc = cv2.VideoCapture('/tmp/recording.mp4')  # pylint: disable=E1101
         c = 1
 
         if vc.isOpened():
@@ -81,7 +82,7 @@ if demisto.command() == 'unifivideo-get-recording':
             rval, frame = vc.read()
             c = c + 1
             if c == int(demisto.args()['frame']):
-                cv2.imwrite('/tmp/snapshot.jpg', frame)
+                cv2.imwrite('/tmp/snapshot.jpg', frame)  # pylint: disable=E1101
                 break
         vc.release()
         f = open("/tmp/snapshot.jpg", "rb")
@@ -99,7 +100,7 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
         if rec._id == recording_id:
             rec.download('/tmp/recording.mp4')
     if "frame" in args:
-        vc = cv2.VideoCapture('/tmp/recording.mp4')
+        vc = cv2.VideoCapture('/tmp/recording.mp4')  # pylint: disable=E1101
         c = 1
 
         if vc.isOpened():
@@ -111,7 +112,7 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
             rval, frame = vc.read()
             c = c + 1
             if c == int(args['frame']):
-                cv2.imwrite("/tmp/" + snapshot_file_name, frame)
+                cv2.imwrite("/tmp/" + snapshot_file_name, frame)  # pylint: disable=E1101
                 break
         vc.release()
         f = open("/tmp/" + snapshot_file_name, "rb")
@@ -134,14 +135,14 @@ if demisto.command() == 'unifivideo-get-recording-list':
     results = [
         CommandResults(
             outputs_prefix='UnifiVideo.Recordings',
-            readable_output=tableToMarkdown("Recording list", recordings,headers=["id","rec_type","start_time","end_time"]),
+            readable_output=tableToMarkdown("Recording list", recordings, headers=["id", "rec_type", "start_time", "end_time"]),
             outputs_key_field=['id'],
             outputs=recordings
         )]
     return_results(results)
 
 if demisto.command() == 'unifivideo-get-snapshot-at-frame':
-    vc = cv2.VideoCapture('recording.mp4')
+    vc = cv2.VideoCapture('recording.mp4')  # pylint: disable=E1101
     c = 1
 
     if vc.isOpened():
@@ -153,7 +154,7 @@ if demisto.command() == 'unifivideo-get-snapshot-at-frame':
         rval, frame = vc.read()
         c = c + 1
         if c == 500:
-            cv2.imwrite(str(c) + '.jpg', frame)
+            cv2.imwrite(str(c) + '.jpg', frame)  # pylint: disable=E1101
             break
     vc.release()
 
@@ -169,7 +170,7 @@ if demisto.command() == 'fetch-incidents':
     day_ago = datetime.now() - timedelta(days=1)
     start_time = day_ago
     if last_run:
-            start_time = last_run.get('start_time')
+        start_time = last_run.get('start_time')
     if not isinstance(start_time, datetime):
         start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
     for rec in uva.get_recordings():
