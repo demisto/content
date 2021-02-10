@@ -19,6 +19,17 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 
+METADATA_TO_REMOVE = {
+    'IAM/metadata-1.1.0.json',
+    'IAM/metadata-1.2.0.json',
+    'IAM/metadata-1.0.0.json',
+    'IAM/metadata-1.3.0.json',
+    'HelloWorldPremium/metadata-1.0.0.json',
+    'HelloWorldPremium/metadata-1.1.0.json',
+    'HelloWorldPremium/metadata-1.0.8.json',
+    'HelloWorldPremium/metadata-1.0.9.json',
+}
+
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -159,8 +170,11 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
         # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
+            logging.info(os.scandir(index_pack_path))
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
+                    os.remove(d.path)
+                if any(d.path in x for x in METADATA_TO_REMOVE):
                     os.remove(d.path)
 
         # skipping index update in case hidden is set to True
