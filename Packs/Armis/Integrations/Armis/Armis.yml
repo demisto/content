@@ -133,18 +133,22 @@ script:
     name: armis-search-alerts
     outputs:
     - contextPath: Armis.SearchAlerts.activityIds
+      description: The activity ids of the Alert
       type: Number
     - contextPath: Armis.SearchAlerts.activityUUIDs
+      description: The activity UUIDs of the Alert
       type: String
     - contextPath: Armis.SearchAlerts.alertId
       description: The ID of the Alert
       type: Number
     - contextPath: Armis.SearchAlerts.connectionIds
+      description: The connection ids of the Alert
       type: Unknown
     - contextPath: Armis.SearchAlerts.description
       description: A text description of the Alert
       type: String
     - contextPath: Armis.SearchAlerts.deviceIds
+      description: The device ids of the Alert
       type: Number
     - contextPath: Armis.SearchAlerts.severity
       description: The Severity of the Alert
@@ -196,18 +200,22 @@ script:
     name: armis-search-alerts-by-aql-string
     outputs:
     - contextPath: Armis.SearchAlertsByAQLString.activityIds
+      description: The activity ids of the Alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.activityUUIDs
+      description: The activity UUIDs of the Alert
       type: String
     - contextPath: Armis.SearchAlertsByAQLString.alertId
       description: The ID of the Alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.connectionIds
+      description: The connection ids of the Alert
       type: Unknown
     - contextPath: Armis.SearchAlertsByAQLString.description
       description: The description of the Alert
       type: String
     - contextPath: Armis.SearchAlertsByAQLString.deviceIds
+      description: The device ids of the Alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.severity
       description: The Severity of the Alert
@@ -290,11 +298,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: The type of the device
       isArray: false
       name: device_type
       required: false
       secret: false
     - default: false
+      description: The time frame in which to search
       isArray: false
       name: time_frame
       required: false
@@ -305,49 +315,71 @@ script:
     name: armis-search-devices
     outputs:
     - contextPath: Armis.SearchDevices.accessSwitch
+      description: The access switch of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.category
+      description: The category of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.firstSeen
+      description: The time the device was first seen
       type: Unknown
     - contextPath: Armis.SearchDevices.id
+      description: The id of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.ipaddress
+      description: The ip address of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.ipv6
+      description: The ipv6 address of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.lastSeen
+      description: The time the device was last seen
       type: Unknown
     - contextPath: Armis.SearchDevices.macAddress
+      description: The mac address of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.manufacturer
+      description: The manufacturer of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.model
+      description: The model of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.name
+      description: The name of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.operatingSystem
+      description: The operating system of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.operatingSystemVersion
+      description: The operating system version of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.purdueLevel
+      description: The purdue level of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.riskLevel
+      description: The risk level associated with the device
       type: Unknown
     - contextPath: Armis.SearchDevices.sensor
+      description: The sensor of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.site
+      description: The site of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.tags
+      description: The tags of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.type
+      description: The type of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.user
+      description: The user of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.visibility
+      description: The visibility of the device
       type: Unknown
   - arguments:
     - default: false
+      description: The aql string to search by
       isArray: false
       name: aql_string
       required: false
@@ -358,48 +390,69 @@ script:
     name: armis-search-devices-by-aql
     outputs:
     - contextPath: Armis.SearchDevicesByAql.accessSwitch
+      description: The access switch of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.category
+      description: The category of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.firstSeen
+      description: The time the device was first seen
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.id
+      description: The id of the device
       type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.ipAddress
+    - contextPath: Armis.SearchDevicesByAql.ipaddress
+      description: The ip address of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.ipv6
+      description: The ipv6 address of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.lastSeen
+      description: The time the device was last seen
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.macAddress
+      description: The mac address of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.manufacturer
+      description: The manufacturer of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.model
+      description: The model of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.name
+      description: The name of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.operatingSystem
+      description: The operating system of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.operatingSystemVersion
+      description: The operating system version of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.purdueLevel
+      description: The purdue level of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.riskLevel
+      description: The risk level associated with the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.sensor
+      description: The sensor of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.site
+      description: The site of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.tags
+      description: The tags of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.type
+      description: The type of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.user
+      description: The user of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.visibility
+      description: The visibility of the device
       type: Unknown
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
@@ -408,6 +461,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
+defaultmapperin: Armis_mapper-incoming
+defaultclassifier: classifier-armis-alerts
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
