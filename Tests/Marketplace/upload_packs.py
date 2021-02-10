@@ -497,13 +497,19 @@ def get_updated_private_packs(private_packs, index_folder_path):
     public_index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
     public_index_json = load_json(public_index_file_path)
     private_packs_from_public_index = public_index_json.get("packs", {})
-
+    logging.info(f"This is all private_packs in get_updated_private_packs {private_packs}")
     for pack in private_packs:
         private_pack_id = pack.get('id')
         private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
+        if private_pack_id == "HelloWorldPremium":
+            private_commit_hash_from_metadata = ""
+            logging.info(f"test commit hash 1 {private_commit_hash_from_metadata}")
         for public_pack in private_packs_from_public_index:
             if public_pack.get('id') == private_pack_id:
                 private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
+                if public_pack.get('id') == "HelloWorldPremium":
+                    private_commit_hash_from_content_repo = "testCommitHash"
+                    logging.info(f"test commit hash 2 {private_commit_hash_from_content_repo}")
 
                 private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
                 private_pack_was_updated = private_pack_was_updated and private_commit_hash_from_metadata != ""
