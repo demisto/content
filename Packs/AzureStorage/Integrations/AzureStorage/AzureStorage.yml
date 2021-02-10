@@ -1,0 +1,220 @@
+category: IT Services
+commonfields:
+  id: Azure Storage
+  version: -1
+configuration:
+- defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
+  display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  type: 0
+- display: Subscription ID
+  hidden: false
+  name: subscription_id
+  required: true
+  type: 0
+- display: Resource Group Name
+  hidden: false
+  name: resource_group_name
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Deploy and manage containerized applications with a fully managed Kubernetes
+  service.
+display: Azure Storage (Beta)
+name: Azure Storage
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-storage-auth-test
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: azure-storage-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the azure-storage-auth-start command.
+    execution: false
+    name: azure-storage-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-storage-auth-reset
+  - arguments:
+    - default: false
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-storage-account-list
+    outputs:
+    - contextPath: AzureStorage.Accounts.[0].properties.encryption.services.blob.enabled
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: account_name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: sku
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: kind
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: location
+      required: true
+      secret: false
+    - default: false
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: custom_domain_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: use_sub_domain_name
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: enc_key_source
+      predefined:
+      - Microsoft.Storage
+      - Microsoft.Keyvault
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: enc_requireInfrastructureEncryption
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: enc_keyvault_key_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: enc_keyvault_key_version
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: enc_keyvault_uri
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: access_tier
+      predefined:
+      - Hot
+      - Cool
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: supports_https_traffic_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: is_hns_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: large_file_shares_state
+      predefined:
+      - Disabled
+      - Enabled
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: allow_blob_public_access
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: minimum_tls_version
+      predefined:
+      - TLS1_0
+      - TLS1_1
+      - TLS1_2
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-storage-account-create-update
+  - arguments:
+    - default: false
+      isArray: false
+      name: account_name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-storage-blob-service-properties-get
+  - deprecated: false
+    execution: false
+    name: azure_storage_blob_service_properties_set
+  dockerimage: demisto/crypto:1.0.0.14297
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+beta: true
