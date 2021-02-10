@@ -24,8 +24,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BRANCH_NAME: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          BASE_REPO: ${{ github.github.repository }}
+          BRANCH_REF: ${{ github.ref }}
         run: |
           echo "PR number is: $PR_NUMBER"
+          echo "PR number is: $PR_NUMBER"
+          echo "Base Ref branch is: $BASE_REF"
+          echo "Base repo is: $BASE_REPO"
+          echo "Branch ref is: $BRANCH_REF"
           echo "Target branch name is: $BRANCH_NAME"
           echo "Starting check of contributor packs"
           python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
