@@ -563,9 +563,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_packs = []
     for metadata_file_path in metadata_files:
-        if any(metadata_file_path in x for x in METADATA_TO_REMOVE):
-            logging.info("Found metadata to remove")
-            os.remove(metadata_file_path)
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
@@ -869,15 +866,14 @@ def main():
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
     updated_private_packs_ids = []
-    # if private_bucket_name:  # Add private packs to the index
-    private_bucket_name = 'marketplace-dist-private'
-    private_storage_bucket = storage_client.bucket(private_bucket_name)
-    private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
+    if private_bucket_name:  # Add private packs to the index
+        private_storage_bucket = storage_client.bucket(private_bucket_name)
+        private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
                                                                                         extract_destination_path,
                                                                                         index_folder_path, pack_names)
-    # else:  # skipping private packs
-    #     logging.debug("Skipping index update of priced packs")
-    #     private_packs = []
+    else:  # skipping private packs
+        logging.debug("Skipping index update of priced packs")
+        private_packs = []
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
