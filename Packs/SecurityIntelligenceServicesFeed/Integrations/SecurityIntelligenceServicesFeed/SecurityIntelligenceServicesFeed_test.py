@@ -377,7 +377,8 @@ def test_get_indicators_command(mocker):
                      'HumanReadable': humanreadable,
                      'EntryContext': {},
                      'IndicatorTimeline': [],
-                     'IgnoreAutoExtract': False}
+                     'IgnoreAutoExtract': False,
+                     'Note': False}
 
     mocker.patch('SecurityIntelligenceServicesFeed.Client.request_list_objects',
                  return_value=[{'Key': 'key1.gz', 'LastModified': datetime.now(timezone.utc)}])

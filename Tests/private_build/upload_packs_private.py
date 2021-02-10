@@ -9,8 +9,8 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
     get_recent_commits_data
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
+from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -101,6 +101,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
@@ -174,7 +175,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        packs_dependencies_mapping: dict, private_bucket_name: str,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
-                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
+                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None) \
         -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
@@ -198,8 +199,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     extract_destination_path = upload_config.extract_path
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
-    is_private_build = upload_config.is_private
     packs_artifacts_dir = upload_config.artifacts_path
+    private_artifacts_dir = upload_config.private_artifacts
+    is_infra_run = upload_config.is_infra_run
+    secondary_enc_key = upload_config.secondary_encryption_key
+
+    pack_was_modified = not is_infra_run
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -230,7 +235,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        index_folder_path=index_folder_path,
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
-                                       packs_statistic_df=packs_statistic_df)
+                                       packs_statistic_df=packs_statistic_df,
+                                       pack_was_modified=pack_was_modified)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -260,22 +266,13 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key,
+                                               private_artifacts_dir, secondary_enc_key)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
         pack.cleanup()
         return
-
-    if not is_private_build:
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              remote_previous_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            pack.cleanup()
-            return
-    else:
-        pack_was_modified = False
 
     task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
     if not task_status:
@@ -307,12 +304,6 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    # in case that pack already exist at cloud storage path and in index, skipped further steps
-    if skipped_pack_uploading and exists_in_index:
-        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-        pack.cleanup()
-        return
-
     task_status = pack.prepare_for_index_upload()
     if not task_status:
         pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -324,6 +315,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                       hidden_pack=pack.hidden)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+        pack.cleanup()
+        return
+
+    # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+    if skipped_pack_uploading and exists_in_index:
+        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
         pack.cleanup()
         return
 
@@ -360,6 +357,9 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False,
                         default=str(uuid.uuid4()))
+    parser.add_argument('-inf', '--is_infra_run',
+                        help="Whether the upload run is an infrastructure one / nightly, or there are actual changes",
+                        required=False, type=str2bool, default=False)
     parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
@@ -372,8 +372,11 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')
-    parser.add_argument('-pr', '--is_private', type=str2bool,
-                        help='The encryption key for the pack, if it should be encrypted.', default=False)
+    parser.add_argument('-pa', '--private_artifacts', type=str,
+                        help='The name of the pack in which the private artifacts should be saved',
+                        default='private_artifacts')
+    parser.add_argument('-nek', '--secondary_encryption_key', type=str,
+                        help='A second encryption key for the pack, if it should be encrypted.', default='')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -408,7 +411,7 @@ def main():
     id_set_path = upload_config.id_set_path
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
-    is_private_build = upload_config.is_private
+    is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
 
     print(f"Packs artifact path is: {packs_artifacts_path}")
 
