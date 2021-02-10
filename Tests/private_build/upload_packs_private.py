@@ -13,8 +13,7 @@ from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifa
     download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, \
     upload_core_packs_config, \
-    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary, \
-    METADATA_TO_REMOVE
+    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
