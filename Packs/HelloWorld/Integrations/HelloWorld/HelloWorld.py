@@ -1083,7 +1083,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """helloworld-get-alert command: Returns a HelloWorld alert
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use.
+    :param Client: HelloWorld client to use
 
     :type args: ``Dict[str, Any]``
     :param args:
