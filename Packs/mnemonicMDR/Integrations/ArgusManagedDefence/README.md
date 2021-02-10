@@ -7,6 +7,9 @@ This integration was integrated and tested with version 5.0.1 argus-toolbelt ([P
 2. Search for mnemonic MDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
+**Note:** if you are intending to use this integration to mirror incident 
+entries, make sure the entries are tagged with the same tag as in `mirror_tag`.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | isFetch | Fetch incidents | False |

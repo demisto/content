@@ -17,6 +17,7 @@ from argus_api import session as argus_session
 from argus_api.api.currentuser.v1.user import get_current_user
 
 from argus_api.api.cases.v2.case import (
+    add_attachment,
     add_case_tag,
     add_comment,
     advanced_case_search,
@@ -254,6 +255,7 @@ def fetch_incidents(
     limit: int = 25,
     min_severity: str = "low",
     mirror_direction: str = "None",
+    mirror_tags: str = "argus_mirror",
     exclude_tag: str = "",
 ):
     start_timestamp = last_run.get("start_time", None) if last_run else None
@@ -291,9 +293,9 @@ def fetch_incidents(
             "dbotMirrorId": str(case["id"]),
             "dbotMirrorInstance": demisto.integrationInstance(),
             "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
+            "dbotMirrorTags": argToList(mirror_tags),
         }
         case["url"] = f"https://portal.mnemonic.no/spa/case/view/{case['id']}"
-        # "dbotMirrorTags":
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
             "occurred": case["createdTime"],
@@ -385,19 +387,20 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
         "dbotMirrorDirection": MIRROR_DIRECTION[
             demisto.params().get("mirror_direction", "None")
         ],
+        "dbotMirrorTags": argToList(demisto.params().get("mirror_tag", "argus_mirror")),
     }
 
     # Close case?
     if case.get("status", "") == "closed":
         entries.append(
             {
-                'Type': EntryType.NOTE,
-                'ContentsFormat': EntryFormat.JSON,
+                "Type": EntryType.NOTE,
+                "ContentsFormat": EntryFormat.JSON,
                 "Contents": {
                     "dbotIncidentClose": True,
                     "closeReason": "Argus case closed",
                     "closeNotes": "Argus case closed",
-                }
+                },
             }
         )
 
@@ -420,21 +423,9 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
         demisto.debug(
             f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
         )
-    demisto.debug(parsed_args.delta)
     demisto.debug(
         f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
     )
-    s = "argusupdatedata"
-    for key, value in parsed_args.data.items():
-        s += f"({key}: {value}) "
-    demisto.debug(s)
-    s = "argusupdateentry"
-    demisto.debug(parsed_args.entries)
-    if parsed_args.entries:
-        for e in parsed_args.entries:
-            for key, value in e.items():
-                s += f"({key}: {value}) "
-    demisto.debug(s)
 
     updated_incident = {}
     if not parsed_args.remote_incident_id or parsed_args.incident_changed:
@@ -451,6 +442,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
 
         parsed_args.data["case_id"] = parsed_args.remote_incident_id
         updated_incident = update_case_command(parsed_args.data).raw_response
+        demisto.debug("argusupdateresponse " + str(updated_incident))
 
     else:
         demisto.debug(
@@ -481,15 +473,37 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> None:
-    demisto.debug(f"Appending entries to case {case_id}: {str(entry)}")
+    demisto.debug(f"Appending entry to case {case_id}: {str(entry)}")
+    if entry.get("type") == 1:  # type note / chat
+        comment = f"<h3>Note mirrored from XSOAR</h3>"
+        comment += (
+            f"<i>Added by {entry.get('user')} at "
+            f"{pretty_print_date(entry.get('created'))}</i><br>"
+        )
+        comment += entry.get("contents")  # TODO fixmarkdown
+        add_comment(caseID=case_id, comment=comment)
+    elif entry.get("type") == 3:  # type file
+        path_res = demisto.getFilePath(entry.get("id"))
+        full_file_name = path_res.get("name")
+        from base64 import b64encode as b64
+        import mimetypes
+
+        mime_type = mimetypes.guess_type(full_file_name)
+        with open(path_res.get("path"), "rb") as file_to_send:
+            raw_bytes = file_to_send.read()
+            base64_bytes = b64(raw_bytes)
+            base64_string = base64_bytes.decode(encoding="utf-8")
+            r = add_attachment(
+                caseID=case_id,
+                name=full_file_name,
+                mimeType=mime_type[0],
+                data=base64_string,
+            )
+            demisto.debug(f"argusadd {r}")
 
 
 def get_mapping_fields_command(args: Dict[str, Any]) -> GetMappingFieldsResponse:
-    import requests
-
-    response = requests.get("https://api.mnemonic.no/cases/swagger.json").json()
-    for key in response.get("paths", []).keys():
-        print(key)
+    argus_case_type_scheme = SchemeTypeMapping(type_name="Argus Case")
 
     return GetMappingFieldsResponse()
 
@@ -1323,8 +1337,8 @@ def main() -> None:
                 limit=demisto.params().get("max_fetch", 25),
                 min_severity=demisto.params().get("min_severity", "low").lower(),
                 mirror_direction=demisto.params().get("mirror_direction", "None"),
-                exclude_tag=demisto.params().get("exclude_tag")
-                # mirror_tag
+                mirror_tags=demisto.params().get("mirror_tag"),
+                exclude_tag=demisto.params().get("exclude_tag"),
             )
 
             demisto.setLastRun(next_run)
