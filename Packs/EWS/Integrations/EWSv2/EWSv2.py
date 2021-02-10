@@ -2237,7 +2237,8 @@ def main():
         else:
             sub_main()
     except Exception as exc:
-        return_error("Found error in EWSv2", exc)
+        return_error("Found error in EWSv2: {}".format(exc),
+                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins

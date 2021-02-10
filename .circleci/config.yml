@@ -5,12 +5,70 @@ commands:
     parameters:
       instance_role:
         type: string
+      instance_created:
+        type: string
+        default: ""
     steps:
       - run:
           name: Set INSTANCE_ROLE env variable
           command: |
             echo 'export INSTANCE_ROLE="<< parameters.instance_role >>"' >> $BASH_ENV
-            source $BASH_ENV
+            echo 'export INSTANCE_WAS_CREATED="<< parameters.instance_created >>"' >> $BASH_ENV
+  start-tunnel:
+    description: "Opens an ssh tunnel to the demisto servers and wait until the tunnels are established"
+    parameters:
+      timeout:
+        type: integer
+        default: 10
+    steps:
+      - run:
+          name: add ssh configurations
+          shell: /bin/bash
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Modifying ssh config file
+            echo "Host 10.0.*
+              StrictHostKeyChecking no
+              LogLevel ERROR
+              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
+             Host content-build-lb.demisto.works
+              UserKnownHostsFile /dev/null
+              StrictHostKeyChecking no
+              LogLevel ERROR" >> ~/.ssh/config
+      - run:
+          name: Open SSH Tunnel
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
+            IPS_AND_PORTS=$(cat ./env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+            # Handling the ip & port pairs line by line
+            echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
+            do
+              # Capturing the IP
+              IP=$(echo $IP_AND_PORT | grep -o -E "10\.0\.[0-9]{1,3}\.[0-9]{1,3}")
+              # Capturing the port
+              PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
+              echo "Opening a tunnel for ip $IP with port $PORT"
+              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              echo "Waiting for tunnel to be established"
+              until nc -z 127.0.0.1 $PORT -v; do
+                if [ $COUNT -ge << parameters.timeout >> ]; then
+                  echo "ssh tunnel set up timeout on instance with ip $IP";
+                  exit 1;
+                fi;
+                ((COUNT++))
+                sleep 1
+              done
+            done
+
 parameters:
   non_ami_run:
     type: string
@@ -230,7 +288,18 @@ references:
       when: always
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
-        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
+
+        GCS_PATH=$(mktemp)
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
+
+        FEATURE_BRANCH_NAME="v4.5.0"
+        successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
 
   restore_cache: &restore_cache
     restore_cache:
@@ -760,6 +829,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 5.0
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -809,6 +879,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 5.5
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -858,6 +929,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 6.0
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -898,6 +970,7 @@ jobs:
       - set-instance-role-env-variable:
           instance_role: Server Master
       - *check_if_instance_was_created
+      - start-tunnel
       - *wait_until_server_ready
       - *install_content_and_configure_integrations_on_server
       - run:
@@ -971,6 +1044,10 @@ jobs:
               - master
               - << pipeline.git.branch >>
           steps:
+            - set-instance-role-env-variable:
+                instance_role: Server Master
+                instance_created: "true"
+            - start-tunnel
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
@@ -1013,25 +1090,12 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server 5.5
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
-            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
       - run:
           name: Instance Test
           command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
             ./Tests/scripts/instance_test.sh
             export RETVAL=$?
             cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
@@ -1082,20 +1146,18 @@ jobs:
       - *create_instance
       - set-instance-role-env-variable:
           instance_role: Server Master
-      - *wait_until_server_ready
-      - run:
-          name: Wait until server ready
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
+          instance_created: "true"
+      - start-tunnel
       - run:
           name: Set Environment Variables
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat env_results.json | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+      - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
@@ -1140,6 +1202,8 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server 6.0
+          instance_created: "true"
+      - start-tunnel
       - *wait_until_server_ready
       - run:
           name: Install Packs
@@ -1171,6 +1235,8 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server Master
+          instance_created: "true"
+      - start-tunnel
       - *wait_until_server_ready
       - run:
           name: Install Packs
