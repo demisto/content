@@ -13,12 +13,12 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: 'for more info visit https://us-cert.cisa.gov/ais'
+- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
   display: Key File as Text
   name: key
   required: true
   type: 4
-- additionalinfo: 'for more info visit https://us-cert.cisa.gov/ais'
+- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
   display: Certificate File as Text
   name: crt
   required: true
@@ -41,7 +41,7 @@ configuration:
   required: false
   type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -52,7 +52,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
@@ -122,7 +122,7 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, among the Federal Government.
+description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 display: 'DHS Feed'
 name: 'DHS Feed'
 script:
@@ -130,7 +130,7 @@ script:
   - arguments:
     - defaultValue: 20
       default: true
-      description: The maximum number of indicators to return. The default value is 20.
+      description: The maximum number of indicators to return. Default is 20.
       isArray: false
       name: limit
       required: true
@@ -142,24 +142,24 @@ script:
       - AMBER
       - GREEN
       - WHITE
-      description: filter by TLP color.
+      description: 'The TLP color by which to filter the results. Possible values: "RED", "AMBER", "GREEN", "WHITE".'
       isArray: false
       name: tlp_color
       required: false
       secret: false
     deprecated: false
-    description: get indicators command.
+    description: Get the indicators.
     execution: false
     name: dhs-get-indicators
     outputs:
     - contextPath: DHS.type
-      description: the indicator type (e.g. IP, Domain, Email, URL, File).
+      description: The indicator type (e.g., IP, Domain, Email, URL, File).
       type: String
     - contextPath: DHS.value
-      description: the indicator.
+      description: The indicator.
       type: string
     - contextPath: DHS.tlp
-      description: the traffic lighte prorotocol.
+      description: The traffic light protocol.
       type: string
   dockerimage: demisto/xml-feed:1.0.0.15261
   feed: true
