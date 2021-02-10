@@ -7,10 +7,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 description: Query the ja3er API for MD5 hashes of JA3 fingerprints.
 display: Ja3er
 name: Ja3er
