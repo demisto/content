@@ -245,7 +245,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
     score = int(args.get("score", '50'))
     # TODO: update is not working
     update = argToBoolean(args.get("update", False))
-    # TODO: how user will know what to write at data
+    # TODO: how user will know what to write at data - add documentation
     data = {}
     try:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
@@ -279,8 +279,6 @@ def main():
 
     api_key = params.get('apikey')
     base_url = params.get('base_url')
-    demisto.info(f"Params apikey {api_key}")
-    demisto.info(f"Params base url {base_url}")
     if base_url.endswith('/'):
         base_url = base_url[:-1]
     indicator_types = params.get('indicator_types')
