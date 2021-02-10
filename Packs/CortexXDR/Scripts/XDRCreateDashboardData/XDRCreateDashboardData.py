@@ -39,7 +39,7 @@ def get_xdr_incidents(include_closed_incidents: bool) -> list:
         incidents = json.loads(incidents_res[0].get('Contents'))
     except json.JSONDecodeError:
         demisto.error(f'Failed to parse incidents response from GetIncidentsByQuery, result = {incidents_res}')
-        pass
+
     return incidents
 
 
@@ -67,7 +67,7 @@ def update_xdr_list(context: list, xdr_list: list, query_type: str, created_date
                 val = val.partition(':')[0]
         except Exception as err:
             demisto.error(f'Could not parse value: {val}, error: {err}')
-            pass
+
         if not val:
             continue
 
