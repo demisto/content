@@ -4,7 +4,7 @@ Use this technology Content Pack to prioritize critical vulnerabilities that exi
 
 ##### What does this pack do?
 - Imports Orca alerts regarding vulnerabilities, malware, misconfigurations, lateral movement risk, authentication risk, and insecure high-risk data.
-- Provides for investigative opportunities through correlation, visualization, and historical review to deliver advanced security reporting and situational awareness
+- Provides for investigative opportunities through correlation, visualization, and historical review to deliver advanced security reporting and situational awareness.
 - Provides real time threat detection; alerts from Orca are pushed in real time.
 
 _For more information, visit [Orca Security](https://orca.security/)_
