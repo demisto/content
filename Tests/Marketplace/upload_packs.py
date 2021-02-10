@@ -175,7 +175,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
                 logging.info(os.path.join(pack_name, d.path))
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
-                if any(os.path.join(d.path) in x for x in METADATA_TO_REMOVE):
+                if any(x in os.path.join(d.path) for x in METADATA_TO_REMOVE):
                     os.remove(d.path)
 
         # skipping index update in case hidden is set to True
