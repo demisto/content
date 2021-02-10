@@ -514,7 +514,6 @@ class ExchangeOnlineClient {
 function TestModuleCommand {
     [CmdletBinding()]
     Param(
-        [OAuth2DeviceCodeClient]$oclient,
         [ExchangeOnlineClient]$exo_client
     )
     try {
@@ -545,6 +544,7 @@ function StartAuthCommand {
 }
 
 function CompleteAuthCommand {
+    [OutputType([PSObject])]
     [CmdletBinding()]
     Param(
         [OAuth2DeviceCodeClient]$client
@@ -557,7 +557,7 @@ function CompleteAuthCommand {
     $human_readable = "Your account **successfully** authorized!"
     $entry_context = @{}
 
-    return $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 
 function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
@@ -661,7 +661,7 @@ function Main {
         switch ($command)
         {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $exo_client
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
             }
             "$script:COMMAND_PREFIX-search" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
