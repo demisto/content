@@ -1,14 +1,14 @@
 Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-This pack provides the necessary configurations and checks for managing a crisis event such as communicating with employees working remotely and engaging on work or health issues, and takes the appropriate steps to ensure employee safety and wellbeing.
+The Orca Security Technology Cortex content pack combines the deep and contextual alert findings of Orca with the Cortex XSOAR analytic capabilities.
+Use this technology Content Pack to prioritize critical vulnerabilities that exist across your cloud estate and create data-driven outcomes. 
+
 
 ##### What does this pack do?
-- Gathers information about a group of employees reporting to the same manager.
-- Sends out a questionnaire to all employees, asking them to answer questions. about their health and whether they require any IT or HR assistance.
-- Processes questionnaire responses, creating Employee indicators in Cortex. XSOAR. The indicators provide insight into the answers that every employee replied.
-- Creates IT and HR incidents for employee requests for assistance
-- Provides a full overview of employee health status.
-
-As part of this pack, you will also get out-of-the-box incident fields, type and layout, as well as indicator fields, type and layout, a playbook for managing crisis events, and a full-fledged dashboard showing the health status of your employees. All of these are easily customizable to suit the needs of your organization.
+- Imports Orca alerts regarding vulnerabilities, malware, misconfigurations, lateral movement risk, authentication risk, and insecure high-risk data.
+- Provides for investigative opportunities through correlation, visualization, and historical review to deliver advanced security reporting and situational awareness
+- Provides real time threat detection; alerts from Orca are pushed in real time.
 
 _For more information, visit [Orca Security](https://orca.security/)_
+
+[![Orca Security Overview](https://img.youtube.com/vi/dM1VU-akFGI/0.jpg)](https://www.youtube.com/watch?v=dM1VU-akFGI "Orca Security Overview")
