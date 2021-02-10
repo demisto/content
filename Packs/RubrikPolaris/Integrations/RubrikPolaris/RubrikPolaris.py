@@ -97,8 +97,7 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         errorMessage = str(e)
         if 'Verify that the server URL parameter' in errorMessage:
-            return """We were unable to connect to the provided\
-            Polaris Account. Verify it has been entered correctly."""
+            return "We were unable to connect to the provided Polaris Account. Verify it has been entered correctly."
         elif 'Unauthorized' in errorMessage:
             return "Incorrect email address or password."
         else:
