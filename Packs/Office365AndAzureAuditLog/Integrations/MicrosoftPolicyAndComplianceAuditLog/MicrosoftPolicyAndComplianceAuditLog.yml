@@ -108,6 +108,15 @@ script:
     - contextPath: O365AuditLog.ExtendedProperties.Value
       description: Value of the extended properties.
       type: String
+    - contextPath: O365AuditLog.ModifiedProperties.Name
+      description: Name of the modified properties.
+      type: String
+    - contextPath: O365AuditLog.ModifiedProperties.NewValue
+      description: The updated value of the property.
+      type: String
+    - contextPath: O365AuditLog.ModifiedProperties.OldValue
+      description: The previous value of the property.
+      type: String
     - contextPath: O365AuditLog.Id
       description: The unique ID of the log.
       type: String

@@ -511,7 +511,12 @@ class ExchangeOnlineClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
+function TestModuleCommand {
+    [CmdletBinding()]
+    Param(
+        [OAuth2DeviceCodeClient]$oclient,
+        [ExchangeOnlineClient]$exo_client
+    )
     try {
         $exo_client.CreateSession()
     }
@@ -522,20 +527,28 @@ function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineCli
     $human_readable = "ok"
     $entry_context = $null
 
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 
-function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
+function StartAuthCommand {
+    [CmdletBinding()]
+    Param(
+        [OAuth2DeviceCodeClient]$client
+    )
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
 2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
     $entry_context = @{}
 
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 
-function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
+function CompleteAuthCommand {
+    [CmdletBinding()]
+    Param(
+        [OAuth2DeviceCodeClient]$client
+    )
     # Verify that user run start before complete
     if (!$client.device_code) {
         throw "Please run !ews-auditlog-auth-start and follow the command instructions"
@@ -544,10 +557,11 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $human_readable = "Your account **successfully** authorized!"
     $entry_context = @{}
 
-    return Write-Output $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
+    [CmdletBinding()]
     $raw_response = $oclient.RefreshTokenRequest()
     $human_readable = "**Test ok!**"
     $entry_context = @{}
@@ -558,7 +572,7 @@ function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClien
         $exo_client.CloseSession()
     }
 
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 
 function SearchAuditLogCommand{
@@ -600,15 +614,22 @@ function SearchAuditLogCommand{
                 (ArgToList $kwargs.user_ids),
                 ($kwargs.result_size -as [int])
         )
-        $list = New-Object Collections.Generic.List[PSObject]
-        foreach ($item in $raw_response){
-            $list.add((ConvertFrom-Json $item.AuditData))
+        if ($raw_response){
+            $list = New-Object Collections.Generic.List[PSObject]
+            foreach ($item in $raw_response)
+            {
+                $list.add((ConvertFrom-Json $item.AuditData))
+            }
+            $context = @{
+                "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
+            }
+            $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
+            Write-Output $human_readable, $context, $list
+        } else {
+            $human_readable = "Audit log from $start_date to $end_date is empty"
+            Write-Output $human_readable, $null, $null
         }
-        $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
-        $context = @{
-            "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
-        }
-        return Write-Output $human_readable, $context, $list
+
     } finally {
         $client.CloseSession()
     }

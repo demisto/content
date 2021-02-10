@@ -12,83 +12,30 @@ Use the integration to get logs from the O365 service.
     | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Authentication
+- Basic authentication - Fill in the Email and password.
+- OAuth2.0 (For MFA enabled accounts) -
+    1. Enter a value for the UPN parameter in the integration configuration.
+    2. Run the ***o365-auditlog-auth-start*** command and follow the instructions.
+    3. Run the ***o365-auditlog-auth-test*** command to verify that the authorization process was implemented correctly.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### o365-auditlog-auth-start
 ***
 Starts the OAuth2.0 authorization process.
-
-
-#### Base Command
-
-`o365-auditlog-auth-start`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### o365-auditlog-auth-complete
 ***
 Completes the OAuth2.0 authorization process.
 
-
-#### Base Command
-
-`o365-auditlog-auth-complete`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### o365-auditlog-auth-test
 ***
 Tests the OAuth2.0 authorization process.
-
-
-#### Base Command
-
-`o365-auditlog-auth-test`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### o365-auditlog-search
 ***
