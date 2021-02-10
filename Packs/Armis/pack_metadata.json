@@ -1,7 +1,7 @@
 {
   "name": "Armis",
   "description": "Agentless and passive security platform that sees, identifies, and classifies every device, tracks behavior, identifies threats, and takes action automatically to protect critical information and systems",
-  "support": "soar experts",
+  "support": "partner",
   "currentVersion": "1.0.0",
   "author": "SOAR XPERTS",
   "url": "https://www.armis.com",
@@ -11,7 +11,7 @@
   ],
   "tags": [],
   "created": "2021-01-02T18:00:53Z",
-  "useCases": "search alerts | search devices | tag and untag devices",
+  "useCases": [],
   "keywords": [],
-  "dependencies": []
+  "dependencies": {}
 }
