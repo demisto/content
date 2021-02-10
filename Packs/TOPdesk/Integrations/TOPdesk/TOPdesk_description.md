@@ -1,3 +1,3 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## TOPdesk
+- Username and password should be the same as in the TOPdesk login.
+- Login with an operator account to manage incidents. 
