@@ -1,0 +1,11 @@
+!service-desk-plus-request-create subject="Create New Request" requester="First Last"
+!service-desk-plus-request-update request_id=123640000000284007 subject="Update Existing Request"
+!service-desk-plus-requests-list start_index=32 page_size=2
+!service-desk-plus-request-assign request_id=123640000000284007 group="Network"
+!service-desk-plus-request-pickup request_id=123640000000279001
+!service-desk-plus-link-request-modify action=Link request_id=123640000000284007 linked_requests_id=123640000000288001
+!service-desk-plus-linked-request-list request_id=123640000000284007
+!service-desk-plus-request-resolution-add request_id=123640000000284007 resolution_content="Resolution Content"
+!service-desk-plus-request-resolutions-list request_id=123640000000284007
+!service-desk-plus-request-close request_id=123640000000288001
+!service-desk-plus-request-delete request_id=123640000000279019

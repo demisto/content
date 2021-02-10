@@ -1,0 +1,1807 @@
+id: Service Desk Plus (On-Premise) Test
+version: -1
+name: Service Desk Plus (On-Premise) Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f95b3bea-2c28-4f85-8ad2-dd41f6aa4760
+    type: start
+    task:
+      id: f95b3bea-2c28-4f85-8ad2-dd41f6aa4760
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 12684003-ab9e-495d-8286-4c321b898a65
+    type: regular
+    task:
+      id: 12684003-ab9e-495d-8286-4c321b898a65
+      version: -1
+      name: service-desk-plus-request-create
+      description: Create new requests
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assets: {}
+      category:
+        simple: "Informational"
+      description: {}
+      email_ids_to_notify: {}
+      group: {}
+      impact: {}
+      is_fcr: {}
+      item: {}
+      level: {}
+      mode:
+        simple: "Web Form"
+      priority: {}
+      request_type: {}
+      requester:
+        simple: "Palo Alto Xsoar"
+      resources: {}
+      service_category: {}
+      site: {}
+      status: {}
+      subcategory:
+        simple: "Informational"
+      subject:
+        simple: ${RandomString}
+      technician: {}
+      udf_fields: {}
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f9f1e44a-6fbc-472d-8d76-d86fac008844
+    type: title
+    task:
+      id: f9f1e44a-6fbc-472d-8d76-d86fac008844
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 87613ed2-81cd-47c3-8871-eb4f80ae0388
+    type: regular
+    task:
+      id: 87613ed2-81cd-47c3-8871-eb4f80ae0388
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      filter_by: {}
+      page_size:
+        simple: "5"
+      request_id: {}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d0fabbce-9af0-4a26-8a3f-95216a6d57f8
+    type: condition
+    task:
+      id: d0fabbce-9af0-4a26-8a3f-95216a6d57f8
+      version: -1
+      name: Verify service-desk-plus-requests-list-output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: ArraySize
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f2ebc516-6d51-4bd4-827e-9981f57f26c2
+    type: regular
+    task:
+      id: f2ebc516-6d51-4bd4-827e-9981f57f26c2
+      version: -1
+      name: Generate Random Request Subject
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "20"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2ad471d0-4461-418f-8a08-c4b38c1cf95e
+    type: title
+    task:
+      id: 2ad471d0-4461-418f-8a08-c4b38c1cf95e
+      version: -1
+      name: Test Requests-List
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: ef02abe2-65ca-4d45-8690-ae813b6c3929
+    type: regular
+    task:
+      id: ef02abe2-65ca-4d45-8690-ae813b6c3929
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id:
+        simple: ${SaveId}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3b5397be-7f6b-4316-8b0c-0aceb4e07d41
+    type: regular
+    task:
+      id: 3b5397be-7f6b-4316-8b0c-0aceb4e07d41
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id: {}
+      search_fields:
+        simple: '{"subject": ${RandomString}}'
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d44e9ce1-4c33-4c85-81c2-0d1b5f3b496f
+    type: condition
+    task:
+      id: d44e9ce1-4c33-4c85-81c2-0d1b5f3b496f
+      version: -1
+      name: Verify service-desk-plus-requests-list-output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Subject}
+      right:
+        simple: ${RandomString}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: b65da235-45a4-45ba-8053-aeb3d6247607
+    type: condition
+    task:
+      id: b65da235-45a4-45ba-8053-aeb3d6247607
+      version: -1
+      name: Verify service-desk-plus-requests-list-output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Subject}
+      right:
+        simple: ${RandomString}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 603166e1-7650-46d5-81ff-a18ad82297fa
+    type: regular
+    task:
+      id: 603166e1-7650-46d5-81ff-a18ad82297fa
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c38fd479-0a62-4205-81b4-6fca22888b36
+    type: regular
+    task:
+      id: c38fd479-0a62-4205-81b4-6fca22888b36
+      version: -1
+      name: Requests Number
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      array:
+        simple: ${ServiceDeskPlus.Request}
+      contextKey: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 038b5799-1e3f-47d7-81b0-a86a89619108
+    type: regular
+    task:
+      id: 038b5799-1e3f-47d7-81b0-a86a89619108
+      version: -1
+      name: Save Request Id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: SaveId
+      stringify:
+        simple: "true"
+      value:
+        simple: ${ServiceDeskPlus.Request.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: fb2a5fd1-058a-4129-8e81-41c95dc7136c
+    type: title
+    task:
+      id: fb2a5fd1-058a-4129-8e81-41c95dc7136c
+      version: -1
+      name: Test Assign, Update Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 040c3c31-6fc6-487e-8a4b-4aecc4dd854b
+    type: regular
+    task:
+      id: 040c3c31-6fc6-487e-8a4b-4aecc4dd854b
+      version: -1
+      name: service-desk-plus-request-update
+      description: Update the request with the given request id.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-update
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      assets: {}
+      category: {}
+      description: {}
+      email_ids_to_notify: {}
+      group: {}
+      impact: {}
+      is_fcr: {}
+      item: {}
+      level: {}
+      mode: {}
+      priority: {}
+      request_id:
+        simple: ${SaveId}
+      request_type: {}
+      requester:
+        simple: Palo Alto Xsoar
+      resources: {}
+      service_category: {}
+      site: {}
+      status:
+        simple: Resolved
+      status_change_comments: {}
+      subcategory: {}
+      subject:
+        simple: Update request
+      technician: {}
+      udf_fields: {}
+      update_reason: {}
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: ade04c9c-c88a-46ea-85b6-2db12709d0a9
+    type: regular
+    task:
+      id: ade04c9c-c88a-46ea-85b6-2db12709d0a9
+      version: -1
+      name: service-desk-plus-request-assign
+      description: Assignes the request with the given request id to a technician/group
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-assign
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      group: {}
+      request_id:
+        simple: ${SaveId}
+      technician:
+        simple: 'Palo Alto Xsoar'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ad3e3b78-a6a2-49a8-8982-e70d146ff3d8
+    type: regular
+    task:
+      id: ad3e3b78-a6a2-49a8-8982-e70d146ff3d8
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "21"
+      - "24"
+      - "25"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id:
+        simple: ${SaveId}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0bb15d90-7ae0-4ba9-8066-50670c8dd9c3
+    type: condition
+    task:
+      id: 0bb15d90-7ae0-4ba9-8066-50670c8dd9c3
+      version: -1
+      name: Verify assign
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ServiceDeskPlus.Request.Technician
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: b05e62b0-c94f-4905-84d0-427e89eff2d6
+    type: condition
+    task:
+      id: b05e62b0-c94f-4905-84d0-427e89eff2d6
+      version: -1
+      name: Verify update
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Status}
+      right:
+        simple: Resolved
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: efa14364-6bf9-4d50-8b30-a255f7c69383
+    type: condition
+    task:
+      id: efa14364-6bf9-4d50-8b30-a255f7c69383
+      version: -1
+      name: Verify update
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Subject}
+      right:
+        simple: Update request
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 5d5aa47a-6143-4a61-899f-42b2f85fcf51
+    type: regular
+    task:
+      id: 5d5aa47a-6143-4a61-899f-42b2f85fcf51
+      version: -1
+      name: service-desk-plus-request-close
+      description: Close the existing request with the given request id
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-close
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      closure_code: {}
+      closure_comments: {}
+      request_id:
+        simple: ${SaveId}
+      requester_ack_comments: {}
+      requester_ack_resolution: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 8d535541-8825-449a-803e-f3ddb9c3201d
+    type: title
+    task:
+      id: 8d535541-8825-449a-803e-f3ddb9c3201d
+      version: -1
+      name: Test Close and Delete commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: cc5a25da-9c6e-4092-8f74-be936766f6a5
+    type: regular
+    task:
+      id: cc5a25da-9c6e-4092-8f74-be936766f6a5
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id:
+        simple: ${SaveId}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 4f4a7b44-2d25-4f03-852e-0f60d3ac9031
+    type: condition
+    task:
+      id: 4f4a7b44-2d25-4f03-852e-0f60d3ac9031
+      version: -1
+      name: Verify closed
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Status}
+      right:
+        simple: Closed
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 81b6fdb8-8bd8-44ea-80de-fc66f6e65924
+    type: regular
+    task:
+      id: 81b6fdb8-8bd8-44ea-80de-fc66f6e65924
+      version: -1
+      name: service-desk-plus-request-delete
+      description: Delete the request with the given id.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      request_id:
+        simple: ${SaveId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 627b7a97-41b9-470a-8c96-22666944d292
+    type: regular
+    task:
+      id: 627b7a97-41b9-470a-8c96-22666944d292
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: b289f753-b2ab-4f6d-8de9-61b4798b66a7
+    type: regular
+    task:
+      id: b289f753-b2ab-4f6d-8de9-61b4798b66a7
+      version: -1
+      name: Generate Random Request Subject
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "20"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 9f454c7b-ca7b-420b-8a69-03e24950f168
+    type: regular
+    task:
+      id: 9f454c7b-ca7b-420b-8a69-03e24950f168
+      version: -1
+      name: service-desk-plus-request-create
+      description: Create new requests
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      assets: {}
+      category:
+        simple: "Informational"
+      description: {}
+      email_ids_to_notify: {}
+      group: {}
+      impact: {}
+      is_fcr: {}
+      item: {}
+      level: {}
+      mode:
+        simple: "Web Form"
+      priority: {}
+      request_type: {}
+      requester:
+        simple: "Palo Alto Xsoar"
+      resources: {}
+      service_category: {}
+      site: {}
+      status: {}
+      subcategory:
+        simple: "Informational"
+      subject:
+        simple: ${RandomString} - second
+      technician: {}
+      udf_fields: {}
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 5a50e00b-ecec-4670-884b-adfa018e6da7
+    type: regular
+    task:
+      id: 5a50e00b-ecec-4670-884b-adfa018e6da7
+      version: -1
+      name: Save Request Id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Request1
+      stringify:
+        simple: "true"
+      value:
+        simple: ${ServiceDeskPlus.Request.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: fd67e209-c1c7-43f7-8cc4-a7acd44a9f75
+    type: title
+    task:
+      id: fd67e209-c1c7-43f7-8cc4-a7acd44a9f75
+      version: -1
+      name: Create 2 New Requests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 30d93ab0-5f72-4295-8e69-39c51eceba91
+    type: regular
+    task:
+      id: 30d93ab0-5f72-4295-8e69-39c51eceba91
+      version: -1
+      name: Generate Random Request Subject
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "20"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: d2575191-02ad-435a-830a-39b66e6ad358
+    type: regular
+    task:
+      id: d2575191-02ad-435a-830a-39b66e6ad358
+      version: -1
+      name: service-desk-plus-request-create
+      description: Create new requests
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      assets: {}
+      category:
+        simple: "Informational"
+      description: {}
+      email_ids_to_notify: {}
+      group: {}
+      impact: {}
+      is_fcr: {}
+      item: {}
+      level: {}
+      mode:
+        simple: "Web Form"
+      priority: {}
+      request_type: {}
+      requester:
+        simple: "Palo Alto Xsoar"
+      resources: {}
+      service_category: {}
+      site: {}
+      status: {}
+      subcategory:
+        simple: "Informational"
+      subject:
+        simple: ${RandomString} - third
+      technician: {}
+      udf_fields: {}
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 83dae9cc-fac3-485c-853a-1cb0e5135d76
+    type: regular
+    task:
+      id: 83dae9cc-fac3-485c-853a-1cb0e5135d76
+      version: -1
+      name: Save Request Id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Request2
+      stringify:
+        simple: "true"
+      value:
+        simple: ${ServiceDeskPlus.Request.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 265f62d2-5e4e-464a-8183-ff8941ef7e20
+    type: title
+    task:
+      id: 265f62d2-5e4e-464a-8183-ff8941ef7e20
+      version: -1
+      name: Test Requests Linking
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 5855c7bc-4626-41bb-8b08-26da7eeec92a
+    type: regular
+    task:
+      id: 5855c7bc-4626-41bb-8b08-26da7eeec92a
+      version: -1
+      name: service-desk-plus-link-request-modify
+      description: Link or Unlink multiple commands
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      action:
+        simple: Link
+      comment:
+        simple: 'link request modify test'
+      linked_requests_id:
+        simple: ${Request2}
+      request_id:
+        simple: ${Request1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 97580aad-2077-4701-8a13-02746d24ff1e
+    type: condition
+    task:
+      id: 97580aad-2077-4701-8a13-02746d24ff1e
+      version: -1
+      name: Verify Linked Request
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.LinkRequests.LinkedRequest.id}
+      right:
+        simple: ${Request2}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 5ee1b2ae-dbe8-47d6-8517-8ada36598684
+    type: regular
+    task:
+      id: 5ee1b2ae-dbe8-47d6-8517-8ada36598684
+      version: -1
+      name: service-desk-plus-linked-request-list
+      description: Gets a list with all the linked requests under a request
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      request_id:
+        simple: ${Request1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: a3ddbfea-1869-4edc-8091-a8d637721029
+    type: regular
+    task:
+      id: a3ddbfea-1869-4edc-8091-a8d637721029
+      version: -1
+      name: service-desk-plus-link-request-modify
+      description: Link or Unlink multiple commands
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      action:
+        simple: Unlink
+      comment: {}
+      linked_requests_id:
+        simple: ${Request2}
+      request_id:
+        simple: ${Request1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 4aa12771-a36d-437a-8c75-082be0082f85
+    type: regular
+    task:
+      id: 4aa12771-a36d-437a-8c75-082be0082f85
+      version: -1
+      name: service-desk-plus-linked-request-list
+      description: Gets a list with all the linked requests under a request
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      request_id:
+        simple: ${Request1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: eaffb3b0-c77b-4432-8ed3-2459772e9daf
+    type: condition
+    task:
+      id: eaffb3b0-c77b-4432-8ed3-2459772e9daf
+      version: -1
+      name: Verify No Linked Request
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ServiceDeskPlus.Request.LinkRequests.LinkedRequest
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 3b20552d-4a52-4165-8298-3f7309bd261d
+    type: title
+    task:
+      id: 3b20552d-4a52-4165-8298-3f7309bd261d
+      version: -1
+      name: Test Resolution and Pickup
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: de62b0d7-31de-4c4d-8a36-421b8f85df0b
+    type: regular
+    task:
+      id: de62b0d7-31de-4c4d-8a36-421b8f85df0b
+      version: -1
+      name: service-desk-plus-request-resolution-add
+      description: Adds a resolution to the given request
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolution-add
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      add_to_linked_requests:
+        simple: "false"
+      request_id:
+        simple: ${Request1}
+      resolution_content:
+        simple: Add resolution
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: fbdba70a-4c1d-4952-86bc-8cb3013a4bfa
+    type: regular
+    task:
+      id: fbdba70a-4c1d-4952-86bc-8cb3013a4bfa
+      version: -1
+      name: service-desk-plus-request-delete
+      description: Delete the request with the given id.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      request_id:
+        simple: ${Request1},${Request2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 031f3ce4-9e32-4e5f-8924-75287facb569
+    type: regular
+    task:
+      id: 031f3ce4-9e32-4e5f-8924-75287facb569
+      version: -1
+      name: service-desk-plus-request-resolutions-list
+      description: Gets the resolution to the given request
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolutions-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      request_id:
+        simple: ${Request1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 7f99087e-253f-4964-8685-8a652d4a42ed
+    type: condition
+    task:
+      id: 7f99087e-253f-4964-8685-8a652d4a42ed
+      version: -1
+      name: Verify Resolution of Linked Request
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Resolution.Content}
+      right:
+        simple: Add resolution
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 113e8176-4376-42bf-8de5-027a4449c760
+    type: regular
+    task:
+      id: 113e8176-4376-42bf-8de5-027a4449c760
+      version: -1
+      name: service-desk-plus-request-pickup
+      description: Allows the technician to pickup the request with the given request
+        id on his name.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-pickup
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      request_id:
+        simple: ${Request2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 909784d6-9ddf-413b-874d-0724e14c4721
+    type: regular
+    task:
+      id: 909784d6-9ddf-413b-874d-0724e14c4721
+      version: -1
+      name: service-desk-plus-requests-list
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand:
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id:
+        simple: ${Request2}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 679a7084-b285-41b0-8863-abc51f555fa3
+    type: condition
+    task:
+      id: 679a7084-b285-41b0-8863-abc51f555fa3
+      version: -1
+      name: Verify Pickup
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ServiceDeskPlus.Request.Technician
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7905,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
