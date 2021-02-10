@@ -52,7 +52,7 @@ script:
         \ marks (for example: "Invalid logon").'
     - name: record_type
       required: false
-      description: 'The record type by which to filters the log entries.\
+      description: 'The record type by which to filter the log entries.\
         \ Available record types: https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype.'
     - name: ip_addresses
       required: false
