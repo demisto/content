@@ -1,5 +1,5 @@
 ### Ews Audit Log
-This integration can search for logs.
+This integration searches for logs.
 
 Supported authentication methods:
 
@@ -10,4 +10,4 @@ Supported authentication methods:
     3. Run the ***o365-auditlog-auth-test*** command to verify that the authorization process was implemented correctly.
   
 #### Permissions:
-The app is using the scope `https://outlook.office365.com/.default`.
+The app uses the *https://outlook.office365.com/.default* scope.
