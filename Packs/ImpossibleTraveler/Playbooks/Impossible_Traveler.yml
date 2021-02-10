@@ -642,7 +642,7 @@ tasks:
                         simple: Address
                     getField:
                       value:
-                        simple: Geo
+                        simple: "Geo"
                 - operator: getField
                   args:
                     field:
@@ -756,7 +756,7 @@ tasks:
                   simple: Address
               getField:
                 value:
-                  simple: Geo
+                  simple: "Geo"
           - operator: getField
             args:
               field:
@@ -2557,7 +2557,7 @@ tasks:
                         simple: Address
                     getField:
                       value:
-                        simple: Geo
+                        simple: "Geo"
                 - operator: getField
                   args:
                     field:
@@ -2723,7 +2723,7 @@ tasks:
                   simple: Address
               getField:
                 value:
-                  simple: Geo
+                  simple: "Geo"
           - operator: getField
             args:
               field:
