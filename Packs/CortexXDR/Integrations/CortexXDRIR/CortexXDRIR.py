@@ -2824,7 +2824,7 @@ def run_snippet_code_script_command(client: Client, args: Dict) -> Tuple[str, An
 
 
 def get_script_execution_status_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
-    action_id = args.get('action_id')
+    action_id = args.get('action_id', '')
     response = client.get_script_execution_status(action_id)
     reply = response.get('reply')
     reply['action_id'] = int(action_id)
@@ -2838,7 +2838,7 @@ def get_script_execution_status_command(client: Client, args: Dict) -> Tuple[str
 
 
 def get_script_execution_results_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
-    action_id = args.get('action_id')
+    action_id = args.get('action_id', '')
     response = client.get_script_execution_results(action_id)
     results = response.get('reply', {}).get('results')
     context = {
