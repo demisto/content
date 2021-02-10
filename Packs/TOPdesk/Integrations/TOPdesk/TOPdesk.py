@@ -608,7 +608,7 @@ def test_module(client: Client) -> str:
             client.get_list("/incidents/call_types")
     except DemistoException as e:
         if 'Error 401' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure username and password are correctly set'
         else:
             raise e
     return 'ok'

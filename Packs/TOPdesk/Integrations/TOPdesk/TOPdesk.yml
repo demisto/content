@@ -2045,6 +2045,114 @@ script:
     - contextPath: TOPdesk.incident..externalLinks.date
       description: ''
       type: Date
+  arguments:
+  - description: The caller contact details for this incident.
+    isArray: false
+    name: caller
+    required: false
+    secret: false
+  - description: Status of the incident. Can only be set by operators.
+    isArray: false
+    name: status
+    required: false
+    secret: false
+    predefined:
+      - firstLine
+      - secondLine
+      - partial
+  - description: Brief description. maximum 80 characters.
+    isArray: false
+    name: description
+    required: false
+    secret: false
+  - description: Initial request. Can be set by operators and persons.
+    isArray: false
+    name: request
+    required: false
+    secret: false
+  - description: Initial action. Can be set by operators and persons.
+    isArray: false
+    name: action
+    required: false
+    secret: false
+  - description: Whether the initial action is invisible for persons.
+      Can only be set by operators. Default value is false.
+    isArray: false
+    name: action_invisible_for_caller
+    required: false
+    secret: false
+    Type: Boolean
+  - description: Entry type by id or name. Can only be set by operators. XSOAR is set by default for mirroring.
+    isArray: false
+    name: entryType
+    required: false
+    secret: false
+  - description: Category by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    isArray: false
+    name: category
+    required: false
+    secret: false
+  - description: Subcategory by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    isArray: false
+    name: subcategory
+    required: false
+    secret: false
+  - description: External number. Can only be set by operators. Max 60 characters.
+    isArray: false
+    name: external_number
+    required: false
+    secret: false
+  - description: Main incident id or number, required for creating a partial incident. Can only be set by operators.
+    isArray: false
+    name: main_incident
+    required: false
+    secret: false
+  name: topdesk-incident-create
+  outputs:
+    - contextPath: TOPdesk.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.number
+      description: ''
+      type: String
+    - contextPath: TOPdesk.request
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.requests
+      description: ''
+      type: String
+    - contextPath: TOPdesk.action
+      description: ''
+      type: String
+    - contextPath: TOPdesk.attachments
+      description: ''
+      type: String
+    - contextPath: TOPdesk.caller.id
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.caller.dynamicName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.caller.branch.id
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.caller.branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.caller.branch.clientReferenceNumber
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.caller.branch.timeZone
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.caller.branch.extraA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.caller.branch.extraB
+      description: ''
   dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false
