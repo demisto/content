@@ -1,6 +1,6 @@
 {
     "name": "Office365 and Azure Audit Log",
-    "description": "Use the Office365 and Azure Audit Log to manage events as invalid logins and more.",
+    "description": "Search the unified audit log to view user and administrator activity in your organization.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
