@@ -1,0 +1,409 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: GreyNoise
+  version: -1
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Whether to allow connections without verifying SSL certificates
+    validity.
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
+  scan and attack traffic. With this integration, users can contextualize existing
+  alerts, filter false-positives, identify compromised devices, and track emerging
+  threats.
+display: GreyNoise
+name: GreyNoise
+script:
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      description: A comma-separated list of IPs.
+      isArray: true
+      required: true
+    description: Runs reputation on IPs.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: IP.address
+      description: IP address.
+      type: string
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: string
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to IP address.
+      type: string
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: string
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location such as city and region.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: string
+  - arguments:
+    - default: true
+      description: A list of IP addresses to run a quick check on
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    description: 'Check whether a given IP address is "Internet background noise",
+      or has been observed scanning or attacking devices across the Internet. Note:
+      It checks against the last 60 days of Internet scanner data.'
+    execution: false
+    name: greynoise-ip-quick-check
+    outputs:
+    - contextPath: GreyNoise.IP.address
+      description: The IP address of the scanning device IP.
+      type: string
+    - contextPath: GreyNoise.IP.noise
+      description: Whether the IP is internet background noise or attacking.
+      type: boolean
+    - contextPath: GreyNoise.IP.code
+      description: Code which correlates to why GreyNoise labeled the IP as noise.
+      type: string
+    - contextPath: GreyNoise.IP.code_value
+      description: Message which correlates to why GreyNoise labeled the IP as noise.
+      type: string
+  - arguments:
+    - default: false
+      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      description: "The organization that owns the network the IP address belongs to."
+      name: organization
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Classification of the device. Possible values: unknown, benign, malicious."
+      isArray: false
+      name: classification
+      predefined:
+        - unknown
+        - benign
+        - malicious
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: Whether the IP is spoofable or not.
+      isArray: false
+      name: spoofable
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+    - default: false
+      description: The benign actor the device has been associated with.
+      isArray: false
+      name: actor
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum amount of results to grab.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: "GNQL query to filter records.\n
+        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
+        Example:\n
+        malicious,\n
+        spoofable:false SSH Scanner,\n
+        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      isArray: false
+      name: advanced_query
+      required: false
+      secret: false
+    - default: false
+      description: Scroll token to paginate through results.
+      isArray: false
+      name: next_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the information of IP based on the providence filters.
+    execution: false
+    name: greynoise-query
+    outputs:
+    - contextPath: GreyNoise.IP.address
+      description: The IP address of the scanning device IP.
+      type: string
+    - contextPath: GreyNoise.IP.first_seen
+      description: The date the device was first observed by GreyNoise. Format is
+        ISO8601.
+      type: date
+    - contextPath: GreyNoise.IP.last_seen
+      description: The date the device was last observed by GreyNoise. Format is ISO8601.
+      type: date
+    - contextPath: GreyNoise.IP.seen
+      description: IP is in record with GreyNoise.
+      type: boolean
+    - contextPath: GreyNoise.IP.tags
+      description: A list of the tags the device has been assigned over the past 90
+        days.
+      type: array
+    - contextPath: GreyNoise.IP.actor
+      description: The overt actor the device has been associated with.
+      type: string
+    - contextPath: GreyNoise.IP.spoofable
+      description: Boolean indicates if IP is spoofable.
+      type: boolean
+    - contextPath: GreyNoise.IP.classification
+      description: Whether the device has been categorized as unknown, benign, or
+        malicious.
+      type: string
+    - contextPath: GreyNoise.IP.cve
+      description: CVEs associated with IP.
+      type: array
+    - contextPath: GreyNoise.IP.metadata.asn
+      description: The autonomous system identification number.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.city
+      description: The city the device is geographically located in.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.region
+      description: The full name of the region the device is geographically located
+        in.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.country
+      description: The full name of the country.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.country_code
+      description: The two-character country code of the country.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.organization
+      description: The organization that owns the network that the IP address belongs
+        to.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.category
+      description: Whether the device belongs to a business, isp, hosting, education,
+        or mobile network.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.tor
+      description: Whether or not the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.rdns
+      description: Reverse DNS lookup of the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.os
+      description: The name of the operating system of the device.
+      type: string
+    - contextPath: GreyNoise.IP.vpn
+      description: Whether the device is VPN endpoint or not.
+      type: boolean
+    - contextPath: GreyNoise.IP.vpn_service
+      description: The name of the VPN service provider of the device.
+      type: string
+    - contextPath: GreyNoise.IP.raw_data.scan.port
+      description: The port number(s) the devices has been observed scanning.
+      type: number
+    - contextPath: GreyNoise.IP.raw_data.scan.protocol
+      description: The protocol of the port the device has been observed scanning.
+      type: string
+    - contextPath: GreyNoise.IP.raw_data.web.paths
+      description: Any HTTP paths the device has been observed crawling the Internet
+        for.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.web.useragents
+      description: Any HTTP user-agents the device has been observed using while crawling
+        the Internet.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.ja3.fingerprint
+      description: The JA3 TLS/SSL fingerprint.
+      type: string
+    - contextPath: GreyNoise.IP.raw_data.ja3.port
+      description: The corresponding TCP port for the given JA3 fingerprint.
+      type: number
+    - contextPath: GreyNoise.IP.raw_data.hassh.fingerprint
+      description: HASSH hash fingerprint string.
+      type: string
+    - contextPath: GreyNoise.IP.raw_data.hassh.port
+      description: TCP port connection where the HASSH hash was identified.
+      type: number
+    - contextPath: GreyNoise.Query.complete
+      description: Whether all results have been fetched or not.
+      type: boolean
+    - contextPath: GreyNoise.Query.count
+      description: Count of the total matching records.
+      type: number
+    - contextPath: GreyNoise.Query.message
+      description: Message from the API response.
+      type: string
+    - contextPath: GreyNoise.Query.query
+      description: Query which was used to filter the records.
+      type: string
+    - contextPath: GreyNoise.Query.scroll
+      description: Scroll token to paginate through results.
+      type: string
+  - arguments:
+    - default: false
+      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      description: "The organization that owns the network that the IP address belongs to."
+      name: organization
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Classification of the device like unknown, benign, malicious.
+      isArray: false
+      name: classification
+      predefined:
+        - unknown
+        - benign
+        - malicious
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: Whether the IP is spoofable or not.
+      isArray: false
+      name: spoofable
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
+    - default: false
+      description: The benign actor the device has been associated with.
+      isArray: false
+      name: actor
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum amount of results to grab.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: "GNQL query to filter records.\n
+        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
+        Example:\n
+        malicious,\n
+        spoofable:false SSH Scanner,\n
+        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      isArray: false
+      name: advanced_query
+      required: false
+      secret: false
+    deprecated: false
+    description: Get aggregate statistics for the top organizations, actors, tags,
+      ASNs, countries, classifications, and operating systems of all the results of
+      a given GNQL query.
+    execution: false
+    name: greynoise-stats
+    outputs:
+    - contextPath: GreyNoise.Stats.query
+      description: The query which was used to filter the records.
+      type: string
+    - contextPath: GreyNoise.Stats.count
+      description: Count of total aggregated records.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.classifications.classification
+      description: Classification name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.classifications.count
+      description: Classification count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.spoofable.spoofable
+      description: Whether records are spoofable or not.
+      type: boolean
+    - contextPath: GreyNoise.Stats.stats.spoofable.count
+      description: Spoofable count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.organizations.organization
+      description: Organization name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.organizations.count
+      description: Organization count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.actors.actor
+      description: Actor name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.actors.count
+      description: Actor count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.countries.country
+      description: Country name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.countries.count
+      description: Country count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.tags.tag
+      description: Tag name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.tags.count
+      description: Tag count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.operating_systems.operating_system
+      description: Operating system name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.operating_systems.count
+      description: Operating system count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.categories.category
+      description: Category name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.categories.count
+      description: Category count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.asns.asn
+      description: Asn name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.asns.count
+      description: Asn count.
+      type: number
+  dockerimage: demisto/greynoise:1.0.0.15264
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
