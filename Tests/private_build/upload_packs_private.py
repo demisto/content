@@ -9,9 +9,12 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
     get_recent_commits_data
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
-    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
+from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, \
+    download_and_extract_index, \
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, \
+    upload_core_packs_config, \
+    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary, \
+    METADATA_TO_REMOVE
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -482,6 +485,15 @@ def main():
         upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
     # finished iteration over content packs
     if is_private_build:
+        try:
+            metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+        except Exception:
+            logging.exception(f'Could not find metadata files in {private_index_path}.')
+            return []
+        for metadata_file_path in metadata_files:
+            if any(metadata_file_path in x for x in METADATA_TO_REMOVE):
+                logging.info("Found metadata to remove")
+                os.remove(metadata_file_path)
         delete_public_packs_from_index(index_folder_path)
         upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
                                 private_packs,
