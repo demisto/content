@@ -28,7 +28,7 @@ function CreateCertificate
         $cmd_args.StateOrProvince = $StateOrProvince
     }
 
-    New-SelfSignedCertificate @cmd_args -WarningAction:SilentlyContinue 2>&1 | Out-Null
+    New-SelfSignedCertificate @cmd_args -WarningAction:SilentlyContinue > $null
 }
 
 function Main()
