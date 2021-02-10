@@ -1,5 +1,5 @@
 ### Ews Audit Log
-This integration searches the unified audit log to view user and administrator activity in your organization. .
+This integration searches the unified audit log to view user and administrator activity in your organization.
 
 Supported authentication methods:
 
