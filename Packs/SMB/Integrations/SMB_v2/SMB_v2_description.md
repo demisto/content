@@ -1,6 +1,6 @@
 Configuration
 -
-For the configuration, you should either configure the server details and credentials as parameters or as command arguments.
+For the configuration, you should configure the server details and credentials either as parameters or as command arguments.
 
 If the server details were configured both as parameters and as command arguments, the commands argument will be used to set the connection.
 
