@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference
+from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -219,6 +219,10 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
     indicator_type = args.get("type")
     # TODO object - creator id - how to get it ?
     created_by = args.get("created_by")
+    # identity = Identity(client)
+    # created_by = identity.create(name='TestCreatedBy', description='test created by dev',
+    #                             type='Individual', x_opencti_firstname='Dev',
+    #                             x_opencti_lastname='Demisto').get('id')
 
     marking = None
     if marking_name := args.get("marking"):
@@ -243,7 +247,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
 
     description = args.get("description")
     score = int(args.get("score", '50'))
-    # TODO: update is not working
+    # TODO: update is not working - open bug for OpenCTI.
     update = argToBoolean(args.get("update", False))
     # TODO: how user will know what to write at data - add documentation
     data = {}
