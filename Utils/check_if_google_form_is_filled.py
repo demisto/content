@@ -30,7 +30,7 @@ def is_contrib_pr(pr_number, github_token, verify_ssl):
 
 def check_if_form_is_filled(pr_number, github_token, verify_ssl):
     contrib_pr = is_contrib_pr(pr_number, github_token, verify_ssl)
-    if not contrib_pr:
+    if contrib_pr:
         return True
 
     df = pd.read_csv(path_to_csv, encoding='utf8')
