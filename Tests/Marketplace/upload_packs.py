@@ -501,14 +501,14 @@ def get_updated_private_packs(private_packs, index_folder_path):
     for pack in private_packs:
         private_pack_id = pack.get('id')
         private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
-        private_commit_hash_from_content_repo = ""
         for public_pack in private_packs_from_public_index:
             if public_pack.get('id') == private_pack_id:
                 private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
 
-        private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
-        if private_pack_was_updated:
-            updated_private_packs.append(private_pack_id)
+                private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
+                private_pack_was_updated = private_pack_was_updated and private_commit_hash_from_metadata != ""
+                if private_pack_was_updated:
+                    updated_private_packs.append(private_pack_id)
 
     return updated_private_packs
 
