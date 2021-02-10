@@ -3,7 +3,7 @@ commonfields:
   id: RubrikPolaris
   version: -1
 configuration:
-- display: Polaris Account(e.g. ${polarisAccount}.my.rubrik.com)
+- display: Polaris Account (e.g. ${polarisAccount}.my.rubrik.com)
   name: polaris_account
   required: true
   type: 0
