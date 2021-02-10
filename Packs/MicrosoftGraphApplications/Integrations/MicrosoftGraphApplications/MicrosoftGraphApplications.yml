@@ -55,148 +55,148 @@ script:
       defaultValue: 10
       secret: false
     outputs:
-    - contextPath: MSGraphService.accountEnabled
+    - contextPath: MSGraphApplication.accountEnabled
       description: 'true if the service principal account is enabled; otherwise, false.'
       type: Boolean
-    - contextPath: MSGraphService.appDescription
+    - contextPath: MSGraphApplication.appDescription
       description: A brief description of the app.
       type: String
-    - contextPath: MSGraphService.appDisplayName
+    - contextPath: MSGraphApplication.appDisplayName
       description: 'The display name exposed by the associated application.'
       type: String
-    - contextPath: MSGraphService.appId
+    - contextPath: MSGraphApplication.appId
       description: 'The unique identifier for the associated application (its appId
         property).'
       type: String
-    - contextPath: MSGraphService.appOwnerOrganizationId
+    - contextPath: MSGraphApplication.appOwnerOrganizationId
       description: 'Contains the tenant id where the application is registered. This
         is applicable only to service principals backed by applications.'
       type: String
-    - contextPath: MSGraphService.appRoleAssignmentRequired
+    - contextPath: MSGraphApplication.appRoleAssignmentRequired
       description: 'Specifies whether users or other service principals need to be
         granted an app role assignment for this service principal before users can
         sign in or apps can get tokens. The default value is false.'
       type: Boolean
-    - contextPath: MSGraphService.applicationTemplateId
+    - contextPath: MSGraphApplication.applicationTemplateId
       description: 'Unique identifier of the applicationTemplate that the servicePrincipal
         was created from. Read-only.'
       type: String
-    - contextPath: MSGraphService.createdDateTime
+    - contextPath: MSGraphApplication.createdDateTime
       description: 'Time which the application created.'
       type: Date
-    - contextPath: MSGraphService.deletedDateTime
+    - contextPath: MSGraphApplication.deletedDateTime
       description: 'Time which the application deleted.'
       type: Date
-    - contextPath: MSGraphService.description
+    - contextPath: MSGraphApplication.description
       description: A brief description of the app.
       type: String
-    - contextPath: MSGraphService.displayName
+    - contextPath: MSGraphApplication.displayName
       description: 'The display name for the service principal.'
       type: String
-    - contextPath: MSGraphService.homepage
+    - contextPath: MSGraphApplication.homepage
       description: 'Home page or landing page of the application.'
       type: String
-    - contextPath: MSGraphService.id
+    - contextPath: MSGraphApplication.id
       description: 'The unique identifier for the service principal.'
       type: String
-    - contextPath: MSGraphService.info.logoUrl
+    - contextPath: MSGraphApplication.info.logoUrl
       description: CDN URL to the application's logo,
       type: String
-    - contextPath: MSGraphService.info.marketingUrl
+    - contextPath: MSGraphApplication.info.marketingUrl
       description: Link to the application's marketing page.
       type: String
-    - contextPath: MSGraphService.info.privacyStatementUrl
+    - contextPath: MSGraphApplication.info.privacyStatementUrl
       description: Link to the application's privacy statement.
       type: String
-    - contextPath: MSGraphService.info.supportUrl
+    - contextPath: MSGraphApplication.info.supportUrl
       description: Link to the application's support page.
       type: String
-    - contextPath: MSGraphService.info.termsOfServiceUrl
+    - contextPath: MSGraphApplication.info.termsOfServiceUrl
       description: Link to the application's terms of service statement.
       type: String
-    - contextPath: MSGraphService.loginUrl
+    - contextPath: MSGraphApplication.loginUrl
       description: Specifies the URL where the service provider redirects the user
         to Azure AD to authenticate. Azure AD uses the URL to launch the application
         from Microsoft 365 or the Azure AD My Apps
       type: String
-    - contextPath: MSGraphService.logoutUrl
+    - contextPath: MSGraphApplication.logoutUrl
       description: Specifies the URL that will be used by Microsoft's authorization
         service to logout an user.
       type: String
-    - contextPath: MSGraphService.notes
+    - contextPath: MSGraphApplication.notes
       description: Application's notes.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.adminConsentDescription
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.adminConsentDescription
       description: A description of the delegated permissions, intended to be read
         by an administrator granting the permission on behalf of all users. This text
         appears in tenant-wide admin consent experiences.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.adminConsentDisplayName
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.adminConsentDisplayName
       description: The permission's title, intended to be read by an administrator
         granting the permission on behalf of all users.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.id
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.id
       description: Unique delegated permission identifier inside the collection of
         delegated permissions defined for a resource application.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.isEnabled
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.isEnabled
       description: Is oauth2PermissionScopes enabled or not.
       type: Boolean
-    - contextPath: MSGraphService.oauth2PermissionScopes.type
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.type
       description: Specifies whether this delegated permission should be considered
         safe for non-admin users to consent to on behalf of themselves, or whether
         an administrator should be required for consent to the permissions.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.userConsentDescription
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.userConsentDescription
       description: A description of the delegated permissions, intended to be read
         by a user granting the permission on their own behalf. This text appears in
         consent experiences where the user is consenting only on behalf of themselves.
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.userConsentDisplayName
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.userConsentDisplayName
       description: A title for the permission,
       type: String
-    - contextPath: MSGraphService.oauth2PermissionScopes.value
+    - contextPath: MSGraphApplication.oauth2PermissionScopes.value
       description: Specifies the value to include in the scope claim in access tokens.
       type: String
-    - contextPath: MSGraphService.preferredSingleSignOnMode
+    - contextPath: MSGraphApplication.preferredSingleSignOnMode
       description: Specifies the single sign-on mode configured for this application.
         Azure AD uses the preferred single sign-on mode to launch the application
         from Microsoft 365 or the Azure AD My Apps. The supported values are password,
         saml, external, and oidc.
       type: String
-    - contextPath: MSGraphService.preferredTokenSigningKeyThumbprint
+    - contextPath: MSGraphApplication.preferredTokenSigningKeyThumbprint
       description: Thumbprint of preferred certificate to sign the token
       type: String
-    - contextPath: MSGraphService.replyUrls
+    - contextPath: MSGraphApplication.replyUrls
       description: The URLs that user tokens are sent to for sign in with the associated
         application, or the redirect URIs that OAuth 2.0 authorization codes and access
         tokens are sent to for the associated application.
       type: String
-    - contextPath: MSGraphService.samlSingleSignOnSettings
+    - contextPath: MSGraphApplication.samlSingleSignOnSettings
       description: The collection for settings related to saml single sign-on.
       type: String
-    - contextPath: MSGraphService.servicePrincipalNames
+    - contextPath: MSGraphApplication.servicePrincipalNames
       description: Contains the list of identifiersUris,
       type: String
-    - contextPath: MSGraphService.servicePrincipalType
+    - contextPath: MSGraphApplication.servicePrincipalType
       description: Identifies if the service principal represents an application or
         a managed identity.
       type: String
-    - contextPath: MSGraphService.signInAudience
+    - contextPath: MSGraphApplication.signInAudience
       description: The audience that can sign in.
       type: String
-    - contextPath: MSGraphService.tokenEncryptionKeyId
+    - contextPath: MSGraphApplication.tokenEncryptionKeyId
       description: Specifies the keyId of a public key from the keyCredentials
       type: String
-    - contextPath: MSGraphService.verifiedPublisher.addedDateTime
+    - contextPath: MSGraphApplication.verifiedPublisher.addedDateTime
       description: The timestamp when the verified publisher was first added or most
         recently updated.
       type: Date
-    - contextPath: MSGraphService.verifiedPublisher.displayName
+    - contextPath: MSGraphApplication.verifiedPublisher.displayName
       description: The verified publisher name from the app publisher's Partner Center
         account.
       type: String
-    - contextPath: MSGraphService.verifiedPublisher.verifiedPublisherId
+    - contextPath: MSGraphApplication.verifiedPublisher.verifiedPublisherId
       description: The ID of the verified publisher from the app publisher's Partner
         Center account.
       type: String

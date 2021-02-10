@@ -134,7 +134,7 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
     results = ms_client.get_service_principals(limit)
     return CommandResults(
-        'MSGraphService',
+        'MSGraphApplication',
         'id',
         outputs=results,
         readable_output=tableToMarkdown(
