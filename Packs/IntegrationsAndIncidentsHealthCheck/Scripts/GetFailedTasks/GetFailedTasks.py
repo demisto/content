@@ -28,8 +28,9 @@ def get_rest_api_instance_to_use():
 def get_tenant_name():
     """
         Gets the tenant name from the server url.
-        :return: tenant name.
-        :rtype: ``str``
+
+        Returns:
+         tenant name.
     """
     server_url = demisto.executeCommand("GetServerURL", {})[0].get('Contents')
     tenant_name = ''
@@ -40,6 +41,16 @@ def get_tenant_name():
 
 
 def get_failed_tasks_output(tasks: list, incident: dict):
+    """
+        Converts the failing task objects of an incident to context outputs.
+
+        Args:
+            tasks (list): List of failing tasks.
+            incident (dict): An incident object.
+
+        Returns:
+            tuple of context outputs and total amount of related error entries
+    """
     if not tasks:
         return [], 0
 
@@ -69,6 +80,17 @@ def get_failed_tasks_output(tasks: list, incident: dict):
 
 
 def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use: str):
+    """
+        Returns the failing task objects of an incident.
+
+        Args:
+            incident (dict): An incident object.
+            tenant_name (str): The tenant of the incident.
+            rest_api_instance_to_use (str): A Demisto REST API instance name to use for fetching task details.
+
+        Returns:
+            tuple of context outputs and total amount of related error entries
+    """
     if tenant_name:
         uri = f'acc_{tenant_name}/investigation/{str(incident["id"])}/workplan/tasks'
     else:
@@ -80,9 +102,9 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
             "uri": uri,
             "body": {
                 "states": ["Error"],
-                "types": ["regular", "condition", "collection"]
+                "types": ["regular", "condition", "collection"],
             },
-            "using": rest_api_instance_to_use
+            "using": rest_api_instance_to_use,
         }
     )
 
@@ -93,9 +115,9 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
     if task_outputs:
-        return task_outputs, True, tasks_error_entries_number
+        return task_outputs, tasks_error_entries_number
     else:
-        return [], False, 0
+        return [], 0
 
 
 def main():
@@ -142,12 +164,12 @@ def main():
                   f'Elapsed time: {time.time() - start_time}')
 
     for incident in total_incidents:
-        task_outputs, is_failed_incident, incident_error_entries_num = get_incident_data(
+        task_outputs, incident_error_entries_num = get_incident_data(
             incident,
             tenant_name,
             rest_api_instance_to_use,
         )
-        if is_failed_incident:
+        if task_outputs:
             incidents_output.extend(task_outputs)
             number_of_failed_incidents += 1
             number_of_error_entries += incident_error_entries_num
