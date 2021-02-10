@@ -28,7 +28,6 @@ def ja3_search(client: Client, **args) -> CommandResults:
 
 
 def main():
-    # If an arg supplying an orgId is provided, will override the one found in params
     args = {**demisto.params(), **demisto.args()}
 
     base_url = 'https://ja3er.com/'
