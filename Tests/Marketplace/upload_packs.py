@@ -852,6 +852,7 @@ def main():
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
     updated_private_packs_ids = []
     # if private_bucket_name:  # Add private packs to the index
+    private_bucket_name = 'marketplace-dist-private'
     private_storage_bucket = storage_client.bucket(private_bucket_name)
     private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
                                                                                         extract_destination_path,
