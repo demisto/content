@@ -32,7 +32,6 @@ def main():
     args = {**demisto.params(), **demisto.args()}
 
     base_url = 'https://ja3er.com/'
-    api_key = base64.b64encode(f'{demisto.getParam("apiKey")}:{demisto.getParam("apiSecret")}'.encode("ascii"))
     verify = args.get('insecure')
 
     client = Client(
