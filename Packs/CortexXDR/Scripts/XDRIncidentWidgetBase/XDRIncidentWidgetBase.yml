@@ -1,0 +1,48 @@
+args:
+- auto: PREDEFINED
+  description: The result of the widget.
+  name: reultType
+  predefined:
+  - Top10
+  - DistinctCount
+  required: true
+- name: from
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
+    +0200").'
+- name: to
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
+    +0200").'
+- auto: PREDEFINED
+  name: queryType
+  description: The query item to gets the result in the incident, e.g Usere is the
+    value in PaloAltoNetworksXDR.Incident.users.
+  predefined:
+  - Categories
+  - Users
+  - Hosts
+  - Alerts
+  - MitreTactic
+  - MitreTechnique
+  - FileSHA2
+  - File
+  required: true
+commonfields:
+  id: XDRIncidentWidgetBase
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: XDRIncidentWidgetBase
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+comment: This script used to gets statistics on Cortex XDR open incidents and generate
+  widget according to queryType parameter.
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
