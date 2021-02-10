@@ -1,4 +1,4 @@
-Threat intelligence platform.
+Deprecated. Use the ThreatConnect v2 integration instead.
 
 ## Configure ThreatConnect v2 on Cortex XSOAR
 
@@ -8,7 +8,7 @@ Threat intelligence platform.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| baseUrl | baseUrl | True |
+| baseUrl | Base Url | True |
 | accessId | Access ID | True |
 | secretKey | Secret Key | True |
 | defaultOrg | Default Organization | False |

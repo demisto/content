@@ -1,4 +1,74 @@
 version: 2.1
+commands:
+  set-instance-role-env-variable:
+    description: "Sets INSTANCE_ROLE env variable into $BASH_ENV file"
+    parameters:
+      instance_role:
+        type: string
+      instance_created:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Set INSTANCE_ROLE env variable
+          command: |
+            echo 'export INSTANCE_ROLE="<< parameters.instance_role >>"' >> $BASH_ENV
+            echo 'export INSTANCE_WAS_CREATED="<< parameters.instance_created >>"' >> $BASH_ENV
+  start-tunnel:
+    description: "Opens an ssh tunnel to the demisto servers and wait until the tunnels are established"
+    parameters:
+      timeout:
+        type: integer
+        default: 10
+    steps:
+      - run:
+          name: add ssh configurations
+          shell: /bin/bash
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Modifying ssh config file
+            echo "Host 10.0.*
+              StrictHostKeyChecking no
+              LogLevel ERROR
+              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
+             Host content-build-lb.demisto.works
+              UserKnownHostsFile /dev/null
+              StrictHostKeyChecking no
+              LogLevel ERROR" >> ~/.ssh/config
+      - run:
+          name: Open SSH Tunnel
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
+            IPS_AND_PORTS=$(cat ./env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+            # Handling the ip & port pairs line by line
+            echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
+            do
+              # Capturing the IP
+              IP=$(echo $IP_AND_PORT | grep -o -E "10\.0\.[0-9]{1,3}\.[0-9]{1,3}")
+              # Capturing the port
+              PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
+              echo "Opening a tunnel for ip $IP with port $PORT"
+              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              echo "Waiting for tunnel to be established"
+              until nc -z 127.0.0.1 $PORT -v; do
+                if [ $COUNT -ge << parameters.timeout >> ]; then
+                  echo "ssh tunnel set up timeout on instance with ip $IP";
+                  exit 1;
+                fi;
+                ((COUNT++))
+                sleep 1
+              done
+            done
+
 parameters:
   non_ami_run:
     type: string
@@ -46,11 +116,11 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "21.1.0"
+      CONTENT_VERSION: "21.2.0"
       SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
-      GIT_SHA1: "f18e964994f46475e5f0057c0981d8aade06b03c" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "90555972b8b17a52a909b97cf99939560fdc939b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -218,7 +288,18 @@ references:
       when: always
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
-        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
+
+        GCS_PATH=$(mktemp)
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
+
+        FEATURE_BRANCH_NAME="v4.5.0"
+        successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
 
   restore_cache: &restore_cache
     restore_cache:
@@ -329,7 +410,7 @@ references:
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all
+        gcloud auth revoke --all &> /dev/null
         rm $GCS_PATH
 
         # Merge public and private ID sets
@@ -508,12 +589,34 @@ references:
       shell: /bin/bash
       when: always
       command: |
-        if ./Tests/scripts/is_ami.sh ;
+        python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+
+  check_if_instance_was_created: &check_if_instance_was_created
+    run:
+      name: Check If Instance Was Created
+      when: always
+      command: |
+        export TEMP=$(cat ./Tests/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+        echo "$INSTANCE_ROLE filter=$TEMP"
+        if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
           then
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
-        else
-            python3 ./Tests/scripts/wait_until_server_ready.py "master"
+            echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
+            exit 0
         fi
+        source $BASH_ENV
+
+  install_content_and_configure_integrations_on_server: &install_content_and_configure_integrations_on_server
+    run:
+      name: Install Content And Configure Integrations On Server
+      shell: /bin/bash
+      when: always
+      command: |
+        if [ -z $INSTANCE_WAS_CREATED ];
+          then
+            echo "Skipping - instance was not created"
+            exit 0
+        fi
+        ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
 
 jobs:
   Setup Environment:
@@ -723,35 +826,12 @@ jobs:
             - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
-            - run:
-                name: Collect Instance Role And Check If Instance Was Created
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Server 5.0"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 5.0"')
-                  echo "Server 5.0 filter=$TEMP"
-                  if [[ "$TEMP" == "true" ]];
-                    then
-                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                      exit 0
-                  fi
-                  source $BASH_ENV
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-            - run:
-                name: Install Content And Configure Integrations On Server
-                shell: /bin/bash
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+            - set-instance-role-env-variable:
+                instance_role: Server 5.0
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
             - run:
                 name: Run Tests - Server 5.0
                 no_output_timeout: 5h
@@ -796,35 +876,12 @@ jobs:
             - *attach_workspace
             - *add_ssh_keys
             - *prepare_environment
-            - run:
-                name: Collect Instance Role And Check If Instance Was Created
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Server 5.5"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 5.5"')
-                  echo "Server 5.5 filter=$TEMP"
-                  if [[ "$TEMP" == "true" ]];
-                    then
-                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                      exit 0
-                  fi
-                  source $BASH_ENV
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-            - run:
-                name: Install Content And Configure Integrations On Server
-                shell: /bin/bash
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+            - set-instance-role-env-variable:
+                instance_role: Server 5.5
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
             - run:
                 name: Run Tests - 5.5
                 no_output_timeout: 5h
@@ -869,36 +926,12 @@ jobs:
             - *attach_workspace
             - *add_ssh_keys
             - *prepare_environment
-            - run:
-                name: Collect Instance Role And Check If Instance Was Created
-                when: always
-                command: |
-                  echo 'export INSTANCE_ROLE="Server 6.0"' >> $BASH_ENV
-                  export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server 6.0"')
-                  echo "Server 6.0 filter=$TEMP"
-                  if [[ "$TEMP" == "true" ]];
-                    then
-                      echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                      exit 0
-                  fi
-                  source $BASH_ENV
-            - run:
-                name: Wait until server ready
-                shell: /bin/bash
-                when: always
-                command: |
-                  python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-            - run:
-                name: Install Content And Configure Integrations On Server
-                shell: /bin/bash
-                when: always
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+            - set-instance-role-env-variable:
+                instance_role: Server 6.0
+            - *check_if_instance_was_created
+            - start-tunnel
+            - *wait_until_server_ready
+            - *install_content_and_configure_integrations_on_server
             - run:
                 name: Run Tests - Server 6.0
                 shell: /bin/bash
@@ -934,36 +967,12 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - run:
-          name: Collect Instance Role And Check If Instance Was Created
-          when: always
-          command: |
-            echo 'export INSTANCE_ROLE="Server Master"' >> $BASH_ENV
-            export TEMP=$(cat ./Tests/filter_envs.json | jq '."Server Master"')
-            echo "Server Master filter=$TEMP"
-            if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
-              then
-                echo 'export INSTANCE_WAS_CREATED="True"' >> $BASH_ENV
-                exit 0
-            fi
-            source $BASH_ENV
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-      - run:
-          name: Install Content And Configure Integrations On Server
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -z $INSTANCE_WAS_CREATED ];
-              then
-                echo "Skipping - instance was not created"
-                exit 0
-            fi
-            ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+      - set-instance-role-env-variable:
+          instance_role: Server Master
+      - *check_if_instance_was_created
+      - start-tunnel
+      - *wait_until_server_ready
+      - *install_content_and_configure_integrations_on_server
       - run:
           name: Run Tests - Demisto Master
           shell: /bin/bash
@@ -1035,6 +1044,10 @@ jobs:
               - master
               - << pipeline.git.branch >>
           steps:
+            - set-instance-role-env-variable:
+                instance_role: Server Master
+                instance_created: "true"
+            - start-tunnel
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
@@ -1075,27 +1088,14 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server 5.5"
-            echo 'export INSTANCE_ROLE="Server 5.5"' >> $BASH_ENV
-            source $BASH_ENV
+      - set-instance-role-env-variable:
+          instance_role: Server 5.5
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
       - run:
           name: Instance Test
           command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
             ./Tests/scripts/instance_test.sh
             export RETVAL=$?
             cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
@@ -1144,19 +1144,20 @@ jobs:
       - *prepare_environment
       - *download_configuration
       - *create_instance
-      - run:
-          name: Wait until server ready
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
+      - set-instance-role-env-variable:
+          instance_role: Server Master
+          instance_created: "true"
+      - start-tunnel
       - run:
           name: Set Environment Variables
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat env_results.json | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+      - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
@@ -1199,20 +1200,17 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server 6.0"
+      - set-instance-role-env-variable:
+          instance_role: Server 6.0
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
       - run:
           name: Install Packs
           shell: /bin/bash
           when: always
           no_output_timeout: 5h
           command: |
-            echo 'export INSTANCE_ROLE="Server 6.0"' >> $BASH_ENV
-            source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
       - run:
@@ -1235,6 +1233,10 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
+      - set-instance-role-env-variable:
+          instance_role: Server Master
+          instance_created: "true"
+      - start-tunnel
       - *wait_until_server_ready
       - run:
           name: Install Packs
@@ -1242,8 +1244,6 @@ jobs:
           when: always
           no_output_timeout: 5h
           command: |
-            echo 'export INSTANCE_ROLE="Server Master"' >> $BASH_ENV
-            source $BASH_ENV
             ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
             exit $RETVAL
       - run:
@@ -1384,8 +1384,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 10 AM & 10 PM UTC (12:00 PM & 00:00 AM Israel Time)
-          cron: "0 10,22 * * *"
+          # should trigger every day at 9 AM & 9 PM UTC (11:00 PM & 11:00 AM Israel Time)
+          cron: "0 9,21 * * *"
           filters:
             branches:
               only:

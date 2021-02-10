@@ -1,4 +1,8 @@
-Threat InDepth's correlated and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats and actionable insights to make meaningful response decisions. By correlating insights gathered across email content, web traffic, and suspicious files; Cyren provides security teams with a multi-dimensional presentation of critical threat characteristics.
+*Please use this Content Pack, if you already obtained API Keys from Cyren.*
+
+---
+
+Threat InDepth's timely, correlated, and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats and actionable insights to make meaningful response decisions. By correlating insights gathered across email content, web traffic, and suspicious files; Cyren provides security teams with a multi-dimensional presentation of critical threat characteristics.
 
 ## Benefits include
 
@@ -8,21 +12,24 @@ Threat InDepth's correlated and contextualized intelligence helps enterprises im
 - Improved threat detection for existing security products such as SIEM and SOAR solutions
 
 ## What makes Threat InDepth unique
-- Global and Expanded Focus <br/>
- Provides **unique** threat **visibility** into the evolving email-borne threats
 
-- Synchronized Intelligence <br/>**Correlated, contextualized** insights **speed** up threat detection and response
+- Global and Expanded Focus  
+  Provides **unique** threat **visibility** into the evolving email-borne threats
 
-- Machine Generated, Human Curated <br/> Industry **trusted** intelligence with **low** false positives **improves** detection efficacy of your security investments
+- Synchronized Intelligence  
+  **Correlated, contextualized** insights **speed** up threat detection and response
 
-- First to Detect, First to Protect <br/>Provides **timely** protection against **evolving** email-borne threats
+- Machine Generated, Human Curated  
+  Industry **trusted** intelligence with **low** false positives **improves** detection efficacy of your security investments
 
-![Cyren GlobalView Cloud](./doc_files/Cyren_GlobalViewCloud_V2.png)
+- First to Detect, First to Protect  
+  Provides **timely** protection against **evolving** email-borne threats
 
+![Cyren GlobalView Cloud](https://raw.githubusercontent.com/demisto/content/master/Packs/FeedCyrenThreatInDepth/doc_files/Cyren_GlobalViewCloud_V2.png)
 
 ## Feeds included in Cyren Threat InDepth content pack
 
-The Cyren Threat InDepth content pack includes access to these streams of indicators:
+The [Cyren Threat InDepth content pack](#/market/browse/FeedCyrenThreatInDepth) includes access to these streams of indicators:
 
 - IP Reputation Intelligence
 - Phishing & Fraud URL Intelligence

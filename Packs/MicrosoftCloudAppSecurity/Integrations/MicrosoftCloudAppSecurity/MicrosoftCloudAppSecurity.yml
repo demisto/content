@@ -59,7 +59,7 @@ configuration:
   - All
   required: false
   type: 16
-- additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
+- additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. Example for Custom Filter: {"entity.policy":{"eq":"Impossible travel"}}. For more information about filter syntax, see the (Microsoft documentation)[https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters].'
   display: Custom Filter
   hidden: false
   name: custom_filter
@@ -834,7 +834,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false

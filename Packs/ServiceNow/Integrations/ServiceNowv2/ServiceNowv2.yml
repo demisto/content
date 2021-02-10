@@ -179,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       isArray: false
       name: custom_fields
       required: false
@@ -189,6 +189,14 @@ script:
         context.
       isArray: true
       name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -482,17 +490,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -503,12 +500,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -776,6 +767,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1047,17 +1046,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -1068,12 +1056,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation.
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -1335,6 +1317,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1410,7 +1400,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1677,7 +1667,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1735,6 +1725,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1797,6 +1795,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2365,7 +2371,7 @@ script:
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-oauth-test
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
