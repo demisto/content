@@ -873,20 +873,22 @@ def configure_servers_and_restart(build):
     manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
     for server in build.servers:
         configurations = dict()
+        configure_types = []
         if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
+            configure_types.append('ignore docker image validation')
             configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
         if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types = ['docker hardening']
+            configure_types.append('docker hardening')
             if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
                 configure_types.append('marketplace')
                 configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+        server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
     if manual_restart:
         input('restart your server and then press enter.')
