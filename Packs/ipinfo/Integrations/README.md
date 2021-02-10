@@ -51,12 +51,12 @@ Check IP reputation (when information is available, returns a JSON with details)
 | IP.Registrar.Abuse.Network | string | The abuse network of the IP |
 | IP.Registrar.Abuse.Phone | string | The abuse phone of the IP |
 | IP.Registrar.Abuse.Email | string | The abuse email of the IP |
-| IP.Organization.Name | string | description: The organization name of the IP |
-| IP.Organization.Type | string | description: The organization type of the IP |
-| DBotScore.Indicator | string | description: The indicator that was tested. |
-| DBotScore.Type | string | description: The indicator type. |
-| DBotScore.Vendor | string | description: The vendor used to calculate the score. |
-| DBotScore.Score | Number | description: The actual score. |
+| IP.Organization.Name | string | The organization name of the IP |
+| IP.Organization.Type | string | The organization type of the IP |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 ``` !ip ip=1.1.1.1 ```
