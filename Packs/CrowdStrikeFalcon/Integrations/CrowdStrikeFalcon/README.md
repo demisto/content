@@ -11,7 +11,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 | url | Server URL \(e.g., https://api.crowdstrike.com\) | True |
 | client_id | Client ID | True |
 | secret | Secret | True |
-| fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | incidents_per_fetch | Max incidents per fetch | False |
 | fetch_query | Fetch query | False |
 | isFetch | Fetch incidents | False |
