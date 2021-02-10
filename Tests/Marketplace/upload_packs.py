@@ -551,9 +551,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'vendorName': metadata.get('vendorName'),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
-                logging.debug(
-                    f"in upload packs get_private_packs, contentCommitHash is {metadata.get('contentCommitHash','')}")
-                logging.debug(f"in upload packs get_private_packs, vendorName is {metadata.get('vendorName')}")
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
 
