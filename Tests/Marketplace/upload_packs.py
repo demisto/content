@@ -502,13 +502,13 @@ def get_updated_private_packs(private_packs, index_folder_path):
         private_pack_id = pack.get('id')
         private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
         if private_pack_id == "HelloWorldPremium":
-            private_commit_hash_from_metadata = ""
+            private_commit_hash_from_metadata = "testCommitHash"
             logging.info(f"test commit hash 1 {private_commit_hash_from_metadata}")
         for public_pack in private_packs_from_public_index:
             if public_pack.get('id') == private_pack_id:
                 private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
                 if public_pack.get('id') == "HelloWorldPremium":
-                    private_commit_hash_from_content_repo = "testCommitHash"
+                    private_commit_hash_from_content_repo = ""
                     logging.info(f"test commit hash 2 {private_commit_hash_from_content_repo}")
 
                 private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
