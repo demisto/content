@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 import traceback
-from typing import Tuple, List, Dict, Generic, AnyStr
+from typing import Tuple, List, Dict
 from datetime import date
 
 # Disable insecure warnings
@@ -32,7 +32,9 @@ class Client(BaseClient):
 
     def get_api_token(self) -> str:
 
-        username = demisto.params().get('username', False)
+        # email is the customer facing version of the username
+        # param
+        username = demisto.params().get('email', False)
         password = demisto.params().get('password', False)
 
         auth_data = {
@@ -110,19 +112,12 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
     # Returns an obj with the previous run in it.
     last_run = demisto.getLastRun().get('last_fetch', None)
 
-    # next_fetch = last_run.get('last_fetch', None)
-
     if last_run is None:
         # if missing, set the next fetch time to 5 minutes
         last_run_obj = datetime.now()
         last_run = last_run_obj.strftime(DATE_TIME_FORMAT)
-        # next_fetch = (datetime.now() - timedelta(minutes=5)).strftime(DATE_TIME_FORMAT)
     else:
         last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
-
-    # TODO  ONLY USED FOR TESTING
-    # last_run = "2020-12-28T21:29:12.548Z"
-    # last_run_obj = datetime.now() - timedelta(minutes=10)
 
     if last_run_obj > (datetime.now() - timedelta(minutes=FETCH_TIME)):
         # It has not been 5 minutes since the last fetch
@@ -179,15 +174,15 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
         for event in radar_events["data"]["activitySeriesConnection"]["edges"]:
 
             # Extra data from the Rubrik API event and save in a XSoar friendly format
-            process_incident = {}
+            process_incident = {}  # mypy: ignore
             process_incident["incidentClassification"] = "RubrikRadar"
-            process_incident["message"] = []
+            process_incident["message"] = []  # type: ignore
 
             for key, value in event["node"].items():
                 # Simplify the message data
                 if key == "activityConnection":
                     for m in value["nodes"]:
-                        process_incident["message"].append({
+                        process_incident["message"].append({  # type: ignore
                             "message": m["message"],
                             "id": m["id"],
                             "time": m["time"]
@@ -402,7 +397,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
     # spanId:uoH6A/2xDM8= traceId:/64k4L3xe74eS9LyVe3rjg==]] locations:[map[column:17 line:2]]
     sensitive_hits = client.gql_query(sensitive_hits_query, sensitive_hits_variables)
 
-    policy_hits = {}
+    policy_hits = {}  # type: ignore
     for h in sensitive_hits["data"]["policyObj"]["rootFileResult"]["analyzerGroupResults"]:
         policy_name = h["analyzerGroup"]["name"]
         policy_hits[policy_name] = {}

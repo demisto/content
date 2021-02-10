@@ -3,9 +3,8 @@
     "associatedTypes": [
         "Rubrik Radar"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "message",
+    "cliName": "rubrikpolarismessage",
     "closeForm": false,
     "columns": [
         {
@@ -33,42 +32,35 @@
             "width": 113
         }
     ],
-    "content": false,
+    "content": true,
     "defaultRows": [
-        {},
-        {},
-        {}
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
     ],
-    "description": "",
     "editForm": true,
-    "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_message",
+    "id": "incident_rubrikpolarismessage",
     "isReadOnly": false,
-    "itemVersion": "",
     "locked": false,
-    "mergeStrategy": "",
-    "name": "Message",
+    "name": "Rubrik Polaris Message",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "packID": "",
-    "placeholder": "",
     "required": false,
-    "script": "",
-    "selectValues": [],
     "sla": 0,
-    "sortValues": null,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
-    "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "validatedError": "",
-    "validationRegex": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

@@ -1,104 +1,114 @@
 {
-    "brands": null,
-    "defaultIncidentType": "",
     "description": "",
     "feed": false,
-    "fromServerVersion": "",
     "id": "97b3f7dc-5bdb-40c8-819b-8c1beb95cb09",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
-    "keyTypeMap": {},
-    "locked": false,
-    "logicalVersion": 3,
     "mapping": {
         "Rubrik Radar": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Activity Series ID": {
+                "Rubrik Polaris Activity Series ID": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "activitySeriesId",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
-                "Analysis Progress": {
+                "Rubrik Polaris Analysis Progress": {
                     "complex": null,
                     "simple": "progress"
                 },
-                "CDM Cluster ID": {
+                "Rubrik Polaris CDM Cluster ID": {
                     "complex": null,
                     "simple": "cluster.id"
                 },
-                "CDM Cluster Name": {
+                "Rubrik Polaris CDM Cluster Name": {
                     "complex": null,
                     "simple": "cluster.name"
                 },
-                "CDM Clustter Name": {
-                    "complex": null,
-                    "simple": "cluster.name"
-                },
-                "Event Completed": {
+                "Rubrik Polaris Event Completed": {
                     "complex": null,
                     "simple": "eventCompleted"
                 },
-                "Event ID": {
+                "Rubrik Polaris Event ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "Event Type": {
+                "Rubrik Polaris Event Type": {
                     "complex": null,
                     "simple": "lastActivityType"
                 },
-                "Last Activity Status": {
+                "Rubrik Polaris Last Activity Status": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "lastActivityStatus",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
-                "Last Updated": {
+                "Rubrik Polaris Last Updated": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "lastUpdated",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
-                "Message": {
+                "Rubrik Polaris Message": {
                     "complex": null,
                     "simple": "message"
                 },
-                "Object ID": {
+                "Rubrik Polaris Object ID": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "objectId",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
-                "Object Name": {
+                "Rubrik Polaris Object Name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "objectName",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
-                "Object Type": {
+                "Rubrik Polaris Object Type": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "objectType",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -109,9 +119,13 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 }
@@ -119,21 +133,13 @@
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
-            "internalMapping": {}
+            "internalMapping": {
+
+            }
         }
     },
     "name": "Rubrik Polaris Radar - Mapping",
-    "nameRaw": "Rubrik Polaris Radar - Mapping",
-    "packID": "",
-    "sortValues": null,
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
-    "transformer": {
-        "complex": null,
-        "simple": ""
-    },
     "type": "mapping-incoming",
-    "unclassifiedCases": null,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

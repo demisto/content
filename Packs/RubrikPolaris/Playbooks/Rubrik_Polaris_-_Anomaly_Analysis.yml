@@ -1,4 +1,4 @@
-id: a841acba-9383-42d8-8df9-40ce20d2b3a1
+id: Rubrik Polaris - Anomaly Analysis
 inputs: []
 name: Rubrik Polaris - Anomaly Analysis
 outputs: []
@@ -21,6 +21,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 4eae6e36-17d4-4330-8955-9f68eb639018
     timertriggers: []
     type: start
@@ -105,7 +106,7 @@ tasks:
         3. (optional) Get the results of the operation.
       id: 2ed5615f-4826-4698-85e4-bf58682a9579
       iscommand: false
-      name: Wait for the Radar Analysis process to complete
+      name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
@@ -133,6 +134,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: bbdc0ff1-5727-463d-8a3b-641337f7aa7a
     timertriggers: []
     type: title
@@ -230,6 +232,7 @@ tasks:
       name: Radar Ransomware Status
       type: title
       version: -1
+      description: ''
     taskid: 5afe9c0b-e882-4721-8d17-4b89f12c0b22
     timertriggers: []
     type: title
@@ -257,6 +260,7 @@ tasks:
       name: Sonar Data Classification
       type: title
       version: -1
+      description: ''
     taskid: 49e169b0-1214-4723-8129-6b31b8a1db9d
     timertriggers: []
     type: title
@@ -632,3 +636,8 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Monitor the progress of a Rubrik Radar anamoly event and use Rubrik Sonar
+  to check for data classification hits.

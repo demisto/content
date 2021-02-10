@@ -51,8 +51,8 @@ def test_test_module_incorrect_polaris_account(requests_mock):
         "Verify that the server URL parameter is correct and that you have\
          access to the server from your host.", None))
 
-    assert test_module(client) == """We were unable to connect to the provided\
-            Polaris Account. Verify it has been entered correctly."""
+    assert test_module(
+        client) == """We were unable to connect to the provided Polaris Account. Verify it has been entered correctly."""
 
 
 def test_test_module_incorrect_polaris_credentials(requests_mock):
@@ -75,19 +75,26 @@ def test_test_module_incorrect_polaris_credentials(requests_mock):
     assert test_module(client) == "Incorrect email address or password."
 
 
-def test_fetch_incidents(requests_mock):
+def test_fetch_incidents(mocker, requests_mock):
     """Tests the fetch_incidents command.
 
     Checks the mock_response for a "access_key" token which
     will result in the return value of "ok"
     """
     from RubrikPolaris import Client, fetch_incidents
+    import demistomock as demisto
+    from datetime import datetime, timedelta
 
     client = Client(
         base_url="http://xsoar.my.rubrik.com",
         headers={},
         verify=False
     )
+    date_time_format = "%Y-%m-%dT%H:%M:%S.000Z"
+
+    last_fetch = (datetime.now() - timedelta(minutes=6)).strftime(date_time_format)
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': last_fetch})
     # Mock the get_api_token() helper function
     requests_mock.post('http://xsoar.my.rubrik.com/session', json={"access_token": "xsoar"})
     # Mock the GraphQL call
@@ -98,7 +105,6 @@ def test_fetch_incidents(requests_mock):
     mock_incident = util_load_json("test_data/processed_radar_event.json")
 
     current_time, response = fetch_incidents(client)
-
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["id"]}',
         "occurred": current_time,

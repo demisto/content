@@ -23,7 +23,8 @@
                             "nodes": [
                                 {
                                     "id": "aa58c10f-14b5-4bc6-91da-3615b05731e9",
-                                    "message": "Detected anomalous filesystem activity with High confidence and High levels of encryption (File Change: 2466 Added, 194 Modified, 2416 Removed)"
+                                    "message": "Detected anomalous filesystem activity with High confidence and High levels of encryption (File Change: 2466 Added, 194 Modified, 2416 Removed)",
+                                    "time": "2021-02-09T21:46:14.257Z"
                                 }
                             ]
                         }

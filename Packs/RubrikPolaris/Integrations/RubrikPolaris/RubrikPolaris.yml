@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 0
 - display: Email
-  name: username
+  name: email
   required: true
   type: 0
 - display: Password
@@ -25,7 +25,8 @@ configuration:
   type: 13
 - defaultvalue: 3 days
   display: First fetch time
-  additionalinfo: The time interval for the first fetch (retroactive). For example 3 days, 1 hour
+  additionalinfo: The time interval for the first fetch (retroactive). For example
+    3 days, 1 hour
   name: first_fetch
   required: true
   type: 0
@@ -84,3 +85,5 @@ script:
 fromversion: 5.0.0
 defaultclassifier: Rubrik Polaris Radar - Classification
 defaultmapperin: Rubrik Polaris Radar - Mapping
+tests:
+- No tests (auto formatted)
