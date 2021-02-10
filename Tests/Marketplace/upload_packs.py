@@ -548,6 +548,9 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_packs = []
     for metadata_file_path in metadata_files:
+        if any(metadata_file_path in x for x in METADATA_TO_REMOVE):
+            logging.info("Found metadata to remove")
+            os.remove(metadata_file_path)
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
