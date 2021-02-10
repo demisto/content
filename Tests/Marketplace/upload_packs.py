@@ -170,7 +170,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
         # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
-            logging.info(os.scandir(index_pack_path))
+            logging.info(os.listdir(index_pack_path))
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
