@@ -485,15 +485,6 @@ def main():
         upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
     # finished iteration over content packs
     if is_private_build:
-        try:
-            metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-        except Exception:
-            logging.exception(f'Could not find metadata files in {private_index_path}.')
-            return []
-        for metadata_file_path in metadata_files:
-            if any(metadata_file_path in x for x in METADATA_TO_REMOVE):
-                logging.info("Found metadata to remove")
-                os.remove(metadata_file_path)
         delete_public_packs_from_index(index_folder_path)
         upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
                                 private_packs,
