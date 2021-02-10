@@ -307,7 +307,6 @@ script:
     - name: reporter
       description: The account ID of the reporter.
       isArray: false
-      name: reporter
       required: false
       secret: false
     - default: false
@@ -482,7 +481,6 @@ script:
     - name: status
       description: The name of the status.
       isArray: false
-      name: status
       required: false
       secret: false
     deprecated: false
