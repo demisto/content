@@ -1,5 +1,5 @@
 Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.
-This integration was integrated and tested with version xx of EWS Extension Online Powershell v2
+This integration was integrated and tested with version v2 of EWS Extension Online Powershell v2
 ## Configure EWS Extension Online Powershell v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -74,14 +74,14 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
     "EWS": {
         "Mailbox": {
             "Alias": "user",
-            "DisplayName": "Avishai Brandeis",
+            "DisplayName": "User User",
             "DistinguishedName": "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM",
             "EmailAddresses": [
-                "SPO:SPO_<SPO0>@SPO_<SPO1>",
+                "SPO:SPO_SPO0@SPO_SPO1",
                 "SIP:user@example.com",
                 "SMTP:user@example.com"
             ],
-            "ExchangeVersion": "0.20 (15.0.0.0)",
+            "ExchangeVersion": "0.20 (15.0.0)",
             "ExternalDirectoryObjectId": "<ExternalDirectoryObjectId>",
             "Guid": "<Guid>",
             "Id": "user",
@@ -99,7 +99,11 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 
 #### Human Readable Output
 
->Disconnected successfully !
+>### Results of ews-mailbox-list
+>| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Guid | Id | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails | UserPrincipalName
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| "user" | "User User" | "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | "user" | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "UserMailbox" | "UserMailbox" | "user@example.com"
+
 
 ### ews-cas-mailbox-list
 ***
@@ -152,15 +156,15 @@ Displays Client Access settings that are configured on mailboxes.
     "EWS": {
         "CASMailbox": {
             "ActiveSyncEnabled": true,
-            "DisplayName": "Avishai Brandeis",
+            "DisplayName": "User User",
             "ECPEnabled": true,
             "EmailAddresses": [
-                "SPO:SPO_<SPO0>@SPO_<SPO1>",
+                "SPO:SPO_SPO0@SPO_SPO1",
                 "SIP:user@example.com",
                 "SMTP:user@example.com"
             ],
             "EwsEnabled": true,
-            "ExchangeVersion": "0.20 (15.0.0.0)",
+            "ExchangeVersion": "0.20 (15.0.0)",
             "ExternalDirectoryObjectId": "<ExternalDirectoryObjectId>",
             "Guid": "<Guid>",
             "Identity": "user",
@@ -179,7 +183,10 @@ Displays Client Access settings that are configured on mailboxes.
 
 #### Human Readable Output
 
->Disconnected successfully !
+>### Results of ews-cas-mailbox-list
+>| ActiveSyncEnabled | DisplayName | ECPEnabled | EmailAddresses | EwsEnabled | ExchangeVersion | ExternalDirectoryObjectId | Guid | Identity | ImapEnabled | MAPIEnabled | Name | OrganizationId | OWAEnabled | PopEnabled | PrimarySmtpAddress | ServerLegacyDN
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| true | "User User" | true | \["SPO:SPO\_cac4b654\-5fcf\-44f0\-818e\-479cf8ae42ac@SPO\_SP01","SIP:user@example.com","SMTP:user@example.com"\] | true | "0.20 \(15.0.0\)" | "3fa9f28b\-eb0e\-463a\-ba7b\-8089fe9991e2" | \{"value":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda","Guid":"042e60ea\-0683\-41a2\-a149\-ca4b682dcdda"\} | "user" | true | true | "user" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | true | true | "user@example.com" | "/o=ExchangeLabs/ou=Exchange Administrative Group \(FYDIBOHF23SPDLT\)/cn=Configuration/cn=Servers/cn=DBXPR07MB383
 
 ### ews-mailbox-permission-list
 ***
@@ -238,7 +245,10 @@ Retrieves permissions on a mailbox.
 
 #### Human Readable Output
 
->Disconnected successfully !
+>### Results of ews-mailbox-permission-list
+>| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
+>| --- | --- | --- | --- | --- | ---
+>| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-permission-get
 ***
@@ -291,7 +301,10 @@ Displays information about SendAs permissions that are configured for users.
 
 #### Human Readable Output
 
->Disconnected successfully !
+>### Results of ews-mailbox-permission-list
+>| AccessRights | Deny | Identity | InheritanceType | IsInherited | User
+>| --- | --- | --- | --- | --- | ---
+>| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
 ### ews-recipient-list
 ***
@@ -336,14 +349,14 @@ Displays existing recipient objects in your organization. This command returns a
     "EWS": {
         "Recipient": {
             "Alias": "user",
-            "DisplayName": "Avishai Brandeis",
+            "DisplayName": "User User",
             "DistinguishedName": "CN=user,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM",
             "EmailAddresses": [
-                "SPO:SPO_<SPO0>@SPO_<SPO1>",
+                "SPO:SPO_SPO0@SPO_SPO1",
                 "SIP:user@example.com",
                 "SMTP:user@example.com"
             ],
-            "ExchangeVersion": "0.20 (15.0.0.0)",
+            "ExchangeVersion": "0.20 (15.0.0)",
             "ExternalDirectoryObjectId": "<ExternalDirectoryObjectId>",
             "Identity": "user",
             "Name": "user",
@@ -358,4 +371,7 @@ Displays existing recipient objects in your organization. This command returns a
 
 #### Human Readable Output
 
->Disconnected successfully !
+>### Results of ews-recipient-list
+>| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "MailUniversalDistributionGroup" | "GroupMailbox"
