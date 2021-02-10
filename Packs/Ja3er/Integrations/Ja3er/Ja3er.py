@@ -32,7 +32,7 @@ def main():
     args = {**demisto.params(), **demisto.args()}
 
     base_url = 'https://ja3er.com/'
-    verify = args.get('insecure')
+    verify = not args.get('insecure', False)
 
     client = Client(
         base_url,
