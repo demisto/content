@@ -600,6 +600,9 @@ class Pack(object):
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
+            logging.info("HERE!")
+            logging.info(pack_metadata['name'])
+            logging.info(user_metadata.get('contentCommitHash', ""))
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
