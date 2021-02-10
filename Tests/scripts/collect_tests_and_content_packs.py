@@ -1097,51 +1097,63 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     tests = set([])
     packs_to_install = set([])
+    print(f'\nIn line 1100, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # Get packs and tests for changed scripts integration and playbooks
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
+        print(f'\nIn line 1106, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
         tests.add('Indicators reputation-.json Test')
+    print(f'\nIn line 1113, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     if is_indicator_json:
         tests.add('Test IP Indicator Fields')
+    print(f'\nIn line 1117, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     for file_path in modified_tests_list:
         test = tools.collect_ids(file_path)
         if test not in tests:
             tests.add(test)
+    print(f'\nIn line 1123, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
+    print(f'\nIn line 1127, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     if changed_common:
         tests.add('TestCommonPython')
+    print(f'\nIn line 1131, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # get all modified packs - not just tests related
     # TODO: need to move the logic of collecting packs of all items to be inside get_modified_files_for_testing
     modified_packs = get_modified_packs(files_string)
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
+    print(f'\nIn line 1138, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # Get packs of integrations corresponding to each test, as listed in conf.json
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_tested_integrations)
+    print(f'\nIn line 1143, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # Get packs that contains each of the collected tests
     packs_of_collected_tests = get_content_pack_name_of_test(tests, id_set)
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
+    print(f'\nIn line 1148, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # All filtering out of packs should be done here
     packs_to_install = filter_installed_packs(packs_to_install)
+    print(f'\nIn line 1152, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
+    print(f'\nIn line 1156, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     if not tests:
         logging.info("No tests found running sanity check only")
@@ -1154,14 +1166,17 @@ def get_test_list_and_content_packs_to_install(files_string,
         }
         logging.debug(f"Adding sanity tests: {sanity_tests}")
         tests.update(sanity_tests)
+        print(f'\nIn line 1169, tests is: {tests}, packs to install is: {packs_to_install}\n')
         logging.debug("Adding HelloWorld to tests as most of the sanity tests requires it.")
         logging.debug(
             "Adding Gmail to packs to install as 'Sanity Test - Playbook with Unmockable Integration' uses it"
         )
         packs_to_install.update(["HelloWorld", "Gmail"])
+        print(f'\nIn line 1175, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     # We add Base andDeveloperTools packs for every build
     packs_to_install.update(["DeveloperTools", "Base"])
+    print(f'\nIn line 1179, tests is: {tests}, packs to install is: {packs_to_install}\n')
 
     return tests, packs_to_install
 

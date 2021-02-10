@@ -186,11 +186,13 @@ class Build:
         :return: List of Pack IDs if there are any, otherwise empty list.
         """
         tests_to_run = []
+        print(f'\npacks_to_install_path in fetch_pack_ids_to_install is: {packs_to_install_path}\n')
         with open(packs_to_install_path, "r") as filter_file:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
                 tests_to_run.append(test_clean)
+        print(f'\ntests_to_run in fetch_pack_ids_to_install is: {tests_to_run}\n')
         return tests_to_run
 
     @staticmethod
