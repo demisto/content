@@ -41,7 +41,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Seconds to sleep between checking for results
+- display: 'Seconds to sleep between checking for results: Polling interval for checking the results of a fetch. 
+    Note: This parameter shouldn't be set to a value greater than Time between fetches to avoid polling for the results of the next fetch (usually a few seconds are enough).'
   name: sleepBetweenChecks
   defaultvalue: "3"
   type: 0
@@ -69,7 +70,8 @@ configuration:
   defaultvalue: "600"
   type: 0
   required: false
-- display: Time between fetches (in seconds). The actual time will be the maximum between the selected value and the server configuration.
+- display: 'Time between fetches (in seconds): Fetch interval. Default value is 60 seconds. 
+    The actual time will be the maximum between the selected value and the server configuration.'
   name: fetchDelay
   defaultvalue: 60
   type: 0
