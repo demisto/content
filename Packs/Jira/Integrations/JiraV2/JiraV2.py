@@ -410,7 +410,7 @@ def get_project_id(project_key='', project_name=''):
     return_error('Project not found')
 
 
-def get_issue_fields(issue_creating=False, **issue_args):
+def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     """
     refactor issues's argument as received from demisto into jira acceptable format, and back.
     :param issue_creating: flag that indicates this function is called when creating an issue
@@ -426,6 +426,11 @@ def get_issue_fields(issue_creating=False, **issue_args):
 
     if not issue.get('fields'):
         issue['fields'] = {}
+
+    if mirroring:
+        for field_name in issue_args:
+            if field_name and field_name.startswith('customfield'):
+                issue['fields'][field_name] = issue_args[field_name]
 
     if not issue['fields'].get('issuetype') and issue_creating:
         issue['fields']['issuetype'] = {}
@@ -547,9 +552,9 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-def edit_issue_command(issue_id, headers=None, status=None, **kwargs):
+def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, **kwargs):
     url = f'rest/api/latest/issue/{issue_id}/'
-    issue = get_issue_fields(**kwargs)
+    issue = get_issue_fields(mirroring=mirroring, **kwargs)
     jira_req('PUT', url, json.dumps(issue))
     if status:
         edit_status(issue_id, status)
@@ -912,7 +917,7 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
 
-            edit_issue_command(remote_id, **remote_args.delta)
+            edit_issue_command(remote_id, mirroring=True, **remote_args.delta)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
@@ -965,8 +970,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         # Update incident only if issue modified in Jira server-side after the last sync
         if jira_modified_date > incident_modified_date:
 
-            incident_update = create_update_incident_from_ticket(
-                issue_raw_response)  # Getting labels to be updated in incident
+            incident_update = issue_raw_response
 
             demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                           f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
