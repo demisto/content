@@ -212,7 +212,6 @@ script:
     deprecated: false
     description: Fetches an issue from Jira.
     execution: false
-    name: jira-get-issue
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
