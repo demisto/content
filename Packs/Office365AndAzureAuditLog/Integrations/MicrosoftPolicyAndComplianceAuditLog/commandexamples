@@ -1,3 +1,0 @@
-!o365-search-auditlog start_date="01/01/20" end_date="01/02/20"
-!o365-search-auditlog start_date="3 days"
-!o365-search-auditlog start_date="3 days" result_size=5 ip_addresses="8.8.8.8,8.4.4.8"
