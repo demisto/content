@@ -174,7 +174,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
-                if any(d.path in x for x in METADATA_TO_REMOVE):
+                if any(os.path.join(pack_name, d.path) in x for x in METADATA_TO_REMOVE):
                     os.remove(d.path)
 
         # skipping index update in case hidden is set to True
@@ -851,14 +851,14 @@ def main():
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
     updated_private_packs_ids = []
-    if private_bucket_name:  # Add private packs to the index
-        private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
+    # if private_bucket_name:  # Add private packs to the index
+    private_storage_bucket = storage_client.bucket(private_bucket_name)
+    private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
                                                                                         extract_destination_path,
                                                                                         index_folder_path, pack_names)
-    else:  # skipping private packs
-        logging.debug("Skipping index update of priced packs")
-        private_packs = []
+    # else:  # skipping private packs
+    #     logging.debug("Skipping index update of priced packs")
+    #     private_packs = []
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
