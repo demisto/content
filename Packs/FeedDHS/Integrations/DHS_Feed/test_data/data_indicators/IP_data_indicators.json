@@ -1,0 +1,116 @@
+[
+    {
+        "value": "2.2.2.2",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "2.2.2.2"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "3.3.3.3",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "3.3.3.3"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "4.4.4.4",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "4.4.4.4"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "5.5.5.5",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "5.5.5.5"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "6.6.6.6",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "6.6.6.6"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    },
+    {
+        "value": "7.7.7.7",
+        "type": "IP",
+        "rawJson": {
+            "@category": "ipv4-addr",
+            "@xsi:type": "AddressObj:AddressObjectType",
+            "AddressObj:Address_Value": {
+                "@condition": "Equals",
+                "#text": "7.7.7.7"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    }
+]
