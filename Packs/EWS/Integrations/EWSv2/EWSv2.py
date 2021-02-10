@@ -845,14 +845,22 @@ def get_searchable_mailboxes(protocol):
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
+def test_log(msg):
+    total = 35 - len(msg)
+    demisto.info('ews_v2_test_log {0} {1} {0}'.format('-' * total, msg))
+
+
 def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):
+    test_log('start')
     mailbox_ids = []
     limit = int(limit)
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
+        test_log('with email_addresses')
         email_addresses = email_addresses.split(",")
         all_mailboxes = get_searchable_mailboxes(protocol)[ENTRY_CONTEXT]['EWS.Mailboxes']
+        test_log('got mailboxes')
         for email_address in email_addresses:
             for mailbox in all_mailboxes:
                 if MAILBOX in mailbox and email_address.lower() == mailbox[MAILBOX].lower():
@@ -865,16 +873,20 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in x.keys()]
         mailbox_ids = map(lambda x: x[MAILBOX_ID], mailboxes)
+    test_log('got mailboxes ids')
+    test_log('length of mailboxes ids is {}'.format(len(mailbox_ids)))
 
     try:
+        test_log('start search')
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
+        test_log('search ended')
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
             return "No results for search query: " + filter
         else:
             raise e
-
+    test_log('creating entry')
     return get_entry_for_object("Search mailboxes results",
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 search_results)
@@ -1511,6 +1523,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
                             is_public=None, selected_fields='all'):
+
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
