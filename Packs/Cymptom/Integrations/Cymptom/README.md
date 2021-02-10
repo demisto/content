@@ -9,12 +9,12 @@ This integration was integrated and tested with version 0.3.4 of Cymptom.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Management URL \(for ex: https://customer_name.cymptom.com/api/\) | True |
+    | url | Management URL (for ex: `https://customer_name.cymptom.com/api/`) | True |
     | api_key | API key | True |
     | is_fetch | Fetch incidents | False |
     | proxy | Use system proxy settings | False |
     | insecure | Trust any certificate \(not secure\) | False |
-    | first_fetch | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Default is "3 days" | False |
+    | first_fetch | First fetch time range (`<number> <time unit>`, e.g., 1 hour, 30 minutes). Default is "3 days" | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
