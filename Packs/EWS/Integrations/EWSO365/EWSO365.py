@@ -1911,7 +1911,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         template_params = handle_template_params(templateParams)
         if template_params:
             body = body.format(**template_params)
-            htmlBody = htmlBody.format(**template_params)
+            if htmlBody:
+                htmlBody = htmlBody.format(**template_params)
 
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader)
 
