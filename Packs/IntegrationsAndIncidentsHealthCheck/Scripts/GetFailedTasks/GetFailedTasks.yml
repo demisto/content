@@ -8,7 +8,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '1000'
+  defaultValue: '300'
   description: Maximum number of incidents to query.
   isArray: false
   name: max_incidents
