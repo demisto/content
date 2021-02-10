@@ -1899,14 +1899,14 @@ def test_get_script_execution_status_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    action_id = 'action_id'
+    action_id = '1'
     args = {
         'action_id': action_id
     }
 
     response = get_script_execution_status_command(client, args)
 
-    api_response['reply']['action_id'] = action_id
+    api_response['reply']['action_id'] = int(action_id)
     assert response[2] == api_response
     assert requests_mock.request_history[0].json() == {
         'request_data': {
@@ -1934,7 +1934,7 @@ def test_get_script_execution_results_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
-    action_id = 'action_id'
+    action_id = '1'
     args = {
         'action_id': action_id
     }
