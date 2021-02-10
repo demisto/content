@@ -479,8 +479,10 @@ function TestModuleCommand {
     return $human_readable, $null, $null
 }
 
-function InvokeCommandCommand([RemotingClient]$client, [string]$command)
-{
+function InvokeCommandCommand {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
+    param([RemotingClient]$client, [string]$command)
+
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
@@ -507,7 +509,9 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
     #>
 }
 
-function CreatResultsMap([System.Array]$raw_result, [string]$command) {
+function CreatResultsMap {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
+    param([System.Array]$raw_result, [string]$command)
     $results_map = @{}
     For ($i=0; $i -lt $raw_result.Length; $i++) {
         # base name
@@ -550,7 +554,7 @@ function CreatResultsMap([System.Array]$raw_result, [string]$command) {
 function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash, [bool]$host_as_prefix, [string]$hosts, [string]$ip)
 {
     # replace host with ip if ip was used instead of host
-    if ($hosts -eq $null) {
+    if ( $null-eq $hosts) {
         $hosts = $ip
     }
     $temp = $script:Demisto.UniqueFile()
@@ -632,9 +636,9 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
     $script:Demisto.Results($demisto_results)
 }
 
-function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$etl_filter, [string]$etl_max_size,
-                         [string]$etl_time_lim, [string]$overwrite)
-{
+function StartETLCommand {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
+    param([RemotingClient]$client, [string]$etl_path, [string]$etl_filter, [string]$etl_max_size, [string]$overwrite)
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
@@ -662,7 +666,7 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
 function StopETLCommand([RemotingClient]$client, [string]$hosts, [string]$ip)
 {
     # replace host with ip if ip was used instead of host
-    if ($hosts -eq $null) {
+    if ($null -eq $hosts) {
         $hosts = $ip
     }
     $command = 'netsh trace stop'
@@ -703,7 +707,7 @@ function StopETLCommand([RemotingClient]$client, [string]$hosts, [string]$ip)
 function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [string]$output_file_path, [string]$hosts, [string]$ip)
 {
     # replace host with ip if ip was used instead of host
-    if ($hosts -eq $null) {
+    if ($null -eq $hosts) {
         $hosts = $ip
     }
     $command = if ($reg_key_hive -eq 'all') {"regedit /e $output_file_path"} else {"reg export $reg_key_hive $output_file_path"}
@@ -733,7 +737,7 @@ function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [
 function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$dst_path, [string]$zip_file, [string]$check_hash, [string]$hosts, [string]$ip)
 {
     # replace host with ip if ip was used instead of host
-    if ($hosts -eq $null) {
+    if ($null -eq $hosts) {
         $hosts = $ip
     }
     $src_path = $script:Demisto.GetFilePath($entry_id).path
@@ -792,7 +796,7 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
 function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$output_file_path, [string]$hosts, [string]$ip)
 {
     # replace host with ip if ip was used instead of host
-    if ($hosts -eq $null) {
+    if ($null -eq $hosts) {
         $hosts = $ip
     }
     $raw_response = $client.ExportMFT($volume, $output_file_path)
@@ -853,24 +857,24 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $client $command_args.command
             }
             "$script:COMMAND_PREFIX-download-file" {
-                DownloadFileCommand -client $client -path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash (ConvertTo-Boolean $command_args.host_prefix) $hosts $ip_hosts
+                DownloadFileCommand -client $client -path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash -host_as_prefix (ConvertTo-Boolean $command_args.host_prefix) -hosts $hosts -ip $ip_hosts
                 return
             }
             "$script:COMMAND_PREFIX-etl-create-start" {
-                ($human_readable, $entry_context, $raw_response) = StartETLCommand -client $client -etl_path $command_args.etl_path -etl_filter $command_args.etl_filter -etl_max_size $command_args.etl_max_size -etl_time_limit $command_args.etl_time_limit -overwrite $command_args.overwrite
+                ($human_readable, $entry_context, $raw_response) = StartETLCommand -client $client -etl_path $command_args.etl_path -etl_filter $command_args.etl_filter -etl_max_size $command_args.etl_max_size -overwrite $command_args.overwrite
             }
             "$script:COMMAND_PREFIX-etl-create-stop" {
-                ($human_readable, $entry_context, $raw_response) = StopETLCommand $client  $hosts $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = StopETLCommand $client  -hosts $hosts -ip $ip_hosts
             }
             "$script:COMMAND_PREFIX-export-registry" {
-                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand -client $client -reg_key_hive $command_args.reg_key_hive -output_file_path $command_args.file_path $hosts $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand -client $client -reg_key_hive $command_args.reg_key_hive -output_file_path $command_args.file_path -hosts $hosts -ip $ip_hosts
             }
             "$script:COMMAND_PREFIX-upload-file" {
                 # to be tested
-                ($human_readable, $entry_context, $raw_response) = UploadFileCommand -client $client -entry_id $command_args.entry_id -dst_path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash $hosts $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = UploadFileCommand -client $client -entry_id $command_args.entry_id -dst_path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash -hosts $hosts -ip $ip_hosts
             }
             "$script:COMMAND_PREFIX-export-mft" {
-                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand -client $client -volume $command_args.volume -output_file_path $command_args.output_path $hosts $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand -client $client -volume $command_args.volume -output_file_path $command_args.output_path -hosts $hosts -ip $ip_hosts
             }
             Default {
                 $Demisto.Error("Unsupported command was entered: $command.")

@@ -87,22 +87,22 @@ script:
     - description: The path of the file to download.
       name: path
       required: true
-    - auto: PREDEFINED
+    - name: zip_file
       defaultValue: "false"
       description: 'Whether to compress the file. Possible values: "true" and "false". Default is "false".'
-      name: zip_file
+      auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-    - auto: PREDEFINED
+    - name: check_hash
       defaultValue: "false"
       description: 'Whether to compare the value of the original file with the downloaded file and
         return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
-      name: check_hash
+      auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-    - auto: PREDFINED
+    - auto: PREDEFINED
       description: 'Whether to use the host as a prefix for the name of the downloaded version of the file. Possible values: "true" and "false". Default is "false".'
       name: host_prefix
       defaultValue: "false"
@@ -240,9 +240,6 @@ script:
         to capture traffic just from the 1.1.1.1 IP address. If no filter is specified
         all traffic will be recorded. For more examples, see: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details.'
       name: etl_filter
-    - description: 'The amount of time after which the ETL will stop capturing.
-        If no value is specified, the capture will continue until the ps-remote-etl-create-stop command has been executed for the same host or the user configured the etl_max_size setting. Possible values: 5 minutes, 1 day etc.'
-      name: etl_time_limit
     - defaultValue: "10"
       description: The maximum file size for the ETL. Once the file has reached this
         size, the capture will stop. For example 10MB. The default size is 10MB.
