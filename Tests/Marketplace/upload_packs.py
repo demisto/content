@@ -297,7 +297,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
     index_zip_name = os.path.basename(index_folder_path)
 
-    ### REMOVE AFTER SUCCESSFUL RUN
+    # REMOVE AFTER SUCCESSFUL RUN
     logging.info("Starting to remove old meta files")
     iam_metadata = glob.glob(f"{index_folder_path}/IAM/metadata-*.json")
     for iam_meta in iam_metadata:
