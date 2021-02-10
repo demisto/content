@@ -136,7 +136,6 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Queries Jira issues.
     execution: false
     name: jira-issue-query
     outputs:
