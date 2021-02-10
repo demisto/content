@@ -181,8 +181,8 @@ script:
       log. This log contains events from Exchange Online, SharePoint Online, OneDrive
       for Business, Azure Active Directory, Microsoft Teams, Power BI, and other Microsoft
       365 services. You can search for all events in a specified date range, or you
-      can filter the results based on specific criteria, such as the user who performed
-      the action, the action, or the target object.
+      can filter the results based on specific criteria, such as the action, the user who performed
+      the action, or the target object.
   isfetch: false
   runonce: false
   script: '-'
