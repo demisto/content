@@ -1,0 +1,17 @@
+{
+    "name": "SecurityTrails",
+    "description": "Provides an integration with SecurityTrails for domain enrichment",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Matt Houston",
+    "url": "",
+    "email": "",
+    "created": "2021-02-10T23:29:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "mhouston007"
+    ]
+}

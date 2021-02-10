@@ -1,0 +1,1 @@
+Login to the SecurityTrails portal, navigate to the "API Keys" section to find the API key to use for this integration.
