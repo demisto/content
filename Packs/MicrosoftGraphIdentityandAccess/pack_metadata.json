@@ -10,6 +10,9 @@
         "Identity and Access Management"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": [
+      "Managing administrator (directory) roles",
+      "inviting external users to an organization"
+    ],
     "keywords": []
 }
