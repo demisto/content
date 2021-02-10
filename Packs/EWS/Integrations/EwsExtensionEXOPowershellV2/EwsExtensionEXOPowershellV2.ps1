@@ -34,10 +34,10 @@ class ExchangeOnlinePowershellV2Client {
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue > $null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession() {
-        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue > $null
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue | Out-Null
     }
     [PSObject]GetEXOCASMailbox(
         [string]$identity,
@@ -258,7 +258,7 @@ function GetEXORecipientCommand {
     $raw_response = $client.GetEXORecipient($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Recipient(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 
 function GetEXORecipientPermissionCommand {
@@ -272,7 +272,7 @@ function GetEXORecipientPermissionCommand {
     $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxPermissionCommand {
     [CmdletBinding()]
@@ -289,7 +289,7 @@ function GetEXOMailBoxPermissionCommand {
             "Permission" = $raw_response
         }
     }
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxCommand {
     [CmdletBinding()]
@@ -303,7 +303,7 @@ function GetEXOMailBoxCommand {
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.Mailbox(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOCASMailboxCommand {
     [CmdletBinding()]
@@ -321,7 +321,7 @@ function GetEXOCASMailboxCommand {
     )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output $human_readable, $entry_context, $raw_response
+    Write-Output $human_readable, $entry_context, $raw_response
 }
 function TestModuleCommand(){
     Get-EXOMailbox
