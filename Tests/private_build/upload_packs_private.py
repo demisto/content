@@ -96,12 +96,15 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
+                commit_to_add = metadata.get('contentCommitHash', "")
+                if commit_to_add == "":
+                    commit_to_add = "testCommit1"
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
-                    'contentCommitHash': metadata.get('contentCommitHash', "")
+                    'contentCommitHash': commit_to_add
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
