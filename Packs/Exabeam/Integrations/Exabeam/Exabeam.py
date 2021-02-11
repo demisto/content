@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any, Optional
-from copy import deepcopy
 import requests
 
 # disable insecure warnings

@@ -492,6 +492,33 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: ID of the sequence.
+      isArray: false
+      name: sequence_id
+      required: true
+      secret: false
+    - default: false
+      description: Type of the sequence.
+      isArray: false
+      name: sequence_type
+      required: true
+      secret: false
+    deprecated: false
+    description: List top domains of a sequence.
+    execution: false
+    name: exabeam-list-top-domains
+    outputs:
+    - contextPath: Exabeam.DataFeed.topDomains
+      description: Top domains information.
+      type: Unknown
+    - contextPath: Exabeam.DataFeed.sequenceId
+      description: ID of the sequence.
+      type: String
+    - contextPath: Exabeam.DataFeed.sequenceType
+      description: Type of the sequence.
+      type: String
+  - arguments:
+    - default: false
       description: ID of the sequence to fetch data for.
       isArray: false
       name: sequence_id
@@ -556,8 +583,9 @@ script:
     - contextPath: Exabeam.TriggeredRule.scoreData
       description: Score data of the rule.
       type: Unknown
-    - contextPath: Exabeam.TriggeredRule.scoreData.ruleDefScore
-      type: Number
+    - contextPath: Exabeam.TriggeredRule.multiPeerGroupData
+      description: Multi-peer group data of the triggered rule.
+      type: Unknown
   - arguments:
     - default: false
       description: ID of the asset to fetch info for.
@@ -577,6 +605,9 @@ script:
     execution: false
     name: exabeam-get-asset-info
     outputs:
+    - contextPath: Exabeam.AssetInfo.assetId
+      description: ID of the asset.
+      type: String
     - contextPath: Exabeam.AssetInfo.hostName
       description: Host of the asset.
       type: String
@@ -609,11 +640,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: ID of the asset.
       isArray: false
       name: asset_id
       required: true
       secret: false
     - default: false
+      description: The event time.
       isArray: false
       name: event_time
       required: true
@@ -628,6 +661,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
+      description: Whether to return only anomaly events.
       isArray: false
       name: anomaly_only
       predefined:
@@ -644,6 +678,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: exclude
+      description: Whether or not to include the specified event types.
       isArray: false
       name: event_types_operator
       predefined:
@@ -759,6 +794,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
+      description: Maximal number of results.
       isArray: false
       name: limit
       required: false
@@ -786,16 +822,13 @@ script:
     - contextPath: Exabeam.AssetSecurityAlert.malware_url
       description: Malware URL of the security alert.
       type: String
-    - contextPath: Exabeam.AssetEvent.event_id
+    - contextPath: Exabeam.AssetSecurityAlert.event_id
       description: Event ID of the asset.
       type: String
-    - contextPath: Exabeam.AssetEvent.event_type
+    - contextPath: Exabeam.AssetSecurityAlert.event_type
       description: Type of the event.
       type: String
-    - contextPath: Exabeam.AssetEvent.event_category
-      description: Category of the event.
-      type: String
-    - contextPath: Exabeam.AssetEvent.time
+    - contextPath: Exabeam.AssetSecurityAlert.time
       description: Time when the event occurred.
       type: Date
     - contextPath: Exabeam.AssetSecurityAlert.rawlog_time
@@ -976,13 +1009,16 @@ script:
     name: exabeam-get-rule-string
     outputs:
     - contextPath: Exabeam.Rule.ruleId
+      description: The ID of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleString
+      description: The rule string.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: all
+      description: The type of the rules to retrieve.
       isArray: false
       name: filter_by
       predefined:
@@ -993,12 +1029,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
+      description: Which page of results to return.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
+      description: Maximal number of results.
       isArray: false
       name: limit
       required: false
@@ -1235,8 +1273,30 @@ script:
     execution: false
     name: exabeam-watchlist-asset-search
     outputs:
-    - contextPath: sdfsdf
-      type: Unknown
+    - contextPath: Exabeam.AssetInfo.hostName
+      description: Host of the asset.
+      type: String
+    - contextPath: Exabeam.AssetInfo.ipAddress
+      description: IP address of the asset.
+      type: String
+    - contextPath: Exabeam.AssetInfo.assetType
+      description: Type of the asset.
+      type: String
+    - contextPath: Exabeam.AssetInfo.firstSeen
+      description: Time when the asset was first seen.
+      type: Date
+    - contextPath: Exabeam.AssetInfo.lastSeen
+      description: Time when the asset was last seen.
+      type: Date
+    - contextPath: Exabeam.AssetInfo.riskScore
+      description: Risk score of the asset.
+      type: Number
+    - contextPath: Exabeam.AssetInfo.riskState
+      description: Risk state of the asset.
+      type: String
+    - contextPath: Exabeam.AssetInfo.zone
+      description: Zone of the asset.
+      type: String
   - arguments:
     - default: false
       description: The watchlist ID.
@@ -1345,6 +1405,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Add records to the context table.
     execution: false
     name: exabeam-add-context-table-records
     outputs:
@@ -1379,6 +1440,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: key_only
+      description: Type of the context table.
       isArray: false
       name: context_table_type
       predefined:
@@ -1405,6 +1467,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Export a context table to CSV.
     execution: false
     name: exabeam-get-context-table-in-csv
   - arguments:
@@ -1467,34 +1530,9 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Delete records from a context table.
     execution: false
     name: exabeam-context-table-delete-records
-  - arguments:
-    - default: false
-      description: ID of the sequence.
-      isArray: false
-      name: sequence_id
-      required: true
-      secret: false
-    - default: false
-      description: Type of the sequence.
-      isArray: false
-      name: sequence_type
-      required: true
-      secret: false
-    deprecated: false
-    execution: false
-    name: exabeam-list-top-domains
-    outputs:
-    - contextPath: Exabeam.DataFeed.topDomains
-      description: Top domains data.
-      type: Unknown
-    - contextPath: Exabeam.DataFeed.sequenceId
-      description: ID of the sequence.
-      type: String
-    - contextPath: Exabeam.DataFeed.sequenceType
-      description: Type of the sequence.
-      type: String
   dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false
