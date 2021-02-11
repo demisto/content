@@ -126,14 +126,15 @@ def fetch_indicators_command(client, params, manual_run=False):
     for item in indicators_unparsed:
         try:
             value = item[client.key_field] if client.key_field in item else None
-            item['object_name'] = client.object_name
-            indicator = {
-                "value": value,
-                "type": client.object_name,
-                "rawJSON": item,
-                "score": client.score
-            }
-            indicators.append(indicator)
+            if value:
+                item['object_name'] = client.object_name
+                indicator = {
+                    "value": value,
+                    "type": client.object_name,
+                    "rawJSON": item,
+                    "score": client.score
+                }
+                indicators.append(indicator)
         except:
             pass
 
