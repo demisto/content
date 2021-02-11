@@ -1,9 +1,11 @@
+name: Manage Contribution Board - Hourly
 on:
   schedule:
     - cron:  '0 * * * *'
 jobs:
   manage_project_board:
     runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
