@@ -599,19 +599,24 @@ class Client(BaseClient):
         else:
             raise ValueError('Invalid entry_id argument.')
 
-    def get_context_table_csv(self, context_table_name: str = None) -> Dict:
+    def get_context_table_csv(self, context_table_name: str = None) -> Tuple[str, str]:
         """
             Args:
                 context_table_name: The context table name.
 
             Returns:
-                (dict) The context table records CSV response.
+                (Tuple[str, str]) The file name and the response content.
         """
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/records/csv'
 
-        response = self._http_request('GET', url_suffix=url_suffix)
-        return response
+        response = self._http_request('GET', url_suffix=url_suffix, resp_type='response')
+        # 'Content-Disposition' value is of the form: attachment; filename="filename.csv"
+        # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
+        filename = response.headers.get('Content-Disposition', str()).split('\"')[1]
+        content = response.content
+
+        return filename, content
 
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
@@ -1414,12 +1419,7 @@ def get_context_table_csv(client: Client, args: Dict) -> Tuple[Any, Dict[str, An
     """
     context_table_name = args.get('context_table_name')
 
-    res = client.get_context_table_csv(context_table_name)
-
-    # 'Content-Disposition' value is of the form: attachment; filename="filename.csv"
-    # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
-    filename = res.headers.get('Content-Disposition', str()).split('\"')[1]
-    content = res.content
+    filename, content = client.get_context_table_csv(context_table_name)
 
     demisto.results(fileResult(filename, content))
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
