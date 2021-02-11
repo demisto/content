@@ -6,7 +6,7 @@ configuration:
 - display: API Key
   name: api_key
   required: true
-  type: 0
+  type: 4
 - display: IP address or hostname
   name: addr
   required: true
@@ -167,7 +167,7 @@ script:
     name: unifivideo-get-recording-snapshot
   dockerimage: demisto/unifi-video:1.0.0.16385
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: true
