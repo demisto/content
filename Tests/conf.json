@@ -3379,6 +3379,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
+        "VirusTotal - Private API": "Issue 23281",
 
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
