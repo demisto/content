@@ -10,16 +10,6 @@ configuration:
 description: Query the ja3er API for MD5 hashes of JA3 fingerprints.
 display: Ja3er
 name: Ja3er
-outputs:
-- contextPath: JA3.Count
-  description: 'Number of times seen'
-  type: Number
-- contextPath: JA3.Last_seen
-  description: 'Last seen date'
-  type: Date
-- contextPath: JA3.User-Agent
-  description: 'User-Agent'
-  type: String
 script:
   commands:
   - arguments:
@@ -29,6 +19,16 @@ script:
       required: true
     description: Search for "User-Agents" matching an MD5 hash of a JA3 fingerprint.
     name: ja3-search
+    outputs:
+    - contextPath: JA3.Count
+      description: 'Number of times seen'
+      type: Number
+    - contextPath: JA3.Last_seen
+      description: 'Last seen date'
+      type: Date
+    - contextPath: JA3.User-Agent
+      description: 'User-Agent'
+      type: String
   dockerimage: demisto/python3:3.8.6.13358
   runonce: false
   script: ''
