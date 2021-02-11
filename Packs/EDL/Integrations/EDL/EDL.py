@@ -146,8 +146,7 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     out_dict["last_run"] = date_to_timestamp(now)
-    out_dict["current_iocs"] = [{'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
-                                for ioc in iocs]
+    out_dict["current_iocs"] = iocs
     set_integration_context(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
@@ -208,7 +207,10 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
         fetched_iocs = fetched_iocs or []
-        iocs.extend(fetched_iocs)
+
+        # save only the value and type of each indicator
+        iocs.extend({'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
+                    for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
         next_page += 1
