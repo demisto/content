@@ -60,8 +60,8 @@ if demisto.command() == 'unifivideo-ir-leds':
 
 if demisto.command() == 'unifivideo-get-recording':
     recording_id = args.get('recording_id')
-    snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
-    recording_file_name = 'recording-' + recording_id + '-' + args['frame'] + '.mp4'
+    snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.jpg'
+    recording_file_name = 'recording-' + recording_id + '-' + args.get('frame') + '.mp4'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.get_recordings():
         if rec._id == recording_id:
@@ -74,7 +74,7 @@ if demisto.command() == 'unifivideo-get-recording':
 
 if demisto.command() == 'unifivideo-get-recording-snapshot':
     recording_id = args.get('recording_id')
-    snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
+    snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.jpg'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.get_recordings():
         if rec._id == recording_id:
