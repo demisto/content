@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 class Client(BaseClient):
+    pass
 
 
 def test_module(client: Client, **args) -> str:
