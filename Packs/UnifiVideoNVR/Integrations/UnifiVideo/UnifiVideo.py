@@ -33,7 +33,7 @@ if demisto.command() == 'unifivideo-get-camera-list':
     return_results(results)
 
 if demisto.command() == 'unifivideo-get-snapshot':
-    camera_name = args['camera_name']
+    camera_name = args.get('camera_name')
     output = bytes()
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).snapshot("/tmp/snapshot.png")
@@ -45,21 +45,21 @@ if demisto.command() == 'unifivideo-get-snapshot':
     demisto.results(file)
 
 if demisto.command() == 'unifivideo-set-recording-settings':
-    camera_name = args['camera_name']
-    rec_set = args['rec_set']
+    camera_name = args.get('camera_name')
+    rec_set = args.get('rec_set')
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).set_recording_settings(rec_set)
     demisto.results(camera_name + ": " + rec_set)
 
 if demisto.command() == 'unifivideo-ir-leds':
-    camera_name = args['camera_name']
-    ir_leds = args['ir_leds']
+    camera_name = args.get('camera_name')
+    ir_leds = args.get('ir_leds')
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).ir_leds(ir_leds)
     demisto.results(camera_name + ": " + ir_leds)
 
 if demisto.command() == 'unifivideo-get-recording':
-    recording_id = args['recording_id']
+    recording_id = args.get('recording_id')
     snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
     recording_file_name = 'recording-' + recording_id + '-' + args['frame'] + '.mp4'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
@@ -73,7 +73,7 @@ if demisto.command() == 'unifivideo-get-recording':
     demisto.results(file)
 
 if demisto.command() == 'unifivideo-get-recording-snapshot':
-    recording_id = args['recording_id']
+    recording_id = args.get('recording_id')
     snapshot_file_name = 'snapshot-' + recording_id + '-' + args['frame'] + '.jpg'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.get_recordings():
@@ -91,7 +91,7 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
         while rval:
             rval, frame = vc.read()
             c = c + 1
-            if c == int(args['frame']):
+            if c == int(args.get('frame')):
                 cv2.imwrite("/tmp/" + snapshot_file_name, frame)  # pylint: disable=E1101
                 break
         vc.release()
