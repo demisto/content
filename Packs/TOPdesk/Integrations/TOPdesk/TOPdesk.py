@@ -8,6 +8,8 @@ import os
 import shutil
 import urllib3
 import traceback
+import dateparser
+
 from typing import Any, Dict, List, Optional, Callable
 from dateutil.parser import parse
 from base64 import b64encode
@@ -19,6 +21,7 @@ urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'TOPdesk'
 XSOAR_ENTRY_TYPE = 'Automation'  # XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 ''' CLIENT CLASS '''
 
@@ -598,20 +601,18 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
 def fetch_incidents(client: Client, args: Dict[str, Any], demisto_params: Dict[str, Any]) -> None:
     """Fetches incidents from TOPdesk."""
 
-    first_fetch_datetime = arg_to_datetime(
-        arg=demisto_params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
+    first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch', None)  # TODO: Always returns None for some reason.
     if not last_fetch:
         if first_fetch_datetime:
-            last_fetch = first_fetch_datetime.timestamp()
+            last_fetch_datetime = first_fetch_datetime
         else:
             raise Exception("Could not find last fetch time.")
+    else:
+        last_fetch_datetime = dateparser.parse(last_fetch)
 
-    latest_created_time = last_fetch
+    latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
     topdesk_incidents = get_incidents_list(client=client,
                                            args=args,
@@ -619,12 +620,12 @@ def fetch_incidents(client: Client, args: Dict[str, Any], demisto_params: Dict[s
                                            is_fetch=True)
 
     for topdesk_incident in topdesk_incidents:
-        creation_datetime = arg_to_datetime(topdesk_incident.get('creationDate', '0'))
-        if creation_datetime:
-            incident_created_time = creation_datetime.timestamp()
+        if topdesk_incident.get('creationDate', None):
+            creation_datetime = dateparser.parse(topdesk_incident['creationDate'])
+            incident_created_time = creation_datetime
         else:
-            incident_created_time = int(last_fetch)
-        if int(last_fetch) < int(incident_created_time):
+            incident_created_time = last_fetch_datetime
+        if last_fetch_datetime.timestamp() < incident_created_time.timestamp():
             labels: List[Dict[str, Any]] = []
             for topdesk_incident_field, topdesk_incident_value in topdesk_incident.items():
                 if isinstance(topdesk_incident_value, str):
@@ -641,13 +642,14 @@ def fetch_incidents(client: Client, args: Dict[str, Any], demisto_params: Dict[s
             incidents.append({
                 'name': f"TOPdesk incident {topdesk_incident['number']}",
                 'details': json.dumps(topdesk_incident),
-                'occurred': timestamp_to_datestring(incident_created_time),
+                'occurred': creation_datetime.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(topdesk_incident),
                 'labels': labels
             })
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-    demisto.setLastRun({'last_fetch': latest_created_time})
+        if latest_created_time.timestamp() < incident_created_time.timestamp():
+            latest_created_time = incident_created_time
+
+    demisto.setLastRun({'last_fetch': latest_created_time.strftime(DATE_FORMAT)})
     demisto.incidents(incidents)
 
 
