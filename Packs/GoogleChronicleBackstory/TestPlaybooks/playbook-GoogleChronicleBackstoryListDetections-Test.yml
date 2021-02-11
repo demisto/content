@@ -1,0 +1,307 @@
+id: Google Chronicle Backstory List Detections - Test
+version: -1
+name: Google Chronicle Backstory List Detections - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-list-detections" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b4f4bcd8-8de5-4ca5-8165-faa4dda96d18
+    type: start
+    task:
+      id: b4f4bcd8-8de5-4ca5-8165-faa4dda96d18
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4d5ee5fa-b86b-4c87-8f07-66622a5b915c
+    type: regular
+    task:
+      id: 4d5ee5fa-b86b-4c87-8f07-66622a5b915c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ef7d26ad-1e4e-47d3-865f-9fecf4e7be95
+    type: regular
+    task:
+      id: ef7d26ad-1e4e-47d3-865f-9fecf4e7be95
+      version: -1
+      name: gcb-list-detections
+      script: '|||gcb-list-detections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_state: {}
+      detection_end_time: {}
+      detection_start_time: {}
+      id:
+        simple: ru_746bd6d6-6b84-4007-b74c-ec90c7306a71
+      page_size:
+        simple: "3"
+      page_token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ed9ba4f6-490f-4f3e-8e67-ce878eb1f6dd
+    type: condition
+    task:
+      id: ed9ba4f6-490f-4f3e-8e67-ce878eb1f6dd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.timeWindowStartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.timeWindowEndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.alertState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.urlBackToProduct
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.createdTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.detectionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 29208792-d72e-437c-8c89-dba9a14a5930
+    type: title
+    task:
+      id: 29208792-d72e-437c-8c89-dba9a14a5930
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a7433642-91b9-4497-80aa-efc39bb5f23d
+    type: condition
+    task:
+      id: a7433642-91b9-4497-80aa-efc39bb5f23d
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 03e4adea-7955-4eea-847d-aca84757a784
+    type: regular
+    task:
+      id: 03e4adea-7955-4eea-847d-aca84757a784
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
