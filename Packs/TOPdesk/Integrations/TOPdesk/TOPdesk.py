@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import os
 import shutil
 import urllib3
 import traceback
@@ -177,17 +178,22 @@ class Client(BaseClient):
         if isinstance(invisible_for_caller, bool):
             request_params["invisibleForCaller"] = invisible_for_caller
         else:
-            raise ValueError('invisibleForCaller must be either ture or false')
+            raise ValueError('invisible_for_caller must be either ture or false')
         if file_description:
             request_params["description"] = file_description
+        else:
+            request_params["description"] = ""
 
-        shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-        files = {'file': open(file_name, 'rb')}
-        response = self._http_request(method='POST',
-                                      url_suffix=f"{endpoint}/attachments",
-                                      files=files,
-                                      json_data=request_params)
-        shutil.rmtree(file_name)
+        shutil.copyfile(demisto.getFilePath(file_entry)['path'], file_name)
+        try:
+            files = {'file': open(file_name, 'rb')}
+            response = self._http_request(method='POST',
+                                          url_suffix=f"{endpoint}/attachments",
+                                          files=files,
+                                          json_data=request_params)
+        except Exception as e:
+            os.remove(file_name)
+            raise e
         return response
 
 
@@ -544,7 +550,7 @@ def incident_func_command(client: Client, args: Dict[str, Any], client_func: Cal
 
 def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Upload attachment to certain incident in TOPdesk"""
-    file_entry = args.get('file_entry', None)
+    file_entry = args.get('file', None)
     if not file_entry:
         raise Exception("Found no file entry.")
 
@@ -555,36 +561,37 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f"Could not fine file in entry with entry_id: {file_entry}")
     file_name = file_name[0] if isinstance(file_name, list) else file_name  # If few files
 
-    response = client.attachment_upload(incident_id=args.get('incident_id', None),
-                                        incident_number=args.get('incident_number', None),
+    invisible_for_caller_str = args.get('invisible_for_caller', None)
+    if not invisible_for_caller_str:
+        raise ValueError('invisible_for_caller must be either ture or false')
+    if invisible_for_caller_str.lower() in ['true', 't', 'yes', 'y', '1']:
+        invisible_for_caller = True
+    else:
+        invisible_for_caller = False
+
+    response = client.attachment_upload(incident_id=args.get('id', None),
+                                        incident_number=args.get('number', None),
                                         file_entry=file_entry,
                                         file_name=file_name,
-                                        invisible_for_caller=args.get('invisibleForCaller', None),
+                                        invisible_for_caller=invisible_for_caller,
                                         file_description=args.get('file_description', None))
 
-    if not response.get("attachment", None):
+    if not response.get("downloadUrl", None):
         raise Exception(f"Failed uploading file: {response}")
 
     headers = ['id', 'fileName', 'downloadUrl', 'size', 'description',
                'invisibleForCaller', 'entryDate', 'operator']
-    readable_attachment = [{
-        'id': response["attachment"].get('id', None),
-        'fileName': response["attachment"].get('fileName', None),
-        'downloadUrl': response["attachment"].get('downloadUrl', None),
-        'size': response["attachment"].get('size', None),
-        'description': response["attachment"].get('description', None),
-        'invisibleForCaller': response["attachment"].get('invisibleForCaller', None),
-        'entryDate': response["attachment"].get('entryDate', None),
-        'operator': response["attachment"].get('operator', None),
-    }]
+    readable_attachment: List[Dict[str, Any]] = [{}]
+    for header in headers:
+        readable_attachment[0][header] = response.get(header, None)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators', readable_attachment, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} attachment', readable_attachment, headers=headers)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.incident',
+        outputs_prefix=f'{INTEGRATION_NAME}.attachment',
         outputs_key_field='id',  # Not sure this will update the right path. Needs checking.
-        outputs=response["attachment"]
+        outputs=response
     )
 
 

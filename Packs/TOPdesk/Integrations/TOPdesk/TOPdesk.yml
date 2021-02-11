@@ -5135,6 +5135,66 @@ script:
     - contextPath: TOPdesk.incident..externalLinks.date
       description: ''
       type: Date
+  - arguments:
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - description: Entry id of the file to upload.
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+      isArray: false
+      name: invisible_for_caller
+      required: false
+      secret: false
+    - description: The description of the uploaded file.
+      isArray: false
+      name: file_descriptipn
+      required: false
+      secret: false
+    deprecated: false
+    description: Upload an attachment to an incident in TOPdesk.
+    name: topdesk-incident-attachment-upload
+    outputs:
+      - contextPath: TOPdesk.id
+        description: ''
+        type: String
+      - contextPath: TOPdesk.fileName
+        description: ''
+        type: String
+      - contextPath: TOPdesk.downloadUrl
+        description: ''
+        type: String
+      - contextPath: TOPdesk.size
+        description: ''
+        type: Number
+      - contextPath: TOPdesk.description
+        description: ''
+        type: String
+      - contextPath: TOPdesk.invisibleForCaller
+        description: ''
+        type: Boolean
+      - contextPath: TOPdesk.entryDate
+        description: ''
+        type: Date
+      - contextPath: TOPdesk.operator.id
+        description: ''
+        type: String
+      - contextPath: TOPdesk.operator.name
+        description: ''
+        type: String
+      - contextPath: TOPdesk.person
+        description: ''
+        type: Unknown
   dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   longRunning: false
