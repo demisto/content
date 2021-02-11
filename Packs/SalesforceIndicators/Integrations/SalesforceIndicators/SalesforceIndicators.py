@@ -137,7 +137,7 @@ def fetch_indicators_command(client, params, manual_run=False):
                     "score": client.score
                 }
                 indicators.append(indicator)
-        except Exception as err:
+        except Exception:
             pass
 
     if not manual_run:
