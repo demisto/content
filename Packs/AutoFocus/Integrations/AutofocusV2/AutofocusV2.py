@@ -1507,11 +1507,6 @@ def search_file_command(file):
             score=score
         )
 
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1523,6 +1518,12 @@ def search_file_command(file):
             md += tableToMarkdown('Indicator Tags:', tags)
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
+
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            tags=tags,
+        )
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',

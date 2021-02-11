@@ -815,6 +815,9 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
     - contextPath: AutoFocus.File.IndicatorValue
       description: SHA256 of the file.
       type: String
