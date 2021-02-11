@@ -1,0 +1,34 @@
+commonfields:
+  id: ValidateContent
+  version: -1
+name: ValidateContent
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Runs validation and linting on content items.
+enabled: true
+args:
+- default: false
+  description: Name of the file to validate.
+  isArray: false
+  name: filename
+  required: false
+  secret: false
+- default: false
+  description: Base64 encoded contents of the file to validate.
+  isArray: false
+  name: data
+  required: false
+  secret: false
+- default: false
+  description: ID of War Room file entry.
+  isArray: false
+  name: entry_id
+  required: false
+  secret: false
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+fromversion: 5.0.0
+dockerimage: demisto/xsoar-tools:1.0.0.15483
