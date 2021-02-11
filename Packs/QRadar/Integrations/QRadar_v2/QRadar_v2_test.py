@@ -43,6 +43,8 @@ command_tests = [
         {"offense_id": "450", "note_text": "XSOAR has the best documentation!"},
     ),
     ("qradar-get-note", get_note_command, {"offense_id": "450", "note_id": "1232"}),
+    ("qradar-get-search", get_search_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
+
 ]
 
 
@@ -74,6 +76,8 @@ class TestQRadarv2:
         mocker.patch.object(client, "send_request", return_value=RAW_RESPONSES[command])
         mocker.patch.object(demisto, "debug")
         res = command_func(client, **args)
+        if isinstance(res, list):
+            res = res[0]
         assert COMMAND_OUTPUTS[command] == res.get("EntryContext")
 
     def test_fetch_incidents_long_running_no_events(self, mocker):

@@ -316,7 +316,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 ### qradar-get-search
 ***
-Gets a specific search id and status
+Gets a the status of a search id or a list of search ids.
 
 
 #### Base Command

@@ -1499,31 +1499,22 @@ def search_command(client: QRadarClient, query_expression=None, headers=None):
 
 
 def get_search_command(client: QRadarClient, search_id=None, headers=None):
-    raw_search = client.get_search(search_id)
-    search = deepcopy(raw_search)
-    search = filter_dict_non_intersection_key_to_value(
-        replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
-    )
-    return get_entry_for_object(
-        "QRadar Search Info",
-        search,
-        raw_search,
-        headers,
-        'QRadar.Search(val.ID === "{0}")'.format(search_id),
-    )
-
-
-def get_search_wrapper_command(client: QRadarClient, search_id=None, headers=None): #naming?
-    """
-    Wrapper for get_search_command function, allows it to be run on bot a list of ids and single id
-    """
     results = []
-    if type(search_id) is list:
-        for item in search_id:
-            results.append(get_search_command(client, item, headers))
-        return results
-    else:
-        return get_search_command(client, search_id, headers)
+    for item in argToList(search_id):
+        raw_search = client.get_search(item)
+        search = deepcopy(raw_search)
+        search = filter_dict_non_intersection_key_to_value(
+            replace_keys(search, SEARCH_ID_NAMES_MAP), SEARCH_ID_NAMES_MAP
+        )
+        results.append(get_entry_for_object(
+            "QRadar Search Info",
+            search,
+            raw_search,
+            headers,
+            'QRadar.Search(val.ID === "{0}")'.format(item),
+        ))
+
+    return results
 
 
 def get_search_results_command(
@@ -2321,7 +2312,7 @@ def main():
             "qradar-offense-by-id": get_offense_by_id_command,
             "qradar-update-offense": update_offense_command,
             "qradar-searches": search_command,
-            "qradar-get-search": get_search_wrapper_command,
+            "qradar-get-search": get_search_command,
             "qradar-get-search-results": get_search_results_command,
             "qradar-get-assets": get_assets_command,
             "qradar-get-asset-by-id": get_asset_by_id_command,
@@ -2341,8 +2332,7 @@ def main():
         }
         if command in normal_commands:
             args = demisto.args()
-            # demisto.results(normal_commands[command](client, **args))
-            return_results(normal_commands[command](client, **args))
+            demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
         elif command == "long-running-execution":
