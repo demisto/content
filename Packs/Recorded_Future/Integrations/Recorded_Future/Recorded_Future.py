@@ -128,8 +128,8 @@ def domain_command():
                     'Rule Triggered Time': detail.get('timestamp')
                 })
                 community_notes.append({
-                    'Note': detail.get('evidenceString'),
-                    'Timestamp': detail.get('timestamp')
+                    'note': detail.get('evidenceString'),
+                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -147,10 +147,10 @@ def domain_command():
             sightings_table.append(sighting)
 
             publications.append({
-                'Timestamp': raw_sighting.get('published'),
-                'Link': raw_sighting.get('url'),
-                'Source': raw_sighting.get('source'),
-                'Title': raw_sighting.get('title')
+                'timestamp': raw_sighting.get('published'),
+                'link': raw_sighting.get('url'),
+                'source': raw_sighting.get('source'),
+                'title': raw_sighting.get('title')
             })
         if sightings_table:
             hr += tableToMarkdown('References collected for this domain', sightings_table,
@@ -242,8 +242,8 @@ def url_command():
                     'Rule Triggered Time': detail.get('timestamp')
                 })
                 community_notes.append({
-                    'Note': detail.get('evidenceString'),
-                    'Timestamp': detail.get('timestamp')
+                    'note': detail.get('evidenceString'),
+                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -260,10 +260,10 @@ def url_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
             publications.append({
-                'Timestamp': raw_sighting.get('published'),
-                'Link': raw_sighting.get('url'),
-                'Source': raw_sighting.get('source'),
-                'Title': raw_sighting.get('title')
+                'timestamp': raw_sighting.get('published'),
+                'link': raw_sighting.get('url'),
+                'source': raw_sighting.get('source'),
+                'title': raw_sighting.get('title')
             })
         if sightings_table:
             hr += tableToMarkdown('References collected for this URL', sightings_table,
@@ -355,8 +355,8 @@ def ip_command():
                     'Rule Triggered Time': detail.get('timestamp')
                 })
                 community_notes.append({
-                    'Note': detail.get('evidenceString'),
-                    'Timestamp': detail.get('timestamp')
+                    'note': detail.get('evidenceString'),
+                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', evidence_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -373,10 +373,10 @@ def ip_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
             publications.append({
-                'Timestamp': raw_sighting.get('published'),
-                'Link': raw_sighting.get('url'),
-                'Source': raw_sighting.get('source'),
-                'Title': raw_sighting.get('title')
+                'timestamp': raw_sighting.get('published'),
+                'link': raw_sighting.get('url'),
+                'source': raw_sighting.get('source'),
+                'title': raw_sighting.get('title')
             })
         if sightings_table:
             hr += tableToMarkdown('References collected for this IP', sightings_table,
@@ -469,8 +469,8 @@ def file_command():
                     'Rule Triggered Time': detail.get('timestamp')
                 })
                 community_notes.append({
-                    'Note': detail.get('evidenceString'),
-                    'Timestamp': detail.get('timestamp')
+                    'note': detail.get('evidenceString'),
+                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
@@ -487,10 +487,10 @@ def file_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
             publications.append({
-                'Timestamp': raw_sighting.get('published'),
-                'Link': raw_sighting.get('url'),
-                'Source': raw_sighting.get('source'),
-                'Title': raw_sighting.get('title')
+                'timestamp': raw_sighting.get('published'),
+                'link': raw_sighting.get('url'),
+                'source': raw_sighting.get('source'),
+                'title': raw_sighting.get('title')
             })
         if sightings_table:
             hr += tableToMarkdown('References collected for this hash', sightings_table,

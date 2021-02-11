@@ -132,22 +132,22 @@ script:
     - contextPath: Domain.Tags
       description: Tags that are associated with the Domain
       type: String
-    - contextPath: Domain.CommunityNotes.Note
+    - contextPath: Domain.CommunityNotes.note
       description: A summary note on the mentioning of the domain in a source monitored by Recorded Future.
       type: String
-    - contextPath: Domain.CommunityNotes.Timestamp
+    - contextPath: Domain.CommunityNotes.timestamp
       description: The timestamp in which the community note was created.
       type: Date
-    - contextPath: Domain.Publications.Source
+    - contextPath: Domain.Publications.source
       description: The publication's source.
       type: String
-    - contextPath: Domain.Publications.Title
+    - contextPath: Domain.Publications.title
       description: The title of the published information.
       type: String
-    - contextPath: Domain.Publications.Link
+    - contextPath: Domain.Publications.link
       description: A link to the published information.
       type: String
-    - contextPath: Domain.Publications.Timestamp
+    - contextPath: Domain.Publications.timestamp
       description: The timestamp in which the information was published.
       type: Date
   - arguments:
@@ -209,22 +209,22 @@ script:
     - contextPath: IP.Tags
       description: Tags that are associated with the Domain
       type: String
-    - contextPath: IP.CommunityNotes.Note
+    - contextPath: IP.CommunityNotes.note
       description: A summary note on the mentioning of the IP in a source monitored by Recorded Future.
       type: String
-    - contextPath: IP.CommunityNotes.Timestamp
+    - contextPath: IP.CommunityNotes.timestamp
       description: The timestamp in which the community note was created.
       type: Date
-    - contextPath: IP.Publications.Source
+    - contextPath: IP.Publications.source
       description: The publication's source.
       type: String
-    - contextPath: IP.Publications.Title
+    - contextPath: IP.Publications.title
       description: The title of the published information.
       type: String
-    - contextPath: IP.Publications.Link
+    - contextPath: IP.Publications.link
       description: A link to the published information.
       type: String
-    - contextPath: IP.Publications.Timestamp
+    - contextPath: IP.Publications.timestamp
       description: The timestamp in which the information was published.
       type: Date
   - arguments:
@@ -300,22 +300,22 @@ script:
     - contextPath: File.Tags
       description: Tags that are associated with the Domain
       type: String
-    - contextPath: File.CommunityNotes.Note
+    - contextPath: File.CommunityNotes.note
       description: A summary note on the mentioning of the file in a source monitored by Recorded Future.
       type: String
-    - contextPath: File.CommunityNotes.Timestamp
+    - contextPath: File.CommunityNotes.timestamp
       description: The timestamp in which the community note was created.
       type: Date
-    - contextPath: File.Publications.Source
+    - contextPath: File.Publications.source
       description: The publication's source.
       type: String
-    - contextPath: File.Publications.Title
+    - contextPath: File.Publications.title
       description: The title of the published information.
       type: String
-    - contextPath: File.Publications.Link
+    - contextPath: File.Publications.link
       description: A link to the published information.
       type: String
-    - contextPath: File.Publications.Timestamp
+    - contextPath: File.Publications.timestamp
       description: The timestamp in which the information was published.
       type: Date
   - arguments:
@@ -657,22 +657,22 @@ script:
     - contextPath: URL.Tags
       description: Tags that are associated with the Domain
       type: String
-    - contextPath: URL.CommunityNotes.Note
+    - contextPath: URL.CommunityNotes.note
       description: A summary note on the mentioning of the URL in a source monitored by Recorded Future.
       type: String
-    - contextPath: URL.CommunityNotes.Timestamp
+    - contextPath: URL.CommunityNotes.timestamp
       description: The timestamp in which the community note was created.
       type: Date
-    - contextPath: URL.Publications.Source
+    - contextPath: URL.Publications.source
       description: The publication's source.
       type: String
-    - contextPath: URL.Publications.Title
+    - contextPath: URL.Publications.title
       description: The title of the published information.
       type: String
-    - contextPath: URL.Publications.Link
+    - contextPath: URL.Publications.link
       description: A link to the published information.
       type: String
-    - contextPath: URL.Publications.Timestamp
+    - contextPath: URL.Publications.timestamp
       description: The timestamp in which the information was published.
       type: Date
   - arguments:
