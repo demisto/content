@@ -3205,6 +3205,10 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "MicrosoftPolicyAndComplianceAuditLog",
+            "playbookID": "Audit Log - Test"
+        },
+        {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
         }
@@ -3287,7 +3291,7 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071"
     },
     "skipped_integrations": {
-      
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
