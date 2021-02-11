@@ -3288,7 +3288,8 @@
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
-        "Extract Indicators From File - Generic v2 - Test": "Issue 30071"
+        "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
+        "Kenna Test": "Missing data"
     },
     "skipped_integrations": {
 
