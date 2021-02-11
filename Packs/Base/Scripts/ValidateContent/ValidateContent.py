@@ -16,8 +16,7 @@ from demisto_sdk.commands.init.contribution_converter import (
     get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split_yml.extractor import Extractor
-from demisto_sdk.commands.validate.validate_manager import (
-    ALLOWED_IGNORE_ERRORS, ValidateManager)
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
 import demistomock as demisto
@@ -47,7 +46,7 @@ def _create_pack_base_files(self):
 
 
 def content_item_to_package_format(
-        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None
+        self, content_item_dir: str, del_unified: bool = True, source_mapping: Optional[Dict] = None  # noqa: F841
 ) -> None:
     child_files = get_child_files(content_item_dir)
     for child_file in child_files:
@@ -155,15 +154,15 @@ def validate_content(filename, data, tmp_directory: str) -> List:
     lint_output_path = os.path.join(os.path.normpath(content.path / '..'), 'lint_res.json')
     if filename.endswith('.zip'):
         # write zip file data to file system
-        file_path = os.path.abspath(os.path.join(tmp_directory, filename))
-        with open(file_path, 'wb') as fp:
+        zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
+        with open(zip_path, 'wb') as fp:
             fp.write(data)
 
-        pack_name = get_pack_name(file_path)
-        contrib_converter = ContributionConverter(name=pack_name, contribution=file_path, base_dir=tmp_directory)
+        pack_name = get_pack_name(zip_path)
+        contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
         convert_contribution_to_pack(contrib_converter)
         # Call the standalone function and get the raw response
-        os.remove(file_path)
+        os.remove(zip_path)
         pack_path = contrib_converter.pack_dir_path
         pack_entity = Pack(pack_path)
         for content_entities in pack_entity.scripts, pack_entity.integrations:
@@ -176,7 +175,7 @@ def validate_content(filename, data, tmp_directory: str) -> List:
     else:
         # a single content item
         pack_name = 'TmpPack'
-        pack_dir = content.path/ 'Packs' / pack_name
+        pack_dir = content.path / 'Packs' / pack_name
         # create pack_metadata.json file in TmpPack
         contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name)
         contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
@@ -232,7 +231,7 @@ def get_file_name_and_contents(
         return filename, b64decode(data)
     elif entry_id:
         file_object = demisto.getFilePath(entry_id)
-        print(file_object)
+
         with open(file_object['path'], 'rb') as f:
             file_contents = f.read()
         return file_object['name'], file_contents
