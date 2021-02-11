@@ -1280,14 +1280,14 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 6.0': False,
         }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    # with open("./Tests/filter_envs.json", "w") as filter_envs_file:
-    #     json.dump(envs_to_test, filter_envs_file)
+    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+        json.dump(envs_to_test, filter_envs_file)
 
 
 def get_list_of_files_in_the_pack(path_to_pack):
     file_paths = []
     local_test = f'../../{path_to_pack}'
-    for root, dirs, files in os.walk(local_test):
+    for root, dirs, files in os.walk(path_to_pack):
         for file in files:
             file_paths.append(os.path.join(root, file))
     return file_paths
