@@ -1,11 +1,15 @@
 import io
-import tempfile
 import types
+from typing import Callable, Iterable, List, Tuple
 import zipfile
 from base64 import b64decode
+import concurrent.futures
+import shutil
+import traceback
 from contextlib import redirect_stderr, redirect_stdout
+from wcmatch.pathlib import NEGATE, GLOBSTAR, EXTGLOB
+from wcmatch.pathlib import Path as wcpath
 
-from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.content.objects.pack_objects.pack import Pack
@@ -23,6 +27,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 yaml = YAML()
+performed_cleanup = False
 
 
 def remove_keys(content_entity: Dict, *args: str) -> None:
@@ -146,6 +151,34 @@ def run_lint(file_path: str, json_output_file: str) -> None:
             )
 
 
+def run_parallel_operations(operations: List[Tuple[Callable, Iterable]]) -> None:
+    parallel_ops = len(operations)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_ops) as executor:
+        try:
+            for func_to_execute, func_args in operations:
+                future = executor.submit(func_to_execute, *func_args)
+                res = future.result()
+                demisto.debug(f'{res=}')
+        except Exception as e:
+            demisto.debug(f'Stopping concurrent operations of validation script due to error - {e}')
+            try:
+                executor.shutdown(wait=False)
+            except Exception:
+                pass
+            raise
+
+
+def do_cleanup(content_dir) -> None:
+    global performed_cleanup
+    packs_dir = os.path.join(content_dir, 'Packs')
+    demisto.info('starting cleanup')
+    files_to_clean = wcpath(packs_dir).glob([r'*', r'!Base'], flags=NEGATE | GLOBSTAR | EXTGLOB)
+    for file_to_clean in files_to_clean:
+        demisto.info(f'{file_to_clean=}')
+        shutil.rmtree(file_to_clean, ignore_errors=True)
+    performed_cleanup = True
+
+
 def validate_content(filename, data, tmp_directory: str) -> List:
     keys_to_remove = ['contentitemexportablefields', 'pswd', 'sourcemoduleid']
     # case when a pack zip file has been passed
@@ -200,8 +233,11 @@ def validate_content(filename, data, tmp_directory: str) -> List:
         path_to_validate = extractor.get_output_path()
         extractor.extract_to_package_format()
 
-    run_validate(path_to_validate, json_output_path)
-    run_lint(path_to_validate, lint_output_path)
+    operations = [
+        (run_validate, [path_to_validate, json_output_path]),
+        (run_lint, [path_to_validate, lint_output_path])
+    ]
+    run_parallel_operations(operations)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
@@ -239,22 +275,20 @@ def get_file_name_and_contents(
 
 def main():
     try:
-        os.chdir('/var/lib/demisto')
-        with tempfile.TemporaryDirectory(None, None, os.path.abspath(os.curdir)) as tmp_directory:
-            content_dir = os.path.join(tmp_directory, 'content')
-            os.makedirs(content_dir, exist_ok=True)
-            tools.run_command('git init', cwd=content_dir)
-            tools.run_command('git remote add origin https://github.com/demisto/content.git', cwd=content_dir)
-            os.chdir(content_dir)
-            args = demisto.args()
-            filename, file_contents = get_file_name_and_contents(
-                args.get('filename'),
-                args.get('data'),
-                args.get('entry_id'),
-            )
-            result = validate_content(filename, file_contents, content_dir)
+        content_dir = '/home/demisto/content'
+        os.chdir(content_dir)
+        args = demisto.args()
+        filename, file_contents = get_file_name_and_contents(
+            args.get('filename'),
+            args.get('data'),
+            args.get('entry_id'),
+        )
+        result = validate_content(filename, file_contents, content_dir)
+        do_cleanup(content_dir)
         return_results(CommandResults(raw_response=result))
     except Exception as e:
+        if not performed_cleanup:
+            do_cleanup(content_dir)
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
 
