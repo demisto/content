@@ -3186,11 +3186,11 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "Tenable.io_Custom",
+            "integrations": "Tenable_SE6712.io",
             "playbookID": "Tenable.io test"
         },
         {
-            "integrations": "Tenable_SE6712.io",
+            "integrations": "Tenable_SE6712_1.io",
             "playbookID": "Tenable.io test"
         }
     ],

@@ -229,20 +229,6 @@ def test_add_tags_command(mocker, requests_mock):
     add_tags()
 
 
-def test_resume_scans_command(mocker, requests_mock):
-    mock_demisto(mocker, {'scanIds': '25'})
-    requests_mock.get(MOCK_PARAMS['url'] + 'scans/25', json={'info': {'status': 'canceled'}})
-    from Tenable_io import resume_scans_command
-    resume_scans_command()
-
-
-def test_pause_scans_command(mocker, requests_mock):
-    mock_demisto(mocker, {'scanIds': '25'})
-    requests_mock.get(MOCK_PARAMS['url'] + 'scans/25', json={'info': {'status': 'canceled'}})
-    from Tenable_io import pause_scans_command
-    pause_scans_command()
-
-
 def test_launch_scans_command(mocker, requests_mock):
     mock_demisto(mocker, {'scan_ids': '25'})
     requests_mock.post(MOCK_PARAMS['url'] + 'scans/25/launch', json={'info': {'status': 'canceled'}})

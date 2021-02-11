@@ -1,5 +1,5 @@
 A comprehensive asset centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers and web applications.
-This integration was integrated and tested with version xx of Tenable.io
+This integration was integrated and tested with version 02.2021 of Tenable.io
 ## Configure Tenable.io on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
