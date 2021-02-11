@@ -110,7 +110,10 @@ configuration:
   name: sync_tags
   required: false
   type: 0
-description: The Expanse v2 integration for Cortex XSOAR leverages the Expander API to create incidents from Expanse issues. It also leverages Expanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Expanse Expander and risky flows detected by Expanse Behavior.
+description: The Expanse v2 integration for Cortex XSOAR leverages the Expander API
+  to create incidents from Expanse issues. It also leverages Expanse's unparalleled
+  view of the Internet to enrich IPs, domains and certificates using information from
+  assets discovered by Expanse Expander and risky flows detected by Expanse Behavior.
 display: Expanse v2
 name: ExpanseV2
 script:
@@ -294,7 +297,8 @@ script:
       description: 'The username of the user that has been assigned to the issue'
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: 'The internal Expanse ID for the business unit the affected asset belongs to'
+      description: 'The internal Expanse ID for the business unit the affected asset
+        belongs to'
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
       description: 'The name of the business unit the affected asset belongs to'
@@ -429,7 +433,8 @@ script:
       description: 'The issuer in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames
-      description: 'The issuer alternative names in the certificate in the initial observation'
+      description: 'The issuer alternative names in the certificate in the initial
+        observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerCountry
       description: 'The issuer country in the certificate in the initial observation'
@@ -474,7 +479,8 @@ script:
       description: 'The public key modulus in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyRsaExponent
-      description: 'The public key RSA exponent in the certificate in the initial observation'
+      description: 'The public key RSA exponent in the certificate in the initial
+        observation'
       type: Number
     - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeySpki
       description: 'The public key Spki in the certificate in the initial observation'
@@ -489,7 +495,8 @@ script:
       description: 'The subject in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectAlternativeNames
-      description: 'The subject alternative names in the certificate in the initial observation'
+      description: 'The subject alternative names in the certificate in the initial
+        observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectCountry
       description: 'The subject country in the certificate in the initial observation'
@@ -597,7 +604,8 @@ script:
       description: 'The name of the issue type'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg
-      description: 'The formatted issuer org in the certificate in the most recent observation'
+      description: 'The formatted issuer org in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
       description: 'The Internal Expanse certificate ID in the most recent observation'
@@ -606,7 +614,8 @@ script:
       description: 'The issuer in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames
-      description: 'The issuer alternative names in the certificate in the most recent observation'
+      description: 'The issuer alternative names in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerCountry
       description: 'The issuer country in the certificate in the most recent observation'
@@ -642,7 +651,8 @@ script:
       description: 'The public key in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyAlgorithm
-      description: 'The public key algorithm in the certificate in the most recent observation'
+      description: 'The public key algorithm in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyBits
       description: 'The public key bits in the certificate in the most recent observation'
@@ -651,7 +661,8 @@ script:
       description: 'The public key modulus in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyRsaExponent
-      description: 'The public key RSA exponent in the certificate in the most recent observation'
+      description: 'The public key RSA exponent in the certificate in the most recent
+        observation'
       type: Number
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeySpki
       description: 'The public key Spki in the certificate in the most recent observation'
@@ -660,13 +671,15 @@ script:
       description: 'The serial number in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.signatureAlgorithm
-      description: 'The signature algorithm in the certificate in the most recent observation'
+      description: 'The signature algorithm in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subject
       description: 'The subject in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectAlternativeNames
-      description: 'The subject alternative names in the certificate in the most recent observation'
+      description: 'The subject alternative names in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectCountry
       description: 'The subject country in the certificate in the most recent observation'
@@ -690,10 +703,12 @@ script:
       description: 'The subject state in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotAfter
-      description: 'The valid not after date in the certificate in the most recent observation'
+      description: 'The valid not after date in the certificate in the most recent
+        observation'
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotBefore
-      description: 'The valid not before date in the certificate in the most recent observation'
+      description: 'The valid not before date in the certificate in the most recent
+        observation'
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.version
       description: 'The version in the certificate in the most recent observation'
@@ -827,7 +842,8 @@ script:
       description: 'The previous value of the field that was updated'
       type: String
     - contextPath: Expanse.IssueUpdate.updateType
-      description: 'The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment'
+      description: 'The type of update that occurred, valid types are ProgressStatus,
+        ActivityStatus, Priority, Assignee, and Comment'
       type: String
     - contextPath: Expanse.IssueUpdate.user.username
       description: 'The username of the user who made the update'
@@ -867,7 +883,8 @@ script:
       description: 'The previous value of the field that was updated'
       type: String
     - contextPath: Expanse.IssueComment.updateType
-      description: 'The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment'
+      description: 'The type of update that occurred, valid types are ProgressStatus,
+        ActivityStatus, Priority, Assignee, and Comment'
       type: String
     - contextPath: Expanse.IssueComment.user.username
       description: 'The username of the user who made the update'
@@ -919,7 +936,8 @@ script:
       description: 'The previous value of the field that was updated'
       type: String
     - contextPath: Expanse.IssueUpdate.updateType
-      description: 'The type of update that occurred, valid types are ProgressStatus, ActivityStatus, Priority, Assignee, and Comment'
+      description: 'The type of update that occurred, valid types are ProgressStatus,
+        ActivityStatus, Priority, Assignee, and Comment'
       type: String
     - contextPath: Expanse.IssueUpdate.user.username
       description: 'The username of the user who made the update'
@@ -964,7 +982,8 @@ script:
       description: 'The username of the user that has been assigned to the issue'
       type: String
     - contextPath: Expanse.Issue.businessUnits.id
-      description: 'The internal Expanse ID for the business unit the affected asset belongs to'
+      description: 'The internal Expanse ID for the business unit the affected asset
+        belongs to'
       type: String
     - contextPath: Expanse.Issue.businessUnits.name
       description: 'The name of the business unit the affected asset belongs to'
@@ -1099,7 +1118,8 @@ script:
       description: 'The issuer in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerAlternativeNames
-      description: 'The issuer alternative names in the certificate in the initial observation'
+      description: 'The issuer alternative names in the certificate in the initial
+        observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.issuerCountry
       description: 'The issuer country in the certificate in the initial observation'
@@ -1144,7 +1164,8 @@ script:
       description: 'The public key modulus in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeyRsaExponent
-      description: 'The public key RSA exponent in the certificate in the initial observation'
+      description: 'The public key RSA exponent in the certificate in the initial
+        observation'
       type: Number
     - contextPath: Expanse.Issue.initialEvidence.certificate.publicKeySpki
       description: 'The public key Spki in the certificate in the initial observation'
@@ -1159,7 +1180,8 @@ script:
       description: 'The subject in the certificate in the initial observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectAlternativeNames
-      description: 'The subject alternative names in the certificate in the initial observation'
+      description: 'The subject alternative names in the certificate in the initial
+        observation'
       type: String
     - contextPath: Expanse.Issue.initialEvidence.certificate.subjectCountry
       description: 'The subject country in the certificate in the initial observation'
@@ -1267,7 +1289,8 @@ script:
       description: 'The name of the issue type'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.formattedIssuerOrg
-      description: 'The formatted issuer org in the certificate in the most recent observation'
+      description: 'The formatted issuer org in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.id
       description: 'The Internal Expanse certificate ID in the most recent observation'
@@ -1276,7 +1299,8 @@ script:
       description: 'The issuer in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerAlternativeNames
-      description: 'The issuer alternative names in the certificate in the most recent observation'
+      description: 'The issuer alternative names in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.issuerCountry
       description: 'The issuer country in the certificate in the most recent observation'
@@ -1312,7 +1336,8 @@ script:
       description: 'The public key in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyAlgorithm
-      description: 'The public key algorithm in the certificate in the most recent observation'
+      description: 'The public key algorithm in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyBits
       description: 'The public key bits in the certificate in the most recent observation'
@@ -1321,7 +1346,8 @@ script:
       description: 'The public key modulus in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeyRsaExponent
-      description: 'The public key RSA exponent in the certificate in the most recent observation'
+      description: 'The public key RSA exponent in the certificate in the most recent
+        observation'
       type: Number
     - contextPath: Expanse.Issue.latestEvidence.certificate.publicKeySpki
       description: 'The public key Spki in the certificate in the most recent observation'
@@ -1330,13 +1356,15 @@ script:
       description: 'The serial number in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.signatureAlgorithm
-      description: 'The signature algorithm in the certificate in the most recent observation'
+      description: 'The signature algorithm in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subject
       description: 'The subject in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectAlternativeNames
-      description: 'The subject alternative names in the certificate in the most recent observation'
+      description: 'The subject alternative names in the certificate in the most recent
+        observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.subjectCountry
       description: 'The subject country in the certificate in the most recent observation'
@@ -1360,10 +1388,12 @@ script:
       description: 'The subject state in the certificate in the most recent observation'
       type: String
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotAfter
-      description: 'The valid not after date in the certificate in the most recent observation'
+      description: 'The valid not after date in the certificate in the most recent
+        observation'
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.validNotBefore
-      description: 'The valid not before date in the certificate in the most recent observation'
+      description: 'The valid not before date in the certificate in the most recent
+        observation'
       type: Date
     - contextPath: Expanse.Issue.latestEvidence.certificate.version
       description: 'The version in the certificate in the most recent observation'
@@ -1916,7 +1946,8 @@ script:
       description: 'The number of IP addresses in the IP range'
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: 'If the IP range is Expanse-generated parent range or a customer-generated custom range'
+      description: 'If the IP range is Expanse-generated parent range or a customer-generated
+        custom range'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
       description: 'The country within the IP range registration information'
@@ -1937,52 +1968,68 @@ script:
       description: 'The parent handle within the IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.address
-      description: 'The address within the registry entities of the IP range registration information'
+      description: 'The address within the registry entities of the IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.email
-      description: 'The email within the registry entities of the e IP range registration information'
+      description: 'The email within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.action
-      description: 'The events action within the registry entities of the e IP range registration information'
+      description: 'The events action within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.actor
-      description: 'The events actor within the registry entities of the e IP range registration information'
+      description: 'The events actor within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.date
-      description: 'The events date within the registry entities of the e IP range registration information'
+      description: 'The events date within the registry entities of the e IP range
+        registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.firstRegistered
-      description: 'The first registered date within the registry entities of the e IP range registration information'
+      description: 'The first registered date within the registry entities of the
+        e IP range registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.formattedName
-      description: 'The formatted name within the registry entities of the e IP range registration information'
+      description: 'The formatted name within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.handle
-      description: 'The handle within the registry entities of the e IP range registration information'
+      description: 'The handle within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: 'The ID within the registry entities of the e IP range registration information'
+      description: 'The ID within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
-      description: 'The last changed date within the registry entities of the e IP range registration information'
+      description: 'The last changed date within the registry entities of the e IP
+        range registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.org
-      description: 'The org within the registry entities of the e IP range registration information'
+      description: 'The org within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.phone
-      description: 'The phone number within the registry entities of the e IP range registration information'
+      description: 'The phone number within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.relatedEntityHandles
-      description: 'The related entity handles within the registry entities of the e IP range registration information'
+      description: 'The related entity handles within the registry entities of the
+        e IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.remarks
-      description: 'The remarks within the registry entities of the e IP range registration information'
+      description: 'The remarks within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.roles
-      description: 'The roles within the registry entities of the e IP range registration information'
+      description: 'The roles within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.statuses
-      description: 'The statuses within the registry entities of the e IP range registration information'
+      description: 'The statuses within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.remarks
       description: 'The remarks within the IP range registration information'
@@ -1997,7 +2044,8 @@ script:
       description: 'The Whois server within the IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.responsiveIpCount
-      description: 'The number of IPs responsive on the public Internet within the IP range'
+      description: 'The number of IPs responsive on the public Internet within the
+        IP range'
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.count
       description: 'The number of exposures observed on the IP range'
@@ -2142,16 +2190,19 @@ script:
       description: 'Business Units that the domain has been assigned to'
       type: String
     - contextPath: Expanse.Domain.businessUnits.tenantId
-      description: 'Tenant ID for business Units that the domain has been assigned to'
+      description: 'Tenant ID for business Units that the domain has been assigned
+        to'
       type: String
     - contextPath: Expanse.Domain.dateAdded
       description: 'The date that the domain was added to the Expander instance'
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.assetKey
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.assetType
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.id
       description: 'Business Units for the recent IPs that the domain resolved to'
@@ -2160,37 +2211,48 @@ script:
       description: 'Business Units for the recent IPs that the domain resolved to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.tenantId
-      description: 'Tenant information for business Units that the recent IPs that the domain resolved to'
+      description: 'Tenant information for business Units that the recent IPs that
+        the domain resolved to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.commonName
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.domain
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.ip
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.lastObserved
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.provider.id
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.provider.name
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.type
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.dnsResolutionStatus
       description: 'Latest DNS resolution status'
@@ -2199,7 +2261,8 @@ script:
       description: 'The date that the domain was first observed'
       type: Date
     - contextPath: Expanse.Domain.hasLinkedCloudResources
-      description: 'Whether the domain has any linked cloud resources associated with it'
+      description: 'Whether the domain has any linked cloud resources associated with
+        it'
       type: Boolean
     - contextPath: Expanse.Domain.id
       description: 'Internal Expanse ID for Domain'
@@ -2232,10 +2295,12 @@ script:
       description: 'Sub-domain metadata'
       type: Date
     - contextPath: Expanse.Domain.providers.id
-      description: 'Information about the hosting provider of the IP the domain resolves to'
+      description: 'Information about the hosting provider of the IP the domain resolves
+        to'
       type: String
     - contextPath: Expanse.Domain.providers.name
-      description: 'Information about the hosting provider of the IP the domain resolves to'
+      description: 'Information about the hosting provider of the IP the domain resolves
+        to'
       type: String
     - contextPath: Expanse.Domain.serviceStatus
       description: 'Detected service statuses for the domain'
@@ -2313,10 +2378,12 @@ script:
       description: 'The registrant country in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.emailAddress
-      description: 'The registrant email address in the Whois information for the domain'
+      description: 'The registrant email address in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.faxExtension
-      description: 'The registrant fax extension in the Whois information for the domain'
+      description: 'The registrant fax extension in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.faxNumber
       description: 'The registrant fax number in the Whois information for the domain'
@@ -2328,7 +2395,8 @@ script:
       description: 'The registrant organization in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneExtension
-      description: 'The registrant phone extension in the Whois information for the domain'
+      description: 'The registrant phone extension in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneNumber
       description: 'The registrant phone number in the Whois information for the domain'
@@ -2346,10 +2414,12 @@ script:
       description: 'The registrant street in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactEmail
-      description: 'The registrar abuse contact email in the Whois information for the domain'
+      description: 'The registrar abuse contact email in the Whois information for
+        the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactPhone
-      description: The registrar abuse contact phone in the Whois information for the domain''
+      description: The registrar abuse contact phone in the Whois information for
+        the domain''
       type: String
     - contextPath: Expanse.Domain.whois.registrar.formattedName
       description: 'The registrar formatted name Whois information for the domain'
@@ -2361,7 +2431,8 @@ script:
       description: 'The registrar name in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.registrationExpirationDate
-      description: 'The registrar registration expiration date in the Whois information for the domain'
+      description: 'The registrar registration expiration date in the Whois information
+        for the domain'
       type: Date
     - contextPath: Expanse.Domain.whois.registrar.url
       description: 'The registrar URL in the Whois information for the domain'
@@ -2439,7 +2510,8 @@ script:
       description: 'Business Units that the cloud resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.businessUnits.tenantId
-      description: 'Tenant information businessUnits that the cloud resource as been assigned to'
+      description: 'Tenant information businessUnits that the cloud resource as been
+        assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.dateAdded
       description: 'The date that the cloud resource was added to the Expander instance'
@@ -2487,49 +2559,64 @@ script:
       description: 'Additional details for the cloud resource linked to the domain'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetKey
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetType
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.tenantId
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.commonName
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.domain
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.ip
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.lastObserved
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: Date
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.id
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.name
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.type
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.annotations.note
       description: 'Customer provided annotation details for a domain'
@@ -2851,7 +2938,8 @@ script:
       description: 'Business Units that the certificate has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.businessUnits.tenantId
-      description: 'Tenant information for business units that the certificate has been assigned to'
+      description: 'Tenant information for business units that the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
       description: 'The formatted issuer org in the certificate'
@@ -2974,13 +3062,16 @@ script:
       description: 'Additional details for the recent IPs linked to the certificate'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Business Units that the recent IPs linked to the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Business Units that the recent IPs linked to the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
-      description: 'Tenant information for business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Tenant information for business Units that the recent IPs linked
+        to the certificate has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.commonName
       description: 'Additional details for the recent IPs linked to the certificate'
@@ -3016,7 +3107,8 @@ script:
       description: 'The date that the certificate was first observed'
       type: Date
     - contextPath: Expanse.Certificate.hasLinkedCloudResources
-      description: 'Whether the certificate has any linked cloud resources associated with it'
+      description: 'Whether the certificate has any linked cloud resources associated
+        with it'
       type: Boolean
     - contextPath: Expanse.Certificate.id
       description: 'Internal Expanse ID for Certificate'
@@ -3064,7 +3156,8 @@ script:
       description: 'Business Units that the cloud resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.businessUnits.tenantId
-      description: 'Tenant information businessUnits that the cloud resource as been assigned to'
+      description: 'Tenant information businessUnits that the cloud resource as been
+        assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.dateAdded
       description: 'The date that the cloud resource was added to the Expander instance'
@@ -3112,49 +3205,64 @@ script:
       description: 'Additional details for the cloud resource linked to the certificate'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetKey
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetType
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.tenantId
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.commonName
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.domain
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.ip
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.lastObserved
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: Date
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.id
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.name
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.type
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.annotations.note
       description: 'Customer provided annotation details for a certificate'
@@ -3295,7 +3403,8 @@ script:
       description: 'Business Units that the certificate has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.businessUnits.tenantId
-      description: 'Tenant information for business units that the certificate has been assigned to'
+      description: 'Tenant information for business units that the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.certificate.formattedIssuerOrg
       description: 'The formatted issuer org in the certificate'
@@ -3418,13 +3527,16 @@ script:
       description: 'Additional details for the recent IPs linked to the certificate'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Business Units that the recent IPs linked to the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Business Units that the recent IPs linked to the certificate has
+        been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.businessUnits.tenantId
-      description: 'Tenant information for business Units that the recent IPs linked to the certificate has been assigned to'
+      description: 'Tenant information for business Units that the recent IPs linked
+        to the certificate has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.recentIps.commonName
       description: 'Additional details for the recent IPs linked to the certificate'
@@ -3460,7 +3572,8 @@ script:
       description: 'The date that the certificate was first observed'
       type: Date
     - contextPath: Expanse.Certificate.hasLinkedCloudResources
-      description: 'Whether the certificate has any linked cloud resources associated with it'
+      description: 'Whether the certificate has any linked cloud resources associated
+        with it'
       type: Boolean
     - contextPath: Expanse.Certificate.id
       description: 'Internal Expanse ID for Certificate'
@@ -3508,7 +3621,8 @@ script:
       description: 'Business Units that the cloud resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.businessUnits.tenantId
-      description: 'Tenant information businessUnits that the cloud resource as been assigned to'
+      description: 'Tenant information businessUnits that the cloud resource as been
+        assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.dateAdded
       description: 'The date that the cloud resource was added to the Expander instance'
@@ -3556,49 +3670,64 @@ script:
       description: 'Additional details for the cloud resource linked to the certificate'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetKey
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.assetType
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.businessUnits.tenantId
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.commonName
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.domain
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.ip
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.lastObserved
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: Date
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.id
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.provider.name
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.recentIps.type
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Certificate.details.cloudResources.annotations.note
       description: 'Customer provided annotation details for a certificate'
@@ -3775,7 +3904,8 @@ script:
       description: 'The internal port of the communication involved in the risky flow'
       type: Number
     - contextPath: Expanse.RiskyFlow.internalTags.ipRange
-      description: 'Any tags associated with with the internal asset involved in the risky flow'
+      description: 'Any tags associated with with the internal asset involved in the
+        risky flow'
       type: String
     - contextPath: Expanse.RiskyFlow.observationTimestamp
       description: 'The timestamp when the risky flow took place'
@@ -3784,7 +3914,8 @@ script:
       description: 'The protocol of the risky flow'
       type: String
     - contextPath: Expanse.RiskyFlow.riskRule.additionalDataFields
-      description: 'Additional data fields associated with the risk rule for the risky flow'
+      description: 'Additional data fields associated with the risk rule for the risky
+        flow'
       type: String
     - contextPath: Expanse.RiskyFlow.riskRule.description
       description: 'The risk rule description for the risky flow'
@@ -3802,7 +3933,8 @@ script:
       description: 'The internal domains associated with the risky flow'
       type: String
     - contextPath: Expanse.RiskyFlow.internalExposureTypes
-      description: 'The known exposure types associated with the asset involved in the risky flow'
+      description: 'The known exposure types associated with the asset involved in
+        the risky flow'
       type: String
   - name: expanse-list-risk-rules
     description: List risk rules from Expanse Behavior.
@@ -3871,16 +4003,19 @@ script:
       description: 'Business Units that the domain has been assigned to'
       type: String
     - contextPath: Expanse.Domain.businessUnits.tenantId
-      description: 'Tenant ID for business Units that the domain has been assigned to'
+      description: 'Tenant ID for business Units that the domain has been assigned
+        to'
       type: String
     - contextPath: Expanse.Domain.dateAdded
       description: 'The date that the domain was added to the Expander instance'
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.assetKey
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.assetType
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.id
       description: 'Business Units for the recent IPs that the domain resolved to'
@@ -3889,37 +4024,48 @@ script:
       description: 'Business Units for the recent IPs that the domain resolved to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.businessUnits.tenantId
-      description: 'Tenant information for business Units that the recent IPs that the domain resolved to'
+      description: 'Tenant information for business Units that the recent IPs that
+        the domain resolved to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.commonName
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.domain
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.ip
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.lastObserved
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: Date
     - contextPath: Expanse.Domain.details.recentIps.provider.id
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.provider.name
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs that the domain resolved to'
+      description: 'Tenant information for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.details.recentIps.type
-      description: 'Additional details for the recent IPs that the domain resolved to'
+      description: 'Additional details for the recent IPs that the domain resolved
+        to'
       type: String
     - contextPath: Expanse.Domain.dnsResolutionStatus
       description: 'Latest DNS resolution status'
@@ -3928,7 +4074,8 @@ script:
       description: 'The date that the domain was first observed'
       type: Date
     - contextPath: Expanse.Domain.hasLinkedCloudResources
-      description: 'Whether the domain has any linked cloud resources associated with it'
+      description: 'Whether the domain has any linked cloud resources associated with
+        it'
       type: Boolean
     - contextPath: Expanse.Domain.id
       description: 'Internal Expanse ID for Domain'
@@ -3961,10 +4108,12 @@ script:
       description: 'Sub-domain metadata'
       type: Date
     - contextPath: Expanse.Domain.providers.id
-      description: 'Information about the hosting provider of the IP the domain resolves to'
+      description: 'Information about the hosting provider of the IP the domain resolves
+        to'
       type: String
     - contextPath: Expanse.Domain.providers.name
-      description: 'Information about the hosting provider of the IP the domain resolves to'
+      description: 'Information about the hosting provider of the IP the domain resolves
+        to'
       type: String
     - contextPath: Expanse.Domain.serviceStatus
       description: 'Detected service statuses for the domain'
@@ -4042,10 +4191,12 @@ script:
       description: 'The registrant country in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.emailAddress
-      description: 'The registrant email address in the Whois information for the domain'
+      description: 'The registrant email address in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.faxExtension
-      description: 'The registrant fax extension in the Whois information for the domain'
+      description: 'The registrant fax extension in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.faxNumber
       description: 'The registrant fax number in the Whois information for the domain'
@@ -4057,7 +4208,8 @@ script:
       description: 'The registrant organization in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneExtension
-      description: 'The registrant phone extension in the Whois information for the domain'
+      description: 'The registrant phone extension in the Whois information for the
+        domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrant.phoneNumber
       description: 'The registrant phone number in the Whois information for the domain'
@@ -4075,10 +4227,12 @@ script:
       description: 'The registrant street in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactEmail
-      description: 'The registrar abuse contact email in the Whois information for the domain'
+      description: 'The registrar abuse contact email in the Whois information for
+        the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.abuseContactPhone
-      description: The registrar abuse contact phone in the Whois information for the domain''
+      description: The registrar abuse contact phone in the Whois information for
+        the domain''
       type: String
     - contextPath: Expanse.Domain.whois.registrar.formattedName
       description: 'The registrar formatted name Whois information for the domain'
@@ -4090,7 +4244,8 @@ script:
       description: 'The registrar name in the Whois information for the domain'
       type: String
     - contextPath: Expanse.Domain.whois.registrar.registrationExpirationDate
-      description: 'The registrar registration expiration date in the Whois information for the domain'
+      description: 'The registrar registration expiration date in the Whois information
+        for the domain'
       type: Date
     - contextPath: Expanse.Domain.whois.registrar.url
       description: 'The registrar URL in the Whois information for the domain'
@@ -4168,7 +4323,8 @@ script:
       description: 'Business Units that the cloud resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.businessUnits.tenantId
-      description: 'Tenant information businessUnits that the cloud resource as been assigned to'
+      description: 'Tenant information businessUnits that the cloud resource as been
+        assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.dateAdded
       description: 'The date that the cloud resource was added to the Expander instance'
@@ -4216,49 +4372,64 @@ script:
       description: 'Additional details for the cloud resource linked to the domain'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetKey
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.assetType
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.id
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.name
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.businessUnits.tenantId
-      description: 'Business Units that the recent IPs linked to the linked cloud resource has been assigned to'
+      description: 'Business Units that the recent IPs linked to the linked cloud
+        resource has been assigned to'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.commonName
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.domain
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.ip
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.lastObserved
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: Date
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.id
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.provider.name
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.id
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.name
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.tenant.tenantId
-      description: 'Tenant information for the recent IPs linked to the linked cloud resource'
+      description: 'Tenant information for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.recentIps.type
-      description: 'Additional details for the recent IPs linked to the linked cloud resource'
+      description: 'Additional details for the recent IPs linked to the linked cloud
+        resource'
       type: String
     - contextPath: Expanse.Domain.details.cloudResources.annotations.note
       description: 'Customer provided annotation details for a domain'
@@ -4418,7 +4589,8 @@ script:
       description: 'The type of asset'
       type: String
     - contextPath: Expanse.IP.businessUnits.id
-      description: 'The internal Expanse ID for the business unit the asset belongs to'
+      description: 'The internal Expanse ID for the business unit the asset belongs
+        to'
       type: String
     - contextPath: Expanse.IP.businessUnits.name
       description: 'The name of the business unit the asset belongs to'
@@ -4573,7 +4745,8 @@ script:
       description: 'The number of IP addresses in the IP range'
       type: Number
     - contextPath: Expanse.IPRange.rangeType
-      description: 'If the IP range is Expanse-generated parent range or a customer-generated custom range'
+      description: 'If the IP range is Expanse-generated parent range or a customer-generated
+        custom range'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.country
       description: 'The country within the IP range registration information'
@@ -4594,52 +4767,68 @@ script:
       description: 'The parent handle within the IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.address
-      description: 'The address within the registry entities of the IP range registration information'
+      description: 'The address within the registry entities of the IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.email
-      description: 'The email within the registry entities of the e IP range registration information'
+      description: 'The email within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.action
-      description: 'The events action within the registry entities of the e IP range registration information'
+      description: 'The events action within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.actor
-      description: 'The events actor within the registry entities of the e IP range registration information'
+      description: 'The events actor within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.events.date
-      description: 'The events date within the registry entities of the e IP range registration information'
+      description: 'The events date within the registry entities of the e IP range
+        registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.firstRegistered
-      description: 'The first registered date within the registry entities of the e IP range registration information'
+      description: 'The first registered date within the registry entities of the
+        e IP range registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.formattedName
-      description: 'The formatted name within the registry entities of the e IP range registration information'
+      description: 'The formatted name within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.handle
-      description: 'The handle within the registry entities of the e IP range registration information'
+      description: 'The handle within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.id
-      description: 'The ID within the registry entities of the e IP range registration information'
+      description: 'The ID within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.lastChanged
-      description: 'The last changed date within the registry entities of the e IP range registration information'
+      description: 'The last changed date within the registry entities of the e IP
+        range registration information'
       type: Date
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.org
-      description: 'The org within the registry entities of the e IP range registration information'
+      description: 'The org within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.phone
-      description: 'The phone number within the registry entities of the e IP range registration information'
+      description: 'The phone number within the registry entities of the e IP range
+        registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.relatedEntityHandles
-      description: 'The related entity handles within the registry entities of the e IP range registration information'
+      description: 'The related entity handles within the registry entities of the
+        e IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.remarks
-      description: 'The remarks within the registry entities of the e IP range registration information'
+      description: 'The remarks within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.roles
-      description: 'The roles within the registry entities of the e IP range registration information'
+      description: 'The roles within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.registryEntities.statuses
-      description: 'The statuses within the registry entities of the e IP range registration information'
+      description: 'The statuses within the registry entities of the e IP range registration
+        information'
       type: String
     - contextPath: Expanse.IPRange.relatedRegistrationInformation.remarks
       description: 'The remarks within the IP range registration information'
@@ -4654,7 +4843,8 @@ script:
       description: 'The Whois server within the IP range registration information'
       type: String
     - contextPath: Expanse.IPRange.responsiveIpCount
-      description: 'The number of IPs responsive on the public Internet within the IP range'
+      description: 'The number of IPs responsive on the public Internet within the
+        IP range'
       type: Number
     - contextPath: Expanse.IPRange.severityCounts.count
       description: 'The number of exposures observed on the IP range'
@@ -4683,7 +4873,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

@@ -107,10 +107,6 @@
 					"complex": null,
 					"simple": "resolve_comment"
 				},
-				"XDR Severity": {
-					"complex": null,
-					"simple": "severity"
-				},
 				"XDR Status v2": {
 					"complex": null,
 					"simple": "status"
@@ -421,10 +417,6 @@
 		"CortextXDRIncident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"XDR Severity": {
-					"complex": null,
-					"simple": "severity"
-				}
 			}
 		}
 	},

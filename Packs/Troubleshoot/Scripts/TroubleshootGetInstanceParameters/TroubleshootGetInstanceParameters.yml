@@ -1,0 +1,72 @@
+args:
+- default: false
+  isArray: false
+  name: instance_name
+  required: true
+  secret: false
+  description: The name of the instance for which to get its parameters.
+comment: Gets an instance's configuration parameters in order to troubleshoot the
+  instance.
+commonfields:
+  id: TroubleshootGetInstanceParameters
+  version: -1
+enabled: false
+name: TroubleshootGetInstanceParameters
+outputs:
+- contextPath: InstanceParameters.instance_name
+  type: String
+  description: The instance name.
+- contextPath: InstanceParameters.system
+  description: Whether the integration is a system integration (not custom).
+  type: Boolean
+- contextPath: InstanceParameters.deprecated
+  description: Whether the integration is deprecated.
+  type: Boolean
+- contextPath: InstanceParameters.isFetch
+  description: Whether "Is fetch" is configured.
+  type: Boolean
+- contextPath: InstanceParameters.proxy
+  description: Whether "use proxy" is selected. If any parameter is not called proxy,
+    it will be wrong.
+  type: Boolean
+- contextPath: InstanceParameters.proxy_key
+  description: The proxy key in which insecure is hosted. Can be null if no key is
+    found.
+  type: String
+- contextPath: InstanceParameters.insecure
+  description: Whether "use unsecure connection" is selected. If any parameter is
+    not called insecure, it will be wrong.
+  type: Boolean
+- contextPath: InstanceParameters.insecure_key
+  description: The insecure key in which insecure is hosted. Can be null if no key
+    is found.
+  type: String
+- contextPath: InstanceParameters.type
+  description: The type of the integration. Can be JavaScript or Python.
+  type: String
+- contextPath: InstanceParameters.subtype
+  description: The subtype of a Python integration. Can be Python2 or Python3.
+  type: String
+- contextPath: InstanceParameters.engine
+  description: The engine used by the integration, if any.
+  type: String
+- contextPath: InstanceParameters.dockerimage
+  description: The Docker image used by the integration, if any.
+  type: String
+- contextPath: InstanceParameters.RawInstance
+  description: The raw instance. Should be used when checking the instance configuration.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.0.0
+dependson:
+  must:
+  - demisto-api-post
+tests:
+- No tests (auto formatted)

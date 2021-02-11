@@ -19,6 +19,17 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 
+METADATA_TO_REMOVE = {
+    'IAM/metadata-1.1.0.json',
+    'IAM/metadata-1.2.0.json',
+    'IAM/metadata-1.0.0.json',
+    'IAM/metadata-1.3.0.json',
+    'HelloWorldPremium/metadata-1.0.0.json',
+    'HelloWorldPremium/metadata-1.1.0.json',
+    'HelloWorldPremium/metadata-1.0.8.json',
+    'HelloWorldPremium/metadata-1.0.9.json',
+}
+
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -168,6 +179,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
             logging.warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
             return True
 
         # Copy new files and add metadata for latest version
@@ -280,6 +292,20 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
+
+    # REMOVE AFTER SUCCESSFUL RUN
+    logging.info("Starting to remove old meta files")
+    iam_metadata = glob.glob(f"{index_folder_path}/IAM/metadata-*.json")
+    for iam_meta in iam_metadata:
+        if any(x in iam_meta for x in METADATA_TO_REMOVE):
+            logging.info(f"Removing - {iam_meta}")
+            os.remove(iam_meta)
+    hwp_metadata = glob.glob(f"{index_folder_path}/HelloWorldPremium/metadata-*.json")
+    for hwp_meta in hwp_metadata:
+        if any(x in hwp_meta for x in METADATA_TO_REMOVE):
+            logging.info(f"Removing - {hwp_meta}")
+            os.remove(hwp_meta)
+
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
@@ -440,7 +466,7 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
                                    index_folder_path: str, pack_names: set) \
-        -> Tuple[Union[list, list], str, Any]:
+        -> Tuple[Union[list, list], str, Any, list]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -455,6 +481,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
     """
     private_index_path = ""
     private_packs = []
+    updated_private_packs = []
 
     try:
         (private_index_path, private_index_blob, _) = \
@@ -464,6 +491,10 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
+
+        logging.info("get_updated_private_packs")
+        updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
+
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         logging.info("Finished updating index with priced packs")
@@ -471,7 +502,40 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         logging.exception('Could not add private packs to the index.')
     finally:
         shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
-        return private_packs, private_index_path, private_index_blob
+        return private_packs, private_index_path, private_index_blob, updated_private_packs
+
+
+def get_updated_private_packs(private_packs, index_folder_path):
+    """ Checks for updated private packs by compering contentCommitHash between public index json and private pack
+    metadata files.
+
+    Args:
+        private_packs (list): List of dicts containing pack metadata information.
+        index_folder_path (str): The public index folder path.
+
+    Returns:
+        updated_private_packs (list) : a list of all private packs id's that were updated.
+
+    """
+    updated_private_packs = []
+
+    public_index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
+    public_index_json = load_json(public_index_file_path)
+    private_packs_from_public_index = public_index_json.get("packs", {})
+
+    for pack in private_packs:
+        private_pack_id = pack.get('id')
+        private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
+        private_commit_hash_from_content_repo = ""
+        for public_pack in private_packs_from_public_index:
+            if public_pack.get('id') == private_pack_id:
+                private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
+
+        private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
+        if private_pack_was_updated:
+            updated_private_packs.append(private_pack_id)
+
+    return updated_private_packs
 
 
 def get_private_packs(private_index_path: str, pack_names: set = set(),
@@ -510,6 +574,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
@@ -570,7 +635,8 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         current_commit = content_repo.commit(current_commit_hash)
 
         if current_commit.committed_datetime <= index_commit.committed_datetime:
-            logging.warning(f"Current commit {current_commit.hexsha} committed time: {current_commit.committed_datetime}")
+            logging.warning(
+                f"Current commit {current_commit.hexsha} committed time: {current_commit.committed_datetime}")
             logging.warning(f"Index commit {index_commit.hexsha} committed time: {index_commit.committed_datetime}")
             logging.warning("Index is already updated.")
             logging.warning(skipping_build_task_message)
@@ -578,7 +644,8 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
         for changed_file in current_commit.diff(index_commit):
             if changed_file.a_path.startswith(PACKS_FOLDER):
-                logging.info(f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
+                logging.info(
+                    f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
                 break
         else:
             logging.warning(f"No changes found between index commit {index_commit.hexsha} and {current_commit.hexsha}")
@@ -632,11 +699,11 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         build_num = os.environ['CIRCLE_BUILD_NUM']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-            f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
-            f'Uploaded packs:\n{successful_packs_table}\n\n' \
-            f'Browse to the build bucket with this address:\n{bucket_path}'
+                     f'Uploaded packs:\n{successful_packs_table}\n\n' \
+                     f'Browse to the build bucket with this address:\n{bucket_path}'
 
         add_pr_comment(pr_comment)
 
@@ -794,11 +861,12 @@ def main():
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+    updated_private_packs_ids = []
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs, _, _ = update_index_with_priced_packs(private_storage_bucket,
-                                                             extract_destination_path,
-                                                             index_folder_path, pack_names)
+        private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
+                                                                                        extract_destination_path,
+                                                                                        index_folder_path, pack_names)
     else:  # skipping private packs
         logging.debug("Skipping index update of priced packs")
         private_packs = []
@@ -832,18 +900,26 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
+                                                              previous_commit_hash)
+        if not task_status:
+            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
+            continue
+
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
-                                           packs_statistic_df=packs_statistic_df)
+                                           packs_statistic_df=packs_statistic_df,
+                                           pack_was_modified=pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
@@ -872,13 +948,6 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              previous_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            pack.cleanup()
-            continue
-
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                    storage_bucket, override_all_packs
@@ -895,12 +964,6 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path and in index, skipped further steps
-        if skipped_pack_uploading and exists_in_index:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -911,6 +974,12 @@ def main():
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+        if skipped_pack_uploading and exists_in_index:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
 
@@ -934,7 +1003,8 @@ def main():
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
+        updated_private_packs_ids
     )
 
     # summary of packs status
