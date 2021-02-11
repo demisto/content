@@ -494,7 +494,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
-
+    print(f'\n playbook_names on line 497 is: {playbook_names}\n')
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
@@ -648,11 +648,13 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         if tests:
                             catched_playbooks.add(playbook_name)
                             update_test_set(tests, tests_set)
-
+                        print(f'\nOn line 651, updated_playbook_names is: {updated_playbook_names}\n')
                         updated_playbook_names.add(playbook_name)
+                        print(f'\nOn line 653, updated_playbook_names is: {updated_playbook_names}\n')
                         new_versions = (playbook_fromversion, playbook_toversion)
                         enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
                                                updated_playbook_names, catched_playbooks, tests_set)
+                        print(f'\nOn line 657, updated_playbook_names is: {updated_playbook_names}\n')
 
     for script in script_set:
         script_data = list(script.values())[0]
@@ -745,6 +747,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                      tests_set)
 
     for playbook in playbook_set:
+        print(f'\nline 748: playbook is: {playbook}')
         playbook_data = list(playbook.values())[0]
         if playbook_data.get('deprecated', False):
             continue
