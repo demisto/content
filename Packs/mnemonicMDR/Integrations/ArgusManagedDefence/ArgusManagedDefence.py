@@ -205,7 +205,8 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:
 def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     string = f"<h2>{title}</h2>" if title else ""
     string += "<small>"
-    string += f"<em>{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}</em><br>"
+    string += f"<em>Added by {comment['addedByUser']['userName']} at "
+    string += f"{pretty_print_date(comment['addedTime'])}</em><br>"
     string += (
         f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>\n"
         if comment["lastUpdatedTime"]
@@ -213,10 +214,6 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     )
     string += "</small>"
     string += f"{comment['comment']}"
-    string += "<small>"
-    string += f"<br><em>id: {comment['id']}</em><br>"
-    string += f"<em>Flags: {str(comment['flags'])}</em><br>" if comment["flags"] else ""
-    string += "</small>"
     return string
 
 
@@ -349,6 +346,7 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
 
     # Update status
     entries.append({"severity": argus_priority_to_demisto_severity(case.get("priority"))})
+    entries.append({"arguscasestatus": case.get("status")})
 
     # Add new attachments
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
