@@ -37,8 +37,8 @@ def check_if_form_is_filled(pr_number, github_token, verify_ssl):
     # socket = urllib.request.urlopen(path_to_csv)
     # xd = pd.ExcelFile(socket)
     # print(xd.sheet_names)
-    df = pd.read_csv(path_to_csv, encoding='utf8', error_bad_lines=False)
-    print(df.info())
+    df = pd.read_excel('Contributor Details (Responses)', sheet_name='Form Responses 1')
+    print(df)
     # pr_numbers = df['Pull Request Number'].value_counts()
     # print(pr_numbers)
 
