@@ -1537,6 +1537,7 @@ def search_file_command(file):
 
     return command_results
 
+
 def get_tags_for_generic_conext(tags: dict):
     keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
     sub_keys = ['TagGroupName']
