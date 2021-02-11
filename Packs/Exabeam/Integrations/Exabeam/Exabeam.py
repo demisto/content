@@ -198,10 +198,10 @@ class Client(BaseClient):
             'sequenceId': sequence_id,
             'sequenceType': sequence_type
         }
-        response = self._http_request('GET', url_suffix=f'/uba/api/user/sequence/triggeredRules', params=params)
+        response = self._http_request('GET', url_suffix='/uba/api/user/sequence/triggeredRules', params=params)
         return response
 
-    def get_asset_info_request(self, asset_id: str = None, max_users_number: int = None) -> Dict:
+    def get_asset_info_request(self, asset_id: str = None, max_users_number: int = None) -> Dict[str, Any]:
         """
 
             Args:
@@ -460,10 +460,8 @@ class Client(BaseClient):
         demisto.results(str(response))
         return response
 
-    def add_context_table_records(self, context_table_name: str = None,
-                                  records_list: List[str] = None,
-                                  key_only: bool = False,
-                                  session_id: str = None) -> Dict:
+    def add_context_table_records(self, context_table_name: str, records_list: List[str],
+                                  key_only: bool, session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -497,10 +495,8 @@ class Client(BaseClient):
 
         return response
 
-    def update_context_table_records(self, context_table_name: str = None,
-                                     records_list: List[str] = None,
-                                     key_only: bool = False,
-                                     session_id: str = None) -> Dict:
+    def update_context_table_records(self, context_table_name: str, records_list: List[str],
+                                     key_only: bool, session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -536,8 +532,7 @@ class Client(BaseClient):
 
         return response
 
-    def delete_context_table_records(self, context_table_name: str = None,
-                                     records: List[str] = None, session_id: str = None) -> Dict:
+    def delete_context_table_records(self, context_table_name: str, records: List[str], session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -935,7 +930,7 @@ def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
     return human_readable, entry_context, asset_raw_data
 
 
-def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
+def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
     """  Return session information for a given session ID
 
     Args:
@@ -945,10 +940,6 @@ def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, D
     """
     session_id = args.get('session_id')
     session_info_raw_data = client.get_session_info_request(session_id)
-
-    if not session_info_raw_data or 'sessionInfo' not in session_info_raw_data:
-        raise Exception(f'The session with ID {session_id} has no information. '
-                        f'Please verify that the session ID is valid.')
 
     session_info = session_info_raw_data.get('sessionInfo')
 
@@ -980,7 +971,7 @@ def list_top_domains(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[An
     return human_readable, entry_context, top_domains_raw_data
 
 
-def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
+def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
     """  Returns all triggered rules for a given sequence
 
     Args:
@@ -992,10 +983,6 @@ def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dic
     sequence_type = args.get('sequence_type')
     triggered_rules_raw_data = client.list_triggered_rules_request(sequence_id, sequence_type)
 
-    if not triggered_rules_raw_data or 'triggeredRules' not in triggered_rules_raw_data:
-        raise Exception(f'The sequence has no triggered rules. '
-                        f'Please verify that the sequence details are valid.')
-
     triggered_rules = triggered_rules_raw_data.get('triggeredRules')
 
     entry_context = {'Exabeam.TriggeredRules(val._Id && val._Id === obj._Id)': triggered_rules}
@@ -1005,7 +992,7 @@ def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dic
     return human_readable, entry_context, triggered_rules_raw_data
 
 
-def get_asset_info(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
+def get_asset_info(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Optional[Any]], Dict[Any, Any]]:
     """  Returns asset info for given asset ID (hostname or IP address)
 
     Args:
@@ -1014,10 +1001,10 @@ def get_asset_info(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
 
     """
     asset_id = args.get('asset_id')
-    max_users_number = int(args.get('max_users_number'))
+    max_users_number = int(args['max_users_number'])
     asset_raw_data = client.get_asset_info_request(asset_id, max_users_number)
 
-    asset_info = asset_raw_data.get('info')
+    asset_info = asset_raw_data.get('info', {})
     asset_info['assetId'] = asset_id
     entry_context = {'Exabeam.AssetInfo(val.assetId && val.assetId === obj.assetId)': asset_info}
     human_readable = tableToMarkdown(f'Asset {asset_id} Information', asset_info,
@@ -1026,7 +1013,7 @@ def get_asset_info(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
     return human_readable, entry_context, asset_raw_data
 
 
-def list_asset_next_events(client: Client, args: Dict) -> Tuple[Any, Dict[str, List[Any]], Optional[Any]]:
+def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Dict[Any, Any]]:
     """  Returns next events for a given asset.
 
     Args:
@@ -1034,9 +1021,9 @@ def list_asset_next_events(client: Client, args: Dict) -> Tuple[Any, Dict[str, L
         args: Dict
 
     """
-    asset_id = args.get('asset_id')
-    event_time = int(args.get('event_time'))
-    number_of_events = int(args.get('number_of_events'))
+    asset_id = args['asset_id']
+    event_time = int(args['event_time'])
+    number_of_events = int(args['number_of_events'])
     anomaly_only = args.get('anomaly_only')
     event_categories = argToList(args.get('event_categories'))
     event_types = argToList(args.get('event_types'))
@@ -1060,7 +1047,7 @@ def list_asset_next_events(client: Client, args: Dict) -> Tuple[Any, Dict[str, L
     return human_readable, entry_context, events_raw_data
 
 
-def aggregated_events_to_xsoar_format(asset_id: str = None, events: list = None) -> Tuple[list, str]:
+def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple[List[Any], str]:
     outputs = []
     aggregated_events_data = [{
         'start_time': convert_unix_to_date(event.get('ts'), sep=' '),
@@ -1093,7 +1080,8 @@ def aggregated_events_to_xsoar_format(asset_id: str = None, events: list = None)
     return outputs, human_readable
 
 
-def list_security_alerts_by_asset(client: Client, args: Dict) -> Tuple[Any, Dict[str, List[Any]], Optional[Any]]:
+def list_security_alerts_by_asset(client: Client,
+                                  args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Dict[Any, Any]]:
     """  Returns security alerts for a given asset.
 
     Args:
@@ -1104,7 +1092,7 @@ def list_security_alerts_by_asset(client: Client, args: Dict) -> Tuple[Any, Dict
     asset_id = args.get('asset_id')
     sort_by = args.get('sort_by')
     sort_order = 1 if args.get('sort_order') == 'asc' else -1
-    limit = int(args.get('limit'))
+    limit = int(args['limit'])
 
     security_alerts_raw_data = client.list_security_alerts(asset_id, sort_by, sort_order, limit)
 
@@ -1123,7 +1111,7 @@ def list_security_alerts_by_asset(client: Client, args: Dict) -> Tuple[Any, Dict
     return human_readable, entry_context, security_alerts_raw_data
 
 
-def search_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, List[Any]], Optional[Any]]:
+def search_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, List[Any]], Union[List, Dict]]:
     """  Searches for rules by a keyword.
 
     Args:
@@ -1134,8 +1122,8 @@ def search_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, List[Any]],
     keyword = args.get('keyword')
     filter_exp = args.get('filter')
 
-    limit = int(args.get('limit'))
-    page = int(args.get('page'))
+    limit = int(args['limit'])
+    page = int(args['page'])
     from_idx = page * limit
     to_idx = (page + 1) * limit
 
@@ -1147,7 +1135,7 @@ def search_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, List[Any]],
     return human_readable, entry_context, rules_raw_data
 
 
-def get_rules_in_xsoar_format(rules_raw_data: list, from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
+def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
     outputs = []
 
     for category in rules_raw_data:
@@ -1164,7 +1152,7 @@ def get_rules_in_xsoar_format(rules_raw_data: list, from_idx: int, to_idx: int) 
     return res, tableToMarkdown('Rule Search Results', res, removeNull=True, headerTransform=pascalToSpace)
 
 
-def get_rule_string(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_rule_string(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Dict[str, Optional[Any]]], str]:
     """  Gets a rule string by ID.
 
     Args:
@@ -1185,7 +1173,7 @@ def get_rule_string(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Op
     return human_readable, entry_context, rule_string_raw_data
 
 
-def fetch_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def fetch_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Gets all rules.
 
     Args:
@@ -1195,19 +1183,19 @@ def fetch_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Option
     """
     filter_by = args.get('filter_by')
 
-    limit = int(args.get('limit'))
-    page = int(args.get('page'))
+    limit = int(args['limit'])
+    page = int(args['page'])
     from_idx = page * limit
     to_idx = (page + 1) * limit
 
     rules_raw_data = client.fetch_rules(filter_by)
     rules, human_readable = get_rules_in_xsoar_format(rules_raw_data, from_idx, to_idx)
-    entry_context = {f'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': rules}
+    entry_context = {'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': rules}
 
     return human_readable, entry_context, rules_raw_data
 
 
-def get_rules_model_definition(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_rules_model_definition(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Gets a rule model definition by name.
 
     Args:
@@ -1225,7 +1213,7 @@ def get_rules_model_definition(client: Client, args: Dict) -> Tuple[Any, Dict[st
     return human_readable, entry_context, model
 
 
-def add_watchlist_item_from_csv(client: Client, args: Dict) -> Tuple[str, Optional[Any], Optional[Any]]:
+def add_watchlist_item_from_csv(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
     """  Add a watchlist item from CSV file.
 
     Args:
@@ -1236,7 +1224,7 @@ def add_watchlist_item_from_csv(client: Client, args: Dict) -> Tuple[str, Option
     watchlist_id = args.get('watchlist_id')
     csv_entry_id = args.get('csv_entry_id')
     category = args.get('category')
-    watch_until_days = int(args.get('watch_until_days'))
+    watch_until_days = int(args['watch_until_days'])
 
     raw_response = client.add_watchlist_items_from_csv(watchlist_id, watch_until_days, csv_entry_id, category)
     added_count = raw_response.get('addedCount')
@@ -1245,7 +1233,7 @@ def add_watchlist_item_from_csv(client: Client, args: Dict) -> Tuple[str, Option
     return human_readable, None, raw_response
 
 
-def search_asset_in_watchlist(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Gets the assets of a specified watchlist according to a keyword.
 
     Args:
@@ -1255,7 +1243,7 @@ def search_asset_in_watchlist(client: Client, args: Dict) -> Tuple[Any, Dict[str
     """
     keyword = args.get('keyword')
     watchlist_id = args.get('watchlist_id')
-    limit = int(args.get('limit'))
+    limit = int(args['limit'])
     is_exclusive = args.get('is_exclusive')
     search_by_ip = args.get('search_by_ip')
 
@@ -1269,7 +1257,7 @@ def search_asset_in_watchlist(client: Client, args: Dict) -> Tuple[Any, Dict[str
     return human_readable, entry_context, assets_raw_data
 
 
-def remove_watchlist_item(client: Client, args: Dict) -> Tuple[str, Optional[Any], Optional[Any]]:
+def remove_watchlist_item(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
     """  Removes items from a watchlist.
 
     Args:
@@ -1289,7 +1277,7 @@ def remove_watchlist_item(client: Client, args: Dict) -> Tuple[str, Optional[Any
     return human_readable, None, None
 
 
-def list_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Returns a list of a context table records.
 
     Args:
@@ -1298,8 +1286,8 @@ def list_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[st
 
     """
     context_table_name = args.get('context_table_name')
-    page_size = int(args.get('page_size'))
-    page_number = int(args.get('page_number'))
+    page_size = int(args['page_size'])
+    page_number = int(args['page_number'])
 
     records_raw_data = client.list_context_table_records(context_table_name, page_size, page_number)
     records = records_raw_data.get('records', [])
@@ -1322,7 +1310,7 @@ def list_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[st
     return human_readable, entry_context, records_raw_data
 
 
-def add_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Adds records to a context table.
 
     Args:
@@ -1330,7 +1318,7 @@ def add_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str
         args: Dict
 
     """
-    context_table_name = args.get('context_table_name')
+    context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     key_only = True if args.get('context_table_type') == 'key_only' else False
     records_list = argToList(args.get('records'))
@@ -1344,7 +1332,7 @@ def add_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str
     return human_readable, entry_context, record_updates_raw_data
 
 
-def update_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Updates records of a context table.
 
     Args:
@@ -1352,7 +1340,7 @@ def update_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
         args: Dict
 
     """
-    context_table_name = args.get('context_table_name')
+    context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
     key_only = True if args.get('context_table_type') == 'key_only' else False
@@ -1374,7 +1362,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
         args: Dict
 
     """
-    context_table_name = args.get('context_table_name')
+    context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
 
@@ -1387,7 +1375,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     return human_readable, entry_context, record_updates_raw_data
 
 
-def addbulk_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def addbulk_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Bulk addition of a context table records from CSV file.
 
     Args:
@@ -1395,7 +1383,7 @@ def addbulk_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict
         args: Dict
 
     """
-    context_table_name = args.get('context_table_name')
+    context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     file_entry_id = args.get('file_entry_id')
 
@@ -1408,7 +1396,7 @@ def addbulk_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict
     return human_readable, entry_context, record_updates_raw_data
 
 
-def get_context_table_csv(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Updates records of a context table.
 
     Args:
@@ -1416,7 +1404,7 @@ def get_context_table_csv(client: Client, args: Dict) -> Tuple[Any, Dict[str, An
         args: Dict
 
     """
-    context_table_name = args.get('context_table_name')
+    context_table_name = args['context_table_name']
 
     filename, content = client.get_context_table_csv(context_table_name)
 

@@ -1533,7 +1533,7 @@ script:
     description: Delete records from a context table.
     execution: false
     name: exabeam-context-table-delete-records
-  dockerimage: demisto/python3:3.7.4.1900
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: false
   longRunning: false
   longRunningPort: false
