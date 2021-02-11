@@ -99,6 +99,6 @@ def test_commands(command, args, response, expected_result, mocker):
     client = Client('http://exabeam.com/api/auth/login', verify=False, username='user',
                     password='1234', proxy=False, headers={})
 
-    mocker.patch.object(client, 'http_request', return_value=response)
+    mocker.patch.object(client, '_http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
