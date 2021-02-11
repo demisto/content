@@ -24,7 +24,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: first event ID to fetch from
+- display: First event ID to fetch from
   name: first_fetch_id
   defaultvalue: "0"
   type: 0
@@ -309,7 +309,7 @@ script:
       description: comma separeted list of event ids
       isArray: true
     description: close list of events
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   runonce: false
   script: '-'
