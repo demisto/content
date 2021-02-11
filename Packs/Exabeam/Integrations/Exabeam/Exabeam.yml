@@ -446,35 +446,49 @@ script:
     name: exabeam-get-session-info-by-id
     outputs:
     - contextPath: Exabeam.SessionInfo.sessionId
-      description: ID of the session to fetch data for.
+      description: ID of the session.
       type: String
     - contextPath: Exabeam.SessionInfo.username
+      description: Username of the session.
       type: String
     - contextPath: Exabeam.SessionInfo.startTime
+      description: Start time of the session.
       type: Date
     - contextPath: Exabeam.SessionInfo.endTime
+      description: End time of the session.
       type: Date
     - contextPath: Exabeam.SessionInfo.initialRiskScore
+      description: Initial risk score of the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.riskScore
+      description: Risk score of the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.numOfReasons
+      description: Number of rules in the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.loginHost
+      description: The host from which the user was logged in.
       type: String
     - contextPath: Exabeam.SessionInfo.label
+      description: Label of the session.
       type: String
     - contextPath: Exabeam.SessionInfo.accounts
+      description: Accounts in the session.
       type: String
     - contextPath: Exabeam.SessionInfo.numOfAccounts
+      description: Number of accounts in the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.numOfZones
+      description: Number of zones in the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.numOfAssets
+      description: Number of assets in the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.numOfEvents
+      description: Number of events in the session.
       type: Number
     - contextPath: Exabeam.SessionInfo.numOfSecurityEvents
+      description: Number of alerts in the session.
       type: Number
   - arguments:
     - default: false
@@ -495,61 +509,53 @@ script:
     name: exabeam-list-triggered-rules
     outputs:
     - contextPath: Exabeam.TriggeredRule._Id
+      description: UUID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.ruleId
+      description: ID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.ruleType
+      description: Type of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.eventId
+      description: Event ID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.sessionId
+      description: Session ID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.lockoutId
+      description: Lockout ID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.sequenceId
+      description: Sequence ID of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.username
+      description: Username of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.eType
+      description: Event type of the rule.
       type: String
     - contextPath: Exabeam.TriggeredRule.triggeringTime
+      description: Time when the rule was triggered.
       type: Date
     - contextPath: Exabeam.TriggeredRule.riskScore
+      description: Risk score of the rule.
       type: Number
     - contextPath: Exabeam.TriggeredRule.anchorScore
+      description: Anchor score of the rule.
       type: Number
     - contextPath: Exabeam.TriggeredRule.anomalyFactor
+      description: Anomaly factor of the rule.
       type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.featureValue
-      type: String
-    - contextPath: Exabeam.TriggeredRule.ruleData.scopeValue
-      type: String
-    - contextPath: Exabeam.TriggeredRule.ruleData.modelName
-      type: String
-    - contextPath: Exabeam.TriggeredRule.ruleData.totalEvents
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.numBins
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.numObservations
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.probability
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.percentileThresholdValue
-      type: String
-    - contextPath: Exabeam.TriggeredRule.ruleData.percentileThresholdCount
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.confidenceFactor
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.distanceCountPercentile
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.distanceValuePercentile
-      type: Number
-    - contextPath: Exabeam.TriggeredRule.ruleData.histogramId
-      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleData
+      description: Data insight of the rule.
+      type: Unknown
     - contextPath: Exabeam.TriggeredRule.createdTime
+      description: Time when the rule was created.
       type: Date
-    - contextPath: Exabeam.TriggeredRule.scoreData.bayesAnchorScoreData.weight
-      type: Number
+    - contextPath: Exabeam.TriggeredRule.scoreData
+      description: Score data of the rule.
+      type: Unknown
     - contextPath: Exabeam.TriggeredRule.scoreData.ruleDefScore
       type: Number
   - arguments:
@@ -572,24 +578,34 @@ script:
     name: exabeam-get-asset-info
     outputs:
     - contextPath: Exabeam.AssetInfo.hostName
+      description: Host of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.ipAddress
+      description: IP address of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.assetType
+      description: Type of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.firstSeen
+      description: Time when the asset was first seen.
       type: Date
     - contextPath: Exabeam.AssetInfo.lastSeen
+      description: Time when the asset was last seen.
       type: Date
     - contextPath: Exabeam.AssetInfo.riskScore
+      description: Risk score of the asset.
       type: Number
     - contextPath: Exabeam.AssetInfo.riskState
+      description: Risk state of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.zone
+      description: Zone of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.assetGroup
+      description: Group of the asset.
       type: String
     - contextPath: Exabeam.AssetInfo.latestSequenceId
+      description: ID of the latest seqence of the asset.
       type: String
   - arguments:
     - default: false
@@ -652,45 +668,65 @@ script:
     execution: false
     name: exabeam-list-asset-timeline-next-events
     outputs:
-    - contextPath: Exabeam.AssetNextEvents.event_id
+    - contextPath: Exabeam.AssetEvent.event_id
+      description: Event ID of the asset.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.event_type
+    - contextPath: Exabeam.AssetEvent.event_type
+      description: Type of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.event_code
+    - contextPath: Exabeam.AssetEvent.event_category
+      description: Category of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.event_category
-      type: Unknown
-    - contextPath: Exabeam.AssetNextEvents.time
+    - contextPath: Exabeam.AssetEvent.time
+      description: Time when the event occurred.
       type: Date
-    - contextPath: Exabeam.AssetNextEvents.rawlog_time
+    - contextPath: Exabeam.AssetEvent.rawlog_time
+      description: Raw log time of the event.
       type: Date
-    - contextPath: Exabeam.AssetNextEvents.host
+    - contextPath: Exabeam.AssetEvent.session_id
+      description: Session ID of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.user
+    - contextPath: Exabeam.AssetEvent.session_order
+      description: Session order of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.nonmachine_user
+    - contextPath: Exabeam.AssetEvent.src_host
+      description: Source host of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.account
+    - contextPath: Exabeam.AssetEvent.src_ip
+      description: Source IP of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.hash
+    - contextPath: Exabeam.AssetEvent.src_zone
+      description: Source zone of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.entity_asset_id
+    - contextPath: Exabeam.AssetEvent.dest_host
+      description: Destination host of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.src_network_type
+    - contextPath: Exabeam.AssetEvent.dest_ip
+      description: Destination IP of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.source
+    - contextPath: Exabeam.AssetEvent.dest_zone
+      description: Destination of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.session_id
+    - contextPath: Exabeam.AssetEvent.user
+      description: User of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.src_ip
+    - contextPath: Exabeam.AssetEvent.host
+      description: Host of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.session_order
+    - contextPath: Exabeam.AssetEvent.domain
+      description: Domain of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.dest_host
+    - contextPath: Exabeam.AssetEvent.account
+      description: Account of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.is_session_first
+    - contextPath: Exabeam.AssetEvent.hash
+      description: Hash of the event.
       type: String
-    - contextPath: Exabeam.AssetNextEvents.src_zone
+    - contextPath: Exabeam.AssetEvent.entity_asset_id
+      description: Entity asset ID of the event.
+      type: String
+    - contextPath: Exabeam.AssetEvent.source
+      description: Source of the event.
       type: String
   - arguments:
     - default: false
@@ -732,8 +768,99 @@ script:
     execution: false
     name: exabeam-list-security-alerts-by-asset
     outputs:
-    - contextPath: Exabeam.AssetSecurityAlerts
-      type: Unknown
+    - contextPath: Exabeam.AssetSecurityAlert.process
+      description: Process of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.process_name
+      description: Process name of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.alert_name
+      description: Name of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.alert_type
+      description: Type of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.alert_severity
+      description: Severity of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.malware_url
+      description: Malware URL of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetEvent.event_id
+      description: Event ID of the asset.
+      type: String
+    - contextPath: Exabeam.AssetEvent.event_type
+      description: Type of the event.
+      type: String
+    - contextPath: Exabeam.AssetEvent.event_category
+      description: Category of the event.
+      type: String
+    - contextPath: Exabeam.AssetEvent.time
+      description: Time when the event occurred.
+      type: Date
+    - contextPath: Exabeam.AssetSecurityAlert.rawlog_time
+      description: Raw log time of the security alert.
+      type: Date
+    - contextPath: Exabeam.AssetSecurityAlert.session_id
+      description: Session ID of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.session_order
+      description: Session order of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.src_host
+      description: Source host of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.src_ip
+      description: Source IP of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.src_port
+      description: Source port of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.dest_host
+      description: Destination host of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.dest_ip
+      description: Destination IP of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.dest_port
+      description: Destination port of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.user
+      description: User of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.host
+      description: Host of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.domain
+      description: Domain of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.account
+      description: Account of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.hash
+      description: Hash of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.MD5
+      description: MD5 of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.entity_asset_id
+      description: Entity asset ID of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.source
+      description: Source of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.vendor
+      description: Vendor of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.sensor_id
+      description: Sensor ID of the alert.
+      type: Boolean
+    - contextPath: Exabeam.AssetSecurityAlert.local_asset
+      description: Local asset of the security alert.
+      type: String
+    - contextPath: Exabeam.AssetSecurityAlert.additional_info
+      description: Additional information about the security alert.
+      type: String
   - arguments:
     - default: false
       description: The search keyword.
@@ -767,52 +894,74 @@ script:
     name: exabeam-search-rules
     outputs:
     - contextPath: Exabeam.Rule.categoryId
+      description: Category ID of the rule.
       type: String
     - contextPath: Exabeam.Rule.categoryDisplayName
+      description: Category display name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleId
-      type: String
-    - contextPath: Exabeam.Rule.ruleDef.ruleId
+      description: ID of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleName
+      description: Name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleDescription
+      description: Description of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.reasonTemplate
+      description: Reason template of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.aggregateReasonTemplate
+      description: Aggregate reason template of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleType
+      description: Type of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.classifyIf
+      description: Classification definition of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleEventTypes
+      description: Event types of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.disabled
+      description: Whether or not the rule is disabled.
       type: Boolean
     - contextPath: Exabeam.Rule.ruleDef.modelName
+      description: Model name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.factFeatureName
+      description: Fact feature name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.hasDynamicScore
+      description: Whether or not the rule has a dynamic score.
       type: Boolean
     - contextPath: Exabeam.Rule.ruleDef.score
+      description: Score of the rule.
       type: Number
     - contextPath: Exabeam.Rule.ruleDef.percentileThreshold
+      description: Percentile threshold of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleExpression
+      description: The rule expression.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.dependencyExpression
+      description: The rule dependency expression.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleCategory
+      description: The category of the rule.
       type: String
     - contextPath: Exabeam.Rule.disabled
+      description: Whether or not the rule is disabled.
       type: Boolean
     - contextPath: Exabeam.Rule.effective
+      description: True if the rule is effective, false otherwise.
       type: Boolean
     - contextPath: Exabeam.Rule.state
+      description: State of the rule (DefaultExabeam, ModifiedExabeam or CustomerCreated).
       type: String
     - contextPath: Exabeam.Rule.canSimpleEdit
+      description: Whether or not it is possible to use the simple editor on this
+        rule.
       type: Boolean
   - arguments:
     - default: false
@@ -826,9 +975,9 @@ script:
     execution: false
     name: exabeam-get-rule-string
     outputs:
-    - contextPath: Exabeam.Rule.ID
+    - contextPath: Exabeam.Rule.ruleId
       type: String
-    - contextPath: Exabeam.Rule.String
+    - contextPath: Exabeam.Rule.ruleString
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -860,52 +1009,76 @@ script:
     name: exabeam-fetch-rules
     outputs:
     - contextPath: Exabeam.Rule.categoryId
+      description: Category ID of the rule.
       type: String
     - contextPath: Exabeam.Rule.categoryDisplayName
+      description: Category display name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleId
-      type: String
-    - contextPath: Exabeam.Rule.ruleDef.ruleId
+      description: ID of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleName
+      description: Name of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleDescription
+      description: Description of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.reasonTemplate
+      description: Reason template of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.aggregateReasonTemplate
+      description: Aggregate reason template of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleType
+      description: Type of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.classifyIf
+      description: Classification expression definition of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleEventTypes
+      description: Event types of the rule.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.disabled
+      description: Whether or not the rule is disabled.
       type: Boolean
     - contextPath: Exabeam.Rule.ruleDef.modelName
+      description: Model name that the rule references.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.factFeatureName
+      description: The name of a feature used for fact based rules.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.hasDynamicScore
+      description: Whether or not the rule has a dynamic score.
       type: Boolean
     - contextPath: Exabeam.Rule.ruleDef.score
+      description: Score of the rule.
       type: Number
     - contextPath: Exabeam.Rule.ruleDef.percentileThreshold
+      description: Indicates which observations are considered anomalous based on
+        the histogram.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleExpression
+      description: A boolean expression that the rule engine uses to determine if
+        a particular rule will trigger.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.dependencyExpression
+      description: The rule dependency expression.
       type: String
     - contextPath: Exabeam.Rule.ruleDef.ruleCategory
+      description: The category of the rule.
       type: String
     - contextPath: Exabeam.Rule.disabled
+      description: Whether or not the rule is disabled.
       type: Boolean
     - contextPath: Exabeam.Rule.effective
+      description: True if the rule is effective, false otherwise.
       type: Boolean
     - contextPath: Exabeam.Rule.state
+      description: State of the rule (DefaultExabeam, ModifiedExabeam or CustomerCreated).
       type: String
     - contextPath: Exabeam.Rule.canSimpleEdit
+      description: Whether or not it is possible to use the simple editor on this
+        rule.
       type: Boolean
   - arguments:
     - default: false
@@ -919,43 +1092,65 @@ script:
     execution: false
     name: exabeam-get-rules-model-definition
     outputs:
-    - contextPath: Exabeam.RuleModelDefinition.alpha
+    - contextPath: Exabeam.Model.alpha
+      description: Alpha value of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.name
+    - contextPath: Exabeam.Model.name
+      description: Name of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.feature
+    - contextPath: Exabeam.Model.feature
+      description: Feature of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.cutOff
+    - contextPath: Exabeam.Model.cutOff
+      description: Cut off value of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.histogramEventTypes
+    - contextPath: Exabeam.Model.histogramEventTypes
+      description: Histogram event types of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.featureName
+    - contextPath: Exabeam.Model.featureName
+      description: Feature name of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.description
+    - contextPath: Exabeam.Model.description
+      description: Description of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.trainIf
+    - contextPath: Exabeam.Model.trainIf
+      description: Train if expression definition of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.featureType
+    - contextPath: Exabeam.Model.featureType
+      description: Feature type of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.modelTemplate
+    - contextPath: Exabeam.Model.modelTemplate
+      description: The model template.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.convergenceFilter
+    - contextPath: Exabeam.Model.convergenceFilter
+      description: Convergence filter of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.iconName
+    - contextPath: Exabeam.Model.iconName
+      description: Icon name of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.modelType
+    - contextPath: Exabeam.Model.modelType
+      description: Type of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.binWidth
+    - contextPath: Exabeam.Model.binWidth
+      description: The bin width.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.scopeType
+    - contextPath: Exabeam.Model.maxNumberOfBins
+      description: The maximal number of bins.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.agingWindow
+    - contextPath: Exabeam.Model.scopeType
+      description: The scope type of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.category
+    - contextPath: Exabeam.Model.agingWindow
+      description: Aging window of the model.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.disabled
+    - contextPath: Exabeam.Model.category
+      description: The model category.
       type: String
-    - contextPath: Exabeam.RuleModelDefinition.scopeValue
+    - contextPath: Exabeam.Model.disabled
+      description: TRUE if the model is disabled, FALSE otherwise.
+      type: String
+    - contextPath: Exabeam.Model.scopeValue
+      description: The scope value of the model.
       type: String
   - arguments:
     - default: false
@@ -967,7 +1162,7 @@ script:
     - default: false
       description: The entry ID of the CSV file.
       isArray: false
-      name: csv_file
+      name: csv_entry_id
       required: true
       secret: false
     - default: false
@@ -1039,6 +1234,9 @@ script:
     description: Gets the assets of a specified watchlist according to a keyword.
     execution: false
     name: exabeam-watchlist-asset-search
+    outputs:
+    - contextPath: sdfsdf
+      type: Unknown
   - arguments:
     - default: false
       description: The watchlist ID.
@@ -1048,7 +1246,7 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of the items to remove.
-      isArray: false
+      isArray: true
       name: items
       required: true
       secret: false
@@ -1095,17 +1293,24 @@ script:
     execution: false
     name: exabeam-list-context-table-records
     outputs:
-    - contextPath: Exabeam.ContextTableRecord.contextTable
+    - contextPath: Exabeam.ContextTableRecord.contextTableName
       description: Name of the context table.
       type: String
     - contextPath: Exabeam.ContextTableRecord.key
+      description: The key of the record.
       type: String
     - contextPath: Exabeam.ContextTableRecord.id
+      description: The ID of the record.
       type: String
     - contextPath: Exabeam.ContextTableRecord.sourceType
+      description: The source type of the record.
       type: String
     - contextPath: Exabeam.ContextTableRecord.position
+      description: The position of the record.
       type: Number
+    - contextPath: Exabeam.ContextTableRecord.value
+      description: Value of the record.
+      type: String
   - arguments:
     - default: false
       description: The name of the context table.
@@ -1114,7 +1319,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the records to add.
+      description: 'A comma-separated list of records to add, for example: k1,k2.
+        If context_table_type argument is set to key_value, every record should be
+        in "key:values" format, where "values" is a semi-colon separated list of values.
+        For example: k1:v1;v2,k2:v3,k3:,k4:v4.'
       isArray: false
       name: records
       required: true
@@ -1123,6 +1331,17 @@ script:
       description: The ID of update session. If not specified, a new session is created.
       isArray: false
       name: session_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: key_only
+      description: The context table type.
+      isArray: false
+      name: context_table_type
+      predefined:
+      - key_only
+      - key_value
       required: false
       secret: false
     deprecated: false
@@ -1135,7 +1354,39 @@ script:
     - contextPath: Exabeam.ContextTableAdd.Details
       description: The raw data of the context table update.
       type: Unknown
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The name of the context table.
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    - default: false
+      description: The ID of update session. If not specified, a new session is created.
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of records to update. If context_table_type
+        argument is set to key_only, each record should be in the following format:
+        id:key. Otherwise it''s a key_value type and then the format of a record is
+        id:key:values, where the values are separated by semi-colons.'
+      isArray: false
+      name: records
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: key_only
+      isArray: false
+      name: context_table_type
+      predefined:
+      - key_only
+      - key_value
+      required: false
+      secret: false
+    deprecated: false
     description: Updates records of a context table.
     execution: false
     name: exabeam-update-context-table-records
@@ -1218,9 +1469,32 @@ script:
     deprecated: false
     execution: false
     name: exabeam-context-table-delete-records
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: ID of the sequence.
+      isArray: false
+      name: sequence_id
+      required: true
+      secret: false
+    - default: false
+      description: Type of the sequence.
+      isArray: false
+      name: sequence_type
+      required: true
+      secret: false
+    deprecated: false
     execution: false
     name: exabeam-list-top-domains
+    outputs:
+    - contextPath: Exabeam.DataFeed.topDomains
+      description: Top domains data.
+      type: Unknown
+    - contextPath: Exabeam.DataFeed.sequenceId
+      description: ID of the sequence.
+      type: String
+    - contextPath: Exabeam.DataFeed.sequenceType
+      description: Type of the sequence.
+      type: String
   dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false

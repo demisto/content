@@ -44,59 +44,6 @@ class Client(BaseClient):
     def __del__(self):
         self._logout()
 
-    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
-                     data: dict = None, resp_type: str = 'json'):
-        """
-        Generic request to Exabeam
-        """
-        full_url = full_url if full_url else f'{self._base_url}{url_suffix}'
-        try:
-            res = self.session.request(
-                method,
-                full_url,
-                headers=self._headers,
-                verify=self._verify,
-                data=data,
-                params=params
-            )
-            if not res.ok:
-                raise ValueError(f'Error in API call to Exabeam {res.status_code}. Reason: {res.text}')
-
-            try:
-                if resp_type == 'json':
-                    return res.json()
-                return res.text
-            except Exception:
-                raise ValueError(
-                    f'Failed to parse http response to JSON format. Original response body: \n{res.text}')
-
-        except requests.exceptions.ConnectTimeout as exception:
-            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg, exception)
-
-        except requests.exceptions.SSLError as exception:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
-            raise DemistoException(err_msg, exception)
-
-        except requests.exceptions.ProxyError as exception:
-            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
-            raise DemistoException(err_msg, exception)
-
-        except requests.exceptions.ConnectionError as exception:
-            # Get originating Exception in Exception chain
-            error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n ' \
-                      f'Verify that the server URL parameter ' \
-                      f'is correct and that you have access to the server from your host.'
-            raise DemistoException(err_msg, exception)
-
-        except Exception as exception:
-            raise Exception(str(exception))
-
     def _login(self):
         """
         Login using the credentials and store the cookie
@@ -364,7 +311,7 @@ class Client(BaseClient):
 
         url_suffix = f'/uba/api/rules/{rule_id}/string'
 
-        response = self._http_request('GET', url_suffix=url_suffix, resp_type='text')  # todo: use BaseClient http_req
+        response = self._http_request('GET', url_suffix=url_suffix, resp_type='text')
         return response
 
     def fetch_rules(self, filter_by: str = None) -> Union[List, Dict]:
@@ -410,15 +357,22 @@ class Client(BaseClient):
                 (dict) The addFromCsv API response.
         """
 
-        form_data = {
-            'watchUntilDays': watch_until_days,
-            'category': category,
-            'files[]': csv_file  # todo - complete
-        }
-        url_suffix = f'/uba/api/watchlist/{watchlist_id}/addFromCsv'
+        file_path = demisto.getFilePath(csv_file).get('path')
 
-        response = self._http_request('PUT', url_suffix=url_suffix, data=form_data)
-        return response
+        if file_path:
+            with open(file_path, 'rb') as _file:
+                file = {'file': (file_path, _file.read())}
+
+            form_data = {
+                'watchUntilDays': watch_until_days,
+                'category': category
+            }
+            url_suffix = f'/uba/api/watchlist/{watchlist_id}/addFromCsv'
+
+            response = self._http_request('PUT', url_suffix=url_suffix, data=form_data, files=file)
+            return response
+        else:
+            raise ValueError('Invalid entry_id argument.')
 
     def search_asset_in_watchlist(self, keyword: str = None, watchlist_id: str = None, limit: int = None,
                                   is_exclusive: str = None, search_by_ip: str = None) -> Dict:
@@ -446,12 +400,12 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def remove_watchlist_items(self, watchlist_id: str = None, items: str = None, category: str = None) -> Dict:
+    def remove_watchlist_item(self, watchlist_id: str = None, item: str = None, category: str = None) -> Dict:
         """
             Args:
-                watchlist_id: ID of the watchlist to search assets for
-                items: A comma-separated list of the items to remove
-                category: The items category
+                watchlist_id: ID of the watchlist to remove an item from
+                item: An item to remove
+                category: The item category
 
             Returns:
                 (dict) The removal API response.
@@ -460,7 +414,7 @@ class Client(BaseClient):
         form_data = {
             'watchlistId': watchlist_id,
             'category': category,
-            'items[]': items  # todo - complete
+            'items[]': item
         }
         url_suffix = f'/uba/api/watchlist/{watchlist_id}/remove'
 
@@ -508,19 +462,33 @@ class Client(BaseClient):
         return response
 
     def add_context_table_records(self, context_table_name: str = None,
-                                  records: List[str] = None, session_id: str = None) -> Dict:
+                                  records_list: List[str] = None,
+                                  key_only: bool = False,
+                                  session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
-                records: The records to add.
+                records_list: The records to add.
+                key_only: True iff the context table type is key only.
                 session_id: The ID of update session. If not specified, a new session is created.
 
             Returns:
                 (dict) The context table records update response.
         """
-
         params = {'sessionId': session_id} if session_id else {}
-        payload = {'records': [{'key': val, 'value': []} for val in records]}
+
+        try:
+            records = []
+            for record_item in records_list:
+                record = record_item.split(':')
+                records.append({
+                    'key': record[0],
+                    'value': [] if key_only else record[1].split(';')
+                })
+        except IndexError:
+            raise ValueError('records argument is malformed.')
+        payload = {'records': records}
+
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/add'
 
         response = self._http_request('POST', url_suffix=url_suffix, params=params, json_data=payload)
@@ -531,11 +499,14 @@ class Client(BaseClient):
         return response
 
     def update_context_table_records(self, context_table_name: str = None,
-                                     records: List[str] = None, session_id: str = None) -> Dict:
+                                     records_list: List[str] = None,
+                                     key_only: bool = False,
+                                     session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
-                records: The records to update, in the following format: id:new_key.
+                records_list: The records to update, in the following format: id:new_key(:new_vals).
+                key_only: True iff the context table type is key only.
                 session_id: The ID of update session. If not specified, a new session is created.
 
             Returns:
@@ -543,16 +514,20 @@ class Client(BaseClient):
         """
 
         params = {'sessionId': session_id} if session_id else {}
-        payload = {
-            'records': [
-                {
-                    'id': record.split(':')[0],
-                    'key': record.split(':')[1],
-                    'value': []
-                }
-                for record in records
-            ]
-        }
+
+        try:
+            records = []
+            for record_item in records_list:
+                record = record_item.split(':')
+                records.append({
+                    'id': record[0],
+                    'key': record[1],
+                    'value': [] if key_only else record[2].split(';')
+                })
+        except IndexError:
+            raise ValueError('records argument is malformed.')
+        payload = {'records': records}
+
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/update'
 
         response = self._http_request('POST', url_suffix=url_suffix, params=params, data=payload)
@@ -593,12 +568,12 @@ class Client(BaseClient):
 
         return response
 
-    def addbulk_context_table_records(self, context_table_name: str = None, file_entry_id: str = None,
+    def addbulk_context_table_records(self, context_table_name: str = None, csv_file: str = None,
                                       session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
-                file_entry_id: The entry ID of the CSV file from which records will be added.
+                csv_file: The entry ID of the CSV file from which records will be added.
                 session_id: The ID of update session. If not specified, a new session is created.
 
             Returns:
@@ -606,15 +581,23 @@ class Client(BaseClient):
         """
 
         params = {'sessionId': session_id} if session_id else {}
-        # todo: add CSV file to request
-        url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/addBulk'
 
-        response = self._http_request('POST', url_suffix=url_suffix, params=params, data=payload)
+        file_path = demisto.getFilePath(csv_file).get('path')
 
-        if not session_id and response.get('sessionId'):
-            self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
+        if file_path:
+            with open(file_path, 'rb') as _file:
+                file = {'file': (file_path, _file.read())}
 
-        return response
+            url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/addBulk'
+
+            response = self._http_request('POST', url_suffix=url_suffix, params=params, files=file)
+
+            if not session_id and response.get('sessionId'):
+                self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
+
+            return response
+        else:
+            raise ValueError('Invalid entry_id argument.')
 
     def get_context_table_csv(self, context_table_name: str = None) -> Dict:
         """
@@ -626,8 +609,6 @@ class Client(BaseClient):
         """
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/records/csv'
-
-        # todo: add headers of content type and content disposition
 
         response = self._http_request('GET', url_suffix=url_suffix)
         return response
@@ -988,8 +969,7 @@ def list_top_domains(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[An
 
     top_domains = top_domains_raw_data.get('topDomains', [])
 
-    # todo: complete DT etc.
-    entry_context = {'Exabeam.TopDomains(val.sessionId && val.sessionId === obj.sessionId)': top_domains}
+    entry_context = {'Exabeam.DataFeed(val.sequenceId && val.sequenceId === obj.sequenceId)': top_domains_raw_data}
     human_readable = tableToMarkdown(f'Sequence {sequence_id} Top Domains', top_domains,
                                      removeNull=True, headerTransform=pascalToSpace)
 
@@ -1034,8 +1014,8 @@ def get_asset_info(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
     asset_raw_data = client.get_asset_info_request(asset_id, max_users_number)
 
     asset_info = asset_raw_data.get('info')
-    entry_context = {'Exabeam.AssetInfo((val.ipAddress && val.ipAddress === obj.ipAddress) ||'
-                     '(val.hostName && val.hostName === obj.hostName))': asset_info}
+    asset_info['assetId'] = asset_id
+    entry_context = {'Exabeam.AssetInfo(val.assetId && val.assetId === obj.assetId)': asset_info}
     human_readable = tableToMarkdown(f'Asset {asset_id} Information', asset_info,
                                      removeNull=True, headerTransform=pascalToSpace)
 
@@ -1071,7 +1051,7 @@ def list_asset_next_events(client: Client, args: Dict) -> Tuple[Any, Dict[str, L
     aggregated_events = events_raw_data.get('aggregatedEvents', [])
     aggregated_events, human_readable = aggregated_events_to_xsoar_format(asset_id, aggregated_events)
 
-    entry_context = {'Exabeam.AssetNextEvents(val.event_id && val.event_id === obj.event_id)': aggregated_events}
+    entry_context = {'Exabeam.AssetEvent(val.event_id && val.event_id === obj.event_id)': aggregated_events}
 
     return human_readable, entry_context, events_raw_data
 
@@ -1095,9 +1075,11 @@ def aggregated_events_to_xsoar_format(asset_id: str = None, events: list = None)
                 event['time'] = convert_unix_to_date(event.get('time'))
                 event['rawlog_time'] = convert_unix_to_date(event.get('rawlog_time'))
 
+                # renaming attributes with unclear names
                 if "getvalue('zone_info', src)" in event:
-                    # renaming attribute with unclear name
                     event['src_zone'] = event.pop("getvalue('zone_info', src)")
+                elif "getvalue('zone_info', dest)" in event:
+                    event['dest_zone'] = event.pop("getvalue('zone_info', dest)")
 
             title = f"{activity['count']} {activity['event_type']} event(s) " \
                 f"between {activity['start_time']} and {activity['end_time']}"
@@ -1122,11 +1104,17 @@ def list_security_alerts_by_asset(client: Client, args: Dict) -> Tuple[Any, Dict
 
     security_alerts_raw_data = client.list_security_alerts(asset_id, sort_by, sort_order, limit)
 
-    security_alerts = security_alerts_raw_data.get('events', [])
+    security_alerts = []
+    for security_alert in security_alerts_raw_data.get('events', []):
+        security_alert = security_alert.get('fields')
+        security_alert['time'] = convert_unix_to_date(security_alert.get('time'))
+        security_alert['rawlog_time'] = convert_unix_to_date(security_alert.get('rawlog_time'))
+        security_alerts.append(security_alert)
+
     human_readable = tableToMarkdown(f'Asset {asset_id} Security Alerts', security_alerts,
                                      removeNull=True, headerTransform=pascalToSpace)
 
-    entry_context = {'Exabeam.AssetSecurityAlerts': security_alerts}
+    entry_context = {'Exabeam.AssetSecurityAlert': security_alerts}
 
     return human_readable, entry_context, security_alerts_raw_data
 
@@ -1186,8 +1174,8 @@ def get_rule_string(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Op
     outputs = {}
     entry_context = {}
     if rule_string_raw_data:
-        outputs = {'ID': rule_id, 'String': rule_string_raw_data}
-        entry_context = {'Exabeam.RuleString(val.ID && val.ID === obj.ID)': outputs}
+        outputs = {'ruleId': rule_id, 'ruleString': rule_string_raw_data}
+        entry_context = {'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': outputs}
     human_readable = tableToMarkdown(f'Rule {rule_id} String', outputs, headerTransform=pascalToSpace)
 
     return human_readable, entry_context, rule_string_raw_data
@@ -1225,12 +1213,12 @@ def get_rules_model_definition(client: Client, args: Dict) -> Tuple[Any, Dict[st
     """
     model_name = args.get('model_name')
 
-    model_def = client.get_model_definition(model_name)
-    entry_context = {'Exabeam.RuleModelDefinition(val.name && val.name === obj.name)': model_def}
-    human_readable = tableToMarkdown(f'Model {model_name} Definition', model_def,
+    model = client.get_model_definition(model_name)
+    entry_context = {'Exabeam.Model(val.name && val.name === obj.name)': model}
+    human_readable = tableToMarkdown(f'Model {model_name} Definition', model,
                                      headerTransform=pascalToSpace, removeNull=True)
 
-    return human_readable, entry_context, model_def
+    return human_readable, entry_context, model
 
 
 def add_watchlist_item_from_csv(client: Client, args: Dict) -> Tuple[str, Optional[Any], Optional[Any]]:
@@ -1242,7 +1230,7 @@ def add_watchlist_item_from_csv(client: Client, args: Dict) -> Tuple[str, Option
 
     """
     watchlist_id = args.get('watchlist_id')
-    csv_entry_id = args.get('csv_file')
+    csv_entry_id = args.get('csv_entry_id')
     category = args.get('category')
     watch_until_days = int(args.get('watch_until_days'))
 
@@ -1269,8 +1257,8 @@ def search_asset_in_watchlist(client: Client, args: Dict) -> Tuple[Any, Dict[str
 
     assets_raw_data = client.search_asset_in_watchlist(keyword, watchlist_id, limit, is_exclusive, search_by_ip)
     assets = assets_raw_data.get('assets', [])
-    outputs = {'WatchlistID': watchlist_id, 'Assets': assets}
-    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': outputs}
+    entry_context = {'Exabeam.AssetInfo((val.ipAddress && val.ipAddress === obj.ipAddress) ||'
+                     '(val.hostName && val.hostName === obj.hostName))': assets}
     human_readable = tableToMarkdown(f'Watchlist {watchlist_id} Assets Search Results', assets,
                                      headerTransform=pascalToSpace, removeNull=True)
 
@@ -1286,14 +1274,15 @@ def remove_watchlist_item(client: Client, args: Dict) -> Tuple[str, Optional[Any
 
     """
     watchlist_id = args.get('watchlist_id')
-    items = args.get('items')
+    items = argToList(args.get('items'))
     category = args.get('category')
 
-    raw_response = client.remove_watchlist_items(watchlist_id, items, category)
-    removed_count = raw_response.get('numberRemoved')
-    human_readable = f'Successfully removed {removed_count} items from watchlist {watchlist_id}.'
+    for item in items:
+        client.remove_watchlist_item(watchlist_id, item, category)
 
-    return human_readable, None, raw_response
+    human_readable = f'Successfully removed {len(items)} items from watchlist {watchlist_id}.'
+
+    return human_readable, None, None
 
 
 def list_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
@@ -1315,12 +1304,13 @@ def list_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[st
         outputs.append({
             'key': record.get('key'),
             'id': record.get('id'),
+            'value': record.get('value'),
             'position': record.get('position'),
             'sourceType': record.get('sourceType'),
-            'contextTable': context_table_name
+            'contextTableName': context_table_name
         })
 
-    entry_context = {'Exabeam.ContextTableRecord(val.contextTable && val.contextTable === obj.contextTable'
+    entry_context = {'Exabeam.ContextTableRecord(val.contextTableName && val.contextTableName === obj.contextTableName'
                      '&& val.id && val.id === obj.id)': outputs}
     human_readable = tableToMarkdown(f'Context Table `{context_table_name}` Records', records,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1338,9 +1328,10 @@ def add_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[str
     """
     context_table_name = args.get('context_table_name')
     session_id = args.get('session_id')
-    records = argToList(args.get('records'))
+    key_only = True if args.get('context_table_type') == 'key_only' else False
+    records_list = argToList(args.get('records'))
 
-    record_updates_raw_data = client.add_context_table_records(context_table_name, records, session_id)
+    record_updates_raw_data = client.add_context_table_records(context_table_name, records_list, key_only, session_id)
     outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
     entry_context = {'Exabeam.ContextTableAdd(val.Name && val.Name === obj.Name)': outputs}
     human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
@@ -1360,8 +1351,9 @@ def update_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     context_table_name = args.get('context_table_name')
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
+    key_only = True if args.get('context_table_type') == 'key_only' else False
 
-    record_updates_raw_data = client.update_context_table_records(context_table_name, records, session_id)
+    record_updates_raw_data = client.update_context_table_records(context_table_name, records, key_only, session_id)
     outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
     entry_context = {'Exabeam.ContextTableUpdate(val.Name && val.Name === obj.Name)': outputs}
     human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
@@ -1422,9 +1414,15 @@ def get_context_table_csv(client: Client, args: Dict) -> Tuple[Any, Dict[str, An
     """
     context_table_name = args.get('context_table_name')
 
-    context_table_raw_data = client.get_context_table_csv(context_table_name)
+    res = client.get_context_table_csv(context_table_name)
 
-    return human_readable, entry_context, record_updates_raw_data
+    # 'Content-Disposition' value is of the form: attachment; filename="filename.csv"
+    # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
+    filename = res.headers.get('Content-Disposition', str()).split('\"')[1]
+    content = res.content
+
+    demisto.results(fileResult(filename, content))
+    return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
 
 
 def main():
@@ -1457,7 +1455,6 @@ def main():
         'exabeam-get-session-info-by-id': get_session_info_by_id,
         'exabeam-list-top-domains': list_top_domains,
         'exabeam-list-triggered-rules': list_triggered_rules,
-        'exabeam-get-triggered-rule-stats': None,
         'exabeam-get-asset-info': get_asset_info,
         'exabeam-list-asset-timeline-next-events': list_asset_next_events,
         'exabeam-list-security-alerts-by-asset': list_security_alerts_by_asset,
