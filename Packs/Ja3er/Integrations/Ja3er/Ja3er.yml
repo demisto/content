@@ -29,12 +29,12 @@ script:
     - contextPath: JA3.User-Agent
       description: 'User-Agent'
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   script: ''
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.8.6.12176
+  dockerimage45: demisto/python3:3.9.1.15759
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
