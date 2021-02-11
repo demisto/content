@@ -3257,7 +3257,8 @@
         "Tenable.io Scan Test": "Issue 26728",
         "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "palo_alto_firewall_test_pb": "Issue 27501"
+        "palo_alto_firewall_test_pb": "Issue 27501",
+        "Kenna Test": "Missing data"
     },
     "skipped_integrations": {
 
