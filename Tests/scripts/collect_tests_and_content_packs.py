@@ -341,14 +341,12 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     print(f'\n modified_files on find_tests_and_content_packs_for_modified_files is: {modified_files_str}\n')
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
-    print(f'\n On line 344: \n tests_set: {tests_set}\n, catched_scripts: {catched_scripts}\n, catched_playbooks: '
-          f'{catched_playbooks}\n, packs_to_install: {packs_to_install}\n \n')
+    print(f'\n On line 344: packs_to_install: {packs_to_install}\n \n')
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
         script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
-    print(f'\n On line 344: \n test_ids: {test_ids}\n, missing_ids: {missing_ids}\n, caught_missing_test: '
-          f'{caught_missing_test}\n, test_packs_to_install: {test_packs_to_install}\n \n')
+    print(f'\n On line 347: \n test_ids: {test_ids}\n, test_packs_to_install: {test_packs_to_install}\n \n')
     packs_to_install.update(test_packs_to_install)
-    print(f'\n packs_to_install on line 351 is: {packs_to_install}\n')
+    print(f'\n packs_to_install on line 349 is: {packs_to_install}\n')
 
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
@@ -689,8 +687,8 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 
 def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
                            updated_playbook_names, catched_playbooks, tests_set):
-    print(f'\n In enrich_for_playbook_id, given_playbook_id:{given_playbook_id}, playbook_names: {playbook_names}, '
-          f'playbook_set: {playbook_set}, updated_playbook_names: {updated_playbook_names}, catched_playbooks: {catched_playbooks}, tests_set: {tests_set} \n')
+    print(f'\n In enrich_for_playbook_id, given_playbook_id:{given_playbook_id} '
+          f'updated_playbook_names: {updated_playbook_names}, catched_playbooks: {catched_playbooks}, tests_set: {tests_set} \n')
     for playbook in playbook_set:
         playbook_data = list(playbook.values())[0]
         if playbook_data.get('deprecated', False):
@@ -1287,6 +1285,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
 
 def get_list_of_files_in_the_pack(path_to_pack):
     file_paths = []
+    local_test = f'../../{path_to_pack}'
     for root, dirs, files in os.walk(path_to_pack):
         for file in files:
             file_paths.append(os.path.join(root, file))
