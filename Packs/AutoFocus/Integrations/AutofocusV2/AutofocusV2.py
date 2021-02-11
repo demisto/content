@@ -1522,7 +1522,7 @@ def search_file_command(file):
         file = Common.File(
             sha256=sha256,
             dbot_score=dbot_score,
-            tags=tags,
+            tags=get_tags_for_generic_conext(tags),
         )
 
         command_results.append(CommandResults(
@@ -1536,6 +1536,13 @@ def search_file_command(file):
         ))
 
     return command_results
+
+def get_tags_for_generic_conext(tags: dict):
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    generic_context_tags = {key: tags[0].get(key) for key in keys}
+    generic_context_tags['tagGroups'] = {key: tags[0].get(key) for key in sub_keys}
+    return remove_empty_elements(generic_context_tags)
 
 
 def get_export_list_command(args):
