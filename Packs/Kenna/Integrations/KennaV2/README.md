@@ -795,7 +795,7 @@ Tag My test tag was deleted to asset {asset_id}
 
 ### kenna-get-connector-runs
 ***
-Returns JSON data on all the runs of a given connector
+Returns JSON data on all the runs of a given connector.
 
 
 #### Base Command
@@ -812,24 +812,24 @@ Returns JSON data on all the runs of a given connector
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kenna.ConnectorRunsList.ID | Number | Connector Run ID | 
-| Kenna.ConnectorRunsList.StartTime | Number | Connector Run Start Time | 
-| Kenna.ConnectorRunsList.EndTime | string | Connector Run End Time | 
-| Kenna.ConnectorRunsList.Success | boolean | Boolean value showing connector success | 
-| Kenna.ConnectorRunsList.TotalPayload | Number | Total connector payloads | 
-| Kenna.ConnectorRunsList.ProcessedPayload | Number | total payloads processed by connector | 
-| Kenna.ConnectorRunsList.FailedPayload | Number | Total failed payloads | 
-| Kenna.ConnectorRunsList.ProcessedAssets | Number | Count of processed assets | 
-| Kenna.ConnectorRunsList.AssetsWithTagsReset | Number | Count of assets with reset tags | 
-| Kenna.ConnectorRunsList.ProcessedScannerVulnerabilities | Number | Count of processed scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.UpdatedScannerVulnerabilities | Number | Count of updated scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.CreatedScannerVulnerabilities | Number | Count of created scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.ClosedScannerVulnerabilities | Number | Count of closed scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.AutoclosedScannerVulnerabilities | Number | Count of auto-closed scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.ReopenedScannerVulnerabilities | number | Count of reopened scanners with vulnerabilities | 
-| Kenna.ConnectorRunsList.ClosedVulnerabilities | Number | Count of closed vulnerabilities | 
-| Kenna.ConnectorRunsList.AutoclosedVulnerabilities | Number | Count of auto-closed vulnerabilities | 
-| Kenna.ConnectorRunsList.ReopenedVulnerabilities | Number | Count of re-opened vulnerabilities | 
+| Kenna.ConnectorRunsList.ID | Number | Connector Run ID. | 
+| Kenna.ConnectorRunsList.StartTime | Number | Connector Run Start Time. | 
+| Kenna.ConnectorRunsList.EndTime | string | Connector Run End Time. | 
+| Kenna.ConnectorRunsList.Success | boolean | Boolean value showing connector success. | 
+| Kenna.ConnectorRunsList.TotalPayload | Number | Total connector payloads. | 
+| Kenna.ConnectorRunsList.ProcessedPayload | Number | Total payloads processed the connector. | 
+| Kenna.ConnectorRunsList.FailedPayload | Number | Total failed payloads. | 
+| Kenna.ConnectorRunsList.ProcessedAssets | Number | Amount of processed assets. | 
+| Kenna.ConnectorRunsList.AssetsWithTagsReset | Number | Amount of assets with reset tags. | 
+| Kenna.ConnectorRunsList.ProcessedScannerVulnerabilities | Number | Amount of processed scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.UpdatedScannerVulnerabilities | Number | Amount of updated scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.CreatedScannerVulnerabilities | Number | Amount of created scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.ClosedScannerVulnerabilities | Number | Amount of closed scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.AutoclosedScannerVulnerabilities | Number | Amount of auto-closed scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.ReopenedScannerVulnerabilities | number | Amount of reopened scanners with vulnerabilities. | 
+| Kenna.ConnectorRunsList.ClosedVulnerabilities | Number | Amount of closed vulnerabilities. | 
+| Kenna.ConnectorRunsList.AutoclosedVulnerabilities | Number | Amount of auto-closed vulnerabilities. | 
+| Kenna.ConnectorRunsList.ReopenedVulnerabilities | Number | Amount of re-opened vulnerabilities. | 
 
 
 #### Command Example
