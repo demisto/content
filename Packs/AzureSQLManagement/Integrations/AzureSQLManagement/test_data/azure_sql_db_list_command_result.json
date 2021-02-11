@@ -1,0 +1,38 @@
+{
+    "value": [
+        {
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard",
+                "capacity": 10
+            },
+            "kind": "v12.0,user",
+            "properties": {
+                "collation": "SOME_LOCATION",
+                "maxSizeBytes": 268435456000,
+                "status": "Online",
+                "databaseId": "123456789",
+                "creationDate": "2020-12-15T14:31:06.663Z",
+                "currentServiceObjectiveName": "S0",
+                "requestedServiceObjectiveName": "S0",
+                "defaultSecondaryLocation": "westus",
+                "catalogCollation": "SOME_LOCATION",
+                "zoneRedundant": false,
+                "earliestRestoreDate": "2020-12-28T00:00:00Z",
+                "readScale": "Disabled",
+                "readReplicaCount": 0,
+                "currentSku": {
+                    "name": "Standard",
+                    "tier": "Standard",
+                    "capacity": 10
+                },
+                "storageAccountType": "GRS"
+            },
+            "location": "eastus",
+            "tags": {},
+            "id": "/subscriptions/123456789/resourceGroups/integration/providers/Microsoft.Sql/servers/integration/databases/integration-db",
+            "name": "integration-db",
+            "type": "Microsoft.Sql/servers/databases"
+        }
+    ]
+}
