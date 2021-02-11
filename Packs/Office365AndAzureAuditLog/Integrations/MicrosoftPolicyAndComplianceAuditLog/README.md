@@ -91,6 +91,9 @@ Use the o365-search-auditlog command to search the unified audit log. This log c
 | O365AuditLog.UserType | Number | The type of user who performed the operation. | 
 | O365AuditLog.Version | Number | The version of the log. | 
 | O365AuditLog.Workload | String | The Office 365 service where the activity occurred. | 
+| O365AuditLog.ModifiedProperties.Name | String | Name of the modified properties. | 
+| O365AuditLog.ModifiedProperties.NewValue | String | The updated value of the property. | 
+| O365AuditLog.ModifiedProperties.OldValue | String | The previous value of the property. | 
 
 
 #### Command Example
