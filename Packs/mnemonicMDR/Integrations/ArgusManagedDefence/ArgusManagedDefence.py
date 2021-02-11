@@ -5,6 +5,7 @@ from CommonServerPython import *
 
 import json
 import urllib3
+import mimetypes
 
 import dateparser
 import traceback
@@ -62,12 +63,28 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PRETTY_DATE_FORMAT = "%b %d, %Y, %H:%M:%S"
 FETCH_TAG = demisto.params().get("fetch_tag")
+ATTACHMENT_SUBSTRING = "_xsoar-upload"
 
 MIRROR_DIRECTION = {
     "None": None,
     "Incoming": "In",
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
+}
+ARGUS_STATUS_MAPPING = {
+    "pendingCustomer": 0,
+    "pendingSoc": 0,
+    "pendingVendor": 0,
+    "pendingClose": 0,
+    "workingSoc": 1,
+    "workingCustomer": 1,
+    "closed": 2,
+}
+ARGUS_PRIORITY_MAPPING = {
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+    "critical": 4
 }
 
 
@@ -84,21 +101,11 @@ def set_argus_settings(
 
 
 def argus_priority_to_demisto_severity(priority: str) -> int:
-    mapping = {"low": 1, "medium": 2, "high": 3, "critical": 4}
-    return mapping.get(priority, 0)
+    return ARGUS_PRIORITY_MAPPING.get(priority, 0)
 
 
 def argus_status_to_demisto_status(status: str) -> int:
-    mapping = {
-        "pendingCustomer": 0,
-        "pendingSoc": 0,
-        "pendingVendor": 0,
-        "pendingClose": 0,
-        "workingSoc": 1,
-        "workingCustomer": 1,
-        "closed": 2,
-    }
-    return mapping.get(status, 0)
+    return ARGUS_STATUS_MAPPING.get(status, 0)
 
 
 def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
@@ -340,11 +347,19 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     entries = []
     last_update_timestamp = date_time_to_epoch_milliseconds(last_mirror_update)
 
+    # Update status
+    entries.append({"severity": argus_priority_to_demisto_severity(case.get("priority"))})
+
     # Add new attachments
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
     for attachment in case_attachments:
+        if ATTACHMENT_SUBSTRING in attachment["name"]:  # file already uploaded by xsoar
+            demisto.debug(
+                f"Ignoring file {attachment['name']} "
+                f"since it contains {ATTACHMENT_SUBSTRING}"
+            )
+            pass
         if last_update_timestamp < attachment.get("addedTimestamp", 0):
-
             entries.append(
                 fileResult(
                     attachment["name"],
@@ -386,7 +401,7 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
         "dbotMirrorInstance": demisto.integrationInstance(),
         "dbotMirrorDirection": MIRROR_DIRECTION[
             demisto.params().get("mirror_direction", "None")
-        ],
+        ],  # TODO fix this as method arguments
         "dbotMirrorTags": argToList(demisto.params().get("mirror_tag", "argus_mirror")),
     }
 
@@ -427,23 +442,35 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
         f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
     )
 
-    updated_incident = {}
-    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
-        if parsed_args.remote_incident_id:
-            # First, get the incident as we need the version
-            old_incident = get_case_metadata_by_id(id=parsed_args.remote_incident_id)
-            for changed_key in parsed_args.delta.keys():
-                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+    if parsed_args.incident_changed and parsed_args.delta:
+        demisto.debug(f"Incident {parsed_args.remote_incident_id} changed, updating")
+        to_update = {}
+        for key, value in parsed_args.delta.items():
+            # Allow changing status of case from XSOAR layout
+            if key == "arguscasestatus":
+                if value in ARGUS_STATUS_MAPPING.keys():
+                    to_update["status"] = value
+            # Allow changing argus priority based upon XSOAR severity
+            elif key == "severity":
+                for priority, severity in ARGUS_PRIORITY_MAPPING.items():
+                    if severity == value:
+                        to_update["priority"] = priority
+                        break
 
-            parsed_args.data = old_incident
+        if to_update:
+            updates = "<b>Following keys have been updated by XSOAR</b><br>"
+            for key, value in to_update.items():
+                updates += f"{key}: {value}<br>"
+            to_update["comment"] = updates
+            to_update["internal_comment"] = True
 
-        else:
-            parsed_args.data["createInvestigation"] = True
-
-        parsed_args.data["case_id"] = parsed_args.remote_incident_id
-        updated_incident = update_case_command(parsed_args.data).raw_response
-        demisto.debug("argusupdateresponse " + str(updated_incident))
-
+        update_case(
+            id=parsed_args.remote_incident_id,
+            status=to_update.get("status", None),
+            priority=to_update.get("priority", None),
+            comment=to_update.get("comment", None),
+            internalComment=to_update.get("internal_comment", None)
+        )
     else:
         demisto.debug(
             f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is "
@@ -458,15 +485,14 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
             )
 
     # Close incident if relevant
-    if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
+    if parsed_args.inc_status == IncidentStatus.DONE:
         demisto.debug(f"Closing remote incident {parsed_args.remote_incident_id}")
         close_case(
             caseID=parsed_args.remote_incident_id,
             comment=(
-                f"## Case closed by XSOAR\n"
-                f"Reason:\n{parsed_args.data.get('closeReason')}"
-                f"Version:\n{parsed_args.data.get('closeReason')}"
-                f"Closing notes:\n{str(parsed_args.data.get('closeNotes'))}"
+                f"<h3>Case closed by XSOAR</h3>"
+                f"<b>Reason:</b> {parsed_args.data.get('closeReason')}<br>"
+                f"<b>Closing notes:</b><br>{parsed_args.data.get('closeNotes')}"
             ),
         )
     return parsed_args.remote_incident_id
@@ -478,34 +504,30 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         comment = f"<h3>Note mirrored from XSOAR</h3>"
         comment += (
             f"<i>Added by {entry.get('user')} at "
-            f"{pretty_print_date(entry.get('created'))}</i><br>"
+            f"{pretty_print_date(entry.get('created'))}</i><br><br>"
         )
         comment += entry.get("contents")  # TODO fixmarkdown
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
         path_res = demisto.getFilePath(entry.get("id"))
         full_file_name = path_res.get("name")
-        from base64 import b64encode as b64
-        import mimetypes
-
+        file_name, file_extension = os.path.splitext(full_file_name)
+        file_name = f"{file_name}{ATTACHMENT_SUBSTRING}{file_extension}"
         mime_type = mimetypes.guess_type(full_file_name)
         with open(path_res.get("path"), "rb") as file_to_send:
-            raw_bytes = file_to_send.read()
-            base64_bytes = b64(raw_bytes)
-            base64_string = base64_bytes.decode(encoding="utf-8")
+            # noinspection PyTypeChecker
             r = add_attachment(
                 caseID=case_id,
-                name=full_file_name,
+                name=file_name,
                 mimeType=mime_type[0],
-                data=base64_string,
+                data=b64_encode(file_to_send.read()),
             )
-            demisto.debug(f"argusadd {r}")
 
 
 def get_mapping_fields_command(args: Dict[str, Any]) -> GetMappingFieldsResponse:
     argus_case_type_scheme = SchemeTypeMapping(type_name="Argus Case")
 
-    return GetMappingFieldsResponse()
+    return GetMappingFieldsResponse()  # TODO
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
