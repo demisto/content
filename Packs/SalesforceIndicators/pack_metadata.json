@@ -1,0 +1,17 @@
+{
+    "name": "Salesforce Indicators",
+    "description": "This pack contains 1 integration, 1 indicator classifier and 1 indicator mapper.\n\nThe Salesforce Indicator Integration allows you to pull in Salesforce objects as indicators. The classifier and mapper are used to classify the indicator and map the relevant fields.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-02-11T09:46:29Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}
