@@ -530,9 +530,10 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
 
     for new_script in updated_script_names:
         script_names.add(new_script)
-
+    print(f'\n playbook_names on line 533 is: {playbook_names}\n')
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
+    print(f'\n playbook_names on line 536 is: {playbook_names}\n')
 
     affected_ids_strings = {
         'scripts': '',
