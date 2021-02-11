@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# import json
 import os
 import sys
 import time
@@ -11,11 +10,8 @@ from datetime import datetime
 import requests
 from requests.exceptions import HTTPError
 
-# disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Header names transformation maps
-# Format: {'OldName': 'NewName'}
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
     'ScanStart': 'StartTime',
@@ -41,7 +37,6 @@ ASSET_VULNS_NAMES_MAP = {
     'Count': 'VulnerabilityOccurences'
 }
 
-# Output Headers / Context Keys
 GET_SCANS_HEADERS = [
     'FolderId',
     'Id',
@@ -140,7 +135,6 @@ severity_to_text = [
     'High',
     'Critical']
 
-# Read integration parameters
 BASE_URL = demisto.params()['url']
 ACCESS_KEY = demisto.params()['access-key']
 SECRET_KEY = demisto.params()['secret-key']
@@ -159,7 +153,6 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 
-# Utility methods
 def flatten(d):
     """Function to return flatted object."""
     r = {}  # type: ignore
@@ -253,9 +246,6 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
 
 def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
-    """Function to change the keys of a dictionary according to a conversion map."""
-    # trans_map - { 'OldKey': 'NewKey', ...}
-    # camelize - change all keys from snake_case to CamelCase
     def snake_to_camel(snake_str):
         components = snake_str.split('_')
         return ''.join(map(lambda x: x.decode('utf-8').title(), components))
@@ -275,7 +265,6 @@ def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
 
 
 def date_range_to_param(date_range):
-    """Function to convert date range to param."""
     params = {}
     if date_range:
         try:
@@ -287,7 +276,6 @@ def date_range_to_param(date_range):
 
 
 def get_scan_error_message(response, scan_id):
-    """Function to parse scan error from response."""
     code = response.status_code
     message = "Error processing request"
     if scan_id:
@@ -305,7 +293,6 @@ def get_scan_error_message(response, scan_id):
 
 
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
-    """Function to generally wrap scan requests."""
     if endpoint:
         endpoint = '/' + endpoint
     full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
@@ -336,7 +323,6 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
 
 
 def get_scan_info(scans_result_elem):
-    """Function to parse scan info."""
     response = send_scan_request(scans_result_elem['id'], ignore_license_error=True)
     if response:
         response['info'].update(scans_result_elem)
@@ -344,14 +330,12 @@ def get_scan_info(scans_result_elem):
 
 
 def send_vuln_details_request(plugin_id, date_range=None):
-    """Function to send vuln details."""
     full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     return res.json()
 
 
 def get_vuln_info(vulns):
-    """Function to get vuln info."""
     vulns_info = {v['plugin_id']: v for v in vulns}
     infos = []
     errors = []
@@ -366,14 +350,12 @@ def get_vuln_info(vulns):
 
 
 def send_assets_request(params):
-    """Function to request assets."""
     full_url = "{}{}".format(BASE_URL, "workbenches/assets")
     res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
 
 def get_asset_id(params):
-    """Function to get asset by id."""
     assets = send_assets_request(params)
     if 'error' in assets:
         return_error(assets['error'])
@@ -383,14 +365,12 @@ def get_asset_id(params):
 
 
 def send_asset_vuln_request(asset_id, date_range):
-    """Function to get an assets vuln request."""
     full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     res.raise_for_status()
     return res.json()
 
 
-# Command methods
 def test_module():
     """Function to test integration from Demisto via test button."""
     send_scan_request()
@@ -398,10 +378,8 @@ def test_module():
 
 
 def get_scans_command():
-    """Function for integration command get_scans_command."""
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        # str(YYYY-MM-DD) to int(timestamp)
         last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
@@ -418,7 +396,6 @@ def get_scans_command():
 
 
 def launch_scan_command():
-    """Function for integration command launch_scan_command."""
     scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTargets')
     scan_info = send_scan_request(scan_id)['info']
     if not targets:
@@ -435,7 +412,6 @@ def launch_scan_command():
 
 
 def launch_scans_command():
-    """Function for integration command launch_scans_command."""
     scan_ids = str(demisto.getArg("scan_ids")).split(",")
 
     results = []
@@ -455,7 +431,6 @@ def launch_scans_command():
 
 
 def get_report_command():
-    """Function for integration command get_report_command."""
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
     results = []
     scan_details = send_scan_request(scan_id)
@@ -488,7 +463,6 @@ def get_report_command():
 
 
 def get_vulnerability_details_command():
-    """Function for integration command get_vulnerability_details_command."""
     plugin_id, date_range = demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')
     info = send_vuln_details_request(plugin_id, date_range)
     if 'error' in info:
@@ -499,20 +473,17 @@ def get_vulnerability_details_command():
 
 
 def args_to_request_params(hostname, ip, date_range):
-    """Function for integration command args_to_request_params."""
     if not hostname and not ip:
         return_error("Please provide one of the following arguments: hostname, ip")
 
     indicator = hostname if hostname else ip
 
-    # Query filter parameters to be passed in request
     params = {
-        "filter.0.filter": "host.target",  # filter by host target
-        "filter.0.quality": "eq",  # operator
-        "filter.0.value": indicator  # value
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": indicator
     }
 
-    # Add date_range filter if provided (timeframe to retrieve results, in days)
     if date_range:
         if not date_range.isdigit():
             return_error("Invalid date range: {}".format(date_range))
@@ -523,7 +494,6 @@ def args_to_request_params(hostname, ip, date_range):
 
 
 def get_vulnerabilities_by_asset_command():
-    """Function for integration command get_vulnerabilities_by_asset_command."""
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
     params, indicator = args_to_request_params(hostname, ip, date_range)
 
@@ -547,7 +517,6 @@ def get_vulnerabilities_by_asset_command():
 
 
 def get_scan_status_command():
-    """Function for integration command get_scan_status_command."""
     scan_id = demisto.getArg('scanId')
     scan_details = send_scan_request(scan_id)
     scan_status = {
@@ -558,7 +527,6 @@ def get_scan_status_command():
 
 
 def pause_scan_command():
-    """Function for integration command pause_scan_command."""
     scan_ids = argToList(demisto.getArg('scanIds'))
 
     results = []
@@ -589,7 +557,6 @@ def pause_scan_command():
 
 
 def resume_scan_command():
-    """Function for integration command resume_scan_command."""
     scan_ids = argToList(demisto.getArg('scanIds'))
 
     results = []
@@ -619,29 +586,11 @@ def resume_scan_command():
     return results
 
 
-def get_scan_templates():
-    """Function for integration command get_scan_templates."""
-    try:
-        endpoint = BASE_URL + "editor/scan/templates"
-        response = requests.request("GET", endpoint, headers=NEW_HEADERS, verify=USE_SSL)
-        response.raise_for_status()
-        # print(response.json())
-        demisto.info("Ran request sucessfully")
-        return response
-    except HTTPError:
-        # print(response.status_code)
-        demisto.error(traceback.format_exc())
-        sys.exit(0)
-
-
-# Request/Response methods
-# kwargs: request parameters
 def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignore_license_error=False, **kwargs):
     """Function for wrap requests."""
     if endpoint and (len(endpoint_base) > 0):
         endpoint = '/' + endpoint
     full_url = "{0}{1}{2}".format(BASE_URL, endpoint_base, endpoint)
-    # print(full_url)
 
     for i in range(5):
         try:
@@ -658,21 +607,11 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
                     return "Status code error: {}".format(res.status_code)
 
                 demisto.error(traceback.format_exc())
-                sys.exit(0)
 
     try:
         return res.json()
     except ValueError:
         return "No JSON to decode."
-
-
-def add_tags():
-    """Function for add tags."""
-    payloads = demisto.getArg('payload')
-    # payloads = json.loads(payloads)
-
-    response = send_request(payload=payloads, endpoint="values", method="POST")
-    return response
 
 
 # Command selector
@@ -694,7 +633,3 @@ elif demisto.command() == 'tenable-io-pause-scan':
     demisto.results(pause_scan_command())
 elif demisto.command() == 'tenable-io-resume-scan':
     demisto.results(resume_scan_command())
-elif demisto.command() == 'tenable-io-add-tags':
-    demisto.results(add_tags())
-elif demisto.command() == 'tenable-io-check-templates':
-    demisto.results(get_scan_templates())

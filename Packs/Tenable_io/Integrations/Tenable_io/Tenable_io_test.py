@@ -222,23 +222,9 @@ def test_resume_scan_command(mocker, requests_mock):
     resume_scan_command()
 
 
-def test_add_tags_command(mocker, requests_mock):
-    mock_demisto(mocker, {'payload': '25'})
-    requests_mock.post(MOCK_PARAMS['url'] + 'tags/values', json={'info': {'status': 'canceled'}})
-    from Tenable_io import add_tags
-    add_tags()
-
-
 def test_launch_scans_command(mocker, requests_mock):
     mock_demisto(mocker, {'scan_ids': '25'})
     requests_mock.post(MOCK_PARAMS['url'] + 'scans/25/launch', json={'info': {'status': 'canceled'}})
     requests_mock.post(MOCK_PARAMS['url'] + 'scans/25/launch?alt_targets=10.0.0.1', json={'info': {'status': 'canceled'}})
     from Tenable_io import launch_scans_command
     launch_scans_command()
-
-
-def test_check_templates_command(mocker, requests_mock):
-    mock_demisto(mocker, {})
-    requests_mock.get(MOCK_PARAMS['url'] + 'editor/scan/templates', json={'info': {'status': 'canceled'}})
-    from Tenable_io import get_scan_templates
-    get_scan_templates()
