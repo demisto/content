@@ -21,7 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
+description: 'TODO [Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
 display: QRadar_v3
 name: QRadar_v3
