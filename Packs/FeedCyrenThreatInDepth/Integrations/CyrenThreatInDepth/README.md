@@ -118,4 +118,4 @@ Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provide
 
 ## Additional Information
 
-Contact us: paloalto-cortex-xsoar@cyren.com
+Contact us: support@cyren.com
