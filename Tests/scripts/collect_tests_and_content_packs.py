@@ -630,6 +630,8 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     :param catched_playbooks: The names of playbooks we found tests for.
     :param tests_set: The names of the caught tests.
     """
+    print(f'\n In enrich_for_script_id, integration_id:{integration_id} '
+          f'updated_playbook_names: {updated_playbook_names}, tests_set: {tests_set} \n')
     for playbook in playbook_set:
         playbook_data = list(playbook.values())[0]
         if playbook_data.get('deprecated', False):
@@ -683,7 +685,9 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                             catched_scripts.add(script_name)
                             tests_set.add('Found a unittest for the script {}'.format(script_name))
 
+                        print(f'\n Line 688, updated_script_names: {updated_script_names}\n')
                         updated_script_names.add(script_name)
+                        print(f'\n Line 690, updated_script_names: {updated_script_names}\n')
                         new_versions = (script_fromversion, script_toversion)
                         enrich_for_script_id(script_name, new_versions, script_names, script_set, playbook_set,
                                              playbook_names, updated_script_names, updated_playbook_names,
@@ -712,15 +716,19 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
                     update_test_set(tests, tests_set)
                     print(f'\n Line 710, playbook_name: {playbook_name}\n tests: {tests} \n')
 
+                print(f'\n Line 717, updated_playbook_names: {updated_playbook_names}\n')
                 updated_playbook_names.add(playbook_name)
+                print(f'\n Line 719, updated_playbook_names: {updated_playbook_names}\n')
                 new_versions = (playbook_fromversion, playbook_toversion)
-                print(f'On line 712, playbook_name is: {playbook_name}\n, playbook_names is: {playbook_names}\n, ')
+                print(f'On line 720, playbook_name is: {playbook_name}\n, playbook_names is: {playbook_names}\n, ')
                 enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
                                        updated_playbook_names, catched_playbooks, tests_set)
 
 
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
+    print(f'\n In enrich_for_script_id, given_script_id:{given_script_id} '
+          f'updated_playbook_names: {updated_playbook_names}, tests_set: {tests_set} \n')
     for script in script_set:
         script_data = list(script.values())[0]
         if script_data.get('deprecated', False):
@@ -740,15 +748,15 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 if glob.glob(package_name + "/*_test.py"):
                     catched_scripts.add(script_name)
                     tests_set.add('Found a unittest for the script {}'.format(script_name))
-
+                print(f'\n Line 751, updated_script_names: {updated_script_names}\n')
                 updated_script_names.add(script_name)
+                print(f'\n Line 753, updated_script_names: {updated_script_names}\n')
                 new_versions = (script_fromversion, script_toversion)
                 enrich_for_script_id(script_name, new_versions, script_names, script_set, playbook_set, playbook_names,
                                      updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks,
                                      tests_set)
 
     for playbook in playbook_set:
-        print(f'\nline 748: playbook is: {playbook}')
         playbook_data = list(playbook.values())[0]
         if playbook_data.get('deprecated', False):
             continue
@@ -762,7 +770,11 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
 
+                print(f'\n Line 773, updated_playbook_names: {updated_playbook_names}\n')
                 updated_playbook_names.add(playbook_name)
+                print(f'\n Line 775, updated_playbook_names: {updated_playbook_names}\n')
+
+                print(f'\nline 777: added playbook {playbook_name}, given_script_id: {given_script_id}')
                 new_versions = (playbook_fromversion, playbook_toversion)
                 enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
                                        updated_playbook_names, catched_playbooks, tests_set)
