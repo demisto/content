@@ -862,14 +862,14 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 75bccaa7-b3d8-4a90-8705-4cc463cf5c91
+    taskid: 295bd5b4-43d5-4b95-8a5f-1a28211c7250
     type: regular
     task:
-      id: 75bccaa7-b3d8-4a90-8705-4cc463cf5c91
+      id: 295bd5b4-43d5-4b95-8a5f-1a28211c7250
       version: -1
       name: Extract indicators from the alert data
-      description: Extracts indicators from the user email and exfiltration destination
-        playbook inputs.
+      description: Extracts indicators from the user email, exfiltration destination
+        and file hash playbook inputs.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -897,6 +897,32 @@ tasks:
               suffix:
                 value:
                   simple: inputs.UserEmail
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.FileMD5
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.FileSHA256
                 iscontext: true
     reputationcalc: 2
     separatecontext: false
@@ -6882,7 +6908,7 @@ inputs:
 - key: FileMD5
   value: {}
   required: false
-  description: The MD5 hash of the file that was exfiltrated.
+  description: The MD5 hash of the file that exfiltrated the data.
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -6915,8 +6941,7 @@ inputs:
 - key: FileSHA256
   value: {}
   required: false
-  description: The SHA256 hash of the file that was associated with the exfiltration
-    (the tool used for exfiltration).
+  description: The SHA256 hash of the file that exfiltrated the data.
   playbookInputQuery:
 - key: FileName
   value: {}
@@ -6958,11 +6983,6 @@ inputs:
     automatically. If set to "True" - the destination will be blocked automatically
     if found to be malicious. Otherwise, an analyst review will be required to block
     the destination.
-  playbookInputQuery:
-- key: DestinationPort
-  value: {}
-  required: false
-  description: The destination port through which data was exfiltrated.
   playbookInputQuery:
 - key: BlockFileAutomatically
   value:
