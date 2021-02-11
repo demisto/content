@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter, fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
-        super().__init__(base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.username = username
         self.password = password
         self.client_id = client_id
