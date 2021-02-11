@@ -854,6 +854,7 @@ script:
         let ipAddressDQ = '.=(val.network_adapters.split("|").slice(0, val.network_adapters.split("|").length-1))';
         let result = getSensorsRequest(args.sensor, args.hostname, args.ip, args.groupid);
         if (args.limit) {
+            args.limit = parseInt(args.limit);
             result.splice(args.limit, result.length - args.limit);
         }
         let entries = [];
