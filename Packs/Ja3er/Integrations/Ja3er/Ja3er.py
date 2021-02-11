@@ -19,7 +19,7 @@ def ja3_search(client: Client, **args) -> CommandResults:
 
     results = CommandResults(
         outputs_prefix="JA3",
-        outputs_key_field=f"JA3.hash",
+        outputs_key_field=f"JA3",
         outputs={ja3: r},
         readable_output=tableToMarkdown(f'Search results for {ja3}', r)
     )
