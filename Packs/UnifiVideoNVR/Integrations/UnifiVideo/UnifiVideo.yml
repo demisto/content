@@ -65,6 +65,7 @@ script:
     name: unifivideo-get-snapshot
   - arguments:
     - default: false
+      description: The id of the recording
       isArray: false
       name: recording_id
       required: true
@@ -110,6 +111,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: auto
+      description: The Infra-Red LED mode
       isArray: false
       name: ir_leds
       predefined:
