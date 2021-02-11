@@ -580,8 +580,8 @@
             "playbookID": "Vertica Test"
         },
         {
-            "integrations": "Server Message Block (SMB)",
-            "playbookID": "SMB test"
+            "integrations": "Server Message Block (SMB) v2",
+            "playbookID": "SMB_v2-Test"
         },
         {
             "playbookID": "ConvertFile-Test",
@@ -3250,7 +3250,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "SMB test": "Issue 26454",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
@@ -3437,7 +3436,7 @@
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
-        "Server Message Block (SMB)": "Does not perform http communication",
+        "Server Message Block (SMB) v2": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
         "dnstwist": "Does not perform http communication",
         "Generic SQL": "Does not perform http communication",
