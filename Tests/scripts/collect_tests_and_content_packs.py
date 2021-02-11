@@ -509,17 +509,19 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
 
-
+    print(f'\nOn line 512, updated_playbook_names is: {updated_playbook_names}\n')
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
+        print(f'\nOn line 517, updated_playbook_names is: {updated_playbook_names}\n. script_id is: {script_id} \n')
 
     integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
                                   updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
+        print(f'\nOn line 523, updated_playbook_names is: {updated_playbook_names}\n. integration_id is: {integration_id} \n')
 
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
@@ -709,8 +711,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 
                 updated_playbook_names.add(playbook_name)
                 new_versions = (playbook_fromversion, playbook_toversion)
-                print(f'On line 712, playbook_name is: {playbook_name}\n, playbook_names is: {playbook_names}\n, '
-                      f'playbook_set is: {playbook_set}')
+                print(f'On line 712, playbook_name is: {playbook_name}\n, playbook_names is: {playbook_names}\n, ')
                 enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
                                        updated_playbook_names, catched_playbooks, tests_set)
 
@@ -1279,14 +1280,14 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 6.0': False,
         }
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
-        json.dump(envs_to_test, filter_envs_file)
+    # with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+    #     json.dump(envs_to_test, filter_envs_file)
 
 
 def get_list_of_files_in_the_pack(path_to_pack):
     file_paths = []
     local_test = f'../../{path_to_pack}'
-    for root, dirs, files in os.walk(path_to_pack):
+    for root, dirs, files in os.walk(local_test):
         for file in files:
             file_paths.append(os.path.join(root, file))
     return file_paths
