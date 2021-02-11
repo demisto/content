@@ -19,6 +19,17 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 
+METADATA_TO_REMOVE = {
+    'IAM/metadata-1.1.0.json',
+    'IAM/metadata-1.2.0.json',
+    'IAM/metadata-1.0.0.json',
+    'IAM/metadata-1.3.0.json',
+    'HelloWorldPremium/metadata-1.0.0.json',
+    'HelloWorldPremium/metadata-1.1.0.json',
+    'HelloWorldPremium/metadata-1.0.8.json',
+    'HelloWorldPremium/metadata-1.0.9.json',
+}
+
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -281,6 +292,20 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
+
+    # REMOVE AFTER SUCCESSFUL RUN
+    logging.info("Starting to remove old meta files")
+    iam_metadata = glob.glob(f"{index_folder_path}/IAM/metadata-*.json")
+    for iam_meta in iam_metadata:
+        if any(x in iam_meta for x in METADATA_TO_REMOVE):
+            logging.info(f"Removing - {iam_meta}")
+            os.remove(iam_meta)
+    hwp_metadata = glob.glob(f"{index_folder_path}/HelloWorldPremium/metadata-*.json")
+    for hwp_meta in hwp_metadata:
+        if any(x in hwp_meta for x in METADATA_TO_REMOVE):
+            logging.info(f"Removing - {hwp_meta}")
+            os.remove(hwp_meta)
+
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
