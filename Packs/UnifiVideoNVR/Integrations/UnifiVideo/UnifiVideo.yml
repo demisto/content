@@ -73,12 +73,6 @@ script:
       name: recording_id
       required: true
       secret: false
-    - default: false
-      description: Get snapshot of frame. Put frame number here
-      isArray: false
-      name: frame
-      required: false
-      secret: false
     deprecated: false
     description: Download a recording to file
     execution: false

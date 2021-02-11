@@ -49,12 +49,14 @@ if demisto.command() == 'unifivideo-set-recording-settings':
     rec_set = args['rec_set']
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).set_recording_settings(rec_set)
+    demisto.results(camera_name + ": " + rec_set)
 
 if demisto.command() == 'unifivideo-ir-leds':
     camera_name = args['camera_name']
     ir_leds = args['ir_leds']
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     uva.get_camera(camera_name).ir_leds(ir_leds)
+    demisto.results(camera_name + ": " + ir_leds)
 
 if demisto.command() == 'unifivideo-get-recording':
     recording_id = args['recording_id']
@@ -69,28 +71,6 @@ if demisto.command() == 'unifivideo-get-recording':
     filename = recording_file_name
     file = fileResult(filename=filename, data=output)
     demisto.results(file)
-    if "frame" in demisto.args():
-        vc = cv2.VideoCapture('/tmp/recording.mp4')  # pylint: disable=E1101
-        c = 1
-
-        if vc.isOpened():
-            rval, frame = vc.read()
-        else:
-            rval = False
-
-        while rval:
-            rval, frame = vc.read()
-            c = c + 1
-            if c == int(demisto.args()['frame']):
-                cv2.imwrite('/tmp/snapshot.jpg', frame)  # pylint: disable=E1101
-                break
-        vc.release()
-        f = open("/tmp/snapshot.jpg", "rb")
-        output = f.read()
-        filename = snapshot_file_name
-        file = fileResult(filename=filename, data=output)
-        file['Type'] = entryTypes['image']
-        demisto.results(file)
 
 if demisto.command() == 'unifivideo-get-recording-snapshot':
     recording_id = args['recording_id']
