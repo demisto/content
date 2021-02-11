@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 from datetime import datetime
-from urllib.parse import quote
 
 import dateparser
 import requests
@@ -17,7 +16,8 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter, fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
+    def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter,
+                 fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.username = username
         self.password = password
@@ -37,7 +37,10 @@ class Client(BaseClient):
         self.fields = fields
         self.history = history
         self.feedReputation = feedReputation
-        self.score = 1 if self.feedReputation == 'Good' else 2 if self.feedReputation == 'Suspicious' else 3 if self.feedReputation == 'Bad' else 0
+        self.score = 1 if self.feedReputation == 'Good'\
+            else 2 if self.feedReputation == 'Suspicious'\
+            else 3 if self.feedReputation == 'Bad'\
+            else 0
 
     def get_new_token(self):
         body = {
@@ -95,7 +98,6 @@ def fetch_indicators_command(client, params, manual_run=False):
     now = datetime.utcnow()
     create_date = dateparser.parse(f"{client.history} days ago", settings={
                                    'RELATIVE_BASE': now}).strftime("%Y-%m-%dT%H:%M:%S.000+0000")
-    integration_context = get_integration_context()
     object_fields = None
     if client.fields:
         object_fields = client.fields.split(",")
@@ -135,7 +137,7 @@ def fetch_indicators_command(client, params, manual_run=False):
                     "score": client.score
                 }
                 indicators.append(indicator)
-        except:
+        except Exception as err:
             pass
 
     if not manual_run:
@@ -156,7 +158,6 @@ def test_module(client):
 
 def main():
     params = demisto.params()
-    args = demisto.args()
     proxies = handle_proxy()
     verify_certificate = not params.get('insecure', False)
     url = params.get('InstanceURL')
