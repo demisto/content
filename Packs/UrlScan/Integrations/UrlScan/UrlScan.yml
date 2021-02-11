@@ -349,8 +349,11 @@ script:
     - contextPath: URL.Geo.Country
       description: The URL country
       type: String
-    - contextPath: URL.RelatedASNs
-      description: ASNs that are associated with the URL
+    - contextPath: URL.ASOwner
+      description: The URL AS owner
+      type: String
+    - contextPath: URL.Tags
+      description: Tags that are associated with the URL
       type: String
   - arguments:
     - default: false

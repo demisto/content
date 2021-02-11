@@ -348,8 +348,12 @@
 <td style="width: 454px;">The URL country</td>
 </tr>
 <tr>
-<td style="width: 267px;">URL.RelatedASNs </td>
-<td style="width: 454px;">ASNs that are associated with the URL</td>
+<td style="width: 267px;">URL.ASOwner </td>
+<td style="width: 454px;">The URL AS owner</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.Tags </td>
+<td style="width: 454px;">Tags that are associated with the URL</td>
 </tr>
 </tbody>
 </table>

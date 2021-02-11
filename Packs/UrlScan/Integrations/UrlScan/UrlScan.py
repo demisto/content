@@ -311,9 +311,8 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-    if 'urlscan' in scan_verdicts:
-        if 'tags' in scan_verdicts['urlscan']:
-            url_cont['Tags'] = scan_verdicts['urlscan']['tags']
+    if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
+        url_cont['Tags'] = scan_verdicts['urlscan']['tags']
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
