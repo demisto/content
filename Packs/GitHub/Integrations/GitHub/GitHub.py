@@ -568,7 +568,8 @@ def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict
         'ID': comment.get('id'),
         'NodeID': comment.get('node_id'),
         'Body': comment.get('body'),
-        'User': format_user_outputs(comment.get('user', {}))
+        'User': format_user_outputs(comment.get('user', {})),
+        'Created At': comment.get('created_at', '')
     }
     return ec_object
 
