@@ -2792,7 +2792,7 @@ def test_send_request_with_severity(mocker):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_notification_channel(mocker):
@@ -2847,7 +2847,7 @@ def test_send_request_with_notification_channel(mocker):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 @pytest.mark.parametrize('notify', [False, True])
@@ -2900,7 +2900,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_entitlement(mocker):
@@ -2964,7 +2964,7 @@ def test_send_request_with_entitlement(mocker):
     assert send_args[4] == 'hi test@demisto.com'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -3030,7 +3030,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     assert send_args[4] == ''
     assert send_args[6] == js.dumps(BLOCK_JSON)
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -3097,7 +3097,7 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     assert send_args[4] == 'wat up'
     assert send_args[6] == js.dumps(BLOCK_JSON)
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -3149,7 +3149,7 @@ def test_send_to_user_lowercase(mocker):
     assert send_args[4] == 'hi'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
@@ -3204,7 +3204,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_no_user(mocker, capfd):
@@ -4272,7 +4272,7 @@ def test_slack_send_filter_one_mirro_tag(mocker):
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
     Slack.slack_send()
-    assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: None'
 
 
 def test_slack_send_filter_no_mirror_tags(mocker):
@@ -4288,7 +4288,7 @@ def test_slack_send_filter_no_mirror_tags(mocker):
 
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': ''})
     Slack.slack_send()
-    assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: None'
 
 
 def test_slack_send_filter_no_entry_tags(mocker):
