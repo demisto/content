@@ -18,7 +18,7 @@ configuration:
   required: false
   type: 8
 description: Use the Microsoft Graph Identity & Access integration to manage roles
-  and membersn.
+  and members.
 display: Microsoft Graph Identity & Access
 name: MicrosoftGraphIdentityandAccess
 script:
@@ -57,7 +57,7 @@ script:
       secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: Presents if role is deleted.
+      description: The time which the role has been deleted. Presents if role is deleted.
       type: Date
     - contextPath: MSGraphIdentity.Role.description
       description: The description for the directory role.
@@ -84,7 +84,7 @@ script:
       secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: Presents if role is deleted.
+      description: The time which the role has been deleted. Presents if role is deleted.
       type: Date
     - contextPath: MSGraphIdentity.Role.description
       description: The description for the directory role.
