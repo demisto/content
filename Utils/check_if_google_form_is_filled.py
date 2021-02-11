@@ -1,5 +1,6 @@
 import argparse
 import sys
+import urllib
 
 import requests
 import pandas as pd
@@ -33,12 +34,13 @@ def check_if_form_is_filled(pr_number, github_token, verify_ssl):
     if contrib_pr:
         return True
 
-    socket = requests.get(path_to_csv)
-    xd = pd.ExcelFile(socket)
-    print(xd.sheet_names)
+    # socket = urllib.request.urlopen(path_to_csv)
+    # xd = pd.ExcelFile(socket)
+    # print(xd.sheet_names)
     df = pd.read_excel(path_to_csv, encoding='utf8', error_bad_lines=False)
-    pr_numbers = df['Pull Request Number'].value_counts()
-    print(pr_numbers)
+    print(df.info())
+    # pr_numbers = df['Pull Request Number'].value_counts()
+    # print(pr_numbers)
 
 
 
