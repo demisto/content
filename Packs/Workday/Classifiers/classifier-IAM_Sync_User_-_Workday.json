@@ -1,15 +1,15 @@
 {
     "description": "",
     "feed": false,
- "id": "IAM Sync User - Workday",
- "mapping": {
+    "id": "IAM Sync User - Workday",
+    "mapping": {
         "IAM - New Hire": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         },
         "IAM - Rehire User": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         },
         "IAM - Sync User": {
             "dontMapEventToLabels": false,
@@ -42,13 +42,11 @@
                     "complex": {
                         "accessor": "",
                         "filters": [
-
                         ],
                         "root": "Email_Address",
                         "transformers": [
                             {
                                 "args": {
-
                                 },
                                 "operator": "toLowerCase"
                             }
@@ -156,13 +154,11 @@
                     "complex": {
                         "accessor": "",
                         "filters": [
-
                         ],
                         "root": "Email_Address",
                         "transformers": [
                             {
                                 "args": {
-
                                 },
                                 "operator": "toLowerCase"
                             }
@@ -182,11 +178,11 @@
         },
         "IAM - Terminate User": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         },
         "IAM - Update User": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         }
     },
     "name": "IAM Sync User - Workday",
