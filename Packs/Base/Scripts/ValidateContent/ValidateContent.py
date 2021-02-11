@@ -1,14 +1,12 @@
-import io
-import types
-from typing import Callable, Iterable, List, Tuple
-import zipfile
-from base64 import b64decode
 import concurrent.futures
+import io
 import shutil
 import traceback
+import types
+import zipfile
+from base64 import b64decode
 from contextlib import redirect_stderr, redirect_stdout
-from wcmatch.pathlib import NEGATE, GLOBSTAR, EXTGLOB
-from wcmatch.pathlib import Path as wcpath
+from typing import Callable, List, Tuple
 
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.content import Content
@@ -22,6 +20,8 @@ from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split_yml.extractor import Extractor
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
+from wcmatch.pathlib import EXTGLOB, GLOBSTAR, NEGATE
+from wcmatch.pathlib import Path as wcpath
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -151,7 +151,7 @@ def run_lint(file_path: str, json_output_file: str) -> None:
             )
 
 
-def run_parallel_operations(operations: List[Tuple[Callable, Iterable]]) -> None:
+def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
     parallel_ops = len(operations)
     with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_ops) as executor:
         try:
