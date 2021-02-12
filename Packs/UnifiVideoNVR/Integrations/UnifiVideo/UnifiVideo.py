@@ -17,6 +17,7 @@ FETCH_TIME = params.get('fetch_time')
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
 
+
 def parse_time_to_minutes():
     """
     Calculate how much time to fetch back in minutes
@@ -37,6 +38,7 @@ def parse_time_to_minutes():
         return number_of_times * time_unit_value_in_minutes
 
     return_error('Error: Invalid time unit.')
+
 
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
@@ -153,7 +155,7 @@ if demisto.command() == 'unifivideo-get-snapshot-at-frame':  # TOFIX
     except Exception as ex:
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex))
 
-    video_path = file_result.get("path")
+    video_path = file_result.get("path")  # pylint: disable=E1101
     vc = cv2.VideoCapture(video_path)  # pylint: disable=E1101
     c = 1
 
