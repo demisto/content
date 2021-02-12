@@ -11,12 +11,12 @@ configuration:
   hidden: false
   name: client_certificate
   required: true
-  type: 12
+  type: 4
 - display: Docker Client Private Key
   hidden: false
   name: client_key
   required: true
-  type: 12
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
