@@ -311,6 +311,8 @@ PAYLOAD_JSON = r'''
 
 SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'ts': 'cool'}, headers={},
                                status_code=0)
+SLACK_RESPONSE_2 = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'cool': 'cool'}, headers={},
+                                 status_code=0)
 
 
 def test_exception_in_invite_to_mirrored_channel(mocker):
@@ -4264,13 +4266,14 @@ def test_fail_connect_threads(mocker):
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
 
 
-def test_slack_send_filter_one_mirro_tag(mocker):
+def test_slack_send_filter_one_mirror_tag(mocker):
     # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
     import Slack
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
+
     mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
                                                        'entryObject': {'tags': ['tag1']}})
 
@@ -4285,7 +4288,7 @@ def test_slack_send_filter_no_mirror_tags(mocker):
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
 
     mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
                                                        'entryObject': {'tags': ['tag1']}})
