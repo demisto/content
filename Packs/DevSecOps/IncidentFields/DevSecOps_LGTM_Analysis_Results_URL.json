@@ -1,10 +1,10 @@
 {
-    "id": "incident_lgtmanalysisresultsurl",
+    "id": "incident_devsecopslgtmanalysisresultsurl",
     "version": -1,
     "modified": "2020-08-10T14:43:45.772336977+04:00",
-    "name": "LGTM Analysis Results URL",
+    "name": "DevSecOps LGTM Analysis Results URL",
     "ownerOnly": false,
-    "cliName": "lgtmanalysisresultsurl",
+    "cliName": "devsecopslgtmanalysisresultsurl",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

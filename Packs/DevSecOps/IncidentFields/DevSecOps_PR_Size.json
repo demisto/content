@@ -1,10 +1,10 @@
 {
-    "id": "incident_prsize",
+    "id": "incident_devsecopsprsize",
     "version": -1,
     "modified": "2020-09-07T12:41:21.383771225+04:00",
-    "name": "PR Size",
+    "name": "DevSecOps PR Size",
     "ownerOnly": false,
-    "cliName": "prsize",
+    "cliName": "devsecopsprsize",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

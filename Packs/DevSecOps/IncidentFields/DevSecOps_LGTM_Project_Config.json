@@ -1,10 +1,10 @@
 {
-    "id": "incident_lgtmprojectconfig",
+    "id": "incident_devsecopslgtmprojectconfig",
     "version": -1,
     "modified": "2020-08-10T14:42:03.168561557+04:00",
-    "name": "LGTM Project Config",
+    "name": "DevSecOps LGTM Project Config",
     "ownerOnly": false,
-    "cliName": "lgtmprojectconfig",
+    "cliName": "devsecopslgtmprojectconfig",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

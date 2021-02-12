@@ -1,10 +1,10 @@
 {
-    "id": "incident_apptaskcompletedat",
+    "id": "incident_devsecopsapptaskcompletedat",
     "version": -1,
     "modified": "2020-09-08T10:28:14.513722961+04:00",
-    "name": "App Task Completed At",
+    "name": "DevSecOps App Task Completed At",
     "ownerOnly": false,
-    "cliName": "apptaskcompletedat",
+    "cliName": "devsecopsapptaskcompletedat",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

@@ -633,7 +633,7 @@ script:
     - contextPath: LGTM.queryjob-results-overview.next
       description: LGTM Query Job Results Overview Next
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
@@ -642,6 +642,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

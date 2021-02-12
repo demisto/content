@@ -1,10 +1,10 @@
 {
-    "id": "incident_prinstallationid",
+    "id": "incident_devsecopsprinstallationid",
     "version": -1,
     "modified": "2020-09-07T12:32:04.615957325+04:00",
-    "name": "PR Installation ID",
+    "name": "DevSecOps PR Installation ID",
     "ownerOnly": false,
-    "cliName": "prinstallationid",
+    "cliName": "devsecopsprinstallationid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

@@ -1,12 +1,12 @@
 {
     "regex": null,
-    "details": "SAST Alert",
+    "details": "DevSecOps SAST Alert",
     "disabled": false,
     "shouldPublish": true,
     "shouldCommit": true,
     "expiration": 0,
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.0.0",
     "system": false,
-    "id": "SAST Alert"
+    "id": "DevSecOps SAST Alert"
 }

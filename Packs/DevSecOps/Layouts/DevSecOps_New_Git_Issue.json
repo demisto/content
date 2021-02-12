@@ -399,7 +399,6 @@
     },
     "typeId": "New Git Issue",
     "version": -1,
-    "toVersion": "5.9.9",
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.0.0",
     "description": ""
 }

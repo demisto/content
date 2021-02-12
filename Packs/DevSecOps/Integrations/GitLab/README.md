@@ -117,7 +117,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 "external_authorization_classification_label": "",
                 "forking_access_level": "enabled",
                 "forks_count": 0,
-                "http_url_to_repo": "https://gitlab.com/ayman-m/moon.git",
+                "http_url_to_repo": "https://gitlab.com/test-user/moon.git",
                 "id": 21898188,
                 "import_status": "finished",
                 "issues_access_level": "enabled",
@@ -132,16 +132,16 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 "merge_requests_enabled": true,
                 "mirror": false,
                 "name": "moon",
-                "name_with_namespace": "Ayman Mahmoud / moon",
+                "name_with_namespace": "test user / moon",
                 "namespace": {
                     "avatar_url": "/uploads/-/system/user/avatar/5773551/avatar.png",
-                    "full_path": "ayman-m",
+                    "full_path": "test-user",
                     "id": 7637905,
                     "kind": "user",
-                    "name": "Ayman Mahmoud",
+                    "name": "test user",
                     "parent_id": null,
-                    "path": "ayman-m",
-                    "web_url": "https://gitlab.com/ayman-m"
+                    "path": "test-user",
+                    "web_url": "https://gitlab.com/test-user"
                 },
                 "only_allow_merge_if_all_discussions_are_resolved": false,
                 "only_allow_merge_if_pipeline_succeeds": false,
@@ -149,15 +149,15 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 "owner": {
                     "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png",
                     "id": 5773551,
-                    "name": "Ayman Mahmoud",
+                    "name": "test user",
                     "state": "active",
-                    "username": "ayman-m",
-                    "web_url": "https://gitlab.com/ayman-m"
+                    "username": "test-user",
+                    "web_url": "https://gitlab.com/test-user"
                 },
                 "packages_enabled": true,
                 "pages_access_level": "enabled",
                 "path": "moon",
-                "path_with_namespace": "ayman-m/moon",
+                "path_with_namespace": "test-user/moon",
                 "permissions": {
                     "group_access": null,
                     "project_access": {
@@ -167,23 +167,23 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 },
                 "printing_merge_request_link_enabled": true,
                 "public_jobs": true,
-                "readme_url": "https://gitlab.com/ayman-m/moon/-/blob/master/README.md",
+                "readme_url": "https://gitlab.com/test-user/moon/-/blob/master/README.md",
                 "remove_source_branch_after_merge": true,
                 "repository_access_level": "enabled",
                 "request_access_enabled": true,
                 "resolve_outdated_diff_discussions": false,
-                "service_desk_address": "incoming+ayman-m-moon-21898188-issue-@incoming.gitlab.com",
+                "service_desk_address": "incoming+test-user-moon-21898188-issue-@incoming.gitlab.com",
                 "service_desk_enabled": true,
                 "shared_runners_enabled": true,
                 "shared_with_groups": [],
                 "snippets_access_level": "enabled",
                 "snippets_enabled": true,
-                "ssh_url_to_repo": "git@gitlab.com:ayman-m/moon.git",
+                "ssh_url_to_repo": "git@gitlab.com:test-user/moon.git",
                 "star_count": 0,
                 "suggestion_commit_message": null,
                 "tag_list": [],
                 "visibility": "public",
-                "web_url": "https://gitlab.com/ayman-m/moon",
+                "web_url": "https://gitlab.com/test-user/moon",
                 "wiki_access_level": "enabled",
                 "wiki_enabled": true
             },
@@ -261,7 +261,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 },
                 "forking_access_level": "enabled",
                 "forks_count": 0,
-                "http_url_to_repo": "https://gitlab.com/ayman-m/PyOTRS.git",
+                "http_url_to_repo": "https://gitlab.com/test-user/PyOTRS.git",
                 "id": 18044686,
                 "import_status": "finished",
                 "issues_access_level": "enabled",
@@ -276,16 +276,16 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 "merge_requests_enabled": true,
                 "mirror": false,
                 "name": "PyOTRS",
-                "name_with_namespace": "Ayman Mahmoud / PyOTRS",
+                "name_with_namespace": "test user / PyOTRS",
                 "namespace": {
                     "avatar_url": "/uploads/-/system/user/avatar/5773551/avatar.png",
-                    "full_path": "ayman-m",
+                    "full_path": "test-user",
                     "id": 7637905,
                     "kind": "user",
-                    "name": "Ayman Mahmoud",
+                    "name": "test user",
                     "parent_id": null,
-                    "path": "ayman-m",
-                    "web_url": "https://gitlab.com/ayman-m"
+                    "path": "test-user",
+                    "web_url": "https://gitlab.com/test-user"
                 },
                 "only_allow_merge_if_all_discussions_are_resolved": false,
                 "only_allow_merge_if_pipeline_succeeds": false,
@@ -293,15 +293,15 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 "owner": {
                     "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png",
                     "id": 5773551,
-                    "name": "Ayman Mahmoud",
+                    "name": "test user",
                     "state": "active",
-                    "username": "ayman-m",
-                    "web_url": "https://gitlab.com/ayman-m"
+                    "username": "test-user",
+                    "web_url": "https://gitlab.com/test-user"
                 },
                 "packages_enabled": true,
                 "pages_access_level": "enabled",
                 "path": "PyOTRS",
-                "path_with_namespace": "ayman-m/PyOTRS",
+                "path_with_namespace": "test-user/PyOTRS",
                 "permissions": {
                     "group_access": null,
                     "project_access": {
@@ -311,23 +311,23 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
                 },
                 "printing_merge_request_link_enabled": true,
                 "public_jobs": true,
-                "readme_url": "https://gitlab.com/ayman-m/PyOTRS/-/blob/master/README.rst",
+                "readme_url": "https://gitlab.com/test-user/PyOTRS/-/blob/master/README.rst",
                 "remove_source_branch_after_merge": true,
                 "repository_access_level": "enabled",
                 "request_access_enabled": true,
                 "resolve_outdated_diff_discussions": false,
-                "service_desk_address": "incoming+ayman-m-pyotrs-18044686-issue-@incoming.gitlab.com",
+                "service_desk_address": "incoming+test-user-pyotrs-18044686-issue-@incoming.gitlab.com",
                 "service_desk_enabled": true,
                 "shared_runners_enabled": true,
                 "shared_with_groups": [],
                 "snippets_access_level": "enabled",
                 "snippets_enabled": true,
-                "ssh_url_to_repo": "git@gitlab.com:ayman-m/PyOTRS.git",
+                "ssh_url_to_repo": "git@gitlab.com:test-user/PyOTRS.git",
                 "star_count": 0,
                 "suggestion_commit_message": null,
                 "tag_list": [],
                 "visibility": "public",
-                "web_url": "https://gitlab.com/ayman-m/PyOTRS",
+                "web_url": "https://gitlab.com/test-user/PyOTRS",
                 "wiki_access_level": "enabled",
                 "wiki_enabled": true
             }
@@ -341,8 +341,8 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 >### Results
 >|_links|allow_merge_on_skipped_pipeline|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|owner|packages_enabled|pages_access_level|path|path_with_namespace|permissions|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|resolve_outdated_diff_discussions|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| self: https://gitlab.com/api/v4/projects/21898188<br/>issues: https://gitlab.com/api/v4/projects/21898188/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/21898188/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/21898188/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/21898188/labels<br/>events: https://gitlab.com/api/v4/projects/21898188/events<br/>members: https://gitlab.com/api/v4/projects/21898188/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 50 | true |  | cadence: 1d<br/>enabled: true<br/>keep_n: 10<br/>older_than: 90d<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-21T10:49:15.236Z | true | 2020-10-20T10:49:15.219Z | 5773551 | master |  |  | false |  | enabled | 0 | https://gitlab.com/ayman-m/moon.git | 21898188 | finished | enabled | true | true | 2020-10-25T11:50:47.126Z | true |  |  | merge | enabled | true | false | moon | Ayman Mahmoud / moon | id: 7637905<br/>name: Ayman Mahmoud<br/>path: ayman-m<br/>kind: user<br/>full_path: ayman-m<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | false | false | 16 | id: 5773551<br/>name: Ayman Mahmoud<br/>username: ayman-m<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | true | enabled | moon | ayman-m/moon | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/ayman-m/moon/-/blob/master/README.md | true | enabled | true | false | incoming+ayman-m-moon-21898188-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:ayman-m/moon.git | 0 |  |  | public | https://gitlab.com/ayman-m/moon | enabled | true |
->| self: https://gitlab.com/api/v4/projects/18044686<br/>issues: https://gitlab.com/api/v4/projects/18044686/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/18044686/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/18044686/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/18044686/labels<br/>events: https://gitlab.com/api/v4/projects/18044686/events<br/>members: https://gitlab.com/api/v4/projects/18044686/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 0 | true |  | cadence: 7d<br/>enabled: true<br/>keep_n: null<br/>older_than: null<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-24T01:50:06.530Z | true | 2020-04-10T04:25:23.777Z | 5773551 | master | Python wrapper for OTRS (REST) API |  | false |  | enabled | 0 | https://gitlab.com/ayman-m/PyOTRS.git | 18044686 | finished | enabled | true | true | 2020-04-10T04:25:23.777Z | true |  |  | merge | enabled | true | false | PyOTRS | Ayman Mahmoud / PyOTRS | id: 7637905<br/>name: Ayman Mahmoud<br/>path: ayman-m<br/>kind: user<br/>full_path: ayman-m<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | false | false | 0 | id: 5773551<br/>name: Ayman Mahmoud<br/>username: ayman-m<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/ayman-m | true | enabled | PyOTRS | ayman-m/PyOTRS | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/ayman-m/PyOTRS/-/blob/master/README.rst | true | enabled | true | false | incoming+ayman-m-pyotrs-18044686-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:ayman-m/PyOTRS.git | 0 |  |  | public | https://gitlab.com/ayman-m/PyOTRS | enabled | true |
+>| self: https://gitlab.com/api/v4/projects/21898188<br/>issues: https://gitlab.com/api/v4/projects/21898188/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/21898188/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/21898188/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/21898188/labels<br/>events: https://gitlab.com/api/v4/projects/21898188/events<br/>members: https://gitlab.com/api/v4/projects/21898188/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 50 | true |  | cadence: 1d<br/>enabled: true<br/>keep_n: 10<br/>older_than: 90d<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-21T10:49:15.236Z | true | 2020-10-20T10:49:15.219Z | 5773551 | master |  |  | false |  | enabled | 0 | https://gitlab.com/test-user/moon.git | 21898188 | finished | enabled | true | true | 2020-10-25T11:50:47.126Z | true |  |  | merge | enabled | true | false | moon | test user / moon | id: 7637905<br/>name: test user<br/>path: test-user<br/>kind: user<br/>full_path: test-user<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | false | false | 16 | id: 5773551<br/>name: test user<br/>username: test-user<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | true | enabled | moon | test-user/moon | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/test-user/moon/-/blob/master/README.md | true | enabled | true | false | incoming+test-user-moon-21898188-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:test-user/moon.git | 0 |  |  | public | https://gitlab.com/test-user/moon | enabled | true |
+>| self: https://gitlab.com/api/v4/projects/18044686<br/>issues: https://gitlab.com/api/v4/projects/18044686/issues<br/>merge_requests: https://gitlab.com/api/v4/projects/18044686/merge_requests<br/>repo_branches: https://gitlab.com/api/v4/projects/18044686/repository/branches<br/>labels: https://gitlab.com/api/v4/projects/18044686/labels<br/>events: https://gitlab.com/api/v4/projects/18044686/events<br/>members: https://gitlab.com/api/v4/projects/18044686/members |  | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | true |  | 0 | true |  | cadence: 7d<br/>enabled: true<br/>keep_n: null<br/>older_than: null<br/>name_regex: null<br/>name_regex_keep: null<br/>next_run_at: 2020-10-24T01:50:06.530Z | true | 2020-04-10T04:25:23.777Z | 5773551 | master | Python wrapper for OTRS (REST) API |  | false |  | enabled | 0 | https://gitlab.com/test-user/PyOTRS.git | 18044686 | finished | enabled | true | true | 2020-04-10T04:25:23.777Z | true |  |  | merge | enabled | true | false | PyOTRS | test user / PyOTRS | id: 7637905<br/>name: test user<br/>path: test-user<br/>kind: user<br/>full_path: test-user<br/>parent_id: null<br/>avatar_url: /uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | false | false | 0 | id: 5773551<br/>name: test user<br/>username: test-user<br/>state: active<br/>avatar_url: https://assets.gitlab-static.net/uploads/-/system/user/avatar/5773551/avatar.png<br/>web_url: https://gitlab.com/test-user | true | enabled | PyOTRS | test-user/PyOTRS | project_access: {"access_level": 40, "notification_level": 3}<br/>group_access: null | true | true | https://gitlab.com/test-user/PyOTRS/-/blob/master/README.rst | true | enabled | true | false | incoming+test-user-pyotrs-18044686-issue-@incoming.gitlab.com | true | true |  | enabled | true | git@gitlab.com:test-user/PyOTRS.git | 0 |  |  | public | https://gitlab.com/test-user/PyOTRS | enabled | true |
 
 
 ### gitlab-projects-get-access-requests
@@ -380,11 +380,11 @@ Gets a list of access requests viewable by the authenticated user.
         "AccessRequests": {
             "avatar_url": "https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon",
             "id": 7475865,
-            "name": "Omar Elkhayam",
+            "name": "test user",
             "requested_at": "2020-10-25T12:50:05.865Z",
             "state": "active",
-            "username": "OmarElkhayam",
-            "web_url": "https://gitlab.com/OmarElkhayam"
+            "username": "testuser",
+            "web_url": "https://gitlab.com/testuser"
         }
     }
 }
@@ -395,7 +395,7 @@ Gets a list of access requests viewable by the authenticated user.
 >### Results
 >|avatar_url|id|name|requested_at|state|username|web_url|
 >|---|---|---|---|---|---|---|
->| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | Omar Elkhayam | 2020-10-25T12:50:05.865Z | active | OmarElkhayam | https://gitlab.com/OmarElkhayam |
+>| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | test user | 2020-10-25T12:50:05.865Z | active | testuser | https://gitlab.com/testuser |
 
 
 ### gitlab-projects-request-access
@@ -433,11 +433,11 @@ Requests access for the authenticated user to a group or project.
         "AccessRequests": {
             "avatar_url": "https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon",
             "id": 7475865,
-            "name": "Omar Elkhayam",
+            "name": "test user",
             "requested_at": "2020-10-25T12:50:05.865Z",
             "state": "active",
-            "username": "OmarElkhayam",
-            "web_url": "https://gitlab.com/OmarElkhayam"
+            "username": "testuser",
+            "web_url": "https://gitlab.com/testuser"
         }
     }
 }
@@ -448,7 +448,7 @@ Requests access for the authenticated user to a group or project.
 >### Results
 >|avatar_url|id|name|requested_at|state|username|web_url|
 >|---|---|---|---|---|---|---|
->| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | Omar Elkhayam | 2020-10-25T12:50:05.865Z | active | OmarElkhayam | https://gitlab.com/OmarElkhayam |
+>| https://secure.gravatar.com/avatar/bcecfc2b23ff4a3962520685ccf046cc?s=80&d=identicon | 7475865 | test user | 2020-10-25T12:50:05.865Z | active | testuser | https://gitlab.com/testuser |
 
 
 ### gitlab-projects-approve-access
@@ -568,8 +568,8 @@ Get a list of repository  branches from a project, sorted by name alphabetically
             {
                 "can_push": true,
                 "commit": {
-                    "author_email": "57979775+ayman-m@users.noreply.github.com",
-                    "author_name": "Ayman Mahmoud",
+                    "author_email": "57979775+test-user@users.noreply.github.com",
+                    "author_name": "test user",
                     "authored_date": "2020-09-09T05:39:00.000+00:00",
                     "committed_date": "2020-09-09T05:39:00.000+00:00",
                     "committer_email": "noreply@github.com",
@@ -580,7 +580,7 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                     "parent_ids": null,
                     "short_id": "3ccb4530",
                     "title": "Create atom.py",
-                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c"
+                    "web_url": "https://gitlab.com/test-user/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c"
                 },
                 "default": false,
                 "developers_can_merge": false,
@@ -588,24 +588,24 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                 "merged": false,
                 "name": "codeql",
                 "protected": false,
-                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/codeql"
+                "web_url": "https://gitlab.com/test-user/moon/-/tree/codeql"
             },
             {
                 "can_push": true,
                 "commit": {
                     "author_email": "amahmoud@paloaltonetworks.com",
-                    "author_name": "Ayman",
+                    "author_name": "test user",
                     "authored_date": "2020-09-09T14:53:17.000+00:00",
                     "committed_date": "2020-09-09T14:53:17.000+00:00",
                     "committer_email": "amahmoud@paloaltonetworks.com",
-                    "committer_name": "Ayman",
+                    "committer_name": "test user",
                     "created_at": "2020-09-09T14:53:17.000+00:00",
                     "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
                     "message": "Update ReadME",
                     "parent_ids": null,
                     "short_id": "39eb3dc0",
                     "title": "Update ReadME",
-                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
+                    "web_url": "https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
                 },
                 "default": true,
                 "developers_can_merge": false,
@@ -613,13 +613,13 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                 "merged": false,
                 "name": "master",
                 "protected": true,
-                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/master"
+                "web_url": "https://gitlab.com/test-user/moon/-/tree/master"
             },
             {
                 "can_push": true,
                 "commit": {
-                    "author_email": "57979775+ayman-m@users.noreply.github.com",
-                    "author_name": "Ayman Mahmoud",
+                    "author_email": "57979775+test-user@users.noreply.github.com",
+                    "author_name": "test user",
                     "authored_date": "2020-09-09T05:40:27.000+00:00",
                     "committed_date": "2020-09-09T05:40:27.000+00:00",
                     "committer_email": "noreply@github.com",
@@ -630,7 +630,7 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                     "parent_ids": null,
                     "short_id": "24ddc466",
                     "title": "Create template.yaml",
-                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4"
+                    "web_url": "https://gitlab.com/test-user/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4"
                 },
                 "default": false,
                 "developers_can_merge": false,
@@ -638,13 +638,13 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                 "merged": false,
                 "name": "prisma",
                 "protected": false,
-                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/prisma"
+                "web_url": "https://gitlab.com/test-user/moon/-/tree/prisma"
             },
             {
                 "can_push": true,
                 "commit": {
-                    "author_email": "57979775+ayman-m@users.noreply.github.com",
-                    "author_name": "Ayman Mahmoud",
+                    "author_email": "57979775+test-user@users.noreply.github.com",
+                    "author_name": "test user",
                     "authored_date": "2020-09-09T05:49:46.000+00:00",
                     "committed_date": "2020-09-09T05:49:46.000+00:00",
                     "committer_email": "noreply@github.com",
@@ -655,7 +655,7 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                     "parent_ids": null,
                     "short_id": "fb3f67b7",
                     "title": "Create template.yaml",
-                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b"
+                    "web_url": "https://gitlab.com/test-user/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b"
                 },
                 "default": false,
                 "developers_can_merge": false,
@@ -663,24 +663,24 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                 "merged": false,
                 "name": "prisma-cloud",
                 "protected": false,
-                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/prisma-cloud"
+                "web_url": "https://gitlab.com/test-user/moon/-/tree/prisma-cloud"
             },
             {
                 "can_push": true,
                 "commit": {
                     "author_email": "amahmoud@paloaltonetworks.com",
-                    "author_name": "Ayman",
+                    "author_name": "test user",
                     "authored_date": "2020-09-09T14:56:09.000+00:00",
                     "committed_date": "2020-09-09T14:56:09.000+00:00",
                     "committer_email": "amahmoud@paloaltonetworks.com",
-                    "committer_name": "Ayman",
+                    "committer_name": "test user",
                     "created_at": "2020-09-09T14:56:09.000+00:00",
                     "id": "405fc6ea44910177f48db9b2eb6839efb4211743",
                     "message": "Test PR",
                     "parent_ids": null,
                     "short_id": "405fc6ea",
                     "title": "Test PR",
-                    "web_url": "https://gitlab.com/ayman-m/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743"
+                    "web_url": "https://gitlab.com/test-user/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743"
                 },
                 "default": false,
                 "developers_can_merge": false,
@@ -688,7 +688,7 @@ Get a list of repository  branches from a project, sorted by name alphabetically
                 "merged": false,
                 "name": "vulnerable",
                 "protected": false,
-                "web_url": "https://gitlab.com/ayman-m/moon/-/tree/vulnerable"
+                "web_url": "https://gitlab.com/test-user/moon/-/tree/vulnerable"
             }
         ]
     }
@@ -700,11 +700,11 @@ Get a list of repository  branches from a project, sorted by name alphabetically
 >### Results
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
->| true | id: 3ccb453019594b9a56ae8090663af76dcac4cc0c<br/>short_id: 3ccb4530<br/>created_at: 2020-09-09T05:39:00.000+00:00<br/>parent_ids: null<br/>title: Create atom.py<br/>message: Create atom.py<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:39:00.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:39:00.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c | false | false | false | false | codeql | false | https://gitlab.com/ayman-m/moon/-/tree/codeql |
->| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T14:53:17.000+00:00<br/>parent_ids: null<br/>title: Update ReadME<br/>message: Update ReadME<br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:53:17.000+00:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:53:17.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | true | false | false | false | master | true | https://gitlab.com/ayman-m/moon/-/tree/master |
->| true | id: 24ddc466d4736222407585a5d947b48b30265fe4<br/>short_id: 24ddc466<br/>created_at: 2020-09-09T05:40:27.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:40:27.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:40:27.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4 | false | false | false | false | prisma | false | https://gitlab.com/ayman-m/moon/-/tree/prisma |
->| true | id: fb3f67b779ead6bff43c8a5002de516a2e8ca99b<br/>short_id: fb3f67b7<br/>created_at: 2020-09-09T05:49:46.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: Ayman Mahmoud<br/>author_email: 57979775+ayman-m@users.noreply.github.com<br/>authored_date: 2020-09-09T05:49:46.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:49:46.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b | false | false | false | false | prisma-cloud | false | https://gitlab.com/ayman-m/moon/-/tree/prisma-cloud |
->| true | id: 405fc6ea44910177f48db9b2eb6839efb4211743<br/>short_id: 405fc6ea<br/>created_at: 2020-09-09T14:56:09.000+00:00<br/>parent_ids: null<br/>title: Test PR<br/>message: Test PR<br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:56:09.000+00:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:56:09.000+00:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743 | false | false | false | false | vulnerable | false | https://gitlab.com/ayman-m/moon/-/tree/vulnerable |
+>| true | id: 3ccb453019594b9a56ae8090663af76dcac4cc0c<br/>short_id: 3ccb4530<br/>created_at: 2020-09-09T05:39:00.000+00:00<br/>parent_ids: null<br/>title: Create atom.py<br/>message: Create atom.py<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:39:00.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:39:00.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/3ccb453019594b9a56ae8090663af76dcac4cc0c | false | false | false | false | codeql | false | https://gitlab.com/test-user/moon/-/tree/codeql |
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T14:53:17.000+00:00<br/>parent_ids: null<br/>title: Update ReadME<br/>message: Update ReadME<br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:53:17.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:53:17.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | true | false | false | false | master | true | https://gitlab.com/test-user/moon/-/tree/master |
+>| true | id: 24ddc466d4736222407585a5d947b48b30265fe4<br/>short_id: 24ddc466<br/>created_at: 2020-09-09T05:40:27.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:40:27.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:40:27.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/24ddc466d4736222407585a5d947b48b30265fe4 | false | false | false | false | prisma | false | https://gitlab.com/test-user/moon/-/tree/prisma |
+>| true | id: fb3f67b779ead6bff43c8a5002de516a2e8ca99b<br/>short_id: fb3f67b7<br/>created_at: 2020-09-09T05:49:46.000+00:00<br/>parent_ids: null<br/>title: Create template.yaml<br/>message: Create template.yaml<br/>author_name: test user<br/>author_email: 57979775+test-user@users.noreply.github.com<br/>authored_date: 2020-09-09T05:49:46.000+00:00<br/>committer_name: GitHub<br/>committer_email: noreply@github.com<br/>committed_date: 2020-09-09T05:49:46.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/fb3f67b779ead6bff43c8a5002de516a2e8ca99b | false | false | false | false | prisma-cloud | false | https://gitlab.com/test-user/moon/-/tree/prisma-cloud |
+>| true | id: 405fc6ea44910177f48db9b2eb6839efb4211743<br/>short_id: 405fc6ea<br/>created_at: 2020-09-09T14:56:09.000+00:00<br/>parent_ids: null<br/>title: Test PR<br/>message: Test PR<br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T14:56:09.000+00:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T14:56:09.000+00:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/405fc6ea44910177f48db9b2eb6839efb4211743 | false | false | false | false | vulnerable | false | https://gitlab.com/test-user/moon/-/tree/vulnerable |
 
 
 ### gitlab-projects-create-repository-branch
@@ -744,11 +744,11 @@ Create a new Branch in the repository.
             "can_push": true,
             "commit": {
                 "author_email": "amahmoud@paloaltonetworks.com",
-                "author_name": "Ayman",
+                "author_name": "test user",
                 "authored_date": "2020-09-09T18:53:17.000+04:00",
                 "committed_date": "2020-09-09T18:53:17.000+04:00",
                 "committer_email": "amahmoud@paloaltonetworks.com",
-                "committer_name": "Ayman",
+                "committer_name": "test user",
                 "created_at": "2020-09-09T18:53:17.000+04:00",
                 "id": "39eb3dc0c7e86d0b943df1be922b173068010bf5",
                 "message": "Update ReadME\n",
@@ -757,7 +757,7 @@ Create a new Branch in the repository.
                 ],
                 "short_id": "39eb3dc0",
                 "title": "Update ReadME",
-                "web_url": "https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
+                "web_url": "https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5"
             },
             "default": false,
             "developers_can_merge": false,
@@ -765,7 +765,7 @@ Create a new Branch in the repository.
             "merged": false,
             "name": "feature1",
             "protected": false,
-            "web_url": "https://gitlab.com/ayman-m/moon/-/tree/feature1"
+            "web_url": "https://gitlab.com/test-user/moon/-/tree/feature1"
         }
     }
 }
@@ -776,7 +776,7 @@ Create a new Branch in the repository.
 >### Results
 >|can_push|commit|default|developers_can_merge|developers_can_push|merged|name|protected|web_url|
 >|---|---|---|---|---|---|---|---|---|
->| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: Ayman<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: Ayman<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/ayman-m/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/ayman-m/moon/-/tree/feature1 |
+>| true | id: 39eb3dc0c7e86d0b943df1be922b173068010bf5<br/>short_id: 39eb3dc0<br/>created_at: 2020-09-09T18:53:17.000+04:00<br/>parent_ids: b736f064314a254c5c847f042938290167598454<br/>title: Update ReadME<br/>message: Update ReadME<br/><br/>author_name: test user<br/>author_email: amahmoud@paloaltonetworks.com<br/>authored_date: 2020-09-09T18:53:17.000+04:00<br/>committer_name: test user<br/>committer_email: amahmoud@paloaltonetworks.com<br/>committed_date: 2020-09-09T18:53:17.000+04:00<br/>web_url: https://gitlab.com/test-user/moon/-/commit/39eb3dc0c7e86d0b943df1be922b173068010bf5 | false | false | false | false | feature1 | false | https://gitlab.com/test-user/moon/-/tree/feature1 |
 
 
 ### gitlab-projects-delete-repository-branch

@@ -1,9 +1,9 @@
 {
-    "id": "New Git PR",
+    "id": "incident_devsecopsnew_git_pr",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "New Git PR",
+    "name": "DevSecOps New Git PR",
     "prevName": "New Git PR",
     "color": "#03b0ff",
     "playbookId": "DevSecOps - Fetch PR - Triage",
@@ -19,5 +19,5 @@
     "autorun": true,
     "disabled": false,
     "reputationCalc": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

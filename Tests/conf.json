@@ -3033,15 +3033,6 @@
             "integrations": "Talos Feed",
             "playbookID": "FeedTalosTestPlaybook",
             "fromversion": "5.5.0"
-        },
-        {
-            "playbookID": "GitLab-test-playbook"
-        },
-        {
-            "playbookID": "LGTM-test-playbook"
-        },
-        {
-            "playbookID": "playbook-MinIO-Test"
         }
     ],
     "skipped_tests": {

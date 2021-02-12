@@ -1,9 +1,411 @@
+category: Utilities
 commonfields:
-  id: cc4e029c-d66e-4bfc-88ef-ce398f3a88a9
+  id: GitLab Integration
   version: -1
-enabled: false
-script: '-'
-subtype: python3
-system: false
-timeout: '0'
-type: python
+configuration:
+- defaultvalue: https://gitlab.com/api/v4
+  display: Server URL (e.g. https://gitlab.com/api/v4)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: An Integration with GitLab
+display: GitLab Integration
+name: GitLab Integration
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Limit results to projects stored on repository_storage. Available
+        for admins only.
+      isArray: false
+      name: repository_storage
+      required: false
+      secret: false
+    - default: false
+      description: Limit results to projects with last_activity before specified time.
+      isArray: false
+      name: last_activity_before
+      required: false
+      secret: false
+    - default: false
+      description: Limit by current user minimal access level.
+      isArray: false
+      name: min_access_level
+      required: false
+      secret: false
+    - default: false
+      description: Return only limited fields for each project. This is a no-op without
+        authentication as then only simple fields are returned.
+      isArray: false
+      name: simple
+      required: false
+      secret: false
+    - default: false
+      description: Return projects sorted in asc or desc order.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Limit by projects that the current user is a member of.
+      isArray: false
+      name: membership
+      required: false
+      secret: false
+    - default: false
+      description: Include ancestor namespaces when matching search criteria.
+      isArray: false
+      name: search_namespaces
+      required: false
+      secret: false
+    - default: false
+      description: Limit by archived status .
+      isArray: false
+      name: archived
+      required: false
+      secret: false
+    - default: false
+      description: Return list of projects matching the search criteria .
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: Limit results to projects with IDs less than the specified ID .
+      isArray: false
+      name: id_before
+      required: false
+      secret: false
+    - default: false
+      description: Limit results to projects with last_activity after specified time
+      isArray: false
+      name: last_activity_after
+      required: false
+      secret: false
+    - default: false
+      description: Limit by projects starred by the current user .
+      isArray: false
+      name: starred
+      required: false
+      secret: false
+    - default: false
+      description: Limit results to projects with IDs greater than the specified ID.
+      isArray: false
+      name: id_after
+      required: false
+      secret: false
+    - default: false
+      description: Limit by projects explicitly owned by the current user.
+      isArray: false
+      name: owned
+      required: false
+      secret: false
+    - default: false
+      description: Return projects ordered by id, name, path, created_at, updated_at,
+        or last_activity_at fields. repository_size, storage_size, or wiki_size fields
+        are only allowed for admins. Default is created_at.
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    - default: false
+      description: Include project statistics .
+      isArray: false
+      name: statistics
+      required: false
+      secret: false
+    - default: false
+      description: Limit by visibility public, internal, or private .
+      isArray: false
+      name: visibility
+      required: false
+      secret: false
+    - default: false
+      description: Include custom attributes in response (admins only).
+      isArray: false
+      name: with_custom_attributes
+      required: false
+      secret: false
+    - default: false
+      description: Limit by enabled issues feature .
+      isArray: false
+      name: with_issues_enabled
+      required: false
+      secret: false
+    - default: false
+      description: Limit by enabled merge requests feature.
+      isArray: false
+      name: with_merge_requests_enabled
+      required: false
+      secret: false
+    - default: false
+      description: Limit by projects which use the given programming language.
+      isArray: false
+      name: with_programming_language
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of all visible projects across GitLab for the authenticated
+      user. When accessed without authentication, only public projects with “simple”
+      fields are returned.
+    execution: false
+    name: gitlab-get-projects
+    outputs:
+    - contextPath: GitLab.Projects.web_url
+      description: Project Web URL
+      type: Unknown
+    - contextPath: GitLab.Projects.name
+      description: Project Name
+      type: Unknown
+    - contextPath: GitLab.Projects.path
+      description: Project Path
+      type: Unknown
+    - contextPath: GitLab.Projects.created_at
+      description: Project Created At
+      type: Unknown
+    - contextPath: GitLab.Projects.visibility
+      description: Project Visiblity
+      type: Unknown
+    - contextPath: GitLab.Projects.id
+      description: Project ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of access requests viewable by the authenticated user.
+    execution: false
+    name: gitlab-projects-get-access-requests
+    outputs:
+    - contextPath: GitLab.AccessRequests.id
+      description: Access Request ID
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.username
+      description: Access Request User
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.requested_at
+      description: Access Request Create Time
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.state
+      description: Access Request State
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Requests access for the authenticated user to a group or project.
+    execution: false
+    name: gitlab-projects-request-access
+    outputs:
+    - contextPath: GitLab.AccessRequests.id
+      description: Access Request ID
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.username
+      description: Access Request User
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.requested_at
+      description: Access Request Create Time
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.state
+      description: Access Request State
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID of the access requester .
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: 'A valid access level (defaults: 30, developer access level) '
+      isArray: false
+      name: access_level
+      required: false
+      secret: false
+    deprecated: false
+    description: Approves an access request for the given user.
+    execution: false
+    name: gitlab-projects-approve-access
+    outputs:
+    - contextPath: GitLab.AccessRequests.id
+      description: Access Request ID
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.username
+      description: Access Request User
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.requested_at
+      description: Access Request Create Time
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.state
+      description: Access Request State
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID of the access requester .
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Denies an access request for the given user.
+    execution: false
+    name: gitlab-projects-deny-access
+    outputs:
+    - contextPath: GitLab.AccessRequests.id
+      description: Access Request ID
+      type: Unknown
+    - contextPath: GitLab.AccessRequests.state
+      description: Access Request State
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Return list of  anches containing the search string. You can use
+        ^term and term$ to find  anches that begin and end with term respectively.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of repository  branches from a project, sorted by name
+      alphabetically.
+    execution: false
+    name: gitlab-projects-get-repository-branches
+    outputs:
+    - contextPath: GitLab.Branches.name
+      description: Branch Name
+      type: Unknown
+    - contextPath: GitLab.Branches.web_url
+      description: Branch Web URL
+      type: Unknown
+    - contextPath: GitLab.Branches.commit.id
+      description: Branch Head Commit ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Name of the  anch. '
+      isArray: false
+      name: branch
+      required: true
+      secret: false
+    - default: false
+      description: 'Branch name or commit SHA to create  anch from. '
+      isArray: false
+      name: ref
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Branch in the repository.
+    execution: false
+    name: gitlab-projects-create-repository-branch
+    outputs:
+    - contextPath: GitLab.Branches.name
+      description: Branch Name
+      type: Unknown
+    - contextPath: GitLab.Branches.web_url
+      description: Branch Web URL
+      type: Unknown
+    - contextPath: GitLab.Branches.commit.id
+      description: Branch Head Commit ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'Name of the  anch. '
+      isArray: false
+      name: branch
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a Branch from the repository.
+    execution: false
+    name: gitlab-projects-delete-repository-branch
+  - arguments:
+    - default: false
+      description: The ID or URL-encoded path of the project owned by the authenticated
+        user.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Will delete all branches that are merged into the project’s default  anch.
+    execution: false
+    name: gitlab-projects-delete-repository-merged-branches
+  - deprecated: false
+    description: Retrieve version information for this GitLab instance. Responds 200
+      OK for authenticated users.
+    execution: false
+    name: gitlab-get-version
+    outputs:
+    - contextPath: GitLab.version
+      description: GitLab Verion
+      type: String
+    - contextPath: GitLab.revision
+      description: GitLab Revision
+      type: String
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+vcShouldKeepItemLegacyProdMachine: false

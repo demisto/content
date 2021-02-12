@@ -1,10 +1,10 @@
 {
-    "id": "incident_language",
+    "id": "incident_devsecopslanguage",
     "version": -1,
     "modified": "2020-06-07T12:44:38.367078205+04:00",
-    "name": "Language",
+    "name": "DevSecOps Language",
     "ownerOnly": false,
-    "cliName": "language",
+    "cliName": "devsecopslanguage",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "New Git PR"
+        "DevSecOps New Git PR"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -26,5 +26,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

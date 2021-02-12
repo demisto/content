@@ -1848,4 +1848,4 @@ tests:
 - GitLab-test-playbook
 - LGTM-test-playbook
 - playbook-MinIO-Test
-fromversion: 1.0.0
+fromversion: 6.0.0

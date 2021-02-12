@@ -36,33 +36,14 @@ This content pack will be updated with more integrations with different software
 - Ticketing Systems
 
 
-This version of the pack has two new integrations :
-* Github long running integration to process Git webhook deliveries
-* LGTM ( A SAST cloud service built on CodeQL) integration with the following commands:
-    * lgtm-get-project-by-url to get the SAST project details 
-    * lgtm-get-project-config to get Extraction and Analysis config by LGTM Project ID
-    * lgtm-get-analysis-status to get get PR/Commit Analysis Results by analysis ID
-    * lgtm-get-alerts-details to get Alerts Details by Analysis ID if any alerts triggered
-    * lgtm-run-commit-analysis to run on-demand SAST analysis on one Commit
-    * lgtm-run-project-query to on-demand SAST analysis on a Github Repo
+This version of the pack has four integrations :
+* LGTM, a SAST cloud service built on CodeQL
+* GitLab, a source code management platform
+* Docker Engine, an open source containerization platform
+* MinIO, a high-performance object storage suite
 
-Two new incident types along with new custom fields:
-* New Git PR incident
-![](doc_files/New%20PR%20Incident.PNG)
+A new incident type along with new fields:
+* DevSecOps New Git PR
 
-* New App Task incident
-![](doc_files/New%20App%20Task%20Incident.PNG)
-
-
-Four playbooks are created to achieve "Discover and Eradicate APP & IaC Code Vuln’s and Policy Violations" use case:
-* A PR triage Playbook that parse and record the PR details once the PR webhook delivery is received by the new Github LR integration.
-![](doc_files/PR_-_Triage_PB.png)
-
-* A Github App Task analysis Playbook that parses the received Github App Task delivery, create vulnerability indicators if any vuln found and then link the App Task incident&indicators to the PR incident
-![](doc_files/App%20Task%20Analysis%20PB.png)
-
-* The App Task analysis Playbook has two subplaybooks:
-    * LGTM Task Analysis Playbook, the parses the LGTM task deliveries and create SAST vuln indicators if any
-![](doc_files/LGTM%20Analysis%20PB.png) 
-    * Prisma Cloud Task Analysis Playbook, the parses the Prisma task deliveries and create IAST vuln indicators if any
-![](doc_files/Prisma%20Analysis%20PB.png) 
+A new playbook:
+* A PR triage Playbook that parse and record the PR details once fetched by the Github integration.

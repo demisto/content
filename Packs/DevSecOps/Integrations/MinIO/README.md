@@ -1,5 +1,5 @@
 An Integration with MinIO Object Storage
-This integration was integrated and tested with version xx of MinIO.
+This integration was integrated and tested with RELEASE.2020-12 of MinIO.
 ## Configure MinIO on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
