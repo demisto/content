@@ -3396,7 +3396,6 @@
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
-        "SlackV2",
         "VulnDB"
     ],
     "unmockable_integrations": {
