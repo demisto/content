@@ -122,7 +122,15 @@ if demisto.command() == 'unifivideo-get-recording-list':
     return_results(results)
 
 if demisto.command() == 'unifivideo-get-snapshot-at-frame':  # TOFIX
-    vc = cv2.VideoCapture('recording.mp4')  # pylint: disable=E1101
+    entry_id = demisto.args().get('entryid')
+    snapshot_file_name = 'snapshot-' + entry_id + '-' + args.get('frame') + '.jpg'
+    try:
+        file_result = demisto.getFilePath(entry_id)
+    except Exception as ex:
+        return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex))
+
+    video_path = file_result.get("path")
+    vc = cv2.VideoCapture(video_path)  # pylint: disable=E1101
     c = 1
 
     if vc.isOpened():
@@ -133,10 +141,16 @@ if demisto.command() == 'unifivideo-get-snapshot-at-frame':  # TOFIX
     while rval:
         rval, frame = vc.read()
         c = c + 1
-        if c == 500:
-            cv2.imwrite(str(c) + '.jpg', frame)  # pylint: disable=E1101
+        if c == int(args.get('frame')):
+            cv2.imwrite("/tmp/" + snapshot_file_name, frame)  # pylint: disable=E1101
             break
     vc.release()
+    f = open("/tmp/" + snapshot_file_name, "rb")
+    output = f.read()
+    filename = snapshot_file_name
+    file = fileResult(filename=filename, data=output)
+    file['Type'] = entryTypes['image']
+    demisto.results(file)
 
 if demisto.command() == 'fetch-incidents':
     start_time_of_int = str(datetime.now())
