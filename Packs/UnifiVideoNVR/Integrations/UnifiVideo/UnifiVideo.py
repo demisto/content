@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from unifi_video import UnifiVideoAPI
 import json
-import os.path
-from time import sleep
 
 params = demisto.params()
 args = demisto.args()
