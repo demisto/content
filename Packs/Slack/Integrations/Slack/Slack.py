@@ -1384,7 +1384,6 @@ def slack_send():
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
 
     if response:
-        json_response = slack_response_to_json(response)
         thread = response.get('ts')
         if entitlement:
             save_entitlement(entitlement, thread, reply, expiry, default_response)
@@ -1392,7 +1391,7 @@ def slack_send():
         demisto.results({
             'Type': entryTypes['note'],
             'HumanReadable': f'Message sent to Slack successfully.\nThread ID is: {thread}',
-            'Contents': json_response,
+            'Contents': response.data,
             'ContentsFormat': formats['json'],
             'EntryContext': {
                 'Slack.Thread(val.ID===obj.ID)': {
@@ -1402,16 +1401,6 @@ def slack_send():
         })
     else:
         demisto.results('Could not send the message to Slack.')
-
-
-def slack_response_to_json(response: SlackResponse):
-    """
-        Creates a json response object from the 'SlackResponse' object
-    """
-    json_response = dict()
-    for key, val in response.data.items():
-        json_response[key] = val
-    return json_response
 
 
 def save_entitlement(entitlement, thread, reply, expiry, default_response):
