@@ -88,13 +88,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: motion
-      description: Recording setting, motion,fulltime or disabled
+      description: Recording setting, motion,fulltime or disable
       isArray: false
       name: rec_set
       predefined:
       - fulltime
       - motion
-      - disabled
+      - disable
       required: true
       secret: false
     deprecated: false
@@ -165,7 +165,7 @@ script:
     name: unifivideo-get-recording-snapshot
   dockerimage: demisto/unifi-video:1.0.0.16385
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: true

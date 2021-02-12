@@ -27,7 +27,7 @@ if demisto.command() == 'unifivideo-get-camera-list':
     results = [
         CommandResults(
             outputs_prefix='UnifiVideo.Cameras',
-            readable_output=tableToMarkdown("Camera list", context_output, headers=["Camera name"], removeNull=True),
+            readable_output=tableToMarkdown("Camera list", context_output, headers=["Camera name"], removeNull=False),
             outputs=context_output
         )]
     return_results(results)
@@ -60,8 +60,7 @@ if demisto.command() == 'unifivideo-ir-leds':
 
 if demisto.command() == 'unifivideo-get-recording':
     recording_id = args.get('recording_id')
-    snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.jpg'
-    recording_file_name = 'recording-' + recording_id + '-' + args.get('frame') + '.mp4'
+    recording_file_name = 'recording-' + recording_id + '.mp4'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.get_recordings():
         if rec._id == recording_id:
@@ -70,6 +69,7 @@ if demisto.command() == 'unifivideo-get-recording':
     output = f.read()
     filename = recording_file_name
     file = fileResult(filename=filename, data=output)
+    file['Type'] = entryTypes['file']
     demisto.results(file)
 
 if demisto.command() == 'unifivideo-get-recording-snapshot':
@@ -105,7 +105,7 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
 if demisto.command() == 'unifivideo-get-recording-list':
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     recordings = []
-    for rec in uva.recordings:
+    for rec in uva.get_recordings():
         rec_tmp = {}
         rec_tmp['id'] = rec._id
         rec_tmp['rec_type'] = rec.rec_type
@@ -121,7 +121,7 @@ if demisto.command() == 'unifivideo-get-recording-list':
         )]
     return_results(results)
 
-if demisto.command() == 'unifivideo-get-snapshot-at-frame':
+if demisto.command() == 'unifivideo-get-snapshot-at-frame':  # TOFIX
     vc = cv2.VideoCapture('recording.mp4')  # pylint: disable=E1101
     c = 1
 
