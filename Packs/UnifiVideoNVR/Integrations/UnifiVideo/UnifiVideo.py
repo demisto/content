@@ -127,6 +127,7 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
             rval, frame = vc.read()
         else:
             rval = False
+            raise Exception('Can not open video file')
 
         while rval:
             rval, frame = vc.read()
