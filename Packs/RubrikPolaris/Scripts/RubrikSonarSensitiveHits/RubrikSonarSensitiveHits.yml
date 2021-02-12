@@ -14,6 +14,6 @@ tags:
 - dynamic-section
 - field-change-triggered
 type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
