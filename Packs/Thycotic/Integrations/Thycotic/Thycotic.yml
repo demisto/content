@@ -26,8 +26,8 @@ configuration:
   name: isFetchCredentials
   required: false
   type: 8
-- display: A list secret names to retrieve and sync (separated by commas). 
-           Note the sync, will function only if the synchronization check box is selected.
+- display: A list secret names to retrieve and sync (separated by commas). Note the
+    sync, will function only if the synchronization check box is selected.
   hidden: false
   name: credentialobjects
   required: false

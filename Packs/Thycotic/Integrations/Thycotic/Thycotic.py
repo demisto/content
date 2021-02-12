@@ -211,13 +211,15 @@ class Client(BaseClient):
 
     def getCredentials(self) -> list:
         credentials = []
-        listArgs = (str(self._credential_objects)[2:-3]).split(",")
-        for key in listArgs:
-            object = {'name': key}
-            secretID = self.searchSecretIdByName(key)[0]
-            object['user'] = self.getUsernameById(secretID)
-            object['password'] = self.getPasswordById(secretID)
-            credentials.append(object)
+
+        if self._is_fetch_credential and (len(self._credential_objects) != 0):
+            listArgs = (str(self._credential_objects)).split(",")
+            for key in listArgs:
+                object = {'name': key}
+                secretID = self.searchSecretIdByName(key)[0]
+                object['user'] = self.getUsernameById(secretID)
+                object['password'] = self.getPasswordById(secretID)
+                credentials.append(object)
 
         return credentials
 
