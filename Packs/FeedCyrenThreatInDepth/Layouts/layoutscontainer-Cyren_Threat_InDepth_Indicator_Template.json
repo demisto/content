@@ -882,7 +882,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Cyren Indicator Relationships",
-                        "query": null,
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamicIndicator",
