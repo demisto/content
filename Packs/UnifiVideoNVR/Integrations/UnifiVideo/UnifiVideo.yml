@@ -37,6 +37,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
 description: |-
   Connect to UnifiVideo NVR and manage CCTV cameras!
 
