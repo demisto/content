@@ -1391,8 +1391,8 @@ def slack_send():
         demisto.results({
             'Type': entryTypes['note'],
             'HumanReadable': f'Message sent to Slack successfully.\nThread ID is: {thread}',
-            'Contents': response,
-            'ContentsFormat': formats['text'],
+            'Contents': response.data,
+            'ContentsFormat': formats['json'],
             'EntryContext': {
                 'Slack.Thread(val.ID===obj.ID)': {
                     'ID': thread
