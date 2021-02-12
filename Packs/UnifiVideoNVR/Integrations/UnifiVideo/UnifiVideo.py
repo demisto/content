@@ -98,6 +98,20 @@ if demisto.command() == 'unifivideo-get-recording':
     file['Type'] = entryTypes['file']
     demisto.results(file)
 
+if demisto.command() == 'unifivideo-get-recording-motion-snapshot':
+    recording_id = args.get('recording_id')
+    snapshot_file_name = 'snapshot-motion-' + recording_id + '.jpg'
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    for rec in uva.get_recordings():
+        if rec._id == recording_id:
+            rec.motion('/tmp/snapshot.png')
+    f = open("/tmp/snapshot.png", "rb")
+    output = f.read()
+    filename = snapshot_file_name
+    file = fileResult(filename=filename, data=output)
+    file['Type'] = entryTypes['image']
+    demisto.results(file)
+
 if demisto.command() == 'unifivideo-get-recording-snapshot':
     recording_id = args.get('recording_id')
     snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.jpg'

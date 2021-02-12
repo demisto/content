@@ -174,6 +174,17 @@ script:
     description: Get the recording snapshot (at frame) based on the recording id
     execution: false
     name: unifivideo-get-recording-snapshot
+  - arguments:
+    - default: false
+      description: the ubnt_id of the recording
+      isArray: false
+      name: recording_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the frame snapshot that has triggered the motion event
+    execution: false
+    name: unifivideo-get-recording-motion-snapshot
   dockerimage: demisto/unifi-video:1.0.0.16385
   feed: false
   isfetch: true
