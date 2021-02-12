@@ -411,25 +411,6 @@ def launch_scan_command():
                                 LAUNCH_SCAN_HEADERS)
 
 
-def launch_scans_command():
-    scan_ids = str(demisto.getArg("scan_ids")).split(",")
-
-    results = []
-
-    for scan_id in scan_ids:
-
-        res = send_scan_request(scan_id, 'launch', 'POST')
-        res.update({
-            'id': scan_id,
-            'status': 'pending'
-        })
-
-        results.append(get_entry_for_object('The requested scan was launched successfully',
-                                            'TenableIO.Scan', replace_keys(res), LAUNCH_SCAN_HEADERS))
-
-    return results
-
-
 def get_report_command():
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
     results = []
