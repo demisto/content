@@ -5,6 +5,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from unifi_video import UnifiVideoAPI
 import json
+import os.path
+from time import sleep
 
 params = demisto.params()
 args = demisto.args()
@@ -114,7 +116,7 @@ if demisto.command() == 'unifivideo-get-recording-motion-snapshot':
 
 if demisto.command() == 'unifivideo-get-recording-snapshot':
     recording_id = args.get('recording_id')
-    snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.jpg'
+    snapshot_file_name = 'snapshot-' + recording_id + '-' + args.get('frame') + '.png'
     uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.get_recordings():
         if rec._id == recording_id:
@@ -132,10 +134,10 @@ if demisto.command() == 'unifivideo-get-recording-snapshot':
             rval, frame = vc.read()
             c = c + 1
             if c == int(args.get('frame')):
-                cv2.imwrite("/tmp/" + snapshot_file_name, frame)  # pylint: disable=E1101
+                cv2.imwrite("/tmp/snapshot.png", frame)  # pylint: disable=E1101
                 break
         vc.release()
-        f = open("/tmp/" + snapshot_file_name, "rb")
+        f = open("/tmp/snapshot.png", "rb")
         output = f.read()
         filename = snapshot_file_name
         file = fileResult(filename=filename, data=output)
