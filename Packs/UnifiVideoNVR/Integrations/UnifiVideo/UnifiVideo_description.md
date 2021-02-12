@@ -1,5 +1,4 @@
 ## UnifiVideo
-## UnifiVideo
 * In order to get the API key for your Unifi NVR follow this steps:
   * Login to the NVR
   * Go to the Users section in the WebUI 
