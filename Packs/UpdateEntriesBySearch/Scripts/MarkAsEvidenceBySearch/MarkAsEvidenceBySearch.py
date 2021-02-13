@@ -1,6 +1,5 @@
 import fnmatch
 import re
-import sys
 from typing import Any, Dict, Iterator, List
 
 import demistomock as demisto  # noqa: F401
@@ -12,11 +11,11 @@ def to_string(value: Any) -> Optional[str]:
         return None
     try:
         return str(value)
-    except:
+    except ValueError:
         return None
 
 
-def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) -> re.Match:
+def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) -> re.Pattern[str]:
     """
     Build a matching object from the pattern given.
 
@@ -38,7 +37,7 @@ def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) 
 
 
 class EntryFilter:
-    def __init__(self, include_pattern: re.Match, exclude_pattern: Optional[re.Match], node_paths: List[str]):
+    def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]], node_paths: List[str]):
         """
         Initialize the filter with the matching conditions.
 
@@ -87,7 +86,8 @@ class Entry:
         self.match = match
 
 
-def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any], entry_filter: Optional[EntryFilter] = None) -> Iterator[Entry]:
+def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any],
+                    entry_filter: Optional[EntryFilter] = None) -> Iterator[Entry]:
     """
     Iterate war room entries
 
