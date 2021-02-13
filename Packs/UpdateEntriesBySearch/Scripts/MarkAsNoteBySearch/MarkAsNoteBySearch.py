@@ -183,7 +183,7 @@ def main():
     if not ents:
         return_outputs('No entries matched')
     else:
-        if not dry_run:
+        if not argToBoolean(args.get('dry_run', False)):
             mark = argToBoolean(args.get('mark', True))
             res = demisto.executeCommand('markAsNote', {
                 'entryIDs': [ent['ID'] for ent in ents],
