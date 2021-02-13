@@ -1,0 +1,94 @@
+args:
+- description: The incident ID to search entries from. If not given, the current incident
+    is used.
+  name: incident_id
+- description: The list of tags to set
+  name: tags
+- description: Evidence description
+  name: description
+- auto: PREDEFINED
+  description: The list of categories of source entries
+  isArray: true
+  name: filter_categories
+  predefined:
+  - commandAndResults
+  - playbookTaskResult
+  - playbookTaskStartAndDone
+  - playbookErrors
+  - justFound
+  - deleted
+  - incidentInfo
+  - chats
+  - evidence
+  - notes
+  - attachments
+- description: The tags to filter entries
+  name: filter_tags
+- auto: PREDEFINED
+  defaultValue: exclude_this_entry
+  description: The options to filter entries
+  isArray: true
+  name: filter_options
+  predefined:
+  - first_entry
+  - last_entry
+  - exclude_this_entry
+- auto: PREDEFINED
+  defaultValue: basic
+  description: The pattern matching algorithm
+  name: algorithm
+  predefined:
+  - basic
+  - wildcard
+  - regex
+- description: The pattern text to search
+  name: pattern
+  required: true
+- description: The pattern text to exclude entries matched
+  name: exclude_pattern
+- auto: PREDEFINED
+  defaultValue: Contents
+  description: The list of node path of entries to search from
+  name: node_paths
+  predefined:
+  - Contents
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: true if the pattern is matched in case-insensitive, false otherwise
+  name: case_insensitive
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: true if it only search the entries and doesn't update, false otherwise
+  name: dry_run
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: basic
+  description: The flag to control the output  of results
+  name: summary
+  predefined:
+  - quiet
+  - basic
+  - verbose
+comment: Search entries in the war room for the pattern text, and mark them as evidence.
+commonfields:
+  id: MarkAsEvidenceBySearch
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: MarkAsEvidenceBySearch
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
