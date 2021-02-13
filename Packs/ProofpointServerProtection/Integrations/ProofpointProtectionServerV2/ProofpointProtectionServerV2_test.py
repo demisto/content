@@ -37,12 +37,10 @@ def test_smart_search(requests_mock, client):
     args = {
         'action': 'accept',
         'start_time': '2021-02-08T08:12:30-05:00',
-        'end_time': '2021-02-08T09:12:30-05:00',
     }
     params = {
         'action': 'accept',
         'from': '2021-02-08T08:12:30-0500',
-        'to': '2021-02-08T09:12:30-0500',
         'count': '100',
     }
     api_response = load_test_data('./test_data/smart_search_response.json')
