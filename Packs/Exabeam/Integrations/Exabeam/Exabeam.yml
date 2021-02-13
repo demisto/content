@@ -490,6 +490,9 @@ script:
     - contextPath: Exabeam.SessionInfo.numOfSecurityEvents
       description: Number of alerts in the session.
       type: Number
+    - contextPath: Exabeam.SessionInfo.zones
+      description: Zones information of the session.
+      type: Unknown
   - arguments:
     - default: false
       description: ID of the sequence.
@@ -652,7 +655,7 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '150'
+      defaultValue: '50'
       description: Preffered number of events.
       isArray: false
       name: number_of_events
@@ -793,7 +796,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '50'
       description: Maximal number of results.
       isArray: false
       name: limit
@@ -1207,6 +1210,7 @@ script:
       description: Number of days until asset is automatically removed from the watchlist.
       isArray: false
       name: watch_until_days
+      defaultValue: '30'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1395,24 +1399,35 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: key_only
       description: The context table type.
       isArray: false
       name: context_table_type
       predefined:
       - key_only
       - key_value
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add records to the context table.
     execution: false
     name: exabeam-add-context-table-records
     outputs:
-    - contextPath: Exabeam.ContextTableAdd.Name
-      description: The name of the context table.
+    - contextPath: Exabeam.ContextTableUpdate.contextTableName
+      description: The context table name.
       type: String
-    - contextPath: Exabeam.ContextTableAdd.Details
+    - contextPath: Exabeam.ContextTableUpdate.sessionId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeType
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.key
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.value
       description: The raw data of the context table update.
       type: Unknown
   - arguments:
@@ -1439,24 +1454,35 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: key_only
       description: Type of the context table.
       isArray: false
       name: context_table_type
       predefined:
       - key_only
       - key_value
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Updates records of a context table.
     execution: false
     name: exabeam-update-context-table-records
     outputs:
-    - contextPath: Exabeam.ContextTableUpdate.Name
+    - contextPath: Exabeam.ContextTableUpdate.contextTableName
       description: The context table name.
       type: String
-    - contextPath: Exabeam.ContextTableUpdate.Details
+    - contextPath: Exabeam.ContextTableUpdate.sessionId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeType
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.key
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.value
       description: The raw data of the context table update.
       type: Unknown
   - arguments:
@@ -1472,26 +1498,20 @@ script:
     name: exabeam-get-context-table-in-csv
   - arguments:
     - default: false
-      description: Name of
+      description: Name of the context table.
       isArray: false
       name: context_table_name
       required: true
       secret: false
     - default: false
-      description: ID of
+      description: The ID of context table session. If not specified, a new session is created
       isArray: false
       name: session_id
       required: false
       secret: false
-    - default: false
-      description: A comma
-      isArray: false
-      name: columns
-      required: true
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether the file has a header.
+      description: Indicates whether the file has a header.
       isArray: false
       name: has_header
       predefined:
@@ -1504,6 +1524,17 @@ script:
       isArray: false
       name: file_entry_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to replace or append the records from the CSV file.
+      isArray: false
+      defaultValue: append
+      name: append_or_replace
+      required: false
+      predefined:
+      - 'append'
+      - 'replace'
       secret: false
     deprecated: false
     description: Add context table records from CSV file in a specific modification
@@ -1518,13 +1549,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-s
+      description: A comma-separated list of the records' keys to delete.
       isArray: false
       name: records
       required: true
       secret: false
     - default: false
-      description: ID of the
+      description: The ID of update session. If not specified, a new session is created
       isArray: false
       name: session_id
       required: false
@@ -1532,8 +1563,28 @@ script:
     deprecated: false
     description: Delete records from a context table.
     execution: false
-    name: exabeam-context-table-delete-records
+    name: exabeam-delete-context-table-records
+    outputs:
+    - contextPath: Exabeam.ContextTableUpdate.contextTableName
+      description: The context table name.
+      type: String
+    - contextPath: Exabeam.ContextTableUpdate.sessionId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeType
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.changeId
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.key
+      description: The raw data of the context table update.
+      type: Unknown
+    - contextPath: Exabeam.ContextTableUpdate.record.value
+      description: The raw data of the context table update.
+      type: Unknown
   dockerimage: demisto/python3:3.9.1.15759
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

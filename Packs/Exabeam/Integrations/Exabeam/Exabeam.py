@@ -56,13 +56,13 @@ class Client(BaseClient):
         """
         Logout from the session
         """
-        self._http_request('GET', self._http_request('GET', f'{self._base_url}/api/auth/logout'))
+        self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
 
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
-        self._http_request('GET', '/uba/api/ping', resp_type='text')
+        self._http_request('GET', full_url=f'{self._base_url}/api/auth/check', resp_type='text')
 
     def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
         """
@@ -359,16 +359,16 @@ class Client(BaseClient):
         file_path = demisto.getFilePath(csv_file).get('path')
 
         if file_path:
-            with open(file_path, 'rb') as _file:
-                file = {'file': (file_path, _file.read())}
+            files = {'files': (os.path.basename(file_path), open(file_path, 'rb'), 'text/csv')}
 
             form_data = {
                 'watchUntilDays': watch_until_days,
                 'category': category
             }
+            demisto.results(str(form_data))
             url_suffix = f'/uba/api/watchlist/{watchlist_id}/addFromCsv'
 
-            response = self._http_request('PUT', url_suffix=url_suffix, data=form_data, files=file)
+            response = self._http_request('PUT', url_suffix=url_suffix, data=form_data, files=files)
             return response
         else:
             raise ValueError('Invalid entry_id argument.')
@@ -441,24 +441,21 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def update_session_id_of_context_table(self, context_table_name: str = None, session_id: str = None) -> Dict:
+    def update_session_id_of_context_table(self, context_table_name: str = None, session_id: str = None,
+                                           replace: bool = False):
         """
             Args:
                 context_table_name: The context table name.
                 session_id: The ID of update session.
-
-            Returns:
-                (dict) The context table session update response.
+                replace: whether or not to replace the existing records.
         """
+        try:
+            url_suffix = f'/api/setup/contextTables/{context_table_name}/records'
+            payload = {'sessionId': session_id, 'replace': replace}
 
-        url_suffix = f'/api/setup/contextTables/{context_table_name}/records'
-        payload = {'sessionId': session_id, 'replace': False}
-        demisto.results(str(payload))
-
-        response = self._http_request('PUT', url_suffix=url_suffix, json_data=payload)
-
-        demisto.results(str(response))
-        return response
+            self._http_request('PUT', url_suffix=url_suffix, json_data=payload)
+        except Exception:
+            pass  # this request must be executed, it can sometimes fail but the data will be updated
 
     def add_context_table_records(self, context_table_name: str, records_list: List[str],
                                   key_only: bool, session_id: str = None) -> Dict:
@@ -492,7 +489,6 @@ class Client(BaseClient):
 
         if not session_id and response.get('sessionId'):
             self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
-
         return response
 
     def update_context_table_records(self, context_table_name: str, records_list: List[str],
@@ -525,7 +521,7 @@ class Client(BaseClient):
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/update'
 
-        response = self._http_request('POST', url_suffix=url_suffix, params=params, data=payload)
+        response = self._http_request('POST', url_suffix=url_suffix, params=params, json_data=payload)
 
         if not session_id and response.get('sessionId'):
             self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
@@ -555,7 +551,7 @@ class Client(BaseClient):
         }
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/delete'
 
-        response = self._http_request('POST', url_suffix=url_suffix, params=params, data=payload)
+        response = self._http_request('POST', url_suffix=url_suffix, params=params, json_data=payload)
 
         if not session_id and response.get('sessionId'):
             self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
@@ -563,31 +559,34 @@ class Client(BaseClient):
         return response
 
     def addbulk_context_table_records(self, context_table_name: str = None, csv_file: str = None,
-                                      session_id: str = None) -> Dict:
+                                      has_header: bool = False, session_id: str = None, replace: bool = False) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
                 csv_file: The entry ID of the CSV file from which records will be added.
+                has_header: Indicates whether the file has a header.
                 session_id: The ID of update session. If not specified, a new session is created.
+                replace: whether or not ro replace the existing records in the context table.
 
             Returns:
                 (dict) The context table records update response.
         """
-
-        params = {'sessionId': session_id} if session_id else {}
-
         file_path = demisto.getFilePath(csv_file).get('path')
 
         if file_path:
-            with open(file_path, 'rb') as _file:
-                file = {'file': (file_path, _file.read())}
-
             url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/addBulk'
 
-            response = self._http_request('POST', url_suffix=url_suffix, params=params, files=file)
+            files = {'data': (os.path.basename(file_path), open(file_path, 'rb'), 'text/csv')}
+
+            params = {'hasHeader': has_header}
+            if session_id:
+                params['sessionId'] = session_id
+
+            response = self._http_request('POST', url_suffix=url_suffix, params=params, files=files)
 
             if not session_id and response.get('sessionId'):
-                self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
+                self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'),
+                                                        replace=replace)
 
             return response
         else:
@@ -604,7 +603,8 @@ class Client(BaseClient):
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/records/csv'
 
-        response = self._http_request('GET', url_suffix=url_suffix, resp_type='response')
+        headers = {'Accept': 'text/csv; charset=UTF-8'}
+        response = self._http_request('GET', url_suffix=url_suffix, headers=headers, resp_type='response')
         # 'Content-Disposition' value is of the form: attachment; filename="filename.csv"
         # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
         filename = response.headers.get('Content-Disposition', str()).split('\"')[1]
@@ -1291,19 +1291,14 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
 
     records_raw_data = client.list_context_table_records(context_table_name, page_size, page_number)
     records = records_raw_data.get('records', [])
-    outputs = []
-    for record in records:
-        outputs.append({
-            'key': record.get('key'),
-            'id': record.get('id'),
-            'value': record.get('value'),
-            'position': record.get('position'),
-            'sourceType': record.get('sourceType'),
-            'contextTableName': context_table_name
-        })
 
-    entry_context = {'Exabeam.ContextTableRecord(val.contextTableName && val.contextTableName === obj.contextTableName'
-                     '&& val.id && val.id === obj.id)': outputs}
+    entry_context = {
+        'Exabeam.ContextTable(val.Name && val.Name === obj.Name)':
+            {
+                'Name': context_table_name,
+                'Record': records
+            }
+    }
     human_readable = tableToMarkdown(f'Context Table `{context_table_name}` Records', records,
                                      headerTransform=pascalToSpace, removeNull=True)
 
@@ -1324,11 +1319,7 @@ def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any
     records_list = argToList(args.get('records'))
 
     record_updates_raw_data = client.add_context_table_records(context_table_name, records_list, key_only, session_id)
-    outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
-    entry_context = {'Exabeam.ContextTableAdd(val.Name && val.Name === obj.Name)': outputs}
-    human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
-                                     headerTransform=pascalToSpace, removeNull=True)
-
+    human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
 
@@ -1346,11 +1337,7 @@ def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[
     key_only = True if args.get('context_table_type') == 'key_only' else False
 
     record_updates_raw_data = client.update_context_table_records(context_table_name, records, key_only, session_id)
-    outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
-    entry_context = {'Exabeam.ContextTableUpdate(val.Name && val.Name === obj.Name)': outputs}
-    human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
-                                     headerTransform=pascalToSpace, removeNull=True)
-
+    human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
 
@@ -1367,11 +1354,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     records = argToList(args.get('records'))
 
     record_updates_raw_data = client.delete_context_table_records(context_table_name, records, session_id)
-    outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
-    entry_context = {'Exabeam.ContextTableUpdate(val.Name && val.Name === obj.Name)': outputs}
-    human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
-                                     headerTransform=pascalToSpace, removeNull=True)
-
+    human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
 
@@ -1386,14 +1369,32 @@ def addbulk_context_table_records(client: Client, args: Dict[str, str]) -> Tuple
     context_table_name = args['context_table_name']
     session_id = args.get('session_id')
     file_entry_id = args.get('file_entry_id')
+    has_header = True if args.get('has_header') == 'true' else False
+    replace = True if args.get('append_or_replace') == 'replace' else False
 
-    record_updates_raw_data = client.addbulk_context_table_records(context_table_name, file_entry_id, session_id)
-    outputs = {'Name': context_table_name, 'Details': record_updates_raw_data}
-    entry_context = {'Exabeam.ContextTableUpdate(val.Name && val.Name === obj.Name)': outputs}
-    human_readable = tableToMarkdown(f'Context Table {context_table_name} Update Details', record_updates_raw_data,
-                                     headerTransform=pascalToSpace, removeNull=True)
-
+    record_updates_raw_data = client.addbulk_context_table_records(context_table_name, file_entry_id,
+                                                                   has_header, session_id, replace)
+    human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
+
+
+def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple[Any, Dict[str, Any]]:
+    # flatten results
+    outputs = [{
+        'contextTableName': name,
+        'sessionId': raw_response.get('sessionId'),
+        'changeType': record.get('changeType'),
+        'changeId': record.get('changeId'),
+        'record': record.get('record')
+    } for record in raw_response.get('recordChanges', [])]
+
+    entry_context = {'Exabeam.ContextTableUpdate(val.changeId && val.changeId === obj.changeId)': outputs}
+
+    metadata_str = ', '.join([f'{k}: {v}' for k, v in raw_response.get('metadata', {}).items()])
+    human_readable = tableToMarkdown(f'Context Table {name} Update Details', outputs,
+                                     headerTransform=pascalToSpace, removeNull=True, metadata=metadata_str)
+
+    return human_readable, entry_context
 
 
 def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
@@ -1452,7 +1453,7 @@ def main():
         'exabeam-list-context-table-records': list_context_table_records,
         'exabeam-add-context-table-records': add_context_table_records,
         'exabeam-update-context-table-records': update_context_table_records,
-        'exabeam-context-table-delete-records': delete_context_table_records,
+        'exabeam-delete-context-table-records': delete_context_table_records,
         'exabeam-context-table-addbulk': addbulk_context_table_records,
         'exabeam-get-context-table-in-csv': get_context_table_csv,
         'exabeam-watchlist-add-from-csv': add_watchlist_item_from_csv,
