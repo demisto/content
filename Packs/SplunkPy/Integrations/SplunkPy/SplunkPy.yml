@@ -21,6 +21,7 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
+  additionalinfo: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro, use the new default query as an example.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -118,6 +119,7 @@ configuration:
   - Drilldown
   - Asset
   - Identity
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration documentation.
 - display: Enrichment Timeout (Minutes)
   name: enrichment_timeout
   defaultvalue: "5"
@@ -129,6 +131,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: false
+  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset & Identity)
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -634,7 +637,7 @@ script:
     name: get-mapping-fields
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
-    description: Resets the enriching fetch mechanism.
+    description: Resets the enrichment mechanism of fetched notables.
   dockerimage: demisto/splunksdk:1.0.0.11989
   feed: false
   isfetch: true
