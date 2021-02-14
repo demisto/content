@@ -532,8 +532,8 @@ def test_remove_notable(notables, notable, output):
 
 
 @pytest.mark.parametrize('integration_context, enrichment, output', [
-    ({splunk.ENRICHMENTS: [{splunk.XSOAR_ID: '1'}]}, {splunk.XSOAR_ID: '1'}, []),
-    ({splunk.ENRICHMENTS: [{splunk.XSOAR_ID: '1'}]}, {splunk.XSOAR_ID: '2'}, [{splunk.XSOAR_ID: '1'}])
+    ({splunk.ENRICHMENTS: [{splunk.EID: '1'}]}, {splunk.EID: '1'}, []),
+    ({splunk.ENRICHMENTS: [{splunk.EID: '1'}]}, {splunk.EID: '2'}, [{splunk.EID: '1'}])
 ])
 def test_remove_enrichment_from_integration_context(integration_context, enrichment, output, mocker):
     mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
@@ -585,20 +585,20 @@ def test_add_job_to_enrichment():
     assert splunk.JOB_CREATION_TIME in enrichment[splunk.ENRICHMENT_JOBS][0]
 
 
-@pytest.mark.parametrize('saved_search, raw, status, earliest, latest', [
+@pytest.mark.parametrize('notable, raw, status, earliest, latest', [
     ({}, {}, False, "", ""),
     ({
-        "action.notable.param.drilldown_earliest_offset": "${}$".format(splunk.INFO_MIN_TIME),
-        "action.notable.param.drilldown_latest_offset": "${}$".format(splunk.INFO_MAX_TIME),
+        "drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+        "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME),
     }, {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
     ({
-        "action.notable.param.drilldown_earliest_offset": '1',
-        "action.notable.param.drilldown_latest_offset": '2',
+        "drilldown_earliest": '1',
+        "drilldown_latest": '2',
     }, {}, True, '1', '2')
 ])
-def test_get_drilldown_timeframe(saved_search, raw, status, earliest, latest, mocker):
+def test_get_drilldown_timeframe(notable, raw, status, earliest, latest, mocker):
     mocker.patch.object(demisto, 'info')
-    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(saved_search, raw)
+    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable, raw)
     assert task_status == status
     assert earliest_offset == earliest
     assert latest_offset == latest
@@ -631,14 +631,6 @@ def test_build_drilldown_search(notable, search, raw, expected_search, exc):
     else:
         with pytest.raises(Exception):
             splunk.build_drilldown_search(notable, search, raw)
-
-
-@pytest.mark.parametrize('raw, output', [
-    ('12345,a=1,b=2,c=3', {'a': '1', 'b': '2', 'c': '3'}),
-    ('bla', {})
-])
-def test_raw_to_dict(raw, output):
-    assert splunk.raw_to_dict(raw) == output
 
 
 @pytest.mark.parametrize('notable, prefix, fields, query_part', [
