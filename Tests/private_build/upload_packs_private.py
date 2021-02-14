@@ -89,21 +89,21 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
-                logging.debug(
+                print(
                     f"in upload_packs_private/get_private_packs metadata file of {metadata_file_path}"
                     f" is: {metadata}")
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                logging.debug("in upload_packs_private/get_private_packs/is_changed_private_pack = true ")
+                print("in upload_packs_private/get_private_packs/is_changed_private_pack = true ")
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
-                    logging.debug(
+                    print(
                         f"in upload_packs_private/get_private_packs/is_changed_private_pack "
                         f"metadata file of {pack_id} is: {metadata}")
             if metadata:
-                logging.debug(
+                print(
                     f"contentCommitHash of {metadata.get('vendorId')} is {metadata.get('contentCommitHash', '')}")
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
@@ -112,7 +112,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'vendorName': metadata.get('vendorName'),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
-                logging.debug(f"private_packs are {private_packs}")
+                print(f"private_packs are {private_packs}")
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
 
