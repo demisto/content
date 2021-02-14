@@ -162,7 +162,7 @@ Investigation mirrored successfully, channel: my-mirror
   <tbody>
     <tr>
       <td>message</td>
-      <td>The message content.</td>
+      <td>The message content. When mentioning another slack user, make sure to do so in the following format: <@user_name>.</td>
       <td>Optional</td>
     </tr>
     <tr>
