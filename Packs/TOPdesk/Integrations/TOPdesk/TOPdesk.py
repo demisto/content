@@ -5,12 +5,13 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import os
+import math
 import shutil
 import urllib3
 import traceback
 import dateparser
 
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable, Tuple
 from dateutil.parser import parse
 from base64 import b64encode
 
@@ -22,6 +23,7 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'TOPdesk'
 XSOAR_ENTRY_TYPE = 'Automation'  # XSOAR
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MAX_API_PAGE_SIZE = 10000
 
 ''' CLIENT CLASS '''
 
@@ -39,13 +41,15 @@ class Client(BaseClient):
             raise ValueError(f"Cannot get list of type {list_type}.\n "
                              f"Only {allowed_list_type} are allowed.")
 
+        url_suffix = f"/{list_type}"
+        if query:
+            url_suffix = f"/{list_type}?{query}"
+
         request_params: Dict[str, Any] = {}
         if start:
             request_params["start"] = start
         if page_size:
             request_params["page_size"] = page_size
-        if query:
-            request_params["query"] = query
         if modification_date_start:
             request_params["modification_date_start"] = modification_date_start
         if modification_date_end:
@@ -53,7 +57,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f"/{list_type}",
+            url_suffix=url_suffix,
             json_data=request_params
         )
 
@@ -428,46 +432,55 @@ def get_incidents_list(client: Client,
                        args: Dict[str, Any],
                        demisto_params: Dict[str, Any],
                        is_fetch: bool = False) -> List[Dict[str, Any]]:
-    if args.get('incident_id', None) or args.get('incident_number', None):
-        if args.get('incident_id', None):
-            incidents = client.get_list(f"/incidents/id/{args.get('incident_id', None)}")
+    arg_dict = args
+    incidents = []
+    if is_fetch:
+        arg_dict = demisto_params
+    if arg_dict.get('incident_id', None) or arg_dict.get('incident_number', None):
+        if arg_dict.get('incident_id', None):
+            incidents = [client.get_list(f"/incidents/id/{arg_dict.get('incident_id', None)}")]
 
-        elif args.get('incident_number', None):
-            incidents = client.get_list(f"/incidents/number/{args.get('incident_number', None)}")
+        elif arg_dict.get('incident_number', None):
+            incidents = [client.get_list(f"/incidents/number/{arg_dict.get('incident_number', None)}")]
     else:
-
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
-        if args.get('status', None) not in allowed_statuses:
-            raise(ValueError(f"status {args.get('status', None)} id not in "
+        if arg_dict.get('status', None) not in allowed_statuses:
+            raise(ValueError(f"status {arg_dict.get('status', None)} id not in "
                              f"the allowed statuses list: {allowed_statuses}"))
 
-        query = args.get('query', None)
-        filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
-                            "call_type", "entry_type"]
-        for filter_arg in filter_arguments:
-            query = add_filter_to_query(query=query,
-                                        filter_name=filter_arg,
-                                        args=args)
-
-        if args.get('max_fetch', 10) > 10000:
-            # implement pagination properly
-            pass
-        else:
-            page_size = max(args.get('page_size', 0), args.get('max_fetch', 0))
-            if page_size == 0:
-                page_size = None
-            if is_fetch:
-                modification_date_start = demisto_params.get('modification_date_start', None)
-                modification_date_end = demisto_params.get('modification_date_end', None)
+        query = arg_dict.get('query', None)
+        if is_fetch:
+            modification_date_start = demisto_params.get('modification_date_start', None)
+            modification_date_end = demisto_params.get('modification_date_end', None)
+            max_incidents = int(demisto_params.get('max_fetch', 10))
+            number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
+            if max_incidents < MAX_API_PAGE_SIZE:
+                page_size = max_incidents
             else:
-                modification_date_start = None
-                modification_date_end = None
+                page_size = MAX_API_PAGE_SIZE
+            start = 0
+            for index in range(number_of_requests):
+                incidents += client.get_list_with_query(list_type="incidents",
+                                                        start=start,
+                                                        page_size=page_size,
+                                                        query=query,
+                                                        modification_date_start=modification_date_start,
+                                                        modification_date_end=modification_date_end)
+                start += page_size
+
+        else:
+            filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
+                                "call_type", "entry_type"]
+            for filter_arg in filter_arguments:
+                query = add_filter_to_query(query=query,
+                                            filter_name=filter_arg,
+                                            args=args)
             incidents = client.get_list_with_query(list_type="incidents",
                                                    start=args.get('start', None),
-                                                   page_size=page_size,
+                                                   page_size=args.get('page_size', None),
                                                    query=query,
-                                                   modification_date_start=modification_date_start,
-                                                   modification_date_end=modification_date_end)
+                                                   modification_date_start=None,
+                                                   modification_date_end=None)
 
     return incidents
 
@@ -598,11 +611,13 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any], demisto_params: Dict[str, Any]) -> None:
+def fetch_incidents(client: Client,
+                    args: Dict[str, Any],
+                    last_run: Dict[str, Any],
+                    demisto_params: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """Fetches incidents from TOPdesk."""
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch', None)  # TODO: Always returns None for some reason.
     if not last_fetch:
         if first_fetch_datetime:
@@ -642,15 +657,14 @@ def fetch_incidents(client: Client, args: Dict[str, Any], demisto_params: Dict[s
             incidents.append({
                 'name': f"TOPdesk incident {topdesk_incident['number']}",
                 'details': json.dumps(topdesk_incident),
-                'occurred': creation_datetime.strftime(DATE_FORMAT),
+                'occurred': incident_created_time.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(topdesk_incident),
                 'labels': labels
             })
         if latest_created_time.timestamp() < incident_created_time.timestamp():
             latest_created_time = incident_created_time
 
-    demisto.setLastRun({'last_fetch': latest_created_time.strftime(DATE_FORMAT)})
-    demisto.incidents(incidents)
+    return {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}, incidents
 
 
 def test_module(client: Client, demisto_params: Dict[str, Any]) -> str:
@@ -787,7 +801,12 @@ def main() -> None:
             return_results(attachment_upload_command(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(client, demisto.args(), demisto_params)
+            last_fetch, incidents = fetch_incidents(client=client,
+                                                    last_run=demisto.getLastRun(),
+                                                    args=demisto.args(),
+                                                    demisto_params=demisto_params)
+            demisto.setLastRun(last_fetch)
+            demisto.incidents(incidents)
 
     # Log exceptions and return errors
     except Exception as e:
