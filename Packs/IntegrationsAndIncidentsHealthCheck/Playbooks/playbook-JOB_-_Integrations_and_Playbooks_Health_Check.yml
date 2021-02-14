@@ -1070,6 +1070,7 @@ tasks:
       id: 37c324dd-f456-4b40-8bd6-7742369ee767
       version: -1
       name: Automatically close investigation?
+      description: Checks the "AutoCloseInvestigation" playbook input equel to 'True'.
       type: condition
       iscommand: false
       brand: ""
