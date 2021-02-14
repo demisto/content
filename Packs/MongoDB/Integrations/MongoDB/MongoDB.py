@@ -433,6 +433,18 @@ def drop_collection_command(
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None
 
 
+def pipeline_query_command(client: Client, collection: str, pipeline: str, **kwargs) -> Tuple[str, None]:
+    try:
+        json_pipeline = json.loads(pipeline)
+    except JSONDecodeError:
+        raise DemistoException('The `pipeline` argument is not a valid json.')
+    collection_obj = client.get_collection(collection)
+    results = collection_obj.aggregate(json_pipeline)
+    if not results.acknowledged:
+        raise DemistoException('Error occurred when trying to enter delete entries.')
+    return f'ans', None
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -455,6 +467,7 @@ def main():
         'mongodb-list-collections': list_collections_command,
         'mongodb-create-collection': create_collection_command,
         'mongodb-drop-collection': drop_collection_command,
+        'mongodb-pipeline-query': pipeline_query_command
     }
     try:
         return_outputs(*commands[command](client, **args))  # type: ignore[operator]
@@ -462,5 +475,5 @@ def main():
         return_error(f'MongoDB: {str(e)}', error=e)
 
 
-if __name__ in ('builtins', '__builtin__'):
+if __name__ in ('builtins', '__builtin__', '__main__'):
     main()

@@ -84,7 +84,6 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -94,7 +93,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -212,8 +210,8 @@ script:
       isArray: false
       name: key
       predefined:
-      - 'score'
-      - 'description'
+      - score
+      - description
       required: true
       secret: false
     - default: false
@@ -228,7 +226,7 @@ script:
     name: opencti-indicator-field-update
     outputs:
     - contextPath: OpenCTI.Indicator.id
-      description: 'Updated indicator id.'
+      description: Updated indicator id.
       type: String
   - arguments:
     - default: false
@@ -251,27 +249,29 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The indicator type to create. Out of the box indicator types supported
-         in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-         "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
-         and "URL". The rest will not cause automatic indicator creation in XSOAR.'
+        in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
+        "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
+        and "URL". The rest will not cause automatic indicator creation in XSOAR.'
       isArray: false
       name: type
       predefined:
-        - User-Account
-        - Domain
-        - Email-Address
-        - File-MD5
-        - File-SHA1
-        - File-SHA256
-        - HostName
-        - IPV4-Addr
-        - IPV6-Addr
-        - Registry-Key-Value
-        - URL
+      - User-Account
+      - Domain
+      - Email-Address
+      - File-MD5
+      - File-SHA1
+      - File-SHA256
+      - HostName
+      - IPV4-Addr
+      - IPV6-Addr
+      - Registry-Key-Value
+      - URL
       required: true
       secret: false
     - default: false
-      description: Indicator creator.
+      description: Organization id. Use opencti-organization-list to find all organizations
+        id at opencti, or use  opencti-organization-create to create new organization
+        id.
       isArray: false
       name: created_by
       required: false
@@ -282,10 +282,10 @@ script:
       isArray: false
       name: marking
       predefined:
-      - 'TLP:WHITE'
-      - 'TLP:GREEN'
-      - 'TLP:AMBER'
-      - 'TLP:RED'
+      - TLP:WHITE
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:RED
       required: false
       secret: false
     - default: false
@@ -332,7 +332,133 @@ script:
     name: opencti-indicator-create-update
     outputs:
     - contextPath: OpenCTI.Indicator.id
-      description: 'New indicator id.'
+      description: New indicator id.
+      type: String
+  - arguments:
+    - default: false
+      description: Id of the indicator.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Marking to add.
+      isArray: false
+      name: marking
+      predefined:
+      - TLP:RED
+      - TLP:WHITE
+      - TLP:GREEN
+      - TLP:AMBER
+      required: true
+      secret: false
+    deprecated: false
+    description: Add marking to indicator.
+    execution: false
+    name: opencti-indicator-marking-add
+  - arguments:
+    - default: false
+      description: Id of the indicator.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Marking to remove.
+      isArray: false
+      name: marking
+      predefined:
+      - TLP:RED
+      - TLP:WHITE
+      - TLP:GREEN
+      - TLP:AMBER
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove marking from indicator.
+    execution: false
+    name: opencti-indicator-marking-remove
+  - arguments:
+    - default: false
+      description: Indicator id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Label name to add.
+      isArray: false
+      name: label
+      required: true
+      secret: false
+    deprecated: false
+    description: Add labal to indicator.
+    execution: false
+    name: opencti-indicator-label-add
+  - arguments:
+    - default: false
+      description: Indicator id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Label name to remove.
+      isArray: false
+      name: label
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove label from indicator.
+    execution: false
+    name: opencti-indicator-label-remove
+  - deprecated: false
+    description: Get list of all organizations.
+    execution: false
+    name: opencti-organization-list
+    outputs:
+    - contextPath: OpenCTI.Organizations.id
+      description: Organization id.
+      type: String
+    - contextPath: OpenCTI.Organizations.name
+      description: Organization name.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of organization to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the organization.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Reliability of the organization.
+      isArray: false
+      name: reliability
+      predefined:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+      required: false
+      secret: false
+    deprecated: false
+    description: Create organization.
+    execution: false
+    name: opencti-organization-create
+    outputs:
+    - contextPath: OpenCTI.Organization.id
+      description: New organization id.
       type: String
   dockerimage: demisto/opencti-v4.1.2:1.0.0.16153
   feed: true
@@ -343,6 +469,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - OpenCTI Feed v2 Test
+fromversion: 5.5.0

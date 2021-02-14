@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference  # Identity
+from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -145,7 +145,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 500))
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
-        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id':indicator['rawJSON']['id']}
+        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id']}
                       for indicator in indicators_list]
         output = {'LastRunID': last_run_id,
                   'Indicators': indicators}
@@ -187,7 +187,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
             readable_output, raw_response
         """
     indicator_id = args.get("id")
-    # TODO: works only with score and description
+    # works only with score and description
     key = KEY_TO_CTI_NAME[args.get("key")]  # type: ignore
     value = args.get("value")
     result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
@@ -217,13 +217,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
         """
     indicator_id = args.get("id")
     indicator_type = args.get("type")
-    # TODO object - creator id - how to get it ?
     created_by = args.get("created_by")
-    # identity = Identity(client)
-    # created_by = identity.create(name='TestCreatedBy', description='test created by dev',
-    #                             type='Individual', x_opencti_firstname='Dev',
-    #                             x_opencti_lastname='Demisto').get('id')
-
     marking = None
     if marking_name := args.get("marking"):
         mark_obj = MarkingDefinition(client)
@@ -277,6 +271,149 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
     )
 
 
+def indicator_marking_add_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Add indicator marking to opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    indicator_id = args.get("id")
+    marking_name = args.get("marking")
+    mark_obj = MarkingDefinition(client)
+    marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
+    # TODO: stix_cyber_observable["markingDefinitionsIds"] no such key at map
+    result = client.stix_cyber_observable.add_marking_definition(id=indicator_id, marking_definition_id=marking)
+    if result:
+        readable_output = 'Added marking definition successfully.'
+    else:
+        return_error("Can't add marking definition.")
+    return CommandResults(readable_output=readable_output)
+
+
+def indicator_marking_remove_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Remove indicator marking from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    indicator_id = args.get("id")
+    marking_name = args.get("marking")
+    mark_obj = MarkingDefinition(client)
+    marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
+    result = client.stix_cyber_observable.remove_marking_definition(id=indicator_id, marking_definition_id=marking)
+    if result:
+        readable_output = 'Removed marking definition successfully.'
+    else:
+        return_error("Can't remove marking definition.")
+    return CommandResults(readable_output=readable_output)
+
+
+def indicator_label_add_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Add indicator label to opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    indicator_id = args.get("id")
+    label_name = args.get("label")
+    label_obj = Label(client)
+    label_id = label_obj.create(value=label_name).get('id')
+    result = client.stix_cyber_observable.add_label(id=indicator_id, label_id=label_id)
+    if result:
+        readable_output = 'Added label successfully.'
+    else:
+        return_error("Can't add label.")
+    return CommandResults(readable_output=readable_output)
+
+
+def indicator_label_remove_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Remove indicator label from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output
+        """
+    indicator_id = args.get("id")
+    label_name = args.get("label")
+    label_obj = Label(client)
+    label_id = label_obj.create(value=label_name).get('id')
+    result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
+    if result:
+        readable_output = 'Remove label successfully.'
+    else:
+        return_error("Can't add label.")
+    return CommandResults(readable_output=readable_output)
+
+
+def organization_list_command(client) -> CommandResults:
+    """ Get organizations list from opencti
+
+        Args:
+            client: OpenCTI Client object
+
+        Returns:
+            readable_output, raw_response
+        """
+    organizations_list = client.identity.list(types='Organization')
+    if organizations_list:
+        organizations = [
+            {'organization_name': organization['name'], 'id': organization['id']}
+            for organization in organizations_list]
+        readable_output = tableToMarkdown('Organizations from OpenCTI', organizations, headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix='OpenCTI.Organizations',
+            outputs_key_field='id',
+            outputs=organizations,
+            readable_output=readable_output,
+            raw_response=organizations_list
+        )
+    else:
+        return CommandResults(readable_output='No organizations')
+
+
+def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Create organization at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    name = args.get("name")
+    description = args.get("description")
+    reliability = args.get('reliability')
+    identity = Identity(client)
+    result = identity.create(name=name, type='Organization', x_opencti_reliability=reliability,
+                             description=description)
+    if organization_id := result.get('id'):
+        readable_output = f'Organization created successfully with id: {organization_id}.'
+    else:
+        return_error("Can't create organization.")
+    return CommandResults(
+            outputs_prefix='OpenCTI.Organization',
+            outputs_key_field='id',
+            outputs={'id': result.get('id')},
+            readable_output=readable_output,
+            raw_response=result)
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -325,6 +462,24 @@ def main():
 
         elif command == "opencti-indicator-create-update":
             return_results(indicator_create_or_update_command(client, args))
+
+        elif command == "opencti-indicator-marking-add":
+            return_results(indicator_marking_add_command(client, args))
+
+        elif command == "opencti-indicator-marking-remove":
+            return_results(indicator_marking_remove_command(client, args))
+
+        elif command == "opencti-indicator-label-add":
+            return_results(indicator_label_add_command(client, args))
+
+        elif command == "opencti-indicator-label-remove":
+            return_results(indicator_label_remove_command(client, args))
+
+        elif command == "opencti-organization-list":
+            return_results(organization_list_command(client))
+
+        elif command == "opencti-organization-create":
+            return_results(organization_create_command(client, args))
 
     except Exception as e:
         return_error(f"Error [{e}]")
