@@ -596,13 +596,14 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if 'vendorId' in user_metadata:
+            logging.debug(f"in marketplace_services/_parse_pack_metadata/vendorId in metadata")
+            logging.debug(
+                f"contentCommitHash of vendorId {user_metadata.get('vendorId')}"
+                f" is {user_metadata.get('contentCommitHash', '')}")
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
-            if user_metadata.get('contentCommitHash') == "":
-                pack_metadata['contentCommitHash'] = "testCommit"
-            else:
-                pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "test")
+            pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
@@ -805,7 +806,7 @@ class Pack(object):
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
-                f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+                                                     f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
             subprocess.call(full_command_with_secondary_encryption, shell=True)
 
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
@@ -850,7 +851,7 @@ class Pack(object):
             if stdout:
                 logging.info(str(stdout))
             if stderr:
-                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
+                logging.error(f"Error: Premium pack {self._pack_name} should be encrypted, but isn't.")
                 return False
             return True
 
@@ -1000,15 +1001,18 @@ class Pack(object):
                 else:
                     _pack_artifacts_path = pack_artifacts_path
 
-                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}.enc2')
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}',
+                                                                                f'{self._pack_name}.enc2')
 
                 blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
                 blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
                 with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
                     blob.upload_from_file(pack_zip)
 
-                print(f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
-                shutil.copy(secondary_encryption_key_artifacts_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+                print(
+                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(secondary_encryption_key_artifacts_path,
+                            f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
