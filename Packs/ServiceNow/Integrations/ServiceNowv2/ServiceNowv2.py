@@ -2171,8 +2171,13 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         # Closing sc_type ticket. This ticket type can be closed only when changing the ticket state.
-        if ticket_type == 'sc_task' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+        if (ticket_type == 'sc_task' or ticket_type == 'sc_req_item')\
+                and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
             parsed_args.data['state'] = '3'
+        # Closing incident ticket.
+        if ticket_type == 'incident' and parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            parsed_args.data['state'] = '7'
+
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if not params.get('close_ticket'):
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
