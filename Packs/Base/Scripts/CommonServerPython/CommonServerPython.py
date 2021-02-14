@@ -1116,6 +1116,9 @@ class IntegrationLogger(object):
         for (k, v) in dict_obj.items():
             if isinstance(v, dict):  # credentials object case. recurse into the object
                 self._iter_sensistive_dict_obj(v, sensitive_params)
+                if v.get('identifier') and v.get('password'):  # also add basic auth case
+                    basic_auth = '{}:{}'.format(v.get('identifier'), v.get('password'))
+                    self.add_replace_strs(b64_encode(basic_auth))
             elif isinstance(v, STRING_OBJ_TYPES):
                 k_lower = k.lower()
                 for p in sensitive_params:
