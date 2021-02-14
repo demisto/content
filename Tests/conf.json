@@ -2780,7 +2780,7 @@
         {
             "integrations": "GoogleCloudTranslate",
             "playbookID": "GoogleCloudTranslate-Test",
-            "pid_threshold": 8
+            "pid_threshold": 9
         },
         {
             "integrations": "Infoblox",
