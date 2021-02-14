@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity, StixCyberObservable
+from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity
 
 # Disable insecure warnings
 urllib3.disable_warnings()
