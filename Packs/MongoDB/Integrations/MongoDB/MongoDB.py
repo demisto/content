@@ -462,5 +462,5 @@ def main():
         return_error(f'MongoDB: {str(e)}', error=e)
 
 
-if __name__ in ('builtins', '__builtin__', '__main__'):
+if __name__ in ('builtins', '__builtin__'):
     main()
