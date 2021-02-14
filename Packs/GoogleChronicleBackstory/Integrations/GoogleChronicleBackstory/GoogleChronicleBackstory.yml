@@ -1780,4 +1780,4 @@ tests:
 - Google Chronicle Backstory List Alerts - Test
 - Google Chronicle Backstory IOC Details - Test
 - Google Chronicle Backstory List Events - Test
-fromversion: 5.0.0
+fromversion: 6.0.0
