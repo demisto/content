@@ -694,7 +694,8 @@
         {
             "integrations": "ServiceNow v2",
             "playbookID": "servicenow_test_v2",
-            "instance_names": "snow_basic_auth"
+            "instance_names": "snow_basic_auth",
+            "is_mockable": false
         },
         {
             "integrations": "ServiceNow v2",
@@ -1149,11 +1150,13 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Wildfire Test"
+            "playbookID": "Wildfire Test",
+            "is_mockable": false
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
+            "playbookID": "Detonate URL - WildFire-v2 - Test",
+            "is_mockable": false
         },
         {
             "integrations": "WildFire-v2",
@@ -1602,7 +1605,8 @@
             "integrations": "carbonblackliveresponse",
             "playbookID": "Carbon Black Live Response Test",
             "nightly": true,
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "urlscan.io",
@@ -1848,7 +1852,8 @@
         {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "VMware",
@@ -2079,7 +2084,8 @@
                 "Cylance Protect v2"
             ],
             "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Zscaler",
@@ -2268,7 +2274,8 @@
             "integrations": [
                 "VirusTotal - Private API",
                 "Cylance Protect v2"
-            ]
+            ],
+            "is_mockable": false
         },
         {
             "integrations": [
@@ -2683,7 +2690,8 @@
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "is_mockable": false
         },
         {
             "integrations": "Elasticsearch v2",
@@ -3408,14 +3416,9 @@
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
-        "WildFire-v2": "has a command that uploads a file (!wildfire-upload)",
-        "carbonblackliveresponse": "has a command that uploads a file (!cb-push-file-to-endpoint)",
-        "ServiceNow v2": "has a command that uploads a file (!servicenow-upload-file)",
-        "Hybrid Analysis": "has a command that uploads a file (!hybrid-analysis-submit-sample)",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
-        "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
         "XsoarPowershellTesting": "Integration which not use network.",
