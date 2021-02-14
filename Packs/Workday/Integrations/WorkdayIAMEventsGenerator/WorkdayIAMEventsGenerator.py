@@ -451,13 +451,64 @@ FIRST_RUN_REPORT = {
     ]
 }
 
+NEW_HIRE_REPORT = {
+    "Report_Entry": [
+        {
+            "Employee_Type": "Regular",
+            "Leadership": "No",
+            "Work_Country_Code": "840",
+            "Street_Address": "3000 Tannery Way",
+            "Employment_Status": "Active",
+            "VP_Flag": "N",
+            "Mgr_ID": "115069",
+            "Cost_Center_Description": "IoT - PM",
+            "GDPR_Country_Flag": "0",
+            "Director_Flag": "N",
+            "Email_-_Primary_Home": "test6@testing.com",
+            "First_Name": 'first_name',
+            "Last_Hire_Date": "06/15/2020",
+            "People_Manager_Flag": "N",
+            "Department": "Enterprise R&D:FWaaP",
+            "Workday_ID": "9aa7e309929e013ff3c6e3440803b833",
+            "Postal_Code": "95054",
+            "Rehired_Employee": "No",
+            "Org_Level_1": "All R&D",
+            "Org_Level_3": "FWaaP",
+            "Country_Name": "United States Of America",
+            "Org_Level_2": "Enterprise R&D",
+            "Emp_ID": "115074",
+            "Job_Family": "Product Management",
+            "Preferred_Name_-_First_Name": 'first_name',
+            "Nikesh Arora": "False",
+            "Management_Level_1": "Nikesh Arora",
+            "Work_Country_Abbrev": "US",
+            "Management_Level_2": "Timmy Turner",
+            "Email_Address": 'user_email',
+            "Title": "Product Line Manager",
+            "City": "Santa Clara",
+            "Work_State_US_Only": "California",
+            "Job_Code": "5225",
+            "PAN_CF_Okta_Location_Region": "Americas",
+            "Last_Name": 'lsat_name',
+            "Job_Function": "Product Management Function",
+            "State": "California",
+            "Exec_Admin_Flag": "N",
+            "Preferred_Name": "Chester McBadbat",
+            "Regular_Employee_Flag": "Y",
+            "Preferred_Name_-_Last_Name": 'last_name',
+            "Cost_Center_Code": "651116",
+            "Location": "Office - USA - CA - Headquarters"
+        }
+    ]
+}
+
 UPDATE_REPORT = {
     "Report_Entry": [
         {
             "Employee_Type": "Regular",
             "Leadership": "Yes-HQ",
             "Work_Country_Code": "840",
-            "Street_Address": "Updated_3000 Tannery Way",
+            "Street_Address": demisto.args().get('street_address'),
             "Employment_Status": "Active",
             "VP_Flag": "N",
             "Mgr_ID": "115069",
@@ -484,9 +535,9 @@ UPDATE_REPORT = {
             "Management_Level_1": "Nikesh Arora_Updated",
             "Work_Country_Abbrev": "US",
             "Management_Level_2": "Timmy Turner",
-            "Email_Address": "rrahardjo@test.com",
-            "Title": "Dir, Product Line Manager",
-            "City": "Santa Clara",
+            "Email_Address": demisto.args().get('user_email'),
+            "Title": demisto.args().get('title'),
+            "City": demisto.args().get('city'),
             "Work_State_US_Only": "California",
             "Job_Code": "2245",
             "PAN_CF_Okta_Location_Region": "Americas",
@@ -499,329 +550,10 @@ UPDATE_REPORT = {
             "Preferred_Name_-_Last_Name": "Rahardjo",
             "Cost_Center_Code": "120100",
             "Location": "Office - USA - CA - Headquarters"
-        },
-        {
-            "Employee_Type": "Regular",
-            "Leadership": "No",
-            "Work_Country_Code": "840",
-            "Street_Address": "Updated_WeWork Embarcadero Center",
-            "Employment_Status": "Active",
-            "VP_Flag": "N",
-            "Mgr_ID": "115069",
-            "Cost_Center_Description": "Magnifier Sales Inc",
-            "GDPR_Country_Flag": "0",
-            "Public_Work_Mobile_Phone_Number": "+44  7900-160-819",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "stevearnoldtstc@test.com",
-            "First_Name": "Stephen",
-            "Last_Hire_Date": "10/01/2020",
-            "People_Manager_Flag": "N",
-            "Department": "WW Sales Functions:Cortex Sales",
-            "Workday_ID": "5aa443c785ff10461a941c31a173e459",
-            "Postal_Code": "94111",
-            "Rehired_Employee": "Yes",
-            "Org_Level_1": "Sales",
-            "Org_Level_3": "Cortex Sales",
-            "Country_Name": "United States Of America",
-            "Org_Level_2": "WW Sales Functions",
-            "Emp_ID": "101351",
-            "Job_Family": "Software Engineering",
-            "User_Name": "sarnold@test.com",
-            "Preferred_Name_-_First_Name": "Stephen",
-            "Prehire_Flag": "False",
-            "Management_Level_1": "Nikesh Arora_Updated",
-            "Work_Country_Abbrev": "US",
-            "Management_Level_2": "Timmy Turner",
-            "Email_Address": "sarnold@test.com",
-            "Title": "Mgr, SW Engineering",
-            "City": "San Francisco",
-            "Work_State_US_Only": "California",
-            "Job_Code": "2163",
-            "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": "Arnold",
-            "Job_Function": "Engineering Function",
-            "State": "California",
-            "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Stephen Arnold",
-            "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": "Arnold",
-            "Cost_Center_Code": "101100",
-            "Location": "Office - USA - CA - San Francisco"
-        },
-        {
-            "Emp_ID": "115098",
-            "Leadership": "No",
-            "Work_Country_Code": "0",
-            "Employment_Status": "Active",
-            "User_Name": "cocarmichael",
-            "Preferred_Name_-_First_Name": "Connie",
-            "Prehire_Flag": "False",
-            "VP_Flag": "N",
-            "Email_Address": "cocarmichael@test.com",
-            "Title": "Systems Engineer Specialist",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test30@testing.com",
-            "First_Name": "Connie",
-            "People_Manager_Flag": "N",
-            "Last_Name": "Carmichael",
-            "Exec_Admin_Flag": "N",
-            "Workday_ID": "9aa7e309929e01a58ac35f1508030820",
-            "Preferred_Name": "Connie Carmichael",
-            "Rehired_Employee": "No",
-            "Regular_Employee_Flag": "N",
-            "Preferred_Name_-_Last_Name": "Carmichael",
-            "Last_Hire_Date": "01/22/2018",
-            "Termination_Date": "01/23/2047"
         }
     ]
 }
 
-TERMINATE_USER_REPORT = {
-    "Report_Entry": [
-        {
-            "Employee_Type": "Regular",
-            "Leadership": "No",
-            "Work_Country_Code": "840",
-            "Street_Address": "Updated_3000 Tannery Way",
-            "Employment_Status": "Terminated",
-            "VP_Flag": "N",
-            "Mgr_ID": "115069",
-            "Cost_Center_Description": "IoT - PM",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test6@testing.com",
-            "First_Name": "Chester",
-            "Last_Hire_Date": "06/15/2020",
-            "People_Manager_Flag": "N",
-            "Department": "Enterprise R&D:FWaaP",
-            "Workday_ID": "9aa7e309929e013ff3c6e3440803b833",
-            "Postal_Code": "95054",
-            "Rehired_Employee": "No",
-            "Org_Level_1": "All R&D",
-            "Org_Level_3": "FWaaP",
-            "Country_Name": "United States Of America",
-            "Org_Level_2": "Enterprise R&D",
-            "Emp_ID": "115074",
-            "Job_Family": "Product Management",
-            "Preferred_Name_-_First_Name": "Chester",
-            "Prehire_Flag": "False",
-            "Management_Level_1": "Nikesh Arora_Updated",
-            "Work_Country_Abbrev": "US",
-            "Management_Level_2": "Timmy Turner",
-            "Email_Address": "cmcbadbat@test.com",
-            "Title": "Product Line Manager",
-            "City": "Santa Clara",
-            "Work_State_US_Only": "California",
-            "Job_Code": "5225",
-            "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": "McBadbat",
-            "Job_Function": "Product Management Function",
-            "State": "California",
-            "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Chester McBadbat",
-            "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": "McBadbat",
-            "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
-        },
-        {
-            "Employee_Type": "Regular",
-            "Leadership": "Yes-HQ",
-            "Work_Country_Code": "840",
-            "Street_Address": "Updated_3000 Tannery Way",
-            "Employment_Status": "Terminated",
-            "VP_Flag": "Y",
-            "Mgr_ID": "115069",
-            "Cost_Center_Description": "IoT - PM",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test3@testing.com",
-            "First_Name": "Icky",
-            "Last_Hire_Date": "06/15/2020",
-            "People_Manager_Flag": "N",
-            "Department": "Enterprise R&D:FWaaP",
-            "Workday_ID": "9aa7e309929e01abc779c14a0803b936",
-            "Postal_Code": "95054",
-            "Rehired_Employee": "No",
-            "Org_Level_1": "All R&D",
-            "Org_Level_3": "FWaaP",
-            "Country_Name": "United States Of America",
-            "Org_Level_2": "Enterprise R&D",
-            "Emp_ID": "115071",
-            "Job_Family": "Engineering - Executive",
-            "Preferred_Name_-_First_Name": "Icky",
-            "Prehire_Flag": "False",
-            "Management_Level_1": "Nikesh Arora_Updated",
-            "Work_Country_Abbrev": "US",
-            "Management_Level_2": "Timmy Turner",
-            "Email_Address": "ivicky@test.com",
-            "Title": "VP, Products",
-            "City": "Santa Clara",
-            "Work_State_US_Only": "California",
-            "Job_Code": "2007",
-            "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": "Vicky",
-            "Job_Function": "Engineering Function",
-            "State": "California",
-            "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Icky Vicky",
-            "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": "Vicky",
-            "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
-        },
-        {
-            "Emp_ID": "115100",
-            "Leadership": "No",
-            "Work_Country_Code": "0",
-            "Employment_Status": "Active",
-            "User_Name": "bhartman",
-            "Preferred_Name_-_First_Name": "Butch",
-            "Prehire_Flag": "False",
-            "VP_Flag": "N",
-            "Email_Address": "bhartman@test.com",
-            "Title": "Sr Staff Engineer Software",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test33@testing.com",
-            "First_Name": "Butch",
-            "People_Manager_Flag": "N",
-            "Last_Name": "Hartman",
-            "Exec_Admin_Flag": "N",
-            "Workday_ID": "9aa7e309929e01e7d82293110803571e",
-            "Preferred_Name": "Butch Hartman",
-            "Rehired_Employee": "No",
-            "Regular_Employee_Flag": "N",
-            "Preferred_Name_-_Last_Name": "Hartman",
-            "Last_Hire_Date": "04/17/2019",
-            "Termination_Date": "01/03/2020"
-        }
-    ]
-}
-
-REHIRE_USER_REPORT = {
-    "Report_Entry": [
-        {
-            "Employee_Type": "Regular",
-            "Leadership": "No",
-            "Work_Country_Code": "840",
-            "Street_Address": "Updated_3000 Tannery Way",
-            "Employment_Status": "Terminated",
-            "VP_Flag": "N",
-            "Mgr_ID": "115069",
-            "Cost_Center_Description": "IoT - PM",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test6@testing.com",
-            "First_Name": "Chester",
-            "Last_Hire_Date": "06/15/2020",
-            "People_Manager_Flag": "N",
-            "Department": "Enterprise R&D:FWaaP",
-            "Workday_ID": "9aa7e309929e013ff3c6e3440803b833",
-            "Postal_Code": "95054",
-            "Rehired_Employee": "Yes",
-            "Org_Level_1": "All R&D",
-            "Org_Level_3": "FWaaP",
-            "Country_Name": "United States Of America",
-            "Org_Level_2": "Enterprise R&D",
-            "Emp_ID": "115074",
-            "Job_Family": "Product Management",
-            "Preferred_Name_-_First_Name": "Chester",
-            "Prehire_Flag": "True",
-            "Management_Level_1": "Nikesh Arora_Updated",
-            "Work_Country_Abbrev": "US",
-            "Management_Level_2": "Timmy Turner",
-            "Email_Address": "cmcbadbat@test.com",
-            "Title": "Product Line Manager",
-            "City": "Santa Clara",
-            "Work_State_US_Only": "California",
-            "Job_Code": "5225",
-            "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": "McBadbat",
-            "Job_Function": "Product Management Function",
-            "State": "California",
-            "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Chester McBadbat",
-            "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": "McBadbat",
-            "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
-        },
-        {
-            "Employee_Type": "Regular",
-            "Leadership": "Yes-HQ",
-            "Work_Country_Code": "840",
-            "Street_Address": "Updated_3000 Tannery Way",
-            "Employment_Status": "Terminated",
-            "VP_Flag": "Y",
-            "Mgr_ID": "115069",
-            "Cost_Center_Description": "IoT - PM",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test3@testing.com",
-            "First_Name": "Icky",
-            "Last_Hire_Date": "06/15/2020",
-            "People_Manager_Flag": "N",
-            "Department": "Enterprise R&D:FWaaP",
-            "Workday_ID": "9aa7e309929e01abc779c14a0803b936",
-            "Postal_Code": "95054",
-            "Rehired_Employee": "Yes",
-            "Org_Level_1": "All R&D",
-            "Org_Level_3": "FWaaP",
-            "Country_Name": "United States Of America",
-            "Org_Level_2": "Enterprise R&D",
-            "Emp_ID": "115071",
-            "Job_Family": "Engineering - Executive",
-            "Preferred_Name_-_First_Name": "Icky",
-            "Prehire_Flag": "True",
-            "Management_Level_1": "Nikesh Arora_Updated",
-            "Work_Country_Abbrev": "US",
-            "Management_Level_2": "Timmy Turner",
-            "Email_Address": "ivicky@test.com",
-            "Title": "VP, Products",
-            "City": "Santa Clara",
-            "Work_State_US_Only": "California",
-            "Job_Code": "2007",
-            "PAN_CF_Okta_Location_Region": "Americas",
-            "Last_Name": "Vicky",
-            "Job_Function": "Engineering Function",
-            "State": "California",
-            "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Icky Vicky",
-            "Regular_Employee_Flag": "Y",
-            "Preferred_Name_-_Last_Name": "Vicky",
-            "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
-        },
-        {
-            "Emp_ID": "115100",
-            "Leadership": "No",
-            "Work_Country_Code": "0",
-            "Employment_Status": "Active",
-            "User_Name": "bhartman",
-            "Preferred_Name_-_First_Name": "Butch",
-            "Prehire_Flag": "True",
-            "VP_Flag": "N",
-            "Email_Address": "bhartman@test.com",
-            "Title": "Sr Staff Engineer Software",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test33@testing.com",
-            "First_Name": "Butch",
-            "People_Manager_Flag": "N",
-            "Last_Name": "Hartman",
-            "Exec_Admin_Flag": "N",
-            "Workday_ID": "9aa7e309929e01e7d82293110803571e",
-            "Preferred_Name": "Butch Hartman",
-            "Rehired_Employee": "Yes",
-            "Regular_Employee_Flag": "N",
-            "Preferred_Name_-_Last_Name": "Hartman",
-            "Last_Hire_Date": "04/17/2020",
-            "Termination_Date": "01/03/2025"
-        }
-    ]
-}
 
 APP: Flask = Flask('xsoar-workday')
 
@@ -839,158 +571,140 @@ def test_module():
         return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
 
 
-def generate_event():
-    event_type = demisto.args().get('event_type')
+def get_new_hire_reports():
     user_email = demisto.args().get('user_email')
-    name = demisto.args().get('name')
-    if event_type == 'hire':
-        get_new_hire_reports(user_email, name)
-    elif event_type == 'update':
-        get_update_report(user_email)
-    elif event_type == 'rehire':
-        get_rehire_report(user_email)
-    elif event_type == 'terminate':
-        get_terminate_report(user_email)
-
-    return_results(f'Successfully generated the "{event_type}" event.')
-
-
-def get_new_hire_reports(user_email, name):
+    first_name = demisto.args().get('first_name', '')
+    last_name = demisto.args().get('last_name', '')
     integration_context = get_integration_context()
-    if not name or name == '':
-        return_error('Please insert the user full name (first name and last name).')
-    try:
-        first_name = name.split()[0]
-        last_name = name.split()[1]
-    except Exception:
-        return_error('Missing first or last name.')
-    report_entry = {
-        "Report_Entry": [
-            {
-                "Employee_Type": "Regular",
-                "Leadership": "No",
-                "Work_Country_Code": "840",
-                "Street_Address": "3000 Tannery Way",
-                "Employment_Status": "Active",
-                "VP_Flag": "N",
-                "Mgr_ID": "115069",
-                "Cost_Center_Description": "IoT - PM",
-                "GDPR_Country_Flag": "0",
-                "Director_Flag": "N",
-                "Email_-_Primary_Home": "test6@testing.com",
-                "First_Name": first_name,
-                "Last_Hire_Date": "06/15/2020",
-                "People_Manager_Flag": "N",
-                "Department": "Enterprise R&D:FWaaP",
-                "Workday_ID": "9aa7e309929e013ff3c6e3440803b833",
-                "Postal_Code": "95054",
-                "Rehired_Employee": "No",
-                "Org_Level_1": "All R&D",
-                "Org_Level_3": "FWaaP",
-                "Country_Name": "United States Of America",
-                "Org_Level_2": "Enterprise R&D",
-                "Emp_ID": "115074",
-                "Job_Family": "Product Management",
-                "Preferred_Name_-_First_Name": "Chester",
-                "Nikesh Arora": "False",
-                "Management_Level_1": "Nikesh Arora",
-                "Work_Country_Abbrev": "US",
-                "Management_Level_2": "Timmy Turner",
-                "Email_Address": user_email,
-                "Title": "Product Line Manager",
-                "City": "Santa Clara",
-                "Work_State_US_Only": "California",
-                "Job_Code": "5225",
-                "PAN_CF_Okta_Location_Region": "Americas",
-                "Last_Name": last_name,
-                "Job_Function": "Product Management Function",
-                "State": "California",
-                "Exec_Admin_Flag": "N",
-                "Preferred_Name": "Chester McBadbat",
-                "Regular_Employee_Flag": "Y",
-                "Preferred_Name_-_Last_Name": "McBadbat",
-                "Cost_Center_Code": "651116",
-                "Location": "Office - USA - CA - Headquarters"
-            }
-        ]
-    }
-    new_report = report_entry['Report_Entry'][0]
+
+    new_report = NEW_HIRE_REPORT['Report_Entry'][0]
+    existing_email_addressees = []
     for report in integration_context['Report_Entry']:
         email_address = report.get('Email_Address')
-        if user_email == email_address:
-            return_error(f'User "{user_email}" already exist. Please try another user email.')
+        existing_email_addressees.append(email_address)
+    if user_email in existing_email_addressees:
+        raise Exception(f'User "{user_email}" already exist. Please try another user email.')
 
+    new_report['Email_Address'] = user_email
+    new_report['First_Name'] = first_name
+    new_report['Last_Name'] = last_name
+    new_report['Preferred_Name'] = first_name + last_name
+    new_report['Preferred_Name_-_First_Name'] = first_name
+    new_report['Preferred_Name_-_Last_Name'] = last_name
     integration_context['Report_Entry'].append(new_report)
     set_integration_context(integration_context)
 
+    return_results(f'Successfully generated the a new hire event.')
 
-def get_terminate_report(user_email):
+
+def get_terminate_report():
+    user_email = demisto.args().get('user_email')
     integration_context = get_integration_context()
-    reports = TERMINATE_USER_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
-            return
-        else:
-            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
-                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
-                         f'cocarmichael@test.com, ccarmichael@test.com')
+    existing_email_addressees = []
+    for report in integration_context['Report_Entry']:
+        email_address = report.get('Email_Address')
+        existing_email_addressees.append(email_address)
+    if user_email not in existing_email_addressees:
+        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
+                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+    else:
+        # Get the specific report and change the relevant field for rehire event.
+        user_report = [i for i in integration_context['Report_Entry'] if (i['Email_Address'] == user_email)][0]
+        is_terminated = user_report.get('Employment_Status')
+        rehired_status = user_report.get('Rehired_Employee')
+        if user_email in existing_email_addressees and is_terminated == 'Terminated' and rehired_status == 'No':
+            return_results(f'The user {user_email} is already terminated.')
+
+        user_report['Employment_Status'] = 'Terminated'
+        user_report['Last_Hire_Date'] = demisto.args().get('last_hire_date')
+        set_integration_context(integration_context)
+        return_results(f'Successfully generated the Terminate user event.')
 
 
-def get_update_report(user_email):
+def get_update_report():
+    user_email = demisto.args().get('user_email')
     integration_context = get_integration_context()
-    reports = UPDATE_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
-            return
-        else:
-            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
-                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
-                         f'cocarmichael@test.com, ccarmichael@test.com')
+    title = demisto.args().get('title')
+    city = demisto.args().get('city')
+    street_address = demisto.args().get('street_address')
+    last_hire_date = demisto.args().get('last_hire_date')
+    existing_email_addressees = []
+    for report in integration_context['Report_Entry']:
+        email_address = report.get('Email_Address')
+        existing_email_addressees.append(email_address)
+    if user_email not in existing_email_addressees:
+        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
+                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+    else:
+        # Get the specific report and change the relevant field for rehire event.
+        user_report = [i for i in integration_context['Report_Entry'] if (i['Email_Address'] == user_email)][0]
+        if title:
+            user_report['Title'] = title
+        if city:
+            user_report['City'] = city
+        if street_address:
+            user_report['Street_Address'] = street_address
+        if last_hire_date:
+            user_report['Last_Hire_Date'] = last_hire_date
+            user_report['Employment_Status'] = 'Terminated'
+        set_integration_context(integration_context)
+        return_results(f'Successfully generated the Update user event.')
 
 
-def get_rehire_report(user_email):
+def get_rehire_report():
+    user_email = demisto.args().get('user_email')
     integration_context = get_integration_context()
-    reports = REHIRE_USER_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
-            return
-        else:
-            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
-                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
-                         f'cocarmichael@test.com, ccarmichael@test.com')
+    existing_email_addressees = []
+    for report in integration_context['Report_Entry']:
+        email_address = report.get('Email_Address')
+        existing_email_addressees.append(email_address)
+    if user_email not in existing_email_addressees:
+        raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
+                        f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
+
+    else:
+        # Get the specific report and change the relevant field for rehire event.
+        user_report = [i for i in integration_context['Report_Entry'] if (i['Email_Address'] == user_email)][0]
+        is_terminated = user_report.get('Employment_Status')
+        rehired_status = user_report.get('Rehired_Employee')
+        if user_email in existing_email_addressees and is_terminated == 'Active' or rehired_status == 'Yes':
+            return_results(f'The user {user_email} is not terminated. Either he is still active or was already rehired.')
+        for field in user_report:
+            field['Rehired_Employee'] = 'Yes'
+        set_integration_context(integration_context)
+        return_results(f'Successfully generated the rehire user event.')
 
 
-if demisto.command() == 'test-module':
-    test_module()
+def main():
 
-elif demisto.command() == 'long-running-execution':
-    integration_context = get_integration_context()
-    if not integration_context:
+    if demisto.command() == 'test-module':
+        test_module()
+
+    elif demisto.command() == 'long-running-execution':
+        integration_context = get_integration_context()
+        if not integration_context:
+            set_integration_context(FIRST_RUN_REPORT)
+        while True:
+            port = int(demisto.params().get('longRunningPort', ''))
+            server = WSGIServer(('0.0.0.0', port), APP)
+            server.serve_forever()
+
+    elif demisto.command() == 'workday-generate-hire-event':
+        get_new_hire_reports()
+
+    elif demisto.command() == 'workday-generate-update-event':
+        get_update_report()
+
+    elif demisto.command() == 'workday-generate-rehire-event':
+        get_rehire_report()
+
+    elif demisto.command() == 'workday-generate-terminate-event':
+        get_terminate_report()
+
+    elif demisto.command() == 'initialize-context':
         set_integration_context(FIRST_RUN_REPORT)
-    while True:
-        port = int(demisto.params().get('longRunningPort', ''))
-        server = WSGIServer(('0.0.0.0', port), APP)
-        server.serve_forever()
+        return_results('The integration context has been initialized.')
 
 
-elif demisto.command() == 'workday-test-generate-event':
-    generate_event()
-
-elif demisto.command() == 'initialize-context':
-    set_integration_context(FIRST_RUN_REPORT)
-    return_results('The integration context has been initialized.')
+if __name__ == '__builtin__' or __name__ == 'builtins':
+    main()
