@@ -1,0 +1,10 @@
+!opencti-get-indicators
+!opencti-indicator-create-update type=Domain created_by=0c7cb378-64c3-4809-b423-986ac7cecf91 marking=TLP:WHITE description=test data="{\"value\": \"TestDomain.com\"}" label=test-label
+!opencti-indicator-delete id=afe8bb98-c10a-4a00-bc04-f1c5c9430ec6
+!opencti-indicator-field-update id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd key=description value="update test"
+!opencti-indicator-marking-remove marking=TLP:GREEN id=85b04cf3-d608-4a1f-8e55-d6d732e82749
+!opencti-indicator-label-add label=new-label id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd
+!opencti-indicator-label-remove label=test2  id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd
+!opencti-organization-list
+!opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"
+!opencti-reset-fetch-indicators
