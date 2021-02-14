@@ -76,9 +76,12 @@ def login():
     response = session.get(login_url, verify=VERIFY_SSL)
 
     # get the VIEW_STATE from the xml returned in the UI login page.
+    resp_text = response.text.encode('utf-8')
     p = re.compile('(value=".{1046}==")')
-    viewState = p.findall(response.text.encode('utf-8'))
-    VIEW_STATE = viewState[0][len('value="'):][:-1]
+    view_state_regex = p.findall(resp_text)
+    if not view_state_regex:
+        raise Exception('The login URL was not found, raw response is:' + str(resp_text))
+    VIEW_STATE = view_state_regex[0][len('value="'):][:-1]
 
     data = {
         'loginHtml': 'loginHtml',
