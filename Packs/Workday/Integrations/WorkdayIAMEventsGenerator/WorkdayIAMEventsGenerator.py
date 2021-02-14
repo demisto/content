@@ -542,7 +542,7 @@ def get_new_hire_reports():
     integration_context['Report_Entry'].append(new_report)
     set_integration_context(integration_context)
 
-    return_results(f'Successfully generated the a new hire event.')
+    return_results('Successfully generated the a new hire event.')
 
 
 def get_terminate_report():
@@ -566,7 +566,7 @@ def get_terminate_report():
         user_report['Employment_Status'] = 'Terminated'
         user_report['Last_Hire_Date'] = demisto.args().get('last_hire_date')
         set_integration_context(integration_context)
-        return_results(f'Successfully generated the Terminate user event.')
+        return_results('Successfully generated the Terminate user event.')
 
 
 def get_update_report():
@@ -596,7 +596,7 @@ def get_update_report():
             user_report['Last_Hire_Date'] = last_hire_date
             user_report['Employment_Status'] = 'Terminated'
         set_integration_context(integration_context)
-        return_results(f'Successfully generated the Update user event.')
+        return_results('Successfully generated the Update user event.')
 
 
 def get_rehire_report():
@@ -620,7 +620,7 @@ def get_rehire_report():
         for field in user_report:
             field['Rehired_Employee'] = 'Yes'
         set_integration_context(integration_context)
-        return_results(f'Successfully generated the rehire user event.')
+        return_results('Successfully generated the rehire user event.')
 
 
 def main():
