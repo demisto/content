@@ -131,7 +131,7 @@ description: The CrowdStrike intelligence team tracks the activities of threat a
   groups and advanced persistent threats (APTs) to understand as much as possible
   about their known aliases, targets, methods, and more. This integration retrieves
   indicators from the Crowdstrike Falcon Intel Feed
-display: Crowdstrike Falcon Intel Feed
+display: Crowdstrike Falcon Intel Feed Actors
 name: Crowdstrike Falcon Intel Feed
 script:
   commands:
