@@ -1,9 +1,9 @@
 id: Powershell Payload Response
-version: 23
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Powershell Payload Response
-description: 'The Powershell Payload Response playbook is designed to be used when file payload executions
-are detected from an endpoint machines Powershell and begins the remediation process.'
+description: 'The Powershell Payload Response playbook is designed to be used when
+  file payload executions are detected from an endpoint machines Powershell and begins
+  the remediation process.'
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -44,6 +45,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -142,6 +144,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -397,6 +400,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -498,6 +502,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -558,6 +563,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1278,6 +1284,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1305,6 +1312,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1329,6 +1337,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1356,6 +1365,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1384,6 +1394,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -1427,6 +1438,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1473,6 +1485,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -1535,6 +1548,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1578,6 +1592,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -1627,30 +1642,32 @@ inputs:
     simple: ${incident.endpointid}
   required: false
   description: ID of the endpoint in question.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value:
     simple: ${incident.hostname}
   required: false
   description: Hostname of the endpoint in question.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Email
   value:
     simple: ${incident.email}
   required: false
   description: Email attachment.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: File
   value:
     simple: ${File}
   required: false
   description: Payload file that was executed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: File Path
   value:
     simple: ${incident.filepath}
   required: false
   description: File Path of the Executed Payload.
-  playbookInputQuery: null
+  playbookInputQuery:
 fromversion: 6.0.0
 outputs: []
+tests:
+- No tests (auto formatted)
