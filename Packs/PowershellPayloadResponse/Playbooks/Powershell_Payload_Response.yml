@@ -1652,5 +1652,5 @@ inputs:
   required: false
   description: File Path of the Executed Payload.
   playbookInputQuery: null
-fromversion: 5.0.0
+fromversion: 6.0.0
 outputs: []
