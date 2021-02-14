@@ -54,6 +54,14 @@ KEYWORDS = ['#1', '100%', 'access', 'accordance', 'account', 'act', 'action', 'a
             'wallet', 'warranty', 'web', 'weight', 'win', 'winner', 'winning', 'wire', 'xanax']
 
 
+STATUS_DICT = {
+    0: "Pending",
+    1: "Active",
+    2: "Closed",
+    3: "Archive",
+}
+
+
 def add_context_key(entry_context):
     context = {
         'Campaign': entry_context
@@ -326,12 +334,15 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     # add a mark at current incident, at its similarity cell
     incidents_df['similarity'] = incidents_df.apply(
         lambda x: '{} (current)'.format(x['similarity']) if x['id'] == current_incident_id else x['similarity'], axis=1)
+    incidents_df['status'] = incidents_df['status'].apply(lambda x: STATUS_DICT[x] if x in STATUS_DICT else '')
     incidents_df.rename({
         'name': 'Name',
         FROM_FIELD: 'Email From',
-        'similarity': 'Similarity to Current Incident'},
+        'similarity': 'Similarity to Current Incident',
+        'status': 'Status'},
         axis=1, inplace=True)
-    incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Reputation', 'Similarity to Current Incident']
+    incidents_headers = ['Id', 'Created', 'Name', 'Status', 'Email From', 'Reputation',
+                         'Similarity to Current Incident']
     if fields_to_display is not None:
         fields_to_display = [f for f in fields_to_display if f in incidents_df.columns]
         incidents_df[fields_to_display] = incidents_df[fields_to_display].fillna('')
