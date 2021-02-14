@@ -473,14 +473,13 @@ def test_create_mapping_dict():
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
-@pytest.mark.parametrize('integration_context, output', [
+@pytest.mark.parametrize('cache_object, output', [
     ({splunk.NOT_YET_ENRICHED_NOTABLES: ['n1', 'n2']}, False),
     ({splunk.NOT_YET_ENRICHED_NOTABLES: []}, True),
     ({}, True)
 ])
-def test_is_done_enriching(integration_context, output, mocker):
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    assert splunk.is_done_enriching() is output
+def test_is_done_enriching(cache_object, output):
+    assert splunk.is_done_enriching(cache_object) is output
 
 
 @pytest.mark.parametrize('integration_context, output', [
@@ -489,17 +488,16 @@ def test_is_done_enriching(integration_context, output, mocker):
     ({}, [])
 ])
 def test_get_incidents_for_mapping(integration_context, output, mocker):
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    assert splunk.get_incidents_for_mapping() == output
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'incidents')
+    splunk.fetch_incidents_for_mapping(integration_context)
+    assert demisto.incidents.call_count == 1
+    assert demisto.incidents.call_args[0][0] == output
 
 
 def test_reset_enriching_fetch_mechanism(mocker):
     integration_context = {
-        splunk.ENRICHMENTS: ['e1', 'e2'],
-        splunk.LAST_RUN_OVER_FETCH: {'time': 1, 'offset': 20},
-        splunk.LAST_RUN_REGULAR_FETCH: {'time': 2, 'offset': 10},
-        splunk.NOT_YET_ENRICHED_NOTABLES: ['n1', 'n2'],
-        splunk.NUM_FETCHED_NOTABLES: 5,
+        splunk.CACHE: "cache_string",
         splunk.INCIDENTS: ['i1', 'i2']
     }
     mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
@@ -508,40 +506,20 @@ def test_reset_enriching_fetch_mechanism(mocker):
     assert not integration_context
 
 
-@pytest.mark.parametrize('enrichment, enrichment_timeout, output', [
-    ({splunk.ENRICHMENT_JOBS: [
-        {splunk.JOB_CREATION_TIME: datetime.utcnow().isoformat()},
-        {splunk.JOB_CREATION_TIME: datetime.utcnow().isoformat()}
-    ]}, 5, False),
-    ({splunk.ENRICHMENT_JOBS: [
-        {splunk.JOB_CREATION_TIME: (datetime.utcnow() - timedelta(minutes=6)).isoformat()},
-        {splunk.JOB_CREATION_TIME: datetime.utcnow().isoformat()}
-    ]}, 5, True)
+@pytest.mark.parametrize('drilldown_creation_time, asset_creation_time, enrichment_timeout, output', [
+    (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+    ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
 ])
-def test_is_enrichment_exceeding_timeout(enrichment, enrichment_timeout, output):
+def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+    enrichment = splunk.Enrichment(
+        splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    )
+    enrichment.drilldown_job.creation_time = drilldown_creation_time
+    enrichment.asset_job.creation_time = asset_creation_time
     assert splunk.is_enrichment_exceeding_timeout(enrichment, enrichment_timeout) is output
 
 
-@pytest.mark.parametrize('notables, notable, output', [
-    ([{splunk.EVENT_ID: '1', 'data': 'data'}], {splunk.EVENT_ID: '1', 'data': 'different_data'}, []),
-    ([{splunk.EVENT_ID: '2', 'data': 'data'}], {splunk.EVENT_ID: '1', 'data': 'different_data'},
-     [{splunk.EVENT_ID: '2', 'data': 'data'}])
-])
-def test_remove_notable(notables, notable, output):
-    assert splunk.remove_notable(notables, notable) == output
-
-
-@pytest.mark.parametrize('integration_context, enrichment, output', [
-    ({splunk.ENRICHMENTS: [{splunk.XSOAR_ID: '1'}]}, {splunk.XSOAR_ID: '1'}, []),
-    ({splunk.ENRICHMENTS: [{splunk.XSOAR_ID: '1'}]}, {splunk.XSOAR_ID: '2'}, [{splunk.XSOAR_ID: '1'}])
-])
-def test_remove_enrichment_from_integration_context(integration_context, enrichment, output, mocker):
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    splunk.remove_enrichment_from_integration_context(enrichment)
-    assert integration_context.get(splunk.ENRICHMENTS) == output
-
-
-@pytest.mark.parametrize('integration_context, last_run, output', [
+@pytest.mark.parametrize('cache_object, last_run, output', [
     ({}, {}, {}),
     ({
          splunk.LAST_RUN_REGULAR_FETCH: {'time': 1, 'offset': 0},
@@ -554,11 +532,10 @@ def test_remove_enrichment_from_integration_context(integration_context, enrichm
          splunk.NUM_FETCHED_NOTABLES: 20
      }, {}, {'time': 1, 'offset': 0})
 ])
-def test_handle_last_run(integration_context, last_run, output, mocker):
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
+def test_handle_last_run(cache_object, last_run, output, mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
     mocker.patch.object(demisto, 'setLastRun')
-    splunk.handle_last_run()
+    splunk.handle_last_run(cache_object)
     assert last_run == output
 
 
@@ -570,93 +547,106 @@ INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
     ({}, [], []),
     ({}, [INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
 ])
-def test_store_incident_in_ic(integration_context, incidents, output, mocker):
-    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    mocker.patch('SplunkPy.set_integration_context')
-    splunk.store_incidents_in_ic(incidents)
+def test_store_incident_in_ic(integration_context, incidents, output):
+    splunk.store_incidents_for_mapping(incidents, integration_context)
     assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
-def test_add_job_to_enrichment():
-    enrichment = {splunk.ENRICHMENT_JOBS: []}
-    splunk.add_job_to_enrichment(enrichment, '12345', splunk.DRILLDOWN_ENRICHMENT)
-    assert enrichment[splunk.ENRICHMENT_JOBS][0][splunk.JOB_ID] == '12345'
-    assert enrichment[splunk.ENRICHMENT_JOBS][0][splunk.JOB_TYPE] == splunk.DRILLDOWN_ENRICHMENT
-    assert splunk.JOB_CREATION_TIME in enrichment[splunk.ENRICHMENT_JOBS][0]
-
-
-@pytest.mark.parametrize('saved_search, raw, status, earliest, latest', [
+@pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
     ({}, {}, False, "", ""),
     ({
-        "action.notable.param.drilldown_earliest_offset": "${}$".format(splunk.INFO_MIN_TIME),
-        "action.notable.param.drilldown_latest_offset": "${}$".format(splunk.INFO_MAX_TIME),
-    }, {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
+         "drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+         "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME),
+     }, {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
     ({
-        "action.notable.param.drilldown_earliest_offset": '1',
-        "action.notable.param.drilldown_latest_offset": '2',
-    }, {}, True, '1', '2')
+         "drilldown_earliest": '1',
+         "drilldown_latest": '2',
+     }, {}, True, '1', '2')
 ])
-def test_get_drilldown_timeframe(saved_search, raw, status, earliest, latest, mocker):
+def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
     mocker.patch.object(demisto, 'info')
-    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(saved_search, raw)
+    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
     assert task_status == status
     assert earliest_offset == earliest
     assert latest_offset == latest
 
 
-@pytest.mark.parametrize('raw_field, notable, expected_field, expected_value, exc', [
+@pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value, exc', [
     ('field|s', {'field': '1'}, 'field', '1', False),
     ('field', {'field': '1'}, 'field', '1', False),
     ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1', False),
     ('x', {'y': '2'}, '', '', True)
 ])
-def test_get_notable_field_and_value(raw_field, notable, expected_field, expected_value, exc):
+def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, exc):
     if not exc:
-        field, value = splunk.get_notable_field_and_value(raw_field, notable)
+        field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
         assert field == expected_field
         assert value == expected_value
     else:
         with pytest.raises(Exception):
-            splunk.get_notable_field_and_value(raw_field, notable)
+            splunk.get_notable_field_and_value(raw_field, notable_data)
 
 
-@pytest.mark.parametrize('notable, search, raw, expected_search, exc', [
+@pytest.mark.parametrize('notable_data, search, raw, expected_search, exc', [
     ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix', False),
     ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix', False),
     ({'a': '1', '_raw': 'b=3'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, 'search a="1" c=$c$ suffix', True),
 ])
-def test_build_drilldown_search(notable, search, raw, expected_search, exc):
+def test_build_drilldown_search(notable_data, search, raw, expected_search, exc):
     if not exc:
-        assert splunk.build_drilldown_search(notable, search, raw) == expected_search
+        assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
     else:
         with pytest.raises(Exception):
-            splunk.build_drilldown_search(notable, search, raw)
+            splunk.build_drilldown_search(notable_data, search, raw)
 
 
-@pytest.mark.parametrize('raw, output', [
-    ('12345,a=1,b=2,c=3', {'a': '1', 'b': '2', 'c': '3'}),
-    ('bla', {})
-])
-def test_raw_to_dict(raw, output):
-    assert splunk.raw_to_dict(raw) == output
-
-
-@pytest.mark.parametrize('notable, prefix, fields, query_part', [
+@pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
     ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
     ({'_raw': '1233,user=u1'}, 'user', ['user'], 'user="u1"'),
     ({'user': ['u1', 'u2'], '_raw': '1321,src_user=u3'}, 'user', ['user', 'src_user'],
      '(user="u1" OR user="u2" OR user="u3")'),
     ({}, 'prefix', ['field'], '')
 ])
-def test_get_fields_query_part(notable, prefix, fields, query_part):
-    assert splunk.get_fields_query_part(notable, prefix, fields) == query_part
+def test_get_fields_query_part(notable_data, prefix, fields, query_part):
+    assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
 
 
-@pytest.mark.parametrize('enriched_notable, enabled_enrichments, expected_status', [
-    ({splunk.SUCCESSFUL_DRILLDOWN_ENRICHMENT: True}, [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT], False),
-    ({splunk.SUCCESSFUL_DRILLDOWN_ENRICHMENT: False, splunk.SUCCESSFUL_ASSET_ENRICHMENT: True},
-     [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT], False),
-    ({splunk.SUCCESSFUL_DRILLDOWN_ENRICHMENT: True}, [splunk.DRILLDOWN_ENRICHMENT], True)
+def test_differentiate_notables():
+    not_yet_enriched_notable = splunk.Notable({splunk.EVENT_ID: '1'})
+    enriched_notable = splunk.Notable({splunk.EVENT_ID: '1'})
+    enriched_notable.status = splunk.NotableStatus.ENRICHED
+    failed_notable = splunk.Notable({splunk.EVENT_ID: '1'})
+    failed_notable.status = splunk.NotableStatus.CREATED_INCIDENT_ENRICH_FAILURE
+    notables = [enriched_notable, not_yet_enriched_notable, failed_notable]
+    enriched_notables, not_yet_enriched_notables, failed_notables = splunk.differentiate_notables(notables)
+    assert enriched_notables == [enriched_notable]
+    assert not_yet_enriched_notables == [not_yet_enriched_notable]
+    assert failed_notables == [failed_notable]
+
+
+def test_differentiate_enrichments():
+    not_yet_enriched = splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: '1'}), [splunk.DRILLDOWN_ENRICHMENT])
+    done_enriching = splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: '2'}), [splunk.DRILLDOWN_ENRICHMENT])
+    done_enriching.status = splunk.EnrichmentStatus.DONE_ENRICHING
+    done_handling = splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: '3'}), [splunk.DRILLDOWN_ENRICHMENT])
+    done_handling.status = splunk.EnrichmentStatus.DONE_HANDLING
+    exceeding_timeout = splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: '4'}), [splunk.DRILLDOWN_ENRICHMENT])
+    exceeding_timeout.status = splunk.EnrichmentStatus.EXCEEDED_TIMEOUT
+    enrichments = [not_yet_enriched, done_enriching, done_handling, exceeding_timeout]
+    handled_enrichments, open_enrichments = splunk.differentiate_enrichments(enrichments)
+    assert handled_enrichments == [done_handling, exceeding_timeout]
+    assert open_enrichments == [not_yet_enriched, done_enriching]
+
+
+@pytest.mark.parametrize('enrichment, splunk_job', [
+    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT]), {}),
+    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT]), {'sid': 'sid'}),
 ])
-def test_get_enrichment_status(enriched_notable, enabled_enrichments, expected_status):
-    assert splunk.get_enrichment_status(enriched_notable, enabled_enrichments) is expected_status
+def test_maintain_enrichment_metadata(enrichment, splunk_job):
+    splunk.maintain_enrichment_metadata(enrichment, splunk_job, splunk.DRILLDOWN_ENRICHMENT)
+    if splunk_job:
+        assert enrichment.drilldown_job.creation_time
+        assert enrichment.drilldown_job.id
+    else:
+        assert enrichment.drilldown_job.status == splunk.JobStatus.FAILED
+        assert not enrichment.notable.data[splunk.SUCCESSFUL_DRILLDOWN_ENRICHMENT]
