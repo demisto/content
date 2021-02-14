@@ -166,7 +166,7 @@ script:
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-indicators-list
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false
