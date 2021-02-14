@@ -797,5 +797,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Service Desk Plus Test
+- Service Desk Plus (On-Premise) Test
 fromversion: 5.0.0
