@@ -2255,14 +2255,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Integer represents the timeout in seconds for this execution.
+      description: Integer representing the timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
       defaultValue: 600
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution action using a script from the script library.
+    description: Initiates a new endpoint script execution action using a script from the script library.
     execution: false
     name: xdr-run-script
     outputs:
@@ -2281,13 +2281,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Section of a script you want to initiate on an endpoint (e.g. print("7")).
+      description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
       isArray: false
       name: snippet_code
       required: true
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution action using provided snippet code.
+    description: Initiates a new endpoint script execution action using the provided snippet code.
     execution: false
     name: xdr-run-snippet-code-script
     outputs:
@@ -2305,7 +2305,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve the status of a script execution action.
+    description: Retrieves the status of a script execution action.
     execution: false
     outputs:
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.general_status
@@ -2327,7 +2327,7 @@ script:
       description: Number of endpoints in "pending" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress
-      description: Number of endpoints in "in progess" status.
+      description: Number of endpoints in "in progress" status.
       type: Number
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_failed
       description: Number of endpoints in "failed" status.
@@ -2407,7 +2407,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the files retrieved from a specific endpoint during a script execution.
+    description: Gets the files retrieved from a specific endpoint during a script execution.
     execution: false
     name: xdr-get-script-execution-result-files
   - arguments:
@@ -2425,7 +2425,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer represents the timeout in seconds for this execution.
+      description: Integer representing the timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
@@ -2451,20 +2451,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: Path of file to delete.
+      description: Path of the file to delete.
       isArray: false
       name: file_path
       required: true
       secret: false
     - default: false
-      description: Integer represents the timeout in seconds for this execution.
+      description: Integer representing the timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
       defaultValue: 600
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution to delete the specified file.
+    description: Initiates a new endpoint script execution to delete the specified file.
     execution: false
     name: xdr-run-script-delete-file
     outputs:
@@ -2483,20 +2483,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: Path of file to check for existence.
+      description: Path of the file to check for existence.
       isArray: false
       name: file_path
       required: true
       secret: false
     - default: false
-      description: Integer represents the timeout in seconds for this execution.
+      description: Integer representing the timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
       defaultValue: 600
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution to check if file exists.
+    description: Initiates a new endpoint script execution to check if file exists.
     execution: false
     name: xdr-run-script-file-exists
     outputs:
@@ -2521,14 +2521,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer represents the timeout in seconds for this execution.
+      description: Integer representing the timeout in seconds for this execution.
       isArray: false
       name: timeout
       defaultValue: 600
       required: false
       secret: false
     deprecated: false
-    description: Initiate a new endpoint script execution kill process.
+    description: Initiates a new endpoint script execution kill process.
     execution: false
     name: xdr-run-script-kill-process
     outputs:
