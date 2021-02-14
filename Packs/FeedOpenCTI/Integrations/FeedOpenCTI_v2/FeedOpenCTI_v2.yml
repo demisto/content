@@ -84,6 +84,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -93,6 +94,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -444,12 +446,12 @@ script:
       isArray: false
       name: reliability
       predefined:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
       required: false
       secret: false
     deprecated: false
