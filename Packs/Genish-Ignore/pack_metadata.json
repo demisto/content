@@ -1,0 +1,17 @@
+{
+    "name": "Genish-Ignore",
+    "description": "This is a test contribution",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Genish",
+    "url": "",
+    "email": "",
+    "created": "2021-02-14T09:52:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Genish-Tests"
+    ]
+}
