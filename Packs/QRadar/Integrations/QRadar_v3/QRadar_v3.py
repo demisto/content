@@ -9,6 +9,12 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
+
+USECS_ENTRIES_MAPPING = {'last_persisted_time': 'last_persisted_time_usecs',
+                         'start_time': 'start_time_usecs',
+                         'close_time': 'close_time_usecs',
+                         'last_updated_time': 'last_updated_time_usecs',
+                         'first_persisted_time': 'first_persisted_time_usecs'}
 ''' CLIENT CLASS '''
 
 
@@ -36,12 +42,11 @@ class Client(BaseClient):
 
     def qradar_offences_list(self, offence_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{offence_id}' if offence_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses{id_suffix}',
             params=assign_params(filter=filter_),
-            additional_headers=range_header
+            additional_headers={'Range': f'{range_}'} if not offence_id else None
         )
 
     def qradar_offence_update(self, offence_id: Optional[int], protected: Optional[bool], follow_up: Optional[bool],
@@ -61,22 +66,20 @@ class Client(BaseClient):
     def qradar_closing_reasons_list(self, closing_reason_id: Optional[int], range_: str,
                                     filter_: Optional[str]):
         id_suffix = f'/{closing_reason_id}' if closing_reason_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offense_closing_reasons{id_suffix}',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'} if not closing_reason_id else None,
             params=assign_params(filter=filter_)
         )
 
     def qradar_offence_notes_list(self, offence_id: Optional[int], note_id: Optional[int], range_: str,
                                   filter_: Optional[str]):
         note_id_suffix = f'/{note_id}' if note_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses/{offence_id}/notes{note_id_suffix}',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'} if not note_id else None,
             params=assign_params(filter=filter_)
         )
 
@@ -92,39 +95,35 @@ class Client(BaseClient):
 
     def qradar_rule_groups_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/analytics/rule_groups{id_suffix}',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'} if not rule_group_id else None,
             params=assign_params(filter=filter_)
         )
 
     def qradar_assets_list(self, range_: str, filter_: Optional[str]):
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix='/asset_model/assets',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'},
             params=assign_params(filter=filter_)
         )
 
     def qradar_saved_searches_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/saved_searches{id_suffix}',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'} if not rule_group_id else None,
             params=assign_params(filter=filter_)
         )
 
     def qradar_searches_list(self, range_: str, filter_: Optional[str]):
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/searches',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'},
             params=assign_params(filter=filter_)
         )
 
@@ -148,12 +147,11 @@ class Client(BaseClient):
 
     def qradar_reference_sets_list(self, ref_name: Optional[str], range_: str, filter_: Optional[str]):
         name_suffix = f'/{ref_name}' if ref_name else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
             params=assign_params(filter=filter_),
-            additional_headers=range_header
+            additional_headers={'Range': f'items={range_}'} if not ref_name else None
         )
 
     def qradar_reference_set_create(self, ref_name: Optional[str], element_type: Optional[str],
@@ -186,11 +184,10 @@ class Client(BaseClient):
 
     def qradar_domains_list(self, domain_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{domain_id}' if domain_id else ''
-        range_header = {'Range': f'items={range_}'}
         return self.http_request(
             method='GET',
             url_suffix=f'/config/domain_management/domains{id_suffix}',
-            additional_headers=range_header,
+            additional_headers={'Range': f'items={range_}'} if not domain_id else None,
             params=assign_params(filter=filter_)
         )
 
@@ -237,10 +234,65 @@ def qradar_error_handler(res: Any):
         # Try to parse json error response
         error_entry = res.json()
         message = error_entry.get('message', '')
-        raise DemistoException(err_msg, res=message)
+        err_message = f'Error in API call [{res.status_code}] - {message}'
+        raise DemistoException(err_msg, res=err_message)
     except ValueError:
         err_msg += '\n{}'.format(res.text)
         raise DemistoException(err_msg, res=res)
+
+
+def add_iso_entries_to_dict(outputs: List[Dict]) -> None:
+    """
+    Takes list of outputs, for each output:
+    For each field in the output that is contained in 'USECS_ENTRIES_MAPPING' keys,
+    adds a new entry of the corresponding value to the key in 'USECS_ENTRIES_MAPPING',
+    Value of the new entry will be the iso format corresponding to the timestamp from the 'USECS_ENTRIES_MAPPING' key.
+    Args:
+        outputs (List[Dict]): List of the outputs to be transformed.
+
+    Returns:
+        Modifies the outputs.
+    """
+    for output in outputs:
+        for date_entry, date_entry_usecs in USECS_ENTRIES_MAPPING.items():
+            if date_entry in output:
+                output[date_entry_usecs] = output[date_entry]
+                output[date_entry] = convert_epoch_time_to_datetime(output[date_entry])
+
+
+def sanitize_outputs(outputs: Any) -> List[Dict]:
+    """
+    Gets a list of all the outputs, and sanitizes outputs.
+    - Removes empty elements.
+    - adds ISO entries to the outputs.
+    Args:
+        outputs (List[Dict]): List of the outputs to be sanitized.
+
+    Returns:
+        Sanitized outputs.
+    """
+    # outputs = [remove_empty_elements(output) for output in outputs]
+    add_iso_entries_to_dict(outputs)
+    return outputs
+
+
+def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
+    """
+    Receives epoch time, and returns epoch_time representation as date with UTC timezone.
+    If received epoch time is 0, or epoch_time does not exist, returns None.
+    Args:
+        epoch_time (int): The epoch_time to convert.
+    Returns:
+        - The date time with UTC timezone that matches the epoch time if 'epoch_time' is not 0.
+        - None if 'epoch_time' is 0.
+        - None if epoch_time is None.
+    """
+    if not epoch_time or epoch_time == 0:
+        return None
+    maybe_date_time = arg_to_datetime(epoch_time / 1000.0)
+    if not maybe_date_time:
+        return None
+    return maybe_date_time.isoformat()
 
 
 ''' COMMAND FUNCTIONS '''
@@ -281,7 +333,7 @@ def qradar_offences_list_command(client: Client, args: Dict):
         # readable_output=human_readable,
         outputs_prefix='QRadar.Offence',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=sanitize_outputs(response),
         raw_response=response
     )
 
@@ -300,7 +352,7 @@ def qradar_offence_update_command(client: Client, args: Dict):
         # readable_output=human_readable,
         outputs_prefix='QRadar.Offence',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=sanitize_outputs(response),
         raw_response=response
     )
 
@@ -422,6 +474,7 @@ def qradar_searches_list_command(client: Client, args: Dict):
         raw_response=response
     )
 
+
 def qradar_search_create_command(client: Client, args: Dict):
     query_expression = args.get('query_expression')
     saved_search_id = args.get('saved_search_id')
@@ -507,14 +560,13 @@ def qradar_domains_list_command(client: Client, args: Dict):
 # discuss with arseny
 # def qradar_indicators_upload_command
 
-def qradar_geolocations_for_ip_get_command(client: Client, args: Dict, ips: Optional[str]):
+def qradar_geolocations_for_ip_get_command(client: Client, args: Dict):
     ips = argToList(args.get('ips'))
     if not ips:
         raise DemistoException('''IPs list cannot be empty for command 'qradar-geolocations-for-ip-get'.''')
     filter_ = f'''ip_address IN ({','.join(ips)})'''
 
     response = client.qradar_geolocations_for_ip_get(filter_)
-    # QRadar.GeoforIP
 
     return CommandResults(
         # readable_output=human_readable,
@@ -812,7 +864,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    base_url = urljoin(params.get('base_url'),'/api')
+    base_url = urljoin(params.get('base_url'), '/api')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')

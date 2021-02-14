@@ -1,57 +1,367 @@
-category: Utilities
 commonfields:
   id: QRadar_v3
   version: -1
+name: QRadar_v3
+display: QRadar_v3
+category: Utilities
+description: IBM QRadar SIEM helps security teams accurately detect and prioritize
+  threats across the enterprise, and it provides intelligent insights that enable
+  teams to respond quickly to reduce the impact of incidents.
 configuration:
 - display: Server URL
-  additionalinfo: (e.g., https://192.168.0.1:57261)
   name: base_url
-  required: true
   type: 0
+  required: true
+  additionalinfo: (e.g., https://192.168.0.1)
 - display: Username
   name: credentials
-  required: true
   type: 9
-- display: QRadar API Version (e.g. '12.0'). Minimum API version is 10.1.
-  name: api_version
   required: true
+- display: QRadar API Version
+  additionalinfo: (e.g. '12.0'). Minimum API version is 10.1.
+  name: api_version
   type: 0
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, and it provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
-display: QRadar_v3
-name: QRadar_v3
+  required: false
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
+  - name: qradar-offences-list
+    arguments:
+    - name: offence_id
+      description: The offence ID to retrieve its details.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+    - name: filter
+      description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    description: Gets offenses from QRadar.
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
-  isfetch: false
+      - contextPath: QRadar.Offence.username_count
+        description: Number of usernames that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.description
+        description: The description of the offence.
+        type: String
+      - contextPath: QRadar.Offence.rules.id
+        description: ID of the rule.
+        type: Number
+      - contextPath: QRadar.Offence.rules.type
+        description: Type of the rule. One of 'ADE_RULE', 'BUILDING_BLOCK_RULE', 'CRE_RULE'.
+        type: String
+      - contextPath: QRadar.Offence.event_count
+        description: Number of events associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.flow_count
+        description: Number of flows that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.assigned_to
+        description: The user whom the offence is assigned.
+        type: Unknown
+      - contextPath: QRadar.Offence.security_category_count
+        description: Number of security event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.follow_up
+        description: Whether the offence is marked for follow up.
+        type: Boolean
+      - contextPath: QRadar.Offence.source_address_ids
+        description: Source address IDs that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.source_count
+        description: Number of sources that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.inactive
+        description: Whether the offence is inactive.
+        type: Boolean
+      - contextPath: QRadar.Offence.protected
+        description: Whether the offence is protected.
+        type: Boolean
+      - contextPath: QRadar.Offence.closing_user
+        description: The user who closed the offence.
+        type: Unknown
+      - contextPath: QRadar.Offence.destination_networks
+        description: Destination networks that are associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.source_network
+        description: First seen source network associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.category_count
+        description: Number of event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.close_time
+        description: The time when the offence was closed.
+        type: String
+      - contextPath: QRadar.Offence.close_time_usecs
+        description: The number of milliseconds since epoch time at the time when the offence was closed.
+        type: Number
+      - contextPath: QRadar.Offence.remote_destination_count
+        description: Number of remote destinations that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.start_time
+        description: The time of the earliest item that was contributed to the offence.
+        type: String
+      - contextPath: QRadar.Offence.magnitude
+        description: Magnitude of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_updated_time
+        description: The time of the most recent item that contributed to the offence.
+        type: String
+      - contextPath: QRadar.Offence.credibility
+        description: Credibility of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.id
+        description: ID of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.categories
+        description: Event categories that are associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.severity
+        description: Severity of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.policy_category_count
+        description: Number of policy event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.log_sources.type_name
+        description: Name of the log source.
+        type: String
+      - contextPath: QRadar.Offence.log_sources.type_id
+        description: The ID of the log source type.
+        type: Number
+      - contextPath: QRadar.Offence.log_sources.name
+        description: Name of the log source.
+        type: String
+      - contextPath: QRadar.Offence.log_sources.id
+        description: ID of the log source.
+        type: Number
+      - contextPath: QRadar.Offence.closing_reason_id
+        description: The ID of the reason the offence was closed.
+        type: Unknown
+      - contextPath: QRadar.Offence.device_count
+        description: Number of devices that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.offense_type
+        description: ID that represents the offence type. TODO add command to get list of
+          types.
+        type: Number
+      - contextPath: QRadar.Offence.relevance
+        description: Relevance of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.domain_id
+        description: ID of the associated domain if the offence is associated with a single
+          domain.
+        type: Number
+      - contextPath: QRadar.Offence.offense_source
+        description: Source of the offence.
+        type: String
+      - contextPath: QRadar.Offence.local_destination_address_ids
+        description: Local destination address IDs that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.local_destination_count
+        description: Number of local destinations that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.status
+        description: Status of the offence. One of 'OPEN', 'HIDDEN', 'CLOSED'.
+        type: String
+      - contextPath: QRadar.Offence.start_time_usecs
+        description: Number of milliseconds since epoch of the earliest item that contributed
+          to the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_updated_time_usecs
+        description: Number of milliseconds since epoch of the most recent item that contributed
+          to the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_persisted_time_usecs
+          description: Number of milliseconds since epoch when an offence field was last updated.
+          type: Number
+      - contextPath: QRadar.Offence.last_persisted_time
+          description: The time when an offence field was last updated.
+          type: Date
+      - contextPath: QRadar.Offence.first_persisted_time_usecs
+        description: Number of milliseconds since epoch when the offence was created.
+        type: Number
+      - contextPath: QRadar.Offence.first_persisted_time
+        description: The time when the offence was created.
+        type: Date
+  - name: qradar-offence-update
+    arguments:
+    - name: offence_id
+      required: true
+      description: The ID of the offence to update.
+    - name: protected
+      description: Set to true to protect the offence.
+    - name: follow_up
+      description: Set to true to mark the offence for follow up.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - HIDDEN
+      - CLOSED
+      description: The new status for the offence. When the status of an offence is
+        set to CLOSED, a valid closing_reason_id must be provided. To hide an offence,
+        use the HIDDEN status. To show a previously hidden offence, use the OPEN status.
+    - name: closing_reason_id
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offence.
+    - name: assigned_to
+      description: A user to assign the offence to.
+    description: Update an offense.
+    outputs:
+      - contextPath: QRadar.Offence.username_count
+        description: Number of usernames that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.description
+        description: The description of the offence.
+        type: String
+      - contextPath: QRadar.Offence.rules.id
+        description: ID of the rule.
+        type: Number
+      - contextPath: QRadar.Offence.rules.type
+        description: Type of the rule. One of 'ADE_RULE', 'BUILDING_BLOCK_RULE', 'CRE_RULE'.
+        type: String
+      - contextPath: QRadar.Offence.event_count
+        description: Number of events associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.flow_count
+        description: Number of flows that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.assigned_to
+        description: The user whom the offence is assigned.
+        type: Unknown
+      - contextPath: QRadar.Offence.security_category_count
+        description: Number of security event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.follow_up
+        description: Whether the offence is marked for follow up.
+        type: Boolean
+      - contextPath: QRadar.Offence.source_address_ids
+        description: Source address IDs that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.source_count
+        description: Number of sources that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.inactive
+        description: Whether the offence is inactive.
+        type: Boolean
+      - contextPath: QRadar.Offence.protected
+        description: Whether the offence is protected.
+        type: Boolean
+      - contextPath: QRadar.Offence.closing_user
+        description: The user who closed the offence.
+        type: Unknown
+      - contextPath: QRadar.Offence.destination_networks
+        description: Destination networks that are associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.source_network
+        description: First seen source network associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.category_count
+        description: Number of event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.close_time
+        description: The time when the offence was closed.
+        type: String
+      - contextPath: QRadar.Offence.close_time_usecs
+        description: The number of milliseconds since epoch time at the time when the offence was closed.
+        type: Number
+      - contextPath: QRadar.Offence.remote_destination_count
+        description: Number of remote destinations that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.start_time
+        description: The time of the earliest item that was contributed to the offence.
+        type: String
+      - contextPath: QRadar.Offence.magnitude
+        description: Magnitude of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_updated_time
+        description: The time of the most recent item that contributed to the offence.
+        type: String
+      - contextPath: QRadar.Offence.credibility
+        description: Credibility of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.id
+        description: ID of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.categories
+        description: Event categories that are associated with the offence.
+        type: String
+      - contextPath: QRadar.Offence.severity
+        description: Severity of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.policy_category_count
+        description: Number of policy event categories that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.log_sources.type_name
+        description: Name of the log source.
+        type: String
+      - contextPath: QRadar.Offence.log_sources.type_id
+        description: The ID of the log source type.
+        type: Number
+      - contextPath: QRadar.Offence.log_sources.name
+        description: Name of the log source.
+        type: String
+      - contextPath: QRadar.Offence.log_sources.id
+        description: ID of the log source.
+        type: Number
+      - contextPath: QRadar.Offence.closing_reason_id
+        description: The ID of the reason the offence was closed.
+        type: Unknown
+      - contextPath: QRadar.Offence.device_count
+        description: Number of devices that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.offense_type
+        description: ID that represents the offence type. TODO add command to get list of
+          types.
+        type: Number
+      - contextPath: QRadar.Offence.relevance
+        description: Relevance of the offence.
+        type: Number
+      - contextPath: QRadar.Offence.domain_id
+        description: ID of the associated domain if the offence is associated with a single
+          domain.
+        type: Number
+      - contextPath: QRadar.Offence.offense_source
+        description: Source of the offence.
+        type: String
+      - contextPath: QRadar.Offence.local_destination_address_ids
+        description: Local destination address IDs that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.local_destination_count
+        description: Number of local destinations that are associated with the offence.
+        type: Number
+      - contextPath: QRadar.Offence.status
+        description: Status of the offence. One of 'OPEN', 'HIDDEN', 'CLOSED'.
+        type: String
+      - contextPath: QRadar.Offence.start_time_usecs
+        description: Number of milliseconds since epoch of the earliest item that contributed
+          to the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_updated_time_usecs
+        description: Number of milliseconds since epoch of the most recent item that contributed
+          to the offence.
+        type: Number
+      - contextPath: QRadar.Offence.last_persisted_time_usecs
+          description: Number of milliseconds since epoch when an offence field was last updated.
+          type: Number
+      - contextPath: QRadar.Offence.last_persisted_time
+          description: The time when an offence field was last updated.
+          type: Date
+      - contextPath: QRadar.Offence.first_persisted_time_usecs
+        description: Number of milliseconds since epoch when the offence was created.
+        type: Number
+      - contextPath: QRadar.Offence.first_persisted_time
+        description: The time when the offence was created.
+        type: Date
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

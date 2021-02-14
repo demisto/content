@@ -1,0 +1,1 @@
+!qradar-offences-list range=0-9
