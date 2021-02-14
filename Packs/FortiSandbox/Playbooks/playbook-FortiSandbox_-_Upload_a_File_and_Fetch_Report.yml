@@ -132,6 +132,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ""
       id: 2af03c55-367c-4bca-8816-0f1997c70ebc
       iscommand: false
       name: Check if PDF Report Needed

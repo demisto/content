@@ -23,7 +23,7 @@ def _handle_post(post_url, data):
         res = requests.post(post_url, data=json.dumps(data), verify=USE_SSL)
         return res
 
-    except:
+    except ConnectionError:
         return_error("Something went wrong with the POST Request. Please check task inputs\n " + res.text)
 
 
@@ -197,12 +197,14 @@ def upload_file_on_demand(session, base_url):
                 "archive_password": demisto.args().get("archive_password"),
                 "overwrite_vm_list": demisto.args().get("vm_csv_list"),  # WIN7X86VM,WINXPVM
                 "skip_steps": demisto.args().get("skip_steps"),
-                # Do not use this parameter if no step to skip. 1 = Skip AV, 2= Skip Cloud, 4= Skip sandboxing, 8= Skip Static Scan.
+                # Do not use this parameter if no step to skip. 1 = Skip AV, 2= Skip Cloud, 4= Skip sandboxing,
+                # 8= Skip Static Scan.
                 "url": url_suffix,
                 "type": "file",
                 "timeout": "3600",
                 # "malpkg":"0"
-                # (Optional) set the value as "1" to require to add the sample to malware package if it satisfy the malware critia. By default, the value is "0".
+                # (Optional) set the value as "1" to require to add the sample to malware package if it satisfy the
+                # malware critia. By default, the value is "0".
             }
         ],
         "session": session,
@@ -416,12 +418,12 @@ def main():
 
     elif demisto.command() == 'fortisandbox-jobid-from-submission':
         """Get Job IDs from an uploaded Submission"""
-        #demisto.results("Starting JobID from Submission ID")
+        # demisto.results("Starting JobID from Submission ID")
         submission_result, submission_id = get_jobid_from_submissionid(session, base_url)
         json_results = submission_result.json()
 
         if 'result' in json_results and 'data' in json_results['result']:
-            #demisto.results("Results and data exists")
+            # demisto.results("Results and data exists")
             jids = json_results["result"]["data"].get("jids")
             str_jids = [str(one_job_id) for one_job_id in jids]
             if "," in submission_id:
