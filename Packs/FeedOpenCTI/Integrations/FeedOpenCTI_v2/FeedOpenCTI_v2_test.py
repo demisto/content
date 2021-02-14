@@ -1,7 +1,6 @@
 import pytest
 
-from FeedOpenCTI_v2 import get_indicators_command, fetch_indicators_command, get_indicators, indicator_delete_command, \
-    indicator_field_update_command, indicator_create_or_update_command
+from FeedOpenCTI_v2 import *
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults
 
@@ -19,10 +18,20 @@ class StixCyberObservable:
     def create(self):
         return self
 
+    def remove_marking_definition(self):
+        return self
+
+    def add_label(self):
+        return self
+
+    def remove_label(self):
+        return self
+
 
 class Client:
     temp = ''
     stix_cyber_observable = StixCyberObservable
+    identity = Identity
 
 
 def test_get_indicators(mocker):
@@ -165,3 +174,107 @@ def test_indicator_create_or_update_command(mocker):
     results: CommandResults = indicator_create_or_update_command(client, args)
     assert "Indicator created successfully" in results.readable_output
     assert {'id': '123456'} == results.outputs
+
+
+def test_indicator_marking_remove_command(mocker):
+    """Tests indicator_marking_remove_command function
+    Given
+        id of indicator to remove
+        marking to remove
+    When
+        - Calling `indicator_marking_remove_command`
+    Then
+        - validate the response to have a "Marking definition removed successfully." string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'marking': 'TLP:RED'
+    }
+    mark_mock = mocker.MagicMock()
+    mark_mock.create.return_value = {'id': '123'}
+    mocker.patch('FeedOpenCTI_v2.MarkingDefinition', return_value=mark_mock)
+    mocker.patch.object(client.stix_cyber_observable, 'remove_marking_definition', return_value=True)
+    results: CommandResults = indicator_marking_remove_command(client, args)
+    assert "Marking definition removed successfully" in results.readable_output
+
+
+def test_indicator_label_add_command(mocker):
+    """Tests indicator_label_add_command function
+    Given
+        id of indicator to add label
+        label to add
+    When
+        - Calling `indicator_label_add_command`
+    Then
+        - validate the response to have a "Label added successfully" string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'label': 'test-label'
+    }
+    label_mock = mocker.MagicMock()
+    label_mock.create.return_value = {'id': '123'}
+    mocker.patch('FeedOpenCTI_v2.Label', return_value=label_mock)
+    mocker.patch.object(client.stix_cyber_observable, 'add_label', return_value=True)
+    results: CommandResults = indicator_label_add_command(client, args)
+    assert "Label added successfully" in results.readable_output
+
+
+def test_indicator_label_remove_command(mocker):
+    """Tests indicator_label_remove_command function
+    Given
+        id of indicator to remove label
+        label to remove
+    When
+        - Calling `indicator_label_remove_command`
+    Then
+        - validate the response to have a "Label removed successfully" string at human readable
+    """
+    client = Client
+    args = {
+        'id': '123456',
+        'label': 'test-label'
+    }
+    label_mock = mocker.MagicMock()
+    label_mock.create.return_value = {'id': '123'}
+    mocker.patch('FeedOpenCTI_v2.Label', return_value=label_mock)
+    mocker.patch.object(client.stix_cyber_observable, 'remove_label', return_value=True)
+    results: CommandResults = indicator_label_remove_command(client, args)
+    assert "Label removed successfully" in results.readable_output
+
+
+def test_organization_list_command(mocker):
+    """Tests organization_list_command function
+    Given
+
+    When
+        - Calling `organization_list_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    mocker.patch.object(client.identity, 'list', return_value=[{'id': '1', 'name': 'test organization'}])
+    results: CommandResults = organization_list_command(client)
+    assert "Organizations from OpenCTI" in results.readable_output
+    assert [{'id': '1', 'name': 'test organization'}] == results.outputs
+
+
+def test_organization_create_command(mocker):
+    """Tests organization_create_command function
+    Given
+
+    When
+        - Calling `organization_create_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    args = {
+        'name': 'Test Organization',
+    }
+    mocker.patch.object(client.identity, 'create', return_value={'id': '1'})
+    results: CommandResults = organization_create_command(client, args)
+    assert "Organization created successfully" in results.readable_output
+    assert {'id': '1'} == results.outputs

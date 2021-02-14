@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity
+from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity, StixCyberObservable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -310,7 +310,7 @@ def indicator_marking_remove_command(client, args: Dict[str, str]) -> CommandRes
     marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
     result = client.stix_cyber_observable.remove_marking_definition(id=indicator_id, marking_definition_id=marking)
     if result:
-        readable_output = 'Removed marking definition successfully.'
+        readable_output = 'Marking definition removed successfully.'
     else:
         return_error("Can't remove marking definition.")
     return CommandResults(readable_output=readable_output)
@@ -332,7 +332,7 @@ def indicator_label_add_command(client, args: Dict[str, str]) -> CommandResults:
     label_id = label_obj.create(value=label_name).get('id')
     result = client.stix_cyber_observable.add_label(id=indicator_id, label_id=label_id)
     if result:
-        readable_output = 'Added label successfully.'
+        readable_output = 'Label added successfully.'
     else:
         return_error("Can't add label.")
     return CommandResults(readable_output=readable_output)
@@ -354,7 +354,7 @@ def indicator_label_remove_command(client, args: Dict[str, str]) -> CommandResul
     label_id = label_obj.create(value=label_name).get('id')
     result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
     if result:
-        readable_output = 'Remove label successfully.'
+        readable_output = 'Label removed successfully.'
     else:
         return_error("Can't add label.")
     return CommandResults(readable_output=readable_output)
@@ -372,7 +372,7 @@ def organization_list_command(client) -> CommandResults:
     organizations_list = client.identity.list(types='Organization')
     if organizations_list:
         organizations = [
-            {'organization_name': organization['name'], 'id': organization['id']}
+            {'name': organization['name'], 'id': organization['id']}
             for organization in organizations_list]
         readable_output = tableToMarkdown('Organizations from OpenCTI', organizations, headerTransform=pascalToSpace)
         return CommandResults(
