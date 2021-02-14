@@ -132,7 +132,7 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     contents = []
     headers.append('Details')
     contents.append('Found possible campaign of {} similar emails'.format(n_incidents))
-    if max_similarity > min_similarity + 10 ** -2:
+    if max_similarity > min_similarity + 10 ** -3:
         headers.append('Similarity range')
         contents.append("{:.1f}%-{:.1f}%".format(min_similarity * 100, max_similarity * 100))
     else:
@@ -224,7 +224,16 @@ def summarize_email_body(body, subject, nb_sentences=3):
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
     sorted_sentence_rank = sorted(sentence_rank.items(), key=lambda item: item[1], reverse=True)
     top_sentences_indices = [sent_i for sent_i, _ in sorted_sentence_rank[:nb_sentences]]
-    summary = [corpus[sent_i].strip() for sent_i in sorted(top_sentences_indices)]
+    summary = []
+    for sent_i in sorted(top_sentences_indices):
+        sent = corpus[sent_i].strip().replace('\n', ' ')
+        if sent_i == 0 and sent_i + 1 not in top_sentences_indices:
+            sent = sent + ' ...'
+        elif sent_i + 1 == len(corpus) and sent_i - 1 not in top_sentences_indices:
+            sent = '... ' + sent
+        elif sent_i - 1 not in top_sentences_indices and sent_i + 1 not in top_sentences_indices:
+            sent = '... ' + sent + ' ...'
+        summary.append(sent)
     return '\n'.join(summary)
 
 
@@ -237,7 +246,7 @@ def create_email_summary_hr(incidents_df):
     for word in KEYWORDS:
         for cased_word in [word.lower(), word.title(), word.upper()]:
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
-    hr_email_summary += '\n\n' + '### Current Incident\'s Email Summary'
+    hr_email_summary += '\n\n' + '### Current Incident\'s Email Snippets'
     hr_email_summary += '\n ##### ' + email_summary
     context = add_context_key(create_context_for_campaign_details(campaign_found=True, incidents_df=incidents_df))
     return context, hr_email_summary
@@ -307,7 +316,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     incidents_df['Created'] = incidents_df['created_dt'].apply(lambda x: x.strftime("%B %d, %Y"))
     incidents_df['similarity'] = incidents_df['similarity'].fillna(1)
-    incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.2f}%'.format(x * 100))
+    incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.1f}%'.format(x * 100))
     current_incident_id = demisto.incident()['id']
     incidents_df['Reputation'] = incidents_df['id'].apply(lambda id_: get_reputation(id_, indicators_df))
     # add a mark at current incident, at its similarity cell
