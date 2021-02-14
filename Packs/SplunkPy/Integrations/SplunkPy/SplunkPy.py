@@ -204,7 +204,6 @@ def notable_to_incident(event):
         incident["details"] = event["rule_description"]
     if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
-        demisto.debug()
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
         opt_in_log('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
@@ -492,7 +491,7 @@ def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_i
         last_run_datetime = last_run_datetime - timedelta(minutes=1)
 
     # keep last time max 20 mins before current time, to avoid timeout
-    if fetches_with_same_start_time_count >= 20:
+    if fetches_with_same_start_time_count >= 20 and not were_new_incidents_found:  # TODO : make parameter
         last_run_datetime = last_run_datetime + timedelta(minutes=1)
 
     next_run_without_miliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
@@ -504,7 +503,7 @@ def create_incident_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
     incident_id = incident_occurred + incident_raw_data
-    demisto.debug('\n\nlength of incident new ID is: {}\n\n'.format(len(incident_id)))
+    demisto.debug('length of incident new ID is: {}'.format(len(incident_id)))
     return incident_id
 
 
@@ -588,7 +587,6 @@ def fetch_incidents(service):
                     'query: {} is: {}.\n incidents found: {}'.format(last_run, now, searchquery_oneshot,
                                                                      len(incidents), incidents)
     opt_in_log(debug_message)
-    latest_incident_fetched_time = None if len(incidents) == 0 else get_latest_incident_time(incidents)
 
     fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
 
@@ -600,6 +598,7 @@ def fetch_incidents(service):
         demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
                             'fetch_start_update_count': fetches_with_same_start_time_count})
     elif len(incidents) < FETCH_LIMIT:
+        latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count)
         opt_in_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
         demisto.setLastRun(
