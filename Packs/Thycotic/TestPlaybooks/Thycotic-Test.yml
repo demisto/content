@@ -6,10 +6,10 @@ fromversion: 5.0.0
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '6ef568cc-c778-4129-a6bc-51bf3c86f695'
     type: start
     task:
-      id: '0'
+      id: '6ef568cc-c778-4129-a6bc-51bf3c86f695'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '26079a2d-953c-4801-abe9-c7c38abe1811'
     type: regular
     task:
-      id: '1'
+      id: '26079a2d-953c-4801-abe9-c7c38abe1811'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: 'a667a6ef-8072-49c7-8d7b-01368fd88dfc'
     type: regular
     task:
-      id: '2'
+      id: 'a667a6ef-8072-49c7-8d7b-01368fd88dfc'
       version: -1
       name: thycotic-authenticate-token
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'fa51e264-35b5-486e-8b80-e2472b17acae'
     type: condition
     task:
-      id: '3'
+      id: 'fa51e264-35b5-486e-8b80-e2472b17acae'
       version: -1
       name: Verify Outputs
       type: condition
@@ -102,10 +102,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 'd7b1c42f-8cb6-4f94-bb64-ef7290ce6940'
     type: regular
     task:
-      id: '4'
+      id: 'd7b1c42f-8cb6-4f94-bb64-ef7290ce6940'
       version: -1
       name: thycotic-secret-password-get
       description: ''
@@ -125,10 +125,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: 'a27138a9-b946-489a-8ec3-15263052905d'
     type: condition
     task:
-      id: '5'
+      id: 'a27138a9-b946-489a-8ec3-15263052905d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -154,10 +154,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: '489eba09-5939-4320-bcf7-b55b7607b5be'
     type: regular
     task:
-      id: '6'
+      id: '489eba09-5939-4320-bcf7-b55b7607b5be'
       version: -1
       name: thycotic-secret-username-get
       description: ''
@@ -177,10 +177,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: '24ac5ab9-b251-4154-b259-c7be29d2ac9c'
     type: condition
     task:
-      id: '7'
+      id: '24ac5ab9-b251-4154-b259-c7be29d2ac9c'
       version: -1
       name: Verify Outputs
       type: condition
@@ -206,10 +206,10 @@ tasks:
     skipunavailable: false
   '8':
     id: '8'
-    taskid: '8'
+    taskid: '42fee96f-672b-4a9a-93a9-04bd0c135602'
     type: title
     task:
-      id: '8'
+      id: '42fee96f-672b-4a9a-93a9-04bd0c135602'
       version: -1
       name: Test Done
       type: title
@@ -226,3 +226,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: Test playbook for the Thoctic integration.
