@@ -1,7 +1,7 @@
-id: OpenCTI_Feed_v2_Test
+id: OpenCTI Feed v2 Test
 version: 5
 vcShouldKeepItemLegacyProdMachine: false
-name: OpenCTI_Feed_v2_Test
+name: OpenCTI Feed v2 Test
 starttaskid: "0"
 tasks:
   "0":
