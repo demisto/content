@@ -288,7 +288,18 @@ references:
       when: always
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
-        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
+
+        GCS_PATH=$(mktemp)
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
+
+        FEATURE_BRANCH_NAME="v4.5.0"
+        successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
 
   restore_cache: &restore_cache
     restore_cache:
