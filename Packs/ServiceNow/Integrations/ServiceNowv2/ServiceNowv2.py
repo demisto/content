@@ -452,7 +452,7 @@ class Client(BaseClient):
 
     def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
                  sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = {}):
+                 incident_name: str, oauth_params: dict = None, version: str = None):
         """
 
         Args:
@@ -471,8 +471,10 @@ class Client(BaseClient):
             get_attachments: whether to get ticket attachments by default
             incident_name: the ServiceNow ticket field to be set as the incident name
         """
+        oauth_params = oauth_params if oauth_params else {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
+        self._version = version
         self._verify = verify
         self._username = username
         self._password = password
@@ -1970,6 +1972,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
         raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
                         'command followed by the !servicenow-oauth-test command to test the instance.')
 
+    if client._version == 'v2' and client.get_attachments:
+        raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')
+
     test_instance(client)
     return 'ok', {}, {}, True
 
@@ -2290,7 +2295,7 @@ def main():
         client = Client(server_url=server_url, sc_server_url=sc_server_url, username=username, password=password,
                         verify=verify, fetch_time=fetch_time, sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params)
+                        incident_name=incident_name, oauth_params=oauth_params, version=version)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-oauth-test': oauth_test_module,
