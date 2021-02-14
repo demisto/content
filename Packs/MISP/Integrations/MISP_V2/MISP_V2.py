@@ -698,7 +698,7 @@ def download_file():
     """
     file_hash = demisto.args().get('hash')
     event_id = demisto.args().get('eventID')
-    unzip = True if demisto.args().get('unzipped') == 'true' else False
+    unzip = True if demisto.args().get('unzip') == 'true' else False
     all_samples = True if demisto.args().get('allSamples') in ('1', 'true') else False
 
     response = MISP.download_samples(sample_hash=file_hash,

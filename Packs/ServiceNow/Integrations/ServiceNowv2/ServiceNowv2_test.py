@@ -5,7 +5,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
+    ServiceNowClient, oauth_test_module, login_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -16,14 +17,16 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
     RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
-    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED
+    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, \
+    OAUTH_PARAMS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING
+    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, \
+    EXPECTED_MAPPING, EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 import demistomock as demisto
 
@@ -37,6 +40,20 @@ def test_get_ticket_context():
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
+
+
+def test_get_ticket_context_additional_fields():
+    """Unit test
+    Given
+        - additional keys of a ticket alongside regular keys.
+    When
+        - getting a ticket context
+    Then
+        - validate that all the details of the ticket were updated, and all the updated keys are shown in
+        the context with do duplicates.
+    """
+    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
+                                                                                ['Summary', 'sys_created_by'])
 
 
 def test_get_ticket_human_readable():
@@ -77,13 +94,37 @@ def test_split_fields():
     assert False
 
 
+def test_split_fields_with_special_delimiter():
+    """Unit test
+    Given
+    - split_fields method
+    - the default delimiter is ;
+    When
+    - splitting values with a different delimiter - ','
+    Then
+    -  Validate the fields were created correctly
+    """
+    expected_dict_fields = {'a': 'b', 'c': 'd'}
+    assert expected_dict_fields == split_fields('a=b,c=d', ',')
+
+    expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text<;/a>"}
+    assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text<;/a>", ',')
+
+    try:
+        split_fields('a')
+    except Exception as err:
+        assert "must contain a '=' to specify the keys and values" in str(err)
+        return
+    assert False
+
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
-    (update_ticket_command, {'id': '1234', 'impact': '3 - Low'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
+    (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
      RESPONSE_UPDATE_TICKET_SC_REQ, EXPECTED_UPDATE_TICKET_SC_REQ, True),
-    (update_ticket_command, {'id': '1234', 'severity': '2 - Medium', 'additional_fields': "approval=rejected"},
+    (update_ticket_command, {'id': '1234', 'severity': '3', 'additional_fields': "approval=rejected"},
      RESPONSE_UPDATE_TICKET_ADDITIONAL, EXPECTED_UPDATE_TICKET_ADDITIONAL, True),
-    (create_ticket_command, {'active': 'true', 'severity': "2 - Medium", 'description': "creating a test ticket",
+    (create_ticket_command, {'active': 'true', 'severity': "3", 'description': "creating a test ticket",
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS, True),
@@ -384,6 +425,48 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
     assert debug[2][0][0] == expected_debug_msg
 
 
+def test_oauth_authentication(mocker, requests_mock):
+    """
+    Given:
+     - Integration instance, initialized with the `Use OAuth Login` checkbox selected.
+
+    When:
+     - Clicking on running the !servicenow-oauth-test command.
+
+    Then:
+     - Verify that oauth authorization flow is used by checking that the get_access_token is called.
+    """
+    from unittest.mock import MagicMock
+    url = 'https://test.service-now.com'
+    mocker.patch.object(demisto, 'command', return_value='servicenow-oauth-test')
+    mocker.patch.object(ServiceNowClient, 'get_access_token')
+    requests_mock.get(
+        f'{url}/api/now/table/incident?sysparm_limit=1',
+        json={
+            'result': [{
+                'opened_at': 'sometime'
+            }]
+        }
+    )
+
+    # Assert that get_access_token is called when `Use OAuth Login` checkbox is selected:
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': url,
+            'credentials': {
+                'identifier': 'client_id',
+                'password': 'client_secret'
+            },
+            'use_oauth': True
+        }
+    )
+    ServiceNowClient.get_access_token = MagicMock()
+    main()
+    assert ServiceNowClient.get_access_token.called
+
+
 def test_test_module(mocker):
     """Unit test
     Given
@@ -391,11 +474,16 @@ def test_test_module(mocker):
     - command args
     - command raw response
     When
-    - mock the parse_date_range.
-    - mock the Client's send_request.
+    (a)
+        - mock the parse_date_range.
+        - mock the Client's send_request.
+    (b) - calling the test module when using OAuth 2.0 authorization.
     Then
-    - run the test module command using the Client
-    Validate the content of the HumanReadable.
+    (a)
+        - run the test module command using the Client
+        Validate the content of the HumanReadable.
+    (b)
+        Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
     client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
@@ -404,6 +492,76 @@ def test_test_module(mocker):
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
     assert result[0] == 'ok'
+
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
+
+    try:
+        module(client)
+    except Exception as e:
+        assert 'Test button cannot be used when using OAuth 2.0' in e.args[0]
+
+
+def test_oauth_test_module(mocker):
+    """
+    Given:
+    - oauth_test_module command
+    When:
+    - (a) trying to call the command when using basic auth.
+    - (b)
+        - trying to call the command when using OAuth 2.0
+        - mock the parse_date_range.
+        - mock the Client's send_request.
+    Then:
+    - (a) validate that an error is returned, indicating that the function should be called when using OAuth only.
+    - (b) Validate that the instance was configured successfully.
+    """
+    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description')
+    try:
+        oauth_test_module(client)
+    except Exception as e:
+        assert 'command should be used only when using OAuth 2.0 authorization.' in e.args[0]
+
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    result = oauth_test_module(client)
+    assert '### Instance Configured Successfully.' in result[0]
+
+
+def test_oauth_login_command(mocker):
+    """
+    Given:
+    - login command
+    When:
+    - (a) trying to call the command when using basic auth.
+    - (b)
+        - trying to call the command when using OAuth 2.0.
+        - mocking the login command of ServiceNowClient.
+    Then:
+    - (a) validate that an error is returned, indicating that the function should be called when using OAuth only.
+    - (b) Validate that the login was successful.
+    """
+    mocker.patch('ServiceNowv2.ServiceNowClient.login')
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description')
+    try:
+        login_command(client, args={'username': 'username', 'password': 'password'})
+    except Exception as e:
+        assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in e.args[0]
+
+    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    result = login_command(client, args={'username': 'username', 'password': 'password'})
+    assert '### Logged in successfully.' in result[0]
 
 
 def test_sysparm_input_display_value(mocker, requests_mock):

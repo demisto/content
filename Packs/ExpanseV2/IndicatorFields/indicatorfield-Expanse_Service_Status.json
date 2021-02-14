@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate",
+        "DomainGlob",
+        "Domain"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expanseservicestatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_expanseservicestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Service Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

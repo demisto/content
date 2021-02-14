@@ -1,37 +1,38 @@
 from __future__ import print_function
 
 import argparse
-import os
-import uuid
-import json
 import ast
+import json
+import logging
+import os
 import subprocess
 import sys
+import uuid
 import zipfile
 from datetime import datetime
+from distutils.version import LooseVersion
 from enum import IntEnum
 from pprint import pformat
-from time import sleep
 from threading import Thread
-from distutils.version import LooseVersion
-import logging
-from typing import List
+from time import sleep
+from typing import List, Tuple
 
-from Tests.scripts.utils.log_util import install_logging
-
-from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
+from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
-from demisto_sdk.commands.common.tools import print_error, print_warning, print_color, LOG_COLORS, run_threads_list, \
-    run_command, get_yaml, str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import FileType
-from Tests.test_integration import __get_integration_config, __test_integration_instance, \
-    __disable_integrations_instances
-from Tests.test_content import extract_filtered_tests, get_server_numeric_version
-from Tests.update_content_data import update_content
+
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration
+from Tests.scripts.utils.log_util import install_logging
+from Tests.test_content import extract_filtered_tests, get_server_numeric_version
+from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
+from Tests.tools import run_with_proxy_configured
+from Tests.update_content_data import update_content
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -42,10 +43,16 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
 }
+DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
+    'docker.run.internal.asuser': 'true'
+}
 MARKET_PLACE_CONFIGURATION = {
     'content.pack.verify': 'false',
     'marketplace.initial.sync.delay': '0',
     'content.pack.ignore.missing.warnings.contentpack': 'true'
+}
+AVOID_DOCKER_IMAGE_VALIDATION = {
+    'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './Tests/id_set.json'
 
@@ -56,47 +63,31 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
-class SimpleSSH(SSHClient):
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-
-    def __init__(self, host, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
-        self.run_environment = Build.run_environment
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            super().__init__()
-            self.load_system_host_keys()
-            self.set_missing_host_key_policy(AutoAddPolicy())
-            if self.run_environment == Running.CIRCLECI_RUN:
-                self.connect(hostname=host, username=user, timeout=60.0)
-            elif self.run_environment == Running.WITH_OTHER_SERVER:
-                if key_file_path.startswith('~'):
-                    key_file_path = key_file_path.replace('~', os.getenv('HOME'), 1)
-                    self.connect(hostname=host, port=port, username=user, key_filename=key_file_path, timeout=60.0)
-
-    def exec_command(self, command, *_other):
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            _, _stdout, _stderr = super(SimpleSSH, self).exec_command(command)
-            return _stdout.read(), _stderr.read()
-        else:
-            return run_command(command, is_silenced=False), None
-
-
 class Server:
 
-    def __init__(self, host, user_name, password):
+    def __init__(self, internal_ip, port, user_name, password):
         self.__ssh_client = None
         self.__client = None
-        self.host = host
+        self.internal_ip = internal_ip
+        self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
 
     def __str__(self):
-        return self.host
+        return self.internal_ip
 
     @property
     def client(self):
         if self.__client is None:
-            self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
-                                                     password=self.password)
+            self.__client = self.reconnect_client()
+
+        return self.__client
+
+    def reconnect_client(self):
+        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+                                                 verify_ssl=False,
+                                                 username=self.user_name,
+                                                 password=self.password)
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -106,13 +97,8 @@ class Server:
             self.exec_command('sudo systemctl restart demisto')
 
     def exec_command(self, command):
-        if self.__ssh_client is None:
-            self.__init_ssh()
-        self.__ssh_client.exec_command(command)
-
-    def __init_ssh(self):
-        self.__ssh_client = SimpleSSH(host=self.host.replace('https://', '').replace('http://', ''),
-                                      key_file_path=Build.key_file_path, user='ec2-user')
+        subprocess.check_output(f'ssh {SSH_USER}@{self.internal_ip} {command}'.split(),
+                                stderr=subprocess.STDOUT)
 
 
 def get_id_set(id_set_path) -> dict:
@@ -137,20 +123,25 @@ class Build:
     #  END CHANGE ON LOCAL RUN  #
 
     def __init__(self, options):
+        self._proxy = None
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
         self.ami_env = options.ami_env
-        self.servers, self.server_numeric_version = self.get_servers(options.ami_env)
+        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
+        self.servers = [Server(internal_ip,
+                               port,
+                               self.username,
+                               self.password) for internal_ip, port in self.server_to_port_mapping.items()]
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
         self.skipped_integrations_conf = conf['skipped_integrations']
+        self.unmockable_integrations = conf['unmockable_integrations']
         id_set_path = options.id_set_path if options.id_set_path else ID_SET_PATH
         self.id_set = get_id_set(id_set_path)
         self.test_pack_path = options.test_pack_path if options.test_pack_path else None
@@ -158,6 +149,20 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+
+    @property
+    def proxy(self) -> MITMProxy:
+        """
+        A property method that should create and return a single proxy instance through out the build
+        Returns:
+            The single proxy instance that should be used in this build.
+        """
+        if not self._proxy:
+            self._proxy = MITMProxy(self.servers[0].internal_ip,
+                                    logging_module=logging,
+                                    build_number=self.ci_build_number,
+                                    branch_name=self.branch_name)
+        return self._proxy
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -194,12 +199,12 @@ class Build:
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        servers = determine_servers_urls(env_conf, ami_env)
+        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
         if Build.run_environment == Running.CIRCLECI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return servers, server_numeric_version
+        return server_to_port_mapping, server_numeric_version
 
 
 def options_handler():
@@ -207,8 +212,8 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before '
-                                          'GA". The server url is determined by the AMI environment.')
+                                          '"Server Master", "Server 5.0". '
+                                          'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -436,7 +441,12 @@ def change_placeholders_to_values(placeholders_map, config_item):
     return json.loads(item_as_string)
 
 
-def set_integration_params(integrations, secret_params, instance_names, placeholders_map):
+def set_integration_params(build,
+                           integrations,
+                           secret_params,
+                           instance_names,
+                           placeholders_map,
+                           logging_module=logging):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
     the secret_params taken from our secret configuration file. Because there may be a number of
@@ -449,6 +459,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     this function has completed execution and gone out of scope.
 
     Arguments:
+        build: Build object
         integrations: (list of dicts)
             List of integration objects whose 'params' attribute will be populated in this function.
         secret_params: (list of dicts)
@@ -459,6 +470,7 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
             configuration values.
         placeholders_map: (dict)
              Dict that holds the real values to be replaced for each placeholder.
+        logging_module (Union[ParallelLoggingManager,logging]): The logging module to use
 
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
@@ -466,7 +478,6 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
-
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -485,15 +496,23 @@ def set_integration_params(integrations, secret_params, instance_names, placehol
                                                for optional_integration in integration_params]
                     failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
                                                 ' the instance_name argument in conf.json. The options are:\n{}'
-                    print_error(failed_match_instance_msg.format(len(integration_params),
-                                                                 integration['name'],
-                                                                 '\n'.join(optional_instance_names)))
+                    logging_module.error(failed_match_instance_msg.format(len(integration_params),
+                                                                          integration['name'],
+                                                                          '\n'.join(optional_instance_names)))
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
+            if integration['name'] not in build.unmockable_integrations:
+                integration['params'].update({'proxy': True})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=True')
+            else:
+                integration['params'].update({'proxy': False})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=False')
 
     return True
 
@@ -810,75 +829,6 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     return testing_status
 
 
-def set_marketplace_gcp_bucket_for_build(client, prints_manager, branch_name, ci_build_number, is_nightly, is_private):
-    """Sets custom marketplace GCP bucket based on branch name and build number
-
-    Args:
-        client (demisto_client): The configured client to use.
-        prints_manager (ParallelPrintsManager): Print manager object
-        branch_name (str): GitHub branch name
-        ci_build_number (str): CI build number
-        is_nightly: Whether this is a nightly build
-        is_private: Whether this is a private build
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    host = client.api_client.configuration.host
-    installed_content_message = \
-        '\nMaking "POST" request to server - "{}" to set GCP bucket server configuration.'.format(host)
-    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
-
-    # make request to update server configs
-    # disable-secrets-detection-start
-    server_configuration = {
-        'content.pack.verify': 'false',
-        'marketplace.initial.sync.delay': '0',
-        'content.pack.ignore.missing.warnings.contentpack': 'true'
-    }
-    if is_private:
-        server_configuration['marketplace.bootstrap.bypass.url'] = 'https://storage.googleapis.com/marketplace-ci-build'
-        server_configuration['marketplace.gcp.path'] = f'content/builds/{branch_name}/{ci_build_number}/content/packs'
-        server_configuration['jobs.marketplacepacks.schedule'] = '1m'
-        server_configuration[
-            'marketplace.premium.gateway.service.url'] = 'https://xsoar-premium-content-team-gateway.demisto.works'
-    elif not is_nightly:
-        server_configuration['marketplace.bootstrap.bypass.url'] = \
-            f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{branch_name}/{ci_build_number}'
-    error_msg = "Failed to set GCP bucket server config - with status code "
-    # disable-secrets-detection-end
-    return update_server_configuration(client, server_configuration, error_msg)
-
-
-def set_docker_hardening_for_build(client, prints_manager):
-    """Sets docker hardening configuration
-
-    Args:
-        client (demisto_client): The configured client to use.
-        prints_manager (ParallelPrintsManager): Print manager object
-
-    Returns:
-        response_data: The response data
-        status_code: The response status code
-    """
-    host = client.api_client.configuration.host
-    installed_content_message = \
-        '\nMaking "POST" request to server - "{}" to set docker hardening server configuration.'.format(host)
-    prints_manager.add_print_job(installed_content_message, print_color, 0, LOG_COLORS.GREEN)
-
-    # make request to update server configs
-    server_configuration = {
-        'docker.cpu.limit': '1.0',
-        'docker.run.internal.asuser': 'true',
-        'limit.docker.cpu': 'true',
-        'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
-    }
-    error_msg = "Failed to set docker hardening server config - with status code "
-
-    return update_server_configuration(client, server_configuration, error_msg)
-
-
 def get_env_conf():
     if Build.run_environment == Running.CIRCLECI_RUN:
         return get_json_file(Build.env_results_path)
@@ -887,35 +837,31 @@ def get_env_conf():
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
-            "Role": "Demisto Marketplace"  # e.g. 'Demisto Marketplace'
+            "Role": "Server Master"  # e.g. 'Server Master'
         }]
     elif Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
-            "Role": "DEMISTO EVN"  # e.g. 'Demisto Marketplace'
+            "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
 
 
-def determine_servers_urls(env_results, ami_env):
+def map_server_to_port(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
             env_results.json in server
-        ami_env: (str)
+        instance_role: (str)
             The amazon machine image environment whose IP we should connect to.
 
     Returns:
         (lst): The server url list to connect to
     """
 
-    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
-
-    server_urls = []
-    for dns in instances_dns:
-        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
-        server_urls.append(server_url)
-    return server_urls
+    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
+                      instance_role in env.get('Role', '')}
+    return ip_to_port_map
 
 
 def get_json_file(path):
@@ -923,51 +869,32 @@ def get_json_file(path):
         return json.loads(json_file.read())
 
 
-def configure_servers_and_restart(build, prints_manager=None):
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-        configurations = DOCKER_HARDENING_CONFIGURATION
-        configure_types = ['docker hardening']
-        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-            configure_types.append('marketplace')
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+def configure_servers_and_restart(build):
+    manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+    for server in build.servers:
+        configurations = dict()
+        configure_types = []
+        if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
+            configure_types.append('ignore docker image validation')
+            configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
+            if is_redhat_instance(server.internal_ip):
+                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            else:
+                configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            configure_types.append('docker hardening')
+            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+                configure_types.append('marketplace')
+                configurations.update(MARKET_PLACE_CONFIGURATION)
 
         error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
-        for server in build.servers:
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+        server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
-        if manual_restart:
-            input('restart your server and then press enter.')
-        else:
-            if prints_manager:
-                prints_manager.add_print_job('Done restarting servers.\nSleeping for 1 minute...', print_warning, 0)
-                prints_manager.execute_thread_prints(0)
-            else:
-                logging.info('Done restarting servers. Sleeping for 1 minute')
-            sleep(60)
-
-
-def restart_server(server):
-    try:
-        logging.info('Restarting servers to apply server config ...')
-
-        # copy from .demisto_bashrc stop_server && start_server
-        command = 'sudo systemctl restart demisto'
-        SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path,
-                  user='ec2-user').exec_command(command)
-    except Exception:
-        logging.exception('New SSH restart demisto failed')
-        restart_server_legacy(server)
-
-
-def restart_server_legacy(server):
-    try:
-        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                     '"sudo systemctl restart demisto"'
-        subprocess.check_output(
-            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-    except subprocess.CalledProcessError:
-        logging.exception('Legacy SSH restart demisto failed')
+    if manual_restart:
+        input('restart your server and then press enter.')
+    else:
+        logging.info('Done restarting servers. Sleeping for 1 minute')
+        sleep(60)
 
 
 def get_tests(build: Build) -> List[str]:
@@ -1052,7 +979,7 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
-        kwargs = {'client': server.client, 'host': server.host}
+        kwargs = {'client': server.client, 'host': server.internal_ip}
         if service_account:
             kwargs['service_account'] = service_account
         if pack_path:
@@ -1088,7 +1015,7 @@ def install_packs(build, pack_ids=None):
 
 
 def configure_server_instances(build: Build, tests_for_iteration, all_new_integrations, modified_integrations):
-    old_module_instances = []
+    modified_module_instances = []
     new_module_instances = []
     testing_client = build.servers[0].client
     for test in tests_for_iteration:
@@ -1112,10 +1039,13 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        new_ints_params_set = set_integration_params(new_integrations, build.secret_conf['integrations'],
+        new_ints_params_set = set_integration_params(build,
+                                                     new_integrations,
+                                                     build.secret_conf['integrations'],
                                                      instance_names_conf,
                                                      placeholders_map)
-        ints_to_configure_params_set = set_integration_params(integrations_to_configure,
+        ints_to_configure_params_set = set_integration_params(build,
+                                                              integrations_to_configure,
                                                               build.secret_conf['integrations'],
                                                               instance_names_conf, placeholders_map)
         if not new_ints_params_set:
@@ -1125,50 +1055,66 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
 
-        old_module_instances_for_test, new_module_instances_for_test = configure_old_and_new_integrations(
+        modified_module_instances_for_test, new_module_instances_for_test = configure_modified_and_new_integrations(
             build,
             integrations_to_configure,
             new_integrations,
             testing_client)
 
-        old_module_instances.extend(old_module_instances_for_test)
+        modified_module_instances.extend(modified_module_instances_for_test)
         new_module_instances.extend(new_module_instances_for_test)
-    return old_module_instances, new_module_instances
+    return modified_module_instances, new_module_instances
 
 
-def configure_old_and_new_integrations(build: Build,
-                                       old_integrations_to_configure: list,
-                                       new_integrations_to_configure: list,
-                                       demisto_client: demisto_client) -> tuple:
+def configure_modified_and_new_integrations(build: Build,
+                                            modified_integrations_to_configure: list,
+                                            new_integrations_to_configure: list,
+                                            demisto_client: demisto_client) -> tuple:
     """
     Configures old and new integrations in the server configured in the demisto_client.
     Args:
         build: The build object
-        old_integrations_to_configure: Integrations to configure that are already exists
+        modified_integrations_to_configure: Integrations to configure that are already exists
         new_integrations_to_configure: Integrations to configure that were created in this build
         demisto_client: A demisto client
 
     Returns:
         A tuple with two lists:
-        1. List of configured instances of old integrations
+        1. List of configured instances of modified integrations
         2. List of configured instances of new integrations
     """
-    old_modules_instances = []
+    modified_modules_instances = []
     new_modules_instances = []
-    for integration in old_integrations_to_configure:
+    for integration in modified_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
         module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
-            old_modules_instances.append(module_instance)
+            modified_modules_instances.append(module_instance)
     for integration in new_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
         module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
         if module_instance:
             new_modules_instances.append(module_instance)
-    return old_modules_instances, new_modules_instances
+    return modified_modules_instances, new_modules_instances
 
 
-def instance_testing(build: Build, all_module_instances, pre_update):
+def instance_testing(build: Build,
+                     all_module_instances: list,
+                     pre_update: bool,
+                     use_mock: bool = True) -> Tuple[set, set]:
+    """
+    Runs 'test-module' command for the instances detailed in `all_module_instances`
+    Args:
+        build: An object containing the current build info.
+        all_module_instances: The integration instances that should be tested
+        pre_update: Whether this instance testing is before or after the content update on the server.
+        use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
+        private content build which aren't using the mocks.
+
+    Returns:
+        A set of the successful tests containing the instance name and the integration name
+        A set of the failed tests containing the instance name and the integration name
+    """
     update_status = 'Pre' if pre_update else 'Post'
     failed_tests = set()
     successful_tests = set()
@@ -1178,13 +1124,15 @@ def instance_testing(build: Build, all_module_instances, pre_update):
         logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
-
-    testing_client = build.servers[0].client
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         # If there is a failure, __test_integration_instance will print it
-        success, _ = __test_integration_instance(testing_client, instance)
+        if integration_of_instance not in build.unmockable_integrations and use_mock:
+            success = test_integration_with_mock(build, instance, pre_update)
+        else:
+            testing_client = build.servers[0].reconnect_client()
+            success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
         else:
@@ -1193,21 +1141,54 @@ def instance_testing(build: Build, all_module_instances, pre_update):
     return successful_tests, failed_tests
 
 
+def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
+    """
+    Runs 'test-module' for given integration with mitmproxy
+    In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
+    Args:
+        build: An object containing the current build info.
+        instance: A dict containing the instance details
+        pre_update: Whether this instance testing is before or after the content update on the server.
+
+    Returns:
+        The result of running the 'test-module' command for the given integration.
+        If a record was executed - will return the result of the 'test--module' with the record mode only.
+    """
+    testing_client = build.servers[0].reconnect_client()
+    integration_of_instance = instance.get('brand', '')
+    logging.debug(f'Integration "{integration_of_instance}" is mockable, running test-module with mitmproxy')
+    has_mock_file = build.proxy.has_mock_file(integration_of_instance)
+    success = False
+    if has_mock_file:
+        with run_with_mock(build.proxy, integration_of_instance) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
+    if not success and not pre_update:
+        logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
+        with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
+            success, _ = __test_integration_instance(testing_client, instance)
+            result_holder[RESULT] = success
+            if not success:
+                logging.debug(f'Record mode for integration "{integration_of_instance}" has failed.')
+    return success
+
+
 def update_content_till_v6(build: Build):
     threads_list = []
     # For each server url we install content
     for thread_index, server in enumerate(build.servers):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': server.client, 'server': server.host, 'ami_name': build.ami_env})
+                   kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
         threads_list.append(t)
 
     run_threads_list(threads_list)
 
 
-def disable_instances(build: Build, all_module_instances, prints_manager=None):
-    __disable_integrations_instances(build.servers[0].client, all_module_instances, prints_manager)
-    if prints_manager:
-        prints_manager.execute_thread_prints(0)
+def disable_instances(build: Build):
+    for server in build.servers:
+        disable_all_integrations(server.client)
 
 
 def create_nightly_test_pack():
@@ -1310,13 +1291,81 @@ def set_marketplace_url(servers, branch_name, ci_build_number):
     sleep(60)
 
 
-def main():
-    install_logging('Install Content And Configure Integrations On Server.log')
-    build = Build(options_handler())
+@run_with_proxy_configured
+def test_integrations_post_update(build: Build, new_module_instances: list, modified_module_instances: list) -> tuple:
+    """
+    Runs 'test-module on all integrations for post-update check
+    Args:
+        build: A build object
+        new_module_instances: A list containing new integrations instances to run test-module on
+        modified_module_instances: A list containing old (existing) integrations instances to run test-module on
 
-    configure_servers_and_restart(build)
+    Returns:
+        * A list of integration names that have failed the 'test-module' execution post update
+        * A list of integration names that have succeeded the 'test-module' execution post update
+    """
+    modified_module_instances.extend(new_module_instances)
+    successful_tests_post, failed_tests_post = instance_testing(build, modified_module_instances, pre_update=False)
+    return successful_tests_post, failed_tests_post
+
+
+def update_content_on_servers(build: Build) -> bool:
+    """
+    Updates content on the build's server according to the server version
+    Args:
+        build: Build object
+
+    Returns:
+        A boolean that indicates whether the content installation was successful.
+        If the server version is lower then 5.9.9 will return the 'installed_content_packs_successfully' parameter as is
+        If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
+        both before that update and after the update.
+    """
+    installed_content_packs_successfully = True
+    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+        update_content_till_v6(build)
+    elif not build.is_nightly:
+        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
+        installed_content_packs_successfully = install_packs(build)
+    return installed_content_packs_successfully
+
+
+@run_with_proxy_configured
+def configure_and_test_integrations_pre_update(build: Build, new_integrations, modified_integrations) -> tuple:
+    """
+    Configures integration instances that exist in the current version and for each integration runs 'test-module'.
+    Args:
+        build: Build object
+        new_integrations: A list containing new integrations names
+        modified_integrations: A list containing modified integrations names
+
+    Returns:
+        A tuple consists of:
+        * A list of modified module instances configured
+        * A list of new module instances configured
+        * A list of integrations that have failed the 'test-module' command execution
+        * A list of integrations that have succeeded the 'test-module' command execution
+        * A list of new integrations names
+    """
+    tests_for_iteration = get_tests(build)
+    modified_module_instances, new_module_instances = configure_server_instances(build,
+                                                                                 tests_for_iteration,
+                                                                                 new_integrations,
+                                                                                 modified_integrations)
+    successful_tests_pre, failed_tests_pre = instance_testing(build, modified_module_instances, pre_update=True)
+    return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
+
+
+def install_packs_pre_update(build: Build) -> bool:
+    """
+    Install packs on server according to server version
+    Args:
+        build: A build object
+
+    Returns:
+        A boolean that indicates whether the installation was successful or not
+    """
     installed_content_packs_successfully = False
-
     if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build)
@@ -1327,23 +1376,28 @@ def main():
                 installed_content_packs_successfully = install_packs(build, pack_ids=pack_ids)
     else:
         installed_content_packs_successfully = True
+    return installed_content_packs_successfully
 
-    tests_for_iteration = get_tests(build)
+
+def main():
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
+    build = Build(options_handler())
+
+    configure_servers_and_restart(build)
+    disable_instances(build)
+    installed_content_packs_successfully = install_packs_pre_update(build)
+
     new_integrations, modified_integrations = get_changed_integrations(build)
-    all_module_instances, brand_new_integrations = configure_server_instances(build,
-                                                                              tests_for_iteration,
-                                                                              new_integrations,
-                                                                              modified_integrations)
-    successful_tests_pre, failed_tests_pre = instance_testing(build, all_module_instances, pre_update=True)
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
-        update_content_till_v6(build)
-    elif not build.is_nightly:
-        set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
-        installed_content_packs_successfully = install_packs(build) and installed_content_packs_successfully
 
-    all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build, all_module_instances, pre_update=False)
-    disable_instances(build, all_module_instances)
+    pre_update_configuration_results = configure_and_test_integrations_pre_update(build,
+                                                                                  new_integrations,
+                                                                                  modified_integrations)
+    modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+
+    successful_tests_post, failed_tests_post = test_integrations_post_update(build,
+                                                                             new_module_instances,
+                                                                             modified_module_instances)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                   new_integrations)

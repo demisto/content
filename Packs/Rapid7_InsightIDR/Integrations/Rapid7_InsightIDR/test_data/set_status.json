@@ -1,0 +1,22 @@
+{
+    "data": [
+      {
+        "alerts": [
+          {
+            "first_event_time": "2018-06-06T16:56:42Z",
+            "type": "Account Created",
+            "type_description": "A new account has been created."
+          }
+        ],
+        "assignee": {
+          "email": "example@test.com",
+          "name": "Ellen Example"
+        },
+        "created_time": "2018-06-06T16:56:42Z",
+        "id": "174e4f99-2ac7-4481-9301-4d24c34baf06",
+        "source": "ALERT",
+        "status": "OPEN",
+        "title": "Joe enabled account Joebob"
+      }
+    ]
+  }

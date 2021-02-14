@@ -2,7 +2,7 @@
     "name": "AlphaSOC Network Behavior Analytics",
     "description": "Retrieve alerts from the AlphaSOC Analytics Engine",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "AlphaSOC",
     "url": "",
     "email": "support@alphasoc.com",

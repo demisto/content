@@ -234,42 +234,6 @@
                         "i": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "prismacloudalertid",
-                                "height": 24,
-                                "id": "959c3cc0-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
-                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "prismacloudalertstatus",
-                                "height": 24,
-                                "id": "9a8baa40-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "prismacloudalertreason",
-                                "height": 24,
-                                "id": "9d27b1e0-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "prismacloudalerttime",
-                                "height": 24,
-                                "id": "9bae0a30-f766-11e9-8c27-6359f1848ae7",
-                                "index": 0,
-                                "listId": "gfrgdzfgei-57cfecc0-f766-11e9-8c27-6359f1848ae7",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "prismacloudid",
                                 "height": 24,
@@ -600,18 +564,7 @@
                         "hideName": false,
                         "i": "fyjdlofdhd-98793800-a9d5-11e9-a91e-57df9227e86a",
                         "isVisible": true,
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "compliancemetadata",
-                                "height": 110,
-                                "id": "bea01080-a9d5-11e9-a91e-57df9227e86a",
-                                "index": 1,
-                                "listId": "fyjdlofdhd-98793800-a9d5-11e9-a91e-57df9227e86a",
-                                "startCol": 0
-                            }
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,

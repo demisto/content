@@ -32,8 +32,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. pwned-email
 ---
 Checks if an email address was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-email`
@@ -115,8 +113,6 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 2. pwned-domain
 ---
 Checks if a domain was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-domain`
@@ -178,8 +174,6 @@ Data breached: **Email addresses,Password hints,Passwords,Usernames**
 ### 3. email
 ---
 Checks if an email address was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `email`
@@ -261,8 +255,6 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 4. domain
 ---
 Checks if a domain was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `domain`
@@ -324,8 +316,6 @@ Data breached: **Email addresses,Password hints,Passwords,Usernames**
 ### 5. pwned-username
 ---
 Checks if a username was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-username`

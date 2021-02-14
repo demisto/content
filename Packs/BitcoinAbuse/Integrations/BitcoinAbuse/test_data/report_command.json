@@ -1,0 +1,28 @@
+{
+  "other_type_missing": {
+    "address": "12xfas41",
+    "abuser": "blabla@blabla.net",
+    "abuse_type": "other",
+    "description": "this is a description of an abuse done to the api"
+  },
+  "unknown_type": {
+    "address": "12xfas41",
+    "abuser": "blabla@blabla.net",
+    "abuse_type": "unknown type",
+    "abuse_type_other": "Stole my bitcoins",
+    "description": "this is a description of an abuse done to the api"
+  },
+  "valid": {
+    "address": "12xfas41",
+    "abuser": "blabla@blabla.net",
+    "abuse_type": "darknet market",
+    "description": "this is a description of an abuse done to the api"
+  },
+  "valid_other": {
+    "address": "12xfas41",
+    "abuser": "blabla@blabla.net",
+    "abuse_type": "other",
+    "abuse_type_other": "Stole my bitcoins",
+    "description": "this is a description of an abuse done to the api"
+  }
+}

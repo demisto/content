@@ -1,0 +1,133 @@
+category: Utilities
+commonfields:
+  id: Arduino
+  version: -1
+configuration:
+- additionalinfo: Hostname or IP
+  display: Hostname or IP
+  name: host
+  required: true
+  type: 0
+- additionalinfo: Port number
+  defaultvalue: "9090"
+  display: Port number
+  name: port
+  required: true
+  type: 0
+description: Connects to and controls an Arduino pin system using the network.
+display: Arduino
+name: Arduino
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: digital
+      description: The type of pin
+      name: pin_type
+      predefined:
+      - digital
+      - analog
+      required: true
+    - description: The pin number to set
+      name: pin_number
+      required: true
+    - description: The value to set the pin to
+      name: value
+      required: true
+    - description: Host name / IP address (optional - overrides parameters)
+      name: host
+    - description: Port number (optional - overrides parameters)
+      name: port
+    description: Requests that a pin be set
+    name: arduino-set-pin
+    outputs:
+    - contextPath: Arduino.DigitalPins
+      description: Digital Pins
+    - contextPath: Arduino.DigitalPins.PinNumber
+      description: PinNumber
+      type: number
+    - contextPath: Arduino.DigitalPins.PinType
+      description: Pin Type
+      type: string
+    - contextPath: Arduino.DigitalPins.PinValue
+      description: Pin Value
+      type: number
+    - contextPath: Arduino.AnalogPins
+      description: Analog Pins
+    - contextPath: Arduino.AnalogPins.PinNumber
+      description: PinNumber
+      type: number
+    - contextPath: Arduino.AnalogPins.PinType
+      description: Pin Type
+      type: string
+    - contextPath: Arduino.AnalogPins.PinValue
+      description: Pin Value
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: digital
+      description: Pin type
+      name: pin_type
+      predefined:
+      - digital
+      - analog
+      required: true
+    - description: The pin to read the value from
+      name: pin_number
+      required: true
+    - description: Host name / IP address (optional - overrides parameters)
+      name: host
+    - description: Port number (optional - overrides parameters)
+      name: port
+    description: Requests the value of a pin
+    name: arduino-get-pin
+    outputs:
+    - contextPath: Arduino.DigitalPins
+      description: Digital Pins
+    - contextPath: Arduino.DigitalPins.PinNumber
+      description: PinNumber
+      type: number
+    - contextPath: Arduino.DigitalPins.PinType
+      description: Pin Type
+      type: string
+    - contextPath: Arduino.DigitalPins.PinValue
+      description: Pin Value
+      type: number
+    - contextPath: Arduino.AnalogPins
+      description: Analog Pins
+    - contextPath: Arduino.AnalogPins.PinNumber
+      description: PinNumber
+      type: number
+    - contextPath: Arduino.AnalogPins.PinType
+      description: Pin Type
+      type: string
+    - contextPath: Arduino.AnalogPins.PinValue
+      description: Pin Value
+      type: number
+  - arguments:
+    - description: The data to send
+      name: data
+      required: true
+    - description: Host name / IP address (optional - overrides parameters)
+      name: host
+    - description: Port number (optional - overrides parameters)
+      name: port
+    description: Send arbitrary data to the Arduino
+    name: arduino-send-data
+    outputs:
+    - contextPath: Arduino.DataSend
+      description: Data Send
+    - contextPath: Arduino.DataSend.Sent
+      description: The data sent
+      type: string
+    - contextPath: Arduino.DataSend.Received
+      description: The data received
+      type: string
+  dockerimage: demisto/python3:3.9.1.14969
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

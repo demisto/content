@@ -1752,6 +1752,7 @@ tasks:
     scriptarguments:
       url:
         simple: 888.com
+    continueonerror: true
     separatecontext: false
     view: |-
       {

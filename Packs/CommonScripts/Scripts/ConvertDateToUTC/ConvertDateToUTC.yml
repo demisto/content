@@ -1,0 +1,36 @@
+commonfields:
+  id: ConvertDatetoUTC
+  version: -1
+name: ConvertDatetoUTC
+script: ''
+type: python
+tags:
+- Utility
+comment: Converts a date from a different timezone to UTC timezone.
+enabled: true
+args:
+- name: date
+  required: true
+  description: Date to convert to UTC
+- name: date_format
+  description: Default is "%Y-%m-%dT%H:%M:%S"
+  defaultValue: '%Y-%m-%dT%H:%M:%S'
+- name: timezone
+  default: true
+  description: 'Timezone accepted by pytz. Default is America/Los_Angeles '
+  defaultValue: America/Los_Angeles
+outputs:
+- contextPath: UTCDate
+  description: Converted Date in UTC timezone
+  type: Unknown
+- contextPath: UTCDateEpoch
+  description: Date in Epoch (Unix time)
+  type: Unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

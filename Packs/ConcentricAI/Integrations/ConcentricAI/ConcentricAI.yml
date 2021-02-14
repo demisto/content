@@ -95,6 +95,9 @@ script:
     - contextPath: ConcentricAI.FileInfo.pii
       description: PII present in file or not
       type: String
+    - contextPath: ConcentricAI.FileInfo.cid
+      description: File ID
+      type: String
   - arguments:
     - default: true
       defaultValue: '50'
@@ -118,7 +121,25 @@ script:
     description: Get's user details
     execution: false
     name: concentricai-get-user-details
-  dockerimage: demisto/python3:3.8.6.12176
+  - arguments:
+    - default: false
+      description: File ID
+      isArray: false
+      name: cid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get's file sharing details
+    execution: false
+    name: concentricai-get-file-sharing-details
+    outputs:
+      - contextPath: ConcentricAI.FileSharingInfo.type
+        description: Sharing type.
+        type: Array
+      - contextPath: ConcentricAI.FileSharingInfo.user_name
+        description: User name.
+        type: Array
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: true
   longRunning: false

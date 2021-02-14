@@ -1,6 +1,6 @@
 flake8==3.8.3
 bandit==1.6.2
-demisto-py==2.0.19
+demisto-py==2.0.22
 requests==2.23.0
 PyYAML==5.3.1
 pylint==1.9.5

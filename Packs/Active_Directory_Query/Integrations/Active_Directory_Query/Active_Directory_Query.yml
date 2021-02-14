@@ -463,6 +463,17 @@ script:
         required: true
         secret: false
         description: A User Profile indicator that contains user information, such as name, email address, etc.
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'true'
+        description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
+        isArray: false
+        name: allow-enable
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
     deprecated: false
     description: Creates an Active Directory user. This command requires a secure
       connection (SSL,TLS).
@@ -560,58 +571,22 @@ script:
         required: true
         secret: false
         description: A User Profile indicator that contains user information, such as name, email address, etc.
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'true'
+        description: When set to true, after the command execution the status of the user in the 3rd-party
+          integration will be active.
+        isArray: false
+        name: allow-enable
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
     deprecated: false
     execution: false
     description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
     name: iam-update-user
-    outputs:
-    - contextPath: IAM.UserProfile
-      description: The user's profile
-      type: Unknown
-    - contextPath: IAM.Vendor.active
-      description: Gives the active status of user. Can be true of false
-      type: Boolean
-    - contextPath: IAM.Vendor.brand
-      description: Name of the Integration
-      type: String
-    - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise error information.
-      type: Unknown
-    - contextPath: IAM.Vendor.email
-      description: The employee's email address.
-      type: String
-    - contextPath: IAM.Vendor.errorCode
-      description: HTTP error response code.
-      type: Number
-    - contextPath: IAM.Vendor.errorMessage
-      description: Reason why the API failed.
-      type: String
-    - contextPath: IAM.Vendor.id
-      description: The employee's user ID in the app.
-      type: String
-    - contextPath: IAM.Vendor.instanceName
-      description: Name of the integration instance.
-      type: Unknown
-    - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
-      type: Boolean
-    - contextPath: IAM.Vendor.username
-      description: The employee's username in the app.
-      type: String
-    - contextPath: IAM.Vendor.action
-      description: The command name.
-      type: String
-  - arguments:
-      - default: false
-        isArray: false
-        name: user-profile
-        required: true
-        secret: false
-        description: "A User Profile indicator that contains user information, such as name, email address, etc."
-    deprecated: false
-    description: Enables a user.
-    execution: false
-    name: iam-enable-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user's profile
