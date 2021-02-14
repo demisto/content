@@ -4,7 +4,7 @@ contentitemexportablefields:
     - all
 description: Main playbook to upload submissions to FortiSandbox, poll for verdict
   and retrieve report
-id: FortiSandbox - Upload a File and Fetch Report
+id: Detonate File - FortiSandbox
 inputs:
 - description: |
     Select Files to upload (Provide File objects from upper playbook only if using this as a sub-playbook). Change FileUploadLoop-FSBX to use ${inputs.File.EntryID} instead of ${File.EntryID}
@@ -20,7 +20,7 @@ inputs:
   required: false
   value:
     simple: "True"
-name: FortiSandbox - Upload a File and Fetch Report
+name: Detonate File - FortiSandbox
 outputs: []
 starttaskid: "0"
 tasks:
