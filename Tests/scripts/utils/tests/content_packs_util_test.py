@@ -7,7 +7,8 @@ from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
 
 from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
                                                     is_pack_deprecated,
-                                                    should_test_content_pack)
+                                                    should_test_content_pack, should_install_content_pack)
+
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
@@ -104,3 +105,44 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     # Mocking os.path.join to return the temp path created instead the path in content
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
     assert should_test_content_pack(pack_name) == expected
+
+
+@pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
+    ({PACK_METADATA_SUPPORT: 'partner'}, 'Partner', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', (False, 'Pack is either the "NonSupported" pack or the '
+                                                               '"DeprecatedContent" pack.')),
+    ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (False, 'Pack is Deprecated')),
+
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'ApiModules',
+     (False, "Pack should be ignored as it one of the files to ignore: ['__init__.py', "
+             "'ApiModules', 'NonSupported']"))
+])
+def test_should_install_content_pack(mocker, tmp_path, pack_metadata_content, pack_name, expected):
+    """
+    Given:
+        - Case A: Partner content pack
+        - Case B: Community content pack
+        - Case C: NonSupported content pack
+        - Case D: Deprecated CortexXDR content pack
+        - Case E: ApiModules content pack
+
+    When:
+        - Checking if pack should be installed
+
+    Then:
+        - Case A: Verify pack should be installed
+        - Case B: Verify pack should be installed
+        - Case C: Verify pack should not be installed
+        - Case D: Verify pack should not be installed
+        - Case E: Verify pack should not be installed
+    """
+    # Creating temp dirs
+    pack = tmp_path / PACKS_DIR / pack_name
+    pack.mkdir(parents=True)
+    pack_metadata_file = pack / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+
+    # Mocking os.path.join to return the temp path created instead the path in content
+    mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
+    assert should_install_content_pack(pack_name) == expected
