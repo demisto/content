@@ -503,17 +503,16 @@ def get_updated_private_packs(private_packs, index_folder_path):
         private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
         for public_pack in private_packs_from_public_index:
             if public_pack.get('id') == private_pack_id:
-                if private_pack_id == "HelloWorldPremium":
-                    logging.debug(
-                        f"private ContentCommitHash of HelloWorldPremium is {private_commit_hash_from_metadata}")
-                    logging.debug(
-                        f"public ContentCommitHash of HelloWorldPremium is {public_pack.get('contentCommitHash', '')}")
-                    private_commit_hash_from_content_rep = public_pack.get('contentCommitHash', "")
-                    private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_rep
-                    if private_pack_was_updated:
-                        logging.debug(f"add {private_pack_id} to notifier packs list")
-                        updated_private_packs.append(private_pack_id)
+                logging.debug(f"private ContentCommitHash of {private_pack_id} is {private_commit_hash_from_metadata}")
+                private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
+                logging.debug(
+                    f"public ContentCommitHash of {private_pack_id} is {private_commit_hash_from_content_repo}")
+                private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
+                if private_pack_was_updated:
+                    logging.debug(f"added {private_pack_id} to notifier packs list")
+                    updated_private_packs.append(private_pack_id)
 
+    logging.debug(f"all private packs that have updated are {updated_private_packs}")
     return updated_private_packs
 
 
@@ -541,21 +540,14 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
-                logging.debug(
-                    f"in upload_packs/get_private_packs metadata file of {metadata_file_path}"
-                    f" is: {metadata}")
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
-                    logging.debug(
-                        f"in upload_packs/get_private_packs/is_changed_private_pack "
-                        f"metadata file of {pack_id} is: {metadata}")
             if metadata:
-                logging.debug(
-                    f"contentCommitHash of {metadata.get('vendorId')} is {metadata.get('contentCommitHash', '')}")
+                logging.debug(f"contentCommitHash of {pack_id} is {metadata.get('contentCommitHash', '')}")
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),

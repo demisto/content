@@ -596,10 +596,8 @@ class Pack(object):
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if 'vendorId' in user_metadata:
-            logging.debug(f"in marketplace_services/_parse_pack_metadata/vendorId in metadata")
-            logging.debug(
-                f"contentCommitHash of vendorId {user_metadata.get('vendorId')}"
-                f" is {user_metadata.get('contentCommitHash', '')}")
+            logging.debug(f"contentCommitHash of vendorId {user_metadata.get('vendorId')}"
+                          f" is {user_metadata.get('contentCommitHash', '')}")
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
