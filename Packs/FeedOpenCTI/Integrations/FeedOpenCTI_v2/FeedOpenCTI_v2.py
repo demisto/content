@@ -406,12 +406,11 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
         readable_output = f'Organization created successfully with id: {organization_id}.'
     else:
         return_error("Can't create organization.")
-    return CommandResults(
-            outputs_prefix='OpenCTI.Organization',
-            outputs_key_field='id',
-            outputs={'id': result.get('id')},
-            readable_output=readable_output,
-            raw_response=result)
+    return CommandResults(outputs_prefix='OpenCTI.Organization',
+                          outputs_key_field='id',
+                          outputs={'id': result.get('id')},
+                          readable_output=readable_output,
+                          raw_response=result)
 
 
 def main():
