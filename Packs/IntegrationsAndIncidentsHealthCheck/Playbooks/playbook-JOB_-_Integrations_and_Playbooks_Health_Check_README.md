@@ -4,8 +4,8 @@ You should run this playbook as a scheduled job.  The playbook checks the health
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Integrations and Playbooks Health Check - Running Scripts
-* JOB - Integrations and Playbooks Health Check - Lists handling
+* Integrations and Incidents Health Check - Running Scripts
+* JOB - Integrations and Incidents Health Check - Lists handling
 
 ### Integrations
 This playbook does not use any integrations.
