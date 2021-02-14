@@ -151,10 +151,11 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
     domains_counter = Counter(senders_domain).most_common()  # type: ignore
+    recipients = incidents_df['emailto'].replace('', np.nan).dropna().tolist()
+    recipients_counter = Counter(recipients).most_common()  # type: ignore
     if len(senders_counter) == 1:
         domain_header = "Sender domain"
         sender_header = "Sender address"
-
     elif len(senders_counter) > 1 and len(domains_counter) == 1:
         domain_header = "Senders domain"
         sender_header = "Senders addresses"
@@ -164,10 +165,13 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     top_n = 3
     domain_value = get_str_representation_top_n_values(senders_domain, domains_counter, top_n)
     sender_value = get_str_representation_top_n_values(senders, senders_counter, top_n)
+    recipients_value = get_str_representation_top_n_values(recipients, recipients_counter, len(recipients_counter))
     headers.append(domain_header)
     contents.append(domain_value)
     headers.append(sender_header)
     contents.append(sender_value)
+    headers.append('Recipients')
+    contents.append(recipients_value)
     for field in fields_to_display:
         if field in incidents_df.columns:
             field_values = get_non_na_empty_values(incidents_df, field)

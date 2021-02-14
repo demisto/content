@@ -73,7 +73,7 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
 
     fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
-              'name', 'status']
+              'name', 'status', 'emailto']
 
     if 'populateFields' in input_args and input_args['populateFields'] is not None:
         get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
