@@ -6,6 +6,20 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
+""" ADVANCED GLOBAL PARAMETERS """
+EVENTS_INTERVAL_SECS = 15  # interval between events polling
+EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
+FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
+FETCH_SLEEP = 60  # sleep between fetches
+BATCH_SIZE = 100  # batch size used for offense ip enrichment
+OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
+LOCK_WAIT_TIME = 0.5  # time to wait for lock.acquire
+MAX_WORKERS = 8  # max concurrent workers used for events enriching
+DOMAIN_ENRCH_FLG = "True"  # when set to true, will try to enrich offense and assets with domain names
+RULES_ENRCH_FLG = "True"  # when set to true, will try to enrich offense with rule names
+MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
+SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
+
 ''' CONSTANTS '''
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
@@ -13,6 +27,7 @@ DEFAULT_RANGE_VALUE = '0-49'
 USECS_ENTRIES_MAPPING = {'last_persisted_time': 'last_persisted_time_usecs',
                          'start_time': 'start_time_usecs',
                          'close_time': 'close_time_usecs',
+                         'create_time': 'create_time_usecs',
                          'last_updated_time': 'last_updated_time_usecs',
                          'first_persisted_time': 'first_persisted_time_usecs'}
 ''' CLIENT CLASS '''
@@ -20,11 +35,12 @@ USECS_ENTRIES_MAPPING = {'last_persisted_time': 'last_persisted_time_usecs',
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, api_version: str, credentials: Dict):
+    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: Dict):
         username = credentials.get("identifier", "")
         password = credentials.get("password", "")
-        super().__init__(base_url, verify=verify, proxy=proxy, auth=(username, password))
+        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=(username, password))
         self.password = password
+        self.server = server
         self.base_headers = {
             'Version': api_version,
         }
@@ -37,93 +53,111 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=params,
             data=data,
-            headers=headers
+            headers=headers,
+            error_handler=qradar_error_handler
         )
 
-    def qradar_offences_list(self, offence_id: Optional[int], range_: str, filter_: Optional[str]):
-        id_suffix = f'/{offence_id}' if offence_id else ''
-        return self.http_request(
+    def qradar_offenses_list(self, offense_id: Optional[int], range_: str, filter_: Optional[str],
+                             fields: Optional[str]):
+        id_suffix = f'/{offense_id}' if offense_id else ''
+        response = self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses{id_suffix}',
-            params=assign_params(filter=filter_),
-            additional_headers={'Range': f'{range_}'} if not offence_id else None
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_} if not offense_id else None
         )
+        return [response] if id_suffix else response
 
-    def qradar_offence_update(self, offence_id: Optional[int], protected: Optional[bool], follow_up: Optional[bool],
-                              status: Optional[str], closing_reason_id: Optional[int], assigned_to: Optional[str]):
+    def qradar_offense_update(self, offense_id: Optional[int], protected: Optional[bool], follow_up: Optional[bool],
+                              status: Optional[str], closing_reason_id: Optional[int], assigned_to: Optional[str],
+                              fields: Optional[str]):
         return self.http_request(
             method='POST',
-            url_suffix=f'/siem/offenses/{offence_id}',
+            url_suffix=f'/siem/offenses/{offense_id}',
             params=assign_params(
                 protected=protected,
                 follow_up=follow_up,
                 status=status,
                 closing_reason_id=closing_reason_id,
-                assigned_to=assigned_to
+                assigned_to=assigned_to,
+                fields=fields
             )
         )
 
-    def qradar_closing_reasons_list(self, closing_reason_id: Optional[int], range_: str,
-                                    filter_: Optional[str]):
+    def qradar_closing_reasons_list(self, closing_reason_id: Optional[int], range_: Optional[str],
+                                    filter_: Optional[str], fields: Optional[str]):
         id_suffix = f'/{closing_reason_id}' if closing_reason_id else ''
-        return self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=f'/siem/offense_closing_reasons{id_suffix}',
-            additional_headers={'Range': f'items={range_}'} if not closing_reason_id else None,
-            params=assign_params(filter=filter_)
+            additional_headers={'Range': range_} if not closing_reason_id and range_ else None,
+            params=assign_params(filter=filter_, fields=fields)
         )
+        return [response] if id_suffix else response
 
-    def qradar_offence_notes_list(self, offence_id: Optional[int], note_id: Optional[int], range_: str,
-                                  filter_: Optional[str]):
+    def qradar_offense_notes_list(self, offense_id: Optional[int], note_id: Optional[int], range_: str,
+                                  filter_: Optional[str], fields: Optional[str]):
         note_id_suffix = f'/{note_id}' if note_id else ''
-        return self.http_request(
+        response = self.http_request(
             method='GET',
-            url_suffix=f'/siem/offenses/{offence_id}/notes{note_id_suffix}',
-            additional_headers={'Range': f'items={range_}'} if not note_id else None,
-            params=assign_params(filter=filter_)
+            url_suffix=f'/siem/offenses/{offense_id}/notes{note_id_suffix}',
+            additional_headers={'Range': range_} if not note_id else None,
+            params=assign_params(filter=filter_, fields=fields)
         )
+        return [response] if note_id_suffix else response
 
-    def qradar_offence_notes_create(self, offence_id: Optional[int], note_text: Optional[str]):
+    def qradar_offense_notes_create(self, offense_id: Optional[int], note_text: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='POST',
-            url_suffix=f'/siem/offenses/{offence_id}/notes',
-            params=assign_params(note_text=note_text)
+            url_suffix=f'/siem/offenses/{offense_id}/notes',
+            params=assign_params(note_text=note_text, fields=fields)
         )
 
     # figure how to use rule type
-    # def qradar_rules_list(self, rule_id: Optional[int], rule_type:):
+    def qradar_rules_list(self, rule_id: Optional[int], range_: Optional[str], filter_: Optional[str],
+                          fields: Optional[str]):
+        id_suffix = f'/{rule_id}' if rule_id else ''
+        response = self.http_request(
+            method='GET',
+            url_suffix=f'/analytics/rules{id_suffix}',
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_} if range_ else None
+        )
+        return [response] if id_suffix else response
 
     def qradar_rule_groups_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        return self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=f'/analytics/rule_groups{id_suffix}',
-            additional_headers={'Range': f'items={range_}'} if not rule_group_id else None,
+            additional_headers={'Range': range_} if not rule_group_id else None,
             params=assign_params(filter=filter_)
         )
+        return [response] if id_suffix else response
 
     def qradar_assets_list(self, range_: str, filter_: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/asset_model/assets',
-            additional_headers={'Range': f'items={range_}'},
+            additional_headers={'Range': range_},
             params=assign_params(filter=filter_)
         )
 
     def qradar_saved_searches_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        return self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=f'/ariel/saved_searches{id_suffix}',
-            additional_headers={'Range': f'items={range_}'} if not rule_group_id else None,
+            additional_headers={'Range': range_} if not rule_group_id else None,
             params=assign_params(filter=filter_)
         )
+        return [response] if id_suffix else response
 
     def qradar_searches_list(self, range_: str, filter_: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/searches',
-            additional_headers={'Range': f'items={range_}'},
+            additional_headers={'Range': range_},
             params=assign_params(filter=filter_)
         )
 
@@ -151,7 +185,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
             params=assign_params(filter=filter_),
-            additional_headers={'Range': f'items={range_}'} if not ref_name else None
+            additional_headers={'Range': range_} if not ref_name else None
         )
 
     def qradar_reference_set_create(self, ref_name: Optional[str], element_type: Optional[str],
@@ -182,13 +216,14 @@ class Client(BaseClient):
             url_suffix=f'/reference_data/sets/{ref_name}/{value}'
         )
 
-    def qradar_domains_list(self, domain_id: Optional[int], range_: str, filter_: Optional[str]):
+    def qradar_domains_list(self, domain_id: Optional[int], range_: Optional[str], filter_: Optional[str],
+                            fields: Optional[str]):
         id_suffix = f'/{domain_id}' if domain_id else ''
         return self.http_request(
             method='GET',
             url_suffix=f'/config/domain_management/domains{id_suffix}',
-            additional_headers={'Range': f'items={range_}'} if not domain_id else None,
-            params=assign_params(filter=filter_)
+            additional_headers={'Range': range_} if not domain_id and range_ else None,
+            params=assign_params(filter=filter_, fields=fields)
         )
 
     # discuss with arseny
@@ -215,6 +250,20 @@ class Client(BaseClient):
             additional_headers=additional_headers
         )
 
+    def qradar_offense_types(self, filter_: Optional[str]):
+        return self.http_request(
+            method='GET',
+            url_suffix='/siem/offense_types',
+            params=assign_params(filter=filter_)
+        )
+
+    def qradar_source_addresses(self, filter_: Optional[str], fields: Optional[str]):
+        return self.http_request(
+            method='GET',
+            url_suffix='/siem/source_addresses',
+            params=assign_params(filter=filter_)
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -235,7 +284,7 @@ def qradar_error_handler(res: Any):
         error_entry = res.json()
         message = error_entry.get('message', '')
         err_message = f'Error in API call [{res.status_code}] - {message}'
-        raise DemistoException(err_msg, res=err_message)
+        raise DemistoException(err_message, res=err_message)
     except ValueError:
         err_msg += '\n{}'.format(res.text)
         raise DemistoException(err_msg, res=res)
@@ -295,6 +344,158 @@ def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
     return maybe_date_time.isoformat()
 
 
+def replace_keys(output: Dict, old_new_dict: Dict) -> Dict:
+    """
+    Receives output, and a dict containing mapping of old key names to new key names.
+    Returns dict of output values, overriding the old name contained in old_new_dict with its value.
+    Args:
+        output (Dict): Output to replace its keys.
+        old_new_dict (Dict): Old key name mapped to new key name.
+
+    Returns:
+        (Dict) The dictionary with the transformed keys.
+    """
+    return {old_new_dict.get(k, k): v for k, v in output.items()}
+
+
+def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
+    """
+    Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
+    matching the offense type IDs of the offenses.
+    Args:
+        client (Client): Client to perform the API request to QRadar.
+        offenses (List[Dict]): List of all of the offenses.
+
+    Returns:
+        (Dict): Dictionary of {offense_type_id: offense_type_name}
+    """
+    offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type')}
+    if not offense_types_ids:
+        return dict()
+    offense_types = client.qradar_offense_types(f'''id in ({','.join(offense_types_ids)})''')
+    return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
+
+
+def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
+    """
+    Receives list of offenses, and performs API call to QRadar service to retrieve the closing reason names
+    matching the closing reason IDs of the offenses.
+    Args:
+        client (Client): Client to perform the API request to QRadar.
+        offenses (List[Dict]): List of all of the offenses.
+
+    Returns:
+        (Dict): Dictionary of {closing_reason_id: closing_reason_name}
+    """
+    closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses if offense.get('closing_reason_id')}
+    if not closing_reason_ids:
+        return dict()
+    closing_reasons = client.qradar_closing_reasons_list(None, None, f'''id in ({','.join(closing_reason_ids)})''',
+                                                         None)
+    return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
+
+
+def get_domain_names(client: Client, offenses: List[Dict]) -> Dict:
+    """
+    Receives list of offenses, and performs API call to QRadar service to retrieve the domain names
+    matching the domain IDs of the offenses.
+    Args:
+        client (Client): Client to perform the API request to QRadar.
+        offenses (List[Dict]): List of all of the offenses.
+
+    Returns:
+        (Dict): Dictionary of {domain_id: domain_name}
+    """
+    domain_ids = {offense.get('domain_id') for offense in offenses if offense.get('domain_id')}
+    if not domain_ids:
+        return dict()
+    domains_info = client.qradar_domains_list(None, None, f'''id in ({','.join(domain_ids)})''', fields='id,name')
+    return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
+
+
+def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
+    """
+    Receives list of offenses, and performs API call to QRadar service to retrieve the rules names
+    matching the rule IDs of the offenses.
+    Args:
+        client (Client): Client to perform the API request to QRadar.
+        offenses (List[Dict]): List of all of the offenses.
+
+    Returns:
+        (Dict): Dictionary of {rule_id: rule_name}
+    """
+    rules_ids = {rule.get('id') for offense in offenses for rule in offense.get('rules', [])}
+    if not rules_ids:
+        return dict()
+    rules = client.qradar_rules_list(None, None, f'''id in ({','.join(rules_ids)})''', fields='id,name')
+    return {rule.get('id'): rule.get('name') for rule in rules}
+
+
+def enrich_offenses_result(client: Client, offenses: List[Dict]) -> List[Dict]:
+    """
+    Receives list of offenses, and enriches the offenses with the following:
+    - Changes offense_type value from the offense type ID to the offense type name.
+    - Changes closing_reason_id value from closing reason ID to the closing reason name.
+    - Adds a link to the URL of each offense.
+    - Adds the domain name of the domain ID for each offense.
+    - Adds to each rule of the offense its name.
+    Args:
+        client (Client): Client to perform the API calls.
+        offenses (List[Dict]): List of all of the offenses to enrich.
+
+    Returns:
+        (List[Dict]): The enriched offenses.
+    """
+    offense_types_id_name_dict = get_offense_types(client, offenses)
+    closing_reasons_id_name_dict = get_offense_closing_reasons(client, offenses)
+    domain_id_name_dict = get_domain_names(client, offenses)
+    rules_id_name_dict = get_rules_names(client, offenses)
+
+    def create_enriched_offense(offense: Dict) -> Dict:
+        enriches = {
+            'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
+            'closing_reason_id': closing_reasons_id_name_dict.get(offense.get('closing_reason_id')),
+            'LinkToOffense': f'{client.server}/console/do/sem/offensesummary?'
+                             f'''appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}''',
+            'domain_name': domain_id_name_dict.get(offense.get('domain_id')),
+            'rules': [
+                {
+                    'id': rule.get('id'),
+                    'type': rule.get('type'),
+                    'name': rules_id_name_dict.get(rule.get('id'))
+
+                } for rule in offense.get('rules')
+            ]
+        }
+        return dict(offense, **enriches)
+
+    return [create_enriched_offense(offense) for offense in offenses]
+
+
+def enrich_offense_source_addresses(client: Client, offense: Dict) -> Set[str]:
+    """
+
+    Args:
+        client:
+        offense:
+    Returns:
+
+    """
+
+    def get_source_addresses_for_batch(b):
+        response = client.qradar_source_addresses(filter_=f'''id in ({','.join(b)})''', fields='source_ip')
+        return {output.get('source_ip') for output in response if output.get('source_ip')}
+
+    source_addresses_ids = offense.get('source_address_ids', [])
+    # Submit addresses in batches to avoid time out from QRadar service
+    source_addresses_batches = [get_source_addresses_for_batch(b) for b
+                                in batch(source_addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
+    return {source_address for addresses_batch in source_addresses_batches for source_address in addresses_batch}
+
+
+# def enrich_offense_with_destination_address(client: Client, offense: Dict) -> List[str]:
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -323,90 +524,212 @@ def test_module_command(client: Client) -> str:
     return message
 
 
-def qradar_offences_list_command(client: Client, args: Dict):
-    offence_id = args.get('offence_id')
+def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of offenses from QRadar service.
+    possible arguments:
+    - offense_id: Retrieves details of the specific offense that corresponds to the ID given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    offense_id = args.get('offense_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
+    fields = args.get('fields')
 
-    response = client.qradar_offences_list(offence_id, range_, filter_)
+    response = client.qradar_offenses_list(offense_id, range_, filter_, fields)
+    outputs = sanitize_outputs(response)
+    enriched_outputs = enrich_offenses_result(client, outputs)
+
     return CommandResults(
-        # readable_output=human_readable,
-        outputs_prefix='QRadar.Offence',
+        readable_output=tableToMarkdown('offenses List', enriched_outputs),
+        outputs_prefix='QRadar.offense',
         outputs_key_field='id',
-        outputs=sanitize_outputs(response),
+        outputs=enriched_outputs,
         raw_response=response
     )
 
 
-def qradar_offence_update_command(client: Client, args: Dict):
-    offence_id = args.get('offence_id')
+def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Updates offense that corresponds to the given offense ID.
+    possible arguments:
+    - offense_id (Required): Update offense that corresponds to ID given.
+    - protected: Whether the offense is protected.
+    - follow_up: Whether the offense should be marked for follow up.
+    - status: Status of the offense. One of 'OPEN', 'HIDDEN', 'CLOSED'.
+    - closing_reason_id: The ID of the reason the offense was closed. full list of closing reason IDs,
+                         full list of closing reason IDs can be retrieved by 'qradar-closing-reasons' command.
+    - assigned_to: The user whom to assign the offense to.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    offense_id = args.get('offense_id')
     protected = args.get('protected')
     follow_up = args.get('follow_up')
+
     status = args.get('status')
     closing_reason_id = args.get('closing_reason_id')
-    assigned_to = args.get('assigned_to')
+    if status == 'CLOSED' and not closing_reason_id:
+        raise DemistoException(
+            '''Closing reason ID must be provided when closing an offense. Available closing reasons can be achieved 
+            by 'qradar-closing-reasons' command.'''
+        )
 
-    response = client.qradar_offence_update(offence_id, protected, follow_up, status, closing_reason_id, assigned_to)
+    assigned_to = args.get('assigned_to')
+    fields = args.get('fields')
+
+    response = client.qradar_offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
+                                            fields)
+    outputs = sanitize_outputs(response)
+    enriched_outputs = enrich_offenses_result(client, outputs)
 
     return CommandResults(
-        # readable_output=human_readable,
-        outputs_prefix='QRadar.Offence',
+        readable_output=tableToMarkdown('offense Update', enriched_outputs),
+        outputs_prefix='QRadar.offense',
         outputs_key_field='id',
-        outputs=sanitize_outputs(response),
+        outputs=enriched_outputs,
         raw_response=response
     )
 
 
-def qradar_closing_reasons_list_command(client: Client, args: Dict):
+def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of closing reasons from QRadar service.
+    possible arguments:
+    - closing_reason_id: Retrieves details of the specific closing reason that corresponds to the ID given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     closing_reason_id = args.get('closing_reason_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
+    fields = args.get('fields')
 
-    response = client.qradar_closing_reasons_list(closing_reason_id, range_, filter_)
+    response = client.qradar_closing_reasons_list(closing_reason_id, range_, filter_, fields)
+    outputs = sanitize_outputs(response)
 
     return CommandResults(
-        # readable_output=human_readable,
+        readable_output=tableToMarkdown('Closing Reasons List', outputs),
         outputs_prefix='QRadar.ClosingReason',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
 
-def qradar_offence_notes_list_command(client: Client, args: Dict):
-    offence_id = args.get('offence_id')
+def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of notes corresponding to the ID of the offense ID given from QRadar service.
+    possible arguments:
+    - offense_id: The offense ID to retrieve the notes for.
+    - note_id: The note ID to its details.
+    - range: Range of notes to return for the offense corresponding to the offense ID (e.g.: 0-20, 3-5, 3-3).
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    offense_id = args.get('offense_id')
     note_id = args.get('note_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
+    fields = args.get('fields')
 
-    response = client.qradar_offence_notes_list(offence_id, note_id, range_, filter_)
+    response = client.qradar_offense_notes_list(offense_id, note_id, range_, filter_, fields)
+    outputs = sanitize_outputs(response)
 
     return CommandResults(
-        # readable_output=human_readable,
-        outputs_prefix='QRadar.OffenceNote',
+        readable_output=tableToMarkdown(f'offense Notes List For Offense ID {offense_id}', outputs),
+        outputs_prefix='QRadar.offenseNote',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
 
-def qradar_offence_notes_create_command(client: Client, args: Dict):
-    offence_id = args.get('offence_id')
+def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Create a new note for the offense corresponding to the given offense ID with the note text given
+    to QRadar service.
+    possible arguments:
+    - offense_id: The offense ID to add note to.
+    - note_text: The note text.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    offense_id = args.get('offense_id')
     note_text = args.get('note_text')
+    fields = args.get('fields')
 
-    response = client.qradar_offence_notes_create(offence_id, note_text)
+    response = client.qradar_offense_notes_create(offense_id, note_text, fields)
+    outputs = sanitize_outputs([response])
+    print(json.dumps(outputs))
 
     return CommandResults(
-        # readable_output=human_readable,
-        outputs_prefix='QRadar.OffenceNote',
+        readable_output=tableToMarkdown('Create Note', outputs),
+        outputs_prefix='QRadar.offenseNote',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
 
-# figure how to use rule type
-# def qradar_rules_list_command(self, rule_id: Optional[int], rule_type:):
+def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+
+    Args:
+        client:
+        args:
+
+    Returns:
+
+    """
+    rule_id = args.get('rule_id')
+    rule_type = args.get('rule_type')
+    filter_ = args.get('filter')
+    range_ = args.get('range')
+    if not filter_ and rule_type:
+        filter_ = f'type={rule_type}'
+
+    response = client.qradar_rules_list(rule_id, range_, filter_)
+    raise NotImplementedError
+
 
 def qradar_rule_groups_list_command(client: Client, args: Dict):
     rule_group_id = args.get('rule_group_id')
@@ -864,7 +1187,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    base_url = urljoin(params.get('base_url'), '/api')
+    server = urljoin(params.get('server'), '/api')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')
@@ -876,7 +1199,7 @@ def main() -> None:
     try:
 
         client = Client(
-            base_url=base_url,
+            server=server,
             verify=verify_certificate,
             proxy=proxy,
             api_version=api_version,
@@ -889,23 +1212,23 @@ def main() -> None:
         elif command == 'fetch-incidents':
             raise NotImplementedError
 
-        elif command == 'qradar-offences-list':
-            return_results(qradar_offences_list_command(client, args))
+        elif command == 'qradar-offenses-list':
+            return_results(qradar_offenses_list_command(client, args))
 
-        elif command == 'qradar-offence-update':
-            return_results(qradar_offence_update_command(client, args))
+        elif command == 'qradar-offense-update':
+            return_results(qradar_offense_update_command(client, args))
 
         elif command == 'qradar-closing-reasons':
             return_results(qradar_closing_reasons_list_command(client, args))
 
-        elif command == 'qradar-offence-notes-list':
-            return_results(qradar_offence_notes_list_command(client, args))
+        elif command == 'qradar-offense-notes-list':
+            return_results(qradar_offense_notes_list_command(client, args))
 
-        elif command == 'qradar-offence-note-create':
-            return_results(qradar_offence_notes_create_command(client, args))
+        elif command == 'qradar-offense-note-create':
+            return_results(qradar_offense_notes_create_command(client, args))
 
-        # elif command == 'qradar-rules-list':
-        #     return_results(qradar_rules_list_command)
+        elif command == 'qradar-rules-list':
+            return_results(qradar_rules_list_command(client, args))
         # QRadar.Rule
 
         elif command == 'qradar-rule-groups-list':

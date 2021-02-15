@@ -36,3 +36,4 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
+/Packs/QRadar/Integrations/QRadar_v3/outputs/
