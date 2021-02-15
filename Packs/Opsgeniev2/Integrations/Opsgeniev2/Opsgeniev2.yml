@@ -23,8 +23,11 @@ configuration:
   required: false
   type: 4
 description: Integration with Atlassian OpsGenie V2
-display: Opsgeniev2
+display: Opsgenie v2
 name: Opsgeniev2
+fromversion: 6.0.0
+tests:
+  - No tests
 script:
   commands:
   - arguments:
@@ -567,7 +570,7 @@ script:
         description: Bool, whether the request was a success
         type: Boolean
 
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
