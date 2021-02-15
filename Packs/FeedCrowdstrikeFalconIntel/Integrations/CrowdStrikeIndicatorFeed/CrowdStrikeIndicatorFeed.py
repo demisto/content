@@ -38,16 +38,60 @@ class Client(BaseClient):
         return token_res.get('access_token')
 
 
-def fetch_indicators(client: Client, feed_tags, tlp_color, include_deleted, _type, malicious_confidence, _filter, q):
+def set_last_modified_time():
+    current_time = datetime.now()
+    current_timestamp = datetime.timestamp(current_time)
+    timestamp = str(int(current_timestamp))
+    demisto.setIntegrationContext({'last_modified_time': timestamp})
+
+
+def get_last_modified_time():
+    if integration_context := demisto.getIntegrationContext():
+        last_modified_time = int(integration_context['last_modified_time'])
+        params = f'last_modified_date%3A%3E{last_modified_time}'
+        set_last_modified_time()
+    else:
+        params = ''
+        set_last_modified_time()
+    return params
+
+
+def fetch_indicators(client: Client, feed_tags, tlp_color, include_deleted, type, malicious_confidence, filter, q):
+    """ fetch indicators from the Crowdstrike Intel
+
+    Args:
+        client: Client object
+        feed_tags: The indicator tags.
+        tlp_color (str): Traffic Light Protocol color.
+        include_deleted (bool): include deleted indicators. (send just as parameter)
+        type (str): type indicator.
+        malicious_confidence: medium, low, high
+        filter (str): indicators filter.
+        q (str): generic phrase match
+
+    Returns:
+        list of indicators(list)
+    """
     raise Exception('TODO')
 
 
 def crowdstrike_indicators_list_command(client: Client, args: dict):
+    """ Gets indicator from Crowdstrike Intel to readable output
+
+    Args:
+        client: Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
     include_deleted = args.get('include_deleted')
-    _type = args.get('type')
+    type = args.get('type')
     malicious_confidence = args.get('malicious_confidence')
-    _filter = args.get('filter')
+    filter = args.get('filter')
     q = args.get('generic_phrase_match')
+    offset = int(args.get('offset', 0))
+    limit = int(args.get('limit', 50))
 
 
 def test_module(client: Client, args: dict):
@@ -73,9 +117,9 @@ def main() -> None:
     base_url = "https://api.crowdstrike.com/"
     tlp_color = params.get('tlp_color')
     include_deleted = params.get('include_deleted')
-    _type = params.get('type')
+    type = params.get('type')
     malicious_confidence = params.get('malicious_confidence')
-    _filter = params.get('filter')
+    filter = params.get('filter')
     q = params.get('q')
     command = demisto.command()
     args = demisto.args()
@@ -95,8 +139,8 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags, tlp_color, include_deleted, _type, malicious_confidence,
-                                          _filter, q)
+            indicators = fetch_indicators(client, feed_tags, tlp_color, include_deleted, type, malicious_confidence,
+                                          filter, q)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

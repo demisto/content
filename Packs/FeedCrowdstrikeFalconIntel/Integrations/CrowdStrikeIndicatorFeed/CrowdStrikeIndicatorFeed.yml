@@ -50,6 +50,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -59,6 +60,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -121,7 +123,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The maximum number of indicators to return. Default is 10.
+      description: The maximum number of indicators to return. Default is 50.
       isArray: false
       name: limit
       required: false
