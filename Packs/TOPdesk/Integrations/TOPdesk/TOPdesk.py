@@ -428,46 +428,45 @@ def replace_none(value: Any, replacement: Any) -> Any:
     return replacement
 
 
-def get_incidents_list(client: Client,
-                       args: Dict[str, Any],
-                       demisto_params: Dict[str, Any],
-                       is_fetch: bool = False) -> List[Dict[str, Any]]:
-    arg_dict = args
+def get_incidents_with_pagination(client, max_fetch, query, modification_date_start, modification_date_end):
     incidents = []
-    if is_fetch:
-        arg_dict = demisto_params
-    if arg_dict.get('incident_id', None) or arg_dict.get('incident_number', None):
-        if arg_dict.get('incident_id', None):
-            incidents = [client.get_list(f"/incidents/id/{arg_dict.get('incident_id', None)}")]
+    max_incidents = int(max_fetch)
+    number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
+    if max_incidents < MAX_API_PAGE_SIZE:
+        page_size = max_incidents
+    else:
+        page_size = MAX_API_PAGE_SIZE
+    start = 0
+    for index in range(number_of_requests):
+        incidents += client.get_list_with_query(list_type="incidents",
+                                                start=start,
+                                                page_size=page_size,
+                                                query=query,
+                                                modification_date_start=modification_date_start,
+                                                modification_date_end=modification_date_end)
+        start += page_size
+        return incidents
 
-        elif arg_dict.get('incident_number', None):
-            incidents = [client.get_list(f"/incidents/number/{arg_dict.get('incident_number', None)}")]
+
+def get_incidents_list(client: Client,
+                       incident_number: str = None,
+                       incident_id: str = None,
+                       modification_date_start: str = None,
+                       modification_date_end: str = None,
+                       query: str = None,
+                       page_size: int = None,
+                       start: int = None,
+                       args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
+    if incident_id or incident_number:
+        if incident_id:
+            incidents = [client.get_list(f"/incidents/id/{incident_id}")]
+        else:
+            incidents = [client.get_list(f"/incidents/number/{incident_number}")]
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
-        if arg_dict.get('status', None) not in allowed_statuses:
-            raise(ValueError(f"status {arg_dict.get('status', None)} id not in "
+        if args.get('status', None) not in allowed_statuses:
+            raise(ValueError(f"status {args.get('status', None)} id not in "
                              f"the allowed statuses list: {allowed_statuses}"))
-
-        query = arg_dict.get('query', None)
-        if is_fetch:
-            modification_date_start = demisto_params.get('modification_date_start', None)
-            modification_date_end = demisto_params.get('modification_date_end', None)
-            max_incidents = int(demisto_params.get('max_fetch', 10))
-            number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
-            if max_incidents < MAX_API_PAGE_SIZE:
-                page_size = max_incidents
-            else:
-                page_size = MAX_API_PAGE_SIZE
-            start = 0
-            for index in range(number_of_requests):
-                incidents += client.get_list_with_query(list_type="incidents",
-                                                        start=start,
-                                                        page_size=page_size,
-                                                        query=query,
-                                                        modification_date_start=modification_date_start,
-                                                        modification_date_end=modification_date_end)
-                start += page_size
-
         else:
             filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
                                 "call_type", "entry_type"]
@@ -476,11 +475,11 @@ def get_incidents_list(client: Client,
                                             filter_name=filter_arg,
                                             args=args)
             incidents = client.get_list_with_query(list_type="incidents",
-                                                   start=args.get('start', None),
-                                                   page_size=args.get('page_size', None),
+                                                   start=start,
+                                                   page_size=page_size,
                                                    query=query,
-                                                   modification_date_start=None,
-                                                   modification_date_end=None)
+                                                   modification_date_start=modification_date_start,
+                                                   modification_date_end=modification_date_end)
 
     return incidents
 
@@ -611,8 +610,18 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    return incidents_to_command_results(client,
+                                        get_incidents_list(client=client,
+                                                           incident_number=args.get('incident_number', None),
+                                                           incident_id=args.get('incident_id', None),
+                                                           query=args.get('query', None),
+                                                           page_size=args.get('page_size', None),
+                                                           start=args.get('start', None),
+                                                           args=args))
+
+
 def fetch_incidents(client: Client,
-                    args: Dict[str, Any],
                     last_run: Dict[str, Any],
                     demisto_params: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     """Fetches incidents from TOPdesk."""
@@ -629,10 +638,14 @@ def fetch_incidents(client: Client,
 
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
-    topdesk_incidents = get_incidents_list(client=client,
-                                           args=args,
-                                           demisto_params=demisto_params,
-                                           is_fetch=True)
+
+    topdesk_incidents = get_incidents_with_pagination(client=client,
+                                                      max_fetch=int(demisto_params.get('max_fetch', 10)),
+                                                      query=demisto_params.get('query', None),
+                                                      modification_date_start=demisto_params.get(
+                                                          'modification_date_start', None),
+                                                      modification_date_end=demisto_params.get(
+                                                          'modification_date_end', None))
 
     for topdesk_incident in topdesk_incidents:
         if topdesk_incident.get('creationDate', None):
@@ -667,11 +680,13 @@ def fetch_incidents(client: Client,
     return {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}, incidents
 
 
-def test_module(client: Client, demisto_params: Dict[str, Any]) -> str:
+def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params: Dict[str, Any]) -> str:
     """Test API connectivity and authentication."""
     try:
         if demisto_params.get('isFetch'):
-            get_incidents_list(client, {}, demisto_params)
+            fetch_incidents(client=client,
+                            last_run=demisto_last_run,
+                            demisto_params=demisto_params)
         else:
             client.get_list("/incidents/call_types")
     except DemistoException as e:
@@ -709,7 +724,7 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, demisto_params)
+            result = test_module(client, demisto.getLastRun(), demisto_params)
             return_results(result)
 
         elif demisto.command() == 'topdesk-persons-list':
@@ -734,9 +749,7 @@ def main() -> None:
             return_results(branches_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incidents-list':
-            return_results(incidents_to_command_results(client, get_incidents_list(client,
-                                                                                   demisto.args(),
-                                                                                   demisto_params)))
+            return_results(get_incidents_list_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incident-create':
             args = demisto.args()
@@ -803,7 +816,6 @@ def main() -> None:
         elif demisto.command() == 'fetch-incidents':
             last_fetch, incidents = fetch_incidents(client=client,
                                                     last_run=demisto.getLastRun(),
-                                                    args=demisto.args(),
                                                     demisto_params=demisto_params)
             demisto.setLastRun(last_fetch)
             demisto.incidents(incidents)

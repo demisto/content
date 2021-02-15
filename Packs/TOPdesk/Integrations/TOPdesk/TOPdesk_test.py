@@ -3,7 +3,7 @@ import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
-    list_persons_command, list_operators_command, branches_command
+    list_persons_command, list_operators_command, branches_command, get_incidents_list
 
 
 def util_load_json(path):
@@ -111,10 +111,12 @@ def test_large_output_list_command(requests_mock,
     assert command_results.outputs_key_field == expected_results['outputs_key_field']
     assert command_results.outputs == mock_topdesk_response
 
-# TODO: add test for pagination for large output list commands ?
+
+# TODO: add test for pagination for fetch_incidents
 # TODO: add test for query for large output list commands
 # TODO: add tests for incident_do commands
 # TODO: add tests for attachment upload command
+# TODO: add test for incidents_list
 
 
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
@@ -172,7 +174,6 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
     }
     last_fetch, incidents = fetch_incidents(client=client,
                                             last_run=last_run,
-                                            args={},
                                             demisto_params={})
 
     assert len(incidents) == len(expected_incidents)
