@@ -874,16 +874,16 @@ script:
       description: SHA256 hash of the file.
       type: String
     - contextPath: File.Tags.TagGroups.TagGroupName
-      description: Tags of the file.
+      description: The tag's group name.
       type: String
     - contextPath: File.Tags.Aliases
-      description: Tags of the file.
+      description: Aliases of the tags.
       type: String
     - contextPath: File.Tags.PublicTagName
-      description: Tags of the file.
+      description: The public name of the tag. This is usually used as the ID of the tag.
       type: String
     - contextPath: File.Tags.TagName
-      description: Tags of the file.
+      description: The simple name of the tag.
       type: String
     - contextPath: AutoFocus.File.IndicatorValue
       description: SHA256 of the file.

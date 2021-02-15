@@ -1544,9 +1544,9 @@ def get_tags_for_generic_context(tags: Optional[dict]):
     if not tags:
         return None
     results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
     for item in tags:
-        keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
-        sub_keys = ['TagGroupName']
         generic_context_tags = {key: item.get(key) for key in keys}
         generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
         results.append(remove_empty_elements(generic_context_tags))
