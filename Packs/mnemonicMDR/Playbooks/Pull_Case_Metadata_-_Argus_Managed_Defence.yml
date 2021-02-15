@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e46f2f20-aaf8-42ba-8c0a-e63fe26453a7
+    taskid: 52739ace-2dc1-41fc-830d-9538f95653d3
     type: start
     task:
-      id: e46f2f20-aaf8-42ba-8c0a-e63fe26453a7
+      id: 52739ace-2dc1-41fc-830d-9538f95653d3
       version: -1
       name: ""
       iscommand: false
@@ -18,11 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "7"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -36,104 +32,35 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 16f51adf-fb2c-45ce-8fac-82d0767f5892
-    type: regular
-    task:
-      id: 16f51adf-fb2c-45ce-8fac-82d0767f5892
-      version: -1
-      name: List case comments
-      description: List the comments of an Argus case
-      script: ArgusManagedDefence|||argus-list-case-comments
-      type: regular
-      iscommand: true
-      brand: ArgusManagedDefence
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      after_comment: {}
-      before_comment: {}
-      case_id:
-        simple: ${inputs.Argus Case ID}
-      limit: {}
-      offset: {}
-      sort_by: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 880,
-          "y": 270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 6233263f-e009-4ba9-8412-312aca6f8774
-    type: regular
-    task:
-      id: 6233263f-e009-4ba9-8412-312aca6f8774
-      version: -1
-      name: List case attachments
-      description: List attachments for an existing case
-      script: ArgusManagedDefence|||argus-list-case-attachments
-      type: regular
-      iscommand: true
-      brand: ArgusManagedDefence
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      case_id:
-        simple: ${inputs.Argus Case ID}
-      limit: {}
-      offset: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 880,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: da0deff5-699d-44cb-8910-4ec8b1526ad1
+    taskid: e2520f2a-c325-484c-8e7b-64bf4de6900d
     type: regular
     task:
-      id: da0deff5-699d-44cb-8910-4ec8b1526ad1
+      id: e2520f2a-c325-484c-8e7b-64bf4de6900d
       version: -1
       name: List case tags
       description: List tags attached to an Argus case
-      script: ArgusManagedDefence|||argus-list-case-tags
+      script: '|||argus-list-case-tags'
       type: regular
       iscommand: true
-      brand: ArgusManagedDefence
+      brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     scriptarguments:
       case_id:
         simple: ${inputs.Argus Case ID}
       limit: {}
       offset: {}
+      using:
+        simple: ${incident.sourceInstance}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 580
+          "x": 670,
+          "y": 480
         }
       }
     note: false
@@ -143,17 +70,17 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 6c3a5a67-ea81-4b2d-8702-9d00733ef80b
+    taskid: 31bf5c1b-bd61-4530-8901-932040888160
     type: regular
     task:
-      id: 6c3a5a67-ea81-4b2d-8702-9d00733ef80b
+      id: 31bf5c1b-bd61-4530-8901-932040888160
       version: -1
       name: Get Events related to case
       description: Fetch events associated with specified case.
-      script: ArgusManagedDefence|||argus-get-events-for-case
+      script: '|||argus-get-events-for-case'
       type: regular
       iscommand: true
-      brand: ArgusManagedDefence
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -162,12 +89,14 @@ tasks:
         simple: ${inputs.Argus Case ID}
       limit: {}
       offset: {}
+      using:
+        simple: ${incident.sourceInstance}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 730
+          "x": 670,
+          "y": 600
         }
       }
     note: false
@@ -177,10 +106,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+    taskid: 050f20cb-ddd8-4a6d-83ea-e95edfab66b5
     type: condition
     task:
-      id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+      id: 050f20cb-ddd8-4a6d-83ea-e95edfab66b5
       version: -1
       name: Manually review the incident.
       description: Manually review and investigate this incident.
@@ -192,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1310
+          "y": 880
         }
       }
     note: false
@@ -200,30 +129,67 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: eddde2fa-2bac-498d-8500-d365876b7738
+  "8":
+    id: "8"
+    taskid: f233ba19-69a2-4cad-841a-4f242701b7a5
     type: regular
     task:
-      id: eddde2fa-2bac-498d-8500-d365876b7738
+      id: f233ba19-69a2-4cad-841a-4f242701b7a5
       version: -1
-      name: DisplayHTML
-      description: Display HTML in the War Room.
-      scriptName: DisplayHTML
+      name: Print case comments
+      description: Print case comments as notes
+      script: '|||argus-print-case-comments'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
-      header: {}
-      html:
-        simple: ${incident.details}
-      markAsNote: {}
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      using:
+        simple: ${incident.sourceInstance}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1030
+          "x": 670,
+          "y": 240
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "9":
+    id: "9"
+    taskid: d8659f9b-f13a-4f70-8858-572c3adba880
+    type: regular
+    task:
+      id: d8659f9b-f13a-4f70-8858-572c3adba880
+      version: -1
+      name: Download case attachments
+      description: Download all attachments related to Argus Case.
+      script: '|||argus-download-case-attachments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      case_id:
+        simple: ${inputs.Argus Case ID}
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 360
         }
       }
     note: false
@@ -236,8 +202,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1275,
-        "width": 590,
+        "height": 845,
+        "width": 380,
         "x": 670,
         "y": 130
       }
@@ -277,6 +243,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 quiet: true
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
