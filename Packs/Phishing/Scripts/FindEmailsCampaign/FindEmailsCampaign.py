@@ -285,10 +285,10 @@ def return_indicator_entry(incidents_df):
     if is_error(res):
         return_error(res)
     indicators = res[0]['Contents']
-    if len(indicators) == 0:
-        return_no_mututal_indicators_found_entry()
-        return indicators
     indicators_df = pd.DataFrame(data=indicators)
+    if len(indicators_df) == 0:
+        return_no_mututal_indicators_found_entry()
+        return indicators_df
     indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
     indicators_df['Involved Incidents Count'] = \
         indicators_df['investigationIDs'].apply(lambda x: sum(id_ in x for id_ in incidents_df['id']))
