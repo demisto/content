@@ -138,15 +138,22 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     limit = 200 if limit > 200 else limit
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
-        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id']}
+        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
+                       'createdBy': indicator['rawJSON'].get('createdBy').get('id')
+                       if indicator['rawJSON'].get('createdBy') else None,
+                       'score': indicator['rawJSON']['x_opencti_score'],
+                       'description': indicator['rawJSON']['x_opencti_description'],
+                       'labels': [label.get('value') for label in indicator['rawJSON'].get('objectLabel')],
+                       'marking': [mark.get('definition') for mark in indicator['rawJSON'].get('objectMarking')]
+                       }
                       for indicator in indicators_list]
-        output = {'LastRunID': last_run_id,
-                  'Indicators': indicators}
-        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators, headers=["type", "value", "id"])
+        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators, headers=["type", "value", "id"],
+                                          removeNull=True)
+
         return CommandResults(
-            outputs_prefix='OpenCTI',
-            outputs_key_field='Indicators.id',
-            outputs=output,
+            outputs_prefix='OpenCTI.Indicators',
+            outputs_key_field='id',
+            outputs=indicators,
             readable_output=readable_output,
             raw_response=indicators_list
         )
@@ -286,7 +293,8 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
         outputs_key_field='id',
-        outputs={'id': result.get('id')},
+        outputs={'id': result.get('id'),
+                 'data': data},
         readable_output=readable_output,
         raw_response=result
     )

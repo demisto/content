@@ -6,6 +6,7 @@ RESPONSE_DATA = {
             'entity_type': 'registry-key-value',
             'name': '',
             'x_opencti_description': '',
+            'x_opencti_score': 50,
             'observable_value': '768767',
             'created_at': '2020-09-08T23:25:50.954Z',
             'updated_at': '2020-09-08T23:25:50.954Z',
@@ -22,7 +23,7 @@ RESPONSE_DATA = {
                 'remote_relation_id': '33c27e84-6451-5b9a-a778-a973e920db87'
             },
             'objectLabel': [],
-            'markingDefinitions': [],
+            'objectMarking': [],
             'externalReferences': [],
             'indicators': [],
             'createdByRefId': '1f5e08ed-dcb6-4158-aa0a-ab3c03ce00fa',
@@ -37,6 +38,7 @@ RESPONSE_DATA = {
             'entity_type': 'user-account',
             'name': '',
             'x_opencti_description': 'test',
+            'x_opencti_score': 50,
             'observable_value': 'momois',
             'created_at': '2020-09-08T12:44:54.530Z',
             'updated_at': '2020-09-08T12:44:54.530Z',
@@ -61,7 +63,7 @@ RESPONSE_DATA = {
                 'createdByRef': None,
                 'createdByRefId': None
             }],
-            'markingDefinitions': [],
+            'objectMarking': [],
             'externalReferences': [],
             'indicators': [],
             'createdByRefId': '1f5e08ed-dcb6-4158-aa0a-ab3c03ce00fa',

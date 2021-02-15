@@ -85,6 +85,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -94,6 +95,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -180,9 +182,24 @@ script:
     - contextPath: OpenCTI.Indicators.value
       description: Indicator value.
       type: String
-    - contextPath: OpenCTI.LastRunID
-      description: the id of the last fetch to use pagination.
+    - contextPath: OpenCTI.Indicators.id
+      description: Indicator id.
       type: String
+    - contextPath: OpenCTI.Indicators.createdBy
+      description: The creator of indicator.
+      type: String
+    - contextPath: OpenCTI.Indicators.score
+      description: Indicator score.
+      type: Number
+    - contextPath: OpenCTI.Indicators.description
+      description: Indicator Description.
+      type: String
+    - contextPath: OpenCTI.Indicators.labels
+      description: Indicator labels.
+      type: Unknown
+    - contextPath: OpenCTI.Indicators.marking
+      description: Indicator marking definitions.
+      type: Unknown
   - arguments:
     - default: false
       description: Indicator ID.
@@ -342,6 +359,9 @@ script:
     - contextPath: OpenCTI.Indicator.id
       description: New indicator id.
       type: String
+    - contextPath: OpenCTI.Indicator.data
+      description: New indicator data.
+      type: Unknown
   - arguments:
     - default: false
       description: Id of the indicator.
