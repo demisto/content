@@ -1,6 +1,6 @@
 {
     "name": "Exfiltration",
-    "description": "Respond to exfiltration incidents as they occur, asses the damage and remediate them in a timely manner.",
+    "description": "Respond to exfiltration incidents as they occur, assess the damage and remediate them in a timely manner.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
