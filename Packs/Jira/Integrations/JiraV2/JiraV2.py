@@ -982,8 +982,7 @@ def update_remote_system_command(args):
                 if entry.get('type') == 3:
                     demisto.debug('Add new file\n')
                     path_res = demisto.getFilePath(entry.get('id'))
-                    full_file_name = path_res.get('name')
-                    file_name, _ = os.path.splitext(full_file_name)
+                    file_name = path_res.get('name')
                     upload_file(entry.get('id'), remote_id, file_name)
                 else:  # handle comments
                     demisto.debug('Add new comment\n')
