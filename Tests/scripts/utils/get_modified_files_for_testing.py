@@ -17,7 +17,7 @@ from Tests.scripts.utils.collect_helpers import (
 
 class FileType(constants.FileType, Enum):
     CONF_JSON = "confjson"
-    METADATA = "metadata"
+    SECRETS_IGNORE = "secretsignore"
     WHITE_LIST = 'whitelist'
 
 
@@ -33,15 +33,9 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     # if conf.json file
     if checked_type(file_path, [constants.CONF_PATH]):
         return FileType.CONF_JSON
-    # MetaData files
-    elif any(
-        file in file_path
-        for file in (
-            constants.PACKS_PACK_META_FILE_NAME,
-            constants.PACKS_WHITELIST_FILE_NAME,
-        )
-    ):
-        return FileType.METADATA
+    # SecretsIgnore files
+    elif file_path.endswith(constants.PACKS_WHITELIST_FILE_NAME):
+        return FileType.SECRETS_IGNORE
     # Whitelist file type
     elif checked_type(file_path, [SECRETS_WHITE_LIST]):
         return FileType.WHITE_LIST
@@ -152,9 +146,10 @@ def get_modified_files_for_testing(
         types_to_files.get(FileType.BETA_INTEGRATION, set()),
         types_to_files.get(FileType.PLAYBOOK, set()))  # Modified YMLs for testing (Integrations, Scripts, Playbooks).
 
-    # Metadata packs
+    # Metadata of packs
     modified_metadata: Set[str] = set()
-    for file_path in types_to_files.get(FileType.METADATA, set()):
+    for file_path in types_to_files.get(FileType.SECRETS_IGNORE, set()).\
+            union(types_to_files.get(FileType.PACK_METADATA, set())):
         modified_metadata.add(tools.get_pack_name(file_path))
 
     modified_tests: Set[str] = types_to_files.get(FileType.TEST_PLAYBOOK, set())  # Modified tests are test playbooks

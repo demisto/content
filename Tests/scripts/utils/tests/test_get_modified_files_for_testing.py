@@ -317,8 +317,30 @@ class TestGetModifiedFilesForTesting:
         assert is_reputations_json is False
         assert is_indicator_json is False
 
-    def test_metadata(self, mocker):
+    def test_pack_metadata(self, mocker):
         diff_line = "M Packs/HelloWorld/pack_metadata.json"
+        mock_get_dict_from_yaml(mocker, {}, "json")
+        (
+            modified_files_list,
+            modified_tests_list,
+            changed_common,
+            is_conf_json,
+            sample_tests,
+            modified_metadata_list,
+            is_reputations_json,
+            is_indicator_json,
+        ) = get_modified_files_for_testing(diff_line)
+        assert modified_files_list == []
+        assert modified_tests_list == []
+        assert changed_common == []
+        assert is_conf_json is False
+        assert sample_tests == []
+        assert modified_metadata_list == {"HelloWorld"}
+        assert is_reputations_json is False
+        assert is_indicator_json is False
+
+    def test_secrets_ignore(self, mocker):
+        diff_line = "M Packs/HelloWorld/.secrets-ignore"
         mock_get_dict_from_yaml(mocker, {}, "json")
         (
             modified_files_list,
