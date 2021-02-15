@@ -53,7 +53,6 @@ KEYWORDS = ['#1', '100%', 'access', 'accordance', 'account', 'act', 'action', 'a
             'valium', 'verification', 'verify', 'viagra', 'vicodin', 'videos', 'vids', 'viedo', 'virus', 'waiting',
             'wallet', 'warranty', 'web', 'weight', 'win', 'winner', 'winning', 'wire', 'xanax']
 
-
 STATUS_DICT = {
     0: "Pending",
     1: "Active",
@@ -70,14 +69,27 @@ def add_context_key(entry_context):
 
 
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
+    if incidents_df is None:
+        incidents_context = []
+    else:
+        incident_id = demisto.incident()['id']
+        incident_df = incidents_df[['id', 'similarity']]
+        incident_df = incident_df[incident_df['id'] != incident_id]
+        incidents_context = incident_df.fillna(1).to_dict(orient='records')
     return {
         'isCampaignFound': campaign_found,
-        'campaignIncidentsIds': incidents_df['id'].tolist() if incidents_df is not None else []
+        'incidents': incidents_context
     }
 
 
-def create_context_for_indicators(mutual_indicators=[]):
-    return {'mutualIndicatorsIds': mutual_indicators}
+def create_context_for_indicators(indicators_df=None):
+    if indicators_df is None:
+        indicators_context = []
+    else:
+        indicators_df.rename({'Value': 'value'}, axis=1, inplace=True)
+        indicators_df = indicators_df[['id', 'value']]
+        indicators_context = indicators_df.to_dict(orient='records')
+    return {'indicators': indicators_context}
 
 
 CONTEXT_FUNCTIONS = [create_context_for_campaign_details, create_context_for_indicators, ]
@@ -304,7 +316,7 @@ def return_indicator_entry(incidents_df):
 
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
-    return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df['id'].tolist())))
+    return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df)))
     return indicators_df
 
 
