@@ -1,7 +1,7 @@
 flake8==3.8.3
 bandit==1.6.2
 demisto-py==2.0.22
-git+https://github.com/demisto/demisto-sdk.git@removing_pack_metadata_identificcation
+git+https://github.com/demisto/demisto-sdk.git@e83f1091ae82ab3ee290053cf6a10616f85c4660
 pytest==6.2.1
 pytest-mock==3.4.0
 requests-mock==1.8.0
