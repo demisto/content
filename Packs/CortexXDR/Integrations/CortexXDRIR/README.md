@@ -2032,6 +2032,11 @@ Initiate a new endpoint script execution action using a script from the script l
 #### Base Command
 
 `xdr-run-script`
+
+#### Required Permissions
+`Run Standard Script`
+`Run High-Risk Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2080,6 +2085,11 @@ Initiate a new endpoint script execution action using provided snippet code.
 #### Base Command
 
 `xdr-run-snippet-code-script`
+
+#### Required Permissions
+`Script Configurations`
+`Run High-Risk Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2125,6 +2135,10 @@ Retrieve the status of a script execution action.
 #### Base Command
 
 `xdr-get-script-execution-status`
+
+#### Required Permissions
+`Script Configurations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2260,6 +2274,10 @@ Get the files retrieved from a specific endpoint during a script execution.
 #### Base Command
 
 `xdr-get-script-execution-result-files`
+
+#### Required Permissions
+`Script Configurations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2278,6 +2296,10 @@ Initiate a new endpoint script execution of shell commands.
 #### Base Command
 
 `xdr-run-script-execute-commands`
+
+#### Required Permissions
+`Run High-Risk Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2326,6 +2348,10 @@ Initiate a new endpoint script execution to delete the specified file.
 #### Base Command
 
 `xdr-run-script-delete-file`
+
+#### Required Permissions
+`Run High-Risk Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2373,6 +2399,10 @@ Initiate a new endpoint script execution to check if file exists.
 #### Base Command
 
 `xdr-run-script-file-exists`
+
+#### Required Permissions
+`Run Standard Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2420,6 +2450,10 @@ Initiate a new endpoint script execution kill process.
 #### Base Command
 
 `xdr-run-script-kill-process`
+
+#### Required Permissions
+`Run High-Risk Script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
