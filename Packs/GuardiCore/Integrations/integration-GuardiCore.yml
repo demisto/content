@@ -728,7 +728,7 @@ script:
         return entry;
     }
 
-    var request_logout = function(method, url, token, isRawOutput){
+    var request_logout = function(method, url, token){
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers.Authorization = ['Bearer ' + token];
@@ -739,7 +739,7 @@ script:
                 Method: method,
                 Headers: headers,
                 Body: '',
-                SaveToFile: isRawOutput ? true : false
+                SaveToFile: false
             },
             params.insecure,
             params.proxy
