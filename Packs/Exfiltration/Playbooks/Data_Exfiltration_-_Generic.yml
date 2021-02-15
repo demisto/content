@@ -72,7 +72,7 @@ tasks:
       id: a6b00ae0-cef0-4370-85fa-097f9758cd99
       version: -1
       name: Review evidence for malicious behavior
-      description: Review the retrieved file and determine whether the alert is a
+      description: Review the retrieved suspected malware and determine whether the alert is a
         true positive or a false positive.
       type: condition
       iscommand: false
@@ -862,14 +862,14 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 295bd5b4-43d5-4b95-8a5f-1a28211c7250
+    taskid: 75bccaa7-b3d8-4a90-8705-4cc463cf5c91
     type: regular
     task:
-      id: 295bd5b4-43d5-4b95-8a5f-1a28211c7250
+      id: 75bccaa7-b3d8-4a90-8705-4cc463cf5c91
       version: -1
       name: Extract indicators from the alert data
-      description: Extracts indicators from the user email, exfiltration destination
-        and file hash playbook inputs.
+      description: Extracts indicators from the user email and exfiltration destination
+        playbook inputs.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -897,32 +897,6 @@ tasks:
               suffix:
                 value:
                   simple: inputs.UserEmail
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.FileMD5
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.FileSHA256
                 iscontext: true
     reputationcalc: 2
     separatecontext: false
@@ -1024,8 +998,7 @@ tasks:
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
-        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
-
+        Calculate and assign the incident a severity based on the highest returned severity level from the following calculations:
         - DBotScores of indicators
         - Critical assets
         - Email authenticity
@@ -1166,7 +1139,7 @@ tasks:
       id: eb99023f-6479-4dbd-8235-d9410ee97727
       version: -1
       name: Create a new GDPR Data Breach incident
-      description: Please create a new incident of type "GDPR Data Breach" and don't
+      description: Create a new incident of type "GDPR Data Breach" and don't
         complete this task until the "GDPR Breach Notification" playbook finished
         running.
       type: regular
@@ -1196,7 +1169,7 @@ tasks:
       id: b4a34b0f-b556-42c7-861c-bef6f11bc18a
       version: -1
       name: Create a new HIPAA Breach Notification incident
-      description: Please create a new incident of type "HIPAA Breach Notification"
+      description: Create a new incident of type "HIPAA Breach Notification"
         and don't complete this task until the "HIPAA - Breach Notification" playbook
         finished running.
       type: regular
@@ -1226,7 +1199,7 @@ tasks:
       id: cf9fa291-8b0f-43f3-8a0e-a5473fcbf150
       version: -1
       name: Create a new US Breach Notification incident
-      description: Please create a new incident of type "US Breach Notification" and
+      description: Create a new incident of type "US Breach Notification" and
         don't complete this task until the "US - Breach Notification" playbook finished
         running.
       type: regular
@@ -1508,12 +1481,10 @@ tasks:
       name: Block Indicators - Generic v2
       description: |+
         This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
         - Block URL - Generic
         - Block Account - Generic
         - Block IP - Generic v2
         - Block File - Generic v2
-
       playbookName: Block Indicators - Generic v2
       type: playbook
       iscommand: false
@@ -1691,8 +1662,8 @@ tasks:
     task:
       id: 2dd99c92-3b75-467b-8746-ebf2be59fc71
       version: -1
-      name: Was the exfiltration tool retrieved?
-      description: Checks whether the file that triggered the exfiltration alert was
+      name: Was the exfiltration malware retrieved?
+      description: Checks whether the malware that triggered the exfiltration alert was
         retrieved from the endpoint.
       type: condition
       iscommand: false
@@ -1845,7 +1816,7 @@ tasks:
     task:
       id: 820075ef-abdb-4971-8358-3bed8b3b9846
       version: -1
-      name: Display details in Layout
+      name: Display details in layout
       description: Displays information from the alert in the incident layout.
       script: Builtin|||setIncident
       type: regular
@@ -4183,7 +4154,7 @@ tasks:
       id: 5eaa6838-7afa-4405-8937-78f81bc2f69b
       version: -1
       name: Mark manager as notified
-      description: commands.local.cmd.set.incident
+      description: Marks that the manager was notified
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -4944,9 +4915,8 @@ tasks:
     task:
       id: 33bdde35-bb83-4bb6-86f7-c72cc418a594
       version: -1
-      name: Can the attacker's file be blocked automatically?
-      description: Checks whether the destination to which the data was exfiltrated
-        can be blocked automatically, according to the playbook inputs.
+      name: Can the attacker's malware be blocked automatically?
+      description: Checks whether the playbook configuration permits blocking the attacker's malware by hash automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -4988,8 +4958,8 @@ tasks:
     task:
       id: 849ba65b-9233-4098-8011-fc166aaf5820
       version: -1
-      name: Block the exfiltration tool automatically or manually?
-      description: Lets the user select whether the file that exfiltrated the data
+      name: Block the exfiltration malware automatically or manually?
+      description: Lets the user select whether the malware that exfiltrated the data
         is blocked automatically, manually, or whether not to block it at all.
       type: condition
       iscommand: false
@@ -5021,8 +4991,8 @@ tasks:
     task:
       id: bdb0efb6-d833-4b4f-8a63-35a4f6328234
       version: -1
-      name: Was the file found to be malicious?
-      description: Checks whether the file that was used to exfiltrate data is malicious
+      name: Was the suspected malware found to be malicious?
+      description: Checks whether the suspected malware that was used to exfiltrate data is malicious
         according to threat intelligence integrations.
       type: condition
       iscommand: false
@@ -5091,9 +5061,8 @@ tasks:
     task:
       id: ea8d6740-9779-4bc9-8d88-267ab21ac971
       version: -1
-      name: Block the file manually
-      description: Allows the user to manually block the file that was used to exfiltrate
-        data.
+      name: Block the malware manually
+      description: Allows the user to manually block the malware that was used to exfiltrate data.
       type: regular
       iscommand: false
       brand: ""
@@ -5201,8 +5170,8 @@ tasks:
     task:
       id: dde9769c-8d6a-4eb5-8ff2-80f486e918e8
       version: -1
-      name: Mark the file as blocked
-      description: Sets the file as blocked in the incident layout.
+      name: Mark the malware as blocked
+      description: Marks the malware as blocked in the incident layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -5936,7 +5905,7 @@ tasks:
     task:
       id: f1e042fb-e2d4-4e9b-8e41-65e9fa51f555
       version: -1
-      name: Was a URL blocked automatically?
+      name: Was the URL blocked automatically?
       description: Checks whether the destination URL was blocked.
       type: condition
       iscommand: false
@@ -5944,8 +5913,6 @@ tasks:
     nexttasks:
       '#default#':
       - "88"
-      "yes":
-      - "74"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -6024,16 +5991,14 @@ tasks:
     task:
       id: 2f35a338-5463-4239-8f61-e574726cd79d
       version: -1
-      name: Was an IP blocked automatically?
-      description: Checks whether the destination IP was blocked.
+      name: Was the IP address blocked automatically?
+      description: Checks whether the destination IP address was blocked.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "88"
-      "yes":
-      - "87"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -6083,8 +6048,8 @@ tasks:
     task:
       id: 7b721736-31a4-402f-84c4-8d241cbffe45
       version: -1
-      name: Mark destination IP as blocked
-      description: Marks the destination IP as blocked in the incident layout.
+      name: Mark destination IP address as blocked
+      description: Marks the destination IP address as blocked in the incident layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -6890,9 +6855,7 @@ view: |-
       "78_82_Automatically": 0.35,
       "79_80_#default#": 0.48,
       "79_82_yes": 0.17,
-      "84_74_yes": 0.51,
       "84_88_#default#": 0.13,
-      "86_87_yes": 0.36,
       "86_88_#default#": 0.16
     },
     "paper": {
@@ -6908,7 +6871,7 @@ inputs:
 - key: FileMD5
   value: {}
   required: false
-  description: The MD5 hash of the file that exfiltrated the data.
+  description: The MD5 hash of the suspected malware that was associated with the exfiltration.
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -6918,15 +6881,14 @@ inputs:
 - key: FilePath
   value: {}
   required: false
-  description: The path on the endpoint to the file that was associated with the exfiltration
-    (the tool used for exfiltration).
+  description: The endpoint relative path to the suspected malware that was associated with the exfiltration.
   playbookInputQuery:
 - key: AgentID
   value: {}
   required: false
   description: |-
     The ID of the agent/sensor that detected the file exfiltration, or the ID of the endpoint.
-    In Palo Alto Networks Cortex XDR, the Endpoint ID is used instead of an Agent ID to retrieve the file that made the exfiltration from the endpoint.
+    In Palo Alto Networks Cortex XDR, the Endpoint ID is used instead of an Agent ID to retrieve the malware that executed the exfiltration from the endpoint.
   playbookInputQuery:
 - key: Username
   value: {}
@@ -6941,20 +6903,19 @@ inputs:
 - key: FileSHA256
   value: {}
   required: false
-  description: The SHA256 hash of the file that exfiltrated the data.
+  description: The SHA256 hash of the suspected malware that was associated with the exfiltration.
   playbookInputQuery:
 - key: FileName
   value: {}
   required: false
-  description: The name of the file that was associated with the exfiltration (the
-    tool used for exfiltration).
+  description: The name of the suspected malware that was associated with the exfiltration.
   playbookInputQuery:
 - key: IsolateHostsAutomatically
   value:
     simple: "False"
   required: false
   description: Determines whether endpoints where alerts occurred will be isolated
-    automatically. Can be either "True" or "False".
+    automatically. Default is False.
   playbookInputQuery:
 - key: SourceIP
   value: {}
@@ -6966,13 +6927,13 @@ inputs:
   required: false
   description: |-
     The regulation to which the company is subject. Can be GDPR, HIPAA or US.
-    If no value is specified, the user will be asked to notify about the breach using the method practiced in your organization.
+    If no value is specified, the user will be asked to notify about the breach using the method practiced in their organization.
   playbookInputQuery:
 - key: ExfiltrationDestination
   value: {}
   required: false
-  description: The destination of the exfiltration of data. This could be for example
-    a domain to which DNS tunneling was executed, or a URLto which an HTTP POST request
+  description: The destination of the exfiltration data. For example
+    a domain to which DNS tunneling was executed, or a URL to which an HTTP POST request
     was sent to exfiltrate data.
   playbookInputQuery:
 - key: BlockDestinationAutomatically
@@ -6980,17 +6941,22 @@ inputs:
     simple: "False"
   required: false
   description: Whether to block the destination (IP/URL) to which data was exfiltrated
-    automatically. If set to "True" - the destination will be blocked automatically
+    automatically. If set to True - the destination will be blocked automatically
     if found to be malicious. Otherwise, an analyst review will be required to block
-    the destination.
+    the destination. Default is False.
+  playbookInputQuery:
+- key: DestinationPort
+  value: {}
+  required: false
+  description: The destination port through which data was exfiltrated.
   playbookInputQuery:
 - key: BlockFileAutomatically
   value:
     simple: "False"
   required: false
-  description: Whether to block the file used for exfiltration automatically. If set
-    to true - the file will be blocked automatically. Otherwise, an analyst review
-    will be required to block the file.
+  description: Whether to block the malware used for exfiltration automatically. If set
+    to True - the malware will be blocked automatically. Otherwise, an analyst review
+    will be required to block the malware. Default is False.
   playbookInputQuery:
 - key: NotifyManager
   value: {}
