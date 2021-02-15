@@ -2940,7 +2940,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the user who will recieve the folders.
+      description: The ID of the user who will receive the folders.
       isArray: false
       name: to_user_id
       required: true

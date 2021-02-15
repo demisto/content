@@ -3735,3 +3735,373 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Uploaded file: TestFile.gif
+
+### box-move-folder
+***
+Moves all of the items (files, folders and workflows) owned by a user into another user's account. Only the root folder `0` will be transferred.
+
+Folders can only be moved across users by users with administrative permissions.
+
+This command is performed synchronously which might lead to a slow response when the source user has a large number of items in all of its folders.
+
+
+#### Base Command
+
+`box-move-folder`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to_user_id | The ID of the user who will receive the folders. | Required | 
+| from_user_id | The ID of the user who currently owns the folder. | Required | 
+| notify | Determines if users should receive email notification for the action performed. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Box.Folder.id | Number | The ID of the folder created. | 
+| Box.Folder.etag | Number | The entry tag for the folder created. | 
+| Box.Folder.type | String | The type of folder. | 
+| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. | 
+| Box.Folder.name | String | The name of the folder. | 
+| Box.Folder.sha1 | String | The SHA1 hash of the folder. | 
+| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. | 
+| Box.Folder.file_version.type | String | Value is always file_version. | 
+| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
+| Box.Folder.description | String | The description of the item. | 
+| Box.Folder.size | Number | The folder size in bytes. | 
+| Box.Folder.path_collection.total_count | Number | The number of folders in the list. | 
+| Box.Folder.path_collection.entries.id | Number | The ID of the item found. | 
+| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. | 
+| Box.Folder.path_collection.entries.type | String | The type of the item found. | 
+| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
+| Box.Folder.path_collection.entries.name | String | The name of the item. | 
+| Box.Folder.created_at | Date | The date and time when the item was created on Box. | 
+| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. | 
+| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. | 
+| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
+| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
+| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
+| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. | 
+| Box.Folder.created_by.type | String | Value is always user. | 
+| Box.Folder.created_by.name | String | The display name of the user who created the item. | 
+| Box.Folder.created_by.login | String | The primary email address of the user who created the item. | 
+| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. | 
+| Box.Folder.modified_by.type | String | Value is always user. | 
+| Box.Folder.modified_by.name | String | The display name of the user who modified the item. | 
+| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. | 
+| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. | 
+| Box.Folder.owned_by.type | String | Value is always user. | 
+| Box.Folder.owned_by.name | String | The display name of the user who owns the item. | 
+| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. | 
+| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. | 
+| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
+| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
+| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
+| Box.Folder.shared_link.access | String | The access level for the shared link. | 
+| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  | 
+| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. | 
+| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
+| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
+| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
+| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
+| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. | 
+| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. | 
+| Box.Folder.parent.id | Number | The ID of the parent for the item found | 
+| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. | 
+| Box.Folder.parent.type | String | The type for the parent of the item found. | 
+| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
+| Box.Folder.parent.name | String | The name of the parent of the item. | 
+| Box.Folder.item_status | String | The status of the parent of the item. | 
+
+
+#### Command Example
+```!box-move-folder to_user_id="123456" from_user_id="654321" notify="true"```
+
+#### Context Example
+```json
+{
+    "Box": {
+        "Folder": {
+            "content_created_at": null,
+            "content_modified_at": null,
+            "created_at": null,
+            "created_by": {
+                "id": "",
+                "login": "",
+                "name": "",
+                "type": "user"
+            },
+            "description": "",
+            "etag": null,
+            "folder_upload_email": null,
+            "id": "0",
+            "item_collection": {
+                "entries": [
+                    {
+                        "etag": "0",
+                        "id": "125959916474",
+                        "name": "My Box Notes",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "128036492321",
+                        "name": "Sample Folder for Docs",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "126452434994",
+                        "name": "Sample Testing Folder",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "127912817927",
+                        "name": "Sample Testing Folder 2",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "126469445717",
+                        "name": "Sample Testing Folder test",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "127304720432",
+                        "name": "Sample Testing Folder test1",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "0",
+                        "id": "127109452066",
+                        "name": "test-demo name",
+                        "sequence_id": "0",
+                        "type": "folder"
+                    },
+                    {
+                        "etag": "2",
+                        "file_version": {
+                            "id": "794731944502",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745868717302",
+                        "name": "55555.gif",
+                        "sequence_id": "2",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "802646696736",
+                            "sha1": "f401d87fa1cc4f96a357c564bf0de2e19ccf9d1f",
+                            "type": "file_version"
+                        },
+                        "id": "752998071936",
+                        "name": "customers.jpg",
+                        "sequence_id": "0",
+                        "sha1": "f401d87fa1cc4f96a357c564bf0de2e19ccf9d1f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794713426050",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745851995250",
+                        "name": "image.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794716642653",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745854929853",
+                        "name": "image1.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794719141622",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745857164822",
+                        "name": "image2.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794721102684",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745859107884",
+                        "name": "image3.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794733314512",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745870218112",
+                        "name": "image4.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "0",
+                        "file_version": {
+                            "id": "794736891054",
+                            "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                            "type": "file_version"
+                        },
+                        "id": "745873525854",
+                        "name": "image6_please_work.gif",
+                        "sequence_id": "0",
+                        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "2",
+                        "file_version": {
+                            "id": "792056280660",
+                            "sha1": "533a85c782614a6dfe19b83f7d628466ceb00c39",
+                            "type": "file_version"
+                        },
+                        "id": "743439873060",
+                        "name": "new-devs-touching-the-build.gif",
+                        "sequence_id": "2",
+                        "sha1": "533a85c782614a6dfe19b83f7d628466ceb00c39",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "5",
+                        "file_version": {
+                            "id": "794764999514",
+                            "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce",
+                            "type": "file_version"
+                        },
+                        "id": "745898898314",
+                        "name": "testing event1234.gif",
+                        "sequence_id": "5",
+                        "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce",
+                        "type": "file"
+                    },
+                    {
+                        "etag": "3",
+                        "file_version": {
+                            "id": "803108695891",
+                            "sha1": "30d8caa24c8526fa13d80e489ea16ff544d988db",
+                            "type": "file_version"
+                        },
+                        "id": "753421883491",
+                        "name": "vandijk5.gif",
+                        "sequence_id": "3",
+                        "sha1": "30d8caa24c8526fa13d80e489ea16ff544d988db",
+                        "type": "file"
+                    }
+                ],
+                "limit": 100,
+                "offset": 0,
+                "order": [
+                    {
+                        "by": "type",
+                        "direction": "ASC"
+                    },
+                    {
+                        "by": "name",
+                        "direction": "ASC"
+                    }
+                ],
+                "total_count": 18
+            },
+            "item_status": "active",
+            "modified_at": null,
+            "modified_by": {
+                "id": "14342567114",
+                "login": "test@test.com",
+                "name": "Jane Doe",
+                "type": "user"
+            },
+            "name": "All Files",
+            "owned_by": {
+                "id": "14342567114",
+                "login": "test@test.com",
+                "name": "Jane Doe",
+                "type": "user"
+            },
+            "parent": null,
+            "path_collection": {
+                "entries": [],
+                "total_count": 0
+            },
+            "purged_at": null,
+            "sequence_id": null,
+            "shared_link": null,
+            "size": 212311360,
+            "trashed_at": null,
+            "type": "folder"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Folder overview for transferred folder.
+>|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
+>|---|---|---|---|---|---|---|---|---|
+>| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>### File contents for the transferred folder.
+>|Etag|Id|Name|Sequence Id|Type|
+>|---|---|---|---|---|
+>| 0 | 125959916474 | My Box Notes | 0 | folder |
+>| 0 | 128036492321 | Sample Folder for Docs | 0 | folder |
+>| 0 | 126452434994 | Sample Testing Folder | 0 | folder |
+>| 0 | 127912817927 | Sample Testing Folder 2 | 0 | folder |
+>| 0 | 126469445717 | Sample Testing Folder test | 0 | folder |
+>| 0 | 127304720432 | Sample Testing Folder test1 | 0 | folder |
+>| 0 | 127109452066 | test-demo name | 0 | folder |
+>| 2 | 745868717302 | 55555.gif | 2 | file |
+>| 0 | 752998071936 | customers.jpg | 0 | file |
+>| 0 | 745851995250 | image.gif | 0 | file |
+>| 0 | 745854929853 | image1.gif | 0 | file |
+>| 0 | 745857164822 | image2.gif | 0 | file |
+>| 0 | 745859107884 | image3.gif | 0 | file |
+>| 0 | 745870218112 | image4.gif | 0 | file |
+>| 0 | 745873525854 | image6_please_work.gif | 0 | file |
+>| 2 | 743439873060 | new-devs-touching-the-build.gif | 2 | file |
+>| 5 | 745898898314 | testing event1234.gif | 5 | file |
+>| 3 | 753421883491 | vandijk5.gif | 3 | file |
