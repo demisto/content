@@ -1,0 +1,16 @@
+{
+    "GSuiteSecurityAlert.Delete.successAlerts(val.id && val.id == obj.id)": [
+      {
+        "id": "dummy_alertId1",
+        "status": "Success"
+      }
+    ],
+    "GSuiteSecurityAlert.Delete.failedAlerts(val.id && val.id == obj.id)": [
+        {
+            "id": "dummy_alertId2",
+            "status": "Fail",
+            "code": 5,
+            "message": "NOT_FOUND"
+        }
+    ]
+}

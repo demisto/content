@@ -1,0 +1,17 @@
+{
+    "name": "G Suite Security Alert Center",
+    "description": "G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or undelete a single alert or batch of alerts and retrieve the alert's metadata. This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-28T06:18:24Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": ["Threat Intelligence", "Alerts", "Attack"],
+    "useCases": ["Threat Intelligence Management"],
+    "keywords": ["Phishing", "Enrichment", "Threat", "Google", "GSuite"],
+    "githubUser": []
+}

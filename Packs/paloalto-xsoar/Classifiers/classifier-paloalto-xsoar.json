@@ -1,0 +1,58 @@
+{
+    "defaultIncidentType": "G Suite Security Alert Center",
+    "description": "Classifies G Suite Security Alert Center Incidents.",
+    "feed": false,
+    "id": "G Suite Security Alert Center - Classifier",
+    "keyTypeMap": {
+        "type.googleapis.com/google.apps.alertcenter.type.AccountWarning": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.ActivityRule": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.AppMakerSqlSetupNotification": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.BadWhitelist": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DeviceCompromised": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DlpRuleViolation": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DomainWideTakeoutInitiated": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.GoogleOperations": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.MailPhishing": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.StateSponsoredAttack": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.SuspiciousActivity": "G Suite Security Alert Center"
+    },
+    "name": "G Suite Security Alert Center - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "data.@type"
+                            }
+                        },
+                        "operator": "containsGeneral",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "google.apps.alertcenter"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "data.@type",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
