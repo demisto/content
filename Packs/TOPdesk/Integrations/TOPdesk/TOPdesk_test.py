@@ -3,7 +3,7 @@ import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
-    list_persons_command, list_operators_command, branches_command, get_incidents_list
+    list_persons_command, list_operators_command, branches_command
 
 
 def util_load_json(path):
@@ -16,22 +16,22 @@ def util_load_json(path):
      'https://test.com/api/v1/incidents/entry_types',
      [{"id": "1st-id", "name": "entry-type-1"}, {"id": "2st-id", "name": "entry-type-2"}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.entryType',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.entryType',
+         'outputs_key_field': 'id'
      }),
     (call_types_command,
      'https://test.com/api/v1/incidents/call_types',
      [{"id": "1st-id", "name": "call-type-1"}, {"id": "2st-id", "name": "call-type-2"}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.callType',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.callType',
+         'outputs_key_field': 'id'
      }),
     (categories_command,
      'https://test.com/api/v1/incidents/categories',
      [{"id": "1st-id", "name": "category-1"}, {"id": "2st-id", "name": "category-2"}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.category',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.category',
+         'outputs_key_field': 'id'
      }),
     (subcategories_command,
      'https://test.com/api/v1/incidents/subcategories',
@@ -64,24 +64,24 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
      'test_data/topdesk_person.json',
      [{'id': '1st-person-id'}, {'id': '2nd-person-id'}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.person',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.person',
+         'outputs_key_field': 'id'
      }),
     (list_operators_command,
      'https://test.com/api/v1/operators',
      'test_data/topdesk_operator.json',
      [{'id': '1st-operator-id'}, {'id': '2nd-operator-id'}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.operator',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.operator',
+         'outputs_key_field': 'id'
      }),
     (branches_command,
      'https://test.com/api/v1/branches',
      'test_data/topdesk_branch.json',
      [{"id": "1st-branch-id"}, {"id": "2nd-branch-id"}],
      {
-        'outputs_prefix': f'{INTEGRATION_NAME}.branch',
-        'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.branch',
+         'outputs_key_field': 'id'
      })
 ])
 def test_large_output_list_command(requests_mock,
@@ -124,9 +124,8 @@ def test_large_output_list_command(requests_mock,
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
-    }],
-     '2020-01-11T06:32:36.303+0000',
-     '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
+    }], '2020-01-11T06:32:36.303+0000',
+        '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
     ([{
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36Z',
@@ -135,9 +134,8 @@ def test_large_output_list_command(requests_mock,
         'number': 'TEST-2',
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
-    }],
-     '2020-02-11T06:32:36.303+0000',
-     '2020-03-10T06:32:36Z')  # Last fetch is after one incident creation and before other.
+    }], '2020-02-11T06:32:36.303+0000',
+        '2020-03-10T06:32:36Z')  # Last fetch is after one incident creation and before other.
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """

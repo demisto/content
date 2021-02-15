@@ -69,6 +69,14 @@ class Client(BaseClient):
             url_suffix=f"{endpoint}",
         )
 
+    def get_single_endpoint(self, endpoint: str) -> Dict[str, Any]:
+        """Get entry types using the API endpoint"""
+
+        return self._http_request(
+            method='GET',
+            url_suffix=f"{endpoint}",
+        )
+
     def create_incident(self, args: Dict[str, Any] = {}) -> Dict[str, Any]:
         """Create incident in TOPdesk"""
 
@@ -414,10 +422,12 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def add_filter_to_query(query: str, filter_name: str, args: Dict[str, Any]) -> str:
+def add_filter_to_query(query: Optional[str], filter_name: str, args: Dict[str, Any]) -> Optional[str]:
     if args.get(filter_name, None):
         if query:
             query = f"{query}&"
+        else:
+            query = ''
         query = f"{query}{filter_name}=={args.get(filter_name, None)}"
     return query
 
@@ -428,7 +438,11 @@ def replace_none(value: Any, replacement: Any) -> Any:
     return replacement
 
 
-def get_incidents_with_pagination(client, max_fetch, query, modification_date_start, modification_date_end):
+def get_incidents_with_pagination(client: Client,
+                                  max_fetch: int,
+                                  query: str,
+                                  modification_date_start: str,
+                                  modification_date_end: str) -> List[Dict[str, Any]]:
     incidents = []
     max_incidents = int(max_fetch)
     number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
@@ -445,7 +459,7 @@ def get_incidents_with_pagination(client, max_fetch, query, modification_date_st
                                                 modification_date_start=modification_date_start,
                                                 modification_date_end=modification_date_end)
         start += page_size
-        return incidents
+    return incidents
 
 
 def get_incidents_list(client: Client,
@@ -459,9 +473,9 @@ def get_incidents_list(client: Client,
                        args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
     if incident_id or incident_number:
         if incident_id:
-            incidents = [client.get_list(f"/incidents/id/{incident_id}")]
+            incidents = [client.get_single_endpoint(f"/incidents/id/{incident_id}")]
         else:
-            incidents = [client.get_list(f"/incidents/number/{incident_number}")]
+            incidents = [client.get_single_endpoint(f"/incidents/number/{incident_number}")]
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
         if args.get('status', None) not in allowed_statuses:
