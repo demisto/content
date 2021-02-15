@@ -113,18 +113,19 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
     last_run = demisto.getLastRun().get('last_fetch', None)
 
     if last_run is None:
-        # if missing, set the next fetch time to 5 minutes
-        last_run_obj = datetime.now()
-        last_run = last_run_obj.strftime(DATE_TIME_FORMAT)
-    else:
-        last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
+        # if the last run has not been set (i.e on the first run)
+        # return the current time which will then be used to set the
+        # last_fetch variable
+        current_time = datetime.now()
+        return current_time.strftime(DATE_TIME_FORMAT), []
+
+    last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
 
     if last_run_obj > (datetime.now() - timedelta(minutes=FETCH_TIME)):
-        # It has not been 5 minutes since the last fetch
+        # It has not been FETCH_TIME since the last fetch
         # return blank values and skip the fetch
         return "", []
     else:
-
         query = """query RadarEvents($filters: ActivitySeriesFilterInput) {
                     activitySeriesConnection(filters: $filters) {
                         edges {
@@ -214,7 +215,7 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
     # look up the value in the incident custom fields
     activitySeriesId = args.get('activitySeriesId', None)
     if not activitySeriesId:
-        activitySeriesId = incident.get("activityseriesid")
+        activitySeriesId = incident.get("rubrikpolarisactivityseriesid")
 
     query = """query AnomalyEventSeriesDetailsQuery($activitySeriesId: UUID!, $clusterUuid: UUID!) {
                     activitySeries(activitySeriesId: $activitySeriesId, clusterUuid: $clusterUuid) {
@@ -233,14 +234,14 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
                     """
 
     variables = {
-        "clusterUuid": incident.get("cdmclusterid"),
+        "clusterUuid": incident.get("rubrikpolariscdmclusterid"),
         "activitySeriesId": activitySeriesId
     }
 
     radar_update_events = client.gql_query(query, variables)
 
     context = {
-        "ClusterID": incident.get("cdmclusterid"),
+        "ClusterID": incident.get("rubrikpolariscdmclusterid"),
         "ActivitySeriesId": activitySeriesId,
         "Message": radar_update_events["data"]["activitySeries"]["activityConnection"]["nodes"]
     }
@@ -266,7 +267,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
     # TODO - HANDLE NO VALUE BEING FOUND
     objectName = args.get('objectName', None)
     if not objectName:
-        objectName = incident.get("objectname")
+        objectName = incident.get("rubrikpolarisobjectname")
     # TODO - SET A LIMIT HERE?
     searchTimePeriod = args.get('searchTimePeriod', None)
     if not searchTimePeriod:
@@ -320,7 +321,6 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
 
     # If the provided object does not have any sensitive hits for today, look for
     # results from the searchTimePeriod. If results are found, stop the search
-    # TODO TEST THIS LOGIC
     if len(object_details) == 0:
         for d in range(1, searchTimePeriod):
             past_search_day = search_day - timedelta(days=d)
@@ -337,6 +337,15 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
 
             if len(object_details) == 1:
                 break
+
+    # If no results were found from the searchTimePeriod return blank
+    # context data to avoid an error
+    if len(object_details) == 0:
+        return CommandResults(
+            outputs_prefix='Rubrik.Sonar',
+            outputs_key_field='Id',
+            outputs={}
+        )
 
     sensitive_hits_query = """query ObjectDetailQuery($snappableFid: String!, $snapshotFid: String!) {
                 policyObj(snappableFid: $snappableFid, snapshotFid: $snapshotFid) {
@@ -392,7 +401,6 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         "snapshotFid": object_details["snapshot_fid"]
     }
 
-    demisto.info(sensitive_hits_variables)
     # TODO - Handle errors like errors:[map[extensions:map[code:500 trace:map[operation:/api/graphql
     # spanId:uoH6A/2xDM8= traceId:/64k4L3xe74eS9LyVe3rjg==]] locations:[map[column:17 line:2]]
     sensitive_hits = client.gql_query(sensitive_hits_query, sensitive_hits_variables)
@@ -466,6 +474,7 @@ def main() -> None:
                 demisto.setLastRun({
                     'last_fetch': current_time
                 })
+
             demisto.incidents(incidents)
 
         elif demisto.command() == 'rubrik-radar-analysis-status':
