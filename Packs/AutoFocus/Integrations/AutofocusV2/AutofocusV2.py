@@ -1268,13 +1268,15 @@ def tag_details_command():
     result = autofocus_tag_details(tag_name)
     md = tableToMarkdown(f'Tag {tag_name} details:', result, headerTransform=string_to_table_header)
     context = createContext(result, keyTransform=string_to_context_key)
-    demisto.results({
+    outputs_dict = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': result,
         'EntryContext': {'AutoFocus.Tag(val.ID == obj.ID)': context},
         'HumanReadable': md
-    })
+    }
+    demisto.results(outputs_dict)
+    return outputs_dict
 
 
 def top_tags_search_command():

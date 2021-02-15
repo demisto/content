@@ -3,6 +3,9 @@ import pytest
 import requests
 import requests_mock
 import sys
+import io
+import demistomock as demisto
+
 
 
 IP_ADDRESS = '127.0.0.1'
@@ -103,6 +106,21 @@ INDICATOR_RES = {
     ]
 }
 
+TAGS_DETAILS_RES = {'public_tag_name': 'Anon015b57.MYNEWTAGNAME',
+                'tag_name': 'MYNEWTAGNAME',
+                'customer_name': '',
+                'source': 'Palo Alto Networks - InfoSec-Synack Tesing<h1>xxx</h1>',
+                'tag_definition_scope': 'public',
+                'tag_definition_status': 'disabled',
+                'tag_class': 'actor',
+                'count': 108737,
+                'lasthit': '2021-02-11 22:31:51',
+                'description': '<h1>xxx</h1>'}
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 def test_parse_indicator_response():
     from AutofocusV2 import parse_indicator_response
@@ -142,3 +160,11 @@ def test_connection_error(mocker):
             AutofocusV2.search_indicator('ip', '8.8.8.8')
         assert 'Error connecting to server. Check your URL/Proxy/Certificate settings'\
                in return_error_mock.call_args[0][0]
+
+
+def test_tag_details(mocker):
+    import AutofocusV2
+    mocker.patch.object(demisto, 'args', return_value={'tag_name': 'Anon015b57.MYNEWTAGNAME'})
+    mocker.patch.object(AutofocusV2, 'autofocus_tag_details', return_value=TAGS_DETAILS_RES)
+    assert AutofocusV2.tag_details_command() == util_load_json('./test_data/teg_details_outputs.json')
+
