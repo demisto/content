@@ -342,7 +342,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     incidents_df['similarity'] = incidents_df['similarity'].fillna(1)
     incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.1f}%'.format(x * 100))
     current_incident_id = demisto.incident()['id']
-    incidents_df['Reputation'] = incidents_df['id'].apply(lambda id_: get_reputation(id_, indicators_df))
+    incidents_df['DBot Score'] = incidents_df['id'].apply(lambda id_: get_reputation(id_, indicators_df))
     # add a mark at current incident, at its similarity cell
     incidents_df['similarity'] = incidents_df.apply(
         lambda x: '{} (current)'.format(x['similarity']) if x['id'] == current_incident_id else x['similarity'], axis=1)
@@ -353,7 +353,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
         'similarity': 'Similarity to Current Incident',
         'status': 'Status'},
         axis=1, inplace=True)
-    incidents_headers = ['Id', 'Created', 'Name', 'Status', 'Email From', 'Reputation',
+    incidents_headers = ['Id', 'Created', 'Name', 'Status', 'Email From', 'DBot Score',
                          'Similarity to Current Incident']
     if fields_to_display is not None:
         fields_to_display = [f for f in fields_to_display if f in incidents_df.columns]
