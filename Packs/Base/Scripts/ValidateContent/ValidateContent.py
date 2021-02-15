@@ -168,8 +168,19 @@ def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
             raise
 
 
+def cleanup_validation_and_lint_outputs(content_dir):
+    content_parent = os.path.normpath(os.path.join(content_dir, '..'))
+    content_pp = wcpath(os.path.abspath(content_parent))
+    output_files = content_pp.glob(
+        [r'*(lint|valid)*.txt', r'*(lint|valid)*.json', r'*(lint|valid)*.log'], flags=EXTGLOB
+    )
+    for output_file in output_files:
+        output_file.unlink(missing_ok=True)
+
+
 def do_cleanup(content_dir) -> None:
     global performed_cleanup
+    cleanup_validation_and_lint_outputs(content_dir)
     packs_dir = os.path.join(content_dir, 'Packs')
     demisto.info('starting cleanup')
     files_to_clean = wcpath(packs_dir).glob([r'*', r'!Base'], flags=NEGATE | GLOBSTAR | EXTGLOB)
