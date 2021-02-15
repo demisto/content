@@ -1907,7 +1907,7 @@ def move_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     overview_response = response.copy()
     overview_response.pop('item_collection')
     overview_output: str = tableToMarkdown(
-        name=f'Folder overview for transferred folder.',
+        name='Folder overview for transferred folder.',
         t=overview_response,
         removeNull=True,
         headerTransform=string_to_table_header
