@@ -2026,7 +2026,7 @@ There is no context output for this command.
 
 ### xdr-run-script
 ***
-Initiate a new endpoint script execution action using a script from the script library.
+Initiates a new endpoint script execution action using a script from the script library.
 
 
 #### Base Command
@@ -2044,7 +2044,7 @@ Initiate a new endpoint script execution action using a script from the script l
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
 | parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Optional |
-| timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2079,7 +2079,7 @@ Initiate a new endpoint script execution action using a script from the script l
 
 ### xdr-run-snippet-code-script
 ***
-Initiate a new endpoint script execution action using provided snippet code.
+Initiates a new endpoint script execution action using provided snippet code.
 
 
 #### Base Command
@@ -2129,7 +2129,7 @@ Initiate a new endpoint script execution action using provided snippet code.
 
 ### xdr-get-script-execution-status
 ***
-Retrieve the status of a script execution action.
+Retrieves the status of a script execution action.
 
 
 #### Base Command
@@ -2156,7 +2156,7 @@ Retrieve the status of a script execution action.
 | PaloAltoNetworksXDR.ScriptStatus.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_pending_abort | Number | Number of endpoints in "pending abort" status. | 
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_pending | Number | Number of endpoints in "pending" status. | 
-| PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress | Number | Number of endpoints in "in progess" status. | 
+| PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress | Number | Number of endpoints in "in progress" status. | 
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_failed | Number | Number of endpoints in "failed" status. | 
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_expired | Number | Number of endpoints in "expired" status. | 
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_completed_successfully | Number | Number of endpoints in "completed successfully" status. | 
@@ -2197,7 +2197,7 @@ Retrieve the status of a script execution action.
 
 ### xdr-get-script-execution-results
 ***
-Retrieve the results of a script execution action.
+Retrieves the results of a script execution action.
 
 
 #### Base Command
@@ -2268,7 +2268,7 @@ Retrieve the results of a script execution action.
 
 ### xdr-get-script-execution-result-files
 ***
-Get the files retrieved from a specific endpoint during a script execution.
+Gets the files retrieved from a specific endpoint during a script execution.
 
 
 #### Base Command
@@ -2290,7 +2290,7 @@ Get the files retrieved from a specific endpoint during a script execution.
 
 ### xdr-run-script-execute-commands
 ***
-Initiate a new endpoint script execution of shell commands.
+Initiates a new endpoint script execution of shell commands.
 
 
 #### Base Command
@@ -2306,7 +2306,7 @@ Initiate a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | commands | Comma-separated list of shell commands to execute. | Required |
-| timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2342,7 +2342,7 @@ Initiate a new endpoint script execution of shell commands.
 
 ### xdr-run-script-delete-file
 ***
-Initiate a new endpoint script execution to delete the specified file.
+Initiates a new endpoint script execution to delete the specified file.
 
 
 #### Base Command
@@ -2357,8 +2357,8 @@ Initiate a new endpoint script execution to delete the specified file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
-| file_path | Path of file to delete. | Required |
-| timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
+| file_path | Path of the file to delete. | Required |
+| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2393,7 +2393,7 @@ Initiate a new endpoint script execution to delete the specified file.
 
 ### xdr-run-script-file-exists
 ***
-Initiate a new endpoint script execution to check if file exists.
+Initiates a new endpoint script execution to check if the file exists.
 
 
 #### Base Command
@@ -2408,8 +2408,8 @@ Initiate a new endpoint script execution to check if file exists.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
-| file_path | Path of file to check for existence. | Required |
-| timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
+| file_path | Path of the file to check for existence. | Required |
+| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2444,7 +2444,7 @@ Initiate a new endpoint script execution to check if file exists.
 
 ### xdr-run-script-kill-process
 ***
-Initiate a new endpoint script execution kill process.
+Initiates a new endpoint script execution kill process.
 
 
 #### Base Command
@@ -2459,8 +2459,8 @@ Initiate a new endpoint script execution kill process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
-| process_name | Name of process to kill. | Required |
-| timeout | Integer represents the timeout in seconds for this execution. Default is 600. | Optional |
+| process_name | Name of the process to kill. | Required |
+| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
