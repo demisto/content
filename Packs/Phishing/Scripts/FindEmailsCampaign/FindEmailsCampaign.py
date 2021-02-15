@@ -361,14 +361,15 @@ def draw_canvas(incidents, indicators):
         mutual_incidents_in_canvas = len(set(investigations).intersection(incident_ids))
         if mutual_incidents_in_canvas >= 2:
             filtered_indicators.append(indicator)
-
-    res = demisto.executeCommand('DrawRelatedIncidentsCanvas', {'relatedIncidentsIDs': list(incident_ids),
-                                                                'indicators': filtered_indicators,
-                                                                'overrideUserCanvas': 'true'
-                                                                })
-
-    if not is_error(res) or True:
-        demisto.results(res)
+    try:
+        res = demisto.executeCommand('DrawRelatedIncidentsCanvas', {'relatedIncidentsIDs': list(incident_ids),
+                                                                    'indicators': filtered_indicators,
+                                                                    'overrideUserCanvas': 'true'
+                                                                    })
+        if not is_error(res) or True:
+            demisto.results(res)
+    except Exception as e:
+        pass
 
 
 def analyze_incidents_campaign(incidents, fields_to_display):
