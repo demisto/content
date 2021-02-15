@@ -889,6 +889,13 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama_9.0",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "5.5.0",
+            "timeout": 1600
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "PAN-OS URL Filtering enrichment - Test"
         },
@@ -3240,6 +3247,7 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
+        "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
