@@ -31,7 +31,7 @@ MIN_TEXT_LENGTH = 50
 DEFAULT_ARGS = {
     'limit': '1000',
     'incidentTypes': 'Phishing',
-    'exsitingIncidentsLookback': '100 days ago',
+    'existingIncidentsLookback': '100 days ago',
 }
 FROM_POLICY_TEXT_ONLY = 'TextOnly'
 FROM_POLICY_EXACT = 'Exact'
@@ -48,10 +48,10 @@ def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
     get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
-    if 'exsitingIncidentsLookback' in input_args:
-        get_incidents_args['fromDate'] = input_args['exsitingIncidentsLookback']
-    elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
-        get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
+    if 'existingIncidentsLookback' in input_args:
+        get_incidents_args['fromDate'] = input_args['existingIncidentsLookback']
+    elif 'existingIncidentsLookback' in DEFAULT_ARGS:
+        get_incidents_args['fromDate'] = DEFAULT_ARGS['existingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
     query_components = []
     if 'query' in input_args:
