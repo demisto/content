@@ -24,7 +24,7 @@ args:
     Date format is the same as in the incidents query page. For example, "3 days ago",
     ""2019-01-01T00:00:00 +0200").
   isArray: false
-  name: exsitingIncidentsLookback
+  name: existingIncidentsLookback
   required: false
   secret: false
 - default: false
