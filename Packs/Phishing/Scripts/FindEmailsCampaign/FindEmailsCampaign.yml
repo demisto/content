@@ -1,4 +1,3 @@
-vcShouldKeepItemLegacyProdMachine: false
 args:
 - default: false
   defaultValue: type
@@ -133,13 +132,13 @@ commonfields:
 enabled: false
 name: FindEmailsCampaign
 outputs:
-- contextPath: Campaign.isCampaignFound
+- contextPath: EmailsCampaign.isCampaignFound
   description: Whether a campaign was found
   type: Boolean
-- contextPath: Campaign.campaignIncidentsIds
+- contextPath: EmailsCampaign.campaignIncidentsIds
   description: The IDs of the incidents involved in the campaign
   type: Unknown
-- contextPath: Campaign.mutualIndicatorsIds
+- contextPath: EmailsCampaign.mutualIndicatorsIds
   description: The IDs of mututal indicators of incidents invovled in the campaign.
   type: Unknown
 script: '-'
@@ -151,3 +150,4 @@ dockerimage: demisto/sklearn:1.0.0.15216
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false

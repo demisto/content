@@ -64,7 +64,7 @@ STATUS_DICT = {
 
 def add_context_key(entry_context):
     context = {
-        'Campaign': entry_context
+        'EmailsCampaign': entry_context
     }
     return context
 
