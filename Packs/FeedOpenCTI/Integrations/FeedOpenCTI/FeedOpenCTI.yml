@@ -13,11 +13,7 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
-    in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-    "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and
-    "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer
-    to the integration documentation for more information. The default is "ALL".'
+- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
   defaultvalue: ALL
   display: Indicators Type to fetch
   name: indicator_types
@@ -72,8 +68,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -83,7 +78,8 @@ configuration:
   - WHITE
   required: false
   type: 15
-- name: feedExpirationPolicy
+- display: ''
+  name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -91,7 +87,8 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- name: feedExpirationInterval
+- display: ''
+  name: feedExpirationInterval
   required: false
   type: 1
 - defaultvalue: '240'
@@ -136,12 +133,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: 'The indicator types to fetch. Out of the box indicator types supported
-        in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-        "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
-        and "URL". The rest will not cause automatic indicator creation in XSOAR.
-        Please refer to the integration documentation for more information. The default
-        is "ALL".'
+      description: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
       isArray: true
       name: indicator_types
       predefined:
@@ -160,8 +152,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call from which to begin pagination
-        for this call.
+      description: The last ID from the previous call from which to begin pagination for this call.
       isArray: false
       name: last_id
       required: false
@@ -177,6 +168,9 @@ script:
     - contextPath: OpenCTI.Indicators.value
       description: Indicator value.
       type: String
+    - contextPath: OpenCTI.LastRunID
+      description: the id of the last fetch to use pagination.
+      type: String
   - deprecated: false
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
@@ -190,4 +184,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+
 fromversion: 5.5.0
