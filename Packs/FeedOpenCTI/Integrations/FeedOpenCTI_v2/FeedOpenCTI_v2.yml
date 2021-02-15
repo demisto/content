@@ -49,9 +49,9 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
+  defaultvalue: Good
   options:
   - None
   - Good

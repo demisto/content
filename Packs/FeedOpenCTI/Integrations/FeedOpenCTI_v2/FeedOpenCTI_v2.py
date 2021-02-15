@@ -187,7 +187,7 @@ def indicator_score_update_command(client, args: dict) -> CommandResults:
             readable_output, raw_response
         """
     indicator_id = args.get("id")
-    value = int(args.get("score"))
+    value = int(args.get("score", '50'))
     result = client.stix_cyber_observable.update_field(id=indicator_id, key='x_opencti_score', value=value)
 
     if result.get('id'):
