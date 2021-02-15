@@ -715,6 +715,25 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
     return contents
 
 
+def contents_asset_data(asset_data) -> Dict:
+    """create a content obj for the asset
+
+    Args:
+        asset_data: asset data
+    Returns:
+        A contents dict with the relevant asset data
+    """
+    contents = {
+        'HostName': asset_data.get('hostName'),
+        'IPAddress': asset_data.get('ipAddress'),
+        'AssetType': asset_data.get('assetType'),
+        'FirstSeen': convert_unix_to_date(asset_data.get('firstSeen')),
+        'LastSeen': convert_unix_to_date(asset_data.get('lastSeen')),
+        'Labels': asset_data.get('labels')
+    }
+    return contents
+
+
 def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
     outputs = []
 
@@ -966,25 +985,6 @@ def delete_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'The watchlist {watchlist_id} was deleted successfully.', {}, {}
 
 
-def contents_asset_data(asset_data) -> Dict:
-    """create a content obj for the asset
-
-    Args:
-        asset_data: asset data
-    Returns:
-        A contents dict with the relevant asset data
-    """
-    contents = {
-        'HostName': asset_data.get('hostName'),
-        'IPAddress': asset_data.get('ipAddress'),
-        'AssetType': asset_data.get('assetType'),
-        'FirstSeen': convert_unix_to_date(asset_data.get('firstSeen')),
-        'LastSeen': convert_unix_to_date(asset_data.get('lastSeen')),
-        'Labels': asset_data.get('labels')
-    }
-    return contents
-
-
 def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
     """  Return asset data for given asset ID (hostname or IP address)
 
@@ -1064,7 +1064,7 @@ def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Opt
     sequence_type = args.get('sequence_type')
     triggered_rules_raw_data = client.list_triggered_rules_request(sequence_id, sequence_type)
 
-    triggered_rules = triggered_rules_raw_data.get('triggeredRules')
+    triggered_rules = triggered_rules_raw_data.get('triggeredRules', [])
     for triggered_rule in triggered_rules:
         triggered_rule['createdTime'] = convert_unix_to_date(triggered_rule.get('createdTime'))
         triggered_rule['triggeringTime'] = convert_unix_to_date(triggered_rule.get('triggeringTime'))
