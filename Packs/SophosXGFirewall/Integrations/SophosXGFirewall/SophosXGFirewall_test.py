@@ -30,7 +30,7 @@ def test_sophos_firewall_rule_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_list_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_list_command
     mock_response = load_mock_response('rule_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -51,7 +51,7 @@ def test_sophos_firewall_rule_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_get_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_get_command
     mock_response = load_mock_response('rule_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -71,7 +71,7 @@ def test_sophos_firewall_rule_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_add_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_add_command
     mock_response = load_mock_response('rule_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('rule_get.xml')
@@ -93,7 +93,7 @@ def test_sophos_firewall_rule_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_update_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_update_command
     mock_response = load_mock_response('rule_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('rule_get.xml')
@@ -116,7 +116,7 @@ def test_sophos_firewall_rule_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_delete_command
     mock_response = load_mock_response('rule_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('rule_get.xml')
@@ -138,7 +138,7 @@ def test_sophos_firewall_rule_group_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_group_list_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_group_list_command
     mock_response = load_mock_response('rule_group_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -159,7 +159,7 @@ def test_sophos_firewall_rule_group_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_group_get_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_group_get_command
     mock_response = load_mock_response('rule_group_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -179,7 +179,7 @@ def test_sophos_firewall_rule_group_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_group_add_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_group_add_command
     mock_response = load_mock_response('rule_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('rule_group_get.xml')
@@ -201,7 +201,7 @@ def test_sophos_firewall_rule_group_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_group_update_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_group_update_command
     mock_response = load_mock_response('rule_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('rule_group_get.xml')
@@ -223,7 +223,7 @@ def test_sophos_firewall_rule_group_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_rule_group_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_rule_group_delete_command
     mock_response = load_mock_response('rule_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -244,7 +244,7 @@ def test_sophos_firewall_url_group_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_url_group_list_command
+    from SophosXGFirewall import Client, sophos_firewall_url_group_list_command
     mock_response = load_mock_response('url_group_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -265,7 +265,7 @@ def test_sophos_firewall_url_group_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_url_group_get_command
+    from SophosXGFirewall import Client, sophos_firewall_url_group_get_command
     mock_response = load_mock_response('url_group_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -285,7 +285,7 @@ def test_sophos_firewall_url_group_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_url_group_add_command
+    from SophosXGFirewall import Client, sophos_firewall_url_group_add_command
     mock_response = load_mock_response('url_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('url_group_get.xml')
@@ -307,7 +307,7 @@ def test_sophos_firewall_url_group_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_url_group_update_command
+    from SophosXGFirewall import Client, sophos_firewall_url_group_update_command
     mock_response = load_mock_response('url_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('url_group_get.xml')
@@ -329,7 +329,7 @@ def test_sophos_firewall_url_group_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_url_group_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_url_group_delete_command
     mock_response = load_mock_response('url_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -350,7 +350,7 @@ def test_sophos_firewall_ip_host_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_list_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_list_command
     mock_response = load_mock_response('ip_host_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -371,7 +371,7 @@ def test_sophos_firewall_ip_host_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_get_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_get_command
     mock_response = load_mock_response('ip_host_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -391,7 +391,7 @@ def test_sophos_firewall_ip_host_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_add_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_add_command
     mock_response = load_mock_response('ip_host_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('ip_host_get.xml')
@@ -414,7 +414,7 @@ def test_sophos_firewall_ip_host_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_update_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_update_command
     mock_response = load_mock_response('ip_host_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('ip_host_get.xml')
@@ -438,7 +438,7 @@ def test_sophos_firewall_ip_host_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_delete_command
     mock_response = load_mock_response('ip_host_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -459,7 +459,7 @@ def test_sophos_firewall_ip_host_group_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_group_list_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_group_list_command
     mock_response = load_mock_response('ip_host_group_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -480,7 +480,7 @@ def test_sophos_firewall_ip_host_group_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_group_get_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_group_get_command
     mock_response = load_mock_response('ip_host_group_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -500,7 +500,7 @@ def test_sophos_firewall_ip_host_group_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_group_add_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_group_add_command
     mock_response = load_mock_response('ip_host_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('ip_host_group_get.xml')
@@ -522,7 +522,7 @@ def test_sophos_firewall_ip_host_group_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_group_update_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_group_update_command
     mock_response = load_mock_response('ip_host_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('ip_host_group_get.xml')
@@ -545,7 +545,7 @@ def test_sophos_firewall_ip_host_group_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_ip_host_group_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_ip_host_group_delete_command
     mock_response = load_mock_response('ip_host_group_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -566,7 +566,7 @@ def test_sophos_firewall_services_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_services_list_command
+    from SophosXGFirewall import Client, sophos_firewall_services_list_command
     mock_response = load_mock_response('services_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -587,7 +587,7 @@ def test_sophos_firewall_services_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_services_get_command
+    from SophosXGFirewall import Client, sophos_firewall_services_get_command
     mock_response = load_mock_response('services_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -607,7 +607,7 @@ def test_sophos_firewall_services_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_services_add_command
+    from SophosXGFirewall import Client, sophos_firewall_services_add_command
     mock_response = load_mock_response('services_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('services_get.xml')
@@ -630,7 +630,7 @@ def test_sophos_firewall_services_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_services_update_command
+    from SophosXGFirewall import Client, sophos_firewall_services_update_command
     mock_response = load_mock_response('services_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('services_get.xml')
@@ -653,7 +653,7 @@ def test_sophos_firewall_services_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_services_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_services_delete_command
     mock_response = load_mock_response('services_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -673,7 +673,7 @@ def test_sophos_firewall_app_policy_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_policy_get_command
+    from SophosXGFirewall import Client, sophos_firewall_app_policy_get_command
     mock_response = load_mock_response('app_policy_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -693,7 +693,7 @@ def test_sophos_firewall_app_policy_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_policy_add_command
+    from SophosXGFirewall import Client, sophos_firewall_app_policy_add_command
     mock_response = load_mock_response('app_policy_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('app_policy_get.xml')
@@ -715,7 +715,7 @@ def test_sophos_firewall_app_policy_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_policy_update_command
+    from SophosXGFirewall import Client, sophos_firewall_app_policy_update_command
     mock_response = load_mock_response('app_policy_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('app_policy_get.xml')
@@ -737,7 +737,7 @@ def test_sophos_firewall_app_policy_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_policy_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_app_policy_delete_command
     mock_response = load_mock_response('app_policy_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -758,7 +758,7 @@ def test_sophos_firewall_app_category_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_category_list_command
+    from SophosXGFirewall import Client, sophos_firewall_app_category_list_command
     mock_response = load_mock_response('app_category_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -779,7 +779,7 @@ def test_sophos_firewall_app_category_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_category_get_command
+    from SophosXGFirewall import Client, sophos_firewall_app_category_get_command
     mock_response = load_mock_response('app_category_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -799,7 +799,7 @@ def test_sophos_firewall_app_category_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_app_category_update_command
+    from SophosXGFirewall import Client, sophos_firewall_app_category_update_command
     mock_response = load_mock_response('app_category_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('app_category_get.xml')
@@ -822,7 +822,7 @@ def test_sophos_firewall_web_filter_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_web_filter_list_command
+    from SophosXGFirewall import Client, sophos_firewall_web_filter_list_command
     mock_response = load_mock_response('web_filter_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -843,7 +843,7 @@ def test_sophos_firewall_web_filter_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_web_filter_get_command
+    from SophosXGFirewall import Client, sophos_firewall_web_filter_get_command
     mock_response = load_mock_response('web_filter_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -863,7 +863,7 @@ def test_sophos_firewall_web_filter_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_web_filter_add_command
+    from SophosXGFirewall import Client, sophos_firewall_web_filter_add_command
     mock_response = load_mock_response('web_filter_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('web_filter_get.xml')
@@ -886,7 +886,7 @@ def test_sophos_firewall_web_filter_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_web_filter_update_command
+    from SophosXGFirewall import Client, sophos_firewall_web_filter_update_command
     mock_response = load_mock_response('web_filter_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('web_filter_get.xml')
@@ -909,7 +909,7 @@ def test_sophos_firewall_web_filter_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_web_filter_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_web_filter_delete_command
     mock_response = load_mock_response('web_filter_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -930,7 +930,7 @@ def test_sophos_firewall_user_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_user_list_command
+    from SophosXGFirewall import Client, sophos_firewall_user_list_command
     mock_response = load_mock_response('user_list.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -951,7 +951,7 @@ def test_sophos_firewall_user_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_user_get_command
+    from SophosXGFirewall import Client, sophos_firewall_user_get_command
     mock_response = load_mock_response('user_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -971,7 +971,7 @@ def test_sophos_firewall_user_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_user_add_command
+    from SophosXGFirewall import Client, sophos_firewall_user_add_command
     mock_response = load_mock_response('user_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('user_get.xml')
@@ -994,7 +994,7 @@ def test_sophos_firewall_user_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_user_update_command
+    from SophosXGFirewall import Client, sophos_firewall_user_update_command
     mock_response = load_mock_response('user_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     mock_response = load_mock_response('user_get.xml')
@@ -1017,7 +1017,7 @@ def test_sophos_firewall_user_delete_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from sophos_firewall import Client, sophos_firewall_user_delete_command
+    from SophosXGFirewall import Client, sophos_firewall_user_delete_command
     mock_response = load_mock_response('user_set.xml')
     requests_mock.post(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -1036,7 +1036,7 @@ def test_prepare_builder_params(requests_mock):
     Then:
      - Ensure the correct item is returned from the function based on the arguments.
     """
-    from sophos_firewall import Client, prepare_builder_params
+    from SophosXGFirewall import Client, prepare_builder_params
     mock_response = load_mock_response('rule_get.xml')
     requests_mock.get(REQUEST_URL, text=mock_response)
     client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
@@ -1055,7 +1055,7 @@ def test_update_dict_from_params_using_path():
     Then:
      - Ensure the correct item is returned from the function based on the arguments.
     """
-    from sophos_firewall import update_dict_from_params_using_path
+    from SophosXGFirewall import update_dict_from_params_using_path
     result = update_dict_from_params_using_path({'a': ['b', 'c']}, {'a': ['b', 'c']}, {'a': ['d']})
     assert result == {'a': ['d'], 'b': {'c': ['b', 'c']}}
 
@@ -1070,7 +1070,7 @@ def test_check_error_on_response():
     Then:
      - Ensure the correct item is returned from the function based on the arguments.
     """
-    from sophos_firewall import check_error_on_response
+    from SophosXGFirewall import check_error_on_response
     bad_result = {'Status': 'No. of records Zero.'}
     with pytest.raises(Exception):
         check_error_on_response(bad_result)
@@ -1086,7 +1086,7 @@ def test_check_error_on_response_happy():
     Then:
      - Ensure the correct item is returned from the function based on the arguments.
     """
-    from sophos_firewall import check_error_on_response
+    from SophosXGFirewall import check_error_on_response
     good_result = json.loads(load_mock_response('rule_get.json'))
     assert check_error_on_response(good_result) is None
 
@@ -1101,7 +1101,7 @@ def test_retrieve_dict_item_recursively():
     Then:
      - Ensure the correct item is returned from the function based on the arguments.
     """
-    from sophos_firewall import retrieve_dict_item_recursively
+    from SophosXGFirewall import retrieve_dict_item_recursively
     result = retrieve_dict_item_recursively({'a': {'b': 'c'}}, 'b')
     assert result == 'c'
     result = retrieve_dict_item_recursively({'a': 'b'}, 'b')
