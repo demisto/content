@@ -35,7 +35,7 @@ class Client(BaseClient):
         if not request_id:
             raise ConnectionError(f"Failed to send request - {data}")
 
-        status = ""
+        status = None
         attempts = 0
         request_status = {}
         while not status:
