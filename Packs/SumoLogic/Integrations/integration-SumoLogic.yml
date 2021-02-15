@@ -42,7 +42,7 @@ configuration:
   type: 8
   required: false
 - display: 'Seconds to sleep between checking for results: Polling interval for checking the results of a fetch. 
-    Note: This parameter shouldn't be set to a value greater than Time between fetches to avoid polling for the results of the next fetch (usually a few seconds are enough).'
+    Note: This parameter should not be set to a value greater than fetchDelay to avoid polling for the results of the next fetch (usually a few seconds are enough).'
   name: sleepBetweenChecks
   defaultvalue: "3"
   type: 0
