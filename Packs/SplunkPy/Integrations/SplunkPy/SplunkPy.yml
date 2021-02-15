@@ -110,6 +110,12 @@ configuration:
   name: type_field
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Use CIM Schemas for Mapping
+  name: use_cim
+  required: false
+  type: 8
+  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -613,7 +619,7 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/splunksdk:1.0.0.11989
+  dockerimage: demisto/splunksdk:1.0.0.15975
   feed: false
   isfetch: true
   longRunning: false
