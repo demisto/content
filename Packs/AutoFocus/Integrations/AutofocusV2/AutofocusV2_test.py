@@ -218,7 +218,7 @@ def test_get_tags_for_generic_context():
      Given:
          - The 'Tags' values returned from the API for a given file.
      When:
-         - When the user uses file command.
+         - When the user uses 'file' command.
      Then:
          - Only specific keys should be parsed in to context - 'TagGroups.TagGroupName', 'Aliases', 'PublicTagName',
           'TagName'.
