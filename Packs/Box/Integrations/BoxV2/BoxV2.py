@@ -964,7 +964,9 @@ class Client(BaseClient):
             method='PUT',
             url_suffix=url_suffix,
             params=query_params,
-            json_data=request_body
+            json_data=request_body,
+            timeout=30,
+            return_empty_response=True
         )
 
 
@@ -1897,22 +1899,12 @@ def move_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     notify: bool = bool(strtobool(args.get('notify', 'true')))
 
     response = client.move_folder(from_user_id=from_user_id, to_user_id=to_user_id, notify=notify)
-    folder_item_collection: dict = response.get('item_collection')  # type:ignore
-    folders_output: str = tableToMarkdown(
-        name="File contents for the transferred folder.",
-        t=folder_item_collection.get('entries'),
-        removeNull=True,
-        headerTransform=string_to_table_header
-    )
-    overview_response = response.copy()
-    overview_response.pop('item_collection')
-    overview_output: str = tableToMarkdown(
+    readable_output: str = tableToMarkdown(
         name='Folder overview for transferred folder.',
-        t=overview_response,
+        t=response,
         removeNull=True,
         headerTransform=string_to_table_header
     )
-    readable_output: str = overview_output + folders_output
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Box.Folder',
