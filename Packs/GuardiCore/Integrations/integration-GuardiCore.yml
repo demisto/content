@@ -728,6 +728,24 @@ script:
         return entry;
     }
 
+    var request_logout = function(method, url, token){
+        var headers = {'Content-Type': ['application/json']};
+        if (token) {
+            headers.Authorization = ['Bearer ' + token];
+        }
+        console.log('Sending request: ' + server + url);
+        http(server + url,
+            {
+                Method: method,
+                Headers: headers,
+                Body: '',
+                SaveToFile: isRawOutput ? true : false
+            },
+            params.insecure,
+            params.proxy
+        );
+    }
+
 
     var sendRequest = function(method, url, token, args, isRawOutput, shouldIgnoreUrlArgs) {
         var headers = {'Content-Type': ['application/json']};
@@ -751,10 +769,10 @@ script:
             params.insecure,
             params.proxy
         );
-
+        console.log('Response from api: ' + JSON.stringify(res))  # print response to console for debugging
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (token) {
-                sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+                request_logout(methodDictionary.logout, urlDictionary.logout, token);
             }
 
             throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
