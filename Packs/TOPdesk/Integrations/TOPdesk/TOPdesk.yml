@@ -3355,6 +3355,11 @@ script:
       name: number
       required: false
       secret: false
+    - description: The escalation reason id.
+      isArray: false
+      name: reason_id
+      required: true
+      secret: false
     deprecated: false
     description: Escalate an incident in TOPdesk.
     name: topdesk-incident-escalate
@@ -3951,6 +3956,613 @@ script:
       isArray: false
       name: number
       required: false
+      secret: false
+    - description: The deescalation reason id.
+      isArray: false
+      name: reason_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deescalate an incident in TOPdesk.
+    name: topdesk-incident-deescalate
+    outputs:
+    - contextPath: TOPdesk.incident..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..number
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..request
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..requests
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..action
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..attachments
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.dynamicName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.branch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.branch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.branch.extraA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..caller.branch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..caller.branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..caller.branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callerBranch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callerBranch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callerBranch.extraA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..callerBranch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..callerBranch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callerBranch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..branchExtraFieldA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..branchExtraFieldB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..briefDescription
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..externalNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..category.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..category.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..subcategory.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..subcategory.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callType.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callType.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..entryType.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..entryType.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.type.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.type.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.make.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.make.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.model.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.model.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.location.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.location.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.specification
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..object.serialNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..asset.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..branch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..branch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..branch.extraA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..branch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.branch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.branch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.branch.extraA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..location.branch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..location.branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..location.room
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..impact.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..impact.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..urgency.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..urgency.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..priority.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..priority.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..duration.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..duration.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..targetDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..sla.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..onHold
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..onHoldDate
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..onHoldDuration
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..feedbackMessage
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..feedbackRating
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..operator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..operator.status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..operator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..operatorGroup.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..operatorGroup.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..supplier.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..supplier.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..supplier.forFirstLine
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..supplier.forSecondLine
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..processingStatus.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..processingStatus.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..completed
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..completedDate
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..closed
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..closedDate
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..closureCode.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..closureCode.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..timeSpent
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..timeSpentFirstLine
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..timeSpentSecondLineAndPartials
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..costs
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..escalationStatus
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..escalationReason.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..escalationReason.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..escalationOperator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..escalationOperator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..callDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..creator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..creator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..creationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..modifier.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..modifier.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..modificationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..majorCall
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..majorCallObject.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..majorCallObject.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..majorCallObject.status
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..majorCallObject.majorIncident
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..publishToSsd
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..monitored
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..expectedTimeSpent
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..mainIncident
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.incident..partialIncidents.link
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields1.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields1.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields1.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields1.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields1.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields1.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields1.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields1.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields1.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields1.date1
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields1.date2
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields1.date3
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields1.date4
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields1.date5
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields1.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.memo1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.memo2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.memo3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.memo4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.memo5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist1.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist1.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist2.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist2.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist3.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist3.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist4.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist4.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist5.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields1.searchlist5.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields2.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields2.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields2.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields2.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.incident..optionalFields2.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields2.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields2.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields2.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields2.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.incident..optionalFields2.date1
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields2.date2
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields2.date3
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields2.date4
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields2.date5
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.incident..optionalFields2.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.memo1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.memo2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.memo3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.memo4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.memo5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist1.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist1.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist2.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist2.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist3.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist3.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist4.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist4.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist5.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..optionalFields2.searchlist5.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..externalLinks.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..externalLinks.type
+      description: ''
+      type: String
+    - contextPath: TOPdesk.incident..externalLinks.date
+      description: ''
+      type: Date
+  - arguments:
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+      isArray: false
+      name: number
+      required: false
+      secret: false
+    - description: The archiving reason id.
+      isArray: false
+      name: reason_id
+      required: true
       secret: false
     deprecated: false
     description: Archive an incident in TOPdesk.

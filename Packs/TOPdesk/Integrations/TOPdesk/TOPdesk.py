@@ -12,7 +12,6 @@ import traceback
 import dateparser
 
 from typing import Any, Dict, List, Optional, Callable, Tuple
-from dateutil.parser import parse
 from base64 import b64encode
 
 # Disable insecure warnings
@@ -42,14 +41,22 @@ class Client(BaseClient):
                              f"Only {allowed_list_type} are allowed.")
 
         url_suffix = f"/{list_type}"
-        if query:
-            url_suffix = f"/{list_type}?{query}"
-
+        inline_parameters = False
         request_params: Dict[str, Any] = {}
         if start:
-            request_params["start"] = start
+            url_suffix = f"{url_suffix}?start={start}"
+            inline_parameters = True
         if page_size:
-            request_params["page_size"] = page_size
+            if inline_parameters:
+                url_suffix = f"{url_suffix}&page_size={page_size}"
+            else:
+                url_suffix = f"{url_suffix}?page_size={page_size}"
+                inline_parameters = True
+        if query:
+            if inline_parameters:
+                url_suffix = f"{url_suffix}&query={query}"
+            else:
+                url_suffix = f"{url_suffix}?query={query}"
         if modification_date_start:
             request_params["modification_date_start"] = modification_date_start
         if modification_date_end:
@@ -154,7 +161,8 @@ class Client(BaseClient):
 
     def incident_do(self, action: str,
                     incident_id: Optional[str],
-                    incident_number: Optional[str]) -> Dict[str, Any]:
+                    incident_number: Optional[str],
+                    reason_id: Optional[str]) -> Dict[str, Any]:
         """ """
         allowed_actions = ["escalate", "deescalate", "archive", "unarchive"]
         request_params: Dict[str, Any] = {}
@@ -164,10 +172,11 @@ class Client(BaseClient):
             raise ValueError('Either id or number must be specified to update incident.')
         if incident_id:
             endpoint = f"/incidents/id/{incident_id}"
-            request_params["id"] = incident_id
         else:
             endpoint = f"/incidents/number/{incident_number}"
-            request_params["number"] = incident_number
+
+        if reason_id:
+            request_params["id"] = reason_id
 
         return self._http_request(
             method='PATCH',
@@ -180,7 +189,7 @@ class Client(BaseClient):
                           incident_number: Optional[str],
                           file_entry: str,
                           file_name: str,
-                          invisible_for_caller: bool,
+                          invisible_for_caller: Optional[bool],
                           file_description: str):
         """ """
         if not incident_id and not incident_number:
@@ -192,12 +201,8 @@ class Client(BaseClient):
         request_params: Dict[str, Any] = {}
         if isinstance(invisible_for_caller, bool):
             request_params["invisibleForCaller"] = invisible_for_caller
-        else:
-            raise ValueError('invisible_for_caller must be either ture or false')
         if file_description:
             request_params["description"] = file_description
-        else:
-            request_params["description"] = ""
 
         shutil.copyfile(demisto.getFilePath(file_entry)['path'], file_name)
         try:
@@ -224,7 +229,7 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]],
     if len(results) == 0:
         return CommandResults(readable_output=f'No {result_name} found')
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', results)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', results, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -248,9 +253,7 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
         return CommandResults(readable_output='No persons found')
 
     headers = ['id', 'Compound Name', 'Telephone', 'Job Title', 'Department', 'City',
-               'Room']
-
-    # Maybe import settings for this the overview setup ?
+               'Branch Name', 'Room']
 
     readable_persons = []
     for person in persons:
@@ -261,13 +264,17 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
             'Job Title': person.get('jobTitle', None),
             'Department': person.get('department', None),
             'City': person.get('city', None),
+            'Branch Name': replace_none(person.get('branch', {}), {}).get('name', None),
             'Room': None
         }
         if person.get('location', None):
             readable_person['Room'] = person.get('location', None).get('room', None)
         readable_persons.append(readable_person)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} persons', readable_persons, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} persons',
+                                      readable_persons,
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -303,7 +310,10 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
             'Login Name': operator.get('tasLoginName', None),
         })
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators', readable_operators, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators',
+                                      readable_operators,
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -362,7 +372,8 @@ def subcategories_command(client: Client) -> CommandResults:
     headers = ['id', 'name', 'category id', 'category name']
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} subcategories',
                                       subcategories_with_categories,
-                                      headers=headers)
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -380,12 +391,9 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                           page_size=args.get('page_size', None),
                                           query=args.get('query', None))
     if len(branches) == 0:
-        return CommandResults(readable_output='No persons found')
+        return CommandResults(readable_output='No branches found')
 
-    headers = ['id', 'Status', 'Name', 'Specifications', 'Client Reference Number', 'Phone', 'Email',
-               'Website', 'Branch Type', 'Head Branch id', 'Head Branch Name', 'Address', 'Postal Address',
-               'Contact id', 'Contact Name', 'Account Manager id', 'Account Manager Name', 'Attention Comment',
-               'Additional Info']
+    headers = ['id', 'Status', 'Name', 'Phone', 'Website', 'Address']
 
     readable_branches = []
     for branch in branches:
@@ -393,26 +401,16 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'id': branch.get('id', None),
             'Status': branch.get('status', None),
             'Name': branch.get('name', None),
-            'Specifications': branch.get('specifications', None),
-            'Client Reference Number': branch.get('clientReferenceNumber', None),
             'Phone': branch.get('phone', None),
-            'Email': branch.get('email', None),
             'Website': branch.get('website', None),
-            'Branch Type': branch.get('branchType', None),
-            'Head Branch id': branch.get('headBranch', {}).get('id', None),
-            'Head Branch Name': branch.get('headBranch', {}).get('name', None),
-            'Address': branch.get('address', {}).get('addressMemo', None),
-            'Postal Address': branch.get('postalAddress', {}).get('addressMemo', None),
-            'Contact id': branch.get('contact', {}).get('id', None),
-            'Contact Name': branch.get('contact', {}).get('name', None),
-            'Account Manager id': branch.get('accountManager', {}).get('id', None),
-            'Account Manager Name': branch.get('accountManager', {}).get('name', None),
-            'Attention Comment': branch.get('attentionComment', None),
-            'Additional Info': branch.get('additionalInfo', None)
+            'Address': branch.get('address', {}).get('addressMemo', None)
         }
         readable_branches.append(readable_branch)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} branches', readable_branches, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} branches',
+                                      readable_branches,
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -503,60 +501,26 @@ def incidents_to_command_results(client: Client, incidents: List[Dict[str, Any]]
     if len(incidents) == 0:
         return CommandResults(readable_output='No incidents found')
 
-    headers = ['id', 'Request', 'Requests', 'Action', 'Attachments', 'Summary', 'Line', 'Progress',
-               'Response Target Date', 'Responded', 'Response Date', 'Call Number', 'Caller Name',
-               'Customer (Caller)', '\'Budget holder\'', 'Call Type', 'Status', 'Operator', 'Completed',
-               'Closed', 'Target Date', 'Impact', 'Category', 'Subcategory', 'SLA Target Date',
-               'Operator Group', '(De-)escalation Operator']
+    headers = ['id', 'Number', 'Request', 'Line', 'Actions', 'Caller Name', 'Status', 'Operator', 'Priority']
 
     readable_incidents = []
     for incident in incidents:
-        try:
-            actions = client.get_list(f"/incidents/id/{incident.get('id', None)}/actions")
-        except DemistoException as e:
-            if "Failed to parse json object from response: b''" in str(e):
-                actions = []
-            else:
-                raise e
-
-        readable_action = ""
-        for action in actions:
-            pretty_datetime = parse(action.get('entryDate', None)).strftime("%d-%m-%Y %H:%M")
-            readable_action = f"{readable_action}\n\n {pretty_datetime}-" \
-                              f"{action.get('operator', {}).get('name', None)}:\n{action.get('memoText', None)}"
-
         readable_incident = {
             'id': incident.get('id', None),
+            'Number': incident.get('number', None),
             'Request': incident.get('request', None),
-            'Requests': incident.get('requests', None),
-            'Action': readable_action,
-            'Attachments': incident.get('attachments', None),
             'Line': incident.get('status', None),
-            'Response Target Date': incident.get('specifications', None),
-            'Responded': incident.get('responded', None),
-            'Response Date': incident.get('responseDate', None),
-            'Call Number': incident.get('number', None),  # not sure
             'Caller Name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
-            'Customer (Caller)': replace_none(replace_none(incident.get('caller',
-                                                                        {}), {}).get('branch',
-                                                                                     {}), {}).get('name', None),
-            'Call Type': replace_none(incident.get('callType', {}), {}).get('name', None),
             'Status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
-            'Operator': incident.get('operator', None),
-            'Completed': incident.get('completed', None),
-            'Closed': incident.get('closed', None),
-            'Target Date': incident.get('targetDate', None),
-            'Impact': replace_none(incident.get('impact', {}), {}).get('name', None),
-            'Category': replace_none(incident.get('category', {}), {}).get('name', None),
-            'Subcategory': replace_none(incident.get('subcategory', {}), {}).get('name', None),
-            'SLA Target Date': replace_none(incident.get('sla', {}), {}).get('targetDate', None),
-            'Operator Group': replace_none(incident.get('subcategory', {}), {}).get('name', None),
-            '(De-)escalation Operator': replace_none(incident.get('escalationOperator', {}), {}).get('name', None)
+            'Operator': replace_none(incident.get('operator', {}), {}).get('name', None),
+            'Priority': incident.get('priority', None)
         }
 
         readable_incidents.append(readable_incident)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} incidents', readable_incidents, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} incidents', readable_incidents,
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -614,7 +578,10 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     for header in headers:
         readable_attachment[0][header] = response.get(header, None)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} attachment', readable_attachment, headers=headers)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} attachment',
+                                      readable_attachment,
+                                      headers=headers,
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
@@ -642,6 +609,7 @@ def fetch_incidents(client: Client,
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
     last_fetch = last_run.get('last_fetch', None)  # TODO: Always returns None for some reason.
+
     if not last_fetch:
         if first_fetch_datetime:
             last_fetch_datetime = first_fetch_datetime
@@ -667,7 +635,7 @@ def fetch_incidents(client: Client,
             incident_created_time = creation_datetime
         else:
             incident_created_time = last_fetch_datetime
-        if last_fetch_datetime.timestamp() < incident_created_time.timestamp():
+        if int(last_fetch_datetime.timestamp()) < int(incident_created_time.timestamp()):
             labels: List[Dict[str, Any]] = []
             for topdesk_incident_field, topdesk_incident_value in topdesk_incident.items():
                 if isinstance(topdesk_incident_value, str):
@@ -805,25 +773,32 @@ def main() -> None:
                                                         [client.incident_do(action="escalate",
                                                                             incident_id=demisto.args().get("id", None),
                                                                             incident_number=demisto.args().get("number",
-                                                                                                               None))]))
+                                                                                                               None),
+                                                                            reason_id=demisto.args().get("reason_id",
+                                                                                                         None))]))
         elif demisto.command() == 'topdesk-incident-deescalate':
             return_results(incidents_to_command_results(client,
                                                         [client.incident_do(action="deescalate",
                                                                             incident_id=demisto.args().get("id", None),
                                                                             incident_number=demisto.args().get("number",
-                                                                                                               None))]))
+                                                                                                               None),
+                                                                            reason_id=demisto.args().get("reason_id",
+                                                                                                         None))]))
         elif demisto.command() == 'topdesk-incident-archive':
             return_results(incidents_to_command_results(client,
                                                         [client.incident_do(action="archive",
                                                                             incident_id=demisto.args().get("id", None),
                                                                             incident_number=demisto.args().get("number",
-                                                                                                               None))]))
+                                                                                                               None),
+                                                                            reason_id=demisto.args().get("reason_id",
+                                                                                                         None))]))
         elif demisto.command() == 'topdesk-incident-unarchive':
             return_results(incidents_to_command_results(client,
                                                         [client.incident_do(action="unarchive",
                                                                             incident_id=demisto.args().get("id", None),
                                                                             incident_number=demisto.args().get("number",
-                                                                                                               None))]))
+                                                                                                               None),
+                                                                            reason_id=None)]))
         elif demisto.command() == 'topdesk-incident-attachment-upload':
             return_results(attachment_upload_command(client, demisto.args()))
 

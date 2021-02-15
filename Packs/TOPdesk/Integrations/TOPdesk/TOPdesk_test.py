@@ -3,7 +3,7 @@ import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
-    list_persons_command, list_operators_command, branches_command
+    list_persons_command, list_operators_command, branches_command, get_incidents_list_command
 
 
 def util_load_json(path):
@@ -82,6 +82,14 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
      {
          'outputs_prefix': f'{INTEGRATION_NAME}.branch',
          'outputs_key_field': 'id'
+     }),
+    (get_incidents_list_command,
+     'https://test.com/api/v1/incidents',
+     'test_data/topdesk_incident.json',
+     [{"id": "1st-incident-id"}, {"id": "2nd-incident-id"}],
+     {
+         'outputs_prefix': f'{INTEGRATION_NAME}.incident',
+         'outputs_key_field': 'id'
      })
 ])
 def test_large_output_list_command(requests_mock,
@@ -112,11 +120,90 @@ def test_large_output_list_command(requests_mock,
     assert command_results.outputs == mock_topdesk_response
 
 
+@pytest.mark.parametrize('command, command_args, command_api_request', [
+    (branches_command,
+     {'page_size': 2},
+     ('https://test.com/api/v1/branches?page_size=2', {})),
+    (branches_command,
+     {'start': 2},
+     ('https://test.com/api/v1/branches?start=2', {})),
+    (branches_command,
+     {'query': 'id==1st-branch-id'},
+     ('https://test.com/api/v1/branches?query=id==1st-branch-id', {})),
+    (branches_command,
+     {'page_size': 2, 'start': 2, 'query': 'id==1st-branch-id'},
+     ('https://test.com/api/v1/branches?start=2&page_size=2&query=id==1st-branch-id', {})),
+    (branches_command,
+     {'page_size': 2, 'query': 'id==1st-branch-id'},
+     ('https://test.com/api/v1/branches?page_size=2&query=id==1st-branch-id', {})),
+    (list_operators_command,
+     {'page_size': 2},
+     ('https://test.com/api/v1/operators?page_size=2', {})),
+    (list_operators_command,
+     {'start': 2},
+     ('https://test.com/api/v1/operators?start=2', {})),
+    (list_operators_command,
+     {'query': 'id==1st-operator-id'},
+     ('https://test.com/api/v1/operators?query=id==1st-operator-id', {})),
+    (list_operators_command,
+     {'page_size': 2, 'start': 2, 'query': 'id==1st-operator-id'},
+     ('https://test.com/api/v1/operators?start=2&page_size=2&query=id==1st-operator-id', {})),
+    (list_operators_command,
+     {'page_size': 2, 'query': 'id==1st-operator-id'},
+     ('https://test.com/api/v1/operators?page_size=2&query=id==1st-operator-id', {})),
+    (list_persons_command,
+     {'page_size': 2},
+     ('https://test.com/api/v1/persons?page_size=2', {})),
+    (list_persons_command,
+     {'start': 2},
+     ('https://test.com/api/v1/persons?start=2', {})),
+    (list_persons_command,
+     {'query': 'id==1st-person-id'},
+     ('https://test.com/api/v1/persons?query=id==1st-person-id', {})),
+    (list_persons_command,
+     {'page_size': 2, 'start': 2, 'query': 'id==1st-person-id'},
+     ('https://test.com/api/v1/persons?start=2&page_size=2&query=id==1st-person-id', {})),
+    (list_persons_command,
+     {'page_size': 2, 'query': 'id==1st-person-id'},
+     ('https://test.com/api/v1/persons?page_size=2&query=id==1st-person-id', {})),
+    (get_incidents_list_command,
+     {'page_size': 2},
+     ('https://test.com/api/v1/incidents?page_size=2', {})),
+    (get_incidents_list_command,
+     {'start': 2},
+     ('https://test.com/api/v1/incidents?start=2', {})),
+    (get_incidents_list_command,
+     {'query': 'id==1st-incident-id'},
+     ('https://test.com/api/v1/incidents?query=id==1st-incident-id', {})),
+    (get_incidents_list_command,
+     {'page_size': 2, 'start': 2, 'query': 'id==1st-incident-id'},
+     ('https://test.com/api/v1/incidents?start=2&page_size=2&query=id==1st-incident-id', {})),
+    (get_incidents_list_command,
+     {'page_size': 2, 'query': 'id==1st-incident-id'},
+     ('https://test.com/api/v1/incidents?page_size=2&query=id==1st-incident-id', {})),
+])
+def test_list_command_with_args(requests_mock,
+                                command,
+                                command_args,
+                                command_api_request):
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        }
+    )
+    requests_mock.get(
+        command_api_request[0], json=[{}])
+    command(client, command_args)
+
+    assert requests_mock.called
+    assert requests_mock.last_request.json() == command_api_request[1]
+
+
 # TODO: add test for pagination for fetch_incidents
-# TODO: add test for query for large output list commands
 # TODO: add tests for incident_do commands
 # TODO: add tests for attachment upload command
-# TODO: add test for incidents_list
 
 
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
@@ -135,7 +222,13 @@ def test_large_output_list_command(requests_mock,
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303+0000',
-        '2020-03-10T06:32:36Z')  # Last fetch is after one incident creation and before other.
+        '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
+    ([{
+        'number': 'TEST-1',
+        'creationDate': '2020-02-10T06:32:36.303+0000',
+        'will_be_fetched': False
+    }], '2020-02-10T06:32:36Z',
+        '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """
