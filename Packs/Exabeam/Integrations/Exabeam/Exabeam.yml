@@ -1540,7 +1540,7 @@ script:
     description: Add context table records from CSV file in a specific modification
       session.
     execution: false
-    name: exabeam-context-table-addbulk
+    name: exabeam-add-context-table-records-from-csv
   - arguments:
     - default: false
       description: Name of the context table.

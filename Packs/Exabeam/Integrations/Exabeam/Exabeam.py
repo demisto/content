@@ -3,25 +3,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any, Optional
 import requests
+import dateparser
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-
-def convert_unix_to_date(timestamp, sep='T'):
-    """Convert unix timestamp to datetime in iso format.
-
-    Args:
-        timestamp: the date in unix to convert.
-        sep: the separator between date and time, default is None.
-
-    Returns:
-        converted date.
-    """
-    if not timestamp:
-        return None
-
-    return datetime.fromtimestamp(int(timestamp) / 1000).isoformat(sep)
 
 
 class Client(BaseClient):
@@ -443,7 +428,8 @@ class Client(BaseClient):
 
     def update_session_id_of_context_table(self, context_table_name: str = None, session_id: str = None,
                                            replace: bool = False):
-        """
+        """ Apply updates in context table.
+
             Args:
                 context_table_name: The context table name.
                 session_id: The ID of update session.
@@ -454,8 +440,11 @@ class Client(BaseClient):
             payload = {'sessionId': session_id, 'replace': replace}
 
             self._http_request('PUT', url_suffix=url_suffix, json_data=payload)
-        except Exception:
-            pass  # this request must be executed, it can sometimes fail but the data will be updated
+        except Exception:  # as e:
+            pass
+            # the context table should be updated so we proceed and don't raise an exception.
+            # return_error('Warning: returned an error response while applying the context table updates. '
+            #              'Please make sure the updates were applied. Error is:\n' + str(e))
 
     def add_context_table_records(self, context_table_name: str, records_list: List[str],
                                   key_only: bool, session_id: str = None) -> Dict:
@@ -558,8 +547,9 @@ class Client(BaseClient):
 
         return response
 
-    def addbulk_context_table_records(self, context_table_name: str = None, csv_file: str = None,
-                                      has_header: bool = False, session_id: str = None, replace: bool = False) -> Dict:
+    def add_context_table_records_from_csv(self, context_table_name: str = None,
+                                           csv_file: str = None, has_header: bool = False,
+                                           session_id: str = None, replace: bool = False) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -578,7 +568,7 @@ class Client(BaseClient):
 
             files = {'data': (os.path.basename(file_path), open(file_path, 'rb'), 'text/csv')}
 
-            params = {'hasHeader': has_header}
+            params: Dict[str, Any] = {'hasHeader': has_header}
             if session_id:
                 params['sessionId'] = session_id
 
@@ -613,6 +603,9 @@ class Client(BaseClient):
         return filename, content
 
 
+''' HELPER FUNCTIONS '''
+
+
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work
         because their keys must be equal which is not possible in python dictionaries, thus we will
@@ -632,19 +625,63 @@ def get_query_params_str(params: dict, array_type_params: dict) -> str:
     return query_params_str
 
 
-def test_module(client: Client, *_):
-    """test function
+def convert_unix_to_date(timestamp, sep='T'):
+    """Convert unix timestamp to datetime in iso format.
 
     Args:
-        client:
-        *_:
+        timestamp: the date in unix to convert.
+        sep: the separator between date and time, default is None.
 
     Returns:
-        ok if successful
+        converted date.
     """
-    client.test_module_request()
-    demisto.results('ok')
-    return '', None, None
+    if not timestamp:
+        return None
+
+    return datetime.fromtimestamp(int(timestamp) / 1000).isoformat(sep)
+
+
+def convert_date_to_unix(date_string):
+    """Convert date input to unix timestamp.
+
+    Args:
+        date_string: the date input string.
+
+    Returns:
+        (int) converted timestamp.
+    """
+    if not date_string:
+        return None
+
+    return int(dateparser.parse(date_string).timestamp() * 1000)
+
+
+def contents_user_info(user, user_info) -> Dict:
+    """create a content obj for the user
+
+    Args:
+        user: user object
+        user_info: user info object
+
+    Returns:
+        A contents dict with the relevant user data
+    """
+    contents = {
+        'Username': user.get('username'),
+        'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
+        'AverageRiskScore': user_info.get('averageRiskScore'),
+        'LastSessionID': user_info.get('lastSessionId'),
+        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')) if 'firstSeen' in user_info else None,
+        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')) if 'lastSeen' in user_info else None,
+        'LastActivityType': user_info.get('lastActivityType'),
+        'Label': user_info.get('labels'),
+        'AccountNames': user.get('accountNames'),
+        'PeerGroupFieldName': user.get('peerGroupFieldName'),
+        'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
+        'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
+        'PeerGroupType': user.get('peerGroupType')
+    }
+    return contents
 
 
 def contents_append_notable_user_info(contents, user, user_, user_info) -> List[Any]:
@@ -676,6 +713,74 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
         'Title': user_info.get('title')
     })
     return contents
+
+
+def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
+    outputs = []
+
+    for category in rules_raw_data:
+        # raw data contains rules aggregated by categories - we flat them to a single rules array
+        if len(category.get('rules', [])) > 0:
+            rules = category.get('rules', [])
+            for rule in rules:
+                rule['categoryId'] = category.get('categoryId')
+                rule['categoryDisplayName'] = category.get('categoryDisplayName')
+                outputs.append(rule)
+
+    res = outputs[from_idx:to_idx]
+
+    return res, tableToMarkdown('Rule Search Results', res, removeNull=True, headerTransform=pascalToSpace)
+
+
+def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple[List[Any], str]:
+    outputs = []
+    aggregated_events_data = [{
+        'start_time': convert_unix_to_date(event.get('ts'), sep=' '),
+        'end_time': convert_unix_to_date(event.get('te'), sep=' '),
+        'count': event.get('c'),
+        'event_type': event.get('tp'),
+        'events': event.get('es')
+    } for event in events]
+
+    human_readable = f'# Asset {asset_id} Next Events\n'
+
+    for activity in aggregated_events_data:
+        if isinstance(activity['count'], int) and activity['count'] > 0:
+            activity_events = [event.get('fields') for event in activity['events']]
+            for event in activity_events:
+                event['time'] = convert_unix_to_date(event.get('time'))
+                event['rawlog_time'] = convert_unix_to_date(event.get('rawlog_time'))
+
+                # renaming attributes with unclear names
+                if "getvalue('zone_info', src)" in event:
+                    event['src_zone'] = event.pop("getvalue('zone_info', src)")
+                elif "getvalue('zone_info', dest)" in event:
+                    event['dest_zone'] = event.pop("getvalue('zone_info', dest)")
+
+            title = f"{activity['count']} {activity['event_type']} event(s) " \
+                f"between {activity['start_time']} and {activity['end_time']}"
+            human_readable += tableToMarkdown(title, activity_events, removeNull=True) + '\n'
+            outputs.extend(activity_events)
+
+    return outputs, human_readable
+
+
+''' COMMANDS '''
+
+
+def test_module(client: Client, *_):
+    """test function
+
+    Args:
+        client:
+        *_:
+
+    Returns:
+        ok if successful
+    """
+    client.test_module_request()
+    demisto.results('ok')
+    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -717,34 +822,6 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown('Exabeam Notable Users:', contents, headers=headers, removeNull=True)
 
     return human_readable, entry_context, raw_users
-
-
-def contents_user_info(user, user_info) -> Dict:
-    """create a content obj for the user
-
-    Args:
-        user: user object
-        user_info: user info object
-
-    Returns:
-        A contents dict with the relevant user data
-    """
-    contents = {
-        'Username': user.get('username'),
-        'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
-        'AverageRiskScore': user_info.get('averageRiskScore'),
-        'LastSessionID': user_info.get('lastSessionId'),
-        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')) if 'firstSeen' in user_info else None,
-        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')) if 'lastSeen' in user_info else None,
-        'LastActivityType': user_info.get('lastActivityType'),
-        'Label': user_info.get('labels'),
-        'AccountNames': user.get('accountNames'),
-        'PeerGroupFieldName': user.get('peerGroupFieldName'),
-        'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
-        'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
-        'PeerGroupType': user.get('peerGroupType')
-    }
-    return contents
 
 
 def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -943,6 +1020,10 @@ def get_session_info_by_id(client: Client, args: Dict) -> Tuple[Any, Dict[str, O
 
     session_info = session_info_raw_data.get('sessionInfo')
 
+    if session_info and isinstance(session_info, dict):
+        session_info['startTime'] = convert_unix_to_date(session_info.get('startTime'))
+        session_info['endTime'] = convert_unix_to_date(session_info.get('endTime'))
+
     entry_context = {'Exabeam.SessionInfo(val.sessionId && val.sessionId === obj.sessionId)': session_info}
     human_readable = tableToMarkdown(f'Session {session_id} Information', session_info,
                                      removeNull=True, headerTransform=pascalToSpace)
@@ -984,10 +1065,13 @@ def list_triggered_rules(client: Client, args: Dict) -> Tuple[Any, Dict[str, Opt
     triggered_rules_raw_data = client.list_triggered_rules_request(sequence_id, sequence_type)
 
     triggered_rules = triggered_rules_raw_data.get('triggeredRules')
+    for triggered_rule in triggered_rules:
+        triggered_rule['createdTime'] = convert_unix_to_date(triggered_rule.get('createdTime'))
+        triggered_rule['triggeringTime'] = convert_unix_to_date(triggered_rule.get('triggeringTime'))
 
     entry_context = {'Exabeam.TriggeredRules(val._Id && val._Id === obj._Id)': triggered_rules}
     human_readable = tableToMarkdown(f'Sequence {sequence_id} Triggered Rules', triggered_rules,
-                                     removeNull=True, headerTransform=pascalToSpace)
+                                     removeNull=True)
 
     return human_readable, entry_context, triggered_rules_raw_data
 
@@ -1006,6 +1090,8 @@ def get_asset_info(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str,
 
     asset_info = asset_raw_data.get('info', {})
     asset_info['assetId'] = asset_id
+    asset_info['firstSeen'] = convert_unix_to_date(asset_info.get('firstSeen'))
+    asset_info['lastSeen'] = convert_unix_to_date(asset_info.get('lastSeen'))
     entry_context = {'Exabeam.AssetInfo(val.assetId && val.assetId === obj.assetId)': asset_info}
     human_readable = tableToMarkdown(f'Asset {asset_id} Information', asset_info,
                                      removeNull=True, headerTransform=pascalToSpace)
@@ -1022,7 +1108,7 @@ def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, D
 
     """
     asset_id = args['asset_id']
-    event_time = int(args['event_time'])
+    event_time = convert_date_to_unix(args['event_time'])
     number_of_events = int(args['number_of_events'])
     anomaly_only = args.get('anomaly_only')
     event_categories = argToList(args.get('event_categories'))
@@ -1045,39 +1131,6 @@ def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, D
     entry_context = {'Exabeam.AssetEvent(val.event_id && val.event_id === obj.event_id)': aggregated_events}
 
     return human_readable, entry_context, events_raw_data
-
-
-def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple[List[Any], str]:
-    outputs = []
-    aggregated_events_data = [{
-        'start_time': convert_unix_to_date(event.get('ts'), sep=' '),
-        'end_time': convert_unix_to_date(event.get('te'), sep=' '),
-        'count': event.get('c'),
-        'event_type': event.get('tp'),
-        'events': event.get('es')
-    } for event in events]
-
-    human_readable = f'# Asset {asset_id} Next Events\n'
-
-    for activity in aggregated_events_data:
-        if isinstance(activity['count'], int) and activity['count'] > 0:
-            activity_events = [event.get('fields') for event in activity['events']]
-            for event in activity_events:
-                event['time'] = convert_unix_to_date(event.get('time'))
-                event['rawlog_time'] = convert_unix_to_date(event.get('rawlog_time'))
-
-                # renaming attributes with unclear names
-                if "getvalue('zone_info', src)" in event:
-                    event['src_zone'] = event.pop("getvalue('zone_info', src)")
-                elif "getvalue('zone_info', dest)" in event:
-                    event['dest_zone'] = event.pop("getvalue('zone_info', dest)")
-
-            title = f"{activity['count']} {activity['event_type']} event(s) " \
-                f"between {activity['start_time']} and {activity['end_time']}"
-            human_readable += tableToMarkdown(title, activity_events, removeNull=True) + '\n'
-            outputs.extend(activity_events)
-
-    return outputs, human_readable
 
 
 def list_security_alerts_by_asset(client: Client,
@@ -1133,23 +1186,6 @@ def search_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, L
     entry_context = {'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': rules}
 
     return human_readable, entry_context, rules_raw_data
-
-
-def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
-    outputs = []
-
-    for category in rules_raw_data:
-        # raw data contains rules aggregated by categories - we flat them to a single rules array
-        if len(category.get('rules', [])) > 0:
-            rules = category.get('rules', [])
-            for rule in rules:
-                rule['categoryId'] = category.get('categoryId')
-                rule['categoryDisplayName'] = category.get('categoryDisplayName')
-                outputs.append(rule)
-
-    res = outputs[from_idx:to_idx]
-
-    return res, tableToMarkdown('Rule Search Results', res, removeNull=True, headerTransform=pascalToSpace)
 
 
 def get_rule_string(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Dict[str, Optional[Any]]], str]:
@@ -1300,6 +1336,7 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
             }
     }
     human_readable = tableToMarkdown(f'Context Table `{context_table_name}` Records', records,
+                                     headers=['id', 'position', 'sourceType', 'key', 'value'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return human_readable, entry_context, records_raw_data
@@ -1358,7 +1395,8 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     return human_readable, entry_context, record_updates_raw_data
 
 
-def addbulk_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+def add_context_table_records_from_csv(client: Client,
+                                       args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
     """  Bulk addition of a context table records from CSV file.
 
     Args:
@@ -1372,8 +1410,8 @@ def addbulk_context_table_records(client: Client, args: Dict[str, str]) -> Tuple
     has_header = True if args.get('has_header') == 'true' else False
     replace = True if args.get('append_or_replace') == 'replace' else False
 
-    record_updates_raw_data = client.addbulk_context_table_records(context_table_name, file_entry_id,
-                                                                   has_header, session_id, replace)
+    record_updates_raw_data = client.add_context_table_records_from_csv(context_table_name, file_entry_id,
+                                                                        has_header, session_id, replace)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
@@ -1452,9 +1490,9 @@ def main():
         'exabeam-get-rules-model-definition': get_rules_model_definition,
         'exabeam-list-context-table-records': list_context_table_records,
         'exabeam-add-context-table-records': add_context_table_records,
+        'exabeam-add-context-table-records-from-csv': add_context_table_records_from_csv,
         'exabeam-update-context-table-records': update_context_table_records,
         'exabeam-delete-context-table-records': delete_context_table_records,
-        'exabeam-context-table-addbulk': addbulk_context_table_records,
         'exabeam-get-context-table-in-csv': get_context_table_csv,
         'exabeam-watchlist-add-from-csv': add_watchlist_item_from_csv,
         'exabeam-watchlist-asset-search': search_asset_in_watchlist,
@@ -1470,6 +1508,15 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
+
+    except DemistoException as err:
+        # some of the API error responses are not so clear, and the reason for the error is because of bad input.
+        # we concat here a message to the output to make sure
+        error_msg = str(err)
+        if err.res is not None and err.res.status_code == 500:
+            error_msg += '\nThe error might have occurred because of incorrect inputs. ' \
+                         'Please make sure your arguments are set correctly.'
+        return_error(error_msg)
 
     except Exception as err:
         return_error(str(err))
