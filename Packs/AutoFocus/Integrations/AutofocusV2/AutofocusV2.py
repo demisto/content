@@ -1538,7 +1538,7 @@ def search_file_command(file):
     return command_results
 
 
-def get_tags_for_generic_context(tags: Optional[dict]):
+def get_tags_for_generic_context(tags: Optional[list]):
     if not tags:
         return None
     results = []
