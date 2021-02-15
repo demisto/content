@@ -95,6 +95,7 @@ class TestMetadataParsing:
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
+        assert parsed_metadata['searchRank'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self, dummy_pack):
@@ -141,7 +142,7 @@ class TestMetadataParsing:
     def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
         """
         Given a new pack (created less than 30 days ago)
-        Then: add "New" tag
+        Then: add "New" tag and raise the searchRank
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
         parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
@@ -152,11 +153,12 @@ class TestMetadataParsing:
                                                           is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+        assert parsed_metadata['searchRank'] == 20
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
         Given a pack that was created more than 30 days ago
-        Then: remove "New" tag
+        Then: remove "New" tag and make sure the searchRank is reduced
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         if 'New' not in dummy_pack_metadata['tags']:
@@ -169,6 +171,7 @@ class TestMetadataParsing:
                                                           is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert parsed_metadata['searchRank'] == 10
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
