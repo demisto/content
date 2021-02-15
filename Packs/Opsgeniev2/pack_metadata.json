@@ -1,0 +1,16 @@
+{
+    "name": "OpsGenieV2",
+    "description": " Create and read alerts, schedules and on-call information from OpsGenie. \n",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Adam Baumeister",
+    "url": "https://www.atlassian.com/software/opsgenie",
+    "email": "support@orca.security",
+    "created": "2020-12-20T17:38:25Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

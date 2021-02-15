@@ -1,0 +1,10 @@
+{
+    "data": [
+    ],
+    "paging": {
+        "first": "https://api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=0&order=desc",
+        "last": "https://api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=20&order=desc"
+    },
+    "requestId": "77bf36dd-e11c-4bce-9fe3-c30d092d5dba",
+    "took": 0.012
+}
