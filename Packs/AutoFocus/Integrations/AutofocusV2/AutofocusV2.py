@@ -1277,7 +1277,6 @@ def tag_details_command():
     })
 
 
-
 def top_tags_search_command():
     args = demisto.args()
     scope = args.get('scope')
