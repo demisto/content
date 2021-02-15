@@ -147,7 +147,8 @@ def get_indicators_command(client, args: dict) -> CommandResults:
                        'marking': [mark.get('definition') for mark in indicator['rawJSON'].get('objectMarking')]
                        }
                       for indicator in indicators_list]
-        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators, headers=["type", "value", "id"],
+        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators,
+                                          headers=["type", "value", "id"],
                                           removeNull=True)
 
         return CommandResults(
@@ -230,8 +231,8 @@ def indicator_description_update_command(client, args: dict) -> CommandResults:
     )
 
 
-def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Create or update indicator at opencti
+def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Create indicator at opencti
 
         Args:
             client: OpenCTI Client object
@@ -266,8 +267,6 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
 
     description = args.get("description")
     score = int(args.get("score", '50'))
-    # TODO: update is not working - open bug for OpenCTI.
-    update = argToBoolean(args.get("update", False))
     # TODO: how user will know what to write at data - add documentation
     data = {}
     try:
@@ -281,7 +280,7 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
                                                      createdBy=created_by, objectMarking=marking,
                                                      objectLabel=label, externalReferences=external_references,
                                                      simple_observable_description=description,
-                                                     x_opencti_score=score, update=update, observableData=data)
+                                                     x_opencti_score=score, observableData=data)
     except Exception as e:
         return_error(f'Missing argument at data {e}')
 
@@ -487,8 +486,8 @@ def main():
         elif command == "opencti-indicator-description-update":
             return_results(indicator_description_update_command(client, args))
 
-        elif command == "opencti-indicator-create-update":
-            return_results(indicator_create_or_update_command(client, args))
+        elif command == "opencti-indicator-create":
+            return_results(indicator_create_command(client, args))
 
         elif command == "opencti-indicator-marking-add":
             return_results(indicator_marking_add_command(client, args))

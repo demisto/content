@@ -172,14 +172,14 @@ def test_indicator_description_update_command(mocker):
     assert {'id': '123456'} == results.outputs
 
 
-def test_indicator_create_or_update_command(mocker):
-    """Tests indicator_field_update_command function
+def test_indicator_create_command(mocker):
+    """Tests indicator_create_command function
     Given
         id of indicator to update
         key to update
         value to update
     When
-        - Calling `indicator_field_update_command`
+        - Calling `indicator_create_command`
     Then
         - validate the response to have a "Indicator deleted." string and context as expected
     """
@@ -191,7 +191,7 @@ def test_indicator_create_or_update_command(mocker):
         'data': "{\"value\": \"devtest.com\"}"
     }
     mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})
-    results: CommandResults = indicator_create_or_update_command(client, args)
+    results: CommandResults = indicator_create_command(client, args)
     assert "Indicator created successfully" in results.readable_output
     assert 'id' in results.outputs
 

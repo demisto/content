@@ -225,7 +225,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update indicator field.
+    description: Update indicator score.
     execution: false
     name: opencti-indicator-score-update
     outputs:
@@ -246,7 +246,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update indicator field.
+    description: Update indicator description.
     execution: false
     name: opencti-indicator-description-update
     outputs:
@@ -254,23 +254,6 @@ script:
       description: Updated indicator id.
       type: String
   - arguments:
-    - default: false
-      description: Indicator ID.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Set true when updating existing indicator, fasle when creating
-        new indicator, default value false.
-      isArray: false
-      name: update
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: 'The indicator type to create. Out of the box indicator types supported
@@ -352,9 +335,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create or update indicator.
+    description: Create new indicator.
     execution: false
-    name: opencti-indicator-create-update
+    name: opencti-indicator-create
     outputs:
     - contextPath: OpenCTI.Indicator.id
       description: New indicator id.
