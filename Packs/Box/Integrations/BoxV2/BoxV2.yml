@@ -145,6 +145,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
+  display: The maximum amount of incidents to fetch at once
   name: max_fetch
   required: false
   type: 0
