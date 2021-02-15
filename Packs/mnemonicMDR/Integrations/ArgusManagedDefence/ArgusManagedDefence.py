@@ -80,12 +80,7 @@ ARGUS_STATUS_MAPPING = {
     "workingCustomer": 1,
     "closed": 2,
 }
-ARGUS_PRIORITY_MAPPING = {
-    "low": 1,
-    "medium": 2,
-    "high": 3,
-    "critical": 4
-}
+ARGUS_PRIORITY_MAPPING = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
 
 """ HELPER FUNCTIONS """
@@ -208,10 +203,15 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     string += f"<em>Added by {comment['addedByUser']['userName']} at "
     string += f"{pretty_print_date(comment['addedTime'])}</em><br>"
     string += (
-        f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>\n"
+        f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>"
         if comment["lastUpdatedTime"]
         else ""
     )
+    if comment["associatedAttachments"]:
+        string += f"<em>Associated attachment(s): "
+        for attachment in comment["associatedAttachments"]:
+            string += f"{attachment.get('name', '')} "
+        string += f"</em><br>"
     string += "</small>"
     string += f"{comment['comment']}"
     return string
@@ -258,6 +258,7 @@ def fetch_incidents(
     first_fetch_period: str,
     limit: int = 25,
     min_severity: str = "low",
+    integration_instance: str = "",
     mirror_direction: str = "None",
     mirror_tags: str = "argus_mirror",
     exclude_tag: str = "",
@@ -274,12 +275,6 @@ def fetch_incidents(
             sub_criteria.append(
                 {"exclude": True, "tag": {"key": tag_list[0], "values": tag_list[1]}}
             )
-    demisto.debug(
-        "argusfetch " + str(last_run),
-        demisto.getLastRun(),
-        first_fetch_period,
-        sub_criteria,
-    )
     # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
@@ -292,10 +287,9 @@ def fetch_incidents(
     )
     incidents = []
     for case in result.get("data", []):
-        # Get base incident
         case["xsoar_mirroring"] = {
             "dbotMirrorId": str(case["id"]),
-            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorInstance": integration_instance,
             "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
             "dbotMirrorTags": argToList(mirror_tags),
         }
@@ -308,8 +302,6 @@ def fetch_incidents(
             "details": json.dumps(case),
             "rawJSON": json.dumps(case),
         }
-
-        # Append incident
         incidents.append(incident)
 
     if result.get("data", []):
@@ -318,8 +310,12 @@ def fetch_incidents(
     return last_run, incidents
 
 
-def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
-    demisto.debug(f"argusget {json.dumps(args, indent=4)}")
+def get_remote_data_command(
+    args: Dict[str, Any],
+    integration_instance: str = "",
+    mirror_direction: str = "None",
+    mirror_tags: str = "argus_mirror",
+) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
     case_id = remote_args.remote_incident_id
     if not case_id:
@@ -345,7 +341,9 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     last_update_timestamp = date_time_to_epoch_milliseconds(last_mirror_update)
 
     # Update status
-    entries.append({"severity": argus_priority_to_demisto_severity(case.get("priority"))})
+    entries.append(
+        {"severity": argus_priority_to_demisto_severity(case.get("priority"))}
+    )
     entries.append({"arguscasestatus": case.get("status")})
 
     # Add new attachments
@@ -394,13 +392,13 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                     "Contents": (pretty_print_comment_html(comment, "Comment updated")),
                 }
             )
+
+    # Re-attach xsoar mirroring tags, otherwise mirroring breaks
     case["xsoar_mirroring"] = {
-        "dbotMirrorId": remote_args.remote_incident_id,
-        "dbotMirrorInstance": demisto.integrationInstance(),
-        "dbotMirrorDirection": MIRROR_DIRECTION[
-            demisto.params().get("mirror_direction", "None")
-        ],  # TODO fix this as method arguments
-        "dbotMirrorTags": argToList(demisto.params().get("mirror_tag", "argus_mirror")),
+        "dbotMirrorId": str(case["id"]),
+        "dbotMirrorInstance": integration_instance,
+        "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
+        "dbotMirrorTags": argToList(mirror_tags),
     }
 
     # Close case?
@@ -411,8 +409,8 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                 "ContentsFormat": EntryFormat.JSON,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": "Argus case closed",
-                    "closeNotes": "Argus case closed",
+                    "closeReason": "Argus Case closed",
+                    "closeNotes": "Argus Case was marked as closed remotely, incident closed.",
                 },
             }
         )
@@ -427,10 +425,6 @@ def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
-    t = "argusupdate "
-    for key, value in args.items():
-        t += f"({key}: {value}) "
-    demisto.debug(t)
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
         demisto.debug(
@@ -467,7 +461,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
             status=to_update.get("status", None),
             priority=to_update.get("priority", None),
             comment=to_update.get("comment", None),
-            internalComment=to_update.get("internal_comment", None)
+            internalComment=to_update.get("internal_comment", None),
         )
     else:
         demisto.debug(
@@ -475,6 +469,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
             f"not new nor changed."
         )
 
+    # Send over comments and new files
     if parsed_args.entries:
         for entry in parsed_args.entries:
             demisto.debug(f'Sending entry {entry.get("id")}')
@@ -1356,6 +1351,7 @@ def main() -> None:
                 first_fetch_period=first_fetch_period,
                 limit=demisto.params().get("max_fetch", 25),
                 min_severity=demisto.params().get("min_severity", "low").lower(),
+                integration_instance=demisto.integrationInstance(),
                 mirror_direction=demisto.params().get("mirror_direction", "None"),
                 mirror_tags=demisto.params().get("mirror_tag"),
                 exclude_tag=demisto.params().get("exclude_tag"),
@@ -1365,7 +1361,14 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif demisto.command() == "get-remote-data":
-            return_results(get_remote_data_command(demisto.args()))
+            return_results(
+                get_remote_data_command(
+                    demisto.args(),
+                    integration_instance=demisto.integrationInstance(),
+                    mirror_direction=demisto.params().get("mirror_direction", "None"),
+                    mirror_tags=demisto.params().get("mirror_tag"),
+                )
+            )
 
         elif demisto.command() == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(demisto.args()))
