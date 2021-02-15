@@ -106,7 +106,7 @@ args:
   defaultValue: '3'
   description: Minimum number of incidents to consider as cmpaign. Default is "3".
   isArray: false
-  name: minIncedentsForCampaign
+  name: minIncidentsForCampaign
   required: false
   secret: false
 - default: false
