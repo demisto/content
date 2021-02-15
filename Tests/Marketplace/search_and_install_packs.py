@@ -15,6 +15,8 @@ from distutils.version import LooseVersion
 from typing import List
 
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES, GCPConfig, init_storage_client
+from Tests.scripts.utils.content_packs_util import is_pack_deprecated
+from demisto_sdk.commands.common.constants import PACKS_DIR
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
@@ -35,6 +37,23 @@ def get_pack_display_name(pack_id: str) -> str:
             pack_metadata = json.load(json_file)
         return pack_metadata.get('name')
     return ''
+
+
+def is_pack_hidden(pack_id: str) -> bool:
+    """
+    Check if the given pack is deprecated.
+
+    :param pack_id: ID of the pack.
+    :return: True if the pack is deprecated, i.e. has 'hidden: true' field, False otherwise.
+    """
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
+    if pack_id and os.path.isfile(metadata_path):
+        with open(metadata_path, 'r') as json_file:
+            pack_metadata = json.load(json_file)
+            return pack_metadata.get('hidden', False)
+    else:
+        logging.warning(f'Could not open metadata file of pack {pack_id}')
+    return False
 
 
 def create_dependencies_data_structure(response_data: dict, dependants_ids: list, dependencies_data: list,
@@ -263,7 +282,9 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     """
     logging.info(f"Test pack path is: {test_pack_path}")
     logging.info(f"Pack IDs to install are: {pack_ids_to_install}")
+
     local_packs = glob.glob(f"{test_pack_path}/*.zip")
+
     for local_pack in local_packs:
         if any(pack_id in local_pack for pack_id in pack_ids_to_install):
             logging.info(f'Installing the following pack: {local_pack}')
@@ -372,7 +393,16 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         current_packs_to_install = [pack_data]
         if dependencies:
-            current_packs_to_install.extend(dependencies)
+            # Check that the dependencies don't include a deprecated pack:
+            for dependency in dependencies:
+                pack_path = os.path.join(PACKS_DIR, dependency.get('id'))
+                if is_pack_deprecated(pack_path):
+                    logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
+                                     f'pack.')
+                    global SUCCESS_FLAG
+                    SUCCESS_FLAG = False
+                else:
+                    current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
@@ -436,6 +466,12 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
+    # Add deprecated packs to IGNORED_FILES list:
+    for pack_id in os.listdir(PACKS_FULL_PATH):
+        if is_pack_hidden(pack_id):
+            logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
+            IGNORED_FILES.append(pack_id)
+
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
@@ -463,8 +499,11 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
                 server_min_version = pack_metadata.get('serverMinVersion', '6.0.0')
-            # Check if the server version is greater than the minimum server version required for this pack:
-            if 'Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version):
+                hidden = pack_metadata.get('hidden', False)
+            # Check if the server version is greater than the minimum server version required for this pack or if the
+            # pack is hidden (deprecated):
+            if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
+                    not hidden:
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 

@@ -13,7 +13,8 @@
             }
         },
         "IndicatorTimeline": [],
-        "IgnoreAutoExtract": false
+        "IgnoreAutoExtract": false,
+        "Note": false
     },
     "upload_url_results": {
         "Type": 1,
@@ -28,7 +29,8 @@
             }
         },
         "IndicatorTimeline": [],
-        "IgnoreAutoExtract": false
+        "IgnoreAutoExtract": false,
+        "Note": false
     },
     "analysis_info_results": [
         {
@@ -97,7 +99,8 @@
                 }
             },
             "IndicatorTimeline": [],
-            "IgnoreAutoExtract": false
+            "IgnoreAutoExtract": false,
+            "Note": false
         }
     ],
     "serialized_report": {
@@ -326,6 +329,7 @@
             }
         },
         "IndicatorTimeline": [],
-        "IgnoreAutoExtract": false
+        "IgnoreAutoExtract": false,
+        "Note": false
     }]
 }

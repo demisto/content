@@ -949,7 +949,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': {header.name: header.value for header in item.headers},
+        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -1137,8 +1137,18 @@ def parse_incident_from_item(item, is_fetch):
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
-                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                          attached_email.items()]
+                                attached_email_headers = []
+                                for h, v in attached_email.items():
+                                    if not isinstance(v, str):
+                                        try:
+                                            v = str(v)
+                                        except:     # noqa: E722
+                                            demisto.debug('cannot parse the header "{}"'.format(h))
+                                            continue
+
+                                    v = ' '.join(map(str.strip, v.split('\r\n')))
+                                    attached_email_headers.append((h, v))
+
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
@@ -1986,8 +1996,16 @@ def get_item_as_eml(item_id, target_mailbox=None):
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
-            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                      email_content.items()]
+            attached_email_headers = []
+            for h, v in email_content.items():
+                if not isinstance(v, str):
+                    try:
+                        v = str(v)
+                    except:     # noqa: E722
+                        demisto.debug('cannot parse the header "{}"'.format(h))
+
+                v = ' '.join(map(str.strip, v.split('\r\n')))
+                attached_email_headers.append((h, v))
             for header in item.headers:
                 if (header.name, header.value) not in attached_email_headers \
                         and header.name != 'Content-Type':
@@ -2219,7 +2237,8 @@ def main():
         else:
             sub_main()
     except Exception as exc:
-        return_error("Found error in EWSv2", exc)
+        return_error("Found error in EWSv2: {}".format(exc),
+                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins

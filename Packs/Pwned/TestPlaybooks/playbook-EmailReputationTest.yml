@@ -227,7 +227,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: res_score.DBotScore.[0].Score
+              simple: res_score.DBotScore.Score
             iscontext: true
           right:
             value:
@@ -259,7 +259,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: 'Did not get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.[0].Score}'
+        simple: 'Did not get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.Score}'
     separatecontext: false
     view: |-
       {
