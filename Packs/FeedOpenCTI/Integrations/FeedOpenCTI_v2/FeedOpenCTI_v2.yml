@@ -3,16 +3,16 @@ commonfields:
   id: OpenCTI Feed v2
   version: -1
 configuration:
-- display: API Key
-  hidden: false
-  name: apikey
-  required: true
-  type: 4
 - display: Base URL
   hidden: false
   name: base_url
   required: true
   type: 0
+- display: API Key
+  hidden: false
+  name: apikey
+  required: true
+  type: 4
 - additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
     in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
     "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and
@@ -49,7 +49,7 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -74,6 +74,7 @@ configuration:
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
+  defaultvalue: GREEN
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -84,7 +85,6 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -94,7 +94,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -132,7 +131,7 @@ script:
     - default: false
       defaultValue: '50'
       description: The maximum number of indicators to return per fetch. The default
-        value is "50".
+        value is "50". Maximum value is "200".
       isArray: false
       name: limit
       required: false
@@ -184,10 +183,6 @@ script:
     - contextPath: OpenCTI.LastRunID
       description: the id of the last fetch to use pagination.
       type: String
-  - deprecated: false
-    description: 'WARNING: This command will reset your fetch history.'
-    execution: false
-    name: opencti-reset-fetch-indicators
   - arguments:
     - default: false
       description: Indicator ID.
@@ -206,26 +201,37 @@ script:
       name: id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicator key to update.
-      isArray: false
-      name: key
-      predefined:
-      - score
-      - description
-      required: true
-      secret: false
     - default: false
-      description: Value of the key to update.
+      description: Indicator score to update - number between 0 - 100.
       isArray: false
-      name: value
+      name: score
       required: true
       secret: false
     deprecated: false
     description: Update indicator field.
     execution: false
-    name: opencti-indicator-field-update
+    name: opencti-indicator-score-update
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: Updated indicator id.
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Indicator description to update - number between 0 - 100.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    deprecated: false
+    description: Update indicator field.
+    execution: false
+    name: opencti-indicator-description-update
     outputs:
     - contextPath: OpenCTI.Indicator.id
       description: Updated indicator id.

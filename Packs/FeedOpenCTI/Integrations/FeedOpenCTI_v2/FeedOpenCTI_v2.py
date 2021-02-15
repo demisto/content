@@ -60,14 +60,6 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
     return result
 
 
-def reset_last_run():
-    """
-    Reset the last run from the integration context
-    """
-    demisto.setIntegrationContext({})
-    return CommandResults(readable_output='Fetch history deleted successfully')
-
-
 def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
@@ -118,13 +110,13 @@ def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_c
     Returns:
         list of indicators(list)
     """
-    last_run_id = demisto.getIntegrationContext().get('last_run_id')
+    last_run_id = demisto.getLastRun().get('last_run_id')
 
     new_last_run, indicators_list = get_indicators(client, indicator_type, limit=max_fetch, last_run_id=last_run_id,
                                                    tlp_color=tlp_color)
 
     if new_last_run and not is_test:
-        demisto.setIntegrationContext({'last_run_id': new_last_run})
+        demisto.setLastRun({'last_run_id': new_last_run})
 
     return indicators_list
 
@@ -142,7 +134,8 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     indicator_type = argToList(args.get("indicator_types"))
 
     last_run_id = args.get('last_id')
-    limit = int(args.get('limit', 500))
+    limit = int(args.get('limit', 50))
+    limit = 200 if limit > 200 else limit
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
         indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id']}
@@ -152,7 +145,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         readable_output = tableToMarkdown('Indicators from OpenCTI', indicators, headers=["type", "value", "id"])
         return CommandResults(
             outputs_prefix='OpenCTI',
-            outputs_key_field='LastRunID',
+            outputs_key_field='Indicators.id',
             outputs=output,
             readable_output=readable_output,
             raw_response=indicators_list
@@ -176,8 +169,8 @@ def indicator_delete_command(client, args: dict) -> CommandResults:
     return CommandResults(readable_output='Indicator deleted.')
 
 
-def indicator_field_update_command(client, args: dict) -> CommandResults:
-    """ Update indicator field at opencti
+def indicator_score_update_command(client, args: dict) -> CommandResults:
+    """ Update indicator score at opencti
 
         Args:
             client: OpenCTI Client object
@@ -187,13 +180,38 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
             readable_output, raw_response
         """
     indicator_id = args.get("id")
-    # works only with score and description
-    key = KEY_TO_CTI_NAME[args.get("key")]  # type: ignore
-    value = args.get("value")
-    result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
+    value = int(args.get("score"))
+    result = client.stix_cyber_observable.update_field(id=indicator_id, key='x_opencti_score', value=value)
 
     if result.get('id'):
-        readable_output = 'Indicator updated successfully.'
+        readable_output = 'Indicator score updated successfully.'
+    else:
+        return_error("Can't update indicator.")
+    return CommandResults(
+        outputs_prefix='OpenCTI.Indicator',
+        outputs_key_field='id',
+        outputs={'id': result.get('id')},
+        readable_output=readable_output,
+        raw_response=result
+    )
+
+
+def indicator_description_update_command(client, args: dict) -> CommandResults:
+    """ Update indicator description at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    indicator_id = args.get("id")
+    value = args.get("description")
+    result = client.stix_cyber_observable.update_field(id=indicator_id, key='x_opencti_description', value=value)
+
+    if result.get('id'):
+        readable_output = 'Indicator description updated successfully.'
     else:
         return_error("Can't update indicator.")
     return CommandResults(
@@ -251,12 +269,15 @@ def indicator_create_or_update_command(client, args: Dict[str, str]) -> CommandR
         return_error("Data argument type should be json")
 
     data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
-    result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
-                                                 createdBy=created_by, objectMarking=marking,
-                                                 objectLabel=label, externalReferences=external_references,
-                                                 simple_observable_description=description,
-                                                 x_opencti_score=score, update=update, observableData=data,
-                                                 )
+    try:
+        result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
+                                                     createdBy=created_by, objectMarking=marking,
+                                                     objectLabel=label, externalReferences=external_references,
+                                                     simple_observable_description=description,
+                                                     x_opencti_score=score, update=update, observableData=data)
+    except Exception as e:
+        return_error(f'Missing argument at data {e}')
+
     if id := result.get('id'):
         readable_output = f'Indicator created successfully. New Indicator id: {id}'
     else:
@@ -285,7 +306,6 @@ def indicator_marking_add_command(client, args: Dict[str, str]) -> CommandResult
     marking_name = args.get("marking")
     mark_obj = MarkingDefinition(client)
     marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
-    # TODO: stix_cyber_observable["markingDefinitionsIds"] no such key at map
     result = client.stix_cyber_observable.add_marking_definition(id=indicator_id, marking_definition_id=marking)
     if result:
         readable_output = 'Added marking definition successfully.'
@@ -450,14 +470,14 @@ def main():
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
 
-        elif command == "opencti-reset-fetch-indicators":
-            return_results(reset_last_run())
-
         elif command == "opencti-indicator-delete":
             return_results(indicator_delete_command(client, args))
 
-        elif command == "opencti-indicator-field-update":
-            return_results(indicator_field_update_command(client, args))
+        elif command == "opencti-indicator-score-update":
+            return_results(indicator_score_update_command(client, args))
+
+        elif command == "opencti-indicator-description-update":
+            return_results(indicator_description_update_command(client, args))
 
         elif command == "opencti-indicator-create-update":
             return_results(indicator_create_or_update_command(client, args))
