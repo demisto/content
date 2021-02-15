@@ -436,10 +436,26 @@ tasks:
       - "14"
     scriptarguments:
       desc:
-        simple: A registry file acquired from a host.
+        simple: A registry file acquired from a host
       description:
-        simple: A registry file acquired from a host.
-      entryIDs: {}
+        simple: A registry file acquired from a host
+      entryIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: reg
+          accessor: EntryID
+      occurred: {}
+      tags:
+        simple: Registry
+          accessor: EntryID
       occurred: {}
       tags:
         simple: Registry

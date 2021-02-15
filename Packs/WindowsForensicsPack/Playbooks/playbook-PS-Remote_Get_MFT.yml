@@ -423,9 +423,23 @@ tasks:
       - "14"
     scriptarguments:
       desc:
-        simple: An MFT file acquired from a host.
+        simple: A MFT file acquired from a host
       description:
-        simple: An MFT file acquired from a host.
+        simple: A MFT file acquired from a host
+      entryIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: mft
+          accessor: EntryID
+      occurred: {}
       tags:
         simple: MFT
     separatecontext: false
