@@ -106,7 +106,6 @@ def fetch_indicators_command(client, params, manual_run=False):
     if "id" not in object_fields and "Id" not in object_fields:
         object_fields.append("id")
 
-    search_criteria = str()
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
     else:
