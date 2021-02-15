@@ -10,7 +10,7 @@ Test script for the OpsGenieV2 Integration
 Envvars:
     API_TOKEN: If configured, runs integration tests.
     GEN_TEST_DATA: If set, copies the raw output* of the API queries into test_data.
-    
+
 * In the case of Paged data, the raw_response only contains the data of the request response and not the
 paging information. Compare list_alerts_paged.json to list_alerts.json to see the difference.
 

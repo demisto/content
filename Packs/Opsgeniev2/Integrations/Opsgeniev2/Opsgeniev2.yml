@@ -167,6 +167,7 @@ script:
       - P5
       required: false
       secret: false
+    description: Create an Alert in opsgenie
     deprecated: false
     execution: false
     name: create-alert
