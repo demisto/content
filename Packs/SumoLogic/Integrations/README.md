@@ -1,5 +1,4 @@
 Cloud-based service for logs & metrics management
-This integration was integrated and tested with version xx of SumoLogic
 ## Configure SumoLogic on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
