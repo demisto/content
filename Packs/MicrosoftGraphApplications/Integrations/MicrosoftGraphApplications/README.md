@@ -1,5 +1,5 @@
 Use the Microsoft Graph Services integration to manage authorized application.
-This integration was integrated and tested with version v1.0 of Microsoft Graph Services API
+This integration was integrated and tested with version v1.0 of Microsoft Graph Services API.
 ## Configure MicrosoftGraphServices on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,7 +35,7 @@ Tests connectivity to Microsoft.
 
 ### msgraph-apps-service-principal-list
 ***
-Retrieve a list of service principals.
+Retrieves a list of service principals.
 
 
 #### Base Command
@@ -45,7 +45,7 @@ Retrieve a list of service principals.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum results to fetch. Default is 10. | Optional | 
+| limit | Maximum results to fetch. A value of 0 fetches all results. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -53,45 +53,45 @@ Retrieve a list of service principals.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGraphService.accountEnabled | Boolean | true if the service principal account is enabled; otherwise, false. | 
-| MSGraphService.appDescription | String | A brief description of the app. | 
+| MSGraphService.appDescription | String | A brief description of the application. | 
 | MSGraphService.appDisplayName | String | The display name exposed by the associated application. | 
 | MSGraphService.appId | String | The unique identifier for the associated application \(its appId property\). | 
-| MSGraphService.appOwnerOrganizationId | String | Contains the tenant id where the application is registered. This is applicable only to service principals backed by applications. | 
-| MSGraphService.appRoleAssignmentRequired | Boolean | Specifies whether users or other service principals need to be granted an app role assignment for this service principal before users can sign in or apps can get tokens. The default value is false. | 
-| MSGraphService.applicationTemplateId | String | Unique identifier of the applicationTemplate that the servicePrincipal was created from. Read-only. | 
-| MSGraphService.createdDateTime | Date | Time which the application created. | 
-| MSGraphService.deletedDateTime | Date | Time which the application deleted. | 
-| MSGraphService.description | String | A brief description of the app. | 
+| MSGraphService.appOwnerOrganizationId | String | Contains the tenant ID where the application is registered. This is applicable only to service principals backed by applications. | 
+| MSGraphService.appRoleAssignmentRequired | Boolean | Whether users or other service principals need to be granted an application role assignment for this service principal before users can sign in or apps can get tokens. Default is false. | 
+| MSGraphService.applicationTemplateId | String | Unique identifier of the applicationTemplate that the servicePrincipal was created from.  | 
+| MSGraphService.createdDateTime | Date | Time  the application was created. | 
+| MSGraphService.deletedDateTime | Date | Time  the application was deleted. | 
+| MSGraphService.description | String | A brief description of the application. | 
 | MSGraphService.displayName | String | The display name for the service principal. | 
 | MSGraphService.homepage | String | Home page or landing page of the application. | 
 | MSGraphService.id | String | The unique identifier for the service principal. | 
-| MSGraphService.info.logoUrl | String | CDN URL to the application's logo, | 
+| MSGraphService.info.logoUrl | String | Content delivery network (CDN) URL to the application's logo. | 
 | MSGraphService.info.marketingUrl | String | Link to the application's marketing page. | 
 | MSGraphService.info.privacyStatementUrl | String | Link to the application's privacy statement. | 
 | MSGraphService.info.supportUrl | String | Link to the application's support page. | 
 | MSGraphService.info.termsOfServiceUrl | String | Link to the application's terms of service statement. | 
-| MSGraphService.loginUrl | String | Specifies the URL where the service provider redirects the user to Azure AD to authenticate. Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps | 
-| MSGraphService.logoutUrl | String | Specifies the URL that will be used by Microsoft's authorization service to logout an user. | 
+| MSGraphService.loginUrl | String | The URL where the service provider redirects the user to Azure AD to authenticate. Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps | 
+| MSGraphService.logoutUrl | String | The URL that will be used by Microsoft's authorization service to log out an user. | 
 | MSGraphService.notes | String | Application's notes. | 
 | MSGraphService.oauth2PermissionScopes.adminConsentDescription | String | A description of the delegated permissions, intended to be read by an administrator granting the permission on behalf of all users. This text appears in tenant-wide admin consent experiences. | 
 | MSGraphService.oauth2PermissionScopes.adminConsentDisplayName | String | The permission's title, intended to be read by an administrator granting the permission on behalf of all users. | 
 | MSGraphService.oauth2PermissionScopes.id | String | Unique delegated permission identifier inside the collection of delegated permissions defined for a resource application. | 
-| MSGraphService.oauth2PermissionScopes.isEnabled | Boolean | Is oauth2PermissionScopes enabled or not. | 
-| MSGraphService.oauth2PermissionScopes.type | String | Specifies whether this delegated permission should be considered safe for non-admin users to consent to on behalf of themselves, or whether an administrator should be required for consent to the permissions. | 
+| MSGraphService.oauth2PermissionScopes.isEnabled | Boolean | Whether OAuth 2.0 permission scopes are enabled. | 
+| MSGraphService.oauth2PermissionScopes.type | String | Whether this delegated permission should be considered safe for non-admin users to consent to on behalf of themselves, or whether an administrator should be required for consent to the permissions. | 
 | MSGraphService.oauth2PermissionScopes.userConsentDescription | String | A description of the delegated permissions, intended to be read by a user granting the permission on their own behalf. This text appears in consent experiences where the user is consenting only on behalf of themselves. | 
-| MSGraphService.oauth2PermissionScopes.userConsentDisplayName | String | A title for the permission, | 
-| MSGraphService.oauth2PermissionScopes.value | String | Specifies the value to include in the scope claim in access tokens. | 
-| MSGraphService.preferredSingleSignOnMode | String | Specifies the single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, saml, external, and oidc. | 
-| MSGraphService.preferredTokenSigningKeyThumbprint | String | Thumbprint of preferred certificate to sign the token | 
-| MSGraphService.replyUrls | String | The URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. | 
-| MSGraphService.samlSingleSignOnSettings | String | The collection for settings related to saml single sign-on. | 
-| MSGraphService.servicePrincipalNames | String | Contains the list of identifiersUris, | 
+| MSGraphService.oauth2PermissionScopes.userConsentDisplayName | String | A title for the permission. | 
+| MSGraphService.oauth2PermissionScopes.value | String | The value to include in the scope claim in access tokens. | 
+| MSGraphService.preferredSingleSignOnMode | String | The single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, SAML, external, and OIDC. | 
+| MSGraphService.preferredTokenSigningKeyThumbprint | String | Thumbprint of preferred certificate to sign the token. | 
+| MSGraphService.replyUrls | String | The URLs that user tokens are sent to for signing in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. | 
+| MSGraphService.samlSingleSignOnSettings | String | The collection for settings related to SAML single sign-on. | 
+| MSGraphService.servicePrincipalNames | String | The list of identifier URIs. | 
 | MSGraphService.servicePrincipalType | String | Identifies if the service principal represents an application or a managed identity. | 
 | MSGraphService.signInAudience | String | The audience that can sign in. | 
-| MSGraphService.tokenEncryptionKeyId | String | Specifies the keyId of a public key from the keyCredentials | 
+| MSGraphService.tokenEncryptionKeyId | String | Specifies the key ID of a public key from the key credentials. | 
 | MSGraphService.verifiedPublisher.addedDateTime | Date | The timestamp when the verified publisher was first added or most recently updated. | 
-| MSGraphService.verifiedPublisher.displayName | String | The verified publisher name from the app publisher's Partner Center account. | 
-| MSGraphService.verifiedPublisher.verifiedPublisherId | String | The ID of the verified publisher from the app publisher's Partner Center account. | 
+| MSGraphService.verifiedPublisher.displayName | String | The verified publisher name from the application publisher's Partner Center account. | 
+| MSGraphService.verifiedPublisher.verifiedPublisherId | String | The ID of the verified publisher from the application publisher's Partner Center account. | 
 
 
 #### Command Example
@@ -179,7 +179,7 @@ Retrieve a list of service principals.
 
 ### msgraph-apps-service-principal-remove
 ***
-Removes an app from the directory.
+Removes an application from the directory.
 
 
 #### Base Command
@@ -189,7 +189,7 @@ Removes an app from the directory.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the service to remove. Can be retrieved via msgraph-apps-service-principal-remove command. | Required | 
+| id | The ID of the service to remove. Can be retrieved via the msgraph-apps-service-principal-remove command. | Required | 
 
 
 #### Context Output
