@@ -229,7 +229,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_from', None),
                                                      args.get('modification_date_to', None),
                                                      args.get('modification_date_range', None))
-    if args.get('page_size', 10) < 10 or args.get('page_size', 10) > 100:
+    if int(args.get('page_size', 10)) < 10 or int(args.get('page_size', 10)) > 100:
         raise DemistoException('Page size must be between 10 and 100.')
     result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
                                 created_date_to, modify_date_from, modify_date_to,
