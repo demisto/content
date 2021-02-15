@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Union
 import logging
 
 from argus_api import session as argus_session
-
+from argus_api.exceptions.http import AccessDeniedException
 from argus_api.api.currentuser.v1.user import get_current_user
 
 from argus_api.api.cases.v2.case import (
@@ -340,7 +340,7 @@ def get_remote_data_command(
     entries = []
     last_update_timestamp = date_time_to_epoch_milliseconds(last_mirror_update)
 
-    # Update status
+    # Update status and severity (updates whether there are changes or not)
     entries.append(
         {"severity": argus_priority_to_demisto_severity(case.get("priority"))}
     )
@@ -416,8 +416,6 @@ def get_remote_data_command(
         )
 
     return GetRemoteDataResponse(case, entries)
-    # TODO Attach case tags
-    # TODO Attach case events
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
@@ -518,9 +516,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
 
 
 def get_mapping_fields_command(args: Dict[str, Any]) -> GetMappingFieldsResponse:
-    argus_case_type_scheme = SchemeTypeMapping(type_name="Argus Case")
-
-    return GetMappingFieldsResponse()  # TODO
+    raise NotImplementedError
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
@@ -1476,6 +1472,9 @@ def main() -> None:
             return_results(download_case_attachments_command(demisto.args()))
 
     # Log exceptions and return errors
+    except AccessDeniedException as denied:
+        demisto.info(denied.message)
+        return_warning(denied.message)
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(

@@ -1550,11 +1550,9 @@ script:
       isArray: true
     - name: subject
       required: true
-      default: true
       description: Subject of case to create.
     - name: description
       required: true
-      default: true
       description: 'Case description. May use HTML, which will be sanitized. '
     - name: customer_reference
       description: Customer reference for case.
