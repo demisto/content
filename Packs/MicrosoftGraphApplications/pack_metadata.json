@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Graph Applications",
-    "description": "Use this pack to control connected applications and services",
+    "description": "Use this pack to manage connected applications and services",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
