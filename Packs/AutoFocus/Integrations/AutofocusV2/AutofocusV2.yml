@@ -873,7 +873,16 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
-    - contextPath: File.Tags
+    - contextPath: File.Tags.TagGroups.TagGroupName
+      description: Tags of the file.
+      type: String
+    - contextPath: File.Tags.Aliases
+      description: Tags of the file.
+      type: String
+    - contextPath: File.Tags.PublicTagName
+      description: Tags of the file.
+      type: String
+    - contextPath: File.Tags.TagName
       description: Tags of the file.
       type: String
     - contextPath: AutoFocus.File.IndicatorValue
