@@ -306,18 +306,18 @@ class IAMCommand:
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
 
-    def get_user(self, client, args):
+    def get_user(self, client, args, identifier='email'):
         """ Searches a user in the application and updates the user profile object with the data.
             If not found, the error details will be resulted instead.
-
         :param client: (Client) The integration Client object that implements a get_user() method
         :param args: (dict) The `iam-get-user` command arguments
+        :param identifier: (str) The attribute name to search by.
         :return: (IAMUserProfile) The user profile object.
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
-            email = user_profile.get_attribute('email')
-            user_app_data = client.get_user(email)
+            identifier = user_profile.get_attribute(identifier)
+            user_app_data = client.get_user(identifier)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.GET_USER,
@@ -330,7 +330,7 @@ class IAMCommand:
                     action=IAMActions.GET_USER,
                     active=user_app_data.is_active,
                     iden=user_app_data.id,
-                    email=email,
+                    email=user_profile.get_attribute('email'),
                     username=user_app_data.username,
                     details=user_app_data.full_data
                 )

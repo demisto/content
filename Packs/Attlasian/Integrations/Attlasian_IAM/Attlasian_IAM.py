@@ -10,26 +10,27 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    Slack IAM Client class that implements logic to authenticate with Slack.
+    Atlassian IAM Client class that implements logic to authenticate with Atlassian.
     """
+    def __init__(self, base_url, directory_id, headers, ok_codes=None, verify=True, proxy=False):
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
+        self.directory_id = directory_id
 
-    def test(self, directory_id):
-        uri = f'/scim/directory/{encode_string_results(directory_id)}/Users?count=1'
+    def test(self):
+        uri = f'/scim/directory/{self.directory_id}/Users?count=1'
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, email):
-        uri = '/Users'
+    def get_user(self, username):
+        uri = f'/scim/directory/{self.directory_id}/Users'
         query_params = {
-            'filter': f'email eq {email}'
+            'filter': f'userName eq "{username}"'
         }
-
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
         )
-        print(res)
         if res and res.get('totalResults') == 1:
             user_app_data = res.get('Resources')[0]
             user_id = user_app_data.get('id')
@@ -39,8 +40,7 @@ class Client(BaseClient):
         return None
 
     def create_user(self, user_data):
-        uri = '/Users'
-        user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
+        uri = f'/scim/directory/{self.directory_id}/Users'
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -54,9 +54,9 @@ class Client(BaseClient):
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def update_user(self, user_id, user_data):
-        uri = f'/Users/{user_id}'
+        uri = f'/scim/directory/{self.directory_id}/Users/{user_id}'
         res = self._http_request(
-            method='PATCH',
+            method='PUT',
             url_suffix=uri,
             json_data=user_data
         )
@@ -73,7 +73,7 @@ class Client(BaseClient):
 
     def get_app_fields(self):
         app_fields = {}
-        uri = '/Schemas/Users'
+        uri = f'/scim/directory/{self.directory_id}/Schemas/urn:ietf:params:scim:schemas:core:2.0:User'
         res = self._http_request(
             method='GET',
             url_suffix=uri
@@ -119,8 +119,8 @@ class Client(BaseClient):
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client, directory_id):
-    client.test(directory_id)
+def test_module(client):
+    client.test()
     return_results('ok')
 
 
@@ -171,6 +171,7 @@ def main():
 
     client = Client(
         base_url=base_url,
+        directory_id=directory_id,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
@@ -180,7 +181,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
+        user_profile = iam_command.get_user(client, args, 'username')
 
     elif command == 'iam-create-user':
         user_profile = iam_command.create_user(client, args)
@@ -197,7 +198,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, directory_id)
+            test_module(client)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
