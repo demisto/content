@@ -5894,7 +5894,6 @@ class GetRemoteDataResponse:
         :rtype: ``list``
         """
         if self.mirrored_object:
-            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
 
 
