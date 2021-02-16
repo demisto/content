@@ -230,7 +230,7 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
 
 
 def parse_reports_relationships(reports: List, sub_reports: List, matched_relationships: Dict,
-                                id_to_object: Dict) -> Tuple[list, list]:
+                                id_to_object: Dict, courses_of_action_products: Dict) -> Tuple[list, list]:
     """Parse the relationships between reports' malware to attack-patterns and indicators.
 
     Args:
@@ -238,6 +238,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
       sub_reports: a list of sub-reports.
       matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
       id_to_object: a dict in the form of `id: stix_object`.
+      courses_of_action_products (Dict):
 
     Returns:
         A list of processed reports.
@@ -343,19 +344,54 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 # populate mitre course of action data from the relevant relationships
                 relationship = relation_object.get('id')
                 if matched_relationships.get(relationship):
+                    courses_of_action = {}
                     for source in matched_relationships[relationship]:
                         if source.startswith('course-of-action') and id_to_object.get(source):
+                            relationship_product = courses_of_action_products[source]
+                            if not courses_of_action.get(relationship_product):
+                                courses_of_action[relationship_product] = []
+                            courses_of_action[relationship_product].append(id_to_object[source])
 
-                            indicator['fields']['mitrecourseofaction'].append(
-                                {'title': id_to_object[source].get('x_panw_coa_bp_title'),
-                                 'description': id_to_object[source].get('x_panw_coa_bp_description'),
-                                 'recommendation_number': id_to_object[source].get('x_panw_coa_bp_recommendation_number'),
-                                 'remediation_procedure': id_to_object[source].get('x_panw_coa_bp_remediation_procedure'),
-                                 'impact_statement': id_to_object[source].get('x_panw_coa_bp_impact_statement')})
-
+                    if courses_of_action:
+                        indicator['fields']['mitrecourseofaction'] = create_course_of_action_field(courses_of_action)
+                    else:
+                        indicator['fields']['mitrecourseofaction'] = 'No courses of action found.'
                 indicators.append(indicator)
 
     return reports, indicators
+
+
+def create_course_of_action_field(courses_of_action: dict) -> str:
+    """creates a markdown tables from the courses of action data according to the product type.
+
+    Args:
+        courses_of_action: dictionary containing the courses of action data.
+
+    Returns:
+        markdown string with courses of action tables.
+    """
+    markdown = ''
+    for relationship_product, courses_list in courses_of_action.items():
+        tmp_table = []
+        for course_of_action in courses_list:
+            row = {}
+            if relationship_product in ('Cortex XDR Prevent', 'DNS Security', 'XSOAR'):
+                row['title'] = course_of_action.get('x_panw_coa_u42_title')
+
+            if relationship_product in ('URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention'):
+                row['title'] = course_of_action.get('x_panw_coa_bp_title')
+                row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
+                row['recommendation number'] = course_of_action.get('x_panw_coa_bp_recommendation_number')
+                row['description'] = course_of_action.get('x_panw_coa_bp_description')
+                row['remediation procedure'] = course_of_action.get('x_panw_coa_bp_remediation_procedure')
+                row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
+
+            row['description'] = course_of_action.get('description')
+            row['name'] =course_of_action.get('name'),
+
+            tmp_table.append(row)
+        markdown = f'{markdown}\n{tableToMarkdown(relationship_product, tmp_table,removeNull=True, headerTransform=string_to_table_header)}'
+    return markdown
 
 
 def match_relationships(relationships: List):
@@ -366,8 +402,10 @@ def match_relationships(relationships: List):
 
     Returns:
         Dict. Connects object_id to all objects_ids it has a relationship with. In the form of `id: [related_ids]`
+        Dict. Connects courses of action id with the relationship product.
     """
     matches: Dict[str, set] = {}
+    courses_of_action_products = {}
 
     for relationship in relationships:
         source = relationship.get('source_ref')
@@ -386,7 +424,13 @@ def match_relationships(relationships: List):
         else:
             matches[target] = {source}
 
-    return matches
+        if source.startswith('course-of-action'):
+            product = relationship.get('x_panw_coa_u42_panw_product', [])
+            if product:
+                courses_of_action_products[source] = product[0]
+            else:
+                courses_of_action_products[source] = 'No product'
+    return matches, courses_of_action_products
 
 
 def test_module(client: Client) -> str:
@@ -424,20 +468,20 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         + client.objects_data['campaign'] + client.objects_data['attack-pattern'] + client.objects_data['course-of-action']
     }
 
-    matched_relationships = match_relationships(client.objects_data['relationship'])
+    matched_relationships, courses_of_action_products = match_relationships(client.objects_data['relationship'])
 
     indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     indicators = parse_indicators_relationships(indicators, matched_relationships, id_to_object)
 
     main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
-    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object)
+    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object, courses_of_action_products)
 
     demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
     demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
     demisto.debug(f'{len(mitre_indicators)} MITRE ATT&CK Indicators were created.')
 
-    return mitre_indicators + indicators + reports
+    return indicators + reports + mitre_indicators
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],

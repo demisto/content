@@ -206,4 +206,4 @@ MATCHED_RELATIONSHIPS = {
     'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9': {
         'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'}
-}
+}, {}

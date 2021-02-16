@@ -61,7 +61,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
-    assert len(indicators) == 11
+    assert len(indicators) == 13
 
 
 def test_feed_tags_param(mocker):
