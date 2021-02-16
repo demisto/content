@@ -1,54 +1,25 @@
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: df78463f-3b20-4b42-810d-2b4336ad579d
-    propagationLabels:
-    - all
-    toServerVersion: ""
-id: 5a7495bc-e237-466d-829e-949e1c781446
-inputs:
-- description: When does the critical time-range start?
-  key: NightHourStart
-  playbookInputQuery: null
-  required: false
-  value:
-    simple: "22"
-- description: When does the critical time-range stop?
-  key: NightHourEnd
-  playbookInputQuery: null
-  required: false
-  value:
-    simple: "5"
-- description: What email to use for critical notification?
-  key: NotifyEmail
-  playbookInputQuery: null
-  required: false
-  value:
-    simple: email@example.com
+id: CCTV Motion Detected
+version: -1
 name: CCTV Motion Detected
-outputs: []
+description: A playbook that runs ComputerVision on CCTV events
+fromversion: 6.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 20279c6c-b69e-4afa-8ff2-647dc4eb54e2
+    type: start
+    task:
+      id: 20279c6c-b69e-4afa-8ff2-647dc4eb54e2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 20279c6c-b69e-4afa-8ff2-647dc4eb54e2
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: 20279c6c-b69e-4afa-8ff2-647dc4eb54e2
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -56,14 +27,27 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 61dc85d7-f6d3-4cef-87dc-95a5210c45fb
+    type: regular
+    task:
+      id: 61dc85d7-f6d3-4cef-87dc-95a5210c45fb
+      version: -1
+      name: Get the recording snapshot into incident details
+      description: Get the recording snapshot (at frame) based on the recording id
+      script: '|||unifivideo-get-recording-snapshot'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       frame:
         simple: "260"
@@ -72,19 +56,6 @@ tasks:
       using:
         simple: ${incident.sourceInstance}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get the recording snapshot (at frame) based on the recording id
-      id: 61dc85d7-f6d3-4cef-87dc-95a5210c45fb
-      iscommand: true
-      name: Get the recording snapshot into incident details
-      script: '|||unifivideo-get-recording-snapshot'
-      type: regular
-      version: -1
-    taskid: 61dc85d7-f6d3-4cef-87dc-95a5210c45fb
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -92,33 +63,33 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: 598380f7-c4a9-49d9-8c9a-de18dd97961a
+    type: regular
+    task:
+      id: 598380f7-c4a9-49d9-8c9a-de18dd97961a
+      version: -1
+      name: Mark the snapshot as note
+      description: Mark all given entries IDs as notes
+      script: Builtin|||markAsNote
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       entryIDs:
         simple: '${.=(val.InfoFile instanceof Array ? val.InfoFile[val.InfoFile.length-1].EntryID
           : val.InfoFile.EntryID)}'
       isNote: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Mark all given entries IDs as notes
-      id: 598380f7-c4a9-49d9-8c9a-de18dd97961a
-      iscommand: true
-      name: Mark the snapshot as note
-      script: Builtin|||markAsNote
-      type: regular
-      version: -1
-    taskid: 598380f7-c4a9-49d9-8c9a-de18dd97961a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -126,32 +97,32 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: a33aea9c-e309-4497-8183-ae005e2b913a
+    type: regular
+    task:
+      id: a33aea9c-e309-4497-8183-ae005e2b913a
+      version: -1
+      name: Machine Learning/Computer Vision processing
+      script: Computer Vision Engine|||yolo-coco-process-image
+      type: regular
+      iscommand: true
+      brand: Computer Vision Engine
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       confidence: {}
       entryid:
         simple: ${InfoFile.EntryID}
       threshold: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Computer Vision Engine
-      id: a36fe9d5-a3b0-43d5-8240-f4bdcb05336e
-      iscommand: true
-      name: Machine Learning/Computer Vision processing
-      script: Computer Vision Engine|||yolo-coco-process-image
-      type: regular
-      version: -1
-    taskid: a36fe9d5-a3b0-43d5-8240-f4bdcb05336e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -159,23 +130,24 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: d1e36b09-b7e4-4008-8cd6-7e43bedd7cf0
+    type: title
     task:
-      brand: ""
-      id: c79b11b5-e00b-40e9-8813-7cd4ad6deeaf
-      iscommand: false
+      id: d1e36b09-b7e4-4008-8cd6-7e43bedd7cf0
+      version: -1
       name: Done
       type: title
-      version: -1
-    taskid: c79b11b5-e00b-40e9-8813-7cd4ad6deeaf
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -183,38 +155,38 @@ tasks:
           "y": 2120
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: ComputerVision.Images.person
-          operator: isNotEmpty
-      label: "YES"
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
+    type: condition
+    task:
+      id: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
+      version: -1
+      name: Check if person detected
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "9"
       "YES":
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      id: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
-      iscommand: false
-      name: Check if person detected
-      type: condition
-      version: -1
-    taskid: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ComputerVision.Images.person
+            iscontext: true
     view: |-
       {
         "position": {
@@ -222,14 +194,27 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: a82f3486-01a7-4f4f-8694-70d0d43df549
+    type: regular
+    task:
+      id: a82f3486-01a7-4f4f-8694-70d0d43df549
+      version: -1
+      name: Send email
+      description: Sends an email using Gmail.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -252,19 +237,6 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sends an email using Gmail.
-      id: 70831aab-5013-4977-8bea-31d1aa7feaf8
-      iscommand: true
-      name: Send email
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: 70831aab-5013-4977-8bea-31d1aa7feaf8
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -272,14 +244,27 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 6014f529-4bd7-424a-8ffd-c0734f22895f
+    type: regular
+    task:
+      id: 6014f529-4bd7-424a-8ffd-c0734f22895f
+      version: -1
+      name: Get Hours
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       append: {}
       key:
@@ -287,39 +272,26 @@ tasks:
       stringify: {}
       value:
         complex:
-          accessor: occurred
           root: incident
+          accessor: occurred
           transformers:
-          - args:
+          - operator: Cut
+            args:
               delimiter:
                 value:
                   simple: T
               fields:
                 value:
                   simple: "2"
-            operator: Cut
-          - args:
+          - operator: Cut
+            args:
               delimiter:
                 value:
                   simple: ':'
               fields:
                 value:
                   simple: "1"
-            operator: Cut
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: e8aa9323-2504-49d0-8acb-24b2cab4019b
-      iscommand: false
-      name: Get Hours
-      script: Set
-      type: regular
-      version: -1
-    taskid: e8aa9323-2504-49d0-8acb-24b2cab4019b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -327,49 +299,49 @@ tasks:
           "y": 895
         }
       }
-  "8":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: hoursTimeNow
-          operator: greaterThanOrEqual
-          right:
-            iscontext: true
-            value:
-              simple: inputs.NightHourStart
-        - left:
-            iscontext: true
-            value:
-              simple: hoursTimeNow
-          operator: lessThanOrEqual
-          right:
-            iscontext: true
-            value:
-              simple: inputs.NightHourEnd
-      label: "yes"
-    id: "8"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2acb6ae6-6e83-4bd6-8f0b-bf122d6db76d
+    type: condition
+    task:
+      id: 2acb6ae6-6e83-4bd6-8f0b-bf122d6db76d
+      version: -1
+      name: If in the night
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "10"
       "yes":
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4ec5cdcf-0f5a-42c8-8aef-674c876e62e5
-      iscommand: false
-      name: If in the night
-      type: condition
-      version: -1
-    taskid: 4ec5cdcf-0f5a-42c8-8aef-674c876e62e5
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: hoursTimeNow
+            iscontext: true
+          right:
+            value:
+              simple: inputs.NightHourStart
+            iscontext: true
+        - operator: lessThanOrEqual
+          left:
+            value:
+              simple: hoursTimeNow
+            iscontext: true
+          right:
+            value:
+              simple: inputs.NightHourEnd
+            iscontext: true
     view: |-
       {
         "position": {
@@ -377,14 +349,27 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: bdc9452c-0e57-4437-879a-5af5ed478c92
+    type: regular
+    task:
+      id: bdc9452c-0e57-4437-879a-5af5ed478c92
+      version: -1
+      name: Set Severity Low
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -957,19 +942,6 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: bdc9452c-0e57-4437-879a-5af5ed478c92
-      iscommand: true
-      name: Set Severity Low
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: bdc9452c-0e57-4437-879a-5af5ed478c92
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -977,14 +949,27 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
+    type: regular
+    task:
+      id: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
+      version: -1
+      name: Set severity medium
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "15"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -1557,19 +1542,6 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
-      iscommand: true
-      name: Set severity medium
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -1577,14 +1549,27 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 6f08c0cc-d25c-4694-8e5b-2bebc58e5696
+    type: regular
+    task:
+      id: 6f08c0cc-d25c-4694-8e5b-2bebc58e5696
+      version: -1
+      name: Set Severity Critical
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -2157,19 +2142,6 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 6f08c0cc-d25c-4694-8e5b-2bebc58e5696
-      iscommand: true
-      name: Set Severity Critical
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 6f08c0cc-d25c-4694-8e5b-2bebc58e5696
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -2177,25 +2149,19 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "16"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      assignBy: {}
-      email: {}
-      onCall: {}
-      roles: {}
-      username:
-        simple: admin
-    separatecontext: false
-    skipunavailable: false
+    taskid: af2094e2-cdd8-45f8-8cf7-0d8c2b4933e1
+    type: regular
     task:
-      brand: ""
+      id: af2094e2-cdd8-45f8-8cf7-0d8c2b4933e1
+      version: -1
+      name: Assign analyst
       description: |-
         Assign analyst to incident.
         By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
@@ -2205,17 +2171,21 @@ tasks:
         less-busy-user: The less busy analyst will be picked to be the incident owner.
         online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
         current: The user that executed the command
-      id: 60263825-1ba3-4d0b-873d-c8a2c04bacd6
-      iscommand: false
-      name: Assign analyst
-      script: AssignAnalystToIncident
+      scriptName: AssignAnalystToIncident
       type: regular
-      version: -1
-    taskid: 60263825-1ba3-4d0b-873d-c8a2c04bacd6
-    timertriggers:
-    - action: start
-      fieldname: detectionsla
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      onCall: {}
+      roles: {}
+      username:
+        simple: admin
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -2223,14 +2193,29 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    ignoreworker: false
+    taskid: 96b753b8-8af8-472b-8d88-cd10a3946605
+    type: regular
+    task:
+      id: 96b753b8-8af8-472b-8d88-cd10a3946605
+      version: -1
+      name: Close the ticket
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       assetid: {}
       closeNotes:
@@ -2241,19 +2226,6 @@ tasks:
       id: {}
       phishingsubtype: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: 96b753b8-8af8-472b-8d88-cd10a3946605
-      iscommand: true
-      name: Close the ticket
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: 96b753b8-8af8-472b-8d88-cd10a3946605
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -2261,14 +2233,35 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    ignoreworker: false
+    taskid: 2411a559-c5b7-4254-8e64-b68838a461ef
+    type: regular
+    task:
+      id: 2411a559-c5b7-4254-8e64-b68838a461ef
+      version: -1
+      name: Assign analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       assignBy:
         simple: random
@@ -2279,27 +2272,6 @@ tasks:
       username:
         simple: admin
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
-      id: 2411a559-c5b7-4254-8e64-b68838a461ef
-      iscommand: false
-      name: Assign analyst
-      script: AssignAnalystToIncident
-      type: regular
-      version: -1
-    taskid: 2411a559-c5b7-4254-8e64-b68838a461ef
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -2307,51 +2279,32 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    ignoreworker: false
-    message:
-      bcc: null
-      body:
-        simple: Intruder detected!!! Is this a trusted person?
-      cc: null
-      format: ""
-      methods:
-      - email
-      replyOptions:
-      - "Yes"
-      - "No"
-      subject:
-        simple: Intruder detected!!!
-      timings:
-        completeafterreplies: 1
-        retriescount: 3
-        retriesinterval: 120
-      to:
-        simple: ${inputs.NotifyEmail}
+    taskid: 5b130b2e-33e7-49ae-8c5a-f0e79f4f0098
+    type: condition
+    task:
+      id: 5b130b2e-33e7-49ae-8c5a-f0e79f4f0098
+      version: -1
+      name: Is this a trusted person?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "No":
       - "18"
       "Yes":
       - "17"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 10
+      days: 0
       weeks: 0
-    task:
-      brand: ""
-      id: d3243f10-04c6-461f-84ab-89bf2520c13a
-      iscommand: false
-      name: Is this a trusted person?
-      type: condition
-      version: -1
-    taskid: d3243f10-04c6-461f-84ab-89bf2520c13a
-    timertriggers: []
-    type: condition
     view: |-
       {
         "position": {
@@ -2359,14 +2312,46 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.NotifyEmail}
+      subject:
+        simple: Intruder detected!!!
+      body:
+        simple: Intruder detected!!! Is this a trusted person?
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 3
+        retriesinterval: 120
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: 486aecc0-9417-40c7-8117-f60f9094579b
+    type: regular
+    task:
+      id: 486aecc0-9417-40c7-8117-f60f9094579b
+      version: -1
+      name: Close the ticket
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       assetid: {}
       closeNotes:
@@ -2379,19 +2364,6 @@ tasks:
       outgoingmirrorerror: {}
       phishingsubtype: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: c8ba598f-a86b-4c8e-83e4-077c6e828a03
-      iscommand: true
-      name: Close the ticket
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: c8ba598f-a86b-4c8e-83e4-077c6e828a03
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -2399,26 +2371,26 @@ tasks:
           "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    ignoreworker: false
+    taskid: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
+    type: regular
+    task:
+      id: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
+      version: -1
+      name: Investigate
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
-      iscommand: false
-      name: Investigate
-      type: regular
-      version: -1
-    taskid: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -2426,7 +2398,11 @@ tasks:
           "y": 1945
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2441,3 +2417,25 @@ view: |-
       }
     }
   }
+inputs:
+- key: NightHourStart
+  value:
+    simple: "22"
+  required: false
+  description: When does the critical time-range start?
+  playbookInputQuery:
+- key: NightHourEnd
+  value:
+    simple: "5"
+  required: false
+  description: When does the critical time-range stop?
+  playbookInputQuery:
+- key: NotifyEmail
+  value:
+    simple: dom@drobniuch.pl
+  required: false
+  description: What email to use for critical notification?
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
