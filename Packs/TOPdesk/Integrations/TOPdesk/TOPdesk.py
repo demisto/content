@@ -582,12 +582,12 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     file_name = file_name[0] if isinstance(file_name, list) else file_name  # If few files
 
     invisible_for_caller_str = args.get('invisible_for_caller', None)
-    if not invisible_for_caller_str:
-        raise ValueError('invisible_for_caller must be either ture or false')
-    if invisible_for_caller_str.lower() in ['true', 't', 'yes', 'y', '1']:
-        invisible_for_caller = True
-    else:
-        invisible_for_caller = False
+    invisible_for_caller = None
+    if invisible_for_caller_str:
+        if invisible_for_caller_str.lower() in ['true', 't', 'yes', 'y', '1']:
+            invisible_for_caller = True
+        else:
+            invisible_for_caller = False
 
     response = client.attachment_upload(incident_id=args.get('id', None),
                                         incident_number=args.get('number', None),
@@ -613,7 +613,7 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_NAME}.attachment',
-        outputs_key_field='id',  # Not sure this will update the right path. Needs checking.
+        outputs_key_field='id',
         outputs=response
     )
 

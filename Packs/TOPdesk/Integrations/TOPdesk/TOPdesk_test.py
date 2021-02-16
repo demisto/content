@@ -4,7 +4,7 @@ import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
-    get_incidents_with_pagination, incident_do_command, incident_touch_command
+    get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command
 
 
 def util_load_json(path):
@@ -220,45 +220,62 @@ def test_incident_do_commands(requests_mock,
     assert command_results.outputs == [response_incident]
 
 
-@pytest.mark.parametrize('create_func, command_args, command_api_url, caller_lookup, mock_response_file,'
-                         ' expected_last_request_body, expected_call_count', [
+@pytest.mark.parametrize('command_args, command_api_url, command_api_body', [
+    ({"id": "incident_id", "file": "some_entry_id"},
+     'https://test.com/api/v1/incidents/id/incident_id/attachments',
+     {})
+])
+def test_attachment_upload_command(requests_mock,
+                                   command_args,
+                                   command_api_url,
+                                   command_api_body):
+    # TODO: Mock all file entry stuffs
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        }
+    )
+    mock_topdesk_node = util_load_json('test_data/topdesk_attachment.json')
+    response_attachment = mock_topdesk_node.copy()
+
+    requests_mock.put(
+        command_api_url, json=response_attachment)
+
+    command_results = attachment_upload_command(client=client,
+                                                args=command_args)
+    assert requests_mock.called
+    assert requests_mock.last_request.json() == command_api_body
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.attachment'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == response_attachment
+
+
+@pytest.mark.parametrize('create_func, command_args, command_api_url, mock_response_file,'
+                         ' expected_last_request_body', [
                              (True,
                               {"caller": "some_caller"},
                               'https://test.com/api/v1/incidents/',
-                              True,
                               'test_data/topdesk_incident.json',
-                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
-                              1),
-                             (True,
-                              {"caller": "some_caller"},
-                              'https://test.com/api/v1/incidents/',
-                              False,
-                              'test_data/topdesk_incident.json',
-                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
-                              2),
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
                              (False,
                               {"caller": "some_caller", "id": "incident_id"},
                               'https://test.com/api/v1/incidents/id/incident_id',
-                              True,
                               'test_data/topdesk_incident.json',
-                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
-                              1),
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
                              (False,
-                              {"caller": "some_caller", "id": "incident_id"},
-                              'https://test.com/api/v1/incidents/id/incident_id',
-                              False,
+                              {"caller": "some_caller", "number": "incident_number"},
+                              'https://test.com/api/v1/incidents/number/incident_number',
                               'test_data/topdesk_incident.json',
-                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
-                              1)
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
                          ])
-def test_incident_touch_commands(requests_mock,
-                                 create_func,
-                                 command_args,
-                                 command_api_url,
-                                 caller_lookup,
-                                 mock_response_file,
-                                 expected_last_request_body,
-                                 expected_call_count):
+def test_caller_lookup_incident_touch_commands(requests_mock,
+                                               create_func,
+                                               command_args,
+                                               command_api_url,
+                                               mock_response_file,
+                                               expected_last_request_body):
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
@@ -277,13 +294,13 @@ def test_incident_touch_commands(requests_mock,
     response_incident = mock_topdesk_node.copy()
     request_command = getattr(requests_mock, request_method)
 
-    request_command(command_api_url, json=response_incident)  # Fix multiple returns
+    request_command(command_api_url, json=response_incident)
 
     command_results = incident_touch_command(client=client,
                                              args=command_args,
                                              client_func=client_func,
                                              action=action)
-    assert requests_mock.call_count == expected_call_count
+    assert requests_mock.called
     assert requests_mock.last_request.json() == expected_last_request_body
     assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
     assert command_results.outputs_key_field == 'id'
@@ -417,7 +434,7 @@ def test_get_incidents_with_pagination(requests_mock,
     assert requests_mock.call_count == call_count
 
 
-# TODO: add tests for incident_do commands
+# TODO: add tests for incident_touch commands with dynamicName
 # TODO: add tests for attachment upload command
 
 
