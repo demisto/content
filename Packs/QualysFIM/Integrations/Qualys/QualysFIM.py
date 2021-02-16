@@ -115,7 +115,7 @@ class Client(BaseClient):
                                   url_suffix=f'fim/v2/incidents/{incident_id}/events/search',
                                   json_data=data)
 
-    def assets_list(self, params):
+    def assets_list(self, params: dict):
         """
         list all assets.
 
@@ -142,7 +142,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='fim/v3/incidents/create',
                                   json_data=data)
 
-    def approve_incident(self, incident_id, data: dict):
+    def approve_incident(self, incident_id: str, data: dict):
         """
         Approve incident based on ID.
 
@@ -490,7 +490,7 @@ def list_assets_command(client: Client, args: dict):
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    max_fetch,
+                    max_fetch: str,
                     first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
@@ -499,7 +499,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
         first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
-        max_fetch (int): Max number of alerts to fetch.
+        max_fetch (str): Max number of alerts to fetch.
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
