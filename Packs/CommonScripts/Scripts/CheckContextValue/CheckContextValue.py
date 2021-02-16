@@ -42,7 +42,8 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
 
 def main():
     try:
-        return_results(*poll_field(demisto.args()))
+        args = demisto.args()
+        return_results(poll_field(*args))
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CheckFieldValue script. Error: {str(err)}')
