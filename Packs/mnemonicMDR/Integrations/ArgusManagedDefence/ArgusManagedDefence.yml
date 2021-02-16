@@ -11,19 +11,24 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  defaultvalue: true
+  additionalinfo: "Defines if this integration fetches incidents."
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  additionalinfo: "Should be set to Argus Case."
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no
   type: 0
   required: true
+  additionalinfo: "URL to Argus' API Endpoint."
 - display: API Key
   name: api_key
   type: 4
   required: true
+  additionalinfo: "API Key of API user in Argus."
 - display: Minimum severity of alerts to fetch
   name: min_severity
   defaultvalue: Low
@@ -34,17 +39,21 @@ configuration:
   - Medium
   - High
   - Critical
+  additionalinfo: "Argus Cases with priority lower than this value will
+    be excluded by fetch incidents."
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
+  additionalinfo: "How far back should the first run fetch open cases in Argus."
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "25"
+  defaultvalue: "0"
   type: 0
   required: false
-  additionalinfo: 0 means up to system limit (100 000)
+  additionalinfo: "Maximum number of cases to be fetched from Argus.
+    0 means up to system limit (100 000)"
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
@@ -63,6 +72,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  additionalinfo: "Which direction should the integration mirror incidents."
 - display: Mirroring tag
   name: mirror_tag
   type: 0
@@ -74,10 +84,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  additionalinfo: "Skip HTTPS certification verification."
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  additionalinfo: "Use system proxy settings."
 script:
   script: ''
   type: python
