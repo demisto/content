@@ -1,3 +1,4 @@
+/.github/CODEOWNERS @demisto/content-leaders
 /Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
