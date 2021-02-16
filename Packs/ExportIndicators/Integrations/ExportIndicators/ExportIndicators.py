@@ -547,7 +547,7 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext().get('last_output', {})
+    ctx = get_integration_context().get('last_output', {})
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
@@ -593,12 +593,12 @@ def get_ioc_values_str_from_context(request_args: RequestArguments, iocs=None) -
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
-        current_cache = demisto.getIntegrationContext()
+        current_cache = get_integration_context()
         current_cache['last_output'] = returned_dict
-        demisto.setIntegrationContext(current_cache)
+        set_integration_context(current_cache)
 
     else:
-        returned_dict = demisto.getIntegrationContext().get('last_output', {})
+        returned_dict = get_integration_context().get('last_output', {})
 
     return returned_dict.get(CTX_VALUES_KEY, '')
 
@@ -734,12 +734,12 @@ def route_list_values() -> Response:
 
         values = get_outbound_ioc_values(
             on_demand=params.get('on_demand'),
-            last_update_data=demisto.getIntegrationContext(),
+            last_update_data=get_integration_context(),
             cache_refresh_rate=params.get('cache_refresh_rate'),
             request_args=request_args
         )
 
-        if not demisto.getIntegrationContext() and params.get('on_demand'):
+        if not get_integration_context() and params.get('on_demand'):
             values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
                      'export process'
 
