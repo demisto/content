@@ -1,22 +1,22 @@
 id: Powershell Payload Response
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Powershell Payload Response
-description: 'The Powershell Payload Response playbook is designed to be used when
+description: The Powershell Payload Response playbook is designed to be used when
   file payload executions are detected from an endpoint machines Powershell and begins
-  the remediation process.'
+  the remediation process.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9d1eb647-5680-4cb0-8b24-3b90c9a046d9
+    taskid: 5605eb5a-af1a-4834-8bf8-8b6f95ff5e99
     type: start
     task:
-      id: 9d1eb647-5680-4cb0-8b24-3b90c9a046d9
+      id: 5605eb5a-af1a-4834-8bf8-8b6f95ff5e99
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,17 +35,16 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d36306cd-80f5-4cfc-8103-d59597bbf032
+    taskid: 408e4d36-f1a7-4757-850d-0b50611a7695
     type: playbook
     task:
-      id: d36306cd-80f5-4cfc-8103-d59597bbf032
+      id: 408e4d36-f1a7-4757-850d-0b50611a7695
       version: -1
       name: Dedup - Generic v3
       playbookName: Dedup - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -91,10 +90,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 05329b66-19b1-4be4-8005-bb05ab5d2ac3
+    taskid: 5fea8dc6-cd67-4c16-85b3-48431bc2e634
     type: regular
     task:
-      id: 05329b66-19b1-4be4-8005-bb05ab5d2ac3
+      id: 5fea8dc6-cd67-4c16-85b3-48431bc2e634
       version: -1
       name: Assign Analyst to Incident
       description: |-
@@ -135,16 +134,15 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ad615e64-a913-4c37-8d6b-afe7f76093e9
+    taskid: 079c9178-ac5a-4c26-8225-91413ecf15e6
     type: title
     task:
-      id: ad615e64-a913-4c37-8d6b-afe7f76093e9
+      id: 079c9178-ac5a-4c26-8225-91413ecf15e6
       version: -1
       name: Find originating email?
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -165,10 +163,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 65ee166a-f061-4ec5-8747-c6c129ba494d
+    taskid: 74af4972-ca6e-4eb4-8003-6077a89db3f5
     type: playbook
     task:
-      id: 65ee166a-f061-4ec5-8747-c6c129ba494d
+      id: 74af4972-ca6e-4eb4-8003-6077a89db3f5
       version: -1
       name: Process Email - Generic
       description: Add email details to the relevant context entities and handle the
@@ -238,10 +236,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: db12e7b0-9054-41d8-8e33-0ac326b66ccd
+    taskid: 79ea5f4a-2d0f-433e-8350-c141e0d01556
     type: regular
     task:
-      id: db12e7b0-9054-41d8-8e33-0ac326b66ccd
+      id: 79ea5f4a-2d0f-433e-8350-c141e0d01556
       version: -1
       name: Firewall rule to prevent outbound connection to the endpoint
       description: Create a new Policy on the Cb Defense backend.
@@ -276,10 +274,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 63852abd-efd7-4bb1-833a-1f8839804206
+    taskid: b09e623f-08a1-4207-8826-5a0a78d16a6d
     type: regular
     task:
-      id: 63852abd-efd7-4bb1-833a-1f8839804206
+      id: b09e623f-08a1-4207-8826-5a0a78d16a6d
       version: -1
       name: Background Scan
       description: Start a background scan on device.
@@ -308,10 +306,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: e6dbaa82-d5ba-4f02-8f63-66ff32206e37
+    taskid: 034bae6a-5d6f-4f94-8673-664f84ca6c28
     type: regular
     task:
-      id: e6dbaa82-d5ba-4f02-8f63-66ff32206e37
+      id: 034bae6a-5d6f-4f94-8673-664f84ca6c28
       version: -1
       name: Splunk Search for Other Machines with Similar Payloads
       description: Searches Splunk for events.
@@ -346,12 +344,13 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: b69002ed-c874-4f96-81dc-fbdc292e6bf6
+    taskid: 63b03ffe-f320-4510-84f6-2f1c9dc0896a
     type: condition
     task:
-      id: b69002ed-c874-4f96-81dc-fbdc292e6bf6
+      id: 63b03ffe-f320-4510-84f6-2f1c9dc0896a
       version: -1
       name: Any Other Machines Found?
+      description: Checks to verify if any other machines were found with the payload.
       type: condition
       iscommand: false
       brand: ""
@@ -391,16 +390,15 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: e51ac0ec-902b-48aa-89d2-678c603c4fa0
+    taskid: 078f77aa-509e-4830-8321-fb6061f25763
     type: title
     task:
-      id: e51ac0ec-902b-48aa-89d2-678c603c4fa0
+      id: 078f77aa-509e-4830-8321-fb6061f25763
       version: -1
       name: Do Nothing
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -419,10 +417,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: f3a87884-3ffc-42a7-8596-35dbe96208d1
+    taskid: 6296c12d-2d6b-4060-8d45-1ddf5146f990
     type: regular
     task:
-      id: f3a87884-3ffc-42a7-8596-35dbe96208d1
+      id: 6296c12d-2d6b-4060-8d45-1ddf5146f990
       version: -1
       name: Increase Severity
       description: Optionally increases the incident severity to the new value if
@@ -452,10 +450,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 2361825c-38bd-4df2-868b-62a99e78f630
+    taskid: 0f504f0d-0f7e-4732-8e0e-14587c21effc
     type: regular
     task:
-      id: 2361825c-38bd-4df2-868b-62a99e78f630
+      id: 0f504f0d-0f7e-4732-8e0e-14587c21effc
       version: -1
       name: Background Scan
       description: Start a background scan on device.
@@ -492,17 +490,16 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 0447f307-adbf-4deb-887b-9c8862a1b908
+    taskid: eb91aa48-d075-4a05-8298-f0cef70d1b01
     type: playbook
     task:
-      id: 0447f307-adbf-4deb-887b-9c8862a1b908
+      id: eb91aa48-d075-4a05-8298-f0cef70d1b01
       version: -1
       name: Detonate File - Generic
       playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -521,12 +518,14 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: f2d4ed9a-f704-4b55-84f7-66bec74e822b
+    taskid: 80eff38c-a3c9-4b3a-886e-a3770e2222fe
     type: condition
     task:
-      id: f2d4ed9a-f704-4b55-84f7-66bec74e822b
+      id: 80eff38c-a3c9-4b3a-886e-a3770e2222fe
       version: -1
       name: Analyst Review
+      description: Analyst reviews information presented and determines if the incident
+        is still ongoing or if it has been remediated.
       type: condition
       iscommand: false
       brand: ""
@@ -554,16 +553,15 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 65b0bf13-5222-456f-8be8-3b2f554e09d2
+    taskid: 13b065f8-8dc6-4670-83b1-ae05442048b2
     type: title
     task:
-      id: 65b0bf13-5222-456f-8be8-3b2f554e09d2
+      id: 13b065f8-8dc6-4670-83b1-ae05442048b2
       version: -1
       name: Unquarantine Devices
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -582,12 +580,13 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 4606ea4b-7bb2-49f2-8a08-d1d751c683e0
+    taskid: 174e2dc2-9ccc-4db2-810f-c99d593c13a2
     type: regular
     task:
-      id: 4606ea4b-7bb2-49f2-8a08-d1d751c683e0
+      id: 174e2dc2-9ccc-4db2-810f-c99d593c13a2
       version: -1
       name: Escalate Incident
+      description: Remediation failed; escalate incident to the relevant people.
       type: regular
       iscommand: false
       brand: ""
@@ -606,12 +605,13 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 1e268c0f-f974-4426-8ef4-77b2484e169c
+    taskid: 6b0dde85-9523-440c-8a13-1250e1ca7d03
     type: condition
     task:
-      id: 1e268c0f-f974-4426-8ef4-77b2484e169c
+      id: 6b0dde85-9523-440c-8a13-1250e1ca7d03
       version: -1
       name: More Than Just the Original Endpoint?
+      description: Was there more than one endpoint machine infected?
       type: condition
       iscommand: false
       brand: ""
@@ -651,10 +651,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 0748f71f-729f-4df3-876a-8a0b397ce4ca
+    taskid: aaf13e2b-4752-4885-83f5-255ab0595a17
     type: regular
     task:
-      id: 0748f71f-729f-4df3-876a-8a0b397ce4ca
+      id: aaf13e2b-4752-4885-83f5-255ab0595a17
       version: -1
       name: Unquarantine Endpoints
       description: Removes a device from quarantine.
@@ -691,10 +691,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: b0f256fc-ffd3-41bc-8bf3-c54d82ed6afc
+    taskid: ecc5a57c-9283-4032-8d05-88abf55ad75c
     type: regular
     task:
-      id: b0f256fc-ffd3-41bc-8bf3-c54d82ed6afc
+      id: ecc5a57c-9283-4032-8d05-88abf55ad75c
       version: -1
       name: Unquarantine Original Endpoint
       description: Removes a device from quarantine.
@@ -723,10 +723,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 04f05794-7e82-4c3c-802f-421019032cc2
+    taskid: 073aff59-a790-4300-8822-2784726615e9
     type: regular
     task:
-      id: 04f05794-7e82-4c3c-802f-421019032cc2
+      id: 073aff59-a790-4300-8822-2784726615e9
       version: -1
       name: Create SNOW Ticket
       description: Creates new ServiceNow ticket.
@@ -835,10 +835,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 7862192d-49d7-42a8-8960-d701e4d498f9
+    taskid: 036ae538-7883-492d-858a-19ce962f656a
     type: regular
     task:
-      id: 7862192d-49d7-42a8-8960-d701e4d498f9
+      id: 036ae538-7883-492d-858a-19ce962f656a
       version: -1
       name: Update SNOW Ticket
       description: Updates the specified ticket.
@@ -948,10 +948,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 9ce39c82-a8e2-4613-8801-4d265c24e5b7
+    taskid: 57d9dcc0-5851-438e-8349-60cd74be2549
     type: regular
     task:
-      id: 9ce39c82-a8e2-4613-8801-4d265c24e5b7
+      id: 57d9dcc0-5851-438e-8349-60cd74be2549
       version: -1
       name: Update SNOW Ticket with Results
       description: Updates the specified ticket.
@@ -1054,10 +1054,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: dbe029ad-512e-4060-80fd-b5c8ac7d0f4a
+    taskid: 28018ddc-71e6-47e1-83dd-2090e6fee2fe
     type: regular
     task:
-      id: dbe029ad-512e-4060-80fd-b5c8ac7d0f4a
+      id: 28018ddc-71e6-47e1-83dd-2090e6fee2fe
       version: -1
       name: Background Scan
       description: Start a background scan on device.
@@ -1094,10 +1094,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: c493fbcf-fe01-4cb6-8e53-ca1afc6081ce
+    taskid: b1aaf99c-b44c-44fd-84ac-665c3c2a01f8
     type: regular
     task:
-      id: c493fbcf-fe01-4cb6-8e53-ca1afc6081ce
+      id: b1aaf99c-b44c-44fd-84ac-665c3c2a01f8
       version: -1
       name: Background Scan
       description: Start a background scan on device.
@@ -1126,10 +1126,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 804dd40f-2d64-4c23-8017-3358562d260d
+    taskid: 27cc9327-0a9e-4846-88b0-02dc156078c9
     type: regular
     task:
-      id: 804dd40f-2d64-4c23-8017-3358562d260d
+      id: 27cc9327-0a9e-4846-88b0-02dc156078c9
       version: -1
       name: Close Out SNOW Ticket
       description: Updates the specified ticket.
@@ -1233,10 +1233,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 64b259f0-bc3e-4b67-84fa-803f1ff12c9d
+    taskid: 5dad417f-a764-4d2e-8bef-32ab53f6efe9
     type: regular
     task:
-      id: 64b259f0-bc3e-4b67-84fa-803f1ff12c9d
+      id: 5dad417f-a764-4d2e-8bef-32ab53f6efe9
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -1274,17 +1274,16 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: d95ebf7d-457c-4917-8656-1d726a4ad49d
+    taskid: 6609d4ac-81ea-4bc7-89c4-2ebdd5e58f02
     type: title
     task:
-      id: d95ebf7d-457c-4917-8656-1d726a4ad49d
+      id: 6609d4ac-81ea-4bc7-89c4-2ebdd5e58f02
       version: -1
       name: This thread is finished; the quarantine and scan of endpoints continues
         on the playbook
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1303,16 +1302,15 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 5f71f11f-3c7d-40cf-847c-0227bc0c01bc
+    taskid: 0aeb8fd1-b479-4b12-8e1c-2ae58306b25e
     type: title
     task:
-      id: 5f71f11f-3c7d-40cf-847c-0227bc0c01bc
+      id: 0aeb8fd1-b479-4b12-8e1c-2ae58306b25e
       version: -1
       name: End of Investigation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1328,16 +1326,15 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 93fe719e-2f41-405c-80a8-a504daf1e16c
+    taskid: 1b812227-4d75-4b1a-8662-e2fd82dbb0c7
     type: title
     task:
-      id: 93fe719e-2f41-405c-80a8-a504daf1e16c
+      id: 1b812227-4d75-4b1a-8662-e2fd82dbb0c7
       version: -1
       name: Connector
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1356,16 +1353,15 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: d42f0df0-5643-474e-84d7-4ec228067a41
+    taskid: 8b3a9a1b-aac2-4deb-8f14-63cb032e22cf
     type: title
     task:
-      id: d42f0df0-5643-474e-84d7-4ec228067a41
+      id: 8b3a9a1b-aac2-4deb-8f14-63cb032e22cf
       version: -1
       name: Connector
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1384,17 +1380,16 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 8fd54b64-cf05-477b-8ed8-6ddeae4cad11
+    taskid: b637c47a-cb31-47be-875f-ec5c4f89ff03
     type: playbook
     task:
-      id: 8fd54b64-cf05-477b-8ed8-6ddeae4cad11
+      id: b637c47a-cb31-47be-875f-ec5c4f89ff03
       version: -1
       name: Block File - Generic v2
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -1428,17 +1423,16 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: cf436284-aa98-499b-8494-729145c6b9a3
+    taskid: 970372d5-8ad5-4989-8fba-0a3a2af7ff36
     type: playbook
     task:
-      id: cf436284-aa98-499b-8494-729145c6b9a3
+      id: 970372d5-8ad5-4989-8fba-0a3a2af7ff36
       version: -1
       name: Isolate Endpoint - Generic
       playbookName: Isolate Endpoint - Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1475,17 +1469,16 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 49dccc52-763b-4e4c-8113-1c97af54f3bc
+    taskid: eda97e92-1226-4fee-8739-a71cf5fd259b
     type: playbook
     task:
-      id: 49dccc52-763b-4e4c-8113-1c97af54f3bc
+      id: eda97e92-1226-4fee-8739-a71cf5fd259b
       version: -1
       name: Isolate Endpoint - Generic
       playbookName: Isolate Endpoint - Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -1538,17 +1531,16 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 41f96103-69c2-4d51-81fa-9255efc4d076
+    taskid: 09cffb8f-a149-40fe-83a2-acace12a0bca
     type: playbook
     task:
-      id: 41f96103-69c2-4d51-81fa-9255efc4d076
+      id: 09cffb8f-a149-40fe-83a2-acace12a0bca
       version: -1
       name: Block File - Generic v2
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1582,17 +1574,16 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 33e6d2fd-a085-4f62-8acd-55c894191d07
+    taskid: 5a5c72cd-660f-47ff-82db-780b5c4646fa
     type: playbook
     task:
-      id: 33e6d2fd-a085-4f62-8acd-55c894191d07
+      id: 5a5c72cd-660f-47ff-82db-780b5c4646fa
       version: -1
       name: Block File - Generic v2
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -1642,32 +1633,31 @@ inputs:
     simple: ${incident.endpointid}
   required: false
   description: ID of the endpoint in question.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Hostname
   value:
     simple: ${incident.hostname}
   required: false
   description: Hostname of the endpoint in question.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Email
   value:
     simple: ${incident.email}
   required: false
   description: Email attachment.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: File
   value:
     simple: ${File}
   required: false
   description: Payload file that was executed.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: File Path
   value:
     simple: ${incident.filepath}
   required: false
   description: File Path of the Executed Payload.
-  playbookInputQuery:
-fromversion: 6.0.0
+  playbookInputQuery: null
 outputs: []
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
