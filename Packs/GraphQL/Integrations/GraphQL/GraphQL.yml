@@ -53,7 +53,8 @@ script:
       secret: false
     - default: false
       description: 'An optional comma-separated list of types, for example: Boolean,Int,Float.
-        Optional values are: String, Boolean, Int and Float. If not provided, all '
+        Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans
+        will be detected automatically, and the rest of the variables will be handled as strings.'
       isArray: true
       name: variables_types
       required: false
@@ -95,15 +96,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+      description: 'A comma-separated list of names, for example: flag,num,alpha'
       isArray: true
       name: variables_names
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+      description: 'A comma-separated list of values, for example: true,4,3.5'
       isArray: true
       name: variables_values
+      required: false
+      secret: false
+    - default: false
+      description: 'An optional comma-separated list of types, for example: Boolean,Int,Float.
+        Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans
+        will be detected automatically, and the rest of the variables will be handled as strings.'
+      isArray: true
+      name: variables_types
       required: false
       secret: false
     - default: false

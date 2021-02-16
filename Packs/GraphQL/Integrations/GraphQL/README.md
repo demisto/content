@@ -38,8 +38,9 @@ Execute a query request to the GraphQL server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The GraphQL query to execute. | Required |
-| variables_names | A comma-separated list of names, for example: "foo","bar","alpha". | Optional |
-| variables_values | A comma-separated list of values, for example: 7,"foo",3. | Optional |
+| variables_names | A comma-separated list of names, for example: flag,num,alpha | Optional |
+| variables_values | A comma-separated list of values, for example: true,4,3.5 | Optional |
+| variables_types | An optional comma-separated list of types, for example: Boolean,Int,Float. Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans will be detected automatically, and the rest of the variables will be handled as strings. | Optional |
 | max_result_size | Max result size in KBs. Default is 10. | Optional |
 | populate_context_data | Whether to populate the result to the context data. Possible values are: true, false. Default is true. | Optional |
 | outputs_key_field | Primary key field in the response to unique the object in the context data. | Optional |
@@ -78,8 +79,9 @@ Execute a mutation request to the GraphQL server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The GraphQL mutation to execute. | Required |
-| variables_names | A comma-separated list of names, for example: "foo","bar","alpha". | Optional |
-| variables_values | A comma-separated list of values, for example: 7,"foo",3. | Optional |
+| variables_names | A comma-separated list of names, for example: flag,num,alpha | Optional |
+| variables_values | A comma-separated list of values, for example: true,4,3.5 | Optional |
+| variables_types | An optional comma-separated list of types, for example: Boolean,Int,Float. Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans will be detected automatically, and the rest of the variables will be handled as strings. | Optional |
 | max_result_size | Max result size in KBs. Default is 10. | Optional |
 | populate_context_data | Whether to populate the result to the context data. Possible values are: true, false. Default is true. | Optional |
 | outputs_key_field | Primary key field in the response to unique the object in the context data. | Optional |
