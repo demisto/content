@@ -33,7 +33,7 @@ CROWDSTRIKE_TO_XSOHR_TYPES = {
 
 class Client(BaseClient):
 
-    def __init__(self, client_id, client_secret, base_url, verify, proxy):
+    def __init__(self, client_id, client_secret, base_url, verify=True, proxy=False):
         self._client_id = client_id
         self._client_secret = client_secret
         self._verify_certificate = verify
@@ -58,11 +58,26 @@ class Client(BaseClient):
                                       auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
+    def set_last_run(self):
+        current_time = datetime.now()
+        current_timestamp = datetime.timestamp(current_time)
+        timestamp = str(int(current_timestamp))
+        demisto.setLastRun({'last_modified_time': timestamp})
+
+    def get_last_run(self) -> str:
+        if last_run := demisto.getLastRun().get('last_modified_time'):
+            params = f'last_updated:>{last_run}'
+            self.set_last_run()
+        else:
+            params = ''
+            self.set_last_run()
+        return params
+
     def get_indicators(self, type: list = None, malicious_confidence: str = '', filter: str = '', q: str = '',
                        limit: int = 100, offset: int = 0, include_deleted=False,
                        get_indicators_command=False) -> Dict[str, Any]:
         if type:
-            type_fql = build_type_fql(type)
+            type_fql = self.build_type_fql(type)
             filter = f'{type_fql}+{filter}' if filter else type_fql
 
         if malicious_confidence:
@@ -70,9 +85,9 @@ class Client(BaseClient):
             filter = f"{malicious_confidence_fql}+{filter}" if filter else malicious_confidence_fql
 
         if not get_indicators_command:
-            if last_run := get_last_run():
+            if last_run := self.get_last_run():
                 filter = f'{last_run}+{filter}' if filter else last_run
-                set_last_run()
+                self.set_last_run()
 
         params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
 
@@ -80,38 +95,20 @@ class Client(BaseClient):
                                      url_suffix='intel/combined/indicators/v1')
         return response
 
+    def build_type_fql(self, types_list: list) -> str:
+        """Builds an indicator type query for the query"""
 
-def build_type_fql(types_list: list) -> str:
-    """Builds an indicator type query for the query"""
+        if 'ALL' in types_list:
+            # Replaces "ALL" for all types supported on XSOAR.
+            crowdstrike_types = ['username', 'domain', 'email_address', 'hash_md5', 'hash_sha256', 'ip_address',
+                                 'registry', 'url']
+            crowdstrike_types = [f"type:'{type}'" for type in crowdstrike_types]
 
-    if 'ALL' in types_list:
-        # Replaces "ALL" for all types supported on XSOAR.
-        crowdstrike_types = ['username', 'domain', 'email_address', 'hash_md5', 'hash_sha256', 'ip_address',
-                             'registry', 'url']
-        crowdstrike_types = [f"type:'{type}'" for type in crowdstrike_types]
+        else:
+            crowdstrike_types = [f"type:'{XSOHR_TYPES_TO_CROWDSTRIKE.get(type.lower(), type)}'" for type in types_list]
 
-    else:
-        crowdstrike_types = [f"type:'{XSOHR_TYPES_TO_CROWDSTRIKE.get(type.lower(), type)}'" for type in types_list]
-
-    result = ','.join(crowdstrike_types)
-    return result
-
-
-def set_last_run():
-    current_time = datetime.now()
-    current_timestamp = datetime.timestamp(current_time)
-    timestamp = str(int(current_timestamp))
-    demisto.setLastRun({'last_modified_time': timestamp})
-
-
-def get_last_run() -> str:
-    if last_run := demisto.getLastRun().get('last_modified_time'):
-        params = f'last_updated:>{last_run}'
-        set_last_run()
-    else:
-        params = ''
-        set_last_run()
-    return params
+        result = ','.join(crowdstrike_types)
+        return result
 
 
 def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q, feed_tags):
@@ -176,6 +173,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     indicators_list = raw_response.get('resources')
     if outputs := copy.deepcopy(indicators_list):
         for indicator in outputs:
+            indicator['type'] = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator.get('type'), indicator.get('type')),
             indicator['published_date'] = timestamp_to_datestring(indicator['published_date'])
             indicator['last_updated'] = timestamp_to_datestring(indicator['last_updated'])
             indicator['value'] = indicator['indicator']

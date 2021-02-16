@@ -7,24 +7,33 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_crowdstrike_indicators_list_command(requests_mock):
+    """Tests crowdstrike_indicators_list_command function
+        Given
+            - The following indicator type: 'domain' that was chosen by the user.
+            - include_deleted: False
+        When
+            - Calling `crowdstrike_indicators_list_command`
+        Then
+            - convert the result to indicators list
+            - validate the length of the indicators list
+        """
 
-    Checks the output of the command function with the expected output.
+    from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
-    client = Client(base_url='some_mock_url', verify=False)
+    client = Client(base_url='https://api.crowdstrike.com/', client_id='client_id', client_secret='client_secret')
     args = {
-        'dummy': 'this is a dummy response'
+        'type': 'Domain',
+        'include_deleted': 'false',
+        'limit': '2'
     }
-    response = baseintegration_dummy_command(client, args)
+    response = crowdstrike_indicators_list_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    assert len(response.outputs) == 2
+    assert len(response.raw_response) == 3
+    assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
