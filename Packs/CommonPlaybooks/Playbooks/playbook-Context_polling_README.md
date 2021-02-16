@@ -31,3 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
+![Setup Account](./../doc_files/playbook-Context_Polling_-_Generic.png)

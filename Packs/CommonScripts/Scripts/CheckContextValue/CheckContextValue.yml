@@ -1,5 +1,5 @@
 args:
-- description: 'The key to check (can contain. ex: key1.key2.key3)'
+- description: 'The context key to check (can contain ".", e.g: My.Context.Path)'
   name: key
   required: true
 - description: The regex pattern to check the field for (optional).
