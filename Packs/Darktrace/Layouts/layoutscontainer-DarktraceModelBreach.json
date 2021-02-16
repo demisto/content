@@ -403,15 +403,6 @@
         "startCol": 0
        },
        {
-        "endCol": 4,
-        "fieldId": "darktracemodelbreach",
-        "height": 22,
-        "id": "4f3fa160-f196-11ea-a065-99b212c43c46",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 2
-       },
-       {
         "dropEffect": "move",
         "endCol": 4,
         "fieldId": "darktracemodelname",

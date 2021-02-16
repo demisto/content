@@ -25,7 +25,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING
+    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, \
+    EXPECTED_MAPPING, EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 import demistomock as demisto
 
@@ -39,6 +40,20 @@ def test_get_ticket_context():
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
+
+
+def test_get_ticket_context_additional_fields():
+    """Unit test
+    Given
+        - additional keys of a ticket alongside regular keys.
+    When
+        - getting a ticket context
+    Then
+        - validate that all the details of the ticket were updated, and all the updated keys are shown in
+        the context with do duplicates.
+    """
+    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
+                                                                                ['Summary', 'sys_created_by'])
 
 
 def test_get_ticket_human_readable():
@@ -79,13 +94,37 @@ def test_split_fields():
     assert False
 
 
+def test_split_fields_with_special_delimiter():
+    """Unit test
+    Given
+    - split_fields method
+    - the default delimiter is ;
+    When
+    - splitting values with a different delimiter - ','
+    Then
+    -  Validate the fields were created correctly
+    """
+    expected_dict_fields = {'a': 'b', 'c': 'd'}
+    assert expected_dict_fields == split_fields('a=b,c=d', ',')
+
+    expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text<;/a>"}
+    assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text<;/a>", ',')
+
+    try:
+        split_fields('a')
+    except Exception as err:
+        assert "must contain a '=' to specify the keys and values" in str(err)
+        return
+    assert False
+
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
-    (update_ticket_command, {'id': '1234', 'impact': '3 - Low'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
+    (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
      RESPONSE_UPDATE_TICKET_SC_REQ, EXPECTED_UPDATE_TICKET_SC_REQ, True),
-    (update_ticket_command, {'id': '1234', 'severity': '2 - Medium', 'additional_fields': "approval=rejected"},
+    (update_ticket_command, {'id': '1234', 'severity': '3', 'additional_fields': "approval=rejected"},
      RESPONSE_UPDATE_TICKET_ADDITIONAL, EXPECTED_UPDATE_TICKET_ADDITIONAL, True),
-    (create_ticket_command, {'active': 'true', 'severity': "2 - Medium", 'description': "creating a test ticket",
+    (create_ticket_command, {'active': 'true', 'severity': "3", 'description': "creating a test ticket",
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS, True),
@@ -744,9 +783,10 @@ TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19
 
 
 def ticket_fields(*args, **kwargs):
+    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
     assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
             'work_start': '0001-01-01T00:00:00Z'} == args[0]
 
     return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
@@ -756,27 +796,33 @@ def ticket_fields(*args, **kwargs):
 
 
 def update_ticket(*args):
+    state = '7' if 'incident' in args else '3'
     return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
-            'sla_due': '0001-01-01T00:00:00Z', 'state': '3', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
+            'sla_due': '0001-01-01T00:00:00Z', 'state': state, 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
 
 
-def test_update_remote_data_sc_task(mocker):
+@pytest.mark.parametrize('ticket_type', ['sc_task', 'sc_req_item', 'incident'])
+def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
     """
     Given:
     -  ServiceNow client
     -  ServiceNow ticket of type sc_task
+    -  ServiceNow ticket of type sc_req_item
+    -  ServiceNow ticket of type incident
+
     When
         - running update_remote_system_command.
     Then
-        - The state is changed to 3 (closed) after update.
+        - The state is changed to 3 (closed) after update for sc_task and sc_req_item.
+        - The state is changed to 7 (closed) after update for incident.
     """
     client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='sc_task', get_attachments=False, incident_name='description')
-    params = {'ticket_type': 'sc_task', 'close_ticket': True}
+                    ticket_type=ticket_type, get_attachments=False, incident_name='description')
+    params = {'ticket_type': ticket_type, 'close_ticket': True}
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
             'status': 2}
     mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)

@@ -1,0 +1,66 @@
+{
+    "description": "Maps Orca fields for use in Integration Playbooks.",
+    "feed": false,
+    "id": "Orca Mapper",
+    "mapping": {
+        "Orca Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Orca Cloud Account": {
+                    "complex": null,
+                    "simple": "cloud_provider_id"
+                },
+                "Orca Alert ID": {
+                    "complex": null,
+                    "simple": "state.alert_id"
+                },
+                "Orca Asset Unique ID": {
+                    "complex": null,
+                    "simple": "asset_unique_id"
+                },
+                "Orca Reason": {
+                    "complex": null,
+                    "simple": "type_string"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "details"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "demisto_score"
+                }
+            }
+        },
+        "Vulnerability": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Vulnerability Category": {
+                    "complex": null,
+                    "simple": "category"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "state.alert_id"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "demisto_score"
+                }
+            }
+        }
+    },
+    "name": "Orca Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

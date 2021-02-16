@@ -661,7 +661,8 @@ def check_for_answers():
         body = {
             'entitlement': entitlement
         }
-        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT)
+        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT,
+                            timeout=30)
         if res.status_code != 200:
             demisto.error(f'Slack - failed to poll for answers: {res.content!r}, status code: {res.status_code!r}')
             continue
@@ -1389,8 +1390,9 @@ def slack_send():
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': f'Message sent to Slack successfully.\nThread ID is: {thread}',
-            'ContentsFormat': formats['text'],
+            'HumanReadable': f'Message sent to Slack successfully.\nThread ID is: {thread}',
+            'Contents': response.data,
+            'ContentsFormat': formats['json'],
             'EntryContext': {
                 'Slack.Thread(val.ID===obj.ID)': {
                     'ID': thread

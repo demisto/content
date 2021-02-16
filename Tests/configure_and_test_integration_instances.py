@@ -1,37 +1,38 @@
 from __future__ import print_function
 
 import argparse
-import os
-import uuid
-import json
 import ast
+import json
+import logging
+import os
 import subprocess
 import sys
+import uuid
 import zipfile
 from datetime import datetime
+from distutils.version import LooseVersion
 from enum import IntEnum
 from pprint import pformat
-from time import sleep
 from threading import Thread
-from distutils.version import LooseVersion
-import logging
+from time import sleep
 from typing import List, Tuple
 
-from Tests.mock_server import MITMProxy, run_with_mock, RESULT
-from Tests.scripts.utils.log_util import install_logging
-
-from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
+from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml,\
-    str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import FileType
-from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
-from Tests.test_content import extract_filtered_tests, get_server_numeric_version
-from Tests.update_content_data import update_content
+
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration, run_with_proxy_configured
+from Tests.scripts.utils.log_util import install_logging
+from Tests.test_content import extract_filtered_tests, get_server_numeric_version
+from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
+from Tests.tools import run_with_proxy_configured
+from Tests.update_content_data import update_content
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -42,10 +43,16 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
 }
+DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
+    'docker.run.internal.asuser': 'true'
+}
 MARKET_PLACE_CONFIGURATION = {
     'content.pack.verify': 'false',
     'marketplace.initial.sync.delay': '0',
     'content.pack.ignore.missing.warnings.contentpack': 'true'
+}
+AVOID_DOCKER_IMAGE_VALIDATION = {
+    'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './Tests/id_set.json'
 
@@ -56,41 +63,18 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
-class SimpleSSH(SSHClient):
-    logging.getLogger("paramiko").setLevel(logging.WARNING)
-
-    def __init__(self, host, user='ec2-user', port=22, key_file_path='~/.ssh/id_rsa'):
-        self.run_environment = Build.run_environment
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            super().__init__()
-            self.load_system_host_keys()
-            self.set_missing_host_key_policy(AutoAddPolicy())
-            if self.run_environment == Running.CIRCLECI_RUN:
-                self.connect(hostname=host, username=user, timeout=60.0)
-            elif self.run_environment == Running.WITH_OTHER_SERVER:
-                if key_file_path.startswith('~'):
-                    key_file_path = key_file_path.replace('~', os.getenv('HOME'), 1)
-                    self.connect(hostname=host, port=port, username=user, key_filename=key_file_path, timeout=60.0)
-
-    def exec_command(self, command, *_other):
-        if self.run_environment in [Running.CIRCLECI_RUN, Running.WITH_OTHER_SERVER]:
-            _, _stdout, _stderr = super(SimpleSSH, self).exec_command(command)
-            return _stdout.read(), _stderr.read()
-        else:
-            return run_command(command, is_silenced=False), None
-
-
 class Server:
 
-    def __init__(self, host, user_name, password):
+    def __init__(self, internal_ip, port, user_name, password):
         self.__ssh_client = None
         self.__client = None
-        self.host = host
+        self.internal_ip = internal_ip
+        self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
 
     def __str__(self):
-        return self.host
+        return self.internal_ip
 
     @property
     def client(self):
@@ -100,7 +84,9 @@ class Server:
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(self.host, verify_ssl=False, username=self.user_name,
+        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+                                                 verify_ssl=False,
+                                                 username=self.user_name,
                                                  password=self.password)
         return self.__client
 
@@ -111,13 +97,8 @@ class Server:
             self.exec_command('sudo systemctl restart demisto')
 
     def exec_command(self, command):
-        if self.__ssh_client is None:
-            self.__init_ssh()
-        self.__ssh_client.exec_command(command)
-
-    def __init_ssh(self):
-        self.__ssh_client = SimpleSSH(host=self.host.replace('https://', '').replace('http://', ''),
-                                      key_file_path=Build.key_file_path, user='ec2-user')
+        subprocess.check_output(f'ssh {SSH_USER}@{self.internal_ip} {command}'.split(),
+                                stderr=subprocess.STDOUT)
 
 
 def get_id_set(id_set_path) -> dict:
@@ -148,11 +129,14 @@ class Build:
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
         self.ami_env = options.ami_env
-        self.servers, self.server_numeric_version = self.get_servers(options.ami_env)
+        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
-        self.servers = [Server(server_url, self.username, self.password) for server_url in self.servers]
+        self.servers = [Server(internal_ip,
+                               port,
+                               self.username,
+                               self.password) for internal_ip, port in self.server_to_port_mapping.items()]
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -174,7 +158,7 @@ class Build:
             The single proxy instance that should be used in this build.
         """
         if not self._proxy:
-            self._proxy = MITMProxy(self.servers[0].host.replace('https://', ''),
+            self._proxy = MITMProxy(self.servers[0].internal_ip,
                                     logging_module=logging,
                                     build_number=self.ci_build_number,
                                     branch_name=self.branch_name)
@@ -215,12 +199,12 @@ class Build:
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        servers = determine_servers_urls(env_conf, ami_env)
+        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
         if Build.run_environment == Running.CIRCLECI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return servers, server_numeric_version
+        return server_to_port_mapping, server_numeric_version
 
 
 def options_handler():
@@ -863,25 +847,21 @@ def get_env_conf():
     #  END CHANGE ON LOCAL RUN  #
 
 
-def determine_servers_urls(env_results, ami_env):
+def map_server_to_port(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
             env_results.json in server
-        ami_env: (str)
+        instance_role: (str)
             The amazon machine image environment whose IP we should connect to.
 
     Returns:
         (lst): The server url list to connect to
     """
 
-    instances_dns = [env.get('InstanceDNS') for env in env_results if ami_env in env.get('Role', '')]
-
-    server_urls = []
-    for dns in instances_dns:
-        server_url = dns if not dns or dns.startswith('http') else f'https://{dns}'
-        server_urls.append(server_url)
-    return server_urls
+    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
+                      instance_role in env.get('Role', '')}
+    return ip_to_port_map
 
 
 def get_json_file(path):
@@ -890,46 +870,31 @@ def get_json_file(path):
 
 
 def configure_servers_and_restart(build):
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-        configurations = DOCKER_HARDENING_CONFIGURATION
-        configure_types = ['docker hardening']
-        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-            configure_types.append('marketplace')
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+    manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+    for server in build.servers:
+        configurations = dict()
+        configure_types = []
+        if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
+            configure_types.append('ignore docker image validation')
+            configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
+            if is_redhat_instance(server.internal_ip):
+                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            else:
+                configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            configure_types.append('docker hardening')
+            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+                configure_types.append('marketplace')
+                configurations.update(MARKET_PLACE_CONFIGURATION)
 
         error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
-        for server in build.servers:
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+        server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
-        if manual_restart:
-            input('restart your server and then press enter.')
-        else:
-            logging.info('Done restarting servers. Sleeping for 1 minute')
-            sleep(60)
-
-
-def restart_server(server):
-    try:
-        logging.info('Restarting servers to apply server config ...')
-
-        # copy from .demisto_bashrc stop_server && start_server
-        command = 'sudo systemctl restart demisto'
-        SimpleSSH(host=server.replace('https://', '').replace('http://', ''), key_file_path=Build.key_file_path,
-                  user='ec2-user').exec_command(command)
-    except Exception:
-        logging.exception('New SSH restart demisto failed')
-        restart_server_legacy(server)
-
-
-def restart_server_legacy(server):
-    try:
-        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                     '"sudo systemctl restart demisto"'
-        subprocess.check_output(
-            ssh_string.format('ec2-user', server.replace('https://', '')), shell=True)
-    except subprocess.CalledProcessError:
-        logging.exception('Legacy SSH restart demisto failed')
+    if manual_restart:
+        input('restart your server and then press enter.')
+    else:
+        logging.info('Done restarting servers. Sleeping for 1 minute')
+        sleep(60)
 
 
 def get_tests(build: Build) -> List[str]:
@@ -1014,7 +979,7 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
-        kwargs = {'client': server.client, 'host': server.host}
+        kwargs = {'client': server.client, 'host': server.internal_ip}
         if service_account:
             kwargs['service_account'] = service_account
         if pack_path:
@@ -1215,7 +1180,7 @@ def update_content_till_v6(build: Build):
     # For each server url we install content
     for thread_index, server in enumerate(build.servers):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': server.client, 'server': server.host, 'ami_name': build.ami_env})
+                   kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
         threads_list.append(t)
 
     run_threads_list(threads_list)

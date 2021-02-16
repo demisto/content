@@ -1,0 +1,43 @@
+{
+  "items": [
+    {
+      "created": "2020-11-13T13:35:27.681Z",
+      "description": "Virustotal link that appeared on a dark web site, generally to show malware that is undedetected",
+      "external_reference": [
+        {
+          "description": "Mitre attack tactics and technique reference",
+          "mitre_attack_tactic": "Test capabilities",
+          "mitre_attack_tactic_id": "TA0025",
+          "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0025/",
+          "mitre_attack_technique": "Test signature detection for file upload/email filters",
+          "mitre_attack_technique_id": "T1361",
+          "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1361/",
+          "source_name": "mitre-attack"
+        }
+      ],
+      "id": "indicator--c9710887-4032-4541-bb12-028efbdc4fdc",
+      "labels": [
+        "malicious-activity",
+        "malware",
+        "malicious",
+        "Test capabilities",
+        "Test signature detection for file upload/email filters"
+      ],
+      "lang": "ru",
+      "modified": "2020-11-13T13:35:27.681Z",
+      "pattern": "[file:hashes.MD5 = '<md5-hash-value>' OR file:hashes.'SHA-1' = '<sha1-hash-value>' OR file:hashes.'SHA-256' = '<sha256-hash-value>']",
+      "sixgill_actor": "<SIXGILL_ACTOR>",
+      "sixgill_confidence": 80,
+      "sixgill_feedid": "darkfeed_002",
+      "sixgill_feedname": "darkweb_vt_links",
+      "sixgill_postid": "<SIXGILL_POST_ID>",
+      "sixgill_posttitle": "<SIXGILL_POST_TITLE",
+      "sixgill_severity": 70,
+      "sixgill_source": "<SIXGILL_SOURCE",
+      "spec_version": "2.0",
+      "type": "indicator",
+      "valid_from": "2020-11-09T11:11:00Z"
+    }
+  ],
+  "total": 1
+}
