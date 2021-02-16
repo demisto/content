@@ -55,7 +55,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Slack's services to execute CRUD operations for employee
+description: Integrate with Atlassian's services to execute CRUD operations for employee
   lifecycle processes.
 display: Atlassian IAM
 name: Atlassian IAM
