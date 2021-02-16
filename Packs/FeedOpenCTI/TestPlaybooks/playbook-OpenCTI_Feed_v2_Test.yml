@@ -1,19 +1,19 @@
 id: OpenCTI Feed v2 Test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: OpenCTI Feed v2 Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a00ae0a8-cf80-4388-8b9b-153735e3d384
+    taskid: 4a023c69-9bc1-49c9-805d-57740128a304
     type: start
     task:
-      id: a00ae0a8-cf80-4388-8b9b-153735e3d384
+      id: 4a023c69-9bc1-49c9-805d-57740128a304
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: fcc41f37-3e16-42c1-852c-5375a9a6ebf5
+    taskid: 1dc6c09f-fce5-4131-839a-4759fbcdcf0e
     type: regular
     task:
-      id: fcc41f37-3e16-42c1-852c-5375a9a6ebf5
+      id: 1dc6c09f-fce5-4131-839a-4759fbcdcf0e
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4badbd9a-89ea-4c0e-85bd-767919eac840
+    taskid: b361bd20-3005-4771-82ad-24684de7f743
     type: regular
     task:
-      id: 4badbd9a-89ea-4c0e-85bd-767919eac840
+      id: b361bd20-3005-4771-82ad-24684de7f743
       version: -1
       name: opencti-get-indicators
       script: '|||opencti-get-indicators'
@@ -96,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0495ef10-0d1b-4b07-8800-d9d113911259
+    taskid: bdf45974-da8e-4e0d-8445-e0ae6de3fcfe
     type: condition
     task:
-      id: 0495ef10-0d1b-4b07-8800-d9d113911259
+      id: bdf45974-da8e-4e0d-8445-e0ae6de3fcfe
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,7 +107,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -122,11 +122,6 @@ tasks:
             value:
               simple: OpenCTI.Indicators.value
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpenCTI.LastRunID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -139,40 +134,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 89e3d3d3-c41f-43c8-89b6-9f6e03f8399c
-    type: regular
-    task:
-      id: 89e3d3d3-c41f-43c8-89b6-9f6e03f8399c
-      version: -1
-      name: opencti-reset-fetch-indicators
-      script: '|||opencti-reset-fetch-indicators'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 79a1aad2-a397-42ac-81a5-ebc5de525969
+    taskid: a5ea583f-3e71-414a-8774-ec957dd5ef74
     type: regular
     task:
-      id: 79a1aad2-a397-42ac-81a5-ebc5de525969
+      id: a5ea583f-3e71-414a-8774-ec957dd5ef74
       version: -1
       name: opencti-indicator-delete
       script: '|||opencti-indicator-delete'
@@ -190,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
@@ -200,10 +167,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: fa441c60-10cd-452a-8e53-5e70be77fb20
+    taskid: 762cd836-b4eb-47ef-8ede-859f46fd61a8
     type: regular
     task:
-      id: fa441c60-10cd-452a-8e53-5e70be77fb20
+      id: 762cd836-b4eb-47ef-8ede-859f46fd61a8
       version: -1
       name: opencti-indicator-field-update
       script: '|||opencti-indicator-field-update'
@@ -225,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -235,10 +202,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 20c09d54-360a-47fd-8442-3ea3112b912e
+    taskid: 3b5bb1a0-9f7c-40e8-8ef3-5d39ef8dd46b
     type: condition
     task:
-      id: 20c09d54-360a-47fd-8442-3ea3112b912e
+      id: 3b5bb1a0-9f7c-40e8-8ef3-5d39ef8dd46b
       version: -1
       name: Verify Outputs
       type: condition
@@ -260,7 +227,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -270,13 +237,14 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 08d9b2e0-1df3-4ebd-8e16-bfbee12fabb6
+    taskid: 05528c30-91a3-4c10-8c79-25e5f91b576a
     type: regular
     task:
-      id: 08d9b2e0-1df3-4ebd-8e16-bfbee12fabb6
+      id: 05528c30-91a3-4c10-8c79-25e5f91b576a
       version: -1
-      name: opencti-indicator-create-update
-      script: '|||opencti-indicator-create-update'
+      name: opencti-indicator-create
+      description: Create new indicator.
+      script: '|||opencti-indicator-create'
       type: regular
       iscommand: true
       brand: ""
@@ -291,7 +259,6 @@ tasks:
         simple: Test playbook bad hostname indicator
       external_references_source_name: {}
       external_references_url: {}
-      id: {}
       label:
         simple: testplaybook
       marking:
@@ -300,13 +267,12 @@ tasks:
         simple: "70"
       type:
         simple: HostName
-      update: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -316,10 +282,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: d189002c-5f64-4352-8f90-dc598691ffa4
+    taskid: 42c3b63d-345c-42c8-8604-d77b1e6ee170
     type: condition
     task:
-      id: d189002c-5f64-4352-8f90-dc598691ffa4
+      id: 42c3b63d-345c-42c8-8604-d77b1e6ee170
       version: -1
       name: Verify Outputs
       type: condition
@@ -337,11 +303,16 @@ tasks:
             value:
               simple: OpenCTI.Indicator.id
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.data
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -351,21 +322,22 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 0288f0a8-bde4-4f3f-8185-f25a5dc63afa
+    taskid: f5b0e6d9-3b15-4734-8b05-e0271930762a
     type: title
     task:
-      id: 0288f0a8-bde4-4f3f-8185-f25a5dc63afa
+      id: f5b0e6d9-3b15-4734-8b05-e0271930762a
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -375,14 +347,15 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 33656dc4-e3f9-44bb-83ec-841704aee58e
+    taskid: b7a9f5b0-9ff8-4c63-8396-1f5a5c0764e2
     type: regular
     task:
-      id: 33656dc4-e3f9-44bb-83ec-841704aee58e
+      id: b7a9f5b0-9ff8-4c63-8396-1f5a5c0764e2
       version: -1
-      name: opencti-indicator-marking-remove
-      description: Remove marking from indicator.
-      script: '|||opencti-indicator-marking-remove'
+      name: opencti-indicator-field-remove
+      description: Remove field from indicator. Avalible fields to remove - marking
+        defenition, label.
+      script: '|||opencti-indicator-field-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -392,8 +365,47 @@ tasks:
     scriptarguments:
       id:
         simple: ${OpenCTI.Indicator.id}
-      marking:
+      key:
+        simple: marking
+      value:
         simple: TLP:GREEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 041af43b-8fda-473f-87ee-3044fedf5af3
+    type: regular
+    task:
+      id: 041af43b-8fda-473f-87ee-3044fedf5af3
+      version: -1
+      name: opencti-indicator-field-add
+      description: Add field to indicator. Avalible fields to add - marking defenition,
+        label.
+      script: '|||opencti-indicator-field-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        simple: ${OpenCTI.Indicator.id}
+      key:
+        simple: label
+      value:
+        simple: test1
     separatecontext: false
     view: |-
       {
@@ -407,80 +419,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 1c69bbe2-6225-48ed-888e-1d582ac8f8c8
-    type: regular
-    task:
-      id: 1c69bbe2-6225-48ed-888e-1d582ac8f8c8
-      version: -1
-      name: opencti-indicator-label-add
-      description: Add labal to indicator.
-      script: '|||opencti-indicator-label-add'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      id:
-        simple: ${OpenCTI.Indicator.id}
-      label:
-        simple: test-label
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: e0ca1ff9-8913-4a99-8056-a74bdaa26f7d
-    type: regular
-    task:
-      id: e0ca1ff9-8913-4a99-8056-a74bdaa26f7d
-      version: -1
-      name: opencti-indicator-label-remove
-      description: Remove label from indicator.
-      script: '|||opencti-indicator-label-remove'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      id:
-        simple: ${OpenCTI.Indicator.id}
-      label:
-        simple: test-label
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 255f0d1e-e047-4c34-8927-acaf61c9597f
+    taskid: 4a09d1cb-2661-4ee5-8348-9e0bde0139de
     type: regular
     task:
-      id: 255f0d1e-e047-4c34-8927-acaf61c9597f
+      id: 4a09d1cb-2661-4ee5-8348-9e0bde0139de
       version: -1
       name: opencti-organization-list
       description: Get list of all organizations.
@@ -496,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -506,10 +450,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 16fee6e8-823c-472c-83d9-8465db67a161
+    taskid: 5fa5387a-4a0b-472b-81b5-6420dbf136b7
     type: regular
     task:
-      id: 16fee6e8-823c-472c-83d9-8465db67a161
+      id: 5fa5387a-4a0b-472b-81b5-6420dbf136b7
       version: -1
       name: opencti-organization-create
       description: Create organization.
@@ -532,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
@@ -542,10 +486,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 0836db4e-f029-439f-8b51-86fa5eb05b9c
+    taskid: 59127e5b-ecec-47e4-8b0e-38ea0d5d5633
     type: condition
     task:
-      id: 0836db4e-f029-439f-8b51-86fa5eb05b9c
+      id: 59127e5b-ecec-47e4-8b0e-38ea0d5d5633
       version: -1
       name: Verify Outputs
       type: condition
@@ -572,7 +516,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -582,10 +526,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: b4bddecf-a67e-4532-8355-5129d5a30df4
+    taskid: face2a83-0fbe-45bc-8f98-f4f6dfdf7f82
     type: condition
     task:
-      id: b4bddecf-a67e-4532-8355-5129d5a30df4
+      id: face2a83-0fbe-45bc-8f98-f4f6dfdf7f82
       version: -1
       name: Verify Outputs
       type: condition
@@ -607,7 +551,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2295
         }
       }
     note: false
@@ -620,7 +564,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
+        "height": 2660,
         "width": 380,
         "x": 50,
         "y": 50
@@ -630,3 +574,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: test playbook
