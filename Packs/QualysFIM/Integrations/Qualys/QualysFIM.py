@@ -407,8 +407,9 @@ def approve_incident_command(client: Client, args: dict):
         output = create_event_or_incident_output(raw_response, table_headers)
         output['approvalDate'] = datetime.strptime(str(output.get('approvalDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
-        output['filterFromDate'] = datetime.strptime(output.get('filterFromDate'), DATETIME_FORMAT)\
-            .strftime(TABLE_DATETIME_FORMAT)
+        output['filterFromDate'] = datetime.strptime(str(output.get('filterFromDate')),
+                                                     DATETIME_FORMAT).\
+            strftime(TABLE_DATETIME_FORMAT)
         output['filterToDate'] = datetime.strptime(str(output.get('filterToDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
     else:
