@@ -7,7 +7,6 @@ from typing import Callable
 
 import traceback
 import json
-import re
 
 ''' CONSTANTS '''
 
@@ -17,6 +16,32 @@ HIGH_SEVERITY = 3
 MEDIUM_SEVERITY = 2
 LOW_SEVERITY = 1
 UNKNOWN_SEVERITY = 0
+AUTHENTICATION_TYPE = 'Authentication'
+
+INCIDENT_SEVERITY_MAP = {
+    "niomon-auth": {
+        "1000": LOW_SEVERITY,
+        "2000": MEDIUM_SEVERITY,
+        "3000": MEDIUM_SEVERITY,
+        "4000": MEDIUM_SEVERITY
+    },
+    "niomon-decoder": {
+        "1100": MEDIUM_SEVERITY,
+        "1200": LOW_SEVERITY,
+        "1300": HIGH_SEVERITY,
+        "2100": LOW_SEVERITY,
+        "2200": MEDIUM_SEVERITY,
+        "2300": LOW_SEVERITY
+    },
+    "niomon-enricher": {
+        "1000": LOW_SEVERITY,
+        "2000": HIGH_SEVERITY,
+        "0000": HIGH_SEVERITY
+    },
+    "filter-service": {
+        "0000": HIGH_SEVERITY
+    }
+}
 
 ''' CLIENT CLASS '''
 
@@ -65,28 +90,40 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
+def get_incident_type(incident: Dict) -> str:
+    """Return the incident type from the incident
+
+    Args:
+        incident(Dict): an incident
+
+    Return:
+        str: incident type
+    """
+    error = incident.get("error", "")
+    if AUTHENTICATION_TYPE in error:
+        return AUTHENTICATION_TYPE
+    else:
+        return ""
+
+
 def get_severity(incident: Dict) -> int:
-    error_code_key = "errorCode"
-    severity_dict = {
-        "1000": LOW_SEVERITY,
-        "2000": MEDIUM_SEVERITY,
-        "3000": MEDIUM_SEVERITY,
-        "4000": MEDIUM_SEVERITY,
-        "1100": MEDIUM_SEVERITY,
-        "1200": LOW_SEVERITY,
-        "1300": HIGH_SEVERITY,
-        "2100": LOW_SEVERITY,
-        "2200": MEDIUM_SEVERITY,
-        "2300": LOW_SEVERITY,
-        "0000": HIGH_SEVERITY,
-        "": UNKNOWN_SEVERITY
-    }
-    return severity_dict.get(incident.get(error_code_key, ""), UNKNOWN_SEVERITY)
+    """Return severity from the incident
+
+    Args:
+        incident(Dict): an incident
+
+    Return:
+        int: severity level
+    """
+    microservice: str = incident.get("microservice", "")
+    error_code: str = incident.get("errorCode", "")
+    error_codes: Dict = INCIDENT_SEVERITY_MAP.get(microservice, {})
+    severity: int = error_codes.get(error_code, UNKNOWN_SEVERITY)
+    return severity
 
 
 def create_incidents(error_message: str) -> list:
-    """
-    Return the incidents
+    """Create the incidents
 
     Args:
         error_message (str): this is the message payload from MQTT server
@@ -97,7 +134,7 @@ def create_incidents(error_message: str) -> list:
     incident_dict = json.loads(error_message)
     return [{
         'name': incident_dict.get("error"),
-        'type': incident_dict.get("errorCode", "other error"),
+        'type': get_incident_type(incident_dict),
         'labels': [{'type': "requestId", 'value': incident_dict.get("requestId")},
                    {'type': "hwDeviceId", 'value': incident_dict.get("hwDeviceId")}],
         'rawJSON': json.dumps(incident_dict),
@@ -201,7 +238,7 @@ def create_sample_incidents() -> None:
             raise ValueError(f'Failed deserializing sample events - {e}')
     else:
         incidents = [{
-            'name': 'No sample events found.'
+            'name': 'sample incident.',
         }]
         demisto.createIncidents(incidents)
 
@@ -221,9 +258,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        if not re.match(r'^[a-z0-9]{0,64}$', tenant_id):
-            raise ValueError('Tenant id is invalid: Must be a max. of 64 alphanumeric characters (a-z, 0-9).')
-
         try:
             mqtt_port = int(mqtt_port)
         except ValueError as e:

@@ -1,8 +1,3 @@
-## BaseIntegration Help
-
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+To get the credentials, please contact the UBIRCH support: support@ubirch.com
+ 
+UBIRCH will provide you required credentials to use the UBIRCH integration.

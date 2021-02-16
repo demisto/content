@@ -30,3 +30,8 @@ The UBIRCH integration is a long-running implementation. Whenever a verification
 | details | object | Details of the incident to be created. For example, `{"field1":"value1","field2":"value2"}` |
 | raw_json | object | Details of the incident to be created. For example, `{"field1":"value1","field2":"value2"}` |
 
+The incidents are based on these errors written in this [page](https://github.com/ubirch/niomon-http#error-codes).
+- The error codes, NA401 - 4000, have a severity type `HIGH` because it may indicate that someone is trying to get authorization in an invalid manner OR that our ThingAPI is acting up.
+- The error codes, ND403 - 1200, have a severity type `HIGH` because this error would likely mean that the UPP is corrected in some way, which can be a red flag.
+- The error codes, ND400 - 2300, have a severity type `MEDIUM` as if the payload of a UPP is null, then no Hash can be processed. This is of course controlled, but it is very strange if the UPP is empty.
+- The rest of the errors have a severity type `UNKNOWN`.
