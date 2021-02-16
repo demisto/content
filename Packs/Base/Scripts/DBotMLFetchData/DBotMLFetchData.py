@@ -544,13 +544,13 @@ def get_closing_fields_from_incident(row):
     if 'owner' in row:
         owner = row['owner']
         if owner not in ['admin', '']:
-            owner = hash_value(owner)
+            owner = hash_value(str(owner))
     else:
         owner = float('nan')
     if 'closingUserId' in row:
         closing_user = row['closingUserId']
         if closing_user not in ['admin', '', 'DBot']:
-            closing_user = hash_value(closing_user)
+            closing_user = hash_value(str(closing_user))
     else:
         closing_user = float('nan')
     if 'closeNotes' in row:
@@ -645,8 +645,14 @@ def extract_features_from_incident(row, label_fields):
             res[label] = row[label]
         else:
             res[label] = float('nan')
-    res.update(get_closing_fields_from_incident(row))
-    res.update(find_forwarded_features(email_subject, email_body))
+    try:
+        res.update(get_closing_fields_from_incident(row))
+    except Exception:
+        pass
+    try:
+        res.update(find_forwarded_features(email_subject, email_body))
+    except Exception:
+        pass
 
     return res
 
@@ -705,7 +711,12 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         y.append({'field_name': label,
                   'rank': '#{}'.format(i + 1)})
     custom_fields = [col for col in incidents_df.columns if col not in LABEL_FIELDS_BLACKLIST]
-    custom_fields_dict = {col: float(incidents_df[col].nunique() / n_incidents) for col in custom_fields}
+    custom_fields_dict = {}
+    for col in custom_fields:
+        try:
+            custom_fields_dict[col] = float(incidents_df[col].nunique() / n_incidents)
+        except Exception:
+            pass
     subject_field_exists = EMAIL_SUBJECT_FIELD in incidents_df.columns
     body_field_exists = EMAIL_BODY_FIELD in incidents_df.columns
     html_field_exists = EMAIL_HTML_FIELD in incidents_df.columns
