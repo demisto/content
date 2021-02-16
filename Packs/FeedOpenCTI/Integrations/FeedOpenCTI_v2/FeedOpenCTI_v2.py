@@ -138,7 +138,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     limit = 200 if limit > 200 else limit
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
-        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
+        indicators = [{'type': OPENCTI_TYPES_TO_XSOAR[indicator['type']], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
                        'createdBy': indicator['rawJSON'].get('createdBy').get('id')
                        if indicator['rawJSON'].get('createdBy') else None,
                        'score': indicator['rawJSON']['x_opencti_score'],
