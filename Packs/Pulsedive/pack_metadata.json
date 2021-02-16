@@ -5,10 +5,10 @@
     "currentVersion": "1.0.1",
     "author": "Konrad Zacharias",
     "url": "https://pulsedive.com",
-    "email": "mailto:support@pulsedive.com ",
+    "email": "support@pulsedive.com ",
     "created": "2020-10-12T19:45:01Z",
     "categories": [],
-    "tags": [],
+    "tags": ["Threat Intelligence"],
     "useCases": [],
     "keywords": []
 }
