@@ -241,11 +241,11 @@ def get_event_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    raw_response = client.get_event(args.get('event_id'))
+    raw_response = client.get_event(str(args.get('event_id')))
     table_headers = ['name', 'action', 'id', 'severity', 'action', 'incidentId',
                      'profiles', 'type', 'dateTime', 'fullPath']
     object_data = create_event_or_incident_output(raw_response, table_headers)
-    object_data['dateTime'] = datetime.strptime(object_data.get('dateTime'),
+    object_data['dateTime'] = datetime.strptime(str(object_data.get('dateTime')),
                                                 DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
 
     readable_output = tableToMarkdown(name='Found Event:', t=object_data,
@@ -269,7 +269,7 @@ def list_incidents_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(args.get('sort'))}])
+    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
     params = remove_empty_elements({'filter': args.get('filter', None),
                                     'pageNumber': args.get('page_number', None),
                                     'pageSize': args.get('limit', None),
@@ -396,7 +396,8 @@ def approve_incident_command(client: Client, args: dict):
             'comment': args.get('comment', None),
             'dispositionCategory': args.get('disposition_category', None)}
 
-    raw_response = client.approve_incident(args.get('incident_id'), remove_empty_elements(data))
+    raw_response = client.approve_incident(str(args.get('incident_id')),
+                                           remove_empty_elements(data))
 
     table_headers = ['id', 'name', 'type', 'filterFromDate', 'filterToDate', 'filters',
                      'approvalDate', 'approvalStatus', 'approvalType', 'comment', 'createdByName',
@@ -404,11 +405,11 @@ def approve_incident_command(client: Client, args: dict):
 
     if raw_response:
         output = create_event_or_incident_output(raw_response, table_headers)
-        output['approvalDate'] = datetime.strptime(output.get('approvalDate'),
+        output['approvalDate'] = datetime.strptime(str(output.get('approvalDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
-        output['filterFromDate'] = datetime.strptime(output.get('filterFromDate'), DATETIME_FORMAT) \
+        output['filterFromDate'] = datetime.strptime(output.get('filterFromDate'), DATETIME_FORMAT)\
             .strftime(TABLE_DATETIME_FORMAT)
-        output['filterToDate'] = datetime.strptime(output.get('filterToDate'),
+        output['filterToDate'] = datetime.strptime(str(output.get('filterToDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
     else:
         raise ValueError(f"Incident {args.get('incident_id')} wasn't found")
