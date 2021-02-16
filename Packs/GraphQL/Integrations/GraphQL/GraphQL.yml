@@ -7,19 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Enable Basic/Digest/Custom HTTP authentication
-  display: Username
+- display: Username / Header Name
   hidden: false
   name: credentials
   required: false
   type: 9
-- additionalinfo: 'JSON of HTTP headers to send in the request, for example {"Authorization":
-    "Token"}'
-  display: HTTP Headers
-  hidden: false
-  name: headers
-  required: false
-  type: 14
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -41,16 +33,94 @@ script:
       required: true
       secret: false
     - default: false
-      description: Primary key field in the response to provide a unique object in the context.
-        data.
+      description: Primary key field in the response to provide a unique object in
+        the context. data.
       isArray: false
       name: outputs_key_field
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+      isArray: true
+      name: variables_names
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of values, for example: 7,"foo",3.'
+      isArray: true
+      name: variables_values
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max result size in KBs.
+      isArray: false
+      name: max_result_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to populate the result to the context data.
+      isArray: false
+      name: populate_context_data
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
     description: Executes a query request to the GraphQL server.
     execution: false
     name: graphql-query
+  - arguments:
+    - default: false
+      description: The GraphQL mutation to execute.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Primary key field in the response to provide a unique object in
+        the context. data.
+      isArray: false
+      name: outputs_key_field
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of names, for example: "foo","bar","alpha".'
+      isArray: true
+      name: variables_names
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of value, for example: 7,"foo",3.'
+      isArray: true
+      name: variables_values
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max result size in KBs.
+      isArray: false
+      name: max_result_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to populate the result to the context data.
+      isArray: false
+      name: populate_context_data
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a mutation request to the GraphQL server.
+    execution: false
+    name: graphql-mutation
   dockerimage: demisto/graphql:1.0.0.13458
   feed: false
   isfetch: false
