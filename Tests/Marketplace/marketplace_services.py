@@ -1484,7 +1484,7 @@ class Pack(object):
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file in {user_metadata_path}.")
                 return task_status, user_metadata
 
             with open(user_metadata_path, "r") as user_metadata_file:
