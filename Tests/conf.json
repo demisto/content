@@ -1685,7 +1685,8 @@
             ],
             "timeout": 1400,
             "fromversion": "5.5.0",
-            "nightly": true
+            "nightly": true,
+            "is_mockable": false
         },
         {
             "integrations": "Cisco ASA",
