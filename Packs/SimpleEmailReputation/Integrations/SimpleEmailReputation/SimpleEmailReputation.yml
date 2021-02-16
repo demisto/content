@@ -34,10 +34,10 @@ script:
     - default: true
       description: A List of email addresses - comma separated
       isArray: true
-      name: emailrep-get-reputation
+      name: email
       required: true
     description: Return email information and reputation
-    name: email
+    name: emailrep-get-reputation
   dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   script: ''
