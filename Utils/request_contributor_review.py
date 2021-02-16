@@ -86,7 +86,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
     response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed posting comment on PR {pr_number}")
+        print(f"Failed posting comment on PR {pr_number}:\n{response.text}")
         sys.exit(1)
 
 
