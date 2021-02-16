@@ -3,6 +3,7 @@
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
-/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
+/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
+/Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
