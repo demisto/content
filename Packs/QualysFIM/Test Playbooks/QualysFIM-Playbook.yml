@@ -2,6 +2,7 @@ id: QualysFIM-Playbook
 version: 20
 vcShouldKeepItemLegacyProdMachine: false
 name: QualysFIM-Playbook
+description: TEST PLAYBOOK FOR QUALYS FIM
 starttaskid: "0"
 tasks:
   "0":
