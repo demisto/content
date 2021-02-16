@@ -89,7 +89,7 @@ def test_poll_field_from_root_with_regex_success(mocker):
     result = poll_field(args)
 
     assert result.readable_output in "The field exists."
-    assert result.outputs[0]['exists'] is True
+    assert result.outputs['exists'] is True
 
 
 def test_poll_field_from_root_with_regex_failure(mocker):
