@@ -25,7 +25,7 @@ inputs:
   playbookInputQuery: null
   required: false
   value:
-    simple: dom@drobniuch.pl
+    simple: email@example.com
 name: CCTV Motion Detected
 outputs: []
 starttaskid: "0"
