@@ -1,5 +1,6 @@
 id: QualysFIM-Playbook
 version: 20
+fromversion: 1
 vcShouldKeepItemLegacyProdMachine: false
 name: QualysFIM-Playbook
 description: TEST PLAYBOOK FOR QUALYS FIM
