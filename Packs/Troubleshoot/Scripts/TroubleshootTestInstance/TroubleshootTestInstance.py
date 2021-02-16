@@ -1,6 +1,7 @@
 """
 Gets an instance configuration and a parameter to modify, to check if is works.
 """
+from distutils.version import LooseVersion
 from typing import Iterable
 
 from CommonServerPython import *
@@ -36,11 +37,12 @@ def save_configuration(arguments: dict) -> List[str]:
     return get_errors(res)
 
 
-def execute_test_module(arguments: dict) -> List[str]:
+def execute_test_module_legacy(arguments: dict) -> List[str]:
+    suffix = '/settings/integration/test'
     res = demisto.executeCommand(
         'demisto-api-post',
         {
-            'uri': '/settings/integration/test',
+            'uri': suffix,
             'body': arguments
         }
     )
@@ -51,6 +53,21 @@ def execute_test_module(arguments: dict) -> List[str]:
     if contents['success'] is False:
         errors.append(contents.get('message', 'Command failed but no message provided'))
     return errors
+
+
+def execute_test_module(arguments: dict) -> List[str]:
+    suffix = '/settings/integration/testdebug'
+    res = demisto.executeCommand(
+        'demisto-api-post',
+        {
+            'uri': suffix,
+            'body': arguments
+        }
+    )
+    response = res[0]['Contents']['response']
+    if "\nRaw Response section:\nok\n" in response:
+        return []
+    return [response]
 
 
 def main():
@@ -64,7 +81,10 @@ def main():
     keys_in_instance = argToList(args.get('keys'))
     instance = change_keys(instance, keys_in_instance)
     try:
-        errors = execute_test_module(instance)
+        if is_demisto_version_ge('6.0.0'):
+            errors = execute_test_module(instance)
+        else:
+            errors = execute_test_module_legacy(instance)
         context = {
             'TroubleshootTestInstance(obj.instance_name === val.instance_name and val.changed_keys === obj.changed_keys)': {
                 'instance_name': instance_name,
@@ -74,11 +94,15 @@ def main():
             }
         }
         if errors:
-            err_str = "\n".join(errors)
+            err_str = '\n'.join(errors[0].splitlines()[:10])
             human_readable = f'Found errors in instance {instance_name} after changing the next keys: ' \
                              f'{", ".join(keys_in_instance)}\n' \
-                             f'Errors:\n{err_str}'
-            return_error(human_readable, outputs=context)
+                             f'First lines of the error:\n{err_str}'
+            demisto.results(fileResult(
+                'test-module-results.txt',
+                '\n'.join(errors)
+            ))
+            return_error(human_readable, json.dumps(context, indent=4), context)
         else:
             human_readable = f'Found no errors for instance {instance_name}'
             return_outputs(human_readable, context)
