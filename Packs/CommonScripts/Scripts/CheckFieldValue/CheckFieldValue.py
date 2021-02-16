@@ -7,7 +7,7 @@ from typing import Dict, Any, Tuple
 
 def check_field(field_value, regex=None):
     if regex:
-        if re.match(regex, field_value):
+        if re.search(regex, field_value):
             return True
     else:
         if field_value:
@@ -38,17 +38,18 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
         if field in custom_fields:
             data['exists'] = check_field(custom_fields.get(field), regex)
 
-    context = {
-        'CheckFieldValue(val.field == obj.field)': data
-    }
-
-    human_readable = 'The field exists.' if data['exists'] else 'The field does not exist.'
-    return human_readable, context, data
+    return CommandResults(
+        outputs_key_field='field',
+        outputs_prefix='CheckFieldValue',
+        outputs=data,
+        human_readable='The field exists.' if data['exists'] else 'The field does not exist.',
+        raw_response=data
+    )
 
 
 def main():
     try:
-        return_outputs(*poll_field(demisto.args()))
+        return_results(*poll_field(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CheckFieldValue script. Error: {str(ex)}')

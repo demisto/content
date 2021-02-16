@@ -15,7 +15,7 @@ comment: This script checks that a context key exists (and contains data), and o
   checks the value of the context key for a match against an input value. If a regex
   is not supplied, the script checks that the key is not empty. This script can be
   used with the "GenericPolling" playbook to poll for field population or that a field
-  contains a specific value.
+  contains a specific value. This scripts does not support a context key which holds a list of values.
 commonfields:
   id: CheckContextValue
   version: -1
