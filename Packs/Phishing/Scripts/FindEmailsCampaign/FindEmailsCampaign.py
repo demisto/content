@@ -326,11 +326,14 @@ def get_comma_sep_list(value):
 
 
 def get_reputation(id_, indicators_df):
-    relevant_indicators_df = indicators_df[indicators_df['investigationIDs'].apply(lambda x: id_ in x)]
-    if len(relevant_indicators_df) > 0:
-        max_reputation = max(relevant_indicators_df['score'])
-    else:
+    if len(indicators_df) == 0:
         max_reputation = 0
+    else:
+        relevant_indicators_df = indicators_df[indicators_df['investigationIDs'].apply(lambda x: id_ in x)]
+        if len(relevant_indicators_df) > 0:
+            max_reputation = max(relevant_indicators_df['score'])
+        else:
+            max_reputation = 0
     return scoreToReputation(max_reputation)
 
 
