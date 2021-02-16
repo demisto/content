@@ -784,7 +784,7 @@ def determine_incidents_args(input_args, default_args):
         get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
         get_incidents_by_query_args['query'] = 'status:Closed'
-    for arg in ['limit', 'fromDate', 'incidentTypes']:
+    for arg in ['limit', 'fromDate', 'incidentTypes', 'toDate']:
         if arg in input_args:
             get_incidents_by_query_args[arg] = input_args[arg]
         elif arg in default_args:
