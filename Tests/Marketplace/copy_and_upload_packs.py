@@ -245,8 +245,7 @@ def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict
         pc_successful_private_packs_dict : The successful private packs dict
 
     """
-    pc_successful_packs_dict = {}
-    pc_failed_packs_dict = {}
+
     if not pc_successful_packs_dict and not pc_failed_packs_dict and not pc_successful_private_packs_dict:
         logging.warning("Production bucket is updated with origin/master.")
         logging.warning("Skipping Upload To Marketplace Storage Step.")
