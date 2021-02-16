@@ -122,7 +122,7 @@ def http_request(uri: str, method: str, headers: dict = {},
             #  catch urlfiltering error and display a meaningful message
             elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
                 if DEVICE_GROUP:
-                    raise Exception('The URL filtering commands are only available on Firewall devices.')
+                    raise Exception('URL filtering commands are only available on Firewall devices.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
