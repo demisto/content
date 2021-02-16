@@ -699,3 +699,54 @@ def test_list_nids_events(requests_mock):
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = list_nids_events_command({})
     assert result.raw_response == data
+
+
+def test_print_case_comments_command(requests_mock):
+    from ArgusManagedDefence import print_case_comments_command
+
+    with open("argus_json/argus_case_comments.json") as json_file:
+        data = json.load(json_file)
+    method_url = f"/cases/v2/case/{CASE_ID}/comments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    args = {"case_id": CASE_ID}
+    result = print_case_comments_command(args)
+    for comment in result:
+        assert comment.get("ContentsFormat") == "html"
+        assert comment.get("Type") == 1  # Note
+        assert comment.get("Contents")
+        assert comment.get("Note") is True
+
+
+def test_print_case_metadata_by_id_command(requests_mock):
+    from ArgusManagedDefence import print_case_metadata_by_id_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
+    method_url = f"/cases/v2/case/{CASE_ID}"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    args = {"case_id": CASE_ID}
+    result = print_case_metadata_by_id_command(args)
+    assert result.get("ContentsFormat") == "html"
+    assert result.get("Type") == 1
+    assert result.get("Contents")
+
+
+def test_download_case_attachments_command(requests_mock):
+    from ArgusManagedDefence import download_case_attachments_command
+
+    with open("argus_json/argus_case_attachments.json") as json_file:
+        data = json.load(json_file)
+    data["data"][0]["name"] = "filename"
+    attachment_id = data["data"][0]["id"]
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    with open("argus_json/argus_case_attachments.json", "rb") as file:
+        bin_data = file.read()
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments/{attachment_id}/download"
+    requests_mock.get(f"{BASE_URL}{method_url}", content=bin_data)
+    args = {"case_id": CASE_ID}
+    result = download_case_attachments_command(args)
+    for file in result:
+        assert file.get("File") == "filename"
+        assert file.get("Type") == 3  # File
+
