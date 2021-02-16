@@ -24,7 +24,7 @@ class Client(BaseClient):
         self._headers = {'Authorization': 'Bearer ' + self._token}
 
     def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
-                     timeout=10, auth=None):
+                     timeout=10, auth=None) -> dict:
 
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                      params=params, data=data, timeout=timeout, auth=auth)
@@ -39,22 +39,24 @@ class Client(BaseClient):
         return token_res.get('access_token')
 
     def get_indicators(self, type, malicious_confidence, filter, q, limit=100, offset=0, include_deleted=False,
-                       get_indicators_command=False):
+                       get_indicators_command=False) -> Dict[str, Any]:
+        if type:
+            type_fql = f"type%3A'{type}'"
+            filter = f'{type_fql}%2B{filter}' if filter else type_fql
+
+        if malicious_confidence:
+            malicious_confidence_fql = f"malicious_confidence%3A'{malicious_confidence}'"
+            filter = f"{malicious_confidence_fql}'%2B{filter}" if filter else malicious_confidence_fql
 
         if not get_indicators_command:
             last_run = get_last_run()
-            filter += last_run
+            filter = f'{last_run}%2B{filter}' if filter else last_run
             set_last_run()
 
-        params = {
-            'include_deleted': include_deleted,
-            'limit': limit,
-            'offset': offset,
-            'q': q,
-            'filter': filter
-        }
+        params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
 
         response = self.http_request(method='GET', params=params, headers=self._headers, full_url=self._base_url)
+        return response
 
 
 def set_last_run():
@@ -64,7 +66,7 @@ def set_last_run():
     demisto.setLastRun({'last_modified_time': timestamp})
 
 
-def get_last_run():
+def get_last_run() -> str:
     if last_run := demisto.getLastRun():
         params = f'last_updated%3A%3E{last_run["last_modified_time"]}'
         set_last_run()
@@ -74,12 +76,11 @@ def get_last_run():
     return params
 
 
-def fetch_indicators(client: Client, feed_tags, tlp_color, include_deleted, type, malicious_confidence, filter, q):
+def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q):
     """ fetch indicators from the Crowdstrike Intel
 
     Args:
         client: Client object
-        feed_tags: The indicator tags.
         tlp_color (str): Traffic Light Protocol color.
         include_deleted (bool): include deleted indicators. (send just as parameter)
         type (str): type indicator.
@@ -93,7 +94,7 @@ def fetch_indicators(client: Client, feed_tags, tlp_color, include_deleted, type
     raise Exception('TODO')
 
 
-def crowdstrike_indicators_list_command(client: Client, args: dict):
+def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandResults:
     """ Gets indicator from Crowdstrike Intel to readable output
 
     Args:
@@ -111,27 +112,28 @@ def crowdstrike_indicators_list_command(client: Client, args: dict):
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 50))
 
-    indicators_list = client.get_indicators(include_deleted=include_deleted, type=type,
-                                            malicious_confidence=malicious_confidence, filter=filter,
-                                            q=q, limit=limit, offset=offset, get_indicators_command=True)
+    raw_response = client.get_indicators(include_deleted=include_deleted, type=type,
+                                         malicious_confidence=malicious_confidence, filter=filter,
+                                         q=q, limit=limit, offset=offset, get_indicators_command=True)
+    indicators_list = raw_response.get('resources')
 
     return CommandResults(
         outputs=indicators_list,
         outputs_prefix='CrowdStrikeFalconIntel.Indicators',
         outputs_key_field='id',
         readable_output='indicators_list',
-        raw_response=indicators_list
+        raw_response=raw_response
     )
 
 
-def test_module(client: Client, args: dict):
+def test_module(client: Client, args: dict) -> str:
     try:
         # TODO
         args.get('TODO')
     except Exception:
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
-    return 'ok', {}, {}
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
@@ -169,8 +171,9 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client, feed_tags, tlp_color, include_deleted, type, malicious_confidence,
-                                          filter, q)
+            indicators = fetch_indicators(client=client, tlp_color=tlp_color, include_deleted=include_deleted,
+                                          type=type, malicious_confidence=malicious_confidence,
+                                          filter=filter, q=q)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
@@ -185,7 +188,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
