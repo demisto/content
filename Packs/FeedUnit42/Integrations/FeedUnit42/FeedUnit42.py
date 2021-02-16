@@ -344,7 +344,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                 # populate mitre course of action data from the relevant relationships
                 relationship = relation_object.get('id')
                 if matched_relationships.get(relationship):
-                    courses_of_action = {}
+                    courses_of_action: Dict[str, List] = {}
                     for source in matched_relationships[relationship]:
                         if source.startswith('course-of-action') and id_to_object.get(source):
                             relationship_product = courses_of_action_products[source]
@@ -387,10 +387,11 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
                 row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
 
             row['description'] = course_of_action.get('description')
-            row['name'] =course_of_action.get('name'),
+            row['name'] = course_of_action.get('name')
 
             tmp_table.append(row)
-        markdown = f'{markdown}\n{tableToMarkdown(relationship_product, tmp_table,removeNull=True, headerTransform=string_to_table_header)}'
+        md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True, headerTransform=string_to_table_header)
+        markdown = f'{markdown}\n{md_table}'
     return markdown
 
 
@@ -475,7 +476,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
 
     main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
-    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object, courses_of_action_products)
+    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships,
+                                                            id_to_object, courses_of_action_products)
 
     demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
     demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
