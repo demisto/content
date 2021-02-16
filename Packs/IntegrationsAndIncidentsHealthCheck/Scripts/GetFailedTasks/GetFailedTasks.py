@@ -1,3 +1,5 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -133,7 +135,7 @@ def main():
     number_of_failed_incidents = 0
     number_of_error_entries = 0
     total_incidents: list = []
-    incidents_output: list = []
+    incidents_output = []  # type: Any
     total_failed_incidents = []
 
     start_time = time.time()
@@ -178,6 +180,8 @@ def main():
         'total of failed incidents': number_of_failed_incidents,
         'Number of total errors': number_of_error_entries,
     })
+    if not incidents_output:
+        incidents_output = {}
 
     return_results(CommandResults(
         raw_response=incidents_output,
