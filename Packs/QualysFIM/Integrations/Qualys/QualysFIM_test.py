@@ -215,4 +215,3 @@ def test_fetch_incidents_command(requests_mock) -> None:
     raw_json = json.loads(incidents[0].get('rawJSON'))
     assert raw_json.get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
     assert raw_json.get('createdBy').get('date') == 1613378492427
-

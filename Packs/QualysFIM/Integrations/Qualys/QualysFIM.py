@@ -244,7 +244,7 @@ def get_event_command(client: Client, args: dict):
     object_data['dateTime'] = datetime.strptime(object_data.get('dateTime'),
                                                 DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
 
-    readable_output = tableToMarkdown(name=f'Found Event:', t=object_data,
+    readable_output = tableToMarkdown(name='Found Event:', t=object_data,
                                       headers=table_headers, removeNull=True)
     return CommandResults(outputs_prefix='QualysFIM.Event',
                           outputs_key_field='id',
