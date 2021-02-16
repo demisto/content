@@ -159,7 +159,7 @@ class Client(BaseClient):
 
 
 def create_event_or_incident_output(item: Dict,
-                                    table_headers: List[str]) -> Dict[str, Optional[Any]]:
+                                    table_headers: List[str]) -> Dict[str, str]:
     """
     Create the complete output dictionary for events or incidents.
 
