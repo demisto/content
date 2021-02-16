@@ -136,13 +136,15 @@ def main():
     args = demisto.args()
 
     build_pattern_args = assign_params(
-        pattern_algorithm=args.get('algorithm', 'raw'),
+        pattern_algorithm=args.get('algorithm', 'basic'),
         case_insensitive=args.get('case_insensitive', False)
     )
-    include_pattern = build_pattern(**build_pattern_args, pattern=args['pattern'])
+    build_pattern_args['pattern'] = args['pattern']
+    include_pattern = build_pattern(**build_pattern_args)
     exclude_pattern = None
     if args.get('exclude_pattern'):
-        exclude_pattern = build_pattern(**build_pattern_args, pattern=args['exclude_pattern'])
+        build_pattern_args['pattern'] = args['exclude_pattern']
+        exclude_pattern = build_pattern(**build_pattern_args)
 
     filter_options = argToList(args.get('filter_options', []))
     output_option = args.get('summary', 'basic')
