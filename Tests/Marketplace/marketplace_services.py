@@ -564,7 +564,7 @@ class Pack(object):
         In case the pack was released in the last 30 days, its search rank will increase by 10
         In case the pack is certified, its search rank will increase by 10
         In case all the pack's integration are deprecated and there is at least 1 integration in the pack,
-        the pack's search rank will decrease by 10
+        the pack's search rank will decrease by 50
 
         Args:
             tags (str): the pack's tags.
@@ -660,11 +660,12 @@ class Pack(object):
                 pack_metadata['tags'].append('New')
             if days_since_creation > 30 and 'New' in pack_metadata['tags']:
                 pack_metadata['tags'].remove('New')
+        pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
+        pack_metadata['contentItems'] = pack_content_items
         pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
                                                             certification=pack_metadata['certification'],
                                                             content_items=pack_content_items)
-        pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
-        pack_metadata['contentItems'] = pack_content_items
+
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)

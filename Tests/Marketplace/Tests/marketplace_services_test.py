@@ -173,6 +173,42 @@ class TestMetadataParsing:
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
         assert parsed_metadata['searchRank'] == 10
 
+    def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a deprecated pack
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                }
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == -40
+
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
            Given:
