@@ -48,6 +48,8 @@ etc. (the value cannot be higher than 100.000 and it will be capped at that valu
 
 In case you want to want to reset the offset value, use the `cyren-threat-indepth-reset-client-offset` command.
 
+You can retrieve the current offset value using the `cyren-threat-indepth-get-client-offset` command.
+
 ## Commands
 
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
@@ -115,6 +117,33 @@ There is no context output for this command.
 ##### Human Readable Output
 
 Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).
+
+### Get Client Offset
+
+This command allows you to retrieve the stored client offset for the feed API.
+
+##### Required Permissions
+
+- A valid API JWT token and a matching feed name
+
+##### Base Command
+
+`cyren-threat-indepth-get-client-offset`
+
+##### Input
+
+There is not input for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+`!cyren-threat-indepth-get-client-offset`
+
+##### Human Readable Output
+
+Cyren Threat InDepth ip_reputation feed client offset is 500 (API provided max offset of 1000).
 
 ## Additional Information
 

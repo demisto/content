@@ -149,6 +149,10 @@ script:
     description: Resets the max client offset stored in the integration context.
     execution: true
     name: cyren-threat-indepth-reset-client-offset
+  - deprecated: false
+    description: Prints the max client offset stored in the integration context.
+    execution: true
+    name: cyren-threat-indepth-get-client-offset
   dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false

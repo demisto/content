@@ -3,14 +3,14 @@ import pathlib
 import os
 
 from CommonServerPython import (
-    FeedIndicatorType, DemistoException, Common
+    FeedIndicatorType, DemistoException, Common,
+    set_integration_context, get_integration_context
 )
-import demistomock as demisto
 
 from CyrenThreatInDepth import (
     Client, fetch_indicators_command, get_indicators_command,
     test_module_command as _test_module_command, BASE_URL,
-    reset_offset_command
+    reset_offset_command, get_offset_command
 )
 
 
@@ -53,9 +53,9 @@ def fixture_response_429():
 
 @pytest.fixture(name="clean_integration_context", scope="function")
 def fixture_clean_integration_context():
-    demisto.setIntegrationContext({})
+    set_integration_context({})
     yield
-    demisto.setIntegrationContext({})
+    set_integration_context({})
 
 
 def _create_client(feed):
@@ -196,12 +196,12 @@ def test_fetch_indicators_offsets(requests_mock, ip_reputation, context_data, of
 
     """
 
-    demisto.setIntegrationContext(context_data)
+    set_integration_context(context_data)
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, offsets, expected_offset, expected_count)
     created = fetch(initial_count, max_indicators, True)
 
     assert len(created) == 8
-    assert demisto.getIntegrationContext() == dict(offset=50007)
+    assert get_integration_context() == dict(offset=50007)
 
 
 def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
@@ -794,12 +794,12 @@ def test_get_indicators(requests_mock, phishing_urls, context_data, offsets,
 
     """
 
-    demisto.setIntegrationContext(context_data)
+    set_integration_context(context_data)
     _, get = _create_instance(requests_mock, "phishing_urls", phishing_urls, offsets, expected_offset, expected_count)
     result = get(max_indicators)
 
     assert len(result.raw_response) == 8
-    assert demisto.getIntegrationContext() == context_data
+    assert get_integration_context() == context_data
 
 
 def test_test_module_server_error(requests_mock):
@@ -992,7 +992,7 @@ def test_reset_offset_command(requests_mock, offset_data, context_data, offset, 
 
     """
 
-    demisto.setIntegrationContext(context_data)
+    set_integration_context(context_data)
     feed = "ip_reputation"
     requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
                       json=offset_data, request_headers=_expected_headers())
@@ -1005,4 +1005,44 @@ def test_reset_offset_command(requests_mock, offset_data, context_data, offset, 
     result = reset_offset_command(client, args)
 
     assert result.readable_output == expected_text
-    assert demisto.getIntegrationContext() == dict(offset=expected_offset)
+    assert get_integration_context() == dict(offset=expected_offset)
+
+
+@pytest.mark.parametrize("offset_data, context_data, expected_text", [
+    (
+        dict(startOffset=1, endOffset=1000), dict(),
+        (
+            "Cyren Threat InDepth ip_reputation feed client offset has not been set yet "
+            "(API provided max offset of 1000)."
+        )
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500),
+        (
+            "Cyren Threat InDepth ip_reputation feed client offset is 500 "
+            "(API provided max offset of 1000)."
+        )
+    ),
+])
+def test_get_offset_command(requests_mock, offset_data, context_data, expected_text):
+    """
+    Given:
+        - different stored offset configurations
+
+    When:
+        - running the get offset command
+
+    Then:
+        - I am told what the offset is
+
+    """
+
+    set_integration_context(context_data)
+    feed = "ip_reputation"
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
+                      json=offset_data, request_headers=_expected_headers())
+    client = _create_client(feed)
+
+    result = get_offset_command(client, dict())
+
+    assert result.readable_output == expected_text

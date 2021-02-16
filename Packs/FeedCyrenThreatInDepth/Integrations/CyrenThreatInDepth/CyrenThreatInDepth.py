@@ -350,14 +350,14 @@ class Client(BaseClient):
 
 
 def store_offset_in_context(offset: int) -> int:
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     integration_context["offset"] = offset
-    demisto.setIntegrationContext(integration_context)
+    set_integration_context(integration_context)
     return offset
 
 
 def get_offset_from_context() -> int:
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     return integration_context.get("offset")
 
 
@@ -412,6 +412,23 @@ def reset_offset_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(readable_output=readable_output, raw_response=offset)
 
 
+def get_offset_command(client: Client, args: Dict) -> CommandResults:
+    offset_stored = get_offset_from_context()
+    offset_api = int(client.get_offsets().get("endOffset", -1))
+    offset_api_text = f"(API provided max offset of {offset_api})"
+    if offset_stored:
+        readable_output = (
+            f"Cyren Threat InDepth {client.feed_name} feed client offset is {offset_stored} "
+            f"{offset_api_text}."
+        )
+    else:
+        readable_output = (
+            f"Cyren Threat InDepth {client.feed_name} feed client offset has not been set yet "
+            f"{offset_api_text}."
+        )
+    return CommandResults(readable_output=readable_output, raw_response=offset_stored)
+
+
 def feed_entries_to_indicator(entries: List[Dict], feed_name: str) -> Tuple[List[Dict], int]:
     indicators: List[Dict] = []
     max_offset: int = -1
@@ -464,6 +481,7 @@ def main():
     commands: Dict[str, Callable] = {
         "cyren-threat-indepth-get-indicators": get_indicators_command,
         "cyren-threat-indepth-reset-client-offset": reset_offset_command,
+        "cyren-threat-indepth-get-client-offset": get_offset_command,
     }
 
     command = demisto.command()
