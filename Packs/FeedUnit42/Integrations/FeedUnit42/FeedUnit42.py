@@ -328,7 +328,20 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
 
             # create MITRE ATT&CK indicator
             if indicator_val and type_name == 'MITRE ATT&CK':
-                indicator = {
+
+                # populate mitre course of action data from the relevant relationships
+                relationship = relation_object.get('id')
+                courses_of_action: Dict[str, List] = {}
+
+                if matched_relationships.get(relationship):
+                    for source in matched_relationships[relationship]:
+                        if source.startswith('course-of-action') and id_to_object.get(source):
+                            relationship_product = courses_of_action_products[source]
+                            if not courses_of_action.get(relationship_product):
+                                courses_of_action[relationship_product] = []
+                            courses_of_action[relationship_product].append(id_to_object[source])
+
+                indicators.append({
                     "value": indicator_val,
                     "type": 'MITRE ATT&CK',
                     "fields": {
@@ -337,26 +350,10 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                         "tags": [],
                         "modified": relation_object.get('modified'),
                         "reportedby": 'Unit42',
-                        "mitrecourseofaction": 'No courses of action found.'
+                        "mitrecourseofaction": create_course_of_action_field(courses_of_action)
+                            if courses_of_action else 'No courses of action found.'
                     }
-                }
-
-                # populate mitre course of action data from the relevant relationships
-                relationship = relation_object.get('id')
-                if matched_relationships.get(relationship):
-                    courses_of_action: Dict[str, List] = {}
-                    for source in matched_relationships[relationship]:
-                        if source.startswith('course-of-action') and id_to_object.get(source):
-                            relationship_product = courses_of_action_products[source]
-                            if not courses_of_action.get(relationship_product):
-                                courses_of_action[relationship_product] = []
-                            courses_of_action[relationship_product].append(id_to_object[source])
-
-                    if courses_of_action:
-                        indicator['fields']['mitrecourseofaction'] = create_course_of_action_field(courses_of_action)
-                    else:
-                        indicator['fields']['mitrecourseofaction'] = 'No courses of action found.'
-                indicators.append(indicator)
+                })
 
     return reports, indicators
 
