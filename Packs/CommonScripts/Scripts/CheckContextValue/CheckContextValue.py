@@ -35,7 +35,7 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
         outputs_key_field='key',
         outputs_prefix='CheckContextKey',
         outputs=data,
-        human_readable='The key exists.' if data['exists'] else 'The key does not exist.',
+        readable_output='The key exists.' if data['exists'] else 'The key does not exist.',
         raw_response=data
     )
 

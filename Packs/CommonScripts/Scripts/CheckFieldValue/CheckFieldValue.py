@@ -39,7 +39,7 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
         outputs_key_field='field',
         outputs_prefix='CheckFieldValue',
         outputs=data,
-        human_readable='The field exists.' if data['exists'] else 'The field does not exist.',
+        readable_output='The field exists.' if data['exists'] else 'The field does not exist.',
         raw_response=data
     )
     return command_results
