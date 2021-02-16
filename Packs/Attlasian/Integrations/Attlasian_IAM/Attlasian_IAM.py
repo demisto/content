@@ -54,6 +54,8 @@ class Client(BaseClient):
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def update_user(self, user_id, user_data):
+        if isinstance(user_data.get('emails'), dict):
+            user_data['emails'] = [user_data['emails']]
         uri = f'/scim/directory/{self.directory_id}/Users/{user_id}'
         res = self._http_request(
             method='PUT',
@@ -101,7 +103,7 @@ class Client(BaseClient):
             error_code = e.res.status_code
             try:
                 resp = e.res.json()
-                error_message = resp.get('Errors', {}).get('description')
+                error_message = resp.get('detail')
             except ValueError:
                 error_message = str(e)
         else:
