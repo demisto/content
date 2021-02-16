@@ -12,6 +12,7 @@ api_key = params.get('api_key')
 address = params.get('addr')
 port = params.get('port')
 schema = params.get('schema')
+fetch_limit = params.get('fetch_limit')
 verify_cert = params.get('verify_cert')
 FETCH_TIME = params.get('fetch_time')
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
@@ -204,7 +205,8 @@ if demisto.command() == 'fetch-incidents':
         start_time = last_run.get('start_time')
     if not isinstance(start_time, datetime):
         start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
-    for rec in uva.get_recordings():
+    uva.refresh_recordings()
+    for rec in uva.get_recordings(limit=fetch_limit, start_time=start_time, order='desc'):
         incident = {}
         datetime_object = datetime.strptime(str(rec.start_time), '%Y-%m-%d %H:%M:%S')
         for camera in uva.cameras:

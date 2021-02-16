@@ -44,6 +44,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '0'
+  display: Fetch Limit (unlimited=0)
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
 description: |-
   Connect to UnifiVideo NVR and manage CCTV cameras!
 
