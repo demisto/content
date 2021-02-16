@@ -351,44 +351,29 @@ script:
                 method = commandDictionary[command].method
                 setContentType = commandDictionary[command].setContentType
 
-                respoonse = sendRequest(url, method, token, setContentType);
-                status_result = respoonse.Body;
+                response = sendRequest(url, method, token, setContentType);
+                status_result = response.Body;
 
-                contentType = respoonse.Headers && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];
+                contentType = response.Headers && response.Headers['Content-Type'] && response.Headers['Content-Type'][0];
                 if (contentType && contentType.indexOf('application/json') !== -1) {
-                  status_result = JSON.parse(respoonse.Body);
+                  status_result = JSON.parse(response.Body);
                 }
                 if (contentType && contentType.indexOf('application/xml') !== -1) {
-                  status_result = JSON.parse(x2j(respoonse.Body));
+                  status_result = JSON.parse(x2j(response.Body));
                 }
-                // status_result = {
-                //     "submission_Key": submissionKeyList[i],
-                //     "submissionStatus":"Done",
-                //     "verdict":"non-malicious",
-                //     "analysisStatus":"done",
-                //     "submission_details":[
-                //         {
-                //             "vnc_port":[0],
-                //             "job_ids":[123916],
-                //             "id":submissionKeyList[i],
-                //             "uuid":"930d748c-a7c2-4204-8f88-a27ab07d83f7"
-                //         }
-                //     ]
-                // }
-
                 result.push(status_result)
             }
             break;
 
         default:
-            respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
-            result = respoonse.Body;
-            contentType = respoonse.Headers && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];
+            response = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
+            result = response.Body;
+            contentType = response.Headers && response.Headers['Content-Type'] && response.Headers['Content-Type'][0];
             if (contentType && contentType.indexOf('application/json') !== -1) {
-              result = JSON.parse(respoonse.Body);
+              result = JSON.parse(response.Body);
             }
             if (contentType && contentType.indexOf('application/xml') !== -1) {
-              result = JSON.parse(x2j(respoonse.Body));
+              result = JSON.parse(x2j(response.Body));
             }
     }
 
