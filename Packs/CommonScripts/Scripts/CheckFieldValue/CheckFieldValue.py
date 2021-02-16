@@ -1,8 +1,6 @@
-import re
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any, Tuple
+
+from CommonServerPython import *
 
 
 def check_field(field_value, regex=None):
@@ -16,7 +14,6 @@ def check_field(field_value, regex=None):
 
 
 def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
-
     field = args.get('field')
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
@@ -38,13 +35,14 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
         if field in custom_fields:
             data['exists'] = check_field(custom_fields.get(field), regex)
 
-    return CommandResults(
+    command_results = CommandResults(
         outputs_key_field='field',
         outputs_prefix='CheckFieldValue',
         outputs=data,
         human_readable='The field exists.' if data['exists'] else 'The field does not exist.',
         raw_response=data
     )
+    return command_results
 
 
 def main():
@@ -56,7 +54,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
