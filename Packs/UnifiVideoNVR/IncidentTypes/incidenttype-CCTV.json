@@ -1,0 +1,31 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#A3C9FF",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "CCTV",
+	"itemVersion": "",
+	"layout": "4c4d6c82-0d6b-4755-83b0-becab214df54",
+	"locked": false,
+	"name": "CCTV",
+	"packID": "df78463f-3b20-4b42-810d-2b4336ad579d",
+	"playbookId": "5a7495bc-e237-466d-829e-949e1c781446",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
