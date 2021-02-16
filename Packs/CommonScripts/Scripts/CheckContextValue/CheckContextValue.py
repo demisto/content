@@ -13,7 +13,7 @@ def check_key(field_value, regex=None):
     return False
 
 
-def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def poll_field(args: Dict[str, Any]) -> CommandResults:
     keys_list = args.get('key', '').split(".")
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
@@ -31,13 +31,14 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
     if context:
         data['exists'] = check_key(context, regex)
 
-    return CommandResults(
+    command_results = CommandResults(
         outputs_key_field='key',
         outputs_prefix='CheckContextKey',
         outputs=data,
         readable_output='The key exists.' if data['exists'] else 'The key does not exist.',
         raw_response=data
     )
+    return command_results
 
 
 def main():

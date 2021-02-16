@@ -13,7 +13,7 @@ def check_field(field_value, regex=None):
     return False
 
 
-def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
+def poll_field(args: Dict[str, Any]) -> CommandResults:
     field = args.get('field')
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
