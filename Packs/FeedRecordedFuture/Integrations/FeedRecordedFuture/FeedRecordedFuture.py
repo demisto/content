@@ -1,3 +1,5 @@
+import gzip
+
 from CommonServerPython import *
 # IMPORTS
 import urllib3
@@ -83,11 +85,14 @@ class Client(BaseClient):
             else:
                 url = self.BASE_URL + indicator_type + '/risklist?list=' + self.risk_rule
 
+            params = self.PARAMS
+            params['gzip'] = True
+
             response = requests.Request(
                 'GET',
                 url,
                 headers=self.headers,
-                params=self.PARAMS
+                params=params
             )
 
         elif service == 'fusion':
@@ -141,7 +146,12 @@ class Client(BaseClient):
                 return_error(
                     '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
 
-        data = response.text.split('\n')
+        if service == 'connectApi':
+            response_content = gzip.decompress(response.content)
+            response_content = response_content.decode('utf-8')
+            data = response_content.split('\n')
+        else:
+            data = response.text.split('\n')
 
         csvreader = csv.DictReader(data)
 
