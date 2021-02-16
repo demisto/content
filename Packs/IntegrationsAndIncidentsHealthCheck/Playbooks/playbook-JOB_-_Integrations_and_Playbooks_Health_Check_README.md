@@ -28,6 +28,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | SendHealthCheckReport | This input determines if the health check report should be sent automatically after running the playbook.<br/>True - Yes. |  | Optional |
 | EmailReportTo | In case the 'SendHealthCheckReport' input equals to 'True', the email address the report will be sent to. |  | Optional |
+| AutoCloseInvestigation | This input determines if the investigation should close automatically after the re-run of the scripts. |  | Optional |
 
 ## Playbook Outputs
 ---
