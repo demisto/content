@@ -11,6 +11,21 @@ from typing import List, Tuple, Optional
 requests.packages.urllib3.disable_warnings()
 
 
+XSOHR_TYPES_TO_CROWDSTRIKE = {
+    'user-account': "User-Account",
+    'domain': "Domain-Name",
+    'email-address': "Email-Addr",
+    'file-md5': "StixFile",
+    'file-sha1': "StixFile",
+    'file-sha256': "StixFile",
+    'hostname': "X-OpenCTI-Hostname",
+    'ipv4-addr': "IPv4-Addr",
+    'ipv6-addr': "IPv6-Addr",
+    'registry-key-value': "Registry Key",
+    'url': "Url"
+}
+
+
 class Client(BaseClient):
 
     def __init__(self, client_id, client_secret, base_url, verify, proxy):
@@ -116,9 +131,20 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
                                          malicious_confidence=malicious_confidence, filter=filter,
                                          q=q, limit=limit, offset=offset, get_indicators_command=True)
     indicators_list = raw_response.get('resources')
+    outputs = [{'type': indicator['type'],
+                'value': indicator['indicator'],
+                'id': indicator['id'],
+                'published_date': timestamp_to_datestring(indicator['published_date']),
+                'last_updated': timestamp_to_datestring(indicator['last_updated']),
+                'malicious_confidence': indicator['malicious_confidence'],
+                'labels': [label.get('name') for label in indicator.get('labels')]}
+               for indicator in indicators_list]
+
+    readable_output = tableToMarkdown(name='Indicators from CrowdStrike Falcon Intel', t=outputs,
+                                      headers=["type", "value", "id"], headerTransform=pascalToSpace)
 
     return CommandResults(
-        outputs=indicators_list,
+        outputs=outputs,
         outputs_prefix='CrowdStrikeFalconIntel.Indicators',
         outputs_key_field='id',
         readable_output='indicators_list',
