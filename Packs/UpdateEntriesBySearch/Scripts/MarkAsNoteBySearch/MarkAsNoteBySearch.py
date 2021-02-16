@@ -150,7 +150,7 @@ def main():
     output_option = args.get('summary', 'basic')
 
     exclude_ids = []
-    if 'exclude_this_entry' not in filter_options:
+    if 'exclude_this_entry' in filter_options:
         exclude_ids.append(demisto.parentEntry()['id'])
 
     ents = []

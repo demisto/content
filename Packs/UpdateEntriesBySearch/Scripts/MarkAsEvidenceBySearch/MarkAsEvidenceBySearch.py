@@ -137,7 +137,7 @@ def main():
 
     build_pattern_args = assign_params(
         pattern_algorithm=args.get('algorithm', 'basic'),
-        case_insensitive=args.get('case_insensitive', False)
+        case_insensitive=argToBoolean(args.get('case_insensitive', False))
     )
     build_pattern_args['pattern'] = args['pattern']
     include_pattern = build_pattern(**build_pattern_args)
@@ -150,7 +150,7 @@ def main():
     output_option = args.get('summary', 'basic')
 
     exclude_ids = []
-    if 'exclude_this_entry' not in filter_options:
+    if 'exclude_this_entry' in filter_options:
         exclude_ids.append(demisto.parentEntry()['id'])
 
     ents = []
