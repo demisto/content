@@ -419,14 +419,14 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: dfd2bb85-11ef-472b-89e3-b02a2a9e8875
+    taskid: 7bc93731-ece1-467a-8297-ccbea27db218
     type: regular
     task:
-      id: dfd2bb85-11ef-472b-89e3-b02a2a9e8875
+      id: 7bc93731-ece1-467a-8297-ccbea27db218
       version: -1
       name: Mark and tag registry
       description: |
-        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -451,10 +451,6 @@ tasks:
               right:
                 value:
                   simple: reg
-          accessor: EntryID
-      occurred: {}
-      tags:
-        simple: Registry
           accessor: EntryID
       occurred: {}
       tags:
