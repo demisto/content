@@ -1,0 +1,35 @@
+{
+	"brands": null,
+	"defaultIncidentType": "Qualys-Fim",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "b8da1d77-e4d7-47e0-8365-169af522dd3f",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"DEFAULT": "Qualys-Fim"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "QualysFim Classifier",
+	"nameRaw": "QualysFim Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "type"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
