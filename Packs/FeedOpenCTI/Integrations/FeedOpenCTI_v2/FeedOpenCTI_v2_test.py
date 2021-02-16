@@ -1,33 +1,9 @@
+import pytest
 
 from FeedOpenCTI_v2 import *
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults
-
-
-class StixCyberObservable:
-    def list(self):
-        return self
-
-    def delete(self):
-        return self
-
-    def update_field(self):
-        return self
-
-    def create(self):
-        return self
-
-    def remove_marking_definition(self):
-        return self
-
-    def add_label(self):
-        return self
-
-    def remove_label(self):
-        return self
-
-    def add_marking_definition(self):
-        return self
+from pycti import StixCyberObservable
 
 
 class Client:
@@ -128,29 +104,10 @@ def test_indicator_delete_command(mocker):
     assert "Indicator deleted" in results.readable_output
 
 
-def test_indicator_score_update_command(mocker):
-    """Tests indicator_score_update_command function
-    Given
-        id of indicator to update
-        key to update
-        value to update
-    When
-        - Calling `indicator_score_update_command`
-    Then
-        - validate the response to have a "Indicator deleted." string and context as expected
-    """
-    client = Client
-    args = {
-        'id': '123456',
-        'score': 80,
-    }
-    mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
-    results: CommandResults = indicator_score_update_command(client, args)
-    assert "updated successfully" in results.readable_output
-    assert {'id': '123456'} == results.outputs
-
-
-def test_indicator_description_update_command(mocker):
+@pytest.mark.parametrize(argnames="key, value",
+                         argvalues=[('score', '50'),
+                                    ('description', 'new description')])
+def test_indicator_field_update_command(mocker, key, value):
     """Tests indicator_field_update_command function
     Given
         id of indicator to update
@@ -164,28 +121,28 @@ def test_indicator_description_update_command(mocker):
     client = Client
     args = {
         'id': '123456',
-        'description': 'new description'
+        'key': key,
+        'value': value
     }
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
-    results: CommandResults = indicator_description_update_command(client, args)
-    assert "updated successfully" in results.readable_output
+    results: CommandResults = indicator_field_update_command(client, args)
+    assert "Indicator updated successfully" in results.readable_output
     assert {'id': '123456'} == results.outputs
 
 
 def test_indicator_create_command(mocker):
     """Tests indicator_create_command function
     Given
-        id of indicator to update
-        key to update
-        value to update
+        type of indicator to create
+        score to create
+        data to create
     When
         - Calling `indicator_create_command`
     Then
-        - validate the response to have a "Indicator deleted." string and context as expected
+        - validate the response to have a "Indicator created successfully." string and context as expected
     """
     client = Client
     args = {
-        'id': '123456',
         'score': '20',
         'type': 'Domain-Name',
         'data': "{\"value\": \"devtest.com\"}"
@@ -196,96 +153,64 @@ def test_indicator_create_command(mocker):
     assert 'id' in results.outputs
 
 
-def test_indicator_marking_add_command(mocker):
-    """Tests indicator_marking_add_command function
+@pytest.mark.parametrize(argnames="key, value, mock_obj_name, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'add_marking_definition'),
+                                    ('label', 'new-label', 'Label', 'add_label')])
+def test_indicator_field_add_command(mocker, key, value, mock_obj_name, function_name):
+    """Tests indicator_field_add_command function
+        Given
+            id of indicator to add
+            key to add
+            value to add
+        When
+            - Calling `indicator_field_add_command`
+        Then
+            - validate the response to have a "added successfully." string at human readable
+        """
+    client = Client
+    args = {
+        'id': '123456',
+        'key': key,
+        'value': value
+    }
+
+    magic_mock = mocker.MagicMock()
+    magic_mock.create.return_value = {'id': '123'}
+    mocker.patch(f'FeedOpenCTI_v2.{mock_obj_name}', return_value=magic_mock)
+    mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
+
+    results: CommandResults = indicator_field_add_command(client, args)
+    assert "successfully" in results.readable_output
+
+
+@pytest.mark.parametrize(argnames="key, value, mock_obj_name, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'remove_marking_definition'),
+                                    ('label', 'new-label', 'Label', 'remove_label')])
+def test_indicator_field_remove_command(mocker, key, value, mock_obj_name, function_name):
+    """Tests indicator_field_remove_command function
     Given
         id of indicator to remove
-        marking to remove
+        key to remove
+        value to remove
     When
-        - Calling `indicator_marking_add_command`
+        - Calling `indicator_field_remove_command`
     Then
-        - validate the response to have a "Marking definition added successfully." string at human readable
+        - validate the response to have a "removed successfully." string at human readable
     """
     client = Client
     args = {
         'id': '123456',
-        'marking': 'TLP:RED'
+        'key': key,
+        'value': value
     }
-    mark_mock = mocker.MagicMock()
-    mark_mock.create.return_value = {'id': '123'}
-    mocker.patch('FeedOpenCTI_v2.MarkingDefinition', return_value=mark_mock)
-    mocker.patch.object(client.stix_cyber_observable, 'add_marking_definition', return_value=True)
-    results: CommandResults = indicator_marking_add_command(client, args)
-    assert "Added marking definition successfully" in results.readable_output
 
+    magic_mock = mocker.MagicMock()
+    magic_mock.create.return_value = {'id': '123'}
+    mocker.patch(f'FeedOpenCTI_v2.{mock_obj_name}', return_value=magic_mock)
+    mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
 
-def test_indicator_marking_remove_command(mocker):
-    """Tests indicator_marking_remove_command function
-    Given
-        id of indicator to remove
-        marking to remove
-    When
-        - Calling `indicator_marking_remove_command`
-    Then
-        - validate the response to have a "Marking definition removed successfully." string at human readable
-    """
-    client = Client
-    args = {
-        'id': '123456',
-        'marking': 'TLP:RED'
-    }
-    mark_mock = mocker.MagicMock()
-    mark_mock.create.return_value = {'id': '123'}
-    mocker.patch('FeedOpenCTI_v2.MarkingDefinition', return_value=mark_mock)
-    mocker.patch.object(client.stix_cyber_observable, 'remove_marking_definition', return_value=True)
-    results: CommandResults = indicator_marking_remove_command(client, args)
-    assert "Marking definition removed successfully" in results.readable_output
-
-
-def test_indicator_label_add_command(mocker):
-    """Tests indicator_label_add_command function
-    Given
-        id of indicator to add label
-        label to add
-    When
-        - Calling `indicator_label_add_command`
-    Then
-        - validate the response to have a "Label added successfully" string at human readable
-    """
-    client = Client
-    args = {
-        'id': '123456',
-        'label': 'test-label'
-    }
-    label_mock = mocker.MagicMock()
-    label_mock.create.return_value = {'id': '123'}
-    mocker.patch('FeedOpenCTI_v2.Label', return_value=label_mock)
-    mocker.patch.object(client.stix_cyber_observable, 'add_label', return_value=True)
-    results: CommandResults = indicator_label_add_command(client, args)
-    assert "Label added successfully" in results.readable_output
-
-
-def test_indicator_label_remove_command(mocker):
-    """Tests indicator_label_remove_command function
-    Given
-        id of indicator to remove label
-        label to remove
-    When
-        - Calling `indicator_label_remove_command`
-    Then
-        - validate the response to have a "Label removed successfully" string at human readable
-    """
-    client = Client
-    args = {
-        'id': '123456',
-        'label': 'test-label'
-    }
-    label_mock = mocker.MagicMock()
-    label_mock.create.return_value = {'id': '123'}
-    mocker.patch('FeedOpenCTI_v2.Label', return_value=label_mock)
-    mocker.patch.object(client.stix_cyber_observable, 'remove_label', return_value=True)
-    results: CommandResults = indicator_label_remove_command(client, args)
-    assert "Label removed successfully" in results.readable_output
+    results: CommandResults = indicator_field_remove_command(client, args)
+    assert "successfully" in results.readable_output
 
 
 def test_organization_list_command(mocker):

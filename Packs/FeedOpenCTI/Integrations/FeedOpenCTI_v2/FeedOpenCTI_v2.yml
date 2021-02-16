@@ -218,37 +218,26 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Indicator score to update - number between 0 - 100.
+    - auto: PREDEFINED
+      default: false
+      description: Indicator key to update.
       isArray: false
-      name: score
+      name: key
+      predefined:
+      - score
+      - description
+      required: true
+      secret: false
+    - default: false
+      description: Value of the key to update.
+      isArray: false
+      name: value
       required: true
       secret: false
     deprecated: false
-    description: Update indicator score.
+    description: Update indicator field. Available fields to update - score, description.
     execution: false
-    name: opencti-indicator-score-update
-    outputs:
-    - contextPath: OpenCTI.Indicator.id
-      description: Updated indicator id.
-      type: String
-  - arguments:
-    - default: false
-      description: Indicator ID.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Indicator description to update - number between 0 - 100.
-      isArray: false
-      name: description
-      required: true
-      secret: false
-    deprecated: false
-    description: Update indicator description.
-    execution: false
-    name: opencti-indicator-description-update
+    name: opencti-indicator-field-update
     outputs:
     - contextPath: OpenCTI.Indicator.id
       description: Updated indicator id.
@@ -347,84 +336,58 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Id of the indicator.
+      description: Indicator ID.
       isArray: false
       name: id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Marking to add.
+      description: Indicator key to update.
       isArray: false
-      name: marking
+      name: key
       predefined:
-      - TLP:RED
-      - TLP:WHITE
-      - TLP:GREEN
-      - TLP:AMBER
+        - marking
+        - label
+      required: true
+      secret: false
+    - default: false
+      description: "Value of the key to add. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
+      isArray: false
+      name: value
       required: true
       secret: false
     deprecated: false
-    description: Add marking to indicator.
+    description: Add field to indicator. Avalible fields to add - marking defenition, label.
     execution: false
-    name: opencti-indicator-marking-add
+    name: opencti-indicator-field-add
   - arguments:
     - default: false
-      description: Id of the indicator.
+      description: Indicator ID.
       isArray: false
       name: id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Marking to remove.
+      description: Indicator key to update.
       isArray: false
-      name: marking
+      name: key
       predefined:
-      - TLP:RED
-      - TLP:WHITE
-      - TLP:GREEN
-      - TLP:AMBER
+        - marking
+        - label
+      required: true
+      secret: false
+    - default: false
+      description: "Value of the key to remove. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
+      isArray: false
+      name: value
       required: true
       secret: false
     deprecated: false
-    description: Remove marking from indicator.
+    description: Remove field from indicator. Avalible fields to remove - marking defenition, label.
     execution: false
-    name: opencti-indicator-marking-remove
-  - arguments:
-    - default: false
-      description: Indicator id.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Label name to add.
-      isArray: false
-      name: label
-      required: true
-      secret: false
-    deprecated: false
-    description: Add labal to indicator.
-    execution: false
-    name: opencti-indicator-label-add
-  - arguments:
-    - default: false
-      description: Indicator id.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Label name to remove.
-      isArray: false
-      name: label
-      required: true
-      secret: false
-    deprecated: false
-    description: Remove label from indicator.
-    execution: false
-    name: opencti-indicator-label-remove
+    name: opencti-indicator-field-remove
   - deprecated: false
     description: Get list of all organizations.
     execution: false

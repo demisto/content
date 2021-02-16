@@ -177,8 +177,8 @@ def indicator_delete_command(client, args: dict) -> CommandResults:
     return CommandResults(readable_output='Indicator deleted.')
 
 
-def indicator_score_update_command(client, args: dict) -> CommandResults:
-    """ Update indicator score at opencti
+def indicator_field_update_command(client, args: dict) -> CommandResults:
+    """ Update indicator field at opencti
 
         Args:
             client: OpenCTI Client object
@@ -188,38 +188,13 @@ def indicator_score_update_command(client, args: dict) -> CommandResults:
             readable_output, raw_response
         """
     indicator_id = args.get("id")
-    value = int(args.get("score", '50'))
-    result = client.stix_cyber_observable.update_field(id=indicator_id, key='x_opencti_score', value=value)
+    # works only with score and description
+    key = KEY_TO_CTI_NAME[args.get("key")]  # type: ignore
+    value = args.get("value")
+    result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
 
     if result.get('id'):
-        readable_output = 'Indicator score updated successfully.'
-    else:
-        return_error("Can't update indicator.")
-    return CommandResults(
-        outputs_prefix='OpenCTI.Indicator',
-        outputs_key_field='id',
-        outputs={'id': result.get('id')},
-        readable_output=readable_output,
-        raw_response=result
-    )
-
-
-def indicator_description_update_command(client, args: dict) -> CommandResults:
-    """ Update indicator description at opencti
-
-        Args:
-            client: OpenCTI Client object
-            args: demisto.args()
-
-        Returns:
-            readable_output, raw_response
-        """
-    indicator_id = args.get("id")
-    value = args.get("description")
-    result = client.stix_cyber_observable.update_field(id=indicator_id, key='x_opencti_description', value=value)
-
-    if result.get('id'):
-        readable_output = 'Indicator description updated successfully.'
+        readable_output = 'Indicator updated successfully.'
     else:
         return_error("Can't update indicator.")
     return CommandResults(
@@ -299,8 +274,8 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     )
 
 
-def indicator_marking_add_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Add indicator marking to opencti
+def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Add indicator marking or label to opencti
 
         Args:
             client: OpenCTI Client object
@@ -310,19 +285,31 @@ def indicator_marking_add_command(client, args: Dict[str, str]) -> CommandResult
             readable_output
         """
     indicator_id = args.get("id")
-    marking_name = args.get("marking")
-    mark_obj = MarkingDefinition(client)
-    marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
-    result = client.stix_cyber_observable.add_marking_definition(id=indicator_id, marking_definition_id=marking)
+    # works only with marking and label
+    key = args.get("key")
+    value = args.get("value")
+    result = {}
+
+    if key == 'marking':
+        mark_obj = MarkingDefinition(client)
+        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
+        result = client.stix_cyber_observable.add_marking_definition(id=indicator_id, marking_definition_id=marking)
+
+    elif key == 'label':
+        label_obj = Label(client)
+        label_id = label_obj.create(value=value).get('id')
+        result = client.stix_cyber_observable.add_label(id=indicator_id, label_id=label_id)
+
     if result:
-        readable_output = 'Added marking definition successfully.'
+        readable_output = f'Added {key} successfully.'
     else:
-        return_error("Can't add marking definition.")
+        return_error(f"Can't add {key}.")
+
     return CommandResults(readable_output=readable_output)
 
 
-def indicator_marking_remove_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Remove indicator marking from opencti
+def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Remove indicator marking or label from opencti
 
         Args:
             client: OpenCTI Client object
@@ -332,58 +319,26 @@ def indicator_marking_remove_command(client, args: Dict[str, str]) -> CommandRes
             readable_output
         """
     indicator_id = args.get("id")
-    marking_name = args.get("marking")
-    mark_obj = MarkingDefinition(client)
-    marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
-    result = client.stix_cyber_observable.remove_marking_definition(id=indicator_id, marking_definition_id=marking)
+    # works only with marking and label
+    key = args.get("key")
+    value = args.get("value")
+    result = {}
+
+    if key == 'marking':
+        mark_obj = MarkingDefinition(client)
+        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
+        result = client.stix_cyber_observable.remove_marking_definition(id=indicator_id, marking_definition_id=marking)
+
+    elif key == 'label':
+        label_obj = Label(client)
+        label_id = label_obj.create(value=value).get('id')
+        result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
+
     if result:
-        readable_output = 'Marking definition removed successfully.'
+        readable_output = 'Field removed successfully.'
     else:
-        return_error("Can't remove marking definition.")
-    return CommandResults(readable_output=readable_output)
+        return_error(f"Can't remove {key}.")
 
-
-def indicator_label_add_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Add indicator label to opencti
-
-        Args:
-            client: OpenCTI Client object
-            args: demisto.args()
-
-        Returns:
-            readable_output
-        """
-    indicator_id = args.get("id")
-    label_name = args.get("label")
-    label_obj = Label(client)
-    label_id = label_obj.create(value=label_name).get('id')
-    result = client.stix_cyber_observable.add_label(id=indicator_id, label_id=label_id)
-    if result:
-        readable_output = 'Label added successfully.'
-    else:
-        return_error("Can't add label.")
-    return CommandResults(readable_output=readable_output)
-
-
-def indicator_label_remove_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Remove indicator label from opencti
-
-        Args:
-            client: OpenCTI Client object
-            args: demisto.args()
-
-        Returns:
-            readable_output
-        """
-    indicator_id = args.get("id")
-    label_name = args.get("label")
-    label_obj = Label(client)
-    label_id = label_obj.create(value=label_name).get('id')
-    result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
-    if result:
-        readable_output = 'Label removed successfully.'
-    else:
-        return_error("Can't add label.")
     return CommandResults(readable_output=readable_output)
 
 
@@ -480,26 +435,17 @@ def main():
         elif command == "opencti-indicator-delete":
             return_results(indicator_delete_command(client, args))
 
-        elif command == "opencti-indicator-score-update":
-            return_results(indicator_score_update_command(client, args))
-
-        elif command == "opencti-indicator-description-update":
-            return_results(indicator_description_update_command(client, args))
+        elif command == "opencti-indicator-field-update":
+            return_results(indicator_field_update_command(client, args))
 
         elif command == "opencti-indicator-create":
             return_results(indicator_create_command(client, args))
 
-        elif command == "opencti-indicator-marking-add":
-            return_results(indicator_marking_add_command(client, args))
+        elif command == "opencti-indicator-field-add":
+            return_results(indicator_field_add_command(client, args))
 
-        elif command == "opencti-indicator-marking-remove":
-            return_results(indicator_marking_remove_command(client, args))
-
-        elif command == "opencti-indicator-label-add":
-            return_results(indicator_label_add_command(client, args))
-
-        elif command == "opencti-indicator-label-remove":
-            return_results(indicator_label_remove_command(client, args))
+        elif command == "opencti-indicator-field-remove":
+            return_results(indicator_field_remove_command(client, args))
 
         elif command == "opencti-organization-list":
             return_results(organization_list_command(client))
