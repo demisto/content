@@ -70,8 +70,17 @@ class Client(BaseClient):
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def disable_user(self, user_id):
-        user_data = {'active': False}
-        return self.update_user(user_id, user_data)
+        uri = f'/scim/directory/{self.directory_id}/Users/{user_id}'
+        res = self._http_request(
+            method='DELETE',
+            url_suffix=uri
+        )
+        user_app_data = res
+        user_id = user_app_data.get('id')
+        is_active = user_app_data.get('active')
+        username = user_app_data.get('userName')
+
+        return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def get_app_fields(self):
         app_fields = {}
@@ -109,6 +118,11 @@ class Client(BaseClient):
         else:
             error_code = ''
             error_message = str(e)
+
+        if error_code == 204:
+            user_profile.set_result(action=action,
+                                    success=True,
+                                    details='The user was successfully disabled.')
 
         user_profile.set_result(action=action,
                                 success=False,
