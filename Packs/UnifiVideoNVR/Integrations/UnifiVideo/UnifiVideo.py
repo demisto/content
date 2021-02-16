@@ -158,7 +158,7 @@ if demisto.command() == 'unifivideo-get-recording-list':
         )]
     return_results(results)
 
-if demisto.command() == 'unifivideo-get-snapshot-at-frame': 
+if demisto.command() == 'unifivideo-get-snapshot-at-frame':
     entry_id = demisto.args().get('entryid')
     snapshot_file_name = 'snapshot-' + entry_id + '-' + args.get('frame') + '.jpg'
     try:
