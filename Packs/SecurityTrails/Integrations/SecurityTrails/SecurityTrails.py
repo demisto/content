@@ -86,7 +86,7 @@ def get_domain_details(client: Client, **args) -> CommandResults:
     response = client._http_request("GET", uri)
 
     md = ""
-    current_dns = response["current_dns"]
+    current_dns = response.get("current_dns")
     del response["current_dns"]
     md = tableToMarkdown(f"Details for {domain}", response)
     for record_type, record_values in current_dns.items():
