@@ -141,7 +141,7 @@ class TestMetadataParsing:
 
     def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a new pack (created less than 30 days ago)
+        Given a certified new pack (created less than 30 days ago)
         Then: add "New" tag and raise the searchRank
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
@@ -157,7 +157,7 @@ class TestMetadataParsing:
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a pack that was created more than 30 days ago
+        Given a certified pack that was created more than 30 days ago
         Then: remove "New" tag and make sure the searchRank is reduced
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
@@ -175,7 +175,8 @@ class TestMetadataParsing:
 
     def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a deprecated pack
+        Given: a certified pack
+        When: All the integrations in it are deprecated.
         Then: calculate the search rank
         """
         content_items = {
