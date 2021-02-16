@@ -120,6 +120,7 @@ LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phi
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
 LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'categor', 'disposition', 'severity', 'malicious',
                         'tag', 'close', 'phish', 'phishing']
+LABEL_FIELD_BLACKLIST_KEYWORDS = ['attach', 'recipient']
 
 '''
 Define html tags to count
@@ -167,7 +168,7 @@ def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
                   sum(isinstance(x, str) or isinstance(x, bool) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
     candidates = [col for col in candidates if col not in LABEL_FIELDS_BLACKLIST]
-
+    candidates = [col for col in candidates if not any(w in col.lower() for w in LABEL_FIELD_BLACKLIST_KEYWORDS)]
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if
                            sum(not (isinstance(v, str) or isinstance(v, bool)) for v in values) <= 1}
@@ -784,7 +785,7 @@ def determine_incidents_args(input_args, default_args):
         get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
         get_incidents_by_query_args['query'] = 'status:Closed'
-    for arg in ['limit', 'fromDate', 'incidentTypes']:
+    for arg in ['limit', 'fromDate', 'incidentTypes', 'toDate']:
         if arg in input_args:
             get_incidents_by_query_args[arg] = input_args[arg]
         elif arg in default_args:
