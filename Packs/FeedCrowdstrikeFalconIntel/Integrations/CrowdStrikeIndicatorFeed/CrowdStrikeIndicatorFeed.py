@@ -17,42 +17,60 @@ class Client(BaseClient):
         self._client_id = client_id
         self._client_secret = client_secret
         self._verify_certificate = verify
+        self._base_url = base_url
         super().__init__(base_url=base_url, verify=self._verify_certificate,
                          ok_codes=tuple(), proxy=proxy)
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
 
-    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+    def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
+                     timeout=10, auth=None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
-                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+                                     params=params, data=data, timeout=timeout, auth=auth)
 
     def _get_access_token(self) -> str:
         body = {
             'client_id': self._client_id,
             'client_secret': self._client_secret
         }
-        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
+        token_res = self.http_request(method='POST', url_suffix='/oauth2/token', data=body,
+                                      auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
+    def get_indicators(self, type, malicious_confidence, filter, q, limit=100, offset=0, include_deleted=False,
+                       get_indicators_command=False):
 
-def set_last_modified_time():
+        if not get_indicators_command:
+            last_run = get_last_run()
+            filter += last_run
+            set_last_run()
+
+        params = {
+            'include_deleted': include_deleted,
+            'limit': limit,
+            'offset': offset,
+            'q': q,
+            'filter': filter
+        }
+
+        response = self.http_request(method='GET', params=params, headers=self._headers, full_url=self._base_url)
+
+
+def set_last_run():
     current_time = datetime.now()
     current_timestamp = datetime.timestamp(current_time)
     timestamp = str(int(current_timestamp))
-    demisto.setIntegrationContext({'last_modified_time': timestamp})
+    demisto.setLastRun({'last_modified_time': timestamp})
 
 
-def get_last_modified_time():
-    if integration_context := demisto.getIntegrationContext():
-        last_modified_time = int(integration_context['last_modified_time'])
-        params = f'last_modified_date%3A%3E{last_modified_time}'
-        set_last_modified_time()
+def get_last_run():
+    if last_run := demisto.getLastRun():
+        params = f'last_updated%3A%3E{last_run["last_modified_time"]}'
+        set_last_run()
     else:
         params = ''
-        set_last_modified_time()
+        set_last_run()
     return params
 
 
@@ -92,6 +110,18 @@ def crowdstrike_indicators_list_command(client: Client, args: dict):
     q = args.get('generic_phrase_match')
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 50))
+
+    indicators_list = client.get_indicators(include_deleted=include_deleted, type=type,
+                                            malicious_confidence=malicious_confidence, filter=filter,
+                                            q=q, limit=limit, offset=offset, get_indicators_command=True)
+
+    return CommandResults(
+        outputs=indicators_list,
+        outputs_prefix='CrowdStrikeFalconIntel.Indicators',
+        outputs_key_field='id',
+        readable_output='indicators_list',
+        raw_response=indicators_list
+    )
 
 
 def test_module(client: Client, args: dict):
@@ -146,7 +176,7 @@ def main() -> None:
                 demisto.createIndicators(b)
 
         elif command == 'crowdstrike-indicators-list':
-            crowdstrike_indicators_list_command(client, args)
+            return_results(crowdstrike_indicators_list_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:

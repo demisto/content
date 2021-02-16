@@ -12,6 +12,11 @@ configuration:
   name: client_id
   required: true
   type: 4
+- display: Crowdstrike API client secret
+  hidden: false
+  name: client_secret
+  required: true
+  type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Good
@@ -82,11 +87,13 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- display: Crowdstrike API client secret
-  hidden: false
-  name: client_secret
-  required: true
-  type: 4
+- additionalinfo: "When selected, the exclusion list is ignored for indicators from this
+  feed. This means that if an indicator from this feed is on the exclusion list, the
+  indicator might still be added to the system."
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 - defaultvalue: 'false'
   display: Include deleted indicators
   hidden: false
@@ -96,17 +103,42 @@ configuration:
   - 'true'
   required: false
   type: 15
-- display: Type
+- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
+    in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
+    "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and
+    "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer
+    to the integration documentation for more information. The default is "ALL".'
+  display: Type
   hidden: false
   name: type
+  options:
+  - ALL
+  - User-Account
+  - Domain
+  - Email-Address
+  - File-MD5
+  - File-SHA1
+  - File-SHA256
+  - HostName
+  - IPV4-Addr
+  - IPV6-Addr
+  - Registry-Key-Value
+  - URL
   required: false
-  type: 0
-- display: Malicious confidence
+  type: 16
+- additionalinfo: Malicious confidence level of the indicator.
+  display: Malicious confidence
   hidden: false
   name: malicious_confidence
+  options:
+  - high
+  - medium
+  - low
+  - unverified
   required: false
-  type: 0
-- display: Filter
+  type: 15
+- additionalinfo: FQL query.
+  display: Filter
   hidden: false
   name: filter
   required: false
@@ -134,10 +166,14 @@ script:
       name: offset
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Include deleted indicators.
       isArray: false
       name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -146,20 +182,26 @@ script:
       name: type
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Malicious Confidence
       isArray: false
       name: malicious_confidence
+      predefined:
+      - high
+      - medium
+      - low
+      - unverified
       required: false
       secret: false
     - default: false
-      description: Indicators filter
+      description: FQL query, indicators filter.
       isArray: false
       name: filter
       required: false
       secret: false
     - default: false
-      description: generic phrase match
+      description: Generic phrase match search across all indicators.
       isArray: false
       name: generic_phrase_match
       required: false
@@ -179,4 +221,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 5.0.0
+fromversion: 5.5.0
