@@ -1507,11 +1507,6 @@ def search_file_command(file):
             score=score
         )
 
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1524,6 +1519,12 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            tags=get_tags_for_generic_context(tags),
+        )
+
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
@@ -1535,6 +1536,19 @@ def search_file_command(file):
         ))
 
     return command_results
+
+
+def get_tags_for_generic_context(tags: Optional[list]):
+    if not tags:
+        return None
+    results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    for item in tags:
+        generic_context_tags = {key: item.get(key) for key in keys}
+        generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
 
 
 def get_export_list_command(args):
