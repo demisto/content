@@ -345,6 +345,7 @@ def get_remote_data_command(
         {"severity": argus_priority_to_demisto_severity(case.get("priority"))}
     )
     entries.append({"arguscasestatus": case.get("status")})
+    entries.append({"status": argus_status_to_demisto_status(case.get("status"))})
 
     # Add new attachments
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
@@ -1366,8 +1367,8 @@ def main() -> None:
                 )
             )
 
-        elif demisto.command() == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(demisto.args()))
+        # elif demisto.command() == "get-modified-remote-data":
+        #     return_results(get_modified_remote_data_command(demisto.args()))
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(demisto.args()))
