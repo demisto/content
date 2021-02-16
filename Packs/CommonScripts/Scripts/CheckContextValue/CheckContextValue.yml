@@ -6,7 +6,7 @@ args:
   name: regex
 - auto: PREDEFINED
   defaultValue: "False"
-  description: Whether character matching will be case-insensitive. Default is "False".
+  description: Whether character matching will be case-insensitive.
   name: ignore_case
   predefined:
   - "True"
