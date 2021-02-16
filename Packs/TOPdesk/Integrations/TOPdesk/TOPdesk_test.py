@@ -1,9 +1,10 @@
 import pytest
 import json
 import io
-from TOPdesk import Client, INTEGRATION_NAME, \
+from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
-    list_persons_command, list_operators_command, branches_command, get_incidents_list_command
+    list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
+    get_incidents_with_pagination, incident_do_command, incident_touch_command
 
 
 def util_load_json(path):
@@ -120,6 +121,175 @@ def test_large_output_list_command(requests_mock,
     assert command_results.outputs == mock_topdesk_response
 
 
+@pytest.mark.parametrize('action, command_args, command_api_url, mock_response_file, override_node', [
+    ("escalate",
+     {"id": "incident_id", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/escalate',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("deescalate",
+     {"id": "incident_id", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/deescalate',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("archive",
+     {"id": "incident_id", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/archive',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("unarchive",
+     {"id": "incident_id"},
+     'https://test.com/api/v1/incidents/id/incident_id/unarchive',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("escalate",
+     {"number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/number/incident_number/escalate',
+     'test_data/topdesk_incident.json',
+     {'number': 'incident_number'}),
+    ("deescalate",
+     {"number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/number/incident_number/deescalate',
+     'test_data/topdesk_incident.json',
+     {'number': 'incident_number'}),
+    ("archive",
+     {"number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/number/incident_number/archive',
+     'test_data/topdesk_incident.json',
+     {'number': 'incident_number'}),
+    ("unarchive",
+     {"number": "incident_number"},
+     'https://test.com/api/v1/incidents/number/incident_number/unarchive',
+     'test_data/topdesk_incident.json',
+     {'number': 'incident_number'}),
+    ("escalate",
+     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/escalate',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("deescalate",
+     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/deescalate',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("archive",
+     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     'https://test.com/api/v1/incidents/id/incident_id/archive',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'}),
+    ("unarchive",
+     {"id": "incident_id", "number": "incident_number"},
+     'https://test.com/api/v1/incidents/id/incident_id/unarchive',
+     'test_data/topdesk_incident.json',
+     {'id': 'incident_id'})
+])
+def test_incident_do_commands(requests_mock,
+                              action,
+                              command_args,
+                              command_api_url,
+                              mock_response_file,
+                              override_node):
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        }
+    )
+    mock_topdesk_node = util_load_json(mock_response_file)
+    response_incident = mock_topdesk_node.copy()
+    if override_node.get('id', None):
+        response_incident['id'] = override_node['id']
+    elif override_node.get('number', None):
+        response_incident['number'] = override_node['number']
+
+    requests_mock.put(
+        command_api_url, json=response_incident)
+
+    command_results = incident_do_command(client=client,
+                                          args=command_args,
+                                          action=action)
+    assert requests_mock.called
+    if command_args.get("reason_id", None):
+        assert requests_mock.last_request.json() == {'id': command_args.get("reason_id", None)}
+    else:
+        assert requests_mock.last_request.json() == {}
+
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == [response_incident]
+
+
+@pytest.mark.parametrize('create_func, command_args, command_api_url, caller_lookup, mock_response_file,'
+                         ' expected_last_request_body, expected_call_count', [
+                             (True,
+                              {"caller": "some_caller"},
+                              'https://test.com/api/v1/incidents/',
+                              True,
+                              'test_data/topdesk_incident.json',
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
+                              1),
+                             (True,
+                              {"caller": "some_caller"},
+                              'https://test.com/api/v1/incidents/',
+                              False,
+                              'test_data/topdesk_incident.json',
+                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
+                              2),
+                             (False,
+                              {"caller": "some_caller", "id": "incident_id"},
+                              'https://test.com/api/v1/incidents/id/incident_id',
+                              True,
+                              'test_data/topdesk_incident.json',
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
+                              1),
+                             (False,
+                              {"caller": "some_caller", "id": "incident_id"},
+                              'https://test.com/api/v1/incidents/id/incident_id',
+                              False,
+                              'test_data/topdesk_incident.json',
+                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}},
+                              1)
+                         ])
+def test_incident_touch_commands(requests_mock,
+                                 create_func,
+                                 command_args,
+                                 command_api_url,
+                                 caller_lookup,
+                                 mock_response_file,
+                                 expected_last_request_body,
+                                 expected_call_count):
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        }
+    )
+    client_func = client.update_incident
+    request_method = "put"
+    action = "updating"
+    if create_func:
+        client_func = client.create_incident
+        request_method = "post"
+        action = "creating"
+    mock_topdesk_node = util_load_json(mock_response_file)
+    response_incident = mock_topdesk_node.copy()
+    request_command = getattr(requests_mock, request_method)
+
+    request_command(command_api_url, json=response_incident)  # Fix multiple returns
+
+    command_results = incident_touch_command(client=client,
+                                             args=command_args,
+                                             client_func=client_func,
+                                             action=action)
+    assert requests_mock.call_count == expected_call_count
+    assert requests_mock.last_request.json() == expected_last_request_body
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == [response_incident]
+
+
 @pytest.mark.parametrize('command, command_args, command_api_request', [
     (branches_command,
      {'page_size': 2},
@@ -201,7 +371,52 @@ def test_list_command_with_args(requests_mock,
     assert requests_mock.last_request.json() == command_api_request[1]
 
 
-# TODO: add test for pagination for fetch_incidents
+@pytest.mark.parametrize('command_args, command_api_request, call_count', [
+    ({'max_fetch': 2,
+      'modification_date_start': '2020-02-10T06:32:36Z',
+      'modification_date_end': '2020-03-10T06:32:36Z',
+      'query': 'id==1st-incident-id'},
+     [('https://test.com/api/v1/incidents?page_size=2&query=id==1st-incident-id',
+       {'modification_date_start': '2020-02-10T06:32:36Z',
+        'modification_date_end': '2020-03-10T06:32:36Z'})], 1),
+    ({'max_fetch': 2 * MAX_API_PAGE_SIZE,
+      'modification_date_start': '2020-02-10T06:32:36Z',
+      'modification_date_end': '2020-03-10T06:32:36Z',
+      'query': 'id==1st-incident-id'},
+     [(f'https://test.com/api/v1/incidents?page_size={MAX_API_PAGE_SIZE}&query=id==1st-incident-id',
+       {'modification_date_start': '2020-02-10T06:32:36Z',
+        'modification_date_end': '2020-03-10T06:32:36Z'}),
+      (f'https://test.com/api/v1/incidents'
+       f'?start={MAX_API_PAGE_SIZE}&page_size={MAX_API_PAGE_SIZE}&query=id==1st-incident-id',
+       {'modification_date_start': '2020-02-10T06:32:36Z',
+        'modification_date_end': '2020-03-10T06:32:36Z'})], 2)
+])
+def test_get_incidents_with_pagination(requests_mock,
+                                       command_args,
+                                       command_api_request,
+                                       call_count):
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        }
+    )
+    for request in command_api_request:
+        requests_mock.get(
+            request[0], json=[{}])
+    get_incidents_with_pagination(client=client,
+                                  max_fetch=command_args.get('max_fetch', None),
+                                  query=command_args.get('query', None),
+                                  modification_date_start=command_args.get('modification_date_start', None),
+                                  modification_date_end=command_args.get('modification_date_end', None))
+
+    for called_request, mocked_request in zip(requests_mock._adapter.request_history, command_api_request):
+        assert called_request._request.url == mocked_request[0]
+        assert called_request.json() == mocked_request[1]
+    assert requests_mock.call_count == call_count
+
+
 # TODO: add tests for incident_do commands
 # TODO: add tests for attachment upload command
 
@@ -212,7 +427,7 @@ def test_list_command_with_args(requests_mock,
         'creationDate': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-01-11T06:32:36.303+0000',
-        '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
+     '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
     ([{
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36Z',
@@ -222,13 +437,13 @@ def test_list_command_with_args(requests_mock,
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303+0000',
-        '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
+     '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
     ([{
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'will_be_fetched': False
     }], '2020-02-10T06:32:36Z',
-        '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
+     '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """

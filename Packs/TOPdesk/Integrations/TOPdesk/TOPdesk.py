@@ -154,7 +154,7 @@ class Client(BaseClient):
             request_params.update(args["additional_params"])
 
         return self._http_request(
-            method='PATCH',
+            method='PUT',
             url_suffix=endpoint,
             json_data=request_params
         )
@@ -179,7 +179,7 @@ class Client(BaseClient):
             request_params["id"] = reason_id
 
         return self._http_request(
-            method='PATCH',
+            method='PUT',
             url_suffix=f"{endpoint}/{action}",
             json_data=request_params
         )
@@ -477,8 +477,8 @@ def get_incidents_list(client: Client,
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
         if args.get('status', None) not in allowed_statuses:
-            raise(ValueError(f"status {args.get('status', None)} id not in "
-                             f"the allowed statuses list: {allowed_statuses}"))
+            raise (ValueError(f"status {args.get('status', None)} id not in "
+                              f"the allowed statuses list: {allowed_statuses}"))
         else:
             filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
                                 "call_type", "entry_type"]
@@ -534,11 +534,38 @@ def incident_func_command(client: Client, args: Dict[str, Any], client_func: Cal
     """Abstract class for executing client_func and returning TOPdesk incident as a result."""
     response = client_func(args)
 
-    if not response.get('incident', None) and not response.get('id', None):
+    if not response.get('id', None):
         raise Exception(f"Recieved Error when {action} incident in TOPdesk:\n{response}")
 
-    incident = response.get('incident', response)
-    return incidents_to_command_results(client, [incident])
+    return incidents_to_command_results(client, [response])
+
+
+def incident_touch_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+    """ """
+    try:
+        args['registered_caller'] = True
+        return incident_func_command(client=client,
+                                     args=args,
+                                     client_func=client_func,
+                                     action=action)
+    except Exception as e:
+        if "'callerLookup.id' cannot be parsed" in str(e):
+            args['registered_caller'] = False
+            return_results(incident_func_command(client=client,
+                                                 args=args,
+                                                 client_func=client_func,
+                                                 action=action))
+        else:
+            raise e
+
+
+def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> CommandResults:
+    """ """
+    return incidents_to_command_results(client,
+                                        [client.incident_do(action=action,
+                                                            incident_id=args.get("id", None),
+                                                            incident_number=args.get("number", None),
+                                                            reason_id=args.get("reason_id", None))])
 
 
 def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -711,94 +738,41 @@ def main() -> None:
 
         elif demisto.command() == 'topdesk-persons-list':
             return_results(list_persons_command(client, demisto.args()))
-
         elif demisto.command() == 'topdesk-operators-list':
             return_results(list_operators_command(client, demisto.args()))
-
         elif demisto.command() == 'topdesk-entry-types-list':
             return_results(entry_types_command(client))
-
         elif demisto.command() == 'topdesk-call-types-list':
             return_results(call_types_command(client))
-
         elif demisto.command() == 'topdesk-categories-list':
             return_results(categories_command(client))
-
         elif demisto.command() == 'topdesk-subcategories-list':
             return_results(subcategories_command(client))
-
         elif demisto.command() == 'topdesk-branches-list':
             return_results(branches_command(client, demisto.args()))
-
         elif demisto.command() == 'topdesk-incidents-list':
             return_results(get_incidents_list_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incident-create':
-            args = demisto.args()
-            try:
-                args['registered_caller'] = True
-                return_results(incident_func_command(client=client,
-                                                     args=demisto.args(),
-                                                     client_func=client.create_incident,
-                                                     action="creating"))
-            except Exception as e:
-                if "'callerLookup.id' cannot be parsed" in str(e):
-                    args['registered_caller'] = False
-                    return_results(incident_func_command(client=client,
-                                                         args=demisto.args(),
-                                                         client_func=client.create_incident,
-                                                         action="creating"))
-                else:
-                    raise e
-
+            return_results(incident_touch_command(client=client,
+                                                  args=demisto.args(),
+                                                  client_func=client.create_incident,
+                                                  action="creating"))
         elif demisto.command() == 'topdesk-incident-update':
-            args = demisto.args()
-            try:
-                args['registered_caller'] = True
-                return_results(incident_func_command(client=client,
-                                                     args=demisto.args(),
-                                                     client_func=client.update_incident,
-                                                     action="updating"))
-            except Exception as e:
-                if "'callerLookup.id' cannot be parsed" in str(e):
-                    args['registered_caller'] = False
-                    return_results(incident_func_command(client=client,
-                                                         args=demisto.args(),
-                                                         client_func=client.update_incident,
-                                                         action="updating"))
-                else:
-                    raise e
+            return_results(incident_touch_command(client=client,
+                                                  args=demisto.args(),
+                                                  client_func=client.update_incident,
+                                                  action="updating"))
+
         elif demisto.command() == 'topdesk-incident-escalate':
-            return_results(incidents_to_command_results(client,
-                                                        [client.incident_do(action="escalate",
-                                                                            incident_id=demisto.args().get("id", None),
-                                                                            incident_number=demisto.args().get("number",
-                                                                                                               None),
-                                                                            reason_id=demisto.args().get("reason_id",
-                                                                                                         None))]))
+            return_results(incident_do_command(client, demisto.args(), "escalate"))
         elif demisto.command() == 'topdesk-incident-deescalate':
-            return_results(incidents_to_command_results(client,
-                                                        [client.incident_do(action="deescalate",
-                                                                            incident_id=demisto.args().get("id", None),
-                                                                            incident_number=demisto.args().get("number",
-                                                                                                               None),
-                                                                            reason_id=demisto.args().get("reason_id",
-                                                                                                         None))]))
+            return_results(incident_do_command(client, demisto.args(), "deescalate"))
         elif demisto.command() == 'topdesk-incident-archive':
-            return_results(incidents_to_command_results(client,
-                                                        [client.incident_do(action="archive",
-                                                                            incident_id=demisto.args().get("id", None),
-                                                                            incident_number=demisto.args().get("number",
-                                                                                                               None),
-                                                                            reason_id=demisto.args().get("reason_id",
-                                                                                                         None))]))
+            return_results(incident_do_command(client, demisto.args(), "archive"))
         elif demisto.command() == 'topdesk-incident-unarchive':
-            return_results(incidents_to_command_results(client,
-                                                        [client.incident_do(action="unarchive",
-                                                                            incident_id=demisto.args().get("id", None),
-                                                                            incident_number=demisto.args().get("number",
-                                                                                                               None),
-                                                                            reason_id=None)]))
+            return_results(incident_do_command(client, demisto.args(), "unarchive"))
+
         elif demisto.command() == 'topdesk-incident-attachment-upload':
             return_results(attachment_upload_command(client, demisto.args()))
 
