@@ -1,24 +1,43 @@
+from itertools import zip_longest
 from typing import Dict
 
 import urllib3
-from gql import Client, gql
-from gql.transport.requests import RequestsHTTPTransport
 
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from gql import Client, gql
+from gql.transport.requests import RequestsHTTPTransport
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+CAST_MAPPING = {
+    'String': str,
+    'Boolean': bool,
+    'Int': int,
+    'Float': float,
+}
 
 
 def execute_query(client: Client, args: Dict) -> CommandResults:
     query = gql(args.get('query'))
     variables_names = argToList(args.get('variables_names', ''))
     variables_values = argToList(args.get('variables_values', ''))
-    if len(variables_names) != len(variables_values):
+    variables_types = argToList(args.get('variables_types', ''))
+    if len(variables_names) != len(variables_values) or \
+            (variables_types and len(variables_types) != len(variables_values)):
         raise ValueError('The variable lists are not in the same length')
-    variables = {name: value for name, value in zip(variables_names, variables_values)}
+    variables = {}
+    for variable_name, variable_value, variable_type in zip_longest(variables_names, variables_values, variables_types):
+        if variable_type:
+            variable_value = CAST_MAPPING[variable_type](variable_value)
+        elif variable_value.isdigit():
+            variable_value = int(variable_value)
+        elif variable_value.lower() in {'true', 'false'}:
+            variable_value = bool(variable_value)
+        variables[variable_name] = variable_value
     result = client.execute(query, variable_values=variables)
     if (result_size := sys.getsizeof(result)) > (max_result_size := float(args.get('max_result_size', 10))) * 10000:
         raise ValueError(f'Result size {result_size / 10000} KBs is larger then max result size {max_result_size} KBs')
