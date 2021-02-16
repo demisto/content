@@ -1,6 +1,6 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "Azure Storage",
+    "description": "Deploy and manage storage accounts and blob service properties.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

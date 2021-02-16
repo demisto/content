@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 API_VERSION = '2019-06-01'
 
 
-class AKSClient:
+class ASClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -33,9 +33,18 @@ class AKSClient:
 
     @logger
     def storage_account_list_request(self, account_name: str) -> Dict:
+        """
+            Send the get storage account/s request to the API.
+        Args:
+            account_name: The storage account name, optional.
+
+        Returns:
+            The json response from the API call.
+        """
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}',
+            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
+                       f'{account_name}',
             params={
                 'api-version': API_VERSION,
             }
@@ -43,104 +52,244 @@ class AKSClient:
 
     @logger
     def storage_blob_service_properties_get_request(self, account_name: str) -> Dict:
+        """
+            Send the get blob service properties request to the API.
+        Args:
+            account_name: The storage account name.
+
+        Returns:
+            The json response from the API call.
+        """
         return self.ms_client.http_request(
             method='GET',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default',
+            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
+                       f'{account_name}/blobServices/default',
             params={
                 'api-version': API_VERSION,
             }
         )
 
     @logger
-    def storage_account_create_update(self,
-                                      account_name: str,
-                                      sku: str,
-                                      kind: str,
-                                      location: str,
-                                      tags: Optional[str] = None,
-                                      custom_domain_name: Optional[str] = None,
-                                      use_sub_domain_name: Optional[bool] = None,
-                                      enc_key_source: Optional[str] = None,
-                                      enc_requireInfrastructureEncryption: Optional[bool] = None,
-                                      enc_keyvault_key_name: Optional[str] = None,
-                                      enc_keyvault_key_version: Optional[str] = None,
-                                      enc_keyvault_uri: Optional[str] = None,
-                                      access_tier: Optional[str] = None,
-                                      supports_https_traffic_only: Optional[bool] = None,
-                                      is_hns_enabled: Optional[bool] = None,
-                                      large_file_shares_state: Optional[str] = None,
-                                      allow_blob_public_access: Optional[bool] = None,
-                                      minimum_tls_version: Optional[str] = None
-                                      ) -> Dict:
+    def storage_account_create_update_request(self, args: Dict) -> Dict:
+        """
+            Send the user arguments for the create/update account in the request body to the API.
+        Args:
+            args: The user arguments.
+
+        Returns:
+            The json response from the API call.
+        """
         json_data_args = {
             'sku': {
-                'name': sku
+                'name': args['sku']
             },
-            'kind': kind,
-            'location': location,
+            'kind': args['kind'],
+            'location': args['location'],
             'properties': {}
         }
-        if tags is not None:
-            args_tags_list = tags.split(',')
-            tags_obj = {f'tag{str(i+1)}': args_tags_list[i] for i in range(len(args_tags_list))}
+
+        if 'tags' in args:
+            args_tags_list = args['tags'].split(',')
+            tags_obj = {f'tag{str(i + 1)}': args_tags_list[i] for i in range(len(args_tags_list))}
             json_data_args['tags'] = tags_obj
-        if custom_domain_name is not None:
-            custom_domain = {'name': custom_domain_name}
-            if use_sub_domain_name is not None:
-                custom_domain['useSubDomainName'] = use_sub_domain_name
+
+        if 'custom_domain_name' in args:
+            custom_domain = {'name': args['custom_domain_name']}
+            if args['use_sub_domain_name']:
+                custom_domain['useSubDomainName'] = args['use_sub_domain_name']
             else:
                 custom_domain['useSubDomainName'] = False
             json_data_args['properties']['customDomain'] = custom_domain
-        if enc_key_source is not None:
-            json_data_args['properties']['Encryption'] = {'keySource': enc_key_source, 'keyvaultproperties':{}}
-        if enc_keyvault_key_name is not None:
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyname'] = enc_keyvault_key_name
-        if enc_keyvault_key_version is not None:
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyversion'] = enc_keyvault_key_version
-        if enc_keyvault_uri is not None:
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyvaulturi'] = enc_keyvault_uri
-        if enc_requireInfrastructureEncryption is not None:
-            json_data_args['properties']['Encryption']['requireInfrastructureEncryption'] = enc_requireInfrastructureEncryption
-        if access_tier is not None:
-            json_data_args['properties']['accessTier'] = access_tier
-        if supports_https_traffic_only is not None:
-            json_data_args['properties']['supportsHttpsTrafficOnly'] = supports_https_traffic_only
-        if is_hns_enabled is not None:
-            json_data_args['properties']['isHnsEnabled'] = is_hns_enabled
-        if large_file_shares_state is not None:
-            json_data_args['properties']['largeFileSharesState'] = large_file_shares_state
-        if allow_blob_public_access is not None:
-            json_data_args['properties']['allowBlobPublicAccess'] = allow_blob_public_access
-        if minimum_tls_version is not None:
-            json_data_args['properties']['minimumTlsVersion'] = minimum_tls_version
-        print(json_data_args)
+
+        if 'enc_key_source' in args:
+            json_data_args['properties']['Encryption'] = {'keySource': args['enc_key_source'], 'keyvaultproperties': {}}
+
+        if 'enc_keyvault_key_name' in args:
+            if 'Encryption' not in json_data_args['properties']:
+                json_data_args['properties']['Encryption'] = {}
+            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
+                json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
+            json_data_args['properties']['Encryption']['keyvaultproperties']['keyname'] = args['enc_keyvault_key_name']
+
+        if 'enc_keyvault_key_version' in args:
+            if 'Encryption' not in json_data_args['properties']:
+                json_data_args['properties']['Encryption'] = {}
+            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
+                json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
+            json_data_args['properties']['Encryption']['keyvaultproperties']['keyversion'] = \
+                args['enc_keyvault_key_version']
+
+        if 'enc_keyvault_uri' in args:
+            if 'Encryption' not in json_data_args['properties']:
+                json_data_args['properties']['Encryption'] = {}
+            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
+                json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
+            json_data_args['properties']['Encryption']['keyvaultproperties']['keyvaulturi'] = args['enc_keyvault_uri']
+
+        if 'enc_requireInfrastructureEncryption' in args:
+            if 'Encryption' not in json_data_args['properties']:
+                json_data_args['properties']['Encryption'] = {}
+            json_data_args['properties']['Encryption']['requireInfrastructureEncryption'] = \
+                args['enc_requireInfrastructureEncryption']
+
+        if 'network_ruleset_bypass' in args:
+            if 'networkAcls' not in json_data_args['properties']:
+                json_data_args['properties']['networkAcls'] = {}
+            json_data_args['properties']['networkAcls']['bypass'] = args['network_ruleset_bypass']
+
+        if 'network_ruleset_default_action' in args:
+            if 'networkAcls' not in json_data_args['properties']:
+                json_data_args['properties']['networkAcls'] = {}
+            json_data_args['properties']['networkAcls']['defaultAction'] = args['network_ruleset_default_action']
+
+        if 'network_ruleset_ipRules' in args:
+            if 'networkAcls' not in json_data_args['properties']:
+                json_data_args['properties']['networkAcls'] = {}
+            json_data_args['properties']['networkAcls']['ipRules'] = json.loads(args['network_ruleset_ipRules'])
+
+        if 'virtual_network_rules' in args:
+            if 'networkAcls' not in json_data_args['properties']:
+                json_data_args['properties']['networkAcls'] = {}
+            json_data_args['properties']['networkAcls']['virtualNetworkRules'] = \
+                json.loads(args['virtual_network_rules'])
+
+        if 'access_tier' in args:
+            json_data_args['properties']['accessTier'] = args['access_tier']
+
+        if 'supports_https_traffic_only' in args:
+            json_data_args['properties']['supportsHttpsTrafficOnly'] = args['supports_https_traffic_only']
+
+        if 'is_hns_enabled' in args:
+            json_data_args['properties']['isHnsEnabled'] = args['is_hns_enabled']
+
+        if 'large_file_shares_state' in args:
+            json_data_args['properties']['largeFileSharesState'] = args['large_file_shares_state']
+
+        if 'allow_blob_public_access' in args:
+            json_data_args['properties']['allowBlobPublicAccess'] = args['allow_blob_public_access']
+
+        if 'minimum_tls_version' in args:
+            json_data_args['properties']['minimumTlsVersion'] = args['minimum_tls_version']
+
         return self.ms_client.http_request(
             method='PUT',
             url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'/{account_name}',
+                       f'/{args["account_name"]}',
             params={
                 'api-version': API_VERSION,
             },
-            json_data=json_data_args,
-            timeout=30,
+            json_data=json_data_args
+        )
+
+    def storage_blob_service_properties_set_request(self, args: Dict) -> Dict:
+        """
+            Send the user arguments for the blob service in the request body to the API.
+        Args:
+            args: The user arguments.
+
+        Returns:
+            The json response from the API call.
+        """
+        properties = {}
+
+        if 'change_feed_enabled' in args:
+            properties['changeFeed'] = {'enabled': args['change_feed_enabled']}
+
+        if 'change_feed_retention_days' in args:
+            if 'changeFeed' not in properties:
+                properties['changeFeed'] = {}
+            properties['changeFeed']['retentionInDays'] = args['change_feed_retention_days']
+
+        if 'container_delete_rentention_policy_enabled' in args:
+            properties['containerDeleteRetentionPolicy'] = \
+                {'enabled': args['container_delete_rentention_policy_enabled']}
+
+        if 'container_delete_rentention_policy_days' in args:
+            if 'containerDeleteRetentionPolicy' not in properties:
+                properties['containerDeleteRetentionPolicy'] = {}
+            properties['containerDeleteRetentionPolicy']['days'] = args['container_delete_rentention_policy_days']
+
+        if 'delete_rentention_policy_enabled' in args:
+            properties['deleteRetentionPolicy'] = {'enabled': args['delete_rentention_policy_enabled']}
+
+        if 'delete_rentention_policy_days' in args:
+            if 'deleteRetentionPolicy' not in properties:
+                properties['deleteRetentionPolicy'] = {}
+            properties['deleteRetentionPolicy']['days'] = args['delete_rentention_policy_days']
+
+        if 'versioning' in args:
+            properties['isVersioningEnabled'] = args['versioning']
+
+        if 'last_access_time_tracking_policy_enabled' in args:
+            if 'lastAccessTimeTrackingPolicy' not in properties:
+                properties['lastAccessTimeTrackingPolicy'] = {}
+            properties['lastAccessTimeTrackingPolicy']['enable'] = args['last_access_time_tracking_policy_enabled']
+
+        if 'last_access_time_tracking_policy_blob_types' in args:
+            if 'lastAccessTimeTrackingPolicy' not in properties:
+                properties['lastAccessTimeTrackingPolicy'] = {}
+            properties['lastAccessTimeTrackingPolicy']['blobType'] = \
+                args['last_access_time_tracking_policy_blob_types'].split(',')
+
+        if 'last_access_time_tracking_policy_days' in args:
+            if 'lastAccessTimeTrackingPolicy' not in properties:
+                properties['lastAccessTimeTrackingPolicy'] = {}
+            properties['lastAccessTimeTrackingPolicy']['trackingGranularityInDays'] = \
+                args['last_access_time_tracking_policy_days']
+
+        if 'restore_policy_enabled' in args:
+            if 'restorePolicy' not in properties:
+                properties['restorePolicy'] = {}
+            properties['restorePolicy']['enabled'] = args['restore_policy_enabled']
+
+        if 'restore_policy_min_restore_time' in args:
+            if 'restorePolicy' not in properties:
+                properties['restorePolicy'] = {}
+            properties['restorePolicy']['minRestoreTime'] = args['restore_policy_min_restore_time']
+
+        if 'restore_policy_days' in args:
+            if 'restorePolicy' not in properties:
+                properties['restorePolicy'] = {}
+            properties['restorePolicy']['days'] = args['restore_policy_days']
+
+        return self.ms_client.http_request(
+            method='PUT',
+            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
+                       f'{args["account_name"]}/blobServices/default',
+            params={
+                'api-version': API_VERSION,
+            },
+            json_data={'properties': properties}
         )
 
 
-def storage_account_list(client: AKSClient, args: Dict) -> CommandResults:
+# Storage Account Commands
+
+
+def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
+    """
+        Gets a storage account if an account name is specified, and a list of storage accounts if not.
+    Args:
+        client: The microsoft client.
+        args: The users arguments, (like account name).
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     account_name = args.get('account_name', '')
     response = client.storage_account_list_request(account_name)
     accounts = response.get('value', [response])
+
     readable_output = [{
         'Account Name': account.get('name'),
         'Subscription ID': re.search('subscriptions/(.+?)/resourceGroups', account.get('id')).group(1),
         'Resource Group': re.search('resourceGroups/(.+?)/providers', account.get('id')).group(1),
         'Kind': account.get('kind'),
-        'Sku': account.get('sku', {}),
-        'Status Primary': account.get('properties', {}).get('statusOfPrimary'),
-        'Status Secondary': account.get('properties', {}).get('statusOfSecondary'),
+        'Status Primary': account.get('properties').get('statusOfPrimary'),
+        'Status Secondary': account.get('properties').get('statusOfSecondary'),
         'Location': account.get('location'),
-        'Tags': account.get('tags')
     } for account in accounts]
+
     return CommandResults(
         outputs_prefix='AzureStorage.StorageAccount',
         outputs_key_field='id',
@@ -148,104 +297,143 @@ def storage_account_list(client: AKSClient, args: Dict) -> CommandResults:
         readable_output=tableToMarkdown(
             'Azure Storage Account List',
             readable_output,
-            ['Account Name', 'Subscription ID', 'Resource Group', 'Kind', 'Sku', 'Status Primary', 'Status Secondary', 'Location', 'Tags'],
+            ['Account Name', 'Subscription ID', 'Resource Group', 'Kind', 'Status Primary', 'Status Secondary',
+             'Location'],
         ),
         raw_response=response
     )
 
 
-def storage_account_create_update(client: AKSClient, args: Dict) -> str:
-    account_args = {
-        'account_name': args.get('account_name'),
-        'sku': args.get('sku'),
-        'kind': args.get('kind'),
-        'location': args.get('location')
+def storage_account_create_update(client: ASClient, args: Dict) -> CommandResults:
+    """
+        Creates or updates a given storage account.
+    Args:
+        client: The microsoft client.
+        args: The users arguments, (like account name).
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+
+    response = client.storage_account_create_update_request(args)
+
+    readable_output = {
+        'Account Name': response.get('name'),
+        'Subscription ID': re.search('subscriptions/(.+?)/resourceGroups', response.get('id')).group(1),
+        'Resource Group': re.search('resourceGroups/(.+?)/providers', response.get('id')).group(1),
+        'Kind': response.get('kind'),
+        'Status Primary': response.get('properties').get('statusOfPrimary'),
+        'Status Secondary': response.get('properties').get('statusOfSecondary'),
+        'Location': response.get('location')
     }
-    if args.get('tags'):
-        account_args['tags'] = args.get('tags')
-    if args.get('custom_domain_name'):
-        account_args['custom_domain_name'] = args.get('custom_domain_name')
-        if args.get('use_sub_domain_name'):
-            account_args['use_sub_domain_name'] = argToBoolean(args.get('use_sub_domain_name'))
-        else:
-            account_args['use_sub_domain_name'] = False
-    if args.get('enc_key_source'):
-        account_args['enc_key_source'] = args.get('enc_key_source')
-    if args.get('enc_requireInfrastructureEncryption'):
-        account_args['enc_requireInfrastructureEncryption'] = argToBoolean(args.get('enc_requireInfrastructureEncryption'))
-    if args.get('enc_keyvault_key_name'):
-        account_args['enc_keyvault_key_name'] = args.get('enc_keyvault_key_name')
-    if args.get('enc_keyvault_key_version'):
-        account_args['enc_keyvault_key_version'] = args.get('enc_keyvault_key_version')
-    if args.get('enc_keyvault_uri'):
-        account_args['enc_keyvault_uri'] = args.get('enc_keyvault_uri')
-    if args.get('access_tier'):
-        account_args['access_tier'] = args.get('access_tier')
-    if args.get('supports_https_traffic_only'):
-        account_args['supports_https_traffic_only'] = argToBoolean(args.get('supports_https_traffic_only'))
-    if args.get('is_hns_enabled'):
-        account_args['is_hns_enabled'] = argToBoolean(args.get('is_hns_enabled'))
-    if args.get('large_file_shares_state'):
-        account_args['large_file_shares_state'] = args.get('large_file_shares_state')
-    if args.get('allow_blob_public_access'):
-        account_args['allow_blob_public_access'] = argToBoolean(args.get('allow_blob_public_access'))
-    if args.get('minimum_tls_version'):
-        account_args['minimum_tls_version'] = args.get('minimum_tls_version')
 
-    try:
-        client.storage_account_create_update(**account_args)
-        return 'The request to create/update an storage account was sent successfully.'
-    except Exception as e:
-        return e
+    return CommandResults(
+        outputs_prefix='AzureStorage.StorageAccount',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(
+            'Azure Storage Account',
+            readable_output,
+            ['Account Name', 'Subscription ID', 'Resource Group', 'Kind', 'Status Primary', 'Status Secondary',
+             'Location'],
+        ),
+        raw_response=response
+    )
 
 
-def storage_blob_service_properties_get(client: AKSClient, args: Dict):
+# Blob Service Commands
+
+
+def storage_blob_service_properties_get(client: ASClient, args: Dict) -> CommandResults:
+    """
+        Gets the blob service properties for the storage account.
+    Args:
+        client: The microsoft client.
+        args: The users arguments, (like account name).
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+
     account_name = args.get('account_name')
     response = client.storage_blob_service_properties_get_request(account_name)
+
     readable_output = {
         'Name': response.get('name'),
         'Subscription ID': re.search('subscriptions/(.+?)/resourceGroups', response.get('id')).group(1),
         'Resource Group': re.search('resourceGroups/(.+?)/providers', response.get('id')).group(1),
-        'Sku': response.get('sku', {})
     }
+
     return CommandResults(
         outputs_prefix='AzureStorage.BlobServiceProperties',
         outputs_key_field='id',
         outputs=response,
         readable_output=tableToMarkdown(
-            'Azure Storage Account List',
+            'Azure Storage Blob Service Properties',
             readable_output,
-            ['Name', 'Subscription ID', 'Resource Group', 'Sku'],
+            ['Name', 'Subscription ID', 'Resource Group'],
         ),
         raw_response=response
     )
 
 
-def azure_storage_blob_service_properties_set(client: AKSClient, args: Dict):
-    return
+def storage_blob_service_properties_set(client: ASClient, args: Dict):
+    """
+        Sets the blob service properties for the storage account.
+    Args:
+        client: The microsoft client.
+        args: The users arguments, (like account name).
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+
+    response = client.storage_blob_service_properties_set_request(args)
+
+    readable_output = {
+        'Name': response.get('name'),
+        'Subscription ID': re.search('subscriptions/(.+?)/resourceGroups', response.get('id')).group(1),
+        'Resource Group': re.search('resourceGroups/(.+?)/providers', response.get('id')).group(1),
+    }
+
+    return CommandResults(
+        outputs_prefix='AzureStorage.BlobServiceProperties',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(
+            'Azure Storage Blob Service Properties',
+            readable_output,
+            ['Name', 'Subscription ID', 'Resource Group'],
+        ),
+        raw_response=response
+    )
 
 
-def start_auth(client: AKSClient) -> CommandResults:
+# Authentication Functions
+
+
+def start_auth(client: ASClient) -> CommandResults:
     user_code = client.ms_client.device_auth_request()
     return CommandResults(readable_output=f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
  and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-ks-auth-complete** command in the War Room.""")
+2. Run the **!azure-storage-auth-complete** command in the War Room.""")
 
 
-def complete_auth(client: AKSClient) -> str:
+def complete_auth(client: ASClient) -> str:
     client.ms_client.get_access_token()
     return '✅ Authorization completed successfully.'
 
 
-def test_connection(client: AKSClient) -> str:
+def test_connection(client: ASClient) -> str:
     client.ms_client.get_access_token()
     return '✅ Success!'
 
 
 def reset_auth() -> str:
     set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
+    return 'Authorization was reset successfully. Run **!azure-storage-auth-start** to start the authentication \
+    process.'
 
 
 def main() -> None:
@@ -255,7 +443,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = AKSClient(
+        client = ASClient(
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
@@ -278,12 +466,14 @@ def main() -> None:
             return_results(storage_account_create_update(client, args))
         elif command == 'azure-storage-blob-service-properties-get':
             return_results(storage_blob_service_properties_get(client, args))
-        # elif command == 'azure-storage-account-create-update':
-        #     return_results(storage_blob_service_properties_set(client, args))
+        elif command == 'azure-storage-blob-service-properties-set':
+            return_results(storage_blob_service_properties_set(client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
