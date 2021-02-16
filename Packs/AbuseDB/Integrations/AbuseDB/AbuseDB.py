@@ -34,6 +34,7 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
+
 PROXY = demisto.params().get('proxy')
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
