@@ -490,8 +490,8 @@ def list_assets_command(client: Client, args: dict):
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: str,
-                    max_fetch: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
+                    max_fetch: Union[str, bytes, SupportsInt, _SupportsIndex],
+                    first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
