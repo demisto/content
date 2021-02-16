@@ -11,13 +11,10 @@ configuration:
   name: isFetch
   type: 8
   required: false
-  defaultvalue: true
-  additionalinfo: "Defines if this integration fetches incidents."
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-  additionalinfo: "Should be set to Argus Case."
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no

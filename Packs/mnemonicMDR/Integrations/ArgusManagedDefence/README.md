@@ -1,5 +1,7 @@
-Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.
-This integration was integrated and tested with version xx of ArgusManagedDefence
+Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service. 
+
+This integration was integrated and tested with version 5.1.1 argus-toolbelt ([PyPi](https://pypi.org/project/argus-toolbelt)).
+
 ## Configure ArgusManagedDefence on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,6 +24,24 @@ This integration was integrated and tested with version xx of ArgusManagedDefenc
     | Use system proxy settings | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Mirroring
+This integration supports in- and outbound mirroring of incidents. 
+Case comments are added as incident notes and case attachments added as files.
+Tags and events are fetched and placed in context.
+#### Configuration
+You should set the mirroring direction parameter to the appropriate mirroring direction(s). If you are mirroring out, please note that all War Room entries you want added to Argus must be attached with the same tag as configured as the integration parameter *Mirroring tag*.
+
+### Excluding cases / creating Argus Cases from XSOAR
+If you wish to create an Argus Case from an incident you should configure the integration to exclude fetching incidents with and appropriate tag and ensure that the new Argus Case has this tag. 
+This will ensure that this Argus Case is *not* fetched back by the integration and a new incident created.
+An example use case could be that you are running an XSOAR incident for a while for internal purposes before you wish to create an Argus Case. 
+
+#### Example
+```
+!argus-create-case subject=<...> description=<...> service=<...> type=<...> tags=<exclude_tag>
+```
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
