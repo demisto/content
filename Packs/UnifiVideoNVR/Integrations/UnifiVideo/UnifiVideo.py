@@ -94,7 +94,7 @@ if demisto.command() == 'unifivideo-get-recording':
     output = f.read()
     filename = recording_file_name
     file = fileResult(filename=filename, data=output)
-    file['Type'] = entryTypes['file']
+    fileResult(filename=filename, data=output, file_type=EntryType.ENTRY_INFO_FILE)
     demisto.results(file)
 
 if demisto.command() == 'unifivideo-get-recording-motion-snapshot':
