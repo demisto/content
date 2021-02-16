@@ -868,8 +868,8 @@ tasks:
       id: 75bccaa7-b3d8-4a90-8705-4cc463cf5c91
       version: -1
       name: Extract indicators from the alert data
-      description: Extracts indicators from the user email and exfiltration destination
-        playbook inputs.
+      description: Extracts indicators from the user email, exfiltration destination
+       and malware hash playbook inputs.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
