@@ -15,7 +15,8 @@ configuration:
   name: password
   required: true
   type: 4
-- display: Fetch incidents
+- defaultvalue: true
+  display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -23,21 +24,23 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 3 days
-  display: First fetch time
-  additionalinfo: The time interval for the first fetch (retroactive). For example
-    3 days, 1 hour
-  name: first_fetch
-  required: true
-  type: 0
-- defaultvalue: '50'
+- defaultvalue: "50"
   display: Fetch Limit (Recommended less than 200)
   name: max_fetch
   required: false
   type: 0
+- defaultvalue: None (Do Not Modify)
+  display: First fetch time
+  additionalinfo: The time interval for the first fetch (retroactive). Only the
+    default value of None will be honored which means only new Radar events will be found.
+  name: first_fetch
+  required: false
+  type: 0
+defaultclassifier: Rubrik Polaris Radar - Classification
+defaultmapperin: Rubrik Polaris Radar - Mapping
 description: Create a new incident when a Polaris Radar anomaly event is detected
   and determine if any Sonar data classification hits were found on that object.
-display: Rubrik Polaris
+display: Rubrik Polaris (Partner Contribution)
 name: RubrikPolaris
 script:
   commands:
@@ -83,7 +86,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
-defaultclassifier: Rubrik Polaris Radar - Classification
-defaultmapperin: Rubrik Polaris Radar - Mapping
 tests:
 - No tests (auto formatted)
