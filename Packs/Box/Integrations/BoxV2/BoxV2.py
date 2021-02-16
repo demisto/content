@@ -965,8 +965,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             params=query_params,
             json_data=request_body,
-            timeout=30,
-            return_empty_response=True
+            timeout=30
         )
 
 
