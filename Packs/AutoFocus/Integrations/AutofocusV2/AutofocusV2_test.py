@@ -119,23 +119,23 @@ TAGS_DETAILS_RES = {
 }
 
 TAGS_FROM_FILE_RES = [
-         {
-            'PublicTagName': 'Commodity.Sivis',
-            'TagName': 'Sivis',
-            'CustomerName': 'Palo Alto Networks Unit42',
-            'Source': None,
-            'TagDefinitionScopeID': 3,
-            'TagDefinitionStatusID': 1,
-            'TagClassID': 3,
-            'Count': 11778017,
-            'TagGroups': {'TagGroupName': 'GROUP'},
-            'Aliases': 'ALIASES',
-            'Lasthit': '2021-02-14 23:56:40',
-            'Description': 'A file infector which attempts to enumerate files on the host.'
-                           ' Modifies boot.ini and other system files to maintain persistence'
-                           ' and spread.'
-         }
-    ]
+    {
+        'PublicTagName': 'Commodity.Sivis',
+        'TagName': 'Sivis',
+        'CustomerName': 'Palo Alto Networks Unit42',
+        'Source': None,
+        'TagDefinitionScopeID': 3,
+        'TagDefinitionStatusID': 1,
+        'TagClassID': 3,
+        'Count': 11778017,
+        'TagGroups': {'TagGroupName': 'GROUP'},
+        'Aliases': 'ALIASES',
+        'Lasthit': '2021-02-14 23:56:40',
+        'Description': 'A file infector which attempts to enumerate files on the host.'
+                       ' Modifies boot.ini and other system files to maintain persistence'
+                       ' and spread.'
+    }
+]
 
 TAGS_FOR_GENERIC_CONTEXT_OUTPUT = [
     {
@@ -145,7 +145,6 @@ TAGS_FOR_GENERIC_CONTEXT_OUTPUT = [
         'Aliases': 'ALIASES',
     }
 ]
-
 
 
 def util_load_json(path):
