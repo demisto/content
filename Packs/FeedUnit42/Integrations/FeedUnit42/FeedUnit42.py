@@ -351,7 +351,6 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                         "modified": relation_object.get('modified'),
                         "reportedby": 'Unit42',
                         "mitrecourseofaction": create_course_of_action_field(courses_of_action)
-                            if courses_of_action else 'No courses of action found.'
                     }
                 })
 
@@ -367,6 +366,8 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
     Returns:
         markdown string with courses of action tables.
     """
+    if not courses_of_action:
+        return 'No courses of action found.'
     markdown = ''
     for relationship_product, courses_list in courses_of_action.items():
         tmp_table = []
