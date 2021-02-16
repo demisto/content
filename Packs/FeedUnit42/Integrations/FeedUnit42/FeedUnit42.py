@@ -337,7 +337,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                         "tags": [],
                         "modified": relation_object.get('modified'),
                         "reportedby": 'Unit42',
-                        "mitrecourseofaction": []
+                        "mitrecourseofaction": 'No courses of action found.'
                     }
                 }
 
