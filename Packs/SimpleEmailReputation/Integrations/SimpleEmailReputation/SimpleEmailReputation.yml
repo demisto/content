@@ -1,0 +1,48 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Simple Email Reputation
+  version: -1
+configuration:
+- defaultvalue: https://emailrep.io/
+  display: 'Server URL '
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: |-
+  EmailRep is a system of crawlers, scanners and enrichment services that collects data on email addresses, domains, and internet personas.
+
+  EmailRep uses hundreds of data points from social media profiles, professional networking sites, dark web credential leaks, data breaches, phishing kits, phishing emails, spam lists, open mail relays, domain age and reputation, deliverability, and more to predict the risk of an email address.
+display: Simple Email Reputation
+name: Simple Email Reputation
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: A List of email addresses - comma separated
+      isArray: true
+      name: email
+      required: true
+    description: Return email information and reputation
+    name: emailrep-get-reputation
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
