@@ -1,0 +1,17 @@
+{
+    "name": "PICUS",
+    "description": "Hi,\n\nPicus is Breach and Attack Simulation tools that inside in our company(and lot of company). I developed integration between this tool and Demisto.\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Murat Ozfidan",
+    "url": "",
+    "email": "",
+    "created": "2021-02-16T12:21:20Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "muratozfidan"
+    ]
+}
