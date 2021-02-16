@@ -36,4 +36,3 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     assert len(response.outputs) == 2
     assert len(response.raw_response) == 3
     assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
-

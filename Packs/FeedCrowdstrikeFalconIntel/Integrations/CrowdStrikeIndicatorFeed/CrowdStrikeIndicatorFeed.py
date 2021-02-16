@@ -49,7 +49,7 @@ class Client(BaseClient):
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                      params=params, data=data, timeout=timeout, auth=auth)
 
-    def _get_access_token(self) -> str:
+    def _get_access_token(self):
         body = {
             'client_id': self._client_id,
             'client_secret': self._client_secret
@@ -73,7 +73,7 @@ class Client(BaseClient):
             self.set_last_run()
         return params
 
-    def get_indicators(self, type: list = None, malicious_confidence: str = '', filter: str = '', q: str = '',
+    def get_indicators(self, type=None, malicious_confidence='', filter='', q='',
                        limit: int = 100, offset: int = 0, include_deleted=False,
                        get_indicators_command=False) -> Dict[str, Any]:
         if type:
@@ -129,15 +129,15 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
     """
     raw_response = client.get_indicators(type=type, malicious_confidence=malicious_confidence, filter=filter, q=q,
                                          include_deleted=include_deleted, get_indicators_command=True)
-    parsed_indicators = []
-    indicator = {}
+    parsed_indicators = []  # type: List
+    indicator = {}  # type: Dict
     for resource in raw_response['resources']:
         indicator = {
             'type': CROWDSTRIKE_TO_XSOHR_TYPES.get(resource.get('type'), resource.get('type')),
             'value': resource.get('indicator'),
             'rawJSON': resource,
             'fields': {
-                'tags': [label.get('name') for label in indicator.get('labels')]
+                'tags': [label.get('name') for label in indicator.get('labels')]  # type: ignore
             }
         }
         if feed_tags:
@@ -173,7 +173,8 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     indicators_list = raw_response.get('resources')
     if outputs := copy.deepcopy(indicators_list):
         for indicator in outputs:
-            indicator['type'] = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator.get('type'), indicator.get('type')),
+            xsoar_type: str = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator['type'], indicator['type'])
+            indicator['type']: str = xsoar_type,
             indicator['published_date'] = timestamp_to_datestring(indicator['published_date'])
             indicator['last_updated'] = timestamp_to_datestring(indicator['last_updated'])
             indicator['value'] = indicator['indicator']
