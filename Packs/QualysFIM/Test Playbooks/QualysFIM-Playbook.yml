@@ -1,7 +1,6 @@
 id: QualysFIM-Playbook
-version: 20
+version: -1
 fromversion: 1
-vcShouldKeepItemLegacyProdMachine: false
 name: QualysFIM-Playbook
 description: TEST PLAYBOOK FOR QUALYS FIM
 starttaskid: "0"
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,6 +32,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    description: first task
   "1":
     id: "1"
     taskid: 820d7508-c0f7-4641-80c8-19d8880f2c79
@@ -727,6 +728,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -754,3 +756,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

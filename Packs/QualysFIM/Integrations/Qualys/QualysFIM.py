@@ -8,6 +8,7 @@ import json
 import requests
 import dateparser
 from typing import Tuple
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -24,6 +25,7 @@ class Client(BaseClient):
     """
     API Client to communicate with QualysFIM.
     """
+
     def __init__(self, base_url: str, verify: bool, proxy: bool, auth: tuple):
         headers = self.get_token_and_set_headers(base_url, auth)
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
@@ -51,8 +53,9 @@ class Client(BaseClient):
                                   data=data).text
             return {'Authorization': f'Bearer {token}', 'content-type': 'application/json'}
         except Exception:
-            return_error('URL is not set correctly, please review URL,\n'
-                         'Read URL instructions at ? button in "Qualys API Platform URL" parameter')
+            raise ValueError('URL is not set correctly, please review URL,\n'
+                             'Read URL instructions at ? button in "Qualys API Platform URL" '
+                             'parameter')
 
     def incidents_list_test(self):
         """
@@ -198,7 +201,7 @@ def list_events_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(args.get('sort'))}])
+    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
     params = remove_empty_elements({'filter': args.get('filter', None),
                                     'pageNumber': args.get('page_number', None),
                                     'pageSize': args.get('limit', None),
@@ -214,7 +217,8 @@ def list_events_command(client: Client, args: dict):
             raw_outputs.append(data)
             item_dictionary = create_event_or_incident_output(data, table_headers)
             item_dictionary['dateTime'] = datetime.strptime(
-                item_dictionary.get('dateTime'), DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
+                str(item_dictionary.get('dateTime')),
+                DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
             outputs.append(item_dictionary)
 
     readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Events:', t=outputs,
@@ -348,7 +352,7 @@ def create_incident_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if len(str(args.get('name', None))) > 128:
-        return_error('Name is limited to 128 characters, please shorten name.')
+        raise ValueError('Name is limited to 128 characters, please shorten name.')
     if args.get('filters'):
         filters = (args.get('filters'))
     else:
@@ -402,12 +406,12 @@ def approve_incident_command(client: Client, args: dict):
         output = create_event_or_incident_output(raw_response, table_headers)
         output['approvalDate'] = datetime.strptime(output.get('approvalDate'),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
-        output['filterFromDate'] = datetime.strptime(output.get('filterFromDate'), DATETIME_FORMAT)\
+        output['filterFromDate'] = datetime.strptime(output.get('filterFromDate'), DATETIME_FORMAT) \
             .strftime(TABLE_DATETIME_FORMAT)
         output['filterToDate'] = datetime.strptime(output.get('filterToDate'),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
     else:
-        return return_error(f"Incident {args.get('incident_id')} wasn't found")
+        raise ValueError(f"Incident {args.get('incident_id')} wasn't found")
 
     readable_output = tableToMarkdown(name=f'Approved Incident: '
                                            f'{raw_response.get("name", "unknown")}', t=output,
@@ -516,8 +520,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     time_now = int(datetime.timestamp(datetime.now()) * 1000)
 
     if int(max_fetch) > 200:
-        return_error('Max Fetch is limited to 200 incidents per fetch, '
-                     'please choose lower number than 200')
+        raise ValueError('Max Fetch is limited to 200 incidents per fetch, '
+                         'please choose lower number than 200')
 
     params = {'pageSize': max_fetch,
               'filter': f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}']",
