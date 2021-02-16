@@ -15,7 +15,8 @@ class ServerMock:
     def __init__(self):
         self.__ssh_client = None
         self.__client = None
-        self.host = 'https://8.8.8.8'
+        self.internal_ip = '8.8.8.8'
+        self.ssh_tunnel_port = 4445
         self.user_name = 'TestUser'
         self.password = 'TestPassword'
 
