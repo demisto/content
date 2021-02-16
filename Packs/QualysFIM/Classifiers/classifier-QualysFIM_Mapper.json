@@ -1,189 +1,166 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "911866bd-bec1-4932-857b-eae56fac7e46",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 12,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert ID": {
-					"complex": null,
-					"simple": "id"
-				},
-				"Alert Name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"Approval Status": {
-					"complex": null,
-					"simple": "approvalStatus"
-				},
-				"Approval Type": {
-					"complex": null,
-					"simple": "approvalType"
-				},
-				"Changed Type": {
-					"complex": null,
-					"simple": "changeType"
-				},
-				"Event Type": {
-					"complex": null,
-					"simple": "dispositionCategory"
-				},
-				"Last Update Time": {
-					"complex": {
-						"accessor": "date",
-						"filters": [],
-						"root": "lastUpdatedBy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Last updated by": {
-					"complex": null,
-					"simple": "lastUpdatedBy.user.name"
-				},
-				"Marked": {
-					"complex": null,
-					"simple": "marked"
-				},
-				"Query": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "filters",
-						"transformers": [
-							{
-								"args": {
-									"error_if_no_match": {
-										"isContext": false,
-										"value": null
-									},
-									"ignore_case": {
-										"isContext": false,
-										"value": null
-									},
-									"multi_line": {
-										"isContext": false,
-										"value": null
-									},
-									"period_matches_newline": {
-										"isContext": false,
-										"value": null
-									},
-									"regex": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "dateTime\\:(.+)"
-										}
-									}
-								},
-								"operator": "RegexExtractAll"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false,
-										"value": null
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": null
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "["
-										}
-									}
-								},
-								"operator": "replace"
-							},
-							{
-								"args": {
-									"limit": {
-										"isContext": false,
-										"value": null
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": null
-									},
-									"toReplace": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "]"
-										}
-									}
-								},
-								"operator": "replace"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Reviewers": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "reviewers",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "trim"
-							},
-							{
-								"args": {},
-								"operator": "Stringify"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"State": {
-					"complex": null,
-					"simple": "status"
-				},
-				"name": {
-					"complex": null,
-					"simple": "name"
-				}
-			}
-		}
-	},
-	"name": "QualysFIM Mapper",
-	"nameRaw": "QualysFIM Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "911866bd-bec1-4932-857b-eae56fac7e46",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Approval Status": {
+                    "complex": null,
+                    "simple": "approvalStatus"
+                },
+                "Approval Type": {
+                    "complex": null,
+                    "simple": "approvalType"
+                },
+                "Changed Type": {
+                    "complex": null,
+                    "simple": "changeType"
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "dispositionCategory"
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "accessor": "date",
+                        "filters": [],
+                        "root": "lastUpdatedBy",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Last updated by": {
+                    "complex": null,
+                    "simple": "lastUpdatedBy.user.name"
+                },
+                "Marked": {
+                    "complex": null,
+                    "simple": "marked"
+                },
+                "Query": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "filters",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "ignore_case": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "multi_line": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "period_matches_newline": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "dateTime\\:(.+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexExtractAll"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "["
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "]"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Reviewers": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reviewers",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            },
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "QualysFIM Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
