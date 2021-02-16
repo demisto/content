@@ -151,14 +151,14 @@ outputs:
 script: '-'
 subtype: python3
 system: false
+tags:
+- ml
+- phishing
 timeout: '0'
 type: python
 dockerimage: demisto/sklearn:1.0.0.15216
 tests:
 - No tests (auto formatted)
+runonce: true
 fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
-tags:
-- ml
-- phishing
-runonce: true
