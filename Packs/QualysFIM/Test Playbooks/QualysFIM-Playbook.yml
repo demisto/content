@@ -1,6 +1,6 @@
 id: QualysFIM-Playbook
 version: -1
-fromversion: 1
+fromversion: 5.0.0
 name: QualysFIM-Playbook
 description: TEST PLAYBOOK FOR QUALYS FIM
 starttaskid: "0"
@@ -15,7 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: Starts the playbook.
     nexttasks:
       '#none#':
       - "1"
@@ -32,7 +32,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    description: first task
+
   "1":
     id: "1"
     taskid: 820d7508-c0f7-4641-80c8-19d8880f2c79
@@ -41,6 +41,7 @@ tasks:
       id: 820d7508-c0f7-4641-80c8-19d8880f2c79
       version: -1
       name: DeleteContext
+      description: Deletes context.
       script: DeleteContext
       type: regular
       iscommand: true
@@ -72,6 +73,7 @@ tasks:
       id: ee8135db-4306-409a-89ae-a89e85146b65
       version: -1
       name: qualys-fim-events-list
+      description: List all events.
       script: '|||qualys-fim-events-list'
       type: regular
       iscommand: true
@@ -100,6 +102,7 @@ tasks:
       id: 1741b260-4732-4f72-8afa-cf9105cf5f31
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -113,27 +116,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Events.id
+              simple: QualysFIM.Event.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Events.fullPath
+              simple: QualysFIM.Event.fullPath
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Events.dateTime
+              simple: QualysFIM.Event.dateTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Events.severity
+              simple: QualysFIM.Event.severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Events.asset.agentId
+              simple: QualysFIM.Event.asset.agentId
             iscontext: true
     view: |-
       {
@@ -155,6 +158,7 @@ tasks:
       id: afbdd1c2-553b-4a67-8a8b-7600bd549909
       version: -1
       name: qualys-fim-event-get
+      description: Get event by id.
       script: '|||qualys-fim-event-get'
       type: regular
       iscommand: true
@@ -186,6 +190,7 @@ tasks:
       id: 823346a2-44d0-44dd-889a-c9e8eb8b39ad
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -251,6 +256,7 @@ tasks:
       id: 41915a08-0383-4560-8cc6-0732e9975e27
       version: -1
       name: qualys-fim-incidents-list
+      description: List all incidents.
       script: '|||qualys-fim-incidents-list'
       type: regular
       iscommand: true
@@ -279,6 +285,7 @@ tasks:
       id: 66453888-98d0-4c63-8896-ae92ff40908e
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -292,32 +299,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.id
+              simple: QualysFIM.Incident.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.name
+              simple: QualysFIM.Incident.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.type
+              simple: QualysFIM.Incident.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.createdBy.date
+              simple: QualysFIM.Incident.createdBy.date
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.createdBy.user.name
+              simple: QualysFIM.Incident.createdBy.user.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Incidents.status
+              simple: QualysFIM.Incident.status
             iscontext: true
     view: |-
       {
@@ -339,6 +346,7 @@ tasks:
       id: 68270326-596f-4b24-8ba8-ae9722201b20
       version: -1
       name: qualys-fim-incidents-get-events
+      description: Get events from an incident by id.
       script: '|||qualys-fim-incidents-get-events'
       type: regular
       iscommand: true
@@ -375,6 +383,7 @@ tasks:
       id: e04938a9-8d90-4913-86a7-b2ebeeb9d187
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -388,32 +397,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.id
+              simple: QualysFIM.Event.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.name
+              simple: QualysFIM.Event.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.severity
+              simple: QualysFIM.Event.severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.type
+              simple: QualysFIM.Event.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.dateTime
+              simple: QualysFIM.Event.dateTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.IncidentEvents.action
+              simple: QualysFIM.Event.action
             iscontext: true
     view: |-
       {
@@ -435,6 +444,7 @@ tasks:
       id: c26dacfd-099d-4900-8b2c-884df3017d30
       version: -1
       name: qualys-fim-incident-create
+      description: Creates incident.
       script: '|||qualys-fim-incident-create'
       type: regular
       iscommand: true
@@ -477,6 +487,7 @@ tasks:
       id: c31706ee-920b-4117-893d-2355ef4ec866
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -567,6 +578,7 @@ tasks:
       id: 67518ffd-e074-4d0e-8e3b-8cc2ba80abb3
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -580,57 +592,57 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.id
+              simple: QualysFIM.Incident.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.name
+              simple: QualysFIM.Incident.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.type
+              simple: QualysFIM.Incident.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.filterFromDate
+              simple: QualysFIM.Incident.filterFromDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.filterToDate
+              simple: QualysFIM.Incident.filterToDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.approvalDate
+              simple: QualysFIM.Incident.approvalDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.approvalStatus
+              simple: QualysFIM.Incident.approvalStatus
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.comment
+              simple: QualysFIM.Incident.comment
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.createdByName
+              simple: QualysFIM.Incident.createdByName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.status
+              simple: QualysFIM.Incident.status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.ApprovedIncident.reviewers
+              simple: QualysFIM.Incident.reviewers
             iscontext: true
     view: |-
       {
@@ -652,6 +664,7 @@ tasks:
       id: 539dc72e-9814-4a2e-855e-ee55c868b0b3
       version: -1
       name: qualys-fim-assets-list
+      description: List all assets.
       script: '|||qualys-fim-assets-list'
       type: regular
       iscommand: true
@@ -680,6 +693,7 @@ tasks:
       id: acd213cd-4c1a-4183-81fb-06135144b826
       version: -1
       name: Verify Outputs
+      description: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -693,17 +707,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Assets.interfaces.hostname
+              simple: QualysFIM.Asset.interfaces.hostname
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Assets.lastCheckedIn
+              simple: QualysFIM.Asset.lastCheckedIn
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: QualysFIM.Assets.created
+              simple: QualysFIM.Asset.created
             iscontext: true
     view: |-
       {

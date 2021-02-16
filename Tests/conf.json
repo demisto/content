@@ -3220,7 +3220,13 @@
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
+        },
+        {
+            "integrations": "qualys_fim",
+            "playbookID": "QualysFIM-Playbook",
+            "fromversion": "5.0.0"
         }
+
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
