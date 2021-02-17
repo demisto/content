@@ -179,9 +179,9 @@ script:
       required: true
     description: 'Returns the list of the mitigations of threats\nhave optional parameters
       for pagination and filtration, this route may not be used associated with your
-      license. Example Command: !Picus-Mitigation-List begin_date=2021-01-01 end_date=2021-02-01
+      license. Example Command: !picus-mitigation-list begin_date=2021-01-01 end_date=2021-02-01
       threat_id=528370 products="McAfee IPS" signature_id=0x40208a00'
-    name: Picus-Mitigation-List
+    name: picus-mitigation-list
   - arguments: []
     description: Returns the mitre matrix metadata\ntakes no parameters
     name: picus-mitre-matrix
