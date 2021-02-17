@@ -184,7 +184,7 @@ script:
     name: Picus-Mitigation-List
   - arguments: []
     description: Returns the mitre matrix metadata\ntakes no parameters
-    name: Picus-Mitre-Matrix
+    name: picus-mitre-matrix
   - arguments:
     - defaultValue: "100"
       description: Size of Displayed Rule
