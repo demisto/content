@@ -2458,8 +2458,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or
-        'application-pcap').
+      description: The serial number of the firewall to download the PCAP from.
+      isArray: false
+      name: serialNumber
+      required: false
+      secret: false
+    - default: false
+      description: The
       isArray: false
       name: from
       required: false
@@ -2560,9 +2565,14 @@ script:
       predefined:
       - application-pcap
       - filter-pcap
-      - threat-pcap
       - dlp-pcap
       required: true
+      secret: false
+    - default: false
+      description: The serial number of the firewall to download the PCAP from.
+      isArray: false
+      name: serialNumber
+      required: false
       secret: false
     - default: false
       description: Password for Panorama. Relevant for the 'dlp-pcap' PCAP type.
@@ -2571,7 +2581,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all PCAP files by PCAP type.
+    description: Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
     execution: false
     name: panorama-list-pcaps
   - arguments:
@@ -4400,7 +4410,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
