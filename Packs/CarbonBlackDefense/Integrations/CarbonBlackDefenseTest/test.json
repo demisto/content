@@ -1,0 +1,67 @@
+{
+    "type": "WATCHLIST",
+    "id": "4A0AD9BAE59E5187729FB63115807BC3",
+    "legacy_alert_id": "7DESJ9GN-00313c93-0000017c-00000000-1d5d56636374838-MLRtPcpQGKFh5OE4BT3tQ-19d3af31-5dbd-4b9f-9b1d-e8ddca6af991",
+    "org_key": "7DESJ9GN",
+    "create_time": "2020-01-27T23:10:21.814Z",
+    "last_update_time": null,
+    "first_event_time": "2020-01-27T23:05:09.029Z",
+    "last_event_time": "2020-01-27T23:05:09.029Z",
+    "threat_id": "7BF2B848FE2936224483F214414EFDFB",
+    "severity": 9,
+    "category": "THREAT",
+    "device_id": 3226771,
+    "device_os": "WINDOWS",
+    "device_os_version": null,
+    "device_name": "CIGENT-DGC7",
+    "device_username": "IEUser",
+    "policy_id": 33819,
+    "policy_name": "Cigent Policy 1",
+    "target_value": "HIGH",
+    "workflow": {
+        "state": "OPEN",
+        "remediation": "string",
+        "last_update_time": "2020-11-11T17:28:33.416Z",
+        "comment": "Nirlesh_test_log",
+        "changed_by": "G7FQHSQ5AK"
+    },
+    "notes_present": true,
+    "tags": null,
+    "reason": "Process localpowershell.exe was detected by the report \"Script Processors Renamed - Powershell\" in 2 watchlists",
+    "count": 0,
+    "report_id": "MLRtPcpQGKFh5OE4BT3tQ-19d3af31-5dbd-4b9f-9b1d-e8ddca6af991",
+    "report_name": "Script Processors Renamed - Powershell",
+    "ioc_id": "19d3af31-5dbd-4b9f-9b1d-e8ddca6af991-0",
+    "ioc_field": null,
+    "ioc_hit": "(process_original_filename:PowerShell.EXE* -process_name:powershell.exe) -legacy:true",
+    "watchlists": [
+        {
+            "id": "MXzJPzWYRuuKBEsy0UXImA",
+            "name": "Cigent Watchlist"
+        },
+        {
+            "id": "mrTB06fAQbeNfvl47cQiGg",
+            "name": "Carbon Black Advanced Threats"
+        }
+    ],
+    "process_guid": "7DESJ9GN-00313c93-0000017c-00000000-1d5d56636374838",
+    "process_name": "localpowershell.exe",
+    "run_state": "RAN",
+    "threat_indicators": [
+        {
+            "process_name": "localpowershell.exe",
+            "sha256": "de96a6e69944335375dc1ac238336066889d9ffc7d73628ef4fe1b1b160ab32c",
+            "ttps": [
+                "19d3af31-5dbd-4b9f-9b1d-e8ddca6af991-0"
+            ]
+        }
+    ],
+    "threat_cause_actor_sha256": "de96a6e69944335375dc1ac238336066889d9ffc7d73628ef4fe1b1b160ab32c",
+    "threat_cause_actor_md5": "7353f60b1739074eb17c5f4dddefe239",
+    "threat_cause_actor_name": "localpowershell.exe",
+    "threat_cause_reputation": "TRUSTED_WHITE_LIST",
+    "threat_cause_threat_category": null,
+    "threat_cause_vector": "UNKNOWN",
+    "document_guid": "rkjzBzTEQtmMxxF5s7eREQ",
+    "type": "WATCHLIST"
+}

@@ -1,0 +1,227 @@
+category: Utilities
+commonfields:
+  id: Carbon Black Defense V2 Test
+  version: -1
+configuration:
+- defaultvalue: https://defense.conferdeploy.net/
+  display: Url
+  name: url
+  required: true
+  type: 0
+- display: Api Key
+  hidden: false
+  name: api_key
+  required: true
+  type: 0
+- display: Api Secret Key
+  hidden: false
+  name: api_secret_key
+  required: true
+  type: 4
+- display: Organization Key
+  hidden: false
+  name: organization_key
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: VMware Carbon Black Endpoint Standard (formerly known as Carbon Black
+  Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that
+  stops commodity malware, advanced malware, non-malware attacks and ransomware.
+display: Carbon Black Defense V2 Test
+name: Carbon Black Defense V2 Test
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the alert
+      isArray: false
+      name: alertId
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details on the events that led to an alert by ID. This includes
+      retrieving metadata around the alert as well as a list of all the events associated
+      with the alert. Only API keys of type “API” can call the alerts API.
+    execution: false
+    name: cbd-get-alert-details
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.type
+      description: The type of alert.
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.legacy_alert_id
+      description: Unique short id for the alerts to support easier consumption in
+        the UI console. Use the id for API requests
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.org_key
+      description: The unique identifier for the organization associated with the
+        alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.create_time
+      description: The time the alert was created, The format is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.last_update_time
+      description: The last time the alert was updated, The format is in ISO 8601
+        timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.first_event_time
+      description: The time of the first event associated with the alert, The format
+        is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.last_event_time
+      description: The time of the latest event associated with the alert, The format
+        is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_id
+      description: The identifier of a threat which this alert belongs. Threats are
+        comprised of a combination of factors that can be repeated across devices.
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.severity
+      description: The threat ranking of the alert
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.category
+      description: The category of the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_id
+      description: The identifier assigned by Carbon Black Cloud to the device associated
+        with the alert.
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os
+      description: The operating system of the device associated with the alert. (WINDOWS,
+        MAC, LINUX, OTHER)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os_version
+      description: The operating system and version on the device
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_name
+      description: The hostname of the device associated with the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_username
+      description: The username of the logged on user during the alert. If the user
+        is not available then it may be populated with the device owner
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_id
+      description: The identifier for the policy associated with the device at the
+        time of the alert
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_name
+      description: The name of the policy associated with the device at the time of
+        the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.target_value
+      description: The priority of the device assigned by the policy. (LOW, MEDIUM,
+        HIGH, MISSION_CRITICAL)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.state
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.remediation
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.last_update_time
+      description: Tracking system for alerts as they are triaged and resolved
+      type: Date
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.comment
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.changed_by
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.notes_present
+      description: Indicates if notes are associated with the threat_id
+      type: Boolean
+    - contextPath: CarbonBlackDefense.GetAlertDetails.tags
+      description: Tags associated with the alert
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetAlertDetails.reason
+      description: Description of the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.count
+      description: Will be filled.
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.report_id
+      description: The identifier of the report that contains the IOC
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.report_name
+      description: The name of the report that contains the IOC
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_id
+      description: The identifier of the IOC that cause the hit
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_field
+      description: The field the indicator of comprise (IOC) hit contains
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_hit
+      description: IOC field value or IOC query that matches
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.id
+      description: The ID of a watchlists associated with an alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.name
+      description: The name of a watchlists associated with an alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.process_guid
+      description: The global unique identifier of the process that triggered the
+        hit
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.process_name
+      description: "The name of the process that triggered the hit\t"
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.run_state
+      description: Run state is always RAN for watchlist alerts
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.process_name
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.sha256
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.ttps
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_sha256
+      description: SHA256 of the threat cause actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_md5
+      description: MD5 of the threat cause actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_name
+      description: Process name or IP address of the threat actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_reputation
+      description: Reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
+        PUP, NOT_LISTED, ADAPTIVE_WHITE_LIST, COMMON_WHITE_LIST, TRUSTED_WHITE_LIST,
+        COMPANY_BLACK_LIST)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_threat_category
+      description: Category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
+        KNOWN_MALWARE, RISKY_PROGRAM)
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_vector
+      description: 'The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
+        REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY) '
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.document_guid
+      description: Document id
+      type: String
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
