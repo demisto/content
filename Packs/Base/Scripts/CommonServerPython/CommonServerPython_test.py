@@ -818,12 +818,14 @@ SENSITIVE_PARAM = {
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
-         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass:'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC))
+         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass.'
+         ' basic auth: {}'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC, basic_auth))
 
-    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass', basic_auth):
         assert s not in ilog.messages[0]
 
 
@@ -2451,6 +2453,12 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
         with raises(DemistoException, match="SSL Certificate Verification Failed"):
             self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_ssl_error_insecure(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+            client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
         from CommonServerPython import DemistoException

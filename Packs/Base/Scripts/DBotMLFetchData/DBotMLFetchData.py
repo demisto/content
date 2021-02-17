@@ -120,6 +120,7 @@ LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phi
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
 LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'categor', 'disposition', 'severity', 'malicious',
                         'tag', 'close', 'phish', 'phishing']
+LABEL_FIELD_BLACKLIST_KEYWORDS = ['attach', 'recipient']
 
 '''
 Define html tags to count
@@ -155,11 +156,19 @@ SHORTENED_DOMAINS = {"adf.ly", "t.co", "goo.gl", "adbooth.net", "adfoc.us", "bc.
                      "tinyurl.ms", "tip.pe", "ty.by"}
 
 
+def hash_value(simple_value):
+    if not isinstance(simple_value, str):
+        simple_value = str(simple_value)
+    if simple_value.lower() in ["none", "null"]:
+        return None
+    return hash_djb2(simple_value)
+
+
 def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
                   sum(isinstance(x, str) or isinstance(x, bool) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
     candidates = [col for col in candidates if col not in LABEL_FIELDS_BLACKLIST]
-
+    candidates = [col for col in candidates if not any(w in col.lower() for w in LABEL_FIELD_BLACKLIST_KEYWORDS)]
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if
                            sum(not (isinstance(v, str) or isinstance(v, bool)) for v in values) <= 1}
@@ -311,7 +320,7 @@ def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, pref
     if len(vectors) == 0:
         mean_vector = np.zeros(size)
     else:
-        mean_vector = np.mean(vectors, axis=0)
+        mean_vector = np.mean(vectors, axis=0)  # type: ignore
     res = {'{}_{}'.format(prefix, str(i)): mean_vector[i].item() for i in range(len(mean_vector))}
     return res
 
@@ -531,6 +540,55 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
     return text_ngrams
 
 
+def get_closing_fields_from_incident(row):
+    if 'owner' in row:
+        owner = row['owner']
+        if owner not in ['admin', '']:
+            owner = hash_value(owner)
+    else:
+        owner = float('nan')
+    if 'closingUserId' in row:
+        closing_user = row['closingUserId']
+        if closing_user not in ['admin', '', 'DBot']:
+            closing_user = hash_value(closing_user)
+    else:
+        closing_user = float('nan')
+    if 'closeNotes' in row:
+        close_notes = row['closeNotes']
+        if isinstance(close_notes, str):
+            close_notes = close_notes.strip().lower()
+            close_notes_tokenized = word_tokenize(close_notes)
+            close_notes_tokenized = [token if token in EMBEDDING_DICT_FASTTEXT else hash_value(token)  # type: ignore
+                                     for token in close_notes_tokenized]  # type: ignore
+            close_notes = ' '.join(close_notes_tokenized)
+
+    else:
+        close_notes = float('nan')
+    return {'owner': owner, 'closing_user': closing_user, 'close_notes': close_notes}
+
+
+def find_forwarded_features(email_subject, email_body):
+    forwarded = response = False
+    if re.search('- Forwarded message -', email_body, flags=re.IGNORECASE):
+        forwarded = True
+    forwarded_patterns = ['FW', 'Fwd']
+    re_patterns = ['re']
+
+    for pattern in forwarded_patterns:
+        if re.search(r'(?<!\w)({})(?!\w)'.format(pattern), email_subject, flags=re.IGNORECASE):
+            forwarded = True
+            break
+    for pattern in re_patterns:
+        if re.search(r'(?<!\w)({})(?!\w)'.format(pattern), email_subject, flags=re.IGNORECASE):
+            response = True
+            break
+    return {'forwarded': forwarded, 'response': response}
+
+
+def clean_email_subject(email_subject):
+    return re.sub(r"\[[^\]]*?\]", '', email_subject).strip()
+
+
 def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
@@ -546,6 +604,7 @@ def extract_features_from_incident(row, label_fields):
     if isinstance(email_subject, float):
         email_subject = ''
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
+    email_subject = clean_email_subject(email_subject)
     text = email_subject + ' ' + email_body
     if len(text) < MIN_TEXT_LENGTH:
         raise ShortTextException('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
@@ -560,6 +619,8 @@ def extract_features_from_incident(row, label_fields):
     characters_features = get_characters_features(text)
     html_feature = get_html_features(soup)
     ml_features = get_embedding_features(email_body_word_tokenized + email_subject_word_tokenized)
+    ml_features_subject = get_embedding_features(email_subject_word_tokenized)
+    ml_features_body = get_embedding_features(email_body_word_tokenized)
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
@@ -569,6 +630,8 @@ def extract_features_from_incident(row, label_fields):
         'characters_features': characters_features,
         'html_feature': html_feature,
         'ml_features': ml_features,
+        'ml_features_subject': ml_features_subject,
+        'ml_features_body': ml_features_body,
         'headers_features': headers_features,
         'url_features': url_feautres,
         'attachments_features': attachments_features,
@@ -582,6 +645,9 @@ def extract_features_from_incident(row, label_fields):
             res[label] = row[label]
         else:
             res[label] = float('nan')
+    res.update(get_closing_fields_from_incident(row))
+    res.update(find_forwarded_features(email_subject, email_body))
+
     return res
 
 
@@ -719,7 +785,7 @@ def determine_incidents_args(input_args, default_args):
         get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
         get_incidents_by_query_args['query'] = 'status:Closed'
-    for arg in ['limit', 'fromDate', 'incidentTypes']:
+    for arg in ['limit', 'fromDate', 'incidentTypes', 'toDate']:
         if arg in input_args:
             get_incidents_by_query_args[arg] = input_args[arg]
         elif arg in default_args:

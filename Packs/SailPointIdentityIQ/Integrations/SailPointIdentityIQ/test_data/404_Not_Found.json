@@ -1,0 +1,7 @@
+{
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:Error"
+    ],
+    "detail": "Resource 7f000001705911b4817059d30cf50348 not found.",
+    "status": "404"
+}

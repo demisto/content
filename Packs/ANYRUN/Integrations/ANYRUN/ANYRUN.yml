@@ -28,7 +28,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: If true, gets team history. If empty, gets your submitted analyses history.
       isArray: false
@@ -38,7 +38,7 @@ script:
       - 'false'
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: The number of analyses to skip.
       isArray: false
@@ -47,7 +47,7 @@ script:
       - ''
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '25'
       description: Limits the history retrieved/searched to the specified number of executed analyses. The range is 1-100.
       isArray: false
@@ -325,7 +325,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: file
       description: Type of new task.
       isArray: false
@@ -349,7 +349,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: '32'
       description: Bitness of OS.
       isArray: false
@@ -360,7 +360,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Windows 7
       description: Version of Windows OS.
       isArray: false
@@ -373,7 +373,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: complete
       description: Environment preset type.
       isArray: false
@@ -385,7 +385,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: Network connection state.
       isArray: false
@@ -396,7 +396,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Heavy evasion option.
       isArray: false
@@ -407,7 +407,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: owner
       description: Privacy settings for generated task.
       isArray: false
@@ -426,7 +426,7 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.9.1.15759
   subtype: python3
   isfetch: false
   runonce: false
