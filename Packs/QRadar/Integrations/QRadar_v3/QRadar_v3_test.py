@@ -3,12 +3,15 @@
 """
 import io
 import json
+from datetime import datetime
 
 import pytest
+import pytz
 
-from QRadar_v3 import USECS_ENTRIES_MAPPING, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, Client
-from QRadar_v3 import convert_epoch_time_to_datetime, add_iso_entries_to_dict, replace_keys, build_headers, \
-    get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results
+from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, Client
+from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, replace_keys, build_headers, \
+    get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
+    get_offense_source_addresses, get_offense_destination_addresses
 
 client = Client(
     server='https://192.168.0.1',
@@ -30,27 +33,39 @@ def util_load_json(path):
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 
-@pytest.mark.parametrize('epoch_time, expected',
-                         [(0, None),
-                          (None, None),
-                          (1600000000000000, '2020-09-13T12:26:40+00:00')
+@pytest.mark.parametrize('arg, iso_format, epoch_format, expected',
+                         [('2020-11-22T16:31:14-02:00', False, False,
+                           datetime(2020, 11, 22, 18, 31, 14, tzinfo=pytz.utc)),
+                          (None, False, False, None),
+                          (None, True, False, None),
+                          ('2020-12-12', True, False, '2020-12-12T00:00:00+00:00'),
+                          ('2020-12-12T10:11:22', True, False, '2020-12-12T10:11:22+00:00'),
+                          ('2020-12-12T22:11:22-03:00', True, False, '2020-12-13T01:11:22+00:00'),
+                          ('2020-12-12', False, True, 1607731200000),
+                          ('2020-12-12T10:11:22', False, True, 1607767882000),
+                          ('2020-12-12T22:11:22-03:00', False, True, 1607821882000)
                           ])
-def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
+def test_get_optional_time_parameter_valid_time_argument(arg, iso_format, epoch_format, expected):
     """
     Given:
-     - Time to be converted to date time in UTC timezone.
+     - Demisto arguments.
+     - Argument of type time to extract from Demisto arguments as epoch time.
 
     When:
-     - Case a: Epoch time is 0.
-     - Case b: Epoch time is not given.
-     - Case c: Valid epoch time is given.
+     - Case a: Argument exists, has expected date format, parse format was not asked,.
+     - Case b: Argument does not exist, parse format was not asked.
+     - Case c: Argument does not exist, parse format was asked.
+     - Case d: Argument exist and has ISO format, parse format was asked.
+     - Case e: Argument exist and has ISO format, parse format was asked.
 
     Then:
-     - Case a: Ensure None is returned.
-     - Case b: Ensure None is returned.
-     - Case c: Ensure the corresponding date time string is returned.
+     - Case a: Ensure that the corresponding epoch time is returned.
+     - Case b: Ensure that None is returned.
+     - Case c: Ensure that None is returned.
+     - Case d: Ensure that correct FraudWatch format is returned.
+     - Case e: Ensure that correct FraudWatch format is returned.
     """
-    assert convert_epoch_time_to_datetime(epoch_time) == expected
+    assert (get_time_parameter(arg, iso_format=iso_format, epoch_format=epoch_format)) == expected
 
 
 def test_add_iso_entries_to_dict():
@@ -63,16 +78,19 @@ def test_add_iso_entries_to_dict():
 
     Then:
      - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
+     - The dict is cloned and its values are not changed, and a new one is created
     """
-    tested_dict = {usec_entry: 1600000000000000 for usec_entry in USECS_ENTRIES_MAPPING.keys()}
+    tested_dict = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
     tested_dict['host_name'] = 'Nutanix Host'
-    add_iso_entries_to_dict([tested_dict])
+    output_dict = add_iso_entries_to_dict([tested_dict])[0]
     assert tested_dict['host_name'] == 'Nutanix Host'
+    assert output_dict['host_name'] == 'Nutanix Host'
     assert all(
-        tested_dict.get(iso_entry) == '2020-09-13T12:26:40+00:00' for iso_entry in USECS_ENTRIES_MAPPING.keys())
+        tested_dict.get(iso_entry) == 1600000000000 for iso_entry in USECS_ENTRIES)
     assert all(
-        tested_dict.get(iso_entry) == 1600000000000000 for iso_entry in USECS_ENTRIES_MAPPING.values())
-    assert len(tested_dict) == (1 + (len(USECS_ENTRIES_MAPPING) * 2))
+        output_dict.get(iso_entry) == '2020-09-13T12:26:40+00:00' for iso_entry in USECS_ENTRIES)
+    assert len(tested_dict) == (1 + len(USECS_ENTRIES))
+    assert len(output_dict) == (1 + len(USECS_ENTRIES))
 
 
 @pytest.mark.parametrize('output, old_new_dict, expected',
@@ -124,7 +142,7 @@ def test_build_headers(first_headers, all_headers):
 @pytest.mark.parametrize('enrich_func, mock_func_name, outputs, mock_response, expected',
                          [
                              (get_offense_types,
-                              'qradar_offense_types',
+                              'offense_types',
                               [{'offense_type': 1, 'offense_name': 'offense1'},
                                {'offense_type': 2, 'offense_name': 'offense2'}],
                               [{'id': 1, 'name': 'Scheduled Search'},
@@ -132,7 +150,7 @@ def test_build_headers(first_headers, all_headers):
                               {1: 'Scheduled Search', 2: 'Destination IP Identity'}
                               ),
                              (get_offense_closing_reasons,
-                              'qradar_closing_reasons_list',
+                              'closing_reasons_list',
                               [{'closing_reason_id': 3, 'offense_name': 'offense1'},
                                {'closing_reason_id': 4, 'offense_name': 'offense2'}],
                               [{'id': 3, 'text': 'Non-Issue'},
@@ -140,7 +158,7 @@ def test_build_headers(first_headers, all_headers):
                               {3: 'Non-Issue', 4: 'Policy Violation'}
                               ),
                              (get_domain_names,
-                              'qradar_domains_list',
+                              'domains_list',
                               [{'domain_id': 5, 'offense_name': 'offense1'},
                                {'domain_id': 6, 'offense_name': 'offense2'}],
                               [{'id': 5, 'name': 'domain1'},
@@ -148,7 +166,7 @@ def test_build_headers(first_headers, all_headers):
                               {5: 'domain1', 6: 'domain2'}
                               ),
                              (get_rules_names,
-                              'qradar_rules_list',
+                              'rules_list',
                               [{'rules': [{'id': 7}, {'id': 8}], 'offense_name': 'offense1'},
                                {'rules': [{'id': 9}], 'offense_name': 'offense2'}],
                               [{'id': 7, 'name': 'Devices with High Event Rates'},
@@ -158,33 +176,73 @@ def test_build_headers(first_headers, all_headers):
                                8: 'Excessive Database Connections',
                                9: 'Anomaly: Excessive Firewall Accepts Across Multiple Hosts'}
                               ),
+                             (get_offense_source_addresses,
+                              'source_addresses',
+                              [{'source_address_ids': [1, 2], 'offense_name': 'offense1'},
+                               {'source_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                              [{'id': 1, 'source_ip': '1.2.3.4'},
+                               {'id': 2, 'source_ip': '1.2.3.5'},
+                               {'id': 3, 'source_ip': '1.2.3.6'},
+                               {'id': 4, 'source_ip': '192.168.0.2'}],
+                              {1: '1.2.3.4',
+                               2: '1.2.3.5',
+                               3: '1.2.3.6',
+                               4: '192.168.0.2'}
+                              ),
+                             (get_offense_destination_addresses,
+                              'destination_addresses',
+                              [{'local_destination_address_ids': [1, 2], 'offense_name': 'offense1'},
+                               {'local_destination_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                              [{'id': 1, 'local_destination_ip': '1.2.3.4'},
+                               {'id': 2, 'local_destination_ip': '1.2.3.5'},
+                               {'id': 3, 'local_destination_ip': '1.2.3.6'},
+                               {'id': 4, 'local_destination_ip': '192.168.0.2'}],
+                              {1: '1.2.3.4',
+                               2: '1.2.3.5',
+                               3: '1.2.3.6',
+                               4: '192.168.0.2'}
+                              ),
 
                              # Empty cases
                              (get_offense_types,
-                              'qradar_offense_types',
+                              'offense_types',
                               [{'offense_name': 'offense1'},
                                {'offense_name': 'offense2'}],
                               None,
                               dict()
                               ),
                              (get_offense_closing_reasons,
-                              'qradar_closing_reasons_list',
+                              'closing_reasons_list',
                               [{'offense_name': 'offense1'},
                                {'offense_name': 'offense2'}],
                               None,
                               dict()
                               ),
                              (get_domain_names,
-                              'qradar_domains_list',
+                              'domains_list',
                               [{'offense_name': 'offense1'},
                                {'offense_name': 'offense2'}],
                               None,
                               dict()
                               ),
                              (get_rules_names,
-                              'qradar_rules_list',
+                              'rules_list',
                               [{'offense_name': 'offense1'},
                                {'offense_name': 'offense2'}],
+                              None,
+                              dict()
+                              ),
+                             (get_offense_source_addresses,
+                              'source_addresses',
+                              [{'source_address_ids': [], 'offense_name': 'offense1'},
+                               {'source_address_ids': [], 'offense_name': 'offense2'}],
+                              None,
+                              dict()
+                              ),
+                             (get_offense_destination_addresses,
+                              'destination_addresses',
+                              [{'local_destination_address_ids': [], 'offense_name': 'offense1'},
+                               {'local_destination_address_ids': [], 'offense_name': 'offense2'}],
                               None,
                               dict()
                               )
@@ -206,6 +264,6 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, outputs, mock_res
      asset_enrich_data['case_two']['expected']
      )])
 def test_assets_enriches(mocker, assets, domain_mock_response, full_enrichment, expected):
-    mocker.patch.object(client, 'qradar_domains_list', return_value=domain_mock_response)
+    mocker.patch.object(client, 'domains_list', return_value=domain_mock_response)
 
     assert (enrich_assets_results(client, assets, full_enrichment)) == expected
