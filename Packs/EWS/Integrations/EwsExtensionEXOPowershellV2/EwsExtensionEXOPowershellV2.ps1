@@ -111,11 +111,15 @@ class ExchangeOnlinePowershellV2Client {
 
     [PSObject]GetEXOMailbox(
         [string]$identity,
+        [string]$property_sets,
         [int]$limit
     ) {
         $cmd_params = @{}
         if ($identity) {
             $cmd_params.Identity = $identity
+        }
+        if ($property_sets){
+            $cmd_params.PropertySets = $property_sets
         }
         if ($limit -gt 0){
             return Get-EXOMailbox @cmd_params -ResultSize $limit
@@ -298,8 +302,9 @@ function GetEXOMailBoxCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
+    $property_sets = $kwargs.property_sets
     $limit = $kwargs.limit -as [int]
-    $raw_response = $client.GetEXOMailBox($identity, $limit)
+    $raw_response = $client.GetEXOMailBox($identity, $kwargs.property_sets, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.Mailbox(obj.Guid === val.Guid)" = $raw_response }

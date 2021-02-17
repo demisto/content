@@ -35,19 +35,34 @@ script:
       required: false
       secret: false
     - default: false
-      description: The object's location in Active Directory by which to filter the results.
+      isArray: true
+      name: property_sets
+      description: 'A comma-separated list of property sets to fetch. These property
+        sets will supplement the outputs of this integration.  Available properties
+        are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold",
+        "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention",
+        "SCL", "SoftDelete", "StatisticsSeed".'
+      required: false
+      secret: false
+      defaultValue: Minimum
+    - default: false
+      description: The object's location in Active Directory by which to filter the
+        results.
       isArray: false
       name: organizational_unit
       required: false
       secret: false
     - default: false
-      description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
       isArray: false
       name: primary_smtp_address
       required: false
       secret: false
     - default: false
-      description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
       isArray: false
       name: user_principal_name
       required: false
@@ -130,8 +145,8 @@ script:
     - contextPath: EWS.Mailbox.WhenCreatedUTC
       description: UTC time of when the mailbox was created.
       type: Date
-    description: Displays mailbox objects and attributes,
-      populate property pages, or supplies mailbox information to other tasks.
+    description: Displays mailbox objects and attributes, populate property pages,
+      or supplies mailbox information to other tasks.
     execution: false
     name: ews-mailbox-list
   - arguments:
@@ -142,19 +157,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: The object's location in Active Directory by which to filter the results.
+      description: The object's location in Active Directory by which to filter the
+        results.
       isArray: false
       name: organizational_unit
       required: false
       secret: false
     - default: false
-      description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+      description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
       isArray: false
       name: primary_smtp_address
       required: false
       secret: false
     - default: false
-      description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
       isArray: false
       name: user_principal_name
       required: false
@@ -219,8 +238,7 @@ script:
       description: Server legacy distinguished name (DN).
       type: String
     deprecated: false
-    description: Displays Client Access settings
-      that are configured on mailboxes.
+    description: Displays Client Access settings that are configured on mailboxes.
     execution: false
     name: ews-cas-mailbox-list
   - arguments:
@@ -290,7 +308,8 @@ script:
       description: Trustee of the recipient permission.
       type: String
     deprecated: false
-    description: Displays information about SendAs permissions that are configured for users.
+    description: Displays information about SendAs permissions that are configured
+      for users.
     execution: false
     name: ews-recipient-permission-get
   - arguments:
