@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Graph Identity & Access",
-    "description": "Use this pack to control connected applications and services",
+    "description": "Use this pack to manage roles and members.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
