@@ -1,2 +1,8 @@
 [file:playbook-JOB_-_Integrations_and_Playbooks_Health_Check.yml]
 ignore=PB105
+[file:JOB - Integrations and Playbooks Health Check]
+ignore=BA101
+[file:Integrations and Playbooks Health Check - Running Scripts]
+ignore=BA101
+[file:JOB - Integrations and Playbooks Health Check - Lists handling]
+ignore=BA101
