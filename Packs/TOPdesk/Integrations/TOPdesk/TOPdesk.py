@@ -30,6 +30,10 @@ MAX_API_PAGE_SIZE = 10000
 class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
+    def __init__(self, base_url, verify, headers, proxy, new_query):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        self.new_query = new_query
+
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
                             query: Optional[str] = None, modification_date_start: Optional[str] = None,
                             modification_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -53,10 +57,12 @@ class Client(BaseClient):
                 url_suffix = f"{url_suffix}?page_size={page_size}"
                 inline_parameters = True
         if query:
+            if self.new_query:
+                query = f"query={query}"
             if inline_parameters:
-                url_suffix = f"{url_suffix}&query={query}"
+                url_suffix = f"{url_suffix}&{query}"
             else:
-                url_suffix = f"{url_suffix}?query={query}"
+                url_suffix = f"{url_suffix}?{query}"
         if modification_date_start:
             request_params["modification_date_start"] = modification_date_start
         if modification_date_end:
@@ -163,7 +169,7 @@ class Client(BaseClient):
                     incident_id: Optional[str],
                     incident_number: Optional[str],
                     reason_id: Optional[str]) -> Dict[str, Any]:
-        """ """
+        """Preform action on TOPdesk incident with specified reason_id if needed."""
         allowed_actions = ["escalate", "deescalate", "archive", "unarchive"]
         request_params: Dict[str, Any] = {}
         if action not in allowed_actions:
@@ -190,8 +196,8 @@ class Client(BaseClient):
                           file_entry: str,
                           file_name: str,
                           invisible_for_caller: Optional[bool],
-                          file_description: str):
-        """ """
+                          file_description: Optional[str]):
+        """Upload an attachment from file_entry to TOPdesk incident."""
         if not incident_id and not incident_number:
             raise ValueError('Either id or number must be specified to update incident.')
         if incident_id:
@@ -210,11 +216,30 @@ class Client(BaseClient):
             response = self._http_request(method='POST',
                                           url_suffix=f"{endpoint}/attachments",
                                           files=files,
-                                          json_data=request_params)
+                                          data=request_params)
         except Exception as e:
             os.remove(file_name)
             raise e
+        os.remove(file_name)
         return response
+
+    def add_filter_to_query(self, query: Optional[str], filter_name: str, args: Dict[str, Any]) -> Optional[str]:
+        """Enhance query to include filter argument. Consider the supported query type."""
+        if self.new_query:
+            if args.get(filter_name, None):
+                if query:
+                    query = f"{query}&"
+                else:
+                    query = ''
+                query = f"{query}{filter_name}=={args.get(filter_name, None)}"
+        else:
+            if args.get(filter_name, None):
+                if query:
+                    query = f"{query}&"
+                else:
+                    query = ''
+                query = f"{query}{filter_name}={args.get(filter_name, None)}"
+        return query
 
 
 ''' HELPER FUNCTIONS '''
@@ -224,7 +249,7 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]],
                                           result_name: str,
                                           output_prefix: str,
                                           outputs_key_field: str = 'id') -> CommandResults:
-    """Get entry types list from TOPdesk"""
+    """Get entry types list from TOPdesk."""
 
     if len(results) == 0:
         return CommandResults(readable_output=f'No {result_name} found')
@@ -239,7 +264,119 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]],
     )
 
 
+def replace_none(value: Any, replacement: Any) -> Any:
+    if value:
+        return value
+    return replacement
+
+
+def get_incidents_with_pagination(client: Client,
+                                  max_fetch: int,
+                                  query: str,
+                                  modification_date_start: str,
+                                  modification_date_end: str) -> List[Dict[str, Any]]:
+    incidents = []
+    max_incidents = int(max_fetch)
+    number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
+    if max_incidents < MAX_API_PAGE_SIZE:
+        page_size = max_incidents
+    else:
+        page_size = MAX_API_PAGE_SIZE
+    start = 0
+    for index in range(number_of_requests):
+        incidents += client.get_list_with_query(list_type="incidents",
+                                                start=start,
+                                                page_size=page_size,
+                                                query=query,
+                                                modification_date_start=modification_date_start,
+                                                modification_date_end=modification_date_end)
+        start += page_size
+    return incidents
+
+
+def get_incidents_list(client: Client,
+                       incident_number: str = None,
+                       incident_id: str = None,
+                       modification_date_start: str = None,
+                       modification_date_end: str = None,
+                       query: str = None,
+                       page_size: int = None,
+                       start: int = None,
+                       args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
+    """Get list of incidents from TOPdesk."""
+    if incident_id or incident_number:
+        if incident_id:
+            incidents = [client.get_single_endpoint(f"/incidents/id/{incident_id}")]
+        else:
+            incidents = [client.get_single_endpoint(f"/incidents/number/{incident_number}")]
+    else:
+        allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
+        if args.get('status', None) not in allowed_statuses:
+            raise (ValueError(f"status {args.get('status', None)} id not in "
+                              f"the allowed statuses list: {allowed_statuses}"))
+        else:
+            filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
+                                "call_type", "entry_type"]
+            for filter_arg in filter_arguments:
+                query = client.add_filter_to_query(query=query,
+                                                   filter_name=filter_arg,
+                                                   args=args)
+            incidents = client.get_list_with_query(list_type="incidents",
+                                                   start=start,
+                                                   page_size=page_size,
+                                                   query=query,
+                                                   modification_date_start=modification_date_start,
+                                                   modification_date_end=modification_date_end)
+
+    return incidents
+
+
+def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResults:
+    """Receive incidents from api and convert to CommandResults"""
+    if len(incidents) == 0:
+        return CommandResults(readable_output='No incidents found')
+
+    headers = ['id', 'Number', 'Request', 'Line', 'Actions', 'Caller Name', 'Status', 'Operator', 'Priority']
+
+    readable_incidents = []
+    for incident in incidents:
+        readable_incident = {
+            'id': incident.get('id', None),
+            'Number': incident.get('number', None),
+            'Request': incident.get('request', None),
+            'Line': incident.get('status', None),
+            'Caller Name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
+            'Status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
+            'Operator': replace_none(incident.get('operator', {}), {}).get('name', None),
+            'Priority': incident.get('priority', None)
+        }
+
+        readable_incidents.append(readable_incident)
+
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} incidents', readable_incidents,
+                                      headers=headers,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_NAME}.incident',
+        outputs_key_field='id',
+        outputs=incidents
+    )
+
+
+def incident_func_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+    """Abstract class for executing client_func and returning TOPdesk incident as a result."""
+    response = client_func(args)
+
+    if not response.get('id', None):
+        raise Exception(f"Recieved Error when {action} incident in TOPdesk:\n{response}")
+
+    return incidents_to_command_results([response])
+
+
 ''' COMMAND FUNCTIONS '''
+''' List Commands '''
 
 
 def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -420,149 +557,40 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def add_filter_to_query(query: Optional[str], filter_name: str, args: Dict[str, Any]) -> Optional[str]:
-    if args.get(filter_name, None):
-        if query:
-            query = f"{query}&"
-        else:
-            query = ''
-        query = f"{query}{filter_name}=={args.get(filter_name, None)}"
-    return query
+def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Parse arguments and return incidents list as CommandResults."""
+    return incidents_to_command_results(get_incidents_list(client=client,
+                                                           incident_number=args.get('incident_number', None),
+                                                           incident_id=args.get('incident_id', None),
+                                                           query=args.get('query', None),
+                                                           page_size=args.get('page_size', None),
+                                                           start=args.get('start', None),
+                                                           args=args))
 
 
-def replace_none(value: Any, replacement: Any) -> Any:
-    if value:
-        return value
-    return replacement
-
-
-def get_incidents_with_pagination(client: Client,
-                                  max_fetch: int,
-                                  query: str,
-                                  modification_date_start: str,
-                                  modification_date_end: str) -> List[Dict[str, Any]]:
-    incidents = []
-    max_incidents = int(max_fetch)
-    number_of_requests = math.ceil(max_incidents / MAX_API_PAGE_SIZE)
-    if max_incidents < MAX_API_PAGE_SIZE:
-        page_size = max_incidents
-    else:
-        page_size = MAX_API_PAGE_SIZE
-    start = 0
-    for index in range(number_of_requests):
-        incidents += client.get_list_with_query(list_type="incidents",
-                                                start=start,
-                                                page_size=page_size,
-                                                query=query,
-                                                modification_date_start=modification_date_start,
-                                                modification_date_end=modification_date_end)
-        start += page_size
-    return incidents
-
-
-def get_incidents_list(client: Client,
-                       incident_number: str = None,
-                       incident_id: str = None,
-                       modification_date_start: str = None,
-                       modification_date_end: str = None,
-                       query: str = None,
-                       page_size: int = None,
-                       start: int = None,
-                       args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
-    if incident_id or incident_number:
-        if incident_id:
-            incidents = [client.get_single_endpoint(f"/incidents/id/{incident_id}")]
-        else:
-            incidents = [client.get_single_endpoint(f"/incidents/number/{incident_number}")]
-    else:
-        allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
-        if args.get('status', None) not in allowed_statuses:
-            raise (ValueError(f"status {args.get('status', None)} id not in "
-                              f"the allowed statuses list: {allowed_statuses}"))
-        else:
-            filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
-                                "call_type", "entry_type"]
-            for filter_arg in filter_arguments:
-                query = add_filter_to_query(query=query,
-                                            filter_name=filter_arg,
-                                            args=args)
-            incidents = client.get_list_with_query(list_type="incidents",
-                                                   start=start,
-                                                   page_size=page_size,
-                                                   query=query,
-                                                   modification_date_start=modification_date_start,
-                                                   modification_date_end=modification_date_end)
-
-    return incidents
-
-
-def incidents_to_command_results(client: Client, incidents: List[Dict[str, Any]]) -> CommandResults:
-    """Receive Incidents from api and convert to CommandResults"""
-    if len(incidents) == 0:
-        return CommandResults(readable_output='No incidents found')
-
-    headers = ['id', 'Number', 'Request', 'Line', 'Actions', 'Caller Name', 'Status', 'Operator', 'Priority']
-
-    readable_incidents = []
-    for incident in incidents:
-        readable_incident = {
-            'id': incident.get('id', None),
-            'Number': incident.get('number', None),
-            'Request': incident.get('request', None),
-            'Line': incident.get('status', None),
-            'Caller Name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
-            'Status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
-            'Operator': replace_none(incident.get('operator', {}), {}).get('name', None),
-            'Priority': incident.get('priority', None)
-        }
-
-        readable_incidents.append(readable_incident)
-
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} incidents', readable_incidents,
-                                      headers=headers,
-                                      removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.incident',
-        outputs_key_field='id',
-        outputs=incidents
-    )
-
-
-def incident_func_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
-    """Abstract class for executing client_func and returning TOPdesk incident as a result."""
-    response = client_func(args)
-
-    if not response.get('id', None):
-        raise Exception(f"Recieved Error when {action} incident in TOPdesk:\n{response}")
-
-    return incidents_to_command_results(client, [response])
-
-
-def incident_touch_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
-    """ """
+def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+    """Try setting caller as a reqistered caller.
+    If caller is not registered, set the caller argument as caller name.
+    This function implements incident_create and incident_update commands.
+    """
     try:
         args['registered_caller'] = True
-        return incident_func_command(client=client,
-                                     args=args,
+        return incident_func_command(args=args,
                                      client_func=client_func,
                                      action=action)
     except Exception as e:
         if "'callerLookup.id' cannot be parsed" in str(e):
             args['registered_caller'] = False
-            return_results(incident_func_command(client=client,
-                                                 args=args,
-                                                 client_func=client_func,
-                                                 action=action))
+            return incident_func_command(args=args,
+                                         client_func=client_func,
+                                         action=action)
         else:
             raise e
 
 
 def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> CommandResults:
-    """ """
-    return incidents_to_command_results(client,
-                                        [client.incident_do(action=action,
+    """Preform an action on an incident and return it as CommandResults."""
+    return incidents_to_command_results([client.incident_do(action=action,
                                                             incident_id=args.get("id", None),
                                                             incident_number=args.get("number", None),
                                                             reason_id=args.get("reason_id", None))])
@@ -618,15 +646,7 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    return incidents_to_command_results(client,
-                                        get_incidents_list(client=client,
-                                                           incident_number=args.get('incident_number', None),
-                                                           incident_id=args.get('incident_id', None),
-                                                           query=args.get('query', None),
-                                                           page_size=args.get('page_size', None),
-                                                           start=args.get('start', None),
-                                                           args=args))
+''' FETCH & MIRRORING COMMANDS'''
 
 
 def fetch_incidents(client: Client,
@@ -635,7 +655,7 @@ def fetch_incidents(client: Client,
     """Fetches incidents from TOPdesk."""
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_fetch = last_run.get('last_fetch', None)  # TODO: Always returns None for some reason.
+    last_fetch = last_run.get('last_fetch', None)
 
     if not last_fetch:
         if first_fetch_datetime:
@@ -730,7 +750,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            new_query=demisto_params['new_query'])
 
         if demisto.command() == 'test-module':
             result = test_module(client, demisto.getLastRun(), demisto_params)
@@ -754,13 +775,11 @@ def main() -> None:
             return_results(get_incidents_list_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incident-create':
-            return_results(incident_touch_command(client=client,
-                                                  args=demisto.args(),
+            return_results(incident_touch_command(args=demisto.args(),
                                                   client_func=client.create_incident,
                                                   action="creating"))
         elif demisto.command() == 'topdesk-incident-update':
-            return_results(incident_touch_command(client=client,
-                                                  args=demisto.args(),
+            return_results(incident_touch_command(args=demisto.args(),
                                                   client_func=client.update_incident,
                                                   action="updating"))
 
@@ -782,6 +801,8 @@ def main() -> None:
                                                     demisto_params=demisto_params)
             demisto.setLastRun(last_fetch)
             demisto.incidents(incidents)
+        else:
+            raise NotImplementedError(f"command {demisto.command()} does not exist in {INTEGRATION_NAME} integration")
 
     # Log exceptions and return errors
     except Exception as e:

@@ -1,4 +1,5 @@
 import pytest
+import demistomock as demisto
 import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
@@ -44,12 +45,22 @@ def util_load_json(path):
      }),
 ])
 def test_list_command(requests_mock, command, command_api_url, mock_response, expected_results):
+    """Unit test
+    Given
+        - command
+    When
+        - running the command
+    Then
+        - validate the entry context.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     requests_mock.get(
         command_api_url, json=mock_response)
@@ -99,12 +110,22 @@ def test_large_output_list_command(requests_mock,
                                    mock_response_file,
                                    override_nodes,
                                    expected_results):
+    """Unit test
+    Given
+        - command
+    When
+        - running the command
+    Then
+        - validate the entry context.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
     mock_topdesk_response = []
@@ -189,12 +210,24 @@ def test_incident_do_commands(requests_mock,
                               command_api_url,
                               mock_response_file,
                               override_node):
+    """Unit test
+    Given
+        - action
+        - command args
+    When
+        - running incident_do_command with the action
+    Then
+        - validate the correct request was called.
+        - validate the entry context.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
     response_incident = mock_topdesk_node.copy()
@@ -221,32 +254,58 @@ def test_incident_do_commands(requests_mock,
 
 
 @pytest.mark.parametrize('command_args, command_api_url, command_api_body', [
+    ({"id": "incident_id", "file": "some_entry_id", "invisivle_for_caller": "false"},
+     'https://test.com/api/v1/incidents/id/incident_id/attachments',
+     {"invisivle_for_caller": "false"}),
+    ({"id": "incident_id", "file": "some_entry_id", "description": "some description"},
+     'https://test.com/api/v1/incidents/id/incident_id/attachments',
+     {"description": "some description"}),
+    ({"id": "incident_id", "file": "some_entry_id", "description": "some description", "invisivle_for_caller": "false"},
+     'https://test.com/api/v1/incidents/id/incident_id/attachments',
+     {"description": "some description", "invisivle_for_caller": "false"}),
     ({"id": "incident_id", "file": "some_entry_id"},
      'https://test.com/api/v1/incidents/id/incident_id/attachments',
      {})
 ])
-def test_attachment_upload_command(requests_mock,
+def test_attachment_upload_command(mocker,
+                                   requests_mock,
                                    command_args,
                                    command_api_url,
                                    command_api_body):
-    # TODO: Mock all file entry stuffs
+    """Unit test
+    Given
+        - command args
+    When
+        - running attachment_upload_command
+    Then
+        - validate the correct request was called.
+        - validate the file is in the request.
+        - validate the entry context.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
+
     mock_topdesk_node = util_load_json('test_data/topdesk_attachment.json')
     response_attachment = mock_topdesk_node.copy()
 
-    requests_mock.put(
+    requests_mock.post(
         command_api_url, json=response_attachment)
+
+    mocker.patch.object(demisto, 'dt', return_value="made_up_file.txt")
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/mock_upload_file.txt'})
 
     command_results = attachment_upload_command(client=client,
                                                 args=command_args)
+
     assert requests_mock.called
-    assert requests_mock.last_request.json() == command_api_body
+    assert b'mock text file for attachment up' in requests_mock.last_request._request.body
     assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.attachment'
     assert command_results.outputs_key_field == 'id'
     assert command_results.outputs == response_attachment
@@ -276,12 +335,25 @@ def test_caller_lookup_incident_touch_commands(requests_mock,
                                                command_api_url,
                                                mock_response_file,
                                                expected_last_request_body):
+    """Unit test
+    Given
+        - whether the command is Create or Update
+        - command args
+    When
+        - running the command with a caller as a registered caller.
+    Then
+        - validate 1 request was called.
+        - validate the correct request was called.
+        - validate the entry context.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     client_func = client.update_incident
     request_method = "put"
@@ -296,11 +368,82 @@ def test_caller_lookup_incident_touch_commands(requests_mock,
 
     request_command(command_api_url, json=response_incident)
 
-    command_results = incident_touch_command(client=client,
-                                             args=command_args,
+    command_results = incident_touch_command(args=command_args,
                                              client_func=client_func,
                                              action=action)
-    assert requests_mock.called
+    assert requests_mock.call_count == 1
+    assert requests_mock.last_request.json() == expected_last_request_body
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == [response_incident]
+
+
+@pytest.mark.parametrize('create_func, command_args, command_api_url, mock_response_file,'
+                         ' expected_last_request_body', [
+                             (True,
+                              {"caller": "some_caller"},
+                              'https://test.com/api/v1/incidents/',
+                              'test_data/topdesk_incident.json',
+                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
+                             (False,
+                              {"caller": "some_caller", "id": "incident_id"},
+                              'https://test.com/api/v1/incidents/id/incident_id',
+                              'test_data/topdesk_incident.json',
+                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
+                             (False,
+                              {"caller": "some_caller", "number": "incident_number"},
+                              'https://test.com/api/v1/incidents/number/incident_number',
+                              'test_data/topdesk_incident.json',
+                              {'caller': {'dynamicName': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
+                         ])
+def test_non_registered_caller_incident_touch_commands(requests_mock,
+                                                       create_func,
+                                                       command_args,
+                                                       command_api_url,
+                                                       mock_response_file,
+                                                       expected_last_request_body):
+    """Unit test
+    Given
+        - whether the command is Create or Update
+        - command args
+    When
+        - running the command with a caller as a non registered caller.
+    Then
+        - validate 2 requests were called.
+        - validate the entry context.
+    """
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        },
+        proxy=False,
+        new_query=True
+    )
+    client_func = client.update_incident
+    request_method = "put"
+    action = "updating"
+    if create_func:
+        client_func = client.create_incident
+        request_method = "post"
+        action = "creating"
+    mock_topdesk_node = util_load_json(mock_response_file)
+    response_incident = mock_topdesk_node.copy()
+    request_command = getattr(requests_mock, request_method)
+
+    def callback_func(request, context):
+        if 'callerLookup' in request.json():
+            return {"message": "The value for the field 'callerLookup.id' cannot be parsed."}
+        else:
+            return response_incident
+
+    request_command(command_api_url, json=callback_func)
+
+    command_results = incident_touch_command(args=command_args,
+                                             client_func=client_func,
+                                             action=action)
+    assert requests_mock.call_count == 2
     assert requests_mock.last_request.json() == expected_last_request_body
     assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
     assert command_results.outputs_key_field == 'id'
@@ -373,12 +516,23 @@ def test_list_command_with_args(requests_mock,
                                 command,
                                 command_args,
                                 command_api_request):
+    """Unit test
+    Given
+        - command args
+    When
+        - running the command
+    Then
+        - validate the correct request was called.
+        - validate the request body is as expected
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     requests_mock.get(
         command_api_request[0], json=[{}])
@@ -412,12 +566,23 @@ def test_get_incidents_with_pagination(requests_mock,
                                        command_args,
                                        command_api_request,
                                        call_count):
+    """Unit test
+    Given
+        - command args
+    When
+        - running get_incidents_with_pagination function
+    Then
+        - validate the correct parameters in the request.
+        - validate the number of requests preformed.
+    """
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     for request in command_api_request:
         requests_mock.get(
@@ -434,8 +599,91 @@ def test_get_incidents_with_pagination(requests_mock,
     assert requests_mock.call_count == call_count
 
 
-# TODO: add tests for incident_touch commands with dynamicName
-# TODO: add tests for attachment upload command
+@pytest.mark.parametrize('command, new_query, command_args, command_api_request', [
+    (list_persons_command,
+     False,
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/persons?status=firstLine'),
+    (list_operators_command,
+     False,
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/operators?status=firstLine'),
+    (branches_command,
+     False,
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/branches?status=firstLine'),
+    (get_incidents_list_command,
+     False,
+     {"query": "status=firstLine"},
+     'https://test.com/api/v1/incidents?status=firstLine'),
+    (get_incidents_list_command,
+     False,
+     {"status": "firstLine"},
+     'https://test.com/api/v1/incidents?status=firstLine'),
+    (get_incidents_list_command,
+     False,
+     {"query": 'caller_id=some_caller', "status": "firstLine"},
+     'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine'),
+    (get_incidents_list_command,
+     False,
+     {"query": 'caller_id=some_caller', "status": "firstLine", "branch_id": "some_branch"},
+     'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine&branch_id=some_branch'),
+    (list_persons_command,
+     True,
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/persons?query=status==firstLine'),
+    (list_operators_command,
+     True,
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/operators?query=status==firstLine'),
+    (branches_command,
+     True,
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/branches?query=status==firstLine'),
+    (get_incidents_list_command,
+     True,
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/incidents?query=status==firstLine'),
+    (get_incidents_list_command,
+     True,
+     {"status": "firstLine"},
+     'https://test.com/api/v1/incidents?query=status==firstLine'),
+    (get_incidents_list_command,
+     True,
+     {"query": 'caller_id==some_caller', "status": "firstLine"},
+     'https://test.com/api/v1/incidents?query=caller_id==some_caller&status==firstLine'),
+    (get_incidents_list_command,
+     True,
+     {"query": 'caller_id==some_caller', "status": "firstLine", "branch_id": "some_branch"},
+     'https://test.com/api/v1/incidents?query=caller_id==some_caller&status==firstLine&branch_id==some_branch')
+])
+def test_old_new_query(requests_mock,
+                       command,
+                       new_query,
+                       command_args,
+                       command_api_request):
+    """Unit test
+    Given
+        - command args
+        - which type of query is supported
+    When
+        - running the command
+    Then
+        - validate the correct request url was called.
+    """
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        },
+        proxy=False,
+        new_query=new_query
+    )
+    requests_mock.get(command_api_request, json=[{}])
+    command(client=client, args=command_args)
+
+    assert requests_mock.called
 
 
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
@@ -444,7 +692,7 @@ def test_get_incidents_with_pagination(requests_mock,
         'creationDate': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-01-11T06:32:36.303+0000',
-     '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
+        '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
     ([{
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36Z',
@@ -454,24 +702,33 @@ def test_get_incidents_with_pagination(requests_mock,
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
     }], '2020-02-11T06:32:36.303+0000',
-     '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
+        '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
     ([{
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'will_be_fetched': False
     }], '2020-02-10T06:32:36Z',
-     '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
+        '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
+    """Unit test
+    Given
+        - fetch incidents args
+    When
+        - running fetch incidents command
+    Then
+        - validate The length of the results.
+        - validate the entry context.
+        - validate last_fetch is updated.
     """
-    """
-
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
-        }
+        },
+        proxy=False,
+        new_query=True
     )
     mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
     mock_topdesk_response = []

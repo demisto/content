@@ -27,6 +27,11 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: true
+  display: Use new style FIQL query (e.g. query=status==firsLine) available from TOPDesk version 3.3.0
+  name: new_query
+  required: false
+  type: 8
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -2725,6 +2730,11 @@ script:
     - description: Initial action. Can be set by operators and persons.
       isArray: false
       name: action
+      required: false
+      secret: false
+    - description: The caller id for this incident. For an unregistered caller provide a name.
+      isArray: false
+      name: caller
       required: false
       secret: false
     - description: Whether the initial action is invisible for persons.
@@ -5770,7 +5780,7 @@ script:
       secret: false
     - description: The description of the uploaded file.
       isArray: false
-      name: file_descriptipn
+      name: file_description
       required: false
       secret: false
     deprecated: false
