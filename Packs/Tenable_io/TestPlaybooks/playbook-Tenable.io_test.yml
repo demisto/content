@@ -1,7 +1,7 @@
-id: Tenable.io_test-SE6712_2-12
+id: Tenable.io test
 version: 31
 vcShouldKeepItemLegacyProdMachine: false
-name: Tenable.io_test-SE6712_2-12
+name: Tenable.io test
 starttaskid: "0"
 tasks:
   "0":
@@ -185,10 +185,10 @@ tasks:
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset.
-      script: Tenable.io_SE6712_2/12|||tenable-io-get-vulnerabilities-by-asset
+      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
       type: regular
       iscommand: true
-      brand: Tenable.io_SE6712_2/12
+      brand: Tenable.io
     nexttasks:
       '#none#':
       - "5"
@@ -196,9 +196,9 @@ tasks:
       dateRange: {}
       hostname: {}
       ip:
-        simple: 245 216.69.224.11
+        simple: 10.0.0.2
       using:
-        simple: Tenable.io_SE6712_2/12_instance_1
+        simple: Tenable.io
     separatecontext: false
     view: |-
       {
@@ -328,3 +328,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

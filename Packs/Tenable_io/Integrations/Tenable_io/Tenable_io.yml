@@ -1,6 +1,7 @@
 commonfields:
   id: Tenable.io_1
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Tenable.io_1
 display: Tenable.io_1
 category: Data Enrichment & Threat Intelligence
@@ -360,6 +361,4 @@ script:
     description: Pauses all scans inputted as an array
   runonce: false
   subtype: python3
-fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
+sourcemoduleid: Tenable.io_SE6712_2/12

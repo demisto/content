@@ -162,7 +162,6 @@ if not demisto.params()['proxy']:
 
 # Utility methods
 def flatten(d):
-    """Function to return flatted object."""
     r = {}  # type: ignore
     for k, v in d.iteritems():
         if isinstance(v, dict):
@@ -172,14 +171,12 @@ def flatten(d):
 
 
 def filter_dict_null(d):
-    """Function to filter a dict."""
     if isinstance(d, dict):
         return dict((k, v) for k, v in d.items() if v is not None)
     return d
 
 
 def filter_dict_keys(d, keys):
-    """Function to filter a dict using keys."""
     if isinstance(d, list):
         return map(lambda x: filter_dict_keys(x, keys), d)
     if isinstance(d, dict):
@@ -188,7 +185,6 @@ def filter_dict_keys(d, keys):
 
 
 def convert_severity_values(d):
-    """Function to convert numbers to string severity."""
     if isinstance(d, list):
         return map(convert_severity_values, d)
     if isinstance(d, dict):
@@ -197,7 +193,6 @@ def convert_severity_values(d):
 
 
 def convert_dict_context_dates(d):
-    """Function to convert dict context dates."""
     def convert_epoch_to_date(k, v):
         if any(s in k.lower() for s in ('date', 'time')):
             try:
@@ -214,7 +209,6 @@ def convert_dict_context_dates(d):
 
 
 def convert_dict_readable_dates(d):
-    """Function to convert dict context dates."""
     def convert_epoch_to_date(k, v):
         return formatEpochDate(v) if isinstance(v, int) and any(s in k.lower() for s in ('date', 'time')) else v
 
@@ -226,7 +220,6 @@ def convert_dict_readable_dates(d):
 
 
 def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):
-    """Function to get entry for an object."""
     def intersection(lst1, lst2):
         return [value for value in lst1 if value in lst2]
 
@@ -254,7 +247,6 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
 
 def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
-    """Function to change the keys of a dictionary according to a conversion map."""
     # trans_map - { 'OldKey': 'NewKey', ...}
     # camelize - change all keys from snake_case to CamelCase
     def snake_to_camel(snake_str):
@@ -276,7 +268,6 @@ def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
 
 
 def date_range_to_param(date_range):
-    """Function to convert date range to param."""
     params = {}
     if date_range:
         try:
@@ -288,7 +279,6 @@ def date_range_to_param(date_range):
 
 
 def get_scan_error_message(response, scan_id):
-    """Function to parse scan error from response."""
     code = response.status_code
     message = "Error processing request"
     if scan_id:
@@ -306,7 +296,6 @@ def get_scan_error_message(response, scan_id):
 
 
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
-    """Function to generally wrap scan requests."""
     if endpoint:
         endpoint = '/' + endpoint
     full_url = "{0}scans/{1!s}{2}".format(BASE_URL, scan_id, endpoint)
@@ -337,7 +326,6 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
 
 
 def get_scan_info(scans_result_elem):
-    """Function to parse scan info."""
     response = send_scan_request(scans_result_elem['id'], ignore_license_error=True)
     if response:
         response['info'].update(scans_result_elem)
@@ -345,14 +333,12 @@ def get_scan_info(scans_result_elem):
 
 
 def send_vuln_details_request(plugin_id, date_range=None):
-    """Function to send vuln details."""
     full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     return res.json()
 
 
 def get_vuln_info(vulns):
-    """Function to get vuln info."""
     vulns_info = {v['plugin_id']: v for v in vulns}
     infos = []
     errors = []
@@ -367,14 +353,12 @@ def get_vuln_info(vulns):
 
 
 def send_assets_request(params):
-    """Function to request assets."""
     full_url = "{}{}".format(BASE_URL, "workbenches/assets")
     res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
 
 def get_asset_id(params):
-    """Function to get asset by id."""
     assets = send_assets_request(params)
     if 'error' in assets:
         return_error(assets['error'])
@@ -384,7 +368,6 @@ def get_asset_id(params):
 
 
 def send_asset_vuln_request(asset_id, date_range):
-    """Function to get an assets vuln request."""
     full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     res.raise_for_status()
@@ -393,13 +376,11 @@ def send_asset_vuln_request(asset_id, date_range):
 
 # Command methods
 def test_module():
-    """Function to test integration from Demisto via test button."""
     send_scan_request()
     return 'ok'
 
 
 def get_scans_command():
-    """Function for integration command get_scans_command."""
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
         # str(YYYY-MM-DD) to int(timestamp)
@@ -419,7 +400,6 @@ def get_scans_command():
 
 
 def launch_scan_command():
-    """Function for integration command launch_scan_command."""
     scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTargets')
     scan_info = send_scan_request(scan_id)['info']
     if not targets:
@@ -435,27 +415,7 @@ def launch_scan_command():
                                 LAUNCH_SCAN_HEADERS)
 
 
-# def launch_scans_command():
-#     """Function for integration command launch_scans_command."""
-#     scan_ids = str(demisto.getArg("scan_ids")).split(",")
-
-#     results = []
-
-#     for scan_id in scan_ids:
-
-#         res = send_scan_request(scan_id, 'launch', 'POST')
-#         res.update({
-#             'id': scan_id,
-#             'status': 'pending'
-#         })
-
-#         results.append(get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res), LAUNCH_SCAN_HEADERS))
-
-#     return results
-
-
 def get_report_command():
-    """Function for integration command get_report_command."""
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
     results = []
     scan_details = send_scan_request(scan_id)
@@ -490,7 +450,6 @@ def get_report_command():
 
 
 def get_vulnerability_details_command():
-    """Function for integration command get_vulnerability_details_command."""
     plugin_id, date_range = demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')
     info = send_vuln_details_request(plugin_id, date_range)
     if 'error' in info:
@@ -501,7 +460,6 @@ def get_vulnerability_details_command():
 
 
 def args_to_request_params(hostname, ip, date_range):
-    """Function for integration command args_to_request_params."""
     if not hostname and not ip:
         return_error("Please provide one of the following arguments: hostname, ip")
 
@@ -525,7 +483,6 @@ def args_to_request_params(hostname, ip, date_range):
 
 
 def get_vulnerabilities_by_asset_command():
-    """Function for integration command get_vulnerabilities_by_asset_command."""
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
     params, indicator = args_to_request_params(hostname, ip, date_range)
 
@@ -549,7 +506,6 @@ def get_vulnerabilities_by_asset_command():
 
 
 def get_scan_status_command():
-    """Function for integration command get_scan_status_command."""
     scan_id = demisto.getArg('scanId')
     scan_details = send_scan_request(scan_id)
     scan_status = {
@@ -558,17 +514,8 @@ def get_scan_status_command():
     }
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
 
-# TEST
-
 
 def pause_scan_command():
-    """Function for integration command pause_scan_command."""
-
-    # scan_ids = str(demisto.getArg('scanIds')).split(",")
-
-    # for scan_id in scan_ids:
-    #     demisto.results("the scan id is"+scan_id)
-
     scan_ids = str(demisto.getArg('scanIds')).split(",")
 
     results = []
@@ -595,78 +542,10 @@ def pause_scan_command():
             results.append(
                 "Command 'tenable-io-pause-scan' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
 
-    # for scan_id in scan_ids:
-
-    #     scan_details = send_scan_request(scan_id)
-    #     scan_status = {
-    #         'Id': scan_id,
-    #         'Status': scan_details['info']['status']
-    #     }
-
-    #     if scan_status["Status"].lower() == "running":
-    #         send_scan_request(scan_id, "pause", "POST")
-    #         resumed_scan = {
-    #             "Id": scan_id,
-    #             "Status": "Pausing"
-    #         }
-    #         results.append(get_entry_for_object("The requested scan was paused successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
-
-    #     else:
-    #         results.append("Command 'tenable-io-pause-scans' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
-
     return results
 
-    # scan_id = demisto.getArg('scanId')
-    # scan_details = send_scan_request(scan_id)
-    # scan_status = {
-    #     'Id': scan_id,
-    #     'Status': scan_details['info']['status']
-    # }
 
-    # if scan_status["Status"].lower() == "running":
-    #     send_scan_request(scan_id, "pause", "POST")
-    #     paused_scan = {
-    #         "Id": scan_id,
-    #         "Status": "Pausing"
-    #     }
-
-    #     return get_entry_for_object("The requested scan was paused successfully", "TenableIO.Scan", replace_keys(paused_scan), ["Id", "Status"])
-
-    # else:
-    #     return "Command 'tenable-io-pause-scan' cannot be called while scan status is {}".format(scan_status["Status"])
-
-
-# def pause_scans_command():
-#     """Function for integration command pause_scans_command."""
-    # scan_ids = str(demisto.getArg('scanIds')).split(",")
-
-    # results = []
-
-    # for scan_id in scan_ids:
-
-    #     scan_details = send_scan_request(scan_id)
-    #     scan_status = {
-    #         'Id': scan_id,
-    #         'Status': scan_details['info']['status']
-    #     }
-
-    #     if scan_status["Status"].lower() == "running":
-    #         send_scan_request(scan_id, "pause", "POST")
-    #         resumed_scan = {
-    #             "Id": scan_id,
-    #             "Status": "Pausing"
-    #         }
-    #         results.append(get_entry_for_object("The requested scan was paused successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
-
-    #     else:
-    #         results.append("Command 'tenable-io-pause-scans' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
-
-    # return results
-
-
-# TEST
 def resume_scan_command():
-    """Function for integration command resume_scan_command."""
 
     scan_ids = str(demisto.getArg('scanIds')).split(",")
 
@@ -696,106 +575,9 @@ def resume_scan_command():
 
     return results
 
-    # scan_id = demisto.getArg('scanId')
-    # scan_details = send_scan_request(scan_id)
-    # scan_status = {
-    #     'Id': scan_id,
-    #     'Status': scan_details['info']['status']
-    # }
 
-    # if scan_status["Status"].lower() == "paused":
-    #     send_scan_request(scan_id, "resume", "POST")
-    #     resumed_scan = {
-    #         "Id": scan_id,
-    #         "Status": "Resuming"
-    #     }
-    #     return get_entry_for_object("The requested scan was resumed successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"])
-
-    # else:
-    #     return "Command 'tenable-io-resume-scan' cannot be called while scan status is {}".format(scan_status["Status"])
-
-
-# def resume_scans_command():
-#     """Function for integration command resume_scans_command."""
-#     scan_ids = str(demisto.getArg('scanIds')).split(",")
-
-#     results = []
-
-#     for scan_id in scan_ids:
-
-#         scan_details = send_scan_request(scan_id)
-#         scan_status = {
-#             'Id': scan_id,
-#             'Status': scan_details['info']['status']
-#         }
-
-#         if scan_status["Status"].lower() == "paused":
-#             send_scan_request(scan_id, "resume", "POST")
-#             resumed_scan = {
-#                 "Id": scan_id,
-#                 "Status": "Resuming"
-#             }
-#             results.append(get_entry_for_object("The requested scan was resumed successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
-
-#         else:
-#             results.append("Command 'tenable-io-resume-scans' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
-
-#     return results
-
-# Creates new tenable scan
-
-
-# def create_scan_command():
-#     """Function for integration command create_scan_command."""
-#     scan_settings = str(demisto.getArg('scanSettings'))  # JSON string
-#     scan_id = ""
-#     ids_list = []
-#     call_results = {}
-#     try:
-#         json_data = json.loads(scan_settings)
-#         scans = json_data["scan_list"]
-#         for scan in scans:
-#             post_response = send_request(str(scan).replace("u'", '"').replace("'", '"'), endpoint="scans", method="POST", endpoint_base="")
-#             scan_id += "ID of new scan " + str(post_response["scan"]["name"]) + ": " + str(post_response["scan"]["id"]) + "\n"
-#             ids_list.append(post_response['scan']['id'])  # += str(post_response['scan']['id']) + ","
-
-#         # l_list = ids_list[:-1]
-#         call_results = {
-#             'Id': scan_id,
-#             'ScanIds': ids_list
-#         }
-#     except KeyError:
-#         post_response = send_request(str(scan_settings).replace("'", '"'), endpoint="scans", method="POST", endpoint_base="")
-#         scan_id = "Your new scan ID: " + str(post_response['scan']['id'])
-#         ids_list.append(post_response['scan']['id'])  # = post_response['scan']['id']
-#         scan_id = post_response['scan']['id']
-
-#         call_results = {
-#             'Id': scan_id,
-#             'ScanIds': scan_id
-#         }
-
-#     return get_entry_for_object('Scan(s) created', 'Tenable.IO.NewScan', call_results)
-
-
-# def get_scan_templates():
-#     """Function for integration command get_scan_templates."""
-#     try:
-#         response = requests.request("GET", "https://cloud.tenable.com/editor/scan/templates", headers=NEW_HEADERS, verify=USE_SSL)
-#         response.raise_for_status()
-#         print(response.json())
-#         demisto.info("Ran request sucessfully")
-#         return response
-#     except HTTPError:
-#         print(response.status_code())
-#         demisto.error(traceback.format_exc())
-#         sys.exit(0)
-
-
-# Request/Response methods
-# kwargs: request parameters
 def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignore_license_error=False, **kwargs):
-    """Function for wrap requests."""
+
     if endpoint and (len(endpoint_base) > 0):
         endpoint = '/' + endpoint
     full_url = "{0}{1}{2}".format(BASE_URL, endpoint_base, endpoint)
@@ -816,21 +598,11 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
                     return "Status code error: {}".format(res.status_code)
 
                 demisto.error(traceback.format_exc())
-                sys.exit(0)
 
     try:
         return res.json()
     except ValueError:
         return "No JSON to decode."
-
-
-def add_tags():
-    """Function for add tags."""
-    payloads = demisto.getArg('payload')
-    # payloads = json.loads(payloads)
-
-    response = send_request(payload=payloads, endpoint="values", method="POST")
-    return response
 
 
 # Command selector
@@ -852,13 +624,3 @@ elif demisto.command() == 'tenable-io-pause-scan':
     demisto.results(pause_scan_command())
 elif demisto.command() == 'tenable-io-resume-scan':
     demisto.results(resume_scan_command())
-# elif demisto.command() == 'tenable-io-add-tags':
-#     demisto.results(add_tags())
-# elif demisto.command() == 'tenable-io-resume-scans':
-#     demisto.results(resume_scans_command())
-# elif demisto.command() == 'tenable-io-pause-scans':
-#     demisto.results(pause_scans_command())
-# elif demisto.command() == 'tenable-io-create-scan':
-#     demisto.results(create_scan_command())
-# elif demisto.command() == 'tenable-io-check-templates':
-#     demisto.results(get_scan_templates())
