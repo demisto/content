@@ -1401,8 +1401,7 @@ def main() -> None:
             credentials=credentials)
 
         if command == 'test-module':
-            result = test_module_command(client)
-            return_results(result)
+            return_results(test_module_command(client))
 
         elif command == 'fetch-incidents':
             raise NotImplementedError
