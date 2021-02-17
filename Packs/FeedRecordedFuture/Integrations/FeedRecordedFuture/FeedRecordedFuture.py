@@ -12,6 +12,7 @@ from typing import Tuple, Optional, List, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+BATCH_SIZE = 2000
 INTEGRATION_NAME = 'Recorded Future'
 
 # taken from recorded future docs
@@ -151,11 +152,18 @@ class Client(BaseClient):
             response_content = response_content.decode('utf-8')
             data = response_content.split('\n')
         else:
-            data = response.text.split('\n')
+            file_stream = gzip.open(response, 'rt')
 
-        csvreader = csv.DictReader(data)
+            while True:
+                # Creating feeds batch
+                feed_batch = [feed for _, feed in zip(range(BATCH_SIZE), file_stream) if feed]
 
-        return csvreader
+                if not feed_batch:
+                    file_stream.close()
+                    os.remove(response)
+                    return
+
+                yield csv.DictReader(feed_batch)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
