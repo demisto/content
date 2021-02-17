@@ -117,7 +117,7 @@ script:
     name: Picus-Specific-Threats-Results
   - arguments: []
     description: Returns the peer list with current statuses
-    name: Picus-Peer-List
+    name: picus-peer-list
   - arguments:
     - description: 'Example: threat_id=100682 PID of the threat'
       name: threat_id
