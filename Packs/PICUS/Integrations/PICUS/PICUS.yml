@@ -46,7 +46,7 @@ script:
     description: 'Attack Result - Makes a comparison of the given vector''s results.
       Example Command: !picus-vector-compare begin_date=2020-01-20 end_date=2021-01-20
       trusted=Trusted_Peer1 untrusted=Untrusted_Peer1'
-    name: Picus-Vector-Compare
+    name: picus-vector-compare
   - arguments:
     - auto: PREDEFINED
       defaultValue: insecure
