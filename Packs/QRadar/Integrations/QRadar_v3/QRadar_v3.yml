@@ -35,9 +35,11 @@ script:
   - name: qradar-offenses-list
     arguments:
     - name: offense_id
-      description: The offense ID to retrieve its details. Specify offense_id if you want to get details only about certain offense.
+      description: The offense ID to retrieve its details. Specify offense_id if you
+        want to get details only about certain offense.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
       description: 'Query to filter offenses. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
@@ -85,11 +87,14 @@ script:
     arguments:
     - name: closing_reason_id
       required: false
-      description: The closing reason ID to retrieve its details. Specify closing_reason_id if you want to get details only about certain closing reason.
+      description: The closing reason ID to retrieve its details. Specify closing_reason_id
+        if you want to get details only about certain closing reason.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
-      description: 'Query to filter closing reasons. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter closing reasons. For reference please consult:
+        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
@@ -121,9 +126,11 @@ script:
       description: The offense ID to add the note to.
     - name: note_id
       required: true
-      description: The note ID to retrieve its details. Specify note_id if you want to get details only about certain note.
+      description: The note ID to retrieve its details. Specify note_id if you want
+        to get details only about certain note.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
       description: 'Query to filter offense notes. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
@@ -150,6 +157,7 @@ script:
       description: Retrieve rules corresponding to the given rule type.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
       description: 'Query to filter rules. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
@@ -159,24 +167,27 @@ script:
         in brackets and multiple fields in the same object separated by commas. For
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html'
       isArray: true
-
   - name: qradar-search-create
-    description: Create a new asynchronous Ariel search. Creates a new Ariel search as specified by the Ariel Query Language (AQL) query expression. Searches are executed asynchronously. Returns search ID that can be used by 'todo' command to retrieve the results once it is complete. Accepts SELECT query expressions only.
+    description: Create a new asynchronous Ariel search. Creates a new Ariel search
+      as specified by the Ariel Query Language (AQL) query expression. Searches are
+      executed asynchronously. Returns search ID that can be used by 'todo' command
+      to retrieve the results once it is complete. Accepts SELECT query expressions
+      only.
     arguments:
     - name: query_expression
       required: false
       description: The AQL query to execute. Mutually exclusive with saved_search_id.
     - name: saved_search_id
       required: false
-      description: Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'.
-
+      description: Saved search ID to execute. Mutually exclusive with query_expression.
+        Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'.
   - name: qradar-search-status-get
-    description: Retrieve status information for a search, based on the search ID parameter.
+    description: Retrieve status information for a search, based on the search ID
+      parameter.
     arguments:
     - name: search_id
       required: true
       description: The identifier for an Ariel search.
-
   - name: qradar-search-results-get
     description: Retrieves search results.
     arguments:
@@ -185,43 +196,48 @@ script:
       description: The identifier for an Ariel search.
     - name: range
       description: 'Range of results to return. (e.g.: 0-20, 3-5, 3-3).'
-
+      defaultValue: 0-49
   - name: qradar-assets-list
     description: Retrieves assets list.
     arguments:
     - name: asset_id
       required: false
-      description: The asset ID to retrieve its details. Specify asset_id if you want to get details only about certain asset.
+      description: The asset ID to retrieve its details. Specify asset_id if you want
+        to get details only about certain asset.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
       description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
-      Use this parameter to specify which fields you would like to get back in the
-      response. Fields that are not explicitly named are excluded. Specify subfields
-      in brackets and multiple fields in the same object separated by commas. For
-      full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html'
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html'
       isArray: true
   - name: qradar-reference-sets-list
     description: Retrieve a list of reference sets.
     arguments:
     - name: ref_name
       required: false
-      description: The reference name of the reference set to retrieve its details. Specify ref_name if you want to get details only about certain reference set.
+      description: The reference name of the reference set to retrieve its details.
+        Specify ref_name if you want to get details only about certain reference set.
     - name: value
       required: false
       description: TODO understand how to use it
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
     - name: filter
-      description: 'Query to filter reference sets. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter reference sets. For reference please consult:
+        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
-      Use this parameter to specify which fields you would like to get back in the
-      response. Fields that are not explicitly named are excluded. Specify subfields
-      in brackets and multiple fields in the same object separated by commas. For
-      full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html'
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html'
       isArray: true
   - name: qradar-reference-set-create
     description: Create a new reference set.
@@ -233,36 +249,97 @@ script:
       auto: PREDEFINED
       required: true
       predefined:
-        - ALN
-        - ALNIC
-        - NUM
-        - IP
-        - PORT
-        - DATE
+      - ALN
+      - ALNIC
+      - NUM
+      - IP
+      - PORT
+      - DATE
       description: The element type for the values allowed in the reference set.
     - name: timeout_type
-      description: Indicates if the time_to_live interval is based on when the data was first seen or last seen.
+      description: Indicates if the time_to_live interval is based on when the data
+        was first seen or last seen.
       auto: PREDEFINED
-      defaultvalue: UNKNOWN
+      defaultValue: UNKNOWN
       required: true
       predefined:
-        - FIRST_SEEN
-        - LAST_SEEN
-        - UNKNOWN
-        - IP
-        - PORT
-        - DATE
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      - IP
+      - PORT
+      - DATE
     - name: time_to_live
       required: false
-      description: "The time to live interval, time range. for example: '1 month' or '5 minutes'"
+      description: "The time to live interval, time range. for example: '1 month'\
+        \ or '5 minutes'"
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
-      Use this parameter to specify which fields you would like to get back in the
-      response. Fields that are not explicitly named are excluded. Specify subfields
-      in brackets and multiple fields in the same object separated by commas. For
-      full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
       isArray: true
-
+  - name: qradar-reference-set-delete
+    description: Removes a reference set or purges its contents.
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to be deleted.
+  - name: qradar-reference-set-value-upsert
+    description: Add or update an element in a reference set.
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update an element in.
+    - name: value
+      required: true
+      description: "The value to add or update in the reference set. If value chosen\
+        \ is date, supported date formats are: epoch, ISO, and time range (<number>\
+        \ <time unit>', e.g., 12 hours, 7 days.)"
+    - name: source
+      required: false
+      description: An indication of where the data originated.
+      defaultValue: reference data api
+    - name: date_value
+      description: True if the value given type was date.
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
+      isArray: true
+  - name: qradar-reference-set-value-delete
+    description: Remove a value from a reference set.
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to remove a value from.
+    - name: value
+      required: true
+      description: "The value to remove from the reference set. If value chosen is\
+        \ date, supported date formats are: epoch, ISO, and time range (<number> <time\
+        \ unit>', e.g., 12 hours, 7 days.)"
+    - name: date_value
+      description: True if the value given type was date.
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
+      isArray: true
   runonce: false
   script: '-'
   type: python

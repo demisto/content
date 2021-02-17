@@ -1,3 +1,4 @@
+import pytz
 import urllib3
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -23,6 +24,7 @@ SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the even
 ''' CONSTANTS '''
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
+UTC_TIMEZONE = pytz.timezone('utc')
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -110,17 +112,33 @@ REFERENCE_SETS_OLD_NEW_MAP = {
     "first_seen": "FirstSeen",
 }
 
-USECS_ENTRIES_MAPPING = {'last_persisted_time': 'LastPersistedTimeUsecs',
-                         'start_time': 'StartTimeUsecs',
-                         'close_time': 'CloseTimeUsecs',
-                         'create_time': 'CreateTimeUsecs',
-                         'creation_time': 'CreationTimeUsecs',
-                         'creation_date': 'CreationDateUsecs',
-                         'last_updated_time': 'LastUpdatedTimeUsecs',
-                         'first_persisted_time': 'FirstPersistedTimeUsecs',
-                         'modification_date': 'ModificationDateUsecs',
-                         'last_seen': 'LastSeenUsecs',
-                         'first_seen': 'FirstSeenUsecs'}
+DOMAIN_OLD_NEW_MAP = {
+    "asset_scanner_ids": "AssetScannerIDs",
+    "custom_properties": "CustomProperties",
+    "deleted": "Deleted",
+    "description": "Description",
+    "event_collector_ids": "EventCollectorIDs",
+    "flow_collector_ids": "FlowCollectorIDs",
+    "flow_source_ids": "FlowSourceIDs",
+    "id": "ID",
+    "log_source_ids": "LogSourceIDs",
+    "log_source_group_ids": "LogSourceGroupIDs",
+    "name": "Name",
+    "qvm_scanner_ids": "QVMScannerIDs",
+    "tenant_id": "TenantID",
+}
+
+USECS_ENTRIES = {'last_persisted_time',
+                 'start_time',
+                 'close_time',
+                 'create_time',
+                 'creation_time',
+                 'creation_date',
+                 'last_updated_time',
+                 'first_persisted_time',
+                 'modification_date',
+                 'last_seen',
+                 'first_seen'}
 
 ''' ENRICHMENT MAPS '''
 ASSET_PROPERTIES_NAME_MAP = {
@@ -170,14 +188,12 @@ class Client(BaseClient):
     def offenses_list(self, offense_id: Optional[int], range_: str, filter_: Optional[str],
                       fields: Optional[str]):
         id_suffix = f'/{offense_id}' if offense_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses{id_suffix}',
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={'Range': range_} if not offense_id else None
         )
-        # TODO see if needed
-        return [response] if id_suffix else response
 
     def offense_update(self, offense_id: Optional[int], protected: Optional[bool], follow_up: Optional[bool],
                        status: Optional[str], closing_reason_id: Optional[int], assigned_to: Optional[str],
@@ -198,26 +214,22 @@ class Client(BaseClient):
     def closing_reasons_list(self, closing_reason_id: Optional[int], range_: Optional[str], filter_: Optional[str],
                              fields: Optional[str]):
         id_suffix = f'/{closing_reason_id}' if closing_reason_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/siem/offense_closing_reasons{id_suffix}',
             additional_headers={'Range': range_} if not closing_reason_id and range_ else None,
             params=assign_params(filter=filter_, fields=fields)
         )
-        # TODO see if needed
-        return [response] if id_suffix else response
 
     def offense_notes_list(self, offense_id: Optional[int], note_id: Optional[int], range_: str,
                            filter_: Optional[str], fields: Optional[str]):
         note_id_suffix = f'/{note_id}' if note_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses/{offense_id}/notes{note_id_suffix}',
             additional_headers={'Range': range_} if not note_id else None,
             params=assign_params(filter=filter_, fields=fields)
         )
-        # TODO see if needed
-        return [response] if note_id_suffix else response
 
     def offense_notes_create(self, offense_id: Optional[int], note_text: Optional[str], fields: Optional[str]):
         return self.http_request(
@@ -228,26 +240,22 @@ class Client(BaseClient):
 
     def rules_list(self, rule_id: Optional[int], range_: Optional[str], filter_: Optional[str], fields: Optional[str]):
         id_suffix = f'/{rule_id}' if rule_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/analytics/rules{id_suffix}',
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={'Range': range_} if range_ else None
         )
-        # TODO see if needed
-        return [response] if id_suffix else response
 
     def rule_groups_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str],
                          fields: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/analytics/rule_groups{id_suffix}',
             additional_headers={'Range': range_} if not rule_group_id else None,
             params=assign_params(filter=filter_, fields=fields)
         )
-        # TODO see if needed
-        return [response] if id_suffix else response
 
     def assets_list(self, range_: str, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
@@ -259,14 +267,12 @@ class Client(BaseClient):
 
     def saved_searches_list(self, rule_group_id: Optional[int], range_: str, filter_: Optional[str]):
         id_suffix = f'/{rule_group_id}' if rule_group_id else ''
-        response = self.http_request(
+        return self.http_request(
             method='GET',
             url_suffix=f'/ariel/saved_searches{id_suffix}',
             additional_headers={'Range': range_} if not rule_group_id else None,
             params=assign_params(filter=filter_)
         )
-        # TODO see if needed
-        return [response] if id_suffix else response
 
     def searches_list(self, range_: str, filter_: Optional[str]):
         return self.http_request(
@@ -322,27 +328,28 @@ class Client(BaseClient):
             )
         )
 
-    def qradar_reference_set_delete(self, ref_name: Optional[str]):
+    def reference_set_delete(self, ref_name: Optional[str]):
         return self.http_request(
             method='DELETE',
             url_suffix=f'/reference_data/sets/{ref_name}'
         )
 
-    def qradar_reference_set_value_upsert(self, ref_name: Optional[str], value: Optional[str], source: Optional[str]):
+    def reference_set_value_upsert(self, ref_name: Optional[str], value: Optional[str], source: Optional[str],
+                                   fields: Optional[str]):
         return self.http_request(
             method='POST',
             url_suffix=f'/reference_data/sets/{ref_name}',
-            params=assign_params(value=value, source=source)
+            params=assign_params(value=value, source=source, fields=fields)
         )
 
-    def qradar_reference_set_value_delete(self, ref_name: Optional[str], value: Optional[str]):
+    def reference_set_value_delete(self, ref_name: Optional[str], value: Optional[str]):
         return self.http_request(
             method='DELETE',
             url_suffix=f'/reference_data/sets/{ref_name}/{value}'
         )
 
-    def qradar_domains_list(self, domain_id: Optional[int], range_: Optional[str], filter_: Optional[str],
-                            fields: Optional[str]):
+    def domains_list(self, domain_id: Optional[int], range_: Optional[str], filter_: Optional[str],
+                     fields: Optional[str]):
         id_suffix = f'/{domain_id}' if domain_id else ''
         return self.http_request(
             method='GET',
@@ -352,7 +359,7 @@ class Client(BaseClient):
         )
 
     # discuss with arseny
-    # def qradar_indicators_upload
+    # def indicators_upload
 
     def qradar_geolocations_for_ip_get(self, filter_: Optional[str]):
         return self.http_request(
@@ -361,7 +368,7 @@ class Client(BaseClient):
             params=assign_params(filter=filter_)
         )
 
-    def qradar_log_sources_list(self, range_: str, filter_: Optional[str]):
+    def log_sources_list(self, range_: str, filter_: Optional[str]):
         additional_headers = {
             'x-qrd-encryption-algorithm': 'AES256',
             'x-qrd-encryption-password': self.password
@@ -375,24 +382,31 @@ class Client(BaseClient):
             additional_headers=additional_headers
         )
 
-    def qradar_offense_types(self, filter_: Optional[str], fields: Optional[str]):
+    def offense_types(self, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/siem/offense_types',
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def qradar_source_addresses(self, filter_: Optional[str], fields: Optional[str]):
+    def get_addresses(self, address_suffix: str, filter_: Optional[str], fields: Optional[str]):
+        return self.http_request(
+            method='GET',
+            url_suffix=f'/siem/{address_suffix}',
+            params=assign_params(filter=filter_, fields=fields)
+        )
+
+    def source_addresses(self, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/siem/source_addresses',
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def qradar_destination_addresses(self, filter_: Optional[str], fields: Optional[str]):
+    def destination_addresses(self, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
-            url_suffix='/siem/source_addresses',
+            url_suffix='/siem/local_destination_addresses',
             params=assign_params(filter=filter_, fields=fields)
         )
 
@@ -402,47 +416,44 @@ class Client(BaseClient):
 
 def qradar_error_handler(res: Any):
     """
-
+    QRadar error handler for any error occurred during the API request.
+    This function job is to translate the known exceptions returned by QRadar
+    to human readable exception to help the user understand why the request have failed.
+    If error returned is not in the expected error format, raises the exception as is.
     Args:
-        res:
+        res (Any): The error response returned by QRadar.
 
     Returns:
-
+        - raises DemistoException.
     """
-    err_msg = 'Error in API call [{}] - {}' \
-        .format(res.status_code, res.reason)
+    err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
     try:
         # Try to parse json error response
         error_entry = res.json()
         message = error_entry.get('message', '')
-        err_message = f'Error in API call [{res.status_code}] - {message}'
-        raise DemistoException(err_message, res=err_message)
+        err_msg += f'\n{message}'
+        raise DemistoException(err_msg, res=res)
     except ValueError:
         err_msg += '\n{}'.format(res.text)
         raise DemistoException(err_msg, res=res)
 
 
-def add_iso_entries_to_dict(dicts: List[Dict]) -> None:
+def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
     """
     Takes list of dicts, for each dict:
-    For each field in the output that is contained in 'USECS_ENTRIES_MAPPING' keys,
-    adds a new entry of the corresponding value to the key in 'USECS_ENTRIES_MAPPING',
-    Value of the new entry will be the iso format corresponding to the timestamp from the 'USECS_ENTRIES_MAPPING' key.
+    creates a new dict, and for each field in the output that
+    is contained in 'USECS_ENTRIES', maps its value to be iso format corresponding to the value of the field.
     Args:
         dicts (List[Dict]): List of the dicts to be transformed.
 
     Returns:
-        Modifies the dicts.
+        New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
-    # TODO think - maybe not functional
-    for dict_ in dicts:
-        for date_entry, date_entry_usecs in USECS_ENTRIES_MAPPING.items():
-            if date_entry in dict_:
-                dict_[date_entry_usecs] = dict_[date_entry]
-                dict_[date_entry] = convert_epoch_time_to_datetime(dict_[date_entry])
+    return [{k: (get_time_parameter(v, iso_format=True) if k in USECS_ENTRIES else v)
+             for k, v in dict_.items()} for dict_ in dicts]
 
 
-def sanitize_outputs(outputs: Any, key_replace_dict: Dict = dict()) -> List[Dict]:
+def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> List[Dict]:
     """
     Gets a list of all the outputs, and sanitizes outputs.
     - Removes empty elements.
@@ -459,27 +470,37 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Dict = dict()) -> List[Dict
         outputs = [outputs]
     outputs = [remove_empty_elements(output) for output in outputs]
     add_iso_entries_to_dict(outputs)
-    # return outputs
-    return replace_keys(outputs, key_replace_dict)
+    return replace_keys(outputs, key_replace_dict) if key_replace_dict else outputs
 
 
-def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
+def get_time_parameter(arg: Optional[str], iso_format: bool = False, epoch_format: bool = False):
     """
-    Receives epoch time, and returns epoch_time representation as date with UTC timezone.
-    If received epoch time is 0, or epoch_time does not exist, returns None.
+    parses arg into date time object with aware time zone if 'arg' exists.
+    If no time zone is given, sets timezone to UTC.
+    Returns the date time object created/ISO format/epoch format.
     Args:
-        epoch_time (int): The epoch_time to convert.
+        arg (str): The argument to turn into aware date time.
+        iso_format (bool): Whether to return date or the parsed format of the date.
+        epoch_format (bool): Whether to return date or the epoch format of the date.
+
     Returns:
-        - The date time with UTC timezone that matches the epoch time if 'epoch_time' is not 0.
-        - None if 'epoch_time' is 0.
-        - None if epoch_time is None.
+        - (None) If 'arg' is None, returns None.
+        - (datetime): If 'arg' is exists and 'iso_format' and 'epoch_format' are false, returns date time.
+        - (str): If 'arg' is exists and parse_format is true, returns ISO format of the date time object.
+        - (int): If 'arg' is exists and epoch_format is true, returns epoch format of the date time object.
     """
-    if not epoch_time or epoch_time == 0:
+    maybe_unaware_date = arg_to_datetime(arg, is_utc=True)
+    if not maybe_unaware_date:
         return None
-    maybe_date_time = arg_to_datetime(epoch_time / 1000.0)
-    if not maybe_date_time:
-        return None
-    return maybe_date_time.isoformat()
+
+    aware_time_date = maybe_unaware_date if maybe_unaware_date.tzinfo else UTC_TIMEZONE.localize(
+        maybe_unaware_date)
+
+    if iso_format:
+        return aware_time_date.isoformat()
+    if epoch_format:
+        return int(aware_time_date.timestamp() * 1000)
+    return aware_time_date
 
 
 def replace_keys(outputs: Union[List[Dict], Dict], old_new_dict: Dict) -> List[Dict]:
@@ -525,8 +546,8 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type')}
     if not offense_types_ids:
         return dict()
-    offense_types = client.qradar_offense_types(f'''id in ({','.join(map(str, offense_types_ids))})''',
-                                                fields='id,name')
+    offense_types = client.offense_types(f'''id in ({','.join(map(str, offense_types_ids))})''',
+                                         fields='id,name')
     return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
 
 
@@ -564,7 +585,7 @@ def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
     domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id')}
     if not domain_ids:
         return dict()
-    domains_info = client.qradar_domains_list(None, None, f'''id in ({','.join(map(str, domain_ids))})''', 'id,name')
+    domains_info = client.domains_list(None, None, f'''id in ({','.join(map(str, domain_ids))})''', 'id,name')
     return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
 
 
@@ -586,27 +607,24 @@ def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
     return {rule.get('id'): rule.get('name') for rule in rules}
 
 
-# TODO add tests
 def get_offense_source_addresses(client: Client, offenses: List[Dict]) -> Dict:
     """
-    Receives list of offenses, and performs API call to QRadar service to retrieve the source IPs values
+    Receives list of offenses, and performs API call to QRadar service to retrieve the source IP values
     matching the source IPs IDs of the offenses.
     Args:
         client (Client): Client to perform the API request to QRadar.
         offenses (List[Dict]): List of all of the offenses.
 
     Returns:
-        (Dict): Dictionary of {rule_id: rule_name}
+        (Dict): Dictionary of {source_address_id: source_address_name}
     """
 
     def get_source_addresses_for_batch(b: List):
-        return client.qradar_source_addresses(f'''id in ({','.join(b)})''', 'id,source_ip')
+        return client.source_addresses(f'''id in ({','.join(map(str, b))})''', 'id,source_ip')
 
     source_addresses_ids = [address_id for offense in offenses
-                            for addresses_ids in offense.get('source_address_ids', [])
-                            for address_id in addresses_ids]
+                            for address_id in offense.get('source_address_ids', [])]
 
-    # TODO check if empty if calls api
     # Submit addresses in batches to avoid time out from QRadar service
     source_addresses_batches = [get_source_addresses_for_batch(b) for b
                                 in batch(source_addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
@@ -616,27 +634,24 @@ def get_offense_source_addresses(client: Client, offenses: List[Dict]) -> Dict:
             for source_address in addresses_batch}
 
 
-# TODO add tests
 def get_offense_destination_addresses(client: Client, offenses: List[Dict]) -> Dict:
     """
-    Receives list of offenses, and performs API call to QRadar service to retrieve the destination IPs values
+    Receives list of offenses, and performs API call to QRadar service to retrieve the destination IP values
     matching the destination IPs IDs of the offenses.
     Args:
         client (Client): Client to perform the API request to QRadar.
         offenses (List[Dict]): List of all of the offenses.
 
     Returns:
-        (Dict): Dictionary of {rule_id: rule_name}
+        (Dict): Dictionary of {destination_address_id: destination_address_name}
     """
 
     def get_destination_addresses_for_batch(b: List):
-        return client.qradar_destination_addresses(f'''id in ({','.join(b)})''', 'id,local_destination_ip')
+        return client.destination_addresses(f'''id in ({','.join(map(str, b))})''', 'id,local_destination_ip')
 
     destination_addresses_ids = [address_id for offense in offenses
-                                 for addresses_ids in offense.get('local_destination_address_ids', [])
-                                 for address_id in addresses_ids]
+                                 for address_id in offense.get('local_destination_address_ids', [])]
 
-    # TODO check if empty if calls api
     # Submit addresses in batches to avoid time out from QRadar service
     destination_addresses_batches = [get_destination_addresses_for_batch(b) for b
                                      in batch(destination_addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
@@ -1199,11 +1214,12 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
     response = client.reference_sets_list(ref_name, range_, filter_, fields)
     outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
 
-    if ref_name and response.get('data'):
-        outputs = sanitize_outputs(response.get('data'))
+    if ref_name:
+        for output in outputs:
+            add_iso_entries_to_dict(output.get('data', []))
 
     return CommandResults(
-        readable_output=tableToMarkdown(f'Reference Sets List', outputs),
+        readable_output=tableToMarkdown('Reference Sets List', outputs),
         outputs_prefix='QRadar.ReferenceSet',
         outputs_key_field='name',
         outputs=outputs,
@@ -1248,11 +1264,8 @@ def qradar_reference_set_create_command(client: Client, args: Dict):
     response = client.reference_set_create(ref_name, element_type, timeout_type, time_to_live, fields)
     outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
 
-    if ref_name and response.get('data'):
-        outputs = sanitize_outputs(response.get('data'))
-
     return CommandResults(
-        readable_output=tableToMarkdown(f'Reference Set Create', outputs),
+        readable_output=tableToMarkdown('Reference Set Create', outputs),
         outputs_prefix='QRadar.ReferenceSet',
         outputs_key_field='name',
         outputs=outputs,
@@ -1263,26 +1276,46 @@ def qradar_reference_set_create_command(client: Client, args: Dict):
 def qradar_reference_set_delete_command(client: Client, args: Dict):
     ref_name = args.get('ref_name')
 
-    response = client.qradar_reference_set_delete(ref_name)
+    response = client.reference_set_delete(ref_name)
     #     maybe add output for the task to be monitored. add to yml after decisions
-    return CommandResults(readable_output=f'### Reference {ref_name} is being deleted.')
+    return CommandResults(
+        raw_response=response,
+        readable_output=f'### Reference {ref_name} is being deleted.')
 
 
-def qradar_reference_set_value_upsert_command(client: Client, args: Dict):
+def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> CommandResults:
     ref_name = args.get('ref_name')
     value = args.get('value')
     source = args.get('source')
     date_value = argToBoolean(args.get('date_value', False))
+    fields = args.get('fields')
 
-    response = client.refe
+    if date_value:
+        value = get_time_parameter(value, epoch_format=True)
+
+    response = client.reference_set_value_upsert(ref_name, value, source, fields)
+    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Reference Update Create', outputs),
+        outputs_prefix='QRadar.ReferenceSetValue',
+        outputs_key_field='name',
+        outputs=outputs,
+        raw_response=response
+    )
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: Dict):
     ref_name = args.get('ref_name')
     value = args.get('value')
+    date_value = argToBoolean(args.get('date_value', False))
 
-    response = client.qradar_reference_set_value_delete(ref_name, value)
+    if date_value:
+        value = get_time_parameter(value, epoch_format=True)
+
+    response = client.reference_set_value_delete(ref_name, value)
     human_readable = f'### value: {value} of reference: {ref_name} was deleted successfully'
+
     return CommandResults(
         readable_output=human_readable,
         raw_response=response
@@ -1295,14 +1328,14 @@ def qradar_domains_list_command(client: Client, args: Dict):
     filter_ = args.get('filter')
     fields = args.get('fields')
 
-    response = client.qradar_domains_list(domain_id, range_, filter_, fields)
-    # QRadar.Domain
+    response = client.domains_list(domain_id, range_, filter_, fields)
+    outputs = sanitize_outputs(response, DOMAIN_OLD_NEW_MAP)
 
     return CommandResults(
-        # readable_output=human_readable,
+        readable_output=tableToMarkdown('Domains List', outputs),
         outputs_prefix='QRadar.Domain',
         outputs_key_field='id',
-        # outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1336,278 +1369,6 @@ def qradar_geolocations_for_ip_get_command(client: Client, args: Dict):
 
 
 ''' MAIN FUNCTION '''
-"""
-for removed versions
-"Version (3.0) from header parameter (Version) has been removed and is no longer valid. Please refer to documentation
-for list of valid versions."
-for unvalid versions
-"Version (322.0123) from header parameter (Version) is not a valid version. Please refer to documentation for list
-of valid versions."
-
-Range argument
-pattern: items=x-y
-invalid range (items = 3-0)
-"message": "Range of pages specified in \"Range\" header is negative. Non-negative page range must be specified."
-"message": "Failed to parse Range header. The syntax of the Range header must follow this pattern: items=x-y"
- (items=-3-2)
- {
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 36,
-    "description": "",
-    "details": {},
-    "message": "Failed to parse Range header. The syntax of the Range header must follow this pattern: items=x-y"
-}
-get offense by id
-returns a dict (not a list) containing the offense details
-
-
-update offense
-
-closing offense without closing_reason_id
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 1005,
-    "description": "A request parameter is not valid.",
-    "details": {},
-    "message": "closing_reason_id must be provided when closing an offense."
-}
-
-unknown status
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 11,
-    "description": "",
-    "details": {},
-    "message": "Failed to transform user query parameter \"status\" with a content type of \"TEXT_PLAIN\""
-}
-
-
-
-qradar-closing-reasons-list + by id
-id - returns a dict, list - returns list of dicts
-
-notes + notes id
-
-not found note id
-
-create note
-
-empty note_text
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 8,
-    "description": "",
-    "details": {},
-    "message": "Missing required parameter \"note_text\" from query parameters"
-}
-example result
-{
-    "note_text": "asd",
-    "create_time": 1612962518474,
-    "id": 2,
-    "username": "API_user: demisto"
-}
-
-
-rules + rule by id
-list returns list of dicts, id returns dict
-
-rules group list + by id
-list returns list of dicts, id returns dict
-
-saved searches list + id
-
-searches list + id
-
-create search
-exactly one argument should be provided
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 1005,
-    "description": "A request parameter is not valid.",
-    "details": {},
-    "message": "Exactly one parameter is required."
-}
-
-search results get not found search id
-
-qradar reference set by name
-
-create reference set
-empty
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 8,
-    "description": "",
-    "details": {},
-    "message": "Missing required parameter \"name\" from query parameters"
-}
-name only
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 8,
-    "description": "",
-    "details": {},
-    "message": "Missing required parameter \"element_type\" from query parameters"
-}
-unknown element type
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 11,
-    "description": "",
-    "details": {},
-    "message": "Failed to transform user query parameter \"element_type\" with a content type of \"TEXT_PLAIN\""
-}
-
-unknown timeout type
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 11,
-    "description": "",
-    "details": {},
-    "message": "Failed to transform user query parameter \"timeout_type\" with a content type of \"TEXT_PLAIN\""
-}
-
-delete reference set
-return on success
-{
-    "created_by": "demisto",
-    "created": 1612971240237,
-    "name": "Reference Data Deletion Task",
-    "modified": 1612971240927,
-    "started": null,
-    "completed": null,
-    "id": 71,
-    "message": "Searching for items that depend on the Reference Data.",
-    "status": "QUEUED"
-}
-Response Description
-A status ID to retrieve the reference data set's deletion or purge status with at
-/api/system/task_management/tasks/{status_id}. You can also find the url in the Location header
-
-add or update reference set
-empty
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 8,
-    "description": "",
-    "details": {},
-    "message": "Missing required parameter \"value\" from query parameters"
-}
-
-upsert
-
-value is in
-    "data": [
-        {
-            "last_seen": 1612971683681,
-            "first_seen": 1612971630849,
-            "source": "reference data api",
-            "value": "1.2.3.4",
-            "domain_id": null
-        }
-    ],
-
-unknown namepsace
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 11,
-    "description": "",
-    "details": {},
-    "message": "Failed to transform user query parameter \"namespace\" with a content type of \"TEXT_PLAIN\""
-}
-giving tenant
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 1012,
-    "description": "The namespace value of SHARED was expected",
-    "details": {},
-    "message": "Admin user can only access shared namespace"
-}
-
-config management domains
-
-delete reference value
-
-upload indicators
-data not included
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 10,
-    "description": "",
-    "details": {},
-    "message": "Request body must be populated for body parameter \"data\""
-}
-{
-    "http_response": {
-        "code": 500,
-        "message": "Unexpected internal server error"
-    },
-    "code": 1020,
-    "description": "An error occurred during the attempt to add or update data in the reference map.",
-    "details": {},
-    "message": "Adding/updating data to Map test_aas failed"
-}
-
-geolocation
-syntax
-ip_address = "127.0.0.1"
-ip_address IN ( "127.0.0.1", "127.0.0.2" )
-
-log sources list
-too strong
-{
-    "http_response": {
-        "code": 422,
-        "message": "The request was well-formed but was unable to be followed due to semantic errors"
-    },
-    "code": 1003,
-    "description": "The specified encryption strength is not available. Consider installing \"Java Cryptography
-    Extension (JCE) Unlimited Strength Jurisdiction Policy\" or using a weaker encryption.",
-    "details": {},
-    "message": "The specified encryption strength is not available. Consider installing \"
-    Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy\" or using a weaker encryption."
-}
-"""
 
 
 def main() -> None:
@@ -1693,14 +1454,13 @@ def main() -> None:
 
         elif command == 'qradar-reference-set-value-upsert':
             return_results(qradar_reference_set_value_upsert_command(client, args))
-        # QRadar.ReferenceSetValue
-        #
-        # elif command == 'qradar-reference-set-value-delete':
-        #     return_results(qradar_reference_set_value_delete_command(client, args))
-        #
-        # elif command == 'qradar-domains-list':
-        #     return_results(qradar_domains_list_command(client, args))
-        #
+
+        elif command == 'qradar-reference-set-value-delete':
+            return_results(qradar_reference_set_value_delete_command(client, args))
+
+        elif command == 'qradar-domains-list':
+            return_results(qradar_domains_list_command(client, args))
+
         # elif command == 'qradar-indicators-upload':
         #     return_results(qradar_indicators_upload_command(client, args))
         # QRadar.Indicator
