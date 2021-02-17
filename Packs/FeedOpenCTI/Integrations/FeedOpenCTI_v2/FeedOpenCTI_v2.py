@@ -44,6 +44,11 @@ KEY_TO_CTI_NAME = {
     'marking': 'objectMarking',
     'label': 'objectLabel'
 }
+FILE_TYPES = {
+    'file-md5': "file.hashes.md5",
+    'file-sha1': "file.hashes.sha-1",
+    'file-sha256': "file.hashes.sha-256",
+}
 
 
 def build_indicator_list(indicator_list: List[str]) -> List[str]:
@@ -196,7 +201,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     if result.get('id'):
         readable_output = 'Indicator updated successfully.'
     else:
-        return_error("Can't update indicator.")
+        raise DemistoException("Can't update indicator.")
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
         outputs_key_field='id',
@@ -249,11 +254,20 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException("Data argument type should be json")
 
     data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
+    simple_observable_key = None
+    simple_observable_value = None
+    if 'file' in indicator_type.lower():
+        simple_observable_key = FILE_TYPES.get(indicator_type.lower(), indicator_type)
+        simple_observable_value = data.get('hash')
+        if not simple_observable_value:
+            raise DemistoException("Missing argument in data: hash")
     try:
         # cti code prints to stdout so we need to catch it.
         old_stdout = sys.stdout
         sys.stdout = StringIO()
         result = client.stix_cyber_observable.create(
+            simple_observable_key=simple_observable_key,
+            simple_observable_value=simple_observable_value,
             simple_observable_id=indicator_id, type=indicator_type,
             createdBy=created_by, objectMarking=marking,
             objectLabel=label, externalReferences=external_references,
@@ -261,8 +275,9 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
             x_opencti_score=score, observableData=data
         )
         sys.stdout = old_stdout
-    except Exception as e:
+    except KeyError as e:
         raise DemistoException(f'Missing argument at data {e}')
+
 
     if id := result.get('id'):
         readable_output = f'Indicator created successfully. New Indicator id: {id}'
@@ -311,7 +326,7 @@ def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
     if result:
         readable_output = f'Added {key} successfully.'
     else:
-        return_error(f"Can't add {key}.")
+        raise DemistoException(f"Can't add {key}.")
 
     return CommandResults(readable_output=readable_output)
 
@@ -345,7 +360,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     if result:
         readable_output = 'Field removed successfully.'
     else:
-        return_error(f"Can't remove {key}.")
+        raise DemistoException(f"Can't remove {key}.")
 
     return CommandResults(readable_output=readable_output)
 
@@ -397,7 +412,7 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
     if organization_id := result.get('id'):
         readable_output = f'Organization created successfully with id: {organization_id}.'
     else:
-        return_error("Can't create organization.")
+        raise DemistoException("Can't create organization.")
     return CommandResults(outputs_prefix='OpenCTI.Organization',
                           outputs_key_field='id',
                           outputs={'id': result.get('id')},

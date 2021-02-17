@@ -314,7 +314,7 @@ script:
       description: "Indicator data - json. Mandatory Data fields are: value - value\
         \ of the indicator. Mandatory for the following types: Domain, Email-Address,\
         \ IPV4-Addr, IPV6-Addr, URL, HostName. For file-md5, file-sha1, file-sha256\
-        \ data argument should contain hashes, and size keys. For User-Account type\
+        \ data argument should contain hash. For User-Account type\
         \ data should contain account_login. Registry-Key-Value data json should contain\
         \ key \"key\"."
       isArray: false

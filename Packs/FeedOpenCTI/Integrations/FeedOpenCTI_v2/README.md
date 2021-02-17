@@ -209,7 +209,7 @@ Create new indicator.
 | external_references_source_name | External References Source Name. In order to use external references, external_references_url and external_references_source_name are madatory. | Optional | 
 | description | Indicator description. | Optional | 
 | score | Indicator score - number between 0 - 100. Default score value 50. | Optional | 
-| data | Indicator data - json. Mandatory Data fields are: value - value of the indicator. Mandatory for the following types: Domain, Email-Address, IPV4-Addr, IPV6-Addr, URL, HostName. For file-md5, file-sha1, file-sha256 data argument should contain hashes, and size keys. For User-Account type data should contain user_id. Registry-Key-Value data json should contain key "key". | Optional | 
+| data | Indicator data - json. Mandatory Data fields are: value - value of the indicator. Mandatory for the following types: Domain, Email-Address, IPV4-Addr, IPV6-Addr, URL, HostName. For file-md5, file-sha1, file-sha256 data argument should contain key - hash. For User-Account type data should contain user_id. Registry-Key-Value data json should contain key "key". | Optional | 
 
 
 #### Context Output
