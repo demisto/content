@@ -1389,6 +1389,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - default: false

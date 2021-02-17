@@ -681,7 +681,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
             params=params,
             data=data,
             files=files,
-            headers=HEADERS
+            headers=HEADERS,
         )
 
         # Handle error responses gracefully
@@ -690,15 +690,15 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
             try:
                 if res.json().get('error'):
                     err_msg += '\n{}'.format(res.json().get('message'))
-                return_error(err_msg)
+                raise DemistoException(err_msg, res=res)
             except json.decoder.JSONDecodeError:
-                return_error(err_msg)
+                raise DemistoException(err_msg, res=res)
 
         return res.json()
 
     except requests.exceptions.ConnectionError:
         err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
-        return_error(err_msg)
+        raise DemistoException(err_msg)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -779,8 +779,22 @@ def get_report(task_id):
         Response JSON from ANYRUN API call.
     """
 
-    url_suffix = 'analysis/' + task_id
-    response = http_request('GET', url_suffix=url_suffix)
+    try:
+        # according to the any-run documentation, this request should work:
+        # https://any.run/api-documentation/#api-Analysis-GetReport
+        url_suffix = f'analysis/{task_id}'
+        response = http_request('GET', url_suffix=url_suffix)
+    except DemistoException as exc:
+        if exc.res and exc.res.status_code != 403:
+            raise
+
+        # in case of 403, try a work-around suggested by customer
+        url_suffix = 'analysis/'
+        params = {
+            'task': task_id,
+        }
+        response = http_request('GET', url_suffix=url_suffix, params=params)
+
     return response
 
 
@@ -886,7 +900,7 @@ COMMANDS = {
     'test-module': test_module,
     'anyrun-get-history': get_history_command,
     'anyrun-get-report': get_report_command,
-    'anyrun-run-analysis': run_analysis_command
+    'anyrun-run-analysis': run_analysis_command,
 }
 
 ''' EXECUTION '''
@@ -898,15 +912,15 @@ def main():
     try:
         cmd_name = demisto.command()
         LOG('Command being called is {}'.format(cmd_name))
+        handle_proxy()
 
         if cmd_name in COMMANDS.keys():
             COMMANDS[cmd_name]()
 
     except Exception as e:
-        # return_error(str(e))
-        raise e
+        return_error(str(e), error=traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__builtin__', 'builtins'):
     main()

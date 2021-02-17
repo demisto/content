@@ -545,14 +545,20 @@ End {
                 foreach ($raw_value in $raw_values)
                 {
                     if ($null -ne $raw_value)
-                    {
-                        if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
+                    {   try{
+                            <# PWSH Type Code of numbers are 5 to 15. So we will handle them with ToString
+                            and the rest are Json Serializble #>
+                            $typeValue = $raw_value.getTypeCode().value__
+                            $is_number = ($typeValue -ge 5 -and $typeValue -le 15)
+                        } catch { $is_number = $false}
+
+                        if ($raw_value -is [string] -or $is_number)
                         {
-                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
+                            $value = $raw_value.ToString()
                         }
                         else
                         {
-                            $value = $raw_value.ToString()
+                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
                         }
                     }
                     else
