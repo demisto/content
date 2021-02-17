@@ -1,8 +1,8 @@
 id: CCTV Motion Detected
 version: -1
 name: CCTV Motion Detected
-description: A playbook that runs ComputerVision on CCTV events
 fromversion: 6.0.0
+description: A playbook that runs ComputerVision on CCTV events
 starttaskid: "0"
 tasks:
   "0":
@@ -53,8 +53,6 @@ tasks:
         simple: "260"
       recording_id:
         simple: ${incident.ubntid}
-      using:
-        simple: ${incident.sourceInstance}
     separatecontext: false
     view: |-
       {
@@ -104,12 +102,14 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a33aea9c-e309-4497-8183-ae005e2b913a
+    taskid: 9f0eb787-d571-4240-8c6b-af91015048fb
     type: regular
     task:
-      id: a33aea9c-e309-4497-8183-ae005e2b913a
+      id: 9f0eb787-d571-4240-8c6b-af91015048fb
       version: -1
       name: Machine Learning/Computer Vision processing
+      description: This task runs ComputerVision/ML on an image by using the ComputerVision
+        integration.
       script: Computer Vision Engine|||yolo-coco-process-image
       type: regular
       iscommand: true
@@ -229,7 +229,7 @@ tasks:
       raw_message: {}
       replyTo: {}
       subject:
-        simple: ${incident.labels.camera_name} - Intruder detected!!!
+        simple: ${incident.camera_name} - Intruder detected!!!
       templateParams: {}
       to:
         simple: ${inputs.NotifyEmail}
@@ -306,12 +306,14 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 2acb6ae6-6e83-4bd6-8f0b-bf122d6db76d
+    taskid: 0449d7c2-ed54-4a51-8754-07590848d845
     type: condition
     task:
-      id: 2acb6ae6-6e83-4bd6-8f0b-bf122d6db76d
+      id: 0449d7c2-ed54-4a51-8754-07590848d845
       version: -1
       name: If in the night
+      description: Decide if the event is late in the night. If it is report this
+        as an intruder Critical alert.
       type: condition
       iscommand: false
       brand: ""
@@ -2286,12 +2288,13 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 5b130b2e-33e7-49ae-8c5a-f0e79f4f0098
+    taskid: 7efe254d-4d37-4e8a-8794-689a05c380c3
     type: condition
     task:
-      id: 5b130b2e-33e7-49ae-8c5a-f0e79f4f0098
+      id: 7efe254d-4d37-4e8a-8794-689a05c380c3
       version: -1
       name: Is this a trusted person?
+      description: Let the analyst manually determine if this is a trusted person.
       type: condition
       iscommand: false
       brand: ""
@@ -2378,12 +2381,13 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
+    taskid: 8a62dd94-25cb-49b9-8cb3-ebd6aa20f504
     type: regular
     task:
-      id: f415434d-fd3f-4344-8b9f-f52cbeea7d8e
+      id: 8a62dd94-25cb-49b9-8cb3-ebd6aa20f504
       version: -1
       name: Investigate
+      description: Human being to investigate what's on the snapshot
       type: regular
       iscommand: false
       brand: ""
