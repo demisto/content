@@ -123,7 +123,7 @@ script:
       name: threat_id
       required: true
     description: Schedules given attack on all possible vectors
-    name: Picus-Attack-All-Vectors
+    name: picus-attack-all-vectors
   - arguments:
     - description: 'Example: threat_id=666059 PID of the threat'
       name: threat_id
