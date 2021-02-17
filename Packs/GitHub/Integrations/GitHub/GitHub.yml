@@ -2613,7 +2613,7 @@ script:
     - contextPath: GitHub.ActionsUsage.WorkflowUsage
       description: GitHub action worflow usage on different OS.
       type: Unknown
-  dockerimage: demisto/pyjwt3:1.0.0.15504
+  dockerimage: demisto/pyjwt3:1.0.0.10828
   feed: false
   isfetch: true
   longRunning: false
