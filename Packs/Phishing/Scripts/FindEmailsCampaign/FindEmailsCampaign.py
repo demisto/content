@@ -61,15 +61,16 @@ STATUS_DICT = {
 }
 
 
-def return_outputs(readable_output, outputs=None, tag="no_campaign_detected"):
+def return_outputs(readable_output, outputs=None, tag=None):
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
         "ContentsFormat": formats['json'],
         "Contents": outputs,
         "EntryContext": outputs,
-        "Tags": [tag]
     }
+    if tag is not None:
+        return_entry["Tags"] = ['campaign_{}'.format(tag)]
     demisto.results(return_entry)
 
 
