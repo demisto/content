@@ -1,0 +1,342 @@
+{
+  "assets": [
+    {
+      "domain_id": 5,
+      "interfaces": [
+        {
+          "properties": [
+            {
+              "name": "Primary OS ID",
+              "value": "IOS"
+            },
+            {
+              "name": "Unified Name",
+              "value": "192.168.0.1",
+              "last_reported_by": "admin"
+            }
+          ],
+          "ip_addresses": [
+            {
+              "value": "8.8.8.8"
+            },
+            {
+              "value": "1.1.1.1"
+            }
+          ],
+          "mac_address": "00-14-22-01-23-45"
+        },
+        {
+          "properties": [
+            {
+              "name": "Compliance Notes",
+              "value": "note",
+              "last_reported_by": "Adam"
+            }
+          ],
+          "ip_addresses": [
+            {
+              "value": "2.2.2.2"
+            }
+          ],
+          "mac_address": "Unknown NIC"
+        }
+      ]
+    },
+    {
+      "domain_id": 6,
+      "interfaces": [
+        {
+          "properties": [
+            {
+              "name": "Primary OS ID",
+              "value": "Windows"
+            },
+            {
+              "name": "Unified Name",
+              "value": "192.168.0.1",
+              "last_reported_by": "admin"
+            }
+          ],
+          "ip_addresses": [
+            {
+              "value": "7.7.7.7"
+            },
+            {
+              "value": "3.3.3.3"
+            }
+          ],
+          "mac_address": "00-11-22-33-44-45"
+        },
+        {
+          "properties": [
+            {
+              "name": "Compliance Notes",
+              "value": "note2",
+              "last_reported_by": "Adam2"
+            }
+          ],
+          "ip_addresses": [
+            {
+              "value": "2.2.2.2"
+            }
+          ],
+          "mac_address": "Unknown NIC"
+        }
+      ]
+    }
+  ],
+  "case_one": {
+    "full_enrichment": true,
+    "expected": [
+      {
+        "Endpoint": {
+          "IPAddress": [
+            "8.8.8.8",
+            "1.1.1.1",
+            "2.2.2.2"
+          ],
+          "OS": "IOS",
+          "MACAddress": [
+            "00-14-22-01-23-45",
+            "Unknown NIC"
+          ],
+          "Domain": "domain1"
+        },
+        "Name": {
+          "Value": "192.168.0.1",
+          "LastUser": "admin"
+        },
+        "ComplianceNotes": {
+          "Value": "note",
+          "LastUser": "Adam"
+        },
+        "domain_id": 5,
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "Primary OS ID",
+                "value": "IOS"
+              },
+              {
+                "name": "Unified Name",
+                "value": "192.168.0.1",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "8.8.8.8"
+              },
+              {
+                "value": "1.1.1.1"
+              }
+            ],
+            "mac_address": "00-14-22-01-23-45"
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes",
+                "value": "note",
+                "last_reported_by": "Adam"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "2.2.2.2"
+              }
+            ],
+            "mac_address": "Unknown NIC"
+          }
+        ]
+      },
+      {
+        "domain_id": 6,
+        "Endpoint": {
+          "IPAddress": [
+            "7.7.7.7",
+            "3.3.3.3",
+            "2.2.2.2"
+          ],
+          "OS": "Windows",
+          "MACAddress": [
+            "00-11-22-33-44-45",
+            "Unknown NIC"
+          ],
+          "Domain": "domain2"
+        },
+        "Name": {
+          "Value": "192.168.0.1",
+          "LastUser": "admin"
+        },
+        "ComplianceNotes": {
+          "Value": "note2",
+          "LastUser": "Adam2"
+        },
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "Primary OS ID",
+                "value": "Windows"
+              },
+              {
+                "name": "Unified Name",
+                "value": "192.168.0.1",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "7.7.7.7"
+              },
+              {
+                "value": "3.3.3.3"
+              }
+            ],
+            "mac_address": "00-11-22-33-44-45"
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes",
+                "value": "note2",
+                "last_reported_by": "Adam2"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "2.2.2.2"
+              }
+            ],
+            "mac_address": "Unknown NIC"
+          }
+        ]
+      }
+    ]
+  },
+  "case_two": {
+    "full_enrichment": false,
+    "expected": [
+      {
+        "Endpoint": {
+          "IPAddress": [
+            "8.8.8.8",
+            "1.1.1.1",
+            "2.2.2.2"
+          ],
+          "OS": "IOS"
+        },
+        "Name": {
+          "Value": "192.168.0.1",
+          "LastUser": "admin"
+        },
+        "domain_id": 5,
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "Primary OS ID",
+                "value": "IOS"
+              },
+              {
+                "name": "Unified Name",
+                "value": "192.168.0.1",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "8.8.8.8"
+              },
+              {
+                "value": "1.1.1.1"
+              }
+            ],
+            "mac_address": "00-14-22-01-23-45"
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes",
+                "value": "note",
+                "last_reported_by": "Adam"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "2.2.2.2"
+              }
+            ],
+            "mac_address": "Unknown NIC"
+          }
+        ]
+      },
+      {
+        "domain_id": 6,
+        "Endpoint": {
+          "IPAddress": [
+            "7.7.7.7",
+            "3.3.3.3",
+            "2.2.2.2"
+          ],
+          "OS": "Windows"
+        },
+        "Name": {
+          "Value": "192.168.0.1",
+          "LastUser": "admin"
+        },
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "Primary OS ID",
+                "value": "Windows"
+              },
+              {
+                "name": "Unified Name",
+                "value": "192.168.0.1",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "7.7.7.7"
+              },
+              {
+                "value": "3.3.3.3"
+              }
+            ],
+            "mac_address": "00-11-22-33-44-45"
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes",
+                "value": "note2",
+                "last_reported_by": "Adam2"
+              }
+            ],
+            "ip_addresses": [
+              {
+                "value": "2.2.2.2"
+              }
+            ],
+            "mac_address": "Unknown NIC"
+          }
+        ]
+      }
+    ]
+  },
+  "domain_mock_response": [
+    {
+      "id": 5,
+      "name": "domain1"
+    },
+    {
+      "id": 6,
+      "name": "domain2"
+    }
+  ]
+}
