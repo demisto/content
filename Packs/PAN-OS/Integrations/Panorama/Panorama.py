@@ -756,11 +756,11 @@ def panorama_list_addresses(tag: Optional[str] = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_addresses_command(tag: Optional[str] = None):
+def panorama_list_addresses_command(args: dict):
     """
     Get all addresses
     """
-    addresses_arr = panorama_list_addresses(tag)
+    addresses_arr = panorama_list_addresses(args.get('tag'))
     addresses_output = prettify_addresses_arr(addresses_arr)
 
     return_results({
@@ -803,7 +803,7 @@ def panorama_get_address(address_name: str) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+        'xpath': f'{XPATH_OBJECTS}address/entry[@name=\'{address_name}\']',
         'key': API_KEY
     }
     result = http_request(
@@ -815,11 +815,11 @@ def panorama_get_address(address_name: str) -> Dict:
     return result['response']['result']['entry']
 
 
-def panorama_get_address_command(name: str):
+def panorama_get_address_command(args: dict):
     """
     Get an address
     """
-    address_name = name
+    address_name = args.get('name')
 
     address = panorama_get_address(address_name)
     address_output = prettify_address(address)
@@ -922,11 +922,11 @@ def panorama_delete_address(address_name: str):
     return result
 
 
-def panorama_delete_address_command(name: str):
+def panorama_delete_address_command(args: dict):
     """
     Delete an address
     """
-    address_name = name
+    address_name = args.get('name')
 
     address = panorama_delete_address(address_name)
     address_output = {'Name': address_name}
@@ -997,11 +997,11 @@ def panorama_list_address_groups(tag: str = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_address_groups_command(tag: Optional[str] = None):
+def panorama_list_address_groups_command(args: dict):
     """
     Get all address groups
     """
-    address_groups_arr = panorama_list_address_groups(tag)
+    address_groups_arr = panorama_list_address_groups(args.get('tag'))
     address_groups_output = prettify_address_groups_arr(address_groups_arr)
 
     return_results({
@@ -1056,11 +1056,11 @@ def panorama_get_address_group(address_group_name: str):
     return result['response']['result']['entry']
 
 
-def panorama_get_address_group_command(name: str):
+def panorama_get_address_group_command(args: dict):
     """
     Get an address group
     """
-    address_group_name = name
+    address_group_name = args.get('name')
 
     result = panorama_get_address_group(address_group_name)
 
@@ -3067,8 +3067,6 @@ def panorama_list_pcaps_command(args: dict):
     """
     Get list of pcap files
     """
-    if DEVICE_GROUP:
-        raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3080,6 +3078,14 @@ def panorama_list_pcaps_command(args: dict):
         params['dlp-password'] = args['password']
     elif args['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
+
+    serial_number = args.get('serialNumber')
+    if VSYS and serial_number:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
+        params['target'] = serial_number
 
     result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
@@ -3128,8 +3134,6 @@ def panorama_get_pcap_command(args: dict):
     """
     Get pcap file
     """
-    if DEVICE_GROUP:
-        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3153,6 +3157,14 @@ def panorama_get_pcap_command(args: dict):
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
     device_name = args.get('deviceName')
+
+    serial_number = args.get('serialNumber')
+    if VSYS and serial_number:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
+        params['target'] = serial_number
 
     file_name = None
     if pcap_id:
@@ -6811,23 +6823,23 @@ def main():
 
         # Addresses commands
         elif demisto.command() == 'panorama-list-addresses':
-            panorama_list_addresses_command(**args)
+            panorama_list_addresses_command(args)
 
         elif demisto.command() == 'panorama-get-address':
-            panorama_get_address_command(**args)
+            panorama_get_address_command(args)
 
         elif demisto.command() == 'panorama-create-address':
             panorama_create_address_command(args)
 
         elif demisto.command() == 'panorama-delete-address':
-            panorama_delete_address_command(**args)
+            panorama_delete_address_command(args)
 
         # Address groups commands
         elif demisto.command() == 'panorama-list-address-groups':
-            panorama_list_address_groups_command(**args)
+            panorama_list_address_groups_command(args)
 
         elif demisto.command() == 'panorama-get-address-group':
-            panorama_get_address_group_command(**args)
+            panorama_get_address_group_command(args)
 
         elif demisto.command() == 'panorama-create-address-group':
             panorama_create_address_group_command(args)

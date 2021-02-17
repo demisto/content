@@ -3,7 +3,7 @@ For more information regarding the AWS EC2 service, please visit the official do
 
 ## Configure AWS - EC2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Servers `&` Services**.
 2. Search for AWS - EC2.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -37,7 +37,7 @@ Describes one or more of your instances.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters.See documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters.See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | region | The AWS Region, if not specified the default region will be used | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume | Optional | 
@@ -1723,7 +1723,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Sepreted by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
@@ -1750,7 +1750,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
@@ -1777,7 +1777,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
@@ -1804,7 +1804,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See documentation for details `&` filter options. | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15 | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40 | Optional | 
