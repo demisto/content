@@ -440,7 +440,7 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, **kwa
         raise DemistoException('The `pipeline` argument is not a valid json.')
     collection_obj = client.get_collection(collection)
     results = collection_obj.aggregate(json_pipeline)
-    if not results.acknowledged:
+    if not results:
         raise DemistoException('Error occurred when trying to enter delete entries.')
     return f'ans', None
 
