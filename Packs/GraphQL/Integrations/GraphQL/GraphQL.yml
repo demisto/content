@@ -3,7 +3,7 @@ commonfields:
   id: GraphQL
   version: -1
 configuration:
-- display: GraphQL Server URL (e.g., https://countries.trevorblades.com)
+- display: GraphQL Server URL (e.g., https://api.github.com/graphql)
   name: url
   required: true
   type: 0

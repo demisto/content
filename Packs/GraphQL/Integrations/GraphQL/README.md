@@ -8,7 +8,7 @@ Generic GraphQL client to interact with any GraphQL server API.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | GraphQL Server URL \(e.g. https://countries.trevorblades.com\) | True |
+| url | GraphQL Server URL \(e.g. https://api.github.com/graphql\) | True |
 | credentials | Username / Header Name | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -21,6 +21,12 @@ The **Username** and **Password** integration parameters can be used to access s
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field, and the header value in the **Password** field.
 
+For example, in order to use
+[GitHub GraphQL API](https://docs.github.com/en/graphql), the parameters
+should be set as follows:
+
+- ***Username*** : `_header:Authorization`
+- ***Password*** : `bearer <PERSONAL-ACCESS-TOKEN>`
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -46,14 +52,27 @@ Execute a query request to the GraphQL server.
 | outputs_key_field | Primary key field in the response to unique the object in the context data. | Optional |
 
 #### Command Example
-```!graphql-query query="query getContinentName ($code: ID!) {continent (code: $code) {name}}" variables_names="code" variables_values="EU"````
+
+```!graphql-query query="query($number_of_repos:Int!) {viewer {name repositories(last: $number_of_repos) { nodes { name } } } }" variables_names="number_of_repos" variables_values="3" variables_types="Int" max_result_size="10" populate_context_data="true"````
 
 #### Context Example
 ```json
 {
     "GraphQL": {
-        "continent": {
-            "name": "Europe"
+        "viewer": {
+            "repositories": {
+                "nodes": [
+                    {
+                        "name": "content"
+                    },
+                    {
+                        "name": "demisto-sdk"
+                    },
+                    {
+                        "name": "content-docs"
+                    }
+                ]
+            }
         }
     }
 }
@@ -62,9 +81,9 @@ Execute a query request to the GraphQL server.
 #### Human Readable Output
 
 >### GraphQL Query Results
->|continent|
+>| viewer |
 >|---|
->| name: Europe |
+>| repositories: {"nodes": [{"name": "content"}, {"name": "demisto-sdk"}, {"name": "content-docs"}]} |
 
 ### graphql-mutation
 ***
@@ -87,14 +106,19 @@ Execute a mutation request to the GraphQL server.
 | outputs_key_field | Primary key field in the response to unique the object in the context data. | Optional |
 
 #### Command Example
-```!graphql-mutation query="mutation {createMessage(input: {author: \"Jon Doe\",content: \"knowledge is the most powerful thing on earth, harvest it and use it wisely\",}) {id}}"````
+```!graphql-mutation query="mutation AddReactionToIssue {addReaction(input:{subjectId:"MDU6SXNzdWUyMzEzOTE1NTE=",content:HOORAY}) {reaction {content} subject { id } } }" max_result_size="10" populate_context_data="true"````
 
 #### Context Example
 ```json
 {
     "GraphQL": {
-        "createMessage": {
-            "id": "76a9df0b02f2cc624fc9"
+        "addReaction": {
+            "reaction": {
+                "content": "HORRAY"
+            },
+            "subject": {
+                "id": "MDU6SXNzdWUyMzEzOTE1NTE="
+            }
         }
     }
 }
@@ -103,7 +127,7 @@ Execute a mutation request to the GraphQL server.
 #### Human Readable Output
 
 >### GraphQL Query Results
->|createMessage|
+>| addReaction |
 >|---|
->| id: 76a9df0b02f2cc624fc9 |
+>| reaction: {"content": "HOORAY"}<br/>subject: {"id": "MDU6SXNzdWUyMzEzOTE1NTE="} |
 
