@@ -1394,7 +1394,7 @@ Adds or removes sites to and from a custom URL category.
 
 ### panorama-get-url-category
 ***
-Gets a URL category from URL Filtering.
+Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
@@ -1458,7 +1458,7 @@ Gets a URL category from URL Filtering.
 
 ### url
 ***
-Gets a URL category from URL Filtering.
+Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
@@ -1487,7 +1487,7 @@ Gets a URL category from URL Filtering.
 
 ### panorama-get-url-category-from-cloud
 ***
-Returns a URL category from URL filtering.
+Returns a URL category from URL filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
