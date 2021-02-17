@@ -840,11 +840,12 @@ def find_submission_id_command(
 
 def main():
     params = demisto.params()
+    url = params.get('base_url', 'https://api.crowdstrike.com/')
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    url = "https://api.crowdstrike.com/"
+
     try:
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
