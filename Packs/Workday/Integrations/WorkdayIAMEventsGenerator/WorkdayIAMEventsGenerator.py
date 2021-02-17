@@ -573,7 +573,7 @@ def get_terminate_report():
         raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
                         f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
     else:
-        # Get the specific report and change the relevant field for rehire event.
+        # Get the specific report and change the relevant field for terminate event.
         user_report = [i for i in integration_context['Report_Entry'] if (i['Email_Address'] == user_email)][0]
         is_terminated = user_report.get('Employment_Status')
         rehired_status = user_report.get('Rehired_Employee')
@@ -601,7 +601,7 @@ def get_update_report():
         raise Exception(f'The user email {user_email} does not exist. Please try one  of the followings: '
                         f'ttang@test.com, rrahardjo@test.com, sarnold@test.com')
     else:
-        # Get the specific report and change the relevant field for rehire event.
+        # Get the specific report and change the relevant field for update event.
         user_report = [i for i in integration_context['Report_Entry'] if (i['Email_Address'] == user_email)][0]
         if title:
             user_report['Title'] = title
