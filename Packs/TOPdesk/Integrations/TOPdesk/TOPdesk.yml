@@ -28,7 +28,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: true
-  display: Use new style FIQL query (e.g. query=status==firsLine) available from TOPDesk version 3.3.0
+  display: Use new style FIQL query (e.g. query=status==firsLine) available from TOPDesk
+    version 3.3.0
   name: new_query
   required: false
   type: 8
@@ -38,7 +39,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
   name: first_fetch
   required: false
   type: 0
@@ -46,11 +48,13 @@ configuration:
   name: fetch_query
   required: false
   type: 0
-- display: The earliest modification date to use when fetching incidents (<yyyy-mm-dd> e.g. 2020-01-01)
+- display: The earliest modification date to use when fetching incidents (<yyyy-mm-dd>
+    e.g. 2020-01-01)
   name: modification_date_start
   required: false
   type: 0
-- display: The latest modification date to use when fetching incidents (<yyyy-mm-dd> e.g. 2020-01-03)
+- display: The latest modification date to use when fetching incidents (<yyyy-mm-dd>
+    e.g. 2020-01-03)
   name: modification_date_end
   required: false
   type: 0
@@ -58,75 +62,80 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
+description: TOPdesk’s Enterprise Service Management software (ESM) lets your service
+  teams join forces and process requests from a single platform.
 display: TOPdesk
 name: TOPdesk
 script:
   commands:
-  - arguments: [ ]
+  - arguments: []
     deprecated: false
     description: Get list of subcategories.
     name: topdesk-subcategories-list
     outputs:
-      - contextPath: TOPdesk.subcategory..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.subcategory..name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.subcategory..category.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.subcategory..category.name
-        description: ''
-        type: String
-  - arguments: [ ]
+    - contextPath: TOPdesk.subcategory..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.subcategory..name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.subcategory..category.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.subcategory..category.name
+      description: ''
+      type: String
+  - arguments: []
     deprecated: false
     description: Get list of categories.
     name: topdesk-categories-list
     outputs:
-      - contextPath: TOPdesk.category..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.category..name
-        description: ''
-        type: String
-  - arguments: [ ]
+    - contextPath: TOPdesk.category..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.category..name
+      description: ''
+      type: String
+  - arguments: []
     deprecated: false
     description: Get list of entry types.
     name: topdesk-entry-types-list
     outputs:
-      - contextPath: TOPdesk.entryType..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.entryType..name
-        description: ''
-        type: String
-  - arguments: [ ]
+    - contextPath: TOPdesk.entryType..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.entryType..name
+      description: ''
+      type: String
+  - arguments: []
     deprecated: false
     description: Get list of entry types.
     execution: false
     name: topdesk-call-types-list
     outputs:
-      - contextPath: TOPdesk.callType..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.callType..name
-        description: ''
-        type: String
+    - contextPath: TOPdesk.callType..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.callType..name
+      description: ''
+      type: String
   - arguments:
-    - description: The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0.
+    - description: The offset at which to start listing the persons at. Must be greater
+        or equal to 0, default is 0.
       isArray: false
       name: start
       required: false
       secret: false
-    - description: The amount of persons to be returned per request. Must be between 1 and 100, default is 10.
+    - description: The amount of persons to be returned per request. Must be between
+        1 and 100, default is 10.
       isArray: false
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters from earlier versions still work, but if this parameter is provided, all other filter parameters are ignored.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. The query parameters
+        from earlier versions still work, but if this parameter is provided, all other
+        filter parameters are ignored. The FIQL query syntax is documented in the
+        TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -135,370 +144,374 @@ script:
     description: Get list of persons.
     name: topdesk-persons-list
     outputs:
-      - contextPath: TOPdesk.person..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..status
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..surName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..firstName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..dynamicName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..firstInitials
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..prefixes
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..birthName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..title
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..gender
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..language.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..language.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..phoneNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..mobileNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..fax
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..email
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..jobTitle
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..department
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..budgetHolder
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..employeeNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..networkLoginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..mainframeLoginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..clientReferenceNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..city
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..tasLoginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..showBranch
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..showBudgetholder
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..showDepartment
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..showSubsidiaries
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..showAllBranches
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..authorizeAll
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..authorizeDepartment
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..authorizeBudgetHolder
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..authorizeBranch
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..authorizeSubsidiaryBranches
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..isManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..manager
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..hasAttention
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..attention
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..attentionComment
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..creator.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..creator.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..creationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.person..modifier.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..modifier.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..modificationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.person..optionalFields1.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields1.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields1.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields1.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields1.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields1.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields1.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields1.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields1.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields1.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields1.date1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.date2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.date3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.date4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.date5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields1.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields1.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields1.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields1.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields1.memo1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.memo2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.memo3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.memo4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.memo5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.searchlist1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.searchlist2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.searchlist3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.searchlist4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields1.searchlist5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields2.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields2.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields2.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields2.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.person..optionalFields2.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields2.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields2.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields2.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields2.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.person..optionalFields2.date1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.date2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.date3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.date4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.date5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields2.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields2.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields2.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields2.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..optionalFields2.memo1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.memo2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.memo3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.memo4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.memo5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.searchlist1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.searchlist2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.searchlist3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.searchlist4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..optionalFields2.searchlist5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..personExtraFieldA
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..personExtraFieldB
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..departmentFree
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..branch.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.clientReferenceNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.timeZone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.extraA.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.extraA.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person..branch.extraB
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.person..location
-        description: ''
-        type: Unknown
+    - contextPath: TOPdesk.person..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..surName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..firstName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..dynamicName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..firstInitials
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..prefixes
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..birthName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..title
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..gender
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..language.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..language.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..phoneNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..mobileNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..fax
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..email
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..jobTitle
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..department
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..budgetHolder
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..employeeNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..networkLoginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..mainframeLoginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..city
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..tasLoginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..showBranch
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..showBudgetholder
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..showDepartment
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..showSubsidiaries
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..showAllBranches
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..authorizeAll
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..authorizeDepartment
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..authorizeBudgetHolder
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..authorizeBranch
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..authorizeSubsidiaryBranches
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..isManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..manager
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..hasAttention
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..attention
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..attentionComment
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..creator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..creator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..creationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.person..modifier.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..modifier.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..modificationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.person..optionalFields1.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields1.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields1.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields1.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields1.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields1.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields1.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields1.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields1.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields1.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields1.date1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.date2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.date3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.date4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.date5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields1.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields1.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields1.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields1.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields1.memo1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.memo2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.memo3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.memo4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.memo5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.searchlist1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.searchlist2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.searchlist3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.searchlist4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields1.searchlist5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields2.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields2.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields2.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields2.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.person..optionalFields2.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields2.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields2.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields2.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields2.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.person..optionalFields2.date1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.date2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.date3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.date4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.date5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields2.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields2.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields2.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields2.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..optionalFields2.memo1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.memo2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.memo3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.memo4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.memo5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.searchlist1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.searchlist2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.searchlist3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.searchlist4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..optionalFields2.searchlist5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..personExtraFieldA
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..personExtraFieldB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..departmentFree
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.extraA.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.extraA.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person..branch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.person..location
+      description: ''
+      type: Unknown
   - arguments:
-    - description: The offset at which to start listing the operators at. Must be greater or equal to 0, default is 0.
+    - description: The offset at which to start listing the operators at. Must be
+        greater or equal to 0, default is 0.
       isArray: false
       name: start
       required: false
       secret: false
-    - description: The amount of operators to be returned per request. Must be between 1 and 100, default is 10.
+    - description: The amount of operators to be returned per request. Must be between
+        1 and 100, default is 10.
       isArray: false
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters from earlier versions still work, but if this parameter is provided, all other filter parameters are ignored.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. The query parameters
+        from earlier versions still work, but if this parameter is provided, all other
+        filter parameters are ignored. The FIQL query syntax is documented in the
+        TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -507,400 +520,404 @@ script:
     description: Get list of operators.
     name: topdesk-operators-list
     outputs:
-      - contextPath: TOPdesk.operator..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..principalId
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..status
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..surName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..firstName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..dynamicName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..initials
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..prefixes
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..birthName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..title
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..gender
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..language.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..language.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.clientReferenceNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.timeZone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.extraA.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.extraA.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..branch.extraB
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..location
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..telephone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..mobileNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..faxNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..email
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..exchangeAccount
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..loginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..loginPermission
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..jobTitle
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..department
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..budgetHolder
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..employeeNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..hourlyRate
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..networkLoginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..mainframeLoginName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..hasAttention
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..attention
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..comments
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..installer
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..firstLineCallOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..secondLineCallOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..problemManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..problemOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..changeCoordinator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..changeActivitiesOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..requestForChangeOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..extensiveChangeOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..simpleChangeOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..scenarioManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..planningActivityManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..projectCoordinator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..projectActiviesOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..stockManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..reservationsOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..serviceOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..externalHelpDeskParty
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..contractManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..operationsOperator
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..operationsManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..knowledgeBaseManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..accountManager
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..creationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.operator..creator.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..creator.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..modificationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.operator..modifier.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..modifier.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields1.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields1.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields1.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields1.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields1.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields1.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields1.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields1.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields1.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields1.date1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.date2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.date3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.date4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.date5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields1.memo1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.memo2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.memo3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.memo4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.memo5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.searchlist1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.searchlist2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.searchlist3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.searchlist4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields1.searchlist5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields2.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields2.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields2.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields2.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.operator..optionalFields2.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields2.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields2.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields2.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields2.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.operator..optionalFields2.date1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.date2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.date3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.date4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.date5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields2.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields2.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields2.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields2.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator..optionalFields2.memo1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.memo2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.memo3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.memo4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.memo5
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.searchlist1
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.searchlist2
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.searchlist3
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.searchlist4
-        description: ''
-        type: Unknown
-      - contextPath: TOPdesk.operator..optionalFields2.searchlist5
-        description: ''
-        type: Unknown
+    - contextPath: TOPdesk.operator..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..principalId
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..surName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..firstName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..dynamicName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..initials
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..prefixes
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..birthName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..title
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..gender
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..language.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..language.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.extraA.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.extraA.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..branch.extraB
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..location
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..telephone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..mobileNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..faxNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..email
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..exchangeAccount
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..loginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..loginPermission
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..jobTitle
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..department
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..budgetHolder
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..employeeNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..hourlyRate
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..networkLoginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..mainframeLoginName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..hasAttention
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..attention
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..comments
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..installer
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..firstLineCallOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..secondLineCallOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..problemManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..problemOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..changeCoordinator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..changeActivitiesOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..requestForChangeOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..extensiveChangeOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..simpleChangeOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..scenarioManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..planningActivityManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..projectCoordinator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..projectActiviesOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..stockManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..reservationsOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..serviceOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..externalHelpDeskParty
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..contractManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..operationsOperator
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..operationsManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..knowledgeBaseManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..accountManager
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..creationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.operator..creator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..creator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..modificationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.operator..modifier.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..modifier.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields1.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields1.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields1.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields1.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields1.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields1.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields1.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields1.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields1.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields1.date1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.date2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.date3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.date4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.date5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields1.memo1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.memo2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.memo3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.memo4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.memo5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.searchlist1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.searchlist2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.searchlist3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.searchlist4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields1.searchlist5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields2.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields2.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields2.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields2.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.operator..optionalFields2.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields2.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields2.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields2.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields2.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.operator..optionalFields2.date1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.date2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.date3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.date4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.date5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields2.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields2.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields2.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields2.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator..optionalFields2.memo1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.memo2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.memo3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.memo4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.memo5
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.searchlist1
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.searchlist2
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.searchlist3
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.searchlist4
+      description: ''
+      type: Unknown
+    - contextPath: TOPdesk.operator..optionalFields2.searchlist5
+      description: ''
+      type: Unknown
   - arguments:
-    - description: The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0.
+    - description: The offset at which to start listing the persons at. Must be greater
+        or equal to 0, default is 0.
       isArray: false
       name: start
       required: false
       secret: false
-    - description: The amount of persons to be returned per request. Must be between 1 and 100, default is 10.
+    - description: The amount of persons to be returned per request. Must be between
+        1 and 100, default is 10.
       isArray: false
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters from earlier versions still work, but if this parameter is provided, all other filter parameters are ignored.
-        The FIQL query syntax is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. The query parameters
+        from earlier versions still work, but if this parameter is provided, all other
+        filter parameters are ignored. The FIQL query syntax is documented in the
+        TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -909,561 +926,566 @@ script:
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
-      - contextPath: TOPdesk.branch..id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..status
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..specification
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..clientReferenceNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..timeZone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..extraA.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..extraA.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..extraB.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..extraB.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..phone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..fax
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.country.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.country.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.street
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.number
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.county
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.city
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.postcode
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.addressMemo
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..address.addressType
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..email
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..website
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.country.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.country.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.street
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.number
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.county
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.city
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.postcode
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.addressMemo
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..postalAddress.addressType
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..branchType
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..headBranch.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..headBranch.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..membershipNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..accountManager.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..accountManager.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..contact.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..contact.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..vatNumber
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..surfaceArea
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..volume
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..attention.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..attention.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..attentionComment
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..additionalInfo
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..serviceWindowOption
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..serviceWindow.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..serviceWindow.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.registryReference
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.ownerName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.ownerMobile
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.ownerTelephone
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.ownerEmail
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.designatedUse.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.designatedUse.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.listedBuilding.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.listedBuilding.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.constructionYear
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.acquisitionYear
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.acquisitionPrice
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.energyPerformance.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.energyPerformance.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.energyPerformanceMeasurementDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.environmentalImpact.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.environmentalImpact.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.environmentalImpactMeasurementDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.buildingLevelEPC.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.buildingLevelEPC.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..realEstate.totalAcquisitionCost
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.propertyValuation
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.residualValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.annualDepreciation
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.depreciationPeriod
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.liquidationValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.liquidationValueSurveyDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.landValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.landValueSurveyDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.marketValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.marketValueSurveyDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.rentalValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.rentalValueSurveyDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..realEstate.rebuildingValue
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..realEstate.rebuildingValueSurveyDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields1.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields1.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields1.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields1.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields1.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields1.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields1.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields1.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields1.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields1.date1
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.date2
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.date3
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.date4
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.date5
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields1.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.memo1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.memo2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.memo3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.memo4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.memo5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist1.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist1.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist2.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist2.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist3.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist3.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist4.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist4.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist5.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields1.searchlist5.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.boolean1
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields2.boolean2
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields2.boolean3
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields2.boolean4
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields2.boolean5
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.branch..optionalFields2.number1
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields2.number2
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields2.number3
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields2.number4
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields2.number5
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.branch..optionalFields2.date1
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields2.date2
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields2.date3
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields2.date4
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields2.date5
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..optionalFields2.text1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.text2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.text3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.text4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.text5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.memo1
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.memo2
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.memo3
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.memo4
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.memo5
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist1.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist1.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist2.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist2.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist3.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist3.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist4.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist4.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist5.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..optionalFields2.searchlist5.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..notes
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..creator.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..creator.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..creationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..modifier.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..modifier.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.branch..modificationDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.branch..hasAttention
-        description: ''
-        type: Boolean
+    - contextPath: TOPdesk.branch..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..status
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..specification
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..clientReferenceNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..timeZone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..extraA.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..extraA.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..extraB.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..extraB.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..phone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..fax
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.country.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.country.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.street
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.number
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.county
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.city
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.postcode
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.addressMemo
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..address.addressType
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..email
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..website
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.country.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.country.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.street
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.number
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.county
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.city
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.postcode
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.addressMemo
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..postalAddress.addressType
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..branchType
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..headBranch.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..headBranch.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..membershipNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..accountManager.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..accountManager.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..contact.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..contact.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..vatNumber
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..surfaceArea
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..volume
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..attention.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..attention.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..attentionComment
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..additionalInfo
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..serviceWindowOption
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..serviceWindow.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..serviceWindow.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.registryReference
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.ownerName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.ownerMobile
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.ownerTelephone
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.ownerEmail
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.designatedUse.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.designatedUse.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.listedBuilding.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.listedBuilding.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.constructionYear
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.acquisitionYear
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.acquisitionPrice
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.energyPerformance.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.energyPerformance.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.energyPerformanceMeasurementDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.environmentalImpact.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.environmentalImpact.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.environmentalImpactMeasurementDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.buildingLevelEPC.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.buildingLevelEPC.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..realEstate.totalAcquisitionCost
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.propertyValuation
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.residualValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.annualDepreciation
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.depreciationPeriod
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.liquidationValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.liquidationValueSurveyDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.landValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.landValueSurveyDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.marketValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.marketValueSurveyDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.rentalValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.rentalValueSurveyDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..realEstate.rebuildingValue
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..realEstate.rebuildingValueSurveyDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields1.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields1.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields1.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields1.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields1.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields1.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields1.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields1.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields1.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields1.date1
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.date2
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.date3
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.date4
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.date5
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields1.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.memo1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.memo2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.memo3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.memo4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.memo5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist1.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist1.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist2.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist2.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist3.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist3.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist4.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist4.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist5.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields1.searchlist5.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.boolean1
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields2.boolean2
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields2.boolean3
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields2.boolean4
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields2.boolean5
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.branch..optionalFields2.number1
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields2.number2
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields2.number3
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields2.number4
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields2.number5
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.branch..optionalFields2.date1
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields2.date2
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields2.date3
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields2.date4
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields2.date5
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..optionalFields2.text1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.text2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.text3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.text4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.text5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.memo1
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.memo2
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.memo3
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.memo4
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.memo5
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist1.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist1.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist2.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist2.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist3.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist3.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist4.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist4.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist5.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..optionalFields2.searchlist5.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..notes
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..creator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..creator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..creationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..modifier.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..modifier.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.branch..modificationDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.branch..hasAttention
+      description: ''
+      type: Boolean
   - arguments:
-      - description: The offset at which to start listing the operators at. Must be greater or equal to 0, default is 0.
-        isArray: false
-        name: start
-        required: false
-        secret: false
-      - description: The amount of operators to be returned per request. Must be between 1 and 100, default is 10.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - description: A FIQL search expression to filter the result. The query parameters from earlier versions still work, but if this parameter is provided, all other filter parameters are ignored.
-          The FIQL query syntax is documented in the TOPdesk tutorial.
-        isArray: false
-        name: query
-        required: false
-        secret: false
-      - description: The id of the incident to retrieve, overrides any other arguments.
-        isArray: false
-        name: incident_id
-        required: false
-        secret: false
-      - description: The number of the incident to retrieve, overrides any other argument but incidnet_id.
-        isArray: false
-        name: incident_number
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given status. firstLine/secondLine/partial
-        isArray: false
-        name: status
-        required: false
-        secret: false
-        predefined:
-          - firstLine
-          - secondLine
-          - partial
-      - description: Retrive only the incidents of the given caller id.
-        isArray: false
-        name: caller_id
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given branch id.
-        isArray: false
-        name: branch_id
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given category.
-        isArray: false
-        name: category
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given subcategory.
-        isArray: false
-        name: subcategory
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given call type.
-        isArray: false
-        name: call_type
-        required: false
-        secret: false
-      - description: Retrive only the incidents of the given entry type.
-        isArray: false
-        name: entry_type
-        required: false
-        secret: false
+    - description: The offset at which to start listing the operators at. Must be
+        greater or equal to 0, default is 0.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - description: The amount of operators to be returned per request. Must be between
+        1 and 100, default is 10.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - description: A FIQL search expression to filter the result. The query parameters
+        from earlier versions still work, but if this parameter is provided, all other
+        filter parameters are ignored. The FIQL query syntax is documented in the
+        TOPdesk tutorial.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - description: The id of the incident to retrieve, overrides any other arguments.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - description: The number of the incident to retrieve, overrides any other argument
+        but incidnet_id.
+      isArray: false
+      name: incident_number
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given status. firstLine/secondLine/partial
+      isArray: false
+      name: status
+      required: false
+      secret: false
+      predefined:
+      - firstLine
+      - secondLine
+      - partial
+    - description: Retrive only the incidents of the given caller id.
+      isArray: false
+      name: caller_id
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given branch id.
+      isArray: false
+      name: branch_id
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given category.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given subcategory.
+      isArray: false
+      name: subcategory
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given call type.
+      isArray: false
+      name: call_type
+      required: false
+      secret: false
+    - description: Retrive only the incidents of the given entry type.
+      isArray: false
+      name: entry_type
+      required: false
+      secret: false
     deprecated: false
     description: Get list of incidents.
     name: topdesk-incidents-list
@@ -2051,7 +2073,8 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The caller id for this incident. For an unregistered caller provide a name.
+    - description: The caller id for this incident. For an unregistered caller provide
+        a name.
       isArray: false
       name: caller
       required: true
@@ -2062,9 +2085,9 @@ script:
       required: false
       secret: false
       predefined:
-        - firstLine
-        - secondLine
-        - partial
+      - firstLine
+      - secondLine
+      - partial
     - description: Brief description. maximum 80 characters.
       isArray: false
       name: description
@@ -2080,23 +2103,26 @@ script:
       name: action
       required: false
       secret: false
-    - description: Whether the initial action is invisible for persons.
-        Can only be set by operators. Default value is false.
+    - description: Whether the initial action is invisible for persons. Can only be
+        set by operators. Default value is false.
       isArray: false
       name: action_invisible_for_caller
       required: false
       secret: false
-    - description: Entry type by id or name. Can only be set by operators. XSOAR is set by default for mirroring.
+    - description: Entry type by id or name. Can only be set by operators. XSOAR is
+        set by default for mirroring.
       isArray: false
       name: entry_type
       required: false
       secret: false
-    - description: Category by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    - description: Category by id or name. Can be set by operators. It is an error
+        to provide both an id and a name.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Subcategory by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    - description: Subcategory by id or name. Can be set by operators. It is an error
+        to provide both an id and a name.
       isArray: false
       name: subcategory
       required: false
@@ -2106,7 +2132,8 @@ script:
       name: external_number
       required: false
       secret: false
-    - description: Main incident id or number, required for creating a partial incident. Can only be set by operators.
+    - description: Main incident id or number, required for creating a partial incident.
+        Can only be set by operators.
       isArray: false
       name: main_incident
       required: false
@@ -2698,12 +2725,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -2714,9 +2743,9 @@ script:
       required: false
       secret: false
       predefined:
-        - firstLine
-        - secondLine
-        - partial
+      - firstLine
+      - secondLine
+      - partial
     - description: Brief description. maximum 80 characters.
       isArray: false
       name: description
@@ -2732,28 +2761,32 @@ script:
       name: action
       required: false
       secret: false
-    - description: The caller id for this incident. For an unregistered caller provide a name.
+    - description: The caller id for this incident. For an unregistered caller provide
+        a name.
       isArray: false
       name: caller
       required: false
       secret: false
-    - description: Whether the initial action is invisible for persons.
-        Can only be set by operators. Default value is false.
+    - description: Whether the initial action is invisible for persons. Can only be
+        set by operators. Default value is false.
       isArray: false
       name: action_invisible_for_caller
       required: false
       secret: false
-    - description: Entry type by id or name. Can only be set by operators. XSOAR is set by default for mirroring.
+    - description: Entry type by id or name. Can only be set by operators. XSOAR is
+        set by default for mirroring.
       isArray: false
       name: entry_type
       required: false
       secret: false
-    - description: Category by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    - description: Category by id or name. Can be set by operators. It is an error
+        to provide both an id and a name.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Subcategory by id or name. Can be set by operators. It is an error to provide both an id and a name.
+    - description: Subcategory by id or name. Can be set by operators. It is an error
+        to provide both an id and a name.
       isArray: false
       name: subcategory
       required: false
@@ -2763,7 +2796,8 @@ script:
       name: external_number
       required: false
       secret: false
-    - description: Main incident id or number, required for creating a partial incident. Can only be set by operators.
+    - description: Main incident id or number, required for creating a partial incident.
+        Can only be set by operators.
       isArray: false
       name: main_incident
       required: false
@@ -3355,12 +3389,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -3957,12 +3993,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -4559,12 +4597,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -5161,12 +5201,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -5758,12 +5800,14 @@ script:
       description: ''
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set
+        incident with relevant id will be updated.
       isArray: false
       name: id
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: number
       required: false
@@ -5773,7 +5817,8 @@ script:
       name: file
       required: false
       secret: false
-    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are
+        set incident with relevant id will be updated.
       isArray: false
       name: invisible_for_caller
       required: false
@@ -5787,37 +5832,37 @@ script:
     description: Upload an attachment to an incident in TOPdesk.
     name: topdesk-incident-attachment-upload
     outputs:
-      - contextPath: TOPdesk.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.fileName
-        description: ''
-        type: String
-      - contextPath: TOPdesk.downloadUrl
-        description: ''
-        type: String
-      - contextPath: TOPdesk.size
-        description: ''
-        type: Number
-      - contextPath: TOPdesk.description
-        description: ''
-        type: String
-      - contextPath: TOPdesk.invisibleForCaller
-        description: ''
-        type: Boolean
-      - contextPath: TOPdesk.entryDate
-        description: ''
-        type: Date
-      - contextPath: TOPdesk.operator.id
-        description: ''
-        type: String
-      - contextPath: TOPdesk.operator.name
-        description: ''
-        type: String
-      - contextPath: TOPdesk.person
-        description: ''
-        type: Unknown
-  dockerimage: demisto/python3:3.8.6.13358
+    - contextPath: TOPdesk.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.fileName
+      description: ''
+      type: String
+    - contextPath: TOPdesk.downloadUrl
+      description: ''
+      type: String
+    - contextPath: TOPdesk.size
+      description: ''
+      type: Number
+    - contextPath: TOPdesk.description
+      description: ''
+      type: String
+    - contextPath: TOPdesk.invisibleForCaller
+      description: ''
+      type: Boolean
+    - contextPath: TOPdesk.entryDate
+      description: ''
+      type: Date
+    - contextPath: TOPdesk.operator.id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.operator.name
+      description: ''
+      type: String
+    - contextPath: TOPdesk.person
+      description: ''
+      type: Unknown
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -5828,3 +5873,5 @@ script:
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

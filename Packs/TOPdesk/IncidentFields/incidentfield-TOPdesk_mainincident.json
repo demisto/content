@@ -1,9 +1,9 @@
 {
- "id": "incident_topdeskcallername",
+ "id": "incident_topdeskmainincident",
  "version": -1,
- "name": "TOPdesk Caller Name",
+ "name": "TOPdesk MainIncident",
  "ownerOnly": false,
- "cliName": "topdeskcallername",
+ "cliName": "topdeskmainincident",
  "type": "shortText",
  "closeForm": false,
  "editForm": true,
