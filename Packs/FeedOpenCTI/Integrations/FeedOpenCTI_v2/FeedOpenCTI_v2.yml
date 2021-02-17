@@ -254,7 +254,7 @@ script:
       - HostName
       - IPV4-Addr
       - IPV6-Addr
-      - Registry-Key-Value
+      - RegistryKeyValue
       - URL
       required: true
       secret: false
