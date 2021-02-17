@@ -91,10 +91,10 @@ script:
       name: vector2
       required: true
     description: Returns the list of the attack results\nhave optional parameters
-      for pagination and filtration. \nExample Command:\n !PICUS-Attack-Result-List
+      for pagination and filtration. \nExample Command:\n !picus-attack-result-list
       attack_result=insecure begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1
       vector2=Untrusted-Peer1
-    name: Picus-Attack-Result-List
+    name: picus-attack-result-list
   - arguments:
     - description: CVE code of the threat to be filtered
       name: cve
