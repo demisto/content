@@ -1,7 +1,6 @@
 {
   "id": "incident_topdeskurgency",
-  "version": 1,
-  "modified": "2021-02-10T13:37:42.530245+02:00",
+  "version": -1,
   "sortValues": null,
   "packID": "",
   "itemVersion": "",
@@ -35,9 +34,11 @@
   "group": 0,
   "mergeStrategy": "",
   "hidden": false,
-  "associatedTypes": null,
+  "associatedTypes": [
+    "TOPdesk Incident"
+  ],
   "systemAssociatedTypes": null,
-  "associatedToAll": true,
+  "associatedToAll": false,
   "unmapped": false,
   "unsearchable": false,
   "caseInsensitive": true,

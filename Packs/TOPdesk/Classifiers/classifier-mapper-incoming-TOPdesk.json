@@ -11,15 +11,11 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 3,
+	"logicalVersion": 7,
 	"mapping": {
 		"TOPdesk Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"TOPdesk Incident Number": {
-					"complex": null,
-					"simple": "number"
-				},
 				"TOPdesk Call Type": {
 					"complex": null,
 					"simple": "callType.name"
@@ -45,8 +41,35 @@
 					"simple": "category.name"
 				},
 				"TOPdesk Creation Date": {
-					"complex": null,
-					"simple": "creationDate"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "creationDate",
+						"transformers": [
+							{
+								"args": {
+									"add_utc_timezone": {
+										"isContext": false,
+										"value": null
+									},
+									"dayfirst": {
+										"isContext": false,
+										"value": null
+									},
+									"fuzzy": {
+										"isContext": false,
+										"value": null
+									},
+									"yearfirst": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "DateStringToISOFormat"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"TOPdesk Creator": {
 					"complex": null,
@@ -68,17 +91,60 @@
 					"complex": null,
 					"simple": "number"
 				},
+				"TOPdesk Line": {
+					"complex": null,
+					"simple": "status"
+				},
 				"TOPdesk Main Incident": {
 					"complex": null,
 					"simple": "mainIncident"
 				},
 				"TOPdesk Modification Date": {
-					"complex": null,
-					"simple": "modificationDate"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modificationDate",
+						"transformers": [
+							{
+								"args": {
+									"add_utc_timezone": {
+										"isContext": false,
+										"value": null
+									},
+									"dayfirst": {
+										"isContext": false,
+										"value": null
+									},
+									"fuzzy": {
+										"isContext": false,
+										"value": null
+									},
+									"yearfirst": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "DateStringToISOFormat"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"TOPdesk Modifier": {
 					"complex": null,
 					"simple": "modifier.name"
+				},
+				"TOPdesk Priority": {
+					"complex": null,
+					"simple": "priority.name"
+				},
+				"TOPdesk Processing Status": {
+					"complex": null,
+					"simple": "processingStatus.name"
+				},
+				"TOPdesk Progress Status": {
+					"complex": null,
+					"simple": "processingStatus.name"
 				},
 				"TOPdesk Subcategory": {
 					"complex": null,
@@ -87,6 +153,18 @@
 				"TOPdesk Urgency": {
 					"complex": null,
 					"simple": "urgency.name"
+				},
+				"Ticket Closed Date": {
+					"complex": null,
+					"simple": "closedDate"
+				},
+				"Ticket Number": {
+					"complex": null,
+					"simple": "number"
+				},
+				"Ticket Opened Date": {
+					"complex": null,
+					"simple": "creationDate"
 				}
 			}
 		}

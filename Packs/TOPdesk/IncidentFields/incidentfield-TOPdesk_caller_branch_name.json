@@ -35,9 +35,11 @@
   "group": 0,
   "mergeStrategy": "",
   "hidden": false,
-  "associatedTypes": null,
+			"associatedTypes": [
+				"TOPdesk Incident"
+			],
   "systemAssociatedTypes": null,
-  "associatedToAll": true,
+  "associatedToAll": false,
   "unmapped": false,
   "unsearchable": false,
   "caseInsensitive": true,
