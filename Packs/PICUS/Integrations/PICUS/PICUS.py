@@ -844,7 +844,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         LOG('Command being called is {command}'.format(command=demisto.command()))
-        if demisto.command() == 'Picus-GetAccessToken':
+        if demisto.command() == 'picus-get-access-token':
             getAccessToken()
         elif demisto.command() == 'Picus-Vector-Compare':  # Makes a comparison of the given vector's results
             token = getAccessToken()
