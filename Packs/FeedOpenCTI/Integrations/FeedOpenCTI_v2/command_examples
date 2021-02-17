@@ -4,5 +4,5 @@
 !opencti-indicator-field-update id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd key=description value="update test"
 !opencti-indicator-field-remove key=marking value=TLP:GREEN id=85b04cf3-d608-4a1f-8e55-d6d732e82749
 !opencti-indicator-field-add value=new-label id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd key=label
-!opencti-organization-list
+!opencti-organization-list limit=3
 !opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"

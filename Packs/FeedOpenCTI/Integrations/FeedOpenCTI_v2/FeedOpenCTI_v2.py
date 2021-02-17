@@ -20,7 +20,7 @@ XSOHR_TYPES_TO_OPENCTI = {
     'hostname': "X-OpenCTI-Hostname",
     'ipv4-addr': "IPv4-Addr",
     'ipv6-addr': "IPv6-Addr",
-    'registry-key-value': "Registry Key",
+    'registry-key-value': "Windows-Registry-Key",
     'url': "Url"
 }
 OPENCTI_TYPES_TO_XSOAR = {
@@ -31,7 +31,7 @@ OPENCTI_TYPES_TO_XSOAR = {
     "X-OpenCTI-Hostname": 'HostName',
     "IPv4-Addr": 'IPV4-Addr',
     "IPv6-Addr": 'IPV6-Addr',
-    "Registry Key": 'Registry-Key-Value',
+    "Windows-Registry-Key": 'Registry-Key-Value',
     "Url": 'URL'
 }
 KEY_TO_CTI_NAME = {
@@ -240,7 +240,6 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
 
     description = args.get("description")
     score = int(args.get("score", '50'))
-    # TODO: how user will know what to write at data - add documentation
     data = {}
     try:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore

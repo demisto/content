@@ -311,7 +311,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: Indicator data - json.
+      description: "Indicator data - json. Mandatory Data fields are: value - value\
+        \ of the indicator. Mandatory for the following types: Domain, Email-Address,\
+        \ IPV4-Addr, IPV6-Addr, URL, HostName. For file-md5, file-sha1, file-sha256\
+        \ data argument should contain hashes, and size keys. For User-Account type\
+        \ data should contain user_id. Registry-Key-Value data json should contain\
+        \ key \"key\"."
       isArray: false
       name: data
       required: false
@@ -340,18 +345,20 @@ script:
       isArray: false
       name: key
       predefined:
-        - marking
-        - label
+      - marking
+      - label
       required: true
       secret: false
     - default: false
-      description: "Value of the key to add. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
+      description: "Value of the key to add. For marking available values are TLP:RED,\
+        \ TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
       isArray: false
       name: value
       required: true
       secret: false
     deprecated: false
-    description: Add field to indicator. Avalible fields to add - marking defenition, label.
+    description: Add field to indicator. Avalible fields to add - marking defenition,
+      label.
     execution: false
     name: opencti-indicator-field-add
   - arguments:
@@ -367,18 +374,20 @@ script:
       isArray: false
       name: key
       predefined:
-        - marking
-        - label
+      - marking
+      - label
       required: true
       secret: false
     - default: false
-      description: "Value of the key to remove. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
+      description: "Value of the key to remove. For marking available values are TLP:RED,\
+        \ TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
       isArray: false
       name: value
       required: true
       secret: false
     deprecated: false
-    description: Remove field from indicator. Avalible fields to remove - marking defenition, label.
+    description: Remove field from indicator. Avalible fields to remove - marking
+      defenition, label.
     execution: false
     name: opencti-indicator-field-remove
   - arguments:
