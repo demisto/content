@@ -336,9 +336,10 @@ def get_header_value(email_headers, header_name, index=0, ignore_case=False):
     if ignore_case:
         header_name = header_name.lower()
         headers_with_name = [header_dict for header_dict in email_headers if
-                             header_dict['headername'].lower() == header_name]
+                             'headername' in header_dict and header_dict['headername'].lower() == header_name]
     else:
-        headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'] == header_name]
+        headers_with_name = [header_dict for header_dict in email_headers if
+                             'headername' in header_dict and header_dict['headername'] == header_name]
     if len(headers_with_name) == 0:
         return None
     else:
@@ -594,7 +595,8 @@ def extract_features_from_incident(row, label_fields):
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
     email_html = row[EMAIL_HTML_FIELD] if EMAIL_HTML_FIELD in row and isinstance(row[EMAIL_HTML_FIELD], str) else ''
-    email_headers = row[EMAIL_HEADERS_FIELD] if EMAIL_HEADERS_FIELD in row else {}
+    email_headers = row[EMAIL_HEADERS_FIELD] if EMAIL_HEADERS_FIELD in row and \
+                                                isinstance(row[EMAIL_HEADERS_FIELD], list) else []
     email_attachments = row[EMAIL_ATTACHMENT_FIELD] if EMAIL_ATTACHMENT_FIELD in row else []
     email_attachments = email_attachments if email_attachments is not None else []
     if isinstance(email_html, float):
