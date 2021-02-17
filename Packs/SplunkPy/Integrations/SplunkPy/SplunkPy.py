@@ -574,7 +574,7 @@ def fetch_incidents(service):
     for item in reader:
         inc = notable_to_incident(item)
         extensive_log('Incident data after parsing to notable: {}'.format(inc))
-        incident_id = create_incident_id(inc)
+        incident_id = create_incident_custom_id(inc)
 
         if incident_id not in last_run_fetched_ids:
             last_run_fetched_ids[incident_id] = current_epoch_time
