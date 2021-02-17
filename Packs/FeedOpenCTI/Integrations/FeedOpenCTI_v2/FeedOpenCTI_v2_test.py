@@ -104,14 +104,14 @@ def test_indicator_delete_command(mocker):
     assert "Indicator deleted" in results.readable_output
 
 
-@pytest.mark.parametrize(argnames="key, value",
+@pytest.mark.parametrize(argnames="field, value",
                          argvalues=[('score', '50'),
                                     ('description', 'new description')])
-def test_indicator_field_update_command(mocker, key, value):
+def test_indicator_field_update_command(mocker, field, value):
     """Tests indicator_field_update_command function
     Given
         id of indicator to update
-        key to update
+        field to update
         value to update
     When
         - Calling `indicator_field_update_command`
@@ -121,7 +121,7 @@ def test_indicator_field_update_command(mocker, key, value):
     client = Client
     args = {
         'id': '123456',
-        'key': key,
+        'field': field,
         'value': value
     }
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
@@ -153,14 +153,14 @@ def test_indicator_create_command(mocker):
     assert 'id' in results.outputs
 
 
-@pytest.mark.parametrize(argnames="key, value, mock_obj_name, function_name",
+@pytest.mark.parametrize(argnames="field, value, mock_obj_name, function_name",
                          argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'add_marking_definition'),
                                     ('label', 'new-label', 'Label', 'add_label')])
-def test_indicator_field_add_command(mocker, key, value, mock_obj_name, function_name):
+def test_indicator_field_add_command(mocker, field, value, mock_obj_name, function_name):
     """Tests indicator_field_add_command function
         Given
             id of indicator to add
-            key to add
+            field to add
             value to add
         When
             - Calling `indicator_field_add_command`
@@ -170,7 +170,7 @@ def test_indicator_field_add_command(mocker, key, value, mock_obj_name, function
     client = Client
     args = {
         'id': '123456',
-        'key': key,
+        'field': field,
         'value': value
     }
 
@@ -183,14 +183,14 @@ def test_indicator_field_add_command(mocker, key, value, mock_obj_name, function
     assert "successfully" in results.readable_output
 
 
-@pytest.mark.parametrize(argnames="key, value, mock_obj_name, function_name",
+@pytest.mark.parametrize(argnames="field, value, mock_obj_name, function_name",
                          argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'remove_marking_definition'),
                                     ('label', 'new-label', 'Label', 'remove_label')])
-def test_indicator_field_remove_command(mocker, key, value, mock_obj_name, function_name):
+def test_indicator_field_remove_command(mocker, field, value, mock_obj_name, function_name):
     """Tests indicator_field_remove_command function
     Given
         id of indicator to remove
-        key to remove
+        field to remove
         value to remove
     When
         - Calling `indicator_field_remove_command`
@@ -200,7 +200,7 @@ def test_indicator_field_remove_command(mocker, key, value, mock_obj_name, funct
     client = Client
     args = {
         'id': '123456',
-        'key': key,
+        'field': field,
         'value': value
     }
 

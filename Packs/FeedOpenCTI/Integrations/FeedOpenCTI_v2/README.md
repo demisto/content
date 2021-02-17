@@ -1,5 +1,5 @@
 Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances.
-This integration was integrated and tested with version v4.0.7 of OpenCTI.
+This integration was integrated and tested with version xx of OpenCTI Feed v2
 ## Configure OpenCTI Feed v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -143,7 +143,7 @@ Delete indicator.
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-delete id=79415af7-e23a-480a-9093-d2d0965db26b```
+```!opencti-indicator-delete id=2fdd419e-3a22-4a28-9876-3de6bebd4075```
 
 #### Human Readable Output
 
@@ -162,8 +162,8 @@ Update indicator field. Available fields to update - score, description.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Indicator ID. | Required | 
-| key | Indicator key to update. Possible values are: score, description. | Required | 
-| value | Value of the key to update. | Required | 
+| field | Indicator field to update. Possible values are: score, description. | Required | 
+| value | Value of the field to update. | Required | 
 
 
 #### Context Output
@@ -174,7 +174,7 @@ Update indicator field. Available fields to update - score, description.
 
 
 #### Command Example
-```!opencti-indicator-field-update id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd key=description value="update test"```
+```!opencti-indicator-field-update id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd field=description value="update test"```
 
 #### Context Example
 ```json
@@ -257,8 +257,8 @@ Add field to indicator. Avalible fields to add - marking defenition, label.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Indicator ID. | Required | 
-| key | Indicator key to update. Possible values are: marking, label. | Required | 
-| value | Value of the key to add. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name. | Required | 
+| field | Indicator field to add. Possible values are: marking, label. | Required | 
+| value | Value of the field to add. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. Indicator can have up to 1 marking. For label, enter label name. | Required | 
 
 
 #### Context Output
@@ -266,7 +266,7 @@ Add field to indicator. Avalible fields to add - marking defenition, label.
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-field-add value=new-label id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd key=label```
+```!opencti-indicator-field-add value=new-label id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd field=label```
 
 #### Human Readable Output
 
@@ -285,8 +285,8 @@ Remove field from indicator. Avalible fields to remove - marking defenition, lab
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Indicator ID. | Required | 
-| key | Indicator key to update. Possible values are: marking, label. | Required | 
-| value | Value of the key to remove. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name. | Required | 
+| field | Indicator field to update. Possible values are: marking, label. | Required | 
+| value | Value of the field to remove. For marking available values are TLP:RED, TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name. | Required | 
 
 
 #### Context Output
@@ -294,7 +294,7 @@ Remove field from indicator. Avalible fields to remove - marking defenition, lab
 There is no context output for this command.
 
 #### Command Example
-```!opencti-indicator-field-remove key=marking value=TLP:GREEN id=85b04cf3-d608-4a1f-8e55-d6d732e82749```
+```!opencti-indicator-field-remove field=marking value=TLP:GREEN id=85b04cf3-d608-4a1f-8e55-d6d732e82749```
 
 #### Human Readable Output
 

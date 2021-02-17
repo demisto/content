@@ -50,7 +50,7 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
     if 'ALL' in indicator_list:
         # Replaces "ALL" for all types supported on XSOAR.
         result = ['User-Account', 'Domain-Name', 'Email-Addr', 'StixFile', 'X-OpenCTI-Hostname', 'IPv4-Addr',
-                  'IPv6-Addr', 'Registry Key', 'Url']
+                  'IPv6-Addr', 'Windows-Registry-Key', 'Url']
         # Checks for additional types not supported by XSOAR, and adds them.
         for indicator in indicator_list:
             if not XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), ''):
@@ -187,7 +187,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
         """
     indicator_id = args.get("id")
     # works only with score and description
-    key = KEY_TO_CTI_NAME[args.get("key")]  # type: ignore
+    key = KEY_TO_CTI_NAME[args.get("field")]  # type: ignore
     value = args.get("value")
     result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
 
@@ -283,7 +283,7 @@ def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
         """
     indicator_id = args.get("id")
     # works only with marking and label
-    key = args.get("key")
+    key = args.get("field")
     value = args.get("value")
     result = {}
 
@@ -317,7 +317,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
         """
     indicator_id = args.get("id")
     # works only with marking and label
-    key = args.get("key")
+    key = args.get("field")
     value = args.get("value")
     result = {}
 

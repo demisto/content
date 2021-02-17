@@ -213,16 +213,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicator key to update.
+      description: Indicator field to update.
       isArray: false
-      name: key
+      name: field
       predefined:
       - score
       - description
       required: true
       secret: false
     - default: false
-      description: Value of the key to update.
+      description: Value of the field to update.
       isArray: false
       name: value
       required: true
@@ -341,17 +341,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicator key to update.
+      description: Indicator field to add.
       isArray: false
-      name: key
+      name: field
       predefined:
       - marking
       - label
       required: true
       secret: false
     - default: false
-      description: "Value of the key to add. For marking available values are TLP:RED,\
-        \ TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
+      description: "Value of the field to add. For marking available values are TLP:RED,\
+        \ TLP:WHITE, TLP:GREEN, TLP:AMBER. Indicator can have up to 1 marking. For label, enter label name."
       isArray: false
       name: value
       required: true
@@ -370,16 +370,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Indicator key to update.
+      description: Indicator field to update.
       isArray: false
-      name: key
+      name: field
       predefined:
       - marking
       - label
       required: true
       secret: false
     - default: false
-      description: "Value of the key to remove. For marking available values are TLP:RED,\
+      description: "Value of the field to remove. For marking available values are TLP:RED,\
         \ TLP:WHITE, TLP:GREEN, TLP:AMBER. For label, enter label name."
       isArray: false
       name: value

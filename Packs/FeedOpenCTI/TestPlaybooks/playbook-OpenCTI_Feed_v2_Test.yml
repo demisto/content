@@ -183,7 +183,7 @@ tasks:
     scriptarguments:
       id:
         simple: ${OpenCTI.Indicator.id}
-      key:
+      field:
         simple: score
       value:
         simple: "10"
@@ -365,7 +365,7 @@ tasks:
     scriptarguments:
       id:
         simple: ${OpenCTI.Indicator.id}
-      key:
+      field:
         simple: marking
       value:
         simple: TLP:GREEN
@@ -402,7 +402,7 @@ tasks:
     scriptarguments:
       id:
         simple: ${OpenCTI.Indicator.id}
-      key:
+      field:
         simple: label
       value:
         simple: test1
