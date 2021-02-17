@@ -144,7 +144,7 @@ script:
   - arguments: []
     description: Triggers the update mechanism manually, returns if the update-command
       is taken successfully
-    name: Picus-Trigger-Update
+    name: picus-trigger-update
   - arguments: []
     description: Returns the current version and the update time config
     name: Picus-Version
