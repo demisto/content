@@ -43,7 +43,7 @@ script:
     execution: false
     name: msgraph-apps-auth-test
   - deprecated: false
-    description: Retrieves a list of service principals.
+    description: Retrieves a list of applications.
     execution: false
     name: msgraph-apps-service-principal-list
     arguments:
@@ -56,7 +56,7 @@ script:
       secret: false
     outputs:
     - contextPath: MSGraphApplication.accountEnabled
-      description: 'true if the service principal account is enabled; otherwise, false.'
+      description: 'true if the application account is enabled; otherwise, false.'
       type: Boolean
     - contextPath: MSGraphApplication.appDescription
       description: A brief description of the application.
@@ -91,13 +91,13 @@ script:
       description: A brief description of the application.
       type: String
     - contextPath: MSGraphApplication.displayName
-      description: The display name for the service principal.
+      description: The display name for the application.
       type: String
     - contextPath: MSGraphApplication.homepage
       description: Home page or landing page of the application.
       type: String
     - contextPath: MSGraphApplication.id
-      description: The unique identifier for the service principal.
+      description: The unique identifier for the application.
       type: String
     - contextPath: MSGraphApplication.info.logoUrl
       description: Content delivery network (CDN) URL to the application's logo.
@@ -124,7 +124,7 @@ script:
         service to log out an user.
       type: String
     - contextPath: MSGraphApplication.notes
-      description: Application's notes.
+      description: The application's notes.
       type: String
     - contextPath: MSGraphApplication.oauth2PermissionScopes.adminConsentDescription
       description: A description of the delegated permissions, intended to be read
@@ -197,7 +197,7 @@ script:
         account.
       type: String
     - contextPath: MSGraphApplication.verifiedPublisher.verifiedPublisherId
-      description: The ID of the verified publisher from the app publisher's Partner
+      description: The ID of the verified publisher from the application publisher's Partner
         Center account.
       type: String
   - deprecated: false
@@ -207,7 +207,7 @@ script:
     arguments:
     - name: id
       default: false
-      description: The ID of the service to remove. Can be retrieved via the msgraph-apps-service-principal-remove
+      description: The ID of the application to remove. Can be retrieved via the msgraph-apps-service-principal-remove
         command.
       isArray: false
       required: true
