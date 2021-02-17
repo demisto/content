@@ -44,7 +44,7 @@
             "relations": [
                 {
                     "id": "ip_address_1.1.1.1",
-                    "indicator": "210.140.10.110",
+                    "indicator": "1.1.1.1",
                     "type": "ip_address",
                     "created_date": 1532712929,
                     "last_valid_date": 1532712929
