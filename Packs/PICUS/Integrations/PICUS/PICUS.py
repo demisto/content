@@ -858,9 +858,6 @@ def main() -> None:
         elif demisto.command() == 'Picus-Peer-List':  # Returns the peer list with current statuses
             token = getAccessToken()
             demisto.results(peerList(token))
-        elif demisto.command() == 'Picus-EMail-Peer-List':  # Returns the E-Mail peer list with current statuses
-            token = getAccessToken()
-            demisto.results(eMailPeerList(token))
         elif demisto.command() == 'Picus-Attack-All-Vectors':  # Schedules given attack on all possible vectors
             token = getAccessToken()
             demisto.results(attackAllVectors(token))
@@ -873,9 +870,6 @@ def main() -> None:
         elif demisto.command() == 'Picus-Version':  # Returns the current version and the update time config
             token = getAccessToken()
             demisto.results(version(token))
-        elif demisto.command() == 'Picus-Threat-List':  # Returns the list of the threats\nhave optional parameters for pagination and filtration
-            token = getAccessToken()
-            demisto.results(threatList(token))
         elif demisto.command() == 'Picus-Mitigation-List':  # Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration, this route may not be used associated with your license
             token = getAccessToken()
             demisto.results(mitigationList(token))
