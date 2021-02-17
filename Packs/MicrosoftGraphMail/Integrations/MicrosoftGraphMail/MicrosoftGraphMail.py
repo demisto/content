@@ -115,7 +115,7 @@ class MsGraphClient:
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
-        response = self.ms_client.http_request('GET', suffix)
+        response = self.ms_client.http_request('GET', suffix, timeout=60)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
     def delete_mail(self, user_id: str, message_id: str, folder_id: str = None) -> bool:
