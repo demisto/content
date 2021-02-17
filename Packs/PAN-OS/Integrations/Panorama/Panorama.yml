@@ -1282,7 +1282,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a URL category from URL filtering.
+    description: Gets a URL category from URL filtering. This command is only available on Firewall devices.
     execution: false
     name: panorama-get-url-category
     outputs:
@@ -1354,7 +1354,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL filtering.
+    description: Returns a URL category from URL filtering. This command is only available on Firewall devices.
     execution: false
     name: panorama-get-url-category-from-cloud
     outputs:
@@ -1372,7 +1372,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL filtering.
+    description: Returns a URL category from URL filtering. This command is only available on Firewall devices.
     execution: false
     name: panorama-get-url-category-from-host
     outputs:
