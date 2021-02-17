@@ -164,13 +164,6 @@ script:
       - URL
       required: false
       secret: false
-    - default: false
-      description: The last ID from the previous call from which to begin pagination
-        for this call.
-      isArray: false
-      name: last_id
-      required: false
-      secret: false
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
@@ -388,7 +381,16 @@ script:
     description: Remove field from indicator. Avalible fields to remove - marking defenition, label.
     execution: false
     name: opencti-indicator-field-remove
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of organizations to return per fetch. The default
+        value is "50". Maximum value is "200".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get list of all organizations.
     execution: false
     name: opencti-organization-list

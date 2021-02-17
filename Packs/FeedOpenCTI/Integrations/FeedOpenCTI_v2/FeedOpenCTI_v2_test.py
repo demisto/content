@@ -224,7 +224,7 @@ def test_organization_list_command(mocker):
     """
     client = Client
     mocker.patch.object(client.identity, 'list', return_value=[{'id': '1', 'name': 'test organization'}])
-    results: CommandResults = organization_list_command(client)
+    results: CommandResults = organization_list_command(client, {})
     assert "Organizations from OpenCTI" in results.readable_output
     assert [{'id': '1', 'name': 'test organization'}] == results.outputs
 

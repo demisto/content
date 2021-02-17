@@ -132,11 +132,9 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         readable_output, raw_response
     """
     indicator_type = argToList(args.get("indicator_types"))
-
-    last_run_id = args.get('last_id')
     limit = int(args.get('limit', 50))
     limit = 200 if limit > 200 else limit
-    last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
+    last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit)
     if indicators_list:
         indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
                        'createdBy': indicator['rawJSON'].get('createdBy').get('id')
@@ -342,16 +340,18 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     return CommandResults(readable_output=readable_output)
 
 
-def organization_list_command(client) -> CommandResults:
+def organization_list_command(client, args) -> CommandResults:
     """ Get organizations list from opencti
 
         Args:
             client: OpenCTI Client object
+            args: demisto.args()
 
         Returns:
             readable_output, raw_response
         """
-    organizations_list = client.identity.list(types='Organization')
+    limit = int(args.get('limit', '50'))
+    organizations_list = client.identity.list(types='Organization', first=limit)
     if organizations_list:
         organizations = [
             {'name': organization['name'], 'id': organization['id']}
@@ -448,7 +448,7 @@ def main():
             return_results(indicator_field_remove_command(client, args))
 
         elif command == "opencti-organization-list":
-            return_results(organization_list_command(client))
+            return_results(organization_list_command(client, args))
 
         elif command == "opencti-organization-create":
             return_results(organization_create_command(client, args))
