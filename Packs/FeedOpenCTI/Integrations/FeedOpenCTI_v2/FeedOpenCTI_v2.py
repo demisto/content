@@ -178,7 +178,10 @@ def indicator_delete_command(client, args: dict) -> CommandResults:
             readable_output, raw_response
         """
     indicator_id = args.get("id")
-    client.stix_cyber_observable.delete(id=indicator_id)
+    try:
+        client.stix_cyber_observable.delete(id=indicator_id)
+    except Exception:
+        raise DemistoException("Can't delete indicator.")
     return CommandResults(readable_output='Indicator deleted.')
 
 
@@ -256,8 +259,8 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
     simple_observable_key = None
     simple_observable_value = None
-    if 'file' in indicator_type.lower():
-        simple_observable_key = FILE_TYPES.get(indicator_type.lower(), indicator_type)
+    if 'file' in indicator_type.lower():  # type: ignore
+        simple_observable_key = FILE_TYPES.get(indicator_type.lower(), indicator_type) # type: ignore
         simple_observable_value = data.get('hash')
         if not simple_observable_value:
             raise DemistoException("Missing argument in data: hash")
@@ -277,7 +280,6 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
         sys.stdout = old_stdout
     except KeyError as e:
         raise DemistoException(f'Missing argument at data {e}')
-
 
     if id := result.get('id'):
         readable_output = f'Indicator created successfully. New Indicator id: {id}'
