@@ -782,7 +782,7 @@ def get_report(task_id):
     try:
         # according to the any-run documentation, this request should work:
         # https://any.run/api-documentation/#api-Analysis-GetReport
-        url_suffix = 'analysis/' + task_id
+        url_suffix = f'analysis/{task_id}'
         response = http_request('GET', url_suffix=url_suffix)
     except DemistoException as exc:
         if exc.res and exc.res.status_code != 403:
