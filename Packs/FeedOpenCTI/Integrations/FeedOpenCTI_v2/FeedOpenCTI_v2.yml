@@ -315,7 +315,7 @@ script:
         \ of the indicator. Mandatory for the following types: Domain, Email-Address,\
         \ IPV4-Addr, IPV6-Addr, URL, HostName. For file-md5, file-sha1, file-sha256\
         \ data argument should contain hashes, and size keys. For User-Account type\
-        \ data should contain user_id. Registry-Key-Value data json should contain\
+        \ data should contain account_login. Registry-Key-Value data json should contain\
         \ key \"key\"."
       isArray: false
       name: data
@@ -445,7 +445,7 @@ script:
     - contextPath: OpenCTI.Organization.id
       description: New organization id.
       type: String
-  dockerimage: demisto/opencti-v4.1.2:1.0.0.16153
+  dockerimage: demisto/opencti-v4:1.0.0.16772
   feed: true
   isfetch: false
   longRunning: false

@@ -1,4 +1,6 @@
 from typing import List, Optional, Tuple
+from io import StringIO
+import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -244,28 +246,37 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     try:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
     except Exception:
-        return_error("Data argument type should be json")
+        raise DemistoException("Data argument type should be json")
 
     data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
     try:
-        result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
-                                                     createdBy=created_by, objectMarking=marking,
-                                                     objectLabel=label, externalReferences=external_references,
-                                                     simple_observable_description=description,
-                                                     x_opencti_score=score, observableData=data)
+        # cti code prints to stdout so we need to catch it.
+        old_stdout = sys.stdout
+        sys.stdout = StringIO()
+        result = client.stix_cyber_observable.create(
+            simple_observable_id=indicator_id, type=indicator_type,
+            createdBy=created_by, objectMarking=marking,
+            objectLabel=label, externalReferences=external_references,
+            simple_observable_description=description,
+            x_opencti_score=score, observableData=data
+        )
+        sys.stdout = old_stdout
     except Exception as e:
-        return_error(f'Missing argument at data {e}')
+        raise DemistoException(f'Missing argument at data {e}')
 
     if id := result.get('id'):
         readable_output = f'Indicator created successfully. New Indicator id: {id}'
+        outputs = {
+            'id': result.get('id'),
+            'data': data
+        }
     else:
-        return_error("Can't create indicator.")
+        raise DemistoException("Can't create indicator.")
 
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
         outputs_key_field='id',
-        outputs={'id': result.get('id'),
-                 'data': data},
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=result
     )
