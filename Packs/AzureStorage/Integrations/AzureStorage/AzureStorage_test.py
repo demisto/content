@@ -10,8 +10,23 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import json
 import io
+import json
+
+import pytest
+
+from AzureStorage import (ASClient, storage_account_list, storage_account_create_update,
+                          storage_blob_service_properties_get, storage_blob_service_properties_set)
+
+app_id = 'app_id'
+subscription_id = 'subscription_id'
+resource_group_name = 'resource_group_name'
+
+
+@pytest.fixture()
+def client(mocker):
+    mocker.patch('AzureStorage.MicrosoftClient.get_access_token', return_value='token')
+    return ASClient(app_id, subscription_id, resource_group_name, False, False)
 
 
 def util_load_json(path):
@@ -19,24 +34,125 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_storage_account_list(client, mocker):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given:
+        - AS Client
+        - An API response for storage account list
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    When:
+        - Running storage_account_list
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    Then:
+        - Verify result outputs
+        - Verify result readable outputs
+    """
+    api_response = util_load_json('./test_data/storage_account_list_response.json')
+    mocker.patch.object(ASClient, "storage_account_list_request", return_value=api_response)
+    result = storage_account_list(client=client, args={})
+    expected_hr = '### Azure Storage Account List\n' \
+                  '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| account_name_1 | subscription_id_1 | resource_group_name_1 | Storage | available |  | location1 ' \
+                  '|\n| account_name_2 | subscription_id_2 | resource_group_name_2 | Storage | available | available ' \
+                  '| location_2 |\n'
+    assert result.outputs == api_response.get('value')
+    assert result.readable_output == expected_hr
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_storage_account_single(client, mocker):
+    """
+    Given:
+        - AS Client
+        - An API response for single storage account
+
+    When:
+        - Running storage_account_list with a given account_name argument
+
+    Then:
+        - Verify result outputs
+        - Verify result readable outputs
+    """
+    api_response = util_load_json('test_data/storage_account_single_response.json')
+    mocker.patch.object(ASClient, "storage_account_list_request", return_value=api_response)
+    result = storage_account_list(client=client, args={'account_name': 'account_name'})
+    expected_hr = '### Azure Storage Account List\n' \
+                  '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
+                  '|---|---|---|---|---|---|---|\n| ' \
+                  'account_name | subscription_id | resource_group_name | Storage | available | available | eastus |\n'
+    assert result.outputs[0] == api_response
+    assert result.readable_output == expected_hr
+
+
+def test_storage_account_create_update(client, mocker):
+    """
+    Given:
+        - AS Client
+        - An API response for storage account create/update
+
+    When:
+        - Running storage_account_create_update with the required arguments
+
+    Then:
+        - Verify result outputs
+        - Verify result readable outputs
+    """
+    api_response = util_load_json('test_data/storage_account_single_response.json')
+    mocker.patch.object(ASClient, "storage_account_create_update_request", return_value=api_response)
+    result = storage_account_create_update(client=client, args={'account_name': 'account_name', "sku": "Standard_GRS",
+                                                                "kind": "Storage", "location": "eastus"})
+    expected_hr = '### Azure Storage Account\n' \
+                  '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| account_name | subscription_id | resource_group_name | Storage | available | available | eastus ' \
+                  '|\n'
+    assert result.outputs == api_response
+    assert result.readable_output == expected_hr
+
+
+def test_storage_blob_service_properties_get(client, mocker):
+    """
+    Given:
+        - AS Client
+        - An API response for get blob service properties
+
+    When:
+        - Running storage_blob_service_properties_get with a given account_name argument
+
+    Then:
+        - Verify result outputs
+        - Verify result readable outputs
+    """
+    api_response = util_load_json('test_data/blob_service_properties_get_response.json')
+    mocker.patch.object(ASClient, "storage_blob_service_properties_get_request", return_value=api_response)
+    result = storage_blob_service_properties_get(client=client, args={'account_name': 'account_name'})
+    expected_hr = '### Azure Storage Blob Service Properties\n' \
+                  '|Name|Subscription ID|Resource Group|\n' \
+                  '|---|---|---|\n' \
+                  '| default | subscription_id | resource_group_name |\n'
+    assert result.outputs == api_response
+    assert result.readable_output == expected_hr
+
+
+def test_storage_blob_service_properties_set(client, mocker):
+    """
+    Given:
+        - AS Client
+        - An API response for set blob service properties
+
+    When:
+        - Running storage_blob_service_properties_set with a given account_name argument
+
+    Then:
+        - Verify result outputs
+        - Verify result readable outputs
+    """
+    api_response = util_load_json('test_data/blob_service_properties_set_response.json')
+    mocker.patch.object(ASClient, "storage_blob_service_properties_set_request", return_value=api_response)
+    result = storage_blob_service_properties_set(client=client, args={'account_name': 'yaakov'})
+    expected_hr = '### Azure Storage Blob Service Properties\n' \
+                  '|Name|Subscription ID|Resource Group|\n' \
+                  '|---|---|---|\n' \
+                  '| default | subscription_id | resource_group_name |\n'
+    assert result.outputs == api_response
+    assert result.readable_output == expected_hr
