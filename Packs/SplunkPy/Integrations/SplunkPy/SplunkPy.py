@@ -191,7 +191,7 @@ def notable_to_incident(event):
         if "Error in" in event.message:
             raise ValueError(event.message)
         else:
-            opt_in_log('\n\n message in notable_to_incident is: {}  \n\n'.format(convert_to_str(event.message)))
+            extensive_log('message in notable_to_incident is: {}'.format(convert_to_str(event.message)))
 
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
@@ -206,7 +206,7 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-        opt_in_log('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
+        extensive_log('\n\n occurred time in else: {} \n\n'.format(incident["occurred"]))
 
     event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
@@ -499,20 +499,20 @@ def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_i
     return next_run
 
 
-def create_incident_id(incident):
+def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
-    incident_id = incident_occurred + incident_raw_data
-    demisto.debug('length of incident new ID is: {}'.format(len(incident_id)))
-    return incident_id
+    incident_custom_id = incident_occurred + incident_raw_data
+    demisto.debug('length of incident new custom ID is: {}'.format(len(incident_custom_id)))
+    return incident_custom_id
 
 
-def opt_in_log(message):
+def extensive_log(message):
     if demisto.params().get('extensive_logs', False):
         demisto.info(message)
 
 
-def replace_dict_comprehension(last_run_fetched_ids, current_epoch_time):
+def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time):
     new_last_run_fetched_ids = {}
     for inc_id, time in last_run_fetched_ids.items():
         if current_epoch_time - time < 3600:
@@ -522,9 +522,11 @@ def replace_dict_comprehension(last_run_fetched_ids, current_epoch_time):
 
 
 def fetch_incidents(service):
-    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    opt_in_log('SplunkPy last run is:\n {}'.format(demisto.getLastRun()))
-    search_offset = demisto.getLastRun().get('offset', 0)
+    last_run_data = demisto.getLastRun()
+    last_run = last_run_data and last_run_data['time']
+    search_offset = last_run_data.get('offset', 0)
+
+    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
 
     incidents = []
     current_time_for_fetch = datetime.utcnow()
@@ -543,12 +545,12 @@ def fetch_incidents(service):
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        opt_in_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
+        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    opt_in_log('SplunkPy last run time: {}, now: {}'.format(last_run, now))
+    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run, now))
 
     kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
@@ -565,47 +567,47 @@ def fetch_incidents(service):
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
-    last_run_fetched_ids = demisto.getLastRun().get('found_incidents_ids', {})
+    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
     current_epoch_time = int(time.time())
 
     for item in reader:
         inc = notable_to_incident(item)
-        opt_in_log('Incident data after parsing to notable: {}'.format(inc))
+        extensive_log('Incident data after parsing to notable: {}'.format(inc))
         incident_id = create_incident_id(inc)
 
         if incident_id not in last_run_fetched_ids:
             last_run_fetched_ids[incident_id] = current_epoch_time
             incidents.append(inc)
         else:
-            opt_in_log('SplunkPy - Dropped incident due to duplication.')
+            extensive_log('SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
 
-    last_run_fetched_ids = replace_dict_comprehension(last_run_fetched_ids, current_epoch_time)
-    opt_in_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
+    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time)
+    extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
     debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
                     'query: {} is: {}.\n incidents found: {}'.format(last_run, now, searchquery_oneshot,
                                                                      len(incidents), incidents)
-    opt_in_log(debug_message)
+    extensive_log(debug_message)
 
-    fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
+    fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
 
     demisto.incidents(incidents)
-    opt_in_log('SplunkPy - Found incidents at the end of this run: {}'.format(last_run_fetched_ids))
+    extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, False)
-        opt_in_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
+        extensive_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
         demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
                             'fetch_start_update_count': fetches_with_same_start_time_count})
     elif len(incidents) < FETCH_LIMIT:
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count)
-        opt_in_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
+        extensive_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
         demisto.setLastRun(
             {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
              'fetch_start_update_count': 0})
     else:
-        opt_in_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run))
+        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run))
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
                             'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_ids})
 

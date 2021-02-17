@@ -106,6 +106,7 @@ configuration:
   type: 8
 - defaultvalue: source
   display: Event Type Field
+  hidden: false
   name: type_field
   required: false
   type: 0
@@ -657,6 +658,7 @@ script:
   isfetch: true
   runonce: false
   script: '-'
+  subtype: python2
   type: python
 tests:
 - SplunkPy-Test-V2
