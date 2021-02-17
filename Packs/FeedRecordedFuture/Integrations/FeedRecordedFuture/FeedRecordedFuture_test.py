@@ -32,49 +32,49 @@ def test_get_indicator_type(indicator_type, csv_item, answer):
 
 
 build_iterator_answer_domain = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_domain_glob = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '*domaintools.com',
         'Risk': '92',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_ip = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '192.168.1.1',
         'Risk': '50',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_hash = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '52483514f07eb14570142f6927b77deb7b4da99f',
         'Algorithm': 'SHA-1',
         'Risk': '0',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_url = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'www.securityadvisor.io',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 GET_INDICATOR_INPUTS = [
@@ -131,7 +131,7 @@ def test_fetch_indicators_command(mocker):
     client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
     mocker.patch(
         'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
+        return_value=[[{'Name': '192.168.1.1'}]]
     )
     fetch_indicators_command(client, indicator_type)
 
@@ -149,7 +149,7 @@ def test_feed_tags(mocker, tags):
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
     mocker.patch(
         'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
+        return_value=[[{'Name': '192.168.1.1'}]]
     )
     indicators = fetch_indicators_command(client, 'ip')
     assert tags == indicators[0]['fields']['tags']

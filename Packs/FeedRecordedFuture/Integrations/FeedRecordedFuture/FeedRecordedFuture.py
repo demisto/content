@@ -5,7 +5,6 @@ from CommonServerPython import *
 import urllib3
 import csv
 import requests
-import itertools
 import traceback
 import urllib.parse
 from typing import Tuple, Optional, List, Dict
@@ -156,7 +155,7 @@ class Client(BaseClient):
             with open("response.txt", "w") as f:
                 f.write(response.text)
 
-        file_stream = gzip.open(response, 'rt')
+        file_stream = open("response.txt", 'rt')
 
         while True:
             # Creating feeds batch
@@ -164,7 +163,7 @@ class Client(BaseClient):
 
             if not feed_batch:
                 file_stream.close()
-                os.remove(response)
+                os.remove("response.txt")
                 return
 
             yield csv.DictReader(feed_batch)
@@ -274,6 +273,8 @@ def ip_to_indicator_type(ip):
     :rtype: ``str``
     :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
     """
+    ip = str(ip)
+
     if re.match(ipv4cidrRegex, ip):
         return FeedIndicatorType.CIDR
 
