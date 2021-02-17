@@ -216,6 +216,30 @@ script:
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
+  - arguments:
+    - default: false
+      description: Name of the collection to query.
+      isArray: false
+      name: collection
+      required: true
+      secret: false
+    - default: false
+      description: 'A JSON pipeline query to search for in the collection.'
+      isArray: false
+      name: pipeline
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limits the result returned from MongoDB
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for items by the specified JSON pipeline query.
+    execution: true
+    name: mongodb-pipeline-query
   dockerimage: demisto/pymongo:1.0.0.12410
   feed: false
   isfetch: false

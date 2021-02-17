@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from CommonServerPython import *
 
 from json import JSONDecodeError
@@ -146,6 +148,12 @@ class Client:
 
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
+
+    def pipeline_query(self, collection, pipeline):
+        collection_obj = self.get_collection(collection)
+        entries = collection_obj.aggregate(pipeline)
+        entries = [self.normalize_id(entry) for entry in entries]
+        return entries
 
 
 def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
@@ -433,16 +441,17 @@ def drop_collection_command(
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None
 
 
-def pipeline_query_command(client: Client, collection: str, pipeline: str, **kwargs) -> Tuple[str, None]:
+def pipeline_query_command(client: Client, collection: str, pipeline: str, **kwargs):
     try:
         json_pipeline = json.loads(pipeline)
     except JSONDecodeError:
         raise DemistoException('The `pipeline` argument is not a valid json.')
-    collection_obj = client.get_collection(collection)
-    results = collection_obj.aggregate(json_pipeline)
-    if not results:
-        raise DemistoException('Error occurred when trying to enter delete entries.')
-    return f'ans', None
+    raw_result = client.pipeline_query(collection=collection, pipeline=pipeline)
+    # if not results:
+
+    for movie in raw_result:
+        pprint(movie)
+    return None, None
 
 
 def main():
