@@ -254,7 +254,7 @@ script:
       - HostName
       - IPV4-Addr
       - IPV6-Addr
-      - RegistryKeyValue
+      - Registry-Key-Value
       - URL
       required: true
       secret: false
@@ -445,7 +445,7 @@ script:
     - contextPath: OpenCTI.Organization.id
       description: New organization id.
       type: String
-  dockerimage: demisto/opencti-v4.1.2:1.0.0.16153
+  dockerimage: opencti-v4:1.0.0.16772
   feed: true
   isfetch: false
   longRunning: false

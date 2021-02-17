@@ -20,7 +20,7 @@ XSOHR_TYPES_TO_OPENCTI = {
     'hostname': "X-OpenCTI-Hostname",
     'ipv4-addr': "IPv4-Addr",
     'ipv6-addr': "IPv6-Addr",
-    'registrykeyvalue': "Windows-Registry-Key",
+    'registry-key-value': "Windows-Registry-Key",
     'url': "Url"
 }
 OPENCTI_TYPES_TO_XSOAR = {
