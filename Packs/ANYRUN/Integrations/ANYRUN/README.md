@@ -24,6 +24,8 @@ ANY.RUN is a cloud-based sanbox with interactive access.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+The commands allow you to launch and download only your own tasks, public submissions are not available at this point.
+
 ### anyrun-get-history
 ***
 Get analysis history.
