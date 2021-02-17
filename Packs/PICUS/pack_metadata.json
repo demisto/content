@@ -1,6 +1,6 @@
 {
     "name": "PICUS",
-    "description": "Hi,\n\nPicus is Breach and Attack Simulation tools that inside in our company(and lot of company). I developed integration between this tool and Demisto.\n",
+    "description": "Hi,\n\nPicus is Breach and Attack Simulation tools that inside in our company(and lot of company). I developed integration between this tool and XSOAR.\n",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Murat Ozfidan",
