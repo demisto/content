@@ -23,7 +23,7 @@ XSOHR_TYPES_TO_CROWDSTRIKE = {
 CROWDSTRIKE_TO_XSOHR_TYPES = {
     'username': 'User-Account',
     'domain': 'Domain',
-    'email-address': 'Email_Address',
+    'email_address': 'Email-Address',
     'hash_md5': 'File-MD5',
     'hash_sha256': 'File-SHA256',
     'registry': 'Registry-Key-Value',
@@ -160,21 +160,20 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
         readable_output, raw_response
     """
     include_deleted = argToBoolean(args.get('include_deleted', False))
-    type = argToList(args.get('type'))
+    type_ = argToList(args.get('type'))
     malicious_confidence = args.get('malicious_confidence')
     filter = args.get('filter')
     q = args.get('generic_phrase_match')
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 50))
 
-    raw_response = client.get_indicators(type=type, malicious_confidence=malicious_confidence, filter=filter, q=q,
+    raw_response = client.get_indicators(type=type_, malicious_confidence=malicious_confidence, filter=filter, q=q,
                                          limit=limit, offset=offset, include_deleted=include_deleted,
                                          get_indicators_command=True)
     indicators_list = raw_response.get('resources')
     if outputs := copy.deepcopy(indicators_list):
         for indicator in outputs:
-            xsoar_type: str = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator['type'], indicator['type'])
-            indicator['type']: str = xsoar_type,
+            indicator['type'] = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator['type'], indicator['type'])
             indicator['published_date'] = timestamp_to_datestring(indicator['published_date'])
             indicator['last_updated'] = timestamp_to_datestring(indicator['last_updated'])
             indicator['value'] = indicator['indicator']

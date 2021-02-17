@@ -55,7 +55,6 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -65,7 +64,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -87,9 +85,9 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: 'When selected, the exclusion list is ignored for indicators from this
-  feed. This means that if an indicator from this feed is on the exclusion list, the
-  indicator might still be added to the system.'
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -220,6 +218,52 @@ script:
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-indicators-list
+    outputs:
+    - contextPath: CrowdStrikeFalconIntel.Indicators.id
+      description: Indicator ID.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.value
+      description: Indicator value.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.type
+      description: Indicator type.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.deleted
+      description: If the indicator deleted, deleted set true.
+      type: Boolean
+    - contextPath: CrowdStrikeFalconIntel.Indicators.published_date
+      description: Indicator published date.
+      type: Date
+    - contextPath: CrowdStrikeFalconIntel.Indicators.last_updated
+      description: Indicator last updated date.
+      type: Date
+    - contextPath: CrowdStrikeFalconIntel.Indicators.reports
+      description: Indicator reports.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.actors
+      description: Actors related to indicator.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.malware_families
+      description: Indicator malware families.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.kill_chains
+      description: Indicator kill chains.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.malicious_confidence
+      description: Indicator malicious confidence.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.labels
+      description: Indicator labels.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.targets
+      description: Targets of indicator.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.threat_types
+      description: Indicator threat types.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.vulnerabilities
+      description: Indicator vulnerabilities.
+      type: Unknown
   dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
