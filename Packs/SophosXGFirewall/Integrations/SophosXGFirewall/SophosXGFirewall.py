@@ -78,7 +78,7 @@ class Client(BaseClient):
         response = self._http_request(method=request_method,
                                       url_suffix='/webconsole/APIController',
                                       params=self.request_builder(self._auth, xml_method, data,
-                                                                  operation),
+                                                                  operation),  # type: ignore
                                       resp_type='Response')
         return response
 
@@ -160,7 +160,7 @@ def sophos_firewall_rule_list_command(client: Client, start: int, end: int) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **RULE)
+    return generic_list(client, start, end, **RULE)  # type: ignore
 
 
 def sophos_firewall_rule_get_command(client: Client, name: str) -> CommandResults:
@@ -173,7 +173,7 @@ def sophos_firewall_rule_get_command(client: Client, name: str) -> CommandResult
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **RULE)
+    return generic_get(client, name, **RULE)  # type: ignore
 
 
 def sophos_firewall_rule_add_command(client: Client, params: dict) -> CommandResults:
@@ -186,7 +186,8 @@ def sophos_firewall_rule_add_command(client: Client, params: dict) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE['endpoint_tag'], params, rule_builder, RULE['table_headers'])
+    return generic_save_and_get(client, RULE['endpoint_tag'],  # type: ignore
+                                params, rule_builder, RULE['table_headers'])  # type: ignore
 
 
 def sophos_firewall_rule_update_command(client: Client, params: dict) -> CommandResults:
@@ -199,8 +200,8 @@ def sophos_firewall_rule_update_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE['endpoint_tag'], params, rule_builder, RULE['table_headers'],
-                                True)
+    return generic_save_and_get(client, RULE['endpoint_tag'], params, rule_builder,  # type: ignore
+                                RULE['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandResults:
@@ -213,7 +214,7 @@ def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, RULE['endpoint_tag'])
+    return generic_delete(client, name, RULE['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_rule_group_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -227,7 +228,7 @@ def sophos_firewall_rule_group_list_command(client: Client, start: int, end: int
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **RULE_GROUP)
+    return generic_list(client, start, end, **RULE_GROUP)  # type: ignore
 
 
 def sophos_firewall_rule_group_get_command(client: Client, name: str) -> CommandResults:
@@ -240,7 +241,7 @@ def sophos_firewall_rule_group_get_command(client: Client, name: str) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **RULE_GROUP)
+    return generic_get(client, name, **RULE_GROUP)  # type: ignore
 
 
 def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> CommandResults:
@@ -253,8 +254,8 @@ def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,
-                                RULE_GROUP['table_headers'])
+    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,  # type: ignore
+                                RULE_GROUP['table_headers'])  # type: ignore
 
 
 def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -267,8 +268,8 @@ def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,
-                                RULE_GROUP['table_headers'], True)
+    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,  # type: ignore
+                                RULE_GROUP['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -281,7 +282,7 @@ def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, RULE_GROUP['endpoint_tag'])
+    return generic_delete(client, name, RULE_GROUP['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_url_group_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -295,7 +296,7 @@ def sophos_firewall_url_group_list_command(client: Client, start: int, end: int)
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **URL_GROUP)
+    return generic_list(client, start, end, **URL_GROUP)  # type: ignore
 
 
 def sophos_firewall_url_group_get_command(client: Client, name: str) -> CommandResults:
@@ -308,7 +309,7 @@ def sophos_firewall_url_group_get_command(client: Client, name: str) -> CommandR
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **URL_GROUP)
+    return generic_get(client, name, **URL_GROUP)  # type: ignore
 
 
 def sophos_firewall_url_group_add_command(client: Client, params: dict) -> CommandResults:
@@ -321,8 +322,8 @@ def sophos_firewall_url_group_add_command(client: Client, params: dict) -> Comma
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,
-                                URL_GROUP['table_headers'])
+    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,  # type: ignore
+                                URL_GROUP['table_headers'])  # type: ignore
 
 
 def sophos_firewall_url_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -335,8 +336,8 @@ def sophos_firewall_url_group_update_command(client: Client, params: dict) -> Co
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,
-                                URL_GROUP['table_headers'], True)
+    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,  # type: ignore
+                                URL_GROUP['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_url_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -349,7 +350,7 @@ def sophos_firewall_url_group_delete_command(client: Client, name: str) -> Comma
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, URL_GROUP['endpoint_tag'])
+    return generic_delete(client, name, URL_GROUP['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_ip_host_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -363,7 +364,7 @@ def sophos_firewall_ip_host_list_command(client: Client, start: int, end: int) -
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **IP_HOST)
+    return generic_list(client, start, end, **IP_HOST)  # type: ignore
 
 
 def sophos_firewall_ip_host_get_command(client: Client, name: str) -> CommandResults:
@@ -376,7 +377,7 @@ def sophos_firewall_ip_host_get_command(client: Client, name: str) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **IP_HOST)
+    return generic_get(client, name, **IP_HOST)  # type: ignore
 
 
 def sophos_firewall_ip_host_add_command(client: Client, params: dict) -> CommandResults:
@@ -389,8 +390,8 @@ def sophos_firewall_ip_host_add_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,
-                                IP_HOST['table_headers'])
+    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,  # type: ignore
+                                IP_HOST['table_headers'])  # type: ignore
 
 
 def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> CommandResults:
@@ -403,8 +404,8 @@ def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,
-                                IP_HOST['table_headers'], True)
+    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,  # type: ignore
+                                IP_HOST['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> CommandResults:
@@ -417,7 +418,7 @@ def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, IP_HOST['endpoint_tag'])
+    return generic_delete(client, name, IP_HOST['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_ip_host_group_list_command(client: Client, start: int,
@@ -432,7 +433,7 @@ def sophos_firewall_ip_host_group_list_command(client: Client, start: int,
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **IP_HOST_GROUP)
+    return generic_list(client, start, end, **IP_HOST_GROUP)  # type: ignore
 
 
 def sophos_firewall_ip_host_group_get_command(client: Client, name: str) -> CommandResults:
@@ -445,7 +446,7 @@ def sophos_firewall_ip_host_group_get_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **IP_HOST_GROUP)
+    return generic_get(client, name, **IP_HOST_GROUP)  # type: ignore
 
 
 def sophos_firewall_ip_host_group_add_command(client: Client, params: dict) -> CommandResults:
@@ -458,8 +459,8 @@ def sophos_firewall_ip_host_group_add_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,
-                                IP_HOST_GROUP['table_headers'])
+    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,  # type: ignore
+                                IP_HOST_GROUP['table_headers'])  # type: ignore
 
 
 def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -472,8 +473,8 @@ def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,
-                                IP_HOST_GROUP['table_headers'], True)
+    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,  # type: ignore
+                                IP_HOST_GROUP['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -486,7 +487,7 @@ def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, IP_HOST_GROUP['endpoint_tag'])
+    return generic_delete(client, name, IP_HOST_GROUP['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_services_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -500,7 +501,7 @@ def sophos_firewall_services_list_command(client: Client, start: int, end: int) 
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **SERVICE)
+    return generic_list(client, start, end, **SERVICE)  # type: ignore
 
 
 def sophos_firewall_services_get_command(client: Client, name: str) -> CommandResults:
@@ -513,7 +514,7 @@ def sophos_firewall_services_get_command(client: Client, name: str) -> CommandRe
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **SERVICE)
+    return generic_get(client, name, **SERVICE)  # type: ignore
 
 
 def sophos_firewall_services_add_command(client: Client, params: dict) -> CommandResults:
@@ -526,8 +527,8 @@ def sophos_firewall_services_add_command(client: Client, params: dict) -> Comman
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,
-                                SERVICE['table_headers'])
+    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,  # type: ignore
+                                SERVICE['table_headers'])  # type: ignore
 
 
 def sophos_firewall_services_update_command(client: Client, params: dict) -> CommandResults:
@@ -540,8 +541,8 @@ def sophos_firewall_services_update_command(client: Client, params: dict) -> Com
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,
-                                SERVICE['table_headers'], True)
+    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,  # type: ignore
+                                SERVICE['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_services_delete_command(client: Client, name: str) -> CommandResults:
@@ -554,7 +555,7 @@ def sophos_firewall_services_delete_command(client: Client, name: str) -> Comman
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, SERVICE['endpoint_tag'])
+    return generic_delete(client, name, SERVICE['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_app_policy_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -568,7 +569,7 @@ def sophos_firewall_app_policy_list_command(client: Client, start: int, end: int
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **APP_POLICY)
+    return generic_list(client, start, end, **APP_POLICY)  # type: ignore
 
 
 def sophos_firewall_app_policy_get_command(client: Client, name: str) -> CommandResults:
@@ -581,7 +582,7 @@ def sophos_firewall_app_policy_get_command(client: Client, name: str) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **APP_POLICY)
+    return generic_get(client, name, **APP_POLICY)  # type: ignore
 
 
 def sophos_firewall_app_policy_add_command(client: Client, params: dict) -> CommandResults:
@@ -594,8 +595,8 @@ def sophos_firewall_app_policy_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,
-                                APP_POLICY['table_headers'])
+    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,  # type: ignore
+                                APP_POLICY['table_headers'])  # type: ignore
 
 
 def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> CommandResults:
@@ -608,8 +609,9 @@ def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,
-                                APP_POLICY['table_headers'], True)
+    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,  # type: ignore
+                                APP_POLICY['table_headers'], True)  # type: ignore
+
 
 def sophos_firewall_app_policy_delete_command(client: Client, name: str) -> CommandResults:
     """Delete object by name
@@ -621,7 +623,7 @@ def sophos_firewall_app_policy_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, APP_POLICY['endpoint_tag'])
+    return generic_delete(client, name, APP_POLICY['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_app_category_list_command(client: Client, start: int,
@@ -636,7 +638,7 @@ def sophos_firewall_app_category_list_command(client: Client, start: int,
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **APP_CATEGORY)
+    return generic_list(client, start, end, **APP_CATEGORY)  # type: ignore
 
 
 def sophos_firewall_app_category_get_command(client: Client, name: str) -> CommandResults:
@@ -649,7 +651,7 @@ def sophos_firewall_app_category_get_command(client: Client, name: str) -> Comma
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **APP_CATEGORY)
+    return generic_get(client, name, **APP_CATEGORY)  # type: ignore
 
 
 def sophos_firewall_app_category_update_command(client: Client, params: dict) -> CommandResults:
@@ -662,8 +664,8 @@ def sophos_firewall_app_category_update_command(client: Client, params: dict) ->
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_CATEGORY['endpoint_tag'], params, app_category_builder,
-                                APP_CATEGORY['table_headers'])
+    return generic_save_and_get(client, APP_CATEGORY['endpoint_tag'], params, app_category_builder,  # type: ignore
+                                APP_CATEGORY['table_headers'])  # type: ignore
 
 
 def sophos_firewall_web_filter_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -677,7 +679,7 @@ def sophos_firewall_web_filter_list_command(client: Client, start: int, end: int
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **WEB_FILTER)
+    return generic_list(client, start, end, **WEB_FILTER)  # type: ignore
 
 
 def sophos_firewall_web_filter_get_command(client: Client, name: str) -> CommandResults:
@@ -690,7 +692,7 @@ def sophos_firewall_web_filter_get_command(client: Client, name: str) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **WEB_FILTER)
+    return generic_get(client, name, **WEB_FILTER)  # type: ignore
 
 
 def sophos_firewall_web_filter_add_command(client: Client, params: dict) -> CommandResults:
@@ -703,8 +705,8 @@ def sophos_firewall_web_filter_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,
-                                WEB_FILTER['table_headers'])
+    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,  # type: ignore
+                                WEB_FILTER['table_headers'])  # type: ignore
 
 
 def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> CommandResults:
@@ -717,8 +719,9 @@ def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,
-                                WEB_FILTER['table_headers'], True)
+    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,  # type: ignore
+                                WEB_FILTER['table_headers'], True)  # type: ignore
+
 
 def sophos_firewall_web_filter_delete_command(client: Client, name: str) -> CommandResults:
     """Delete object by name
@@ -730,7 +733,7 @@ def sophos_firewall_web_filter_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, WEB_FILTER['endpoint_tag'])
+    return generic_delete(client, name, WEB_FILTER['endpoint_tag'])  # type: ignore
 
 
 def sophos_firewall_user_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -744,7 +747,7 @@ def sophos_firewall_user_list_command(client: Client, start: int, end: int) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_list(client, start, end, **USER)
+    return generic_list(client, start, end, **USER)  # type: ignore
 
 
 def sophos_firewall_user_get_command(client: Client, name: str) -> CommandResults:
@@ -757,7 +760,7 @@ def sophos_firewall_user_get_command(client: Client, name: str) -> CommandResult
     Returns:
         CommandResults: Command results object
     """
-    return generic_get(client, name, **USER)
+    return generic_get(client, name, **USER)  # type: ignore
 
 
 def sophos_firewall_user_add_command(client: Client, params: dict) -> CommandResults:
@@ -770,7 +773,8 @@ def sophos_firewall_user_add_command(client: Client, params: dict) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder, USER['table_headers'])
+    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder,  # type: ignore
+                                USER['table_headers'])  # type: ignore
 
 
 def sophos_firewall_user_update_command(client: Client, params: dict) -> CommandResults:
@@ -783,8 +787,8 @@ def sophos_firewall_user_update_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder, USER['table_headers'],
-                                True)
+    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder,  # type: ignore
+                                USER['table_headers'], True)  # type: ignore
 
 
 def sophos_firewall_user_delete_command(client: Client, name: str) -> CommandResults:
@@ -797,7 +801,7 @@ def sophos_firewall_user_delete_command(client: Client, name: str) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, USER['endpoint_tag'])
+    return generic_delete(client, name, USER['endpoint_tag'])  # type: ignore
 
 
 def test_module(client):
@@ -817,15 +821,15 @@ def test_module(client):
         status_message = retrieve_dict_item_recursively(json_result, 'status')
         message = ''
 
-        if status_message and 'Successful' in status_message:
+        if status_message and 'Successful' in status_message:  # type: ignore
             message = 'ok'
-        elif status_message and 'Authentication Failure' in status_message:
+        elif status_message and 'Authentication Failure' in status_message:  # type: ignore
             message = 'Please check your credentials'
 
         status_code = dict_safe_get(json_result, ['Response', 'Status', '@code'], 0)
         if status_code and int(status_code) >= 500:
             status_message = retrieve_dict_item_recursively(json_result, '#text')
-            if status_message and 'enable the API Configuration' in status_message:
+            if status_message and 'enable the API Configuration' in status_message:  # type: ignore
                 message = 'Please enable API configuration from the webconsole ' \
                           '(in Backup & firmware)'
             else:
@@ -850,7 +854,7 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
     response = client.delete_request((endpoint_tag, {'Name': name}))
     response = json.loads(xml2json(response.text))
 
-    check_error_on_response(response)
+    check_error_on_response(response)  # type: ignore
 
     delete_status = retrieve_dict_item_recursively(response, '#text')
 
@@ -871,7 +875,7 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
         if old_context and old_context.get('IsDeleted'):
             is_deleted = old_context['IsDeleted']
         else:
-            is_deleted = True if 'successfully' in delete_status else False
+            is_deleted = True if 'successfully' in delete_status else False  # type: ignore
         outputs['IsDeleted'] = is_deleted
 
     readable_output = tableToMarkdown(f'Deleting {endpoint_tag} Objects Results', outputs,
@@ -907,7 +911,7 @@ def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dic
     previous_object = client.get_item_by_name(endpoint_tag, name)
     previous_object = json.loads(xml2json(previous_object.text))
 
-    check_error_on_response(previous_object)
+    check_error_on_response(previous_object)  # type: ignore
 
     previous_object = retrieve_dict_item_recursively(previous_object, endpoint_tag)
 
@@ -989,9 +993,9 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
                  policy_type: str = None,
                  position: str = None, description: str = None, status: str = None,
                  ip_family: str = None, position_policy_name: str = None,
-                 source_zones: str = None, source_networks: str = None, # pylint: disable=unused-argument
-                 destination_zones: str = None, destination_networks: str = None, # pylint: disable=unused-argument
-                 services: str = None, members: str = None, # pylint: disable=unused-argument
+                 source_zones: str = None, source_networks: str = None,  # pylint: disable=unused-argument
+                 destination_zones: str = None, destination_networks: str = None,  # pylint: disable=unused-argument
+                 services: str = None, members: str = None,  # pylint: disable=unused-argument
                  log_traffic: str = None, match_identity: str = None,
                  show_captive_portal: str = None, schedule: str = None,
                  action: str = None, dscp_marking: str = None,
@@ -1085,7 +1089,7 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
     if is_for_update:
         response = client.get_item_by_name(endpoint_tag, name)
         response = json.loads(xml2json(response.text))
-        check_error_on_response(response)
+        check_error_on_response(response)  # type: ignore
         policy_type = retrieve_dict_item_recursively(response, 'PolicyType')
 
     json_data = {
@@ -1130,17 +1134,18 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
         raise Exception('please provide position_policy_name')
 
     if position == 'after':
-        json_data['After'] = {'Name': position_policy_name}
+        json_data['After'] = {'Name': position_policy_name}  # type: ignore
 
     elif position == 'before':
-        json_data['Before'] = {'Name': position_policy_name}
+        json_data['Before'] = {'Name': position_policy_name}  # type: ignore
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
 def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: str,
-                       destination_zones: str = None, source_zones: str = None, rules: str = None,  # pylint: disable=unused-argument
+                       destination_zones: str = None, source_zones: str = None,
+                       rules: str = None,  # pylint: disable=unused-argument
                        policy_type: str = None, description: str = None) -> dict:
     """Rule group object builder.
 
@@ -1180,7 +1185,7 @@ def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, n
 def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
                     name: str, host_type: str = None, ip_address: str = None, start_ip: str = None,
                     end_ip: str = None, ip_addresses: str = None, subnet_mask: str = None,
-                    ip_family: str = None, host_group: str = None) -> dict: # pylint: disable=unused-argument
+                    ip_family: str = None, host_group: str = None) -> dict:  # pylint: disable=unused-argument
     """Builder for the IP host object - build the body of the request
 
     Args:
@@ -1215,7 +1220,7 @@ def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     if is_for_update:
         response = client.get_item_by_name(endpoint_tag, name)
         response = json.loads(xml2json(response.text))
-        check_error_on_response(response)
+        check_error_on_response(response)  # type: ignore
         host_type = retrieve_dict_item_recursively(response, 'HostType')
 
     json_data = {
@@ -1346,13 +1351,13 @@ def service_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     Returns:
         dict: returned dictionary
     """
-    previous_service_details = []
+    previous_service_details = []  # type: ignore
     # if the object need to be updated, merge between old and new information will happen
     if is_for_update:
         previous_object = client.get_item_by_name(endpoint_tag, name)
         previous_object = json.loads(xml2json(previous_object.text))
 
-        check_error_on_response(previous_object)
+        check_error_on_response(previous_object)  # type: ignore
         service_type = retrieve_dict_item_recursively(previous_object, 'Type')
 
         previous_service_details = retrieve_dict_item_recursively(previous_object, 'ServiceDetail')
@@ -1400,7 +1405,7 @@ def service_builder(client: Client, is_for_update: bool, endpoint_tag: str,
 
     previous_service_details.append(service_details)
     json_data.update({
-        'ServiceDetails': {
+        'ServiceDetails': {  # type: ignore
             'ServiceDetail': previous_service_details
         }
     })
@@ -1455,12 +1460,12 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     Returns:
         dict: returned built dictionary
     """
-    previous_rules_details = []
+    previous_rules_details = []  # type: ignore
     # if the object need to be updated, merge between old and new information will happen
     if is_for_update:
         previous_object = client.get_item_by_name(endpoint_tag, name)
         previous_object = json.loads(xml2json(previous_object.text))
-        check_error_on_response(previous_object)
+        check_error_on_response(previous_object)  # type: ignore
 
         previous_rules_details = retrieve_dict_item_recursively(previous_object, 'Rule')
         if not previous_rules_details:
@@ -1503,7 +1508,7 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
 
     previous_rules_details.append(rule_details)
     json_data.update({
-        'RuleList': {
+        'RuleList': {  # type: ignore
             'Rule': previous_rules_details
         }
     })
@@ -1558,12 +1563,12 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     Returns:
         dict: returned built dictionary
     """
-    previous_rules_details = []
+    previous_rules_details = []  # type: ignore
     # if the object need to be updated, merge between old and new information will happen
     if is_for_update:
         previous_object = client.get_item_by_name(endpoint_tag, name)
         previous_object = json.loads(xml2json(previous_object.text))
-        check_error_on_response(previous_object)
+        check_error_on_response(previous_object)  # type: ignore
 
         previous_rules_details = retrieve_dict_item_recursively(previous_object, 'Rule')
         if not previous_rules_details:
@@ -1603,7 +1608,7 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
 
     previous_rules_details.append(rule_details)
     json_data.update({
-        'RuleList': {
+        'RuleList': {  # type: ignore
             'Rule': previous_rules_details
         }
     })
@@ -1686,10 +1691,10 @@ def check_error_on_response(response: dict) -> None:
     response_code = retrieve_dict_item_recursively(response, '@code')
     response_status = retrieve_dict_item_recursively(response, 'Status')
 
-    if response_message and 'successful' not in response_message:
+    if response_message and 'successful' not in response_message:  # type: ignore
         if response_code and int(response_code) > 299:
             raise Exception(f'{response_message} (error code: {response_code})')
-    if response_status and 'No. of records Zero.' in response_status:
+    if response_status and 'No. of records Zero.' in response_status:  # type: ignore
         raise Exception(response_status)
 
 
@@ -1717,8 +1722,8 @@ def generic_save_and_get(client: Client, endpoint_tag: str, params: dict, builde
     response = client.set_request((endpoint_tag, data), operation)
     response = json.loads(xml2json(response.text))
 
-    check_error_on_response(response)
-    return generic_get(client, params.get('name'), endpoint_tag, table_headers)
+    check_error_on_response(response)  # type: ignore
+    return generic_get(client, params.get('name'), endpoint_tag, table_headers)  # type: ignore
 
 
 def generic_get(client: Client, name: str, endpoint_tag: str,
@@ -1737,12 +1742,12 @@ def generic_get(client: Client, name: str, endpoint_tag: str,
     response = client.get_item_by_name(endpoint_tag, name)
     response = json.loads(xml2json(response.text))
 
-    check_error_on_response(response)
+    check_error_on_response(response)  # type: ignore
 
     outputs = retrieve_dict_item_recursively(response, endpoint_tag)
     if outputs:
-        outputs.pop('@transactionid')
-        outputs['IsDeleted'] = False
+        outputs.pop('@transactionid')  # type: ignore
+        outputs['IsDeleted'] = False  # type: ignore
 
     table_title = f'{endpoint_tag} Object details'
 
@@ -1775,7 +1780,7 @@ def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
 
     outputs = dict_safe_get(response, ['Response', endpoint_tag])
 
-    check_error_on_response(response)
+    check_error_on_response(response)  # type: ignore
 
     outputs = outputs if isinstance(outputs, list) else [outputs]
     for output in outputs:
@@ -1800,7 +1805,7 @@ def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
     )
 
 
-def retrieve_dict_item_recursively(obj, key) -> any:
+def retrieve_dict_item_recursively(obj, key) -> any:  # type: ignore
     """Find items in given dictionary by the key
 
     Args:
