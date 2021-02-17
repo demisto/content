@@ -611,7 +611,6 @@ def get_update_report():
             user_report['Street_Address'] = street_address
         if last_hire_date:
             user_report['Last_Hire_Date'] = last_hire_date
-            user_report['Employment_Status'] = 'Terminated'
         set_integration_context(integration_context)
         return_results('Successfully generated the Update user event.')
 
