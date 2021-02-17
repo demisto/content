@@ -1,0 +1,14 @@
+{
+    "name": "playbook-PowerShell",
+    "description": "PowerShell is an automated task framework with a command line shell and a scripting language integrated into the .NET framework. Cyber threat actors often leverage PowerShell once they gain access to a system. It provides them access to the command line, stored data, local and remote systems. This in turn provides them the ability to hide malicious commands and scripts and run locally or over a target network as if the system administrator was performing a legitimate task.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Accenture",
+    "url": "",
+    "email": "",
+    "created": "2020-12-18T18:12:56Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
