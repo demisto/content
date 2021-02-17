@@ -112,9 +112,9 @@ script:
       name: threat_id
       required: true
     description: 'Returns the list of the attack results of a single threat\nhave
-      optional parameters for pagination and filtration. Example Command: !Picus-Specific-Threats-Results
+      optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results
       threat_id=666059'
-    name: Picus-Specific-Threats-Results
+    name: picus-specific-threats-results
   - arguments: []
     description: Returns the peer list with current statuses
     name: picus-peer-list
