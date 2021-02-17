@@ -65,9 +65,10 @@ def jarm_fingerprint_command(
     class JARMDBotScore(Common.Indicator):
         def __init__(self, output: Dict[str, Any]):
             self._jarm = output.get('Fingerprint')
-            self._ip = output.get('IP')
-            self._port = output.get('Port')
-            self._fqdn = output.get('FQDN')
+            if output.get('IP'):
+                self._host = f'{output.get("IP")}:{output.get("Port")}'
+            else:
+                self._host = f'{output.get("FQDN")}:{output.get("Port")}'
 
         def to_context(self) -> Dict[str, Any]:
             return {
@@ -76,11 +77,7 @@ def jarm_fingerprint_command(
                     "Type": "jarm",
                     "Vendor": "JARM",
                     "Score": Common.DBotScore.NONE,
-                    "Host": {
-                        'ip': self._ip,
-                        'fqdn': self._fqdn,
-                        'port': self._port
-                    }
+                    "JARMHost": self._host
                 }
             }
 

@@ -20,7 +20,7 @@
                 "filters": [
 
                 ],
-                "accessor": "Host",
+                "accessor": "JARMHost",
                 "transformers": [
 
                 ]
