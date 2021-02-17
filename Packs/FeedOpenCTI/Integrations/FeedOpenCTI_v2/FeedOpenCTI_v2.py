@@ -260,7 +260,7 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     simple_observable_key = None
     simple_observable_value = None
     if 'file' in indicator_type.lower():  # type: ignore
-        simple_observable_key = FILE_TYPES.get(indicator_type.lower(), indicator_type) # type: ignore
+        simple_observable_key = FILE_TYPES.get(indicator_type.lower(), indicator_type)  # type: ignore
         simple_observable_value = data.get('hash')
         if not simple_observable_value:
             raise DemistoException("Missing argument in data: hash")
