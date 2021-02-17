@@ -519,6 +519,22 @@ def test_module():
         return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
 
 
+def get_employee_id():
+    """
+    Get the maximum employee id number and increase it by one.
+    This function is used to avoid duplication while creating a new hire report.
+    Returns: (int) Employee ID number.
+
+    """
+    integration_context = get_integration_context()
+    employee_ids = []
+    for report in integration_context['Report_Entry']:
+        employee_id = int(report.get('Emp_ID'))
+        employee_ids.append(employee_id)
+
+    return int(max(employee_ids)) + 1
+
+
 def get_new_hire_reports():
     user_email = demisto.args().get('user_email')
     first_name = demisto.args().get('first_name', '')
@@ -539,6 +555,7 @@ def get_new_hire_reports():
     new_report['Preferred_Name'] = first_name + last_name
     new_report['Preferred_Name_-_First_Name'] = first_name
     new_report['Preferred_Name_-_Last_Name'] = last_name
+    new_report['Emp_ID'] = get_employee_id()
     integration_context['Report_Entry'].append(new_report)
     set_integration_context(integration_context)
 
