@@ -50,7 +50,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Rahardjo",
             "Cost_Center_Code": "120100",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -98,7 +100,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Arnold",
             "Cost_Center_Code": "101100",
-            "Location": "Office - USA - CA - San Francisco"
+            "Location": "Office - USA - CA - San Francisco",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -144,7 +148,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Fairy_Updated",
             "Cost_Center_Code": "613116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -191,7 +197,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Buxaplenty",
             "Cost_Center_Code": "310100",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Emp_ID": "115098",
@@ -215,7 +223,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name": "Connie Carmichael",
             "Rehired_Employee": "No",
             "Regular_Employee_Flag": "N",
-            "Preferred_Name_-_Last_Name": "Carmichael"
+            "Preferred_Name_-_Last_Name": "Carmichael",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -262,7 +272,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Genie",
             "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -308,7 +320,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Claus",
             "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -354,7 +368,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Crocker",
             "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -400,7 +416,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Nebula",
             "Cost_Center_Code": "613116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         },
         {
             "Employee_Type": "Regular",
@@ -446,7 +464,9 @@ FIRST_RUN_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Tang",
             "Cost_Center_Code": "613116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         }
     ]
 }
@@ -497,7 +517,9 @@ NEW_HIRE_REPORT = {
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": 'last_name',
             "Cost_Center_Code": "651116",
-            "Location": "Office - USA - CA - Headquarters"
+            "Location": "Office - USA - CA - Headquarters",
+            "Last_Day_of_Work": "02/15/21",
+            "Termination_Date": "02/15/21"
         }
     ]
 }
@@ -552,7 +574,7 @@ def get_new_hire_reports():
     new_report['Email_Address'] = user_email
     new_report['First_Name'] = first_name
     new_report['Last_Name'] = last_name
-    new_report['Preferred_Name'] = first_name + last_name
+    new_report['Preferred_Name'] = f'{first_name} {last_name}'
     new_report['Preferred_Name_-_First_Name'] = first_name
     new_report['Preferred_Name_-_Last_Name'] = last_name
     new_report['Emp_ID'] = get_employee_id()
@@ -578,10 +600,11 @@ def get_terminate_report():
         is_terminated = user_report.get('Employment_Status')
         rehired_status = user_report.get('Rehired_Employee')
         if user_email in existing_email_addressees and is_terminated == 'Terminated' and rehired_status == 'No':
-            return_results(f'The user {user_email} is already terminated.')
+            raise Exception(f'The user {user_email} is already terminated.')
 
         user_report['Employment_Status'] = 'Terminated'
-        user_report['Last_Hire_Date'] = demisto.args().get('last_hire_date')
+        user_report['Last_Day_of_Work'] = demisto.args().get('last_day_of_work')
+        user_report['Termination_Date'] = demisto.args().get('termination_date')
         set_integration_context(integration_context)
         return_results('Successfully generated the Terminate user event.')
 
@@ -592,7 +615,7 @@ def get_update_report():
     title = demisto.args().get('title')
     city = demisto.args().get('city')
     street_address = demisto.args().get('street_address')
-    last_hire_date = demisto.args().get('last_hire_date')
+    last_day_of_work = demisto.args().get('last_day_of_work')
     existing_email_addressees = []
     for report in integration_context['Report_Entry']:
         email_address = report.get('Email_Address')
@@ -609,8 +632,8 @@ def get_update_report():
             user_report['City'] = city
         if street_address:
             user_report['Street_Address'] = street_address
-        if last_hire_date:
-            user_report['Last_Hire_Date'] = last_hire_date
+        if last_day_of_work:
+            user_report['Last_Day_of_Work'] = last_day_of_work
         set_integration_context(integration_context)
         return_results('Successfully generated the Update user event.')
 
@@ -632,9 +655,10 @@ def get_rehire_report():
         is_terminated = user_report.get('Employment_Status')
         rehired_status = user_report.get('Rehired_Employee')
         if user_email in existing_email_addressees and is_terminated == 'Active' or rehired_status == 'Yes':
-            return_results(f'The user {user_email} is not terminated. Either he is still active or was already rehired.')
-        for field in user_report:
-            field['Rehired_Employee'] = 'Yes'
+            raise Exception(f'The user {user_email} is not terminated. Either he is still active or was already '
+                            f'rehired.')
+        user_report['Rehired_Employee'] = 'Yes'
+        user_report['Prehire_Flag'] = 'True'
         set_integration_context(integration_context)
         return_results('Successfully generated the rehire user event.')
 

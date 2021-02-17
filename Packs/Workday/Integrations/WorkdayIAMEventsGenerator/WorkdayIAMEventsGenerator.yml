@@ -74,7 +74,7 @@ script:
       description: 'The last hire date for the user.  For example: "06/15/2020". This
         will trigger "terminate" event.'
       isArray: false
-      name: Last_Hire_Date
+      name: last_day_of_work
       required: false
       secret: false
     deprecated: false
@@ -96,13 +96,19 @@ script:
     - default: false
       description: 'The last hire date of the user. For example: "06/15/2020"'
       isArray: false
-      name: last_hire_date
+      name: last_day_of_work
       required: true
       secret: false
     - default: false
       description: The user email to termniate.
       isArray: false
       name: user_email
+      required: true
+      secret: false
+    - default: false
+      description: The user termination date.
+      isArray: false
+      name: termination_date
       required: true
       secret: false
     deprecated: false
