@@ -61,6 +61,18 @@ STATUS_DICT = {
 }
 
 
+def return_outputs(readable_output, outputs=None, tag="no_campaign_detected"):
+    return_entry = {
+        "Type": entryTypes["note"],
+        "HumanReadable": readable_output,
+        "ContentsFormat": formats['json'],
+        "Contents": outputs,
+        "EntryContext": outputs,
+        "Tags": [tag]
+    }
+    demisto.results(return_entry)
+
+
 def add_context_key(entry_context):
     context = {
         'EmailsCampaign': entry_context
@@ -280,13 +292,13 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
-    return return_outputs(hr, context)
+    return return_outputs(hr, context, tag='campaign_details')
 
 
 def return_no_mututal_indicators_found_entry():
     hr = '### Mutual Indicators' + '\n'
     hr += 'No mutual indicators were found.'
-    return_outputs(hr, add_context_key(create_context_for_indicators()))
+    return_outputs(hr, add_context_key(create_context_for_indicators()), tag='indicators')
 
 
 def return_indicator_entry(incidents_df):
@@ -316,7 +328,7 @@ def return_indicator_entry(incidents_df):
 
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
-    return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df)))
+    return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df)), tag='indicators')
     return indicators_df
 
 
@@ -365,7 +377,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
         incidents_headers += fields_to_display
     hr = '\n\n' + tableToMarkdown('Involved Incidents', incidents_df[incidents_headers].to_dict(orient='records'),
                                   headers=incidents_headers)
-    return_outputs(hr)
+    return_outputs(hr, tag='incidents')
 
 
 def draw_canvas(incidents, indicators):
@@ -382,6 +394,7 @@ def draw_canvas(incidents, indicators):
                                                                     'overrideUserCanvas': 'true'
                                                                     })
         if not is_error(res) or True:
+            res[-1]['Tags'] = ['canvas']
             demisto.results(res)
     except Exception as e:
         pass
