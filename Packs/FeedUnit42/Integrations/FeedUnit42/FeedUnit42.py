@@ -20,6 +20,9 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'file:hashes': FeedIndicatorType.File,
 }
 
+COURSE_OF_ACTION_U42 = ['Cortex XDR Prevent', 'DNS Security', 'XSOAR']
+COURSE_OF_ACTION_BP = ['URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention']
+
 
 class Client(BaseClient):
 
@@ -238,10 +241,11 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
       sub_reports: a list of sub-reports.
       matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
       id_to_object: a dict in the form of `id: stix_object`.
-      courses_of_action_products (Dict):
+      courses_of_action_products (Dict): Connects courses of action id with the relationship product.
 
     Returns:
         A list of processed reports.
+        a list of MITRE ATT&CK indicators.
     """
     indicators = []
     for report in reports:
@@ -279,82 +283,120 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                         'description', ', '.join(malware_object.get('labels', ['No description provided.'])))
                 }])
 
-        for relation in related_ids:
-            relation_object = id_to_object.get(relation)
-            if not relation_object:
-                continue
-
-            if relation.startswith('attack-pattern'):
-                type_name = 'MITRE ATT&CK'
-                relation_value_field = relation_object.get('external_references')
-            elif relation.startswith('indicator'):
-                # Need to create the connection only to file hashes
-                if not relation_object.get('pattern').startswith('[file:'):
-                    continue
-
-                type_name = 'Indicator'
-                relation_value_field = relation_object.get('name')
-            elif relation.startswith('malware'):
-                type_name = 'Malware'
-                relation_value_field = relation_object.get('name')
-            else:
-                continue
-
-            if isinstance(relation_value_field, str):
-                report['fields']['feedrelatedindicators'].extend([{
-                    'type': type_name,
-                    'value': relation_value_field,
-                    'description': ', '.join(relation_object.get('labels', ['No description provided.']))
-                }])
-                indicator_val = relation_value_field
-
-            else:
-                all_urls = []
-                external_id = ''
-
-                for item in relation_value_field:
-                    if 'url' in item:
-                        all_urls.append(item.get('url'))
-
-                        if 'external_id' in item:
-                            external_id = item.get('external_id')
-
-                report['fields']['feedrelatedindicators'].extend([{
-                    'type': type_name,
-                    'value': external_id,
-                    'description': ','.join(all_urls)
-                }])
-                indicator_val = external_id
-
-            # create MITRE ATT&CK indicator
-            if indicator_val and type_name == 'MITRE ATT&CK':
-
-                # populate mitre course of action data from the relevant relationships
-                relationship = relation_object.get('id')
-                courses_of_action: Dict[str, List] = {}
-
-                if matched_relationships.get(relationship):
-                    for source in matched_relationships[relationship]:
-                        if source.startswith('course-of-action') and id_to_object.get(source):
-                            relationship_product = courses_of_action_products[source]
-                            if not courses_of_action.get(relationship_product):
-                                courses_of_action[relationship_product] = []
-                            courses_of_action[relationship_product].append(id_to_object[source])
-
-                indicators.append({
-                    "value": indicator_val,
-                    "type": 'MITRE ATT&CK',
-                    "fields": {
-                        "firstseenbysource": relation_object.get('created'),
-                        "indicatoridentification": relation_object.get('id'),
-                        "tags": [],
-                        "modified": relation_object.get('modified'),
-                        "reportedby": 'Unit42',
-                        "mitrecourseofaction": create_course_of_action_field(courses_of_action)
-                    }
-                })
+        indicators.extend(parse_related_indicators(report, related_ids, id_to_object,
+                                                   matched_relationships, courses_of_action_products))
 
     return reports, indicators
+
+
+def parse_related_indicators(report: Dict, related_ids: List, id_to_object: Dict, matched_relationships: Dict,
+                             courses_of_action_products: Dict) -> List[Dict]:
+    """ Creates feed related indicators to Stix report object.
+
+    Args:
+        report (dict): Stix report object.
+        related_ids (List): Malware objects ids related to the report.
+        id_to_object (Dict): a dict in the form of `id: stix_object`.
+        matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
+        courses_of_action_products (Dict): Connects courses of action id with the relationship product.
+
+    Returns:
+        List of MITRE ATT&CK indicators.
+    """
+    indicators = []
+    for relation in related_ids:
+        relation_object = id_to_object.get(relation)
+        if not relation_object:
+            continue
+
+        if relation.startswith('attack-pattern'):
+            type_name = 'MITRE ATT&CK'
+            relation_value_field = relation_object.get('external_references')
+        elif relation.startswith('indicator'):
+            # Need to create the connection only to file hashes
+            if not relation_object.get('pattern').startswith('[file:'):
+                continue
+
+            type_name = 'Indicator'
+            relation_value_field = relation_object.get('name')
+        elif relation.startswith('malware'):
+            type_name = 'Malware'
+            relation_value_field = relation_object.get('name')
+        else:
+            continue
+
+        if isinstance(relation_value_field, str):
+            report['fields']['feedrelatedindicators'].extend([{
+                'type': type_name,
+                'value': relation_value_field,
+                'description': ', '.join(relation_object.get('labels', ['No description provided.']))
+            }])
+            indicator_val = relation_value_field
+
+        else:
+            all_urls = []
+            external_id = ''
+
+            for item in relation_value_field:
+                if 'url' in item:
+                    all_urls.append(item.get('url'))
+
+                    if 'external_id' in item:
+                        external_id = item.get('external_id')
+
+            report['fields']['feedrelatedindicators'].extend([{
+                'type': type_name,
+                'value': external_id,
+                'description': ','.join(all_urls)
+            }])
+            indicator_val = external_id
+
+        if indicator_val and type_name == 'MITRE ATT&CK':
+            # create MITRE ATT&CK indicator
+            indicators.append(create_mitre_indicator(indicator_val, relation_object, matched_relationships,
+                                                     id_to_object, courses_of_action_products))
+
+    return indicators
+
+
+def create_mitre_indicator(indicator_val: str, relation_object: Dict, matched_relationships: Dict, id_to_object: Dict,
+                           courses_of_action_products: Dict) -> Dict:
+    """Creates MITRE ATT&CK indicator with the related mitre course of action.
+
+    Args:
+        indicator_val (String): The indicator value.
+        relation_object (Dict): Stix relationship object.
+        matched_relationships (Dict): a dict of relationships in the form of `id: list(related_ids)`.
+        id_to_object (Dict): a dict in the form of `id: stix_object`.
+        courses_of_action_products (Dict): Connects courses of action id with the relationship product.
+
+    Returns:
+        MITRE ATT&CK indicator.
+    """
+
+    relationship = relation_object.get('id')
+    courses_of_action: Dict[str, List] = {}
+
+    if relationship in matched_relationships:
+        for source in matched_relationships[relationship]:
+            if source.startswith('course-of-action') and id_to_object.get(source):
+                relationship_product = courses_of_action_products[source]
+                if relationship_product not in courses_of_action:
+                    courses_of_action[relationship_product] = []
+                courses_of_action[relationship_product].append(id_to_object[source])
+
+    return {
+        "value": indicator_val,
+        "type": 'MITRE ATT&CK',
+        "fields": {
+            "firstseenbysource": relation_object.get('created'),
+            "indicatoridentification": relation_object.get('id'),
+            "tags": [],
+            "modified": relation_object.get('modified'),
+            "reportedby": 'Unit42',
+            "mitrecourseofaction": create_course_of_action_field(courses_of_action)
+        }
+    }
 
 
 def create_course_of_action_field(courses_of_action: dict) -> str:
@@ -373,10 +415,10 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
         tmp_table = []
         for course_of_action in courses_list:
             row = {}
-            if relationship_product in ('Cortex XDR Prevent', 'DNS Security', 'XSOAR'):
+            if relationship_product in (COURSE_OF_ACTION_U42):
                 row['title'] = course_of_action.get('x_panw_coa_u42_title')
 
-            if relationship_product in ('URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention'):
+            if relationship_product in (COURSE_OF_ACTION_BP):
                 row['title'] = course_of_action.get('x_panw_coa_bp_title')
                 row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
                 row['recommendation number'] = course_of_action.get('x_panw_coa_bp_recommendation_number')
