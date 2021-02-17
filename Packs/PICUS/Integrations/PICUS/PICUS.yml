@@ -147,7 +147,7 @@ script:
     name: picus-trigger-update
   - arguments: []
     description: Returns the current version and the update time config
-    name: Picus-Version
+    name: picus-version
   - arguments:
     - description: Threat release date filter start of the date range
       name: begin_date
