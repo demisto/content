@@ -220,11 +220,3 @@ def test_resume_scan_command(mocker, requests_mock):
     requests_mock.get(MOCK_PARAMS['url'] + 'scans/25', json={'info': {'status': 'canceled'}})
     from Tenable_io import resume_scan_command
     resume_scan_command()
-
-
-def test_launch_scans_command(mocker, requests_mock):
-    mock_demisto(mocker, {'scan_ids': '25'})
-    requests_mock.post(MOCK_PARAMS['url'] + 'scans/25/launch', json={'info': {'status': 'canceled'}})
-    requests_mock.post(MOCK_PARAMS['url'] + 'scans/25/launch?alt_targets=10.0.0.1', json={'info': {'status': 'canceled'}})
-    from Tenable_io import launch_scans_command
-    launch_scans_command()

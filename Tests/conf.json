@@ -3192,6 +3192,10 @@
         {
             "integrations": "Tenable_SE6712_1.io",
             "playbookID": "Tenable.io test"
+        },
+        {
+            "integrations": "Tenable.io_SE6712_2/12",
+            "playbookID": "Tenable.io test"
         }
     ],
     "skipped_tests": {
