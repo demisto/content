@@ -116,7 +116,6 @@ parameters:
 references:
   environment: &environment
     environment:
-      SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
