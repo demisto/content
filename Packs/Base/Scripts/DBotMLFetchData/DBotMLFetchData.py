@@ -544,14 +544,14 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
 def get_closing_fields_from_incident(row):
     if 'owner' in row:
         owner = row['owner']
-        if owner not in ['admin', '']:
-            owner = hash_value(str(owner))
+        if owner not in ['admin', ''] and isinstance(owner, str):
+            owner = hash_value(owner)
     else:
         owner = float('nan')
     if 'closingUserId' in row:
         closing_user = row['closingUserId']
-        if closing_user not in ['admin', '', 'DBot']:
-            closing_user = hash_value(str(closing_user))
+        if closing_user not in ['admin', '', 'DBot'] and isinstance(closing_user, str):
+            closing_user = hash_value(closing_user)
     else:
         closing_user = float('nan')
     if 'closeNotes' in row:
