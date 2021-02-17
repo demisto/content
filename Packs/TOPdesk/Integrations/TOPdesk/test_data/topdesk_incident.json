@@ -21,7 +21,7 @@
   "subcategory": null,
   "callType": null,
   "entryType": {
-    "id": "05d8e21f-dda7-4516-9ece-6c630bc19aa2",
+    "id": "some_entry_type_id",
     "name": "Automation"
   },
   "object": null,
@@ -43,7 +43,7 @@
   "operatorGroup": null,
   "supplier": null,
   "processingStatus": {
-    "id": "325ded26-849e-4c9f-94c3-0114ebf7e891",
+    "id": "some_status_id",
     "name": "Logged"
   },
   "responded": false,
@@ -62,12 +62,12 @@
   "escalationOperator": null,
   "callDate": "2021-02-11T06:32:36.303+0000",
   "creator": {
-    "id": "c3635de2-4da8-49fe-b6f8-cd4fba168349",
+    "id": "some_operator_id",
     "name": "Xsoar - Operator"
   },
   "creationDate": "2020-02-10T06:32:36.303+0000",
   "modifier": {
-    "id": "c3635de2-4da8-49fe-b6f8-cd4fba168349",
+    "id": "some_operator_id",
     "name": "Xsoar - Operator"
   },
   "modificationDate": "2021-02-11T06:32:36.000+0000",
@@ -106,8 +106,8 @@
     "memo4": null,
     "memo5": null,
     "searchlist1": {
-      "id": "38ab50c9-eb48-4745-be1e-c1cbbcb280ae",
-      "name": "Onbekend, call nog niet afgesloten"
+      "id": "some_search_id",
+      "name": "Searchlist Name"
     },
     "searchlist2": null,
     "searchlist3": null,

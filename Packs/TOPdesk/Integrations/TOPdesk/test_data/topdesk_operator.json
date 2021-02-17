@@ -1,6 +1,6 @@
 {
-  "id": "c3635de2-4da8-49fe-b6f8-cd4fba168349",
-  "principalId": "4de665ad-6eb7-4853-bada-736ffbd7c5b8",
+  "id": "some_operator_id",
+  "principalId": "some_principal_id",
   "status": "operator",
   "surName": "Operator",
   "firstName": "Xsoar -",
@@ -11,17 +11,17 @@
   "title": "",
   "gender": "UNDEFINED",
   "language": {
-    "id": "05606a6e-fcba-41e0-906e-851eb82c4b1b",
+    "id": "some_lang_id",
     "name": "NLD"
   },
   "branch": {
-    "id": "fc24e957-d869-4a0d-ae76-b4d0aa3001e0",
+    "id": "some_branch_id",
     "name": "XSoar - Customer - A",
-    "clientReferenceNumber": "684684",
+    "clientReferenceNumber": "1337",
     "timeZone": "Europe/Amsterdam",
     "extraA": {
-      "id": "bcd69de2-b78e-4dab-9e6d-53a393681d14",
-      "name": "<INVULLEN>"
+      "id": "some_extra_id",
+      "name": "extra"
     },
     "extraB": null
   },
@@ -29,9 +29,9 @@
   "telephone": "",
   "mobileNumber": "",
   "faxNumber": "",
-  "email": "xsoar-dev@motiv.nl",
-  "exchangeAccount": "xsoar-dev@motiv.nl",
-  "loginName": "XSOAR-OPERATOR",
+  "email": "some_email@some_domain",
+  "exchangeAccount": "some_email@some_domainl",
+  "loginName": "SOME_LOGIN_NAME",
   "loginPermission": true,
   "jobTitle": "",
   "department": null,
@@ -68,13 +68,13 @@
   "accountManager": false,
   "creationDate": "2020-12-21T09:24:35.000+0000",
   "creator": {
-    "id": "ab9d5a04-6876-4f43-a8c0-3f18fdc240fc",
-    "name": "Sander Zumbrink (TOPdesk Admin)"
+    "id": "some_operator_id",
+    "name": "(TOPdesk Admin)"
   },
   "modificationDate": "2020-12-21T09:24:35.000+0000",
   "modifier": {
-    "id": "ab9d5a04-6876-4f43-a8c0-3f18fdc240fc",
-    "name": "Sander Zumbrink (TOPdesk Admin)"
+    "id": "some_operator_id",
+    "name": "(TOPdesk Admin)"
   },
   "optionalFields1": {
     "boolean1": false,

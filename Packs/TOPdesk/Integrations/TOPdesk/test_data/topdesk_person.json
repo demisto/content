@@ -1,5 +1,5 @@
 {
-  "id": "52235d88-1743-4c01-89a0-534b96a10cbf",
+  "id": "some_customer_id",
   "status": "person",
   "surName": "User - A",
   "firstName": "Xsoar -",
@@ -10,7 +10,7 @@
   "title": "",
   "gender": "UNDEFINED",
   "language": {
-    "id": "05606a6e-fcba-41e0-906e-851eb82c4b1b",
+    "id": "some_lang_id",
     "name": "NLD"
   },
   "phoneNumber": "",
@@ -23,7 +23,7 @@
   "employeeNumber": "",
   "networkLoginName": "",
   "mainframeLoginName": "",
-  "clientReferenceNumber": "684684",
+  "clientReferenceNumber": "1337",
   "city": "",
   "tasLoginName": "xsoar-user-a",
   "showBranch": true,
@@ -42,13 +42,13 @@
   "attention": null,
   "attentionComment": "",
   "creator": {
-    "id": "ab9d5a04-6876-4f43-a8c0-3f18fdc240fc",
-    "name": "Sander Zumbrink (TOPdesk Admin)"
+    "id": "some_operator_id",
+    "name": "(TOPdesk Admin)"
   },
   "creationDate": "2020-12-21T09:16:34.000+0000",
   "modifier": {
-    "id": "ab9d5a04-6876-4f43-a8c0-3f18fdc240fc",
-    "name": "Sander Zumbrink (TOPdesk Admin)"
+    "id": "some_operator_id",
+    "name": "(TOPdesk Admin)"
   },
   "modificationDate": "2020-12-21T09:20:53.000+0000",
   "optionalFields1": {
@@ -119,13 +119,13 @@
   "personExtraFieldB": null,
   "departmentFree": null,
   "branch": {
-    "id": "fc24e957-d869-4a0d-ae76-b4d0aa3001e0",
+    "id": "some_customer_id",
     "name": "XSoar - Customer - A",
-    "clientReferenceNumber": "684684",
+    "clientReferenceNumber": "1337",
     "timeZone": "Europe/Amsterdam",
     "extraA": {
-      "id": "bcd69de2-b78e-4dab-9e6d-53a393681d14",
-      "name": "<INVULLEN>"
+      "id": "some_extra_id",
+      "name": "extra_name"
     },
     "extraB": null
   },
