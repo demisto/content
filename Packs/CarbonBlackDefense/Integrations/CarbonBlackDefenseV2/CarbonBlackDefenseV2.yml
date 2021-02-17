@@ -1,0 +1,1149 @@
+category: Utilities
+commonfields:
+  id: Carbon Black Defense V2
+  version: -1
+configuration:
+- defaultvalue: https://defense.conferdeploy.net/
+  display: Url
+  name: url
+  required: true
+  type: 0
+- display: Api Key
+  hidden: false
+  name: api_key
+  required: true
+  type: 0
+- display: Api Secret Key
+  hidden: false
+  name: api_secret_key
+  required: true
+  type: 4
+- display: Organization Key
+  hidden: false
+  name: organization_key
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: VMware Carbon Black Endpoint Standard (formerly known as Carbon Black
+  Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that
+  stops commodity malware, advanced malware, non-malware attacks and ransomware.
+display: Carbon Black Defense V2
+name: Carbon Black Defense V2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the alert
+      isArray: false
+      name: alertId
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details on the events that led to an alert by ID. This includes
+      retrieving metadata around the alert as well as a list of all the events associated
+      with the alert. Only API keys of type “API” can call the alerts API.
+    execution: false
+    name: cbd-get-alert-details
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.type
+      description: Type of alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.id
+      description: The ID of the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.legacy_alert_id
+      description: Unique short id for the alerts to support easier consumption in
+        the UI console. Use the id for API requests
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.org_key
+      description: The unique identifier for the organization associated with the
+        alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.create_time
+      description: The time the alert was created, The format is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.last_update_time
+      description: The last time the alert was updated, The format is in ISO 8601
+        timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.first_event_time
+      description: The time of the first event associated with the alert, The format
+        is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.last_event_time
+      description: The time of the latest event associated with the alert, The format
+        is in ISO 8601 timestamp
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_id
+      description: The identifier of a threat which this alert belongs. Threats are
+        comprised of a combination of factors that can be repeated across devices.
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.severity
+      description: The threat ranking of the alert
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.category
+      description: "The category of the alert\t"
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_id
+      description: The identifier assigned by Carbon Black Cloud to the device associated
+        with the alert.
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os
+      description: The operating system of the device associated with the alert. (WINDOWS,
+        MAC, LINUX, OTHER)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os_version
+      description: "The operating system and version on the device\t"
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_name
+      description: The hostname of the device associated with the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.device_username
+      description: The username of the logged on user during the alert. If the user
+        is not available then it may be populated with the device owner
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_id
+      description: The identifier for the policy associated with the device at the
+        time of the alert
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_name
+      description: The name of the policy associated with the device at the time of
+        the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.target_value
+      description: The priority of the device assigned by the policy. (LOW, MEDIUM,
+        HIGH, MISSION_CRITICAL)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.state
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.remediation
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.last_update_time
+      description: Tracking system for alerts as they are triaged and resolved
+      type: Date
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.comment
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.changed_by
+      description: Tracking system for alerts as they are triaged and resolved
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.notes_present
+      description: Indicates if notes are associated with the threat_id
+      type: Boolean
+    - contextPath: CarbonBlackDefense.GetAlertDetails.tags
+      description: Tags associated with the alert
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetAlertDetails.reason
+      description: Description of the alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.count
+      type: Number
+    - contextPath: CarbonBlackDefense.GetAlertDetails.report_id
+      description: The identifier of the report that contains the IOC
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.report_name
+      description: The name of the report that contains the IOC
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_id
+      description: The identifier of the IOC that cause the hit
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_field
+      description: The field the indicator of comprise (IOC) hit contains
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_hit
+      description: IOC field value or IOC query that matches
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.id
+      description: The ID of a watchlists associated with an alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.name
+      description: The name of a watchlists associated with an alert
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.process_guid
+      description: The global unique identifier of the process that triggered the
+        hit
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.process_name
+      description: "The name of the process that triggered the hit\t"
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.run_state
+      description: Run state is always RAN for watchlist alerts
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.process_name
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.sha256
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.ttps
+      description: List of the threat indicators that make up the threat
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_sha256
+      description: SHA256 of the threat cause actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_md5
+      description: MD5 of the threat cause actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_name
+      description: Process name or IP address of the threat actor
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_reputation
+      description: Reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
+        PUP, NOT_LISTED, ADAPTIVE_WHITE_LIST, COMMON_WHITE_LIST, TRUSTED_WHITE_LIST,
+        COMPANY_BLACK_LIST)
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_threat_category
+      description: Category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
+        KNOWN_MALWARE, RISKY_PROGRAM)
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_vector
+      description: 'The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
+        REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY) '
+      type: String
+    - contextPath: CarbonBlackDefense.GetAlertDetails.document_guid
+      description: Document id
+      type: String
+  - arguments:
+    - default: false
+      description: The identifier for the device.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: The Operating System. (WINDOWS, MAC, LINUX, OTHER)
+      isArray: false
+      name: os
+      required: false
+      secret: false
+    - default: false
+      description: The status of the device. (PENDING, REGISTERED, DEREGISTERED, BYPASS
+        ,ACTIVE, INACTIVE, ERROR, ALL, BYPASS_ON, LIVE, SENSOR_PENDING_UPDATE)
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: The time to start getting results.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: The “Target value” configured in the policy assigned to the sensor.
+        (LOW, MEDIUM, HIGH, MISSION_CRITICAL)
+      isArray: false
+      name: target_priority
+      required: false
+      secret: false
+    - default: false
+      description: The Query in lucene syntax.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The time to end getting results.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Search devices in your organization.
+    execution: false
+    name: cbd-device-search
+  - arguments:
+    - default: false
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: device_os
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ad_group_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: policy_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: target_priority
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sort_field
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: sort_order
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: cbd-devices-search
+  - arguments:
+    - default: false
+      defaultValue: 'A Carbon Black Cloud classification for events tagged to an alert
+        indicating whether the event is a “threat” or “observed” '
+      description: The A Carbon Black Cloud classification for events tagged to an
+        alert indicating whether the event is a “threat” or “observed”.
+      isArray: false
+      name: alert_category
+      required: false
+      secret: false
+    - default: false
+      description: SHA-256 hash(es) of the child process(es) binary; for any process(es)
+        terminated by the sensor
+      isArray: false
+      name: blocked_hash
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the endpoint according to the Carbon Black Cloud;
+        can differ from device_internal_ip due to network proxy or NAT; either IPv4
+        (dotted decimal notation) or IPv6 (proprietary format documented below).
+      isArray: false
+      name: device_external_ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The ID assigned to the endpoint by Carbon Black Cloud; unique
+        across all Carbon Black Cloud environments.
+      description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
+        all Carbon Black Cloud environments.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The IP address of the endpoint reported by the sensor; either
+        IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
+      description: The IP address of the endpoint reported by the sensor; either IPv4
+        (dotted decimal notation) or IPv6 (proprietary format, documented below).
+      isArray: false
+      name: device_internal_ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The Hostname of the endpoint recorded by the sensor when last
+        initialized
+      description: The Hostname of the endpoint recorded by the sensor when last initialized.
+      isArray: false
+      name: device_name
+      required: false
+      secret: false
+    - default: false
+      description: The operating system of the endpoint.
+      isArray: false
+      name: device_os
+      required: false
+      secret: false
+    - default: false
+      description: The Sensor-reported timestamp of the batch of events in which this
+        record was submitted to Carbon Black Cloud.
+      isArray: false
+      name: device_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: The Type of enriched event observed.
+      isArray: false
+      name: event_type
+      required: false
+      secret: false
+    - default: false
+      description: The MD5 and/or SHA-256 hash of the parent process binary.
+      isArray: false
+      name: parent_hash
+      required: false
+      secret: false
+    - default: false
+      description: The Filesystem path of the parent process binary.
+      isArray: false
+      name: parent_name
+      required: false
+      secret: false
+    - default: false
+      description: The Reputation of the parent process; applied by the Carbon Black
+        Cloud when the event is initially processed.
+      isArray: false
+      name: parent_reputation
+      required: false
+      secret: false
+    - default: false
+      description: The Command line executed by the actor process.
+      isArray: false
+      name: process_cmdline
+      required: false
+      secret: false
+    - default: false
+      description: The Unique process identifier for the actor process.
+      isArray: false
+      name: process_guid
+      required: false
+      secret: false
+    - default: false
+      description: The MD5 and/or SHA-256 hash of the actor process binary; order
+        may vary when two hashes are reported.
+      isArray: false
+      name: process_hash
+      required: false
+      secret: false
+    - default: false
+      description: The Filesystem path of the actor process binary.
+      isArray: false
+      name: process_name
+      required: false
+      secret: false
+    - default: false
+      description: The Process identifier assigned by the operating system; can be
+        multi-valued in case of fork() or exec() process operations on Linux and macOS.
+      isArray: false
+      name: process_pid
+      required: false
+      secret: false
+    - default: false
+      description: The Reputation of the actor process; applied when event is processed
+        by the Carbon Black Cloud.
+      isArray: false
+      name: process_reputation
+      required: false
+      secret: false
+    - default: false
+      description: The Sensor reported timestamp of when the process started; not
+        available for processes running before the sensor starts.
+      isArray: false
+      name: process_start_time
+      required: false
+      secret: false
+    - default: false
+      description: “True” indicates the process has terminated; always “false” for
+        enriched events (process termination not recorded).
+      isArray: false
+      name: process_terminated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The User context in which the actor process was executed.
+        MacOS - all users for the PID for fork() and exec() transitions,
+        Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
+      isArray: false
+      name: process_username
+      required: false
+      secret: false
+    - default: false
+      description: The action performed by the sensor on the process.
+      isArray: false
+      name: sensor_action
+      required: false
+      secret: false
+    - default: false
+      description: The Query in lucene syntax and/or including value searches.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The Number of rows to request, can be paginated.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
+    - default: false
+      description: The first row to use for pagination.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: The time window to restrict the search to match using device_timestamp
+        as the reference. Window will take priority over start and end if provided.
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a process search job. The results for the search job may
+      be requested using the job_id returned.
+    execution: false
+    name: cbd-find-processes
+  - arguments:
+    - default: false
+      defaultValue: 'A Carbon Black Cloud classification for events tagged to an alert
+        indicating whether the event is a “threat” or “observed” '
+      description: The A Carbon Black Cloud classification for events tagged to an
+        alert indicating whether the event is a “threat” or “observed”.
+      isArray: false
+      name: alert_category
+      required: false
+      secret: false
+    - default: false
+      description: SHA-256 hash(es) of the child process(es) binary; for any process(es)
+        terminated by the sensor
+      isArray: false
+      name: blocked_hash
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the endpoint according to the Carbon Black Cloud;
+        can differ from device_internal_ip due to network proxy or NAT; either IPv4
+        (dotted decimal notation) or IPv6 (proprietary format documented below).
+      isArray: false
+      name: device_external_ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The ID assigned to the endpoint by Carbon Black Cloud; unique
+        across all Carbon Black Cloud environments.
+      description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
+        all Carbon Black Cloud environments.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The IP address of the endpoint reported by the sensor; either
+        IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
+      description: The IP address of the endpoint reported by the sensor; either IPv4
+        (dotted decimal notation) or IPv6 (proprietary format, documented below).
+      isArray: false
+      name: device_internal_ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The Hostname of the endpoint recorded by the sensor when last
+        initialized
+      description: The Hostname of the endpoint recorded by the sensor when last initialized.
+      isArray: false
+      name: device_name
+      required: false
+      secret: false
+    - default: false
+      description: The operating system of the endpoint.
+      isArray: false
+      name: device_os
+      required: false
+      secret: false
+    - default: false
+      description: The Type of enriched event observed.
+      isArray: false
+      name: event_type
+      required: false
+      secret: false
+    - default: false
+      description: The MD5 and/or SHA-256 hash of the parent process binary.
+      isArray: false
+      name: parent_hash
+      required: false
+      secret: false
+    - default: false
+      description: The Filesystem path of the parent process binary.
+      isArray: false
+      name: parent_name
+      required: false
+      secret: false
+    - default: false
+      description: The Reputation of the parent process; applied by the Carbon Black
+        Cloud when the event is initially processed.
+      isArray: false
+      name: parent_reputation
+      required: false
+      secret: false
+    - default: false
+      description: The Command line executed by the actor process.
+      isArray: false
+      name: process_cmdline
+      required: false
+      secret: false
+    - default: false
+      description: The Unique process identifier for the actor process.
+      isArray: false
+      name: process_guid
+      required: false
+      secret: false
+    - default: false
+      description: The MD5 and/or SHA-256 hash of the actor process binary; order
+        may vary when two hashes are reported.
+      isArray: false
+      name: process_hash
+      required: false
+      secret: false
+    - default: false
+      description: The Filesystem path of the actor process binary.
+      isArray: false
+      name: process_name
+      required: false
+      secret: false
+    - default: false
+      description: The Process identifier assigned by the operating system; can be
+        multi-valued in case of fork() or exec() process operations on Linux and macOS.
+      isArray: false
+      name: process_pid
+      required: false
+      secret: false
+    - default: false
+      description: The Reputation of the actor process; applied when event is processed
+        by the Carbon Black Cloud.
+      isArray: false
+      name: process_reputation
+      required: false
+      secret: false
+    - default: false
+      description: The Sensor reported timestamp of when the process started; not
+        available for processes running before the sensor starts.
+      isArray: false
+      name: process_start_time
+      required: false
+      secret: false
+    - default: false
+      description: “True” indicates the process has terminated; always “false” for
+        enriched events (process termination not recorded).
+      isArray: false
+      name: process_terminated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The User context in which the actor process was executed.
+        MacOS - all users for the PID for fork() and exec() transitions,
+        Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
+      isArray: false
+      name: process_username
+      required: false
+      secret: false
+    - default: false
+      description: The action performed by the sensor on the process.
+      isArray: false
+      name: sensor_action
+      required: false
+      secret: false
+    - default: false
+      description: The Query in lucene syntax and/or including value searches.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The Number of rows to request, can be paginated.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
+    - default: false
+      description: The first row to use for pagination.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: The time window to restrict the search to match using device_timestamp
+        as the reference. Window will take priority over start and end if provided.
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an enriched events search job. The results for the search
+      job may be requested using the job_id returned.
+    execution: false
+    name: cbd-find-events
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the results of a process search identified by a job_id.
+    execution: false
+    name: cbd-find-processes-results
+  - deprecated: false
+    description: Get the list of policies available in your organization.
+    execution: false
+    name: cbd-get-policies
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicies.Id
+      description: The policy id.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicies.PriorityLevel
+      description: The policy priority level.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicies.SystemPolicy
+      description: Is system policy (boolean).
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicies.LatestRevision
+      description: Policy latest revision.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicies.Policy
+      description: The policy object.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policyId
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a policy object by ID.
+    execution: false
+    name: cbd-get-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicy.Id
+      description: The policy id.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicy.PriorityLevel
+      description: The policy priority level.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicy.SystemPolicy
+      description: Is system policy (boolean).
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicy.LatestRevision
+      description: Policy latest revision.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.GetPolicy.Policy
+      description: The policy object.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The policy to be set.
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    - default: false
+      description: A json object that holds key/value pairs. Key is the field path
+        in the policy object you wish to update with value.
+      isArray: false
+      name: keyValue
+      required: true
+      secret: false
+    deprecated: false
+    description: Re-set policy fields.
+    execution: false
+    name: cbd-set-policy
+  - arguments:
+    - default: false
+      description: A description of the policy (can be multiple lines)
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: A one-line name for the policy (shown in the UI)
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The priority score associated with sensors assigned to this policy.
+        (HIGH, MEDIUM or LOW )
+      isArray: false
+      name: priorityLevel
+      required: true
+      secret: false
+    - default: false
+      description: The JSON object containing the policy details. Make sure a valid
+        policy object is passed. You may use 'get-policy' in order to receive a similar
+        policy object, then re-set some of the policy's fields with 'set-policy'.
+        Finally pass the mutated object.
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Policy on the Cb Defense backend.
+    execution: false
+    name: cbd-create-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.CreatePolicy.PolicyId
+      description: The new policy id.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policyId
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a policy from the Cb Defense backend. This may return an error
+      if devices are actively assigned to the policy id requested for deletion. Please
+      note that system policies cannot be deleted.
+    execution: false
+    name: cbd-delete-policy
+  - arguments:
+    - default: false
+      description: A description of the policy.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: A one-line name for the policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The priority score associated with sensors assigned to this policy.
+      isArray: false
+      name: priorityLevl
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the policy to replace.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The JSON object containing the policy details. The JSON object
+        containing the policy details. Make sure a valid policy object is passed.
+        You may use 'get-policy' in order to receive the policy object you wish to
+        update, then re-set some of the policy's fields with 'set-policy'. Finally
+        pass the mutated object.
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing policy with a new policy. Please note that system
+      policies cannot be modified.
+    execution: false
+    name: cbd-update-policy
+  - arguments:
+    - default: false
+      description: Rule action.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: Rule operation.
+      isArray: false
+      name: operation
+      required: true
+      secret: false
+    - default: false
+      description: Rule required
+      isArray: false
+      name: required
+      required: true
+      secret: false
+    - default: false
+      description: Rule id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Application type.
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: Application value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policyId
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new rule to an existing policy. Please note that system policies
+      cannot be modified.
+    execution: false
+    name: cbd-add-rule-to-policy
+  - arguments:
+    - default: false
+      description: Rule action.
+      isArray: false
+      name: action
+      required: true
+      secret: false
+    - default: false
+      description: Rule operation.
+      isArray: false
+      name: operation
+      required: true
+      secret: false
+    - default: false
+      description: Rule required
+      isArray: false
+      name: required
+      required: true
+      secret: false
+    - default: false
+      description: Rule id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Application type.
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: Application value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policyId
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing rule with a new rule. Please note that system
+      policies cannot be modified.
+    execution: false
+    name: cbd-update-rule-in-policy
+  - arguments:
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policyId
+      required: true
+      secret: false
+    - default: false
+      description: The rule id.
+      isArray: false
+      name: ruleId
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a rule from an existing policy. Please note that system policies
+      cannot be modified.
+    execution: false
+    name: cbd-delete-rule-from-policy
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the result for an enriched events search request for a
+      given job_id.
+    execution: false
+    name: cbd-find-events-results
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the status for an enriched events search request for a
+      given job_id.
+    execution: false
+    name: cbd-find-events-status
+  - arguments:
+    - default: false
+      description: A list of event ids to fetch. (comma separated)
+      isArray: false
+      name: event_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates a request to retrieve detail fields for enriched events.
+    execution: false
+    name: cbd-find-events-details
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the status for an enriched events detail request for a
+      given job_id.
+    execution: false
+    name: cbd-find-events-details-status
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the status for an enriched events detail request for a
+      given job_id.
+    execution: false
+    name: cbd-find-events-details-results
+  - arguments:
+    - default: false
+      description: The job id.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the status of a search job.
+    execution: false
+    name: cbd-find-processes-status
+  - arguments:
+    - default: false
+      description: The id of the device
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Quarantine the device
+    execution: false
+    name: cbd-device-quarantine
+  - arguments:
+    - default: false
+      description: The id of the device
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unquarantine the device
+    execution: false
+    name: cbd-device-unquarantine
+  - arguments:
+    - default: false
+      description: The id of the device
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Start a background scan on the device
+    execution: false
+    name: cbd-device-background-scan
+  - arguments:
+    - default: false
+      description: The id of the device
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Stop a backgroun scan on the device
+    execution: false
+    name: cbd-device-background-scan-stop
+  - arguments:
+    - default: false
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Bypass a device
+    execution: false
+    name: cbd-device-bypass
+  - arguments:
+    - default: false
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unbypass a device
+    execution: false
+    name: cbd-device-unbypass
+  - arguments:
+    - default: false
+      description: The id of the device.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: The id of the policy.
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a policy in a device by policy id
+    execution: false
+    name: cbd-device-policy-update
+  - arguments:
+    - default: false
+      description: The id of the device
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: The new version of the sensor
+      isArray: false
+      name: sensor_version
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the version of a sensor
+    execution: false
+    name: cbd-device-update-sensor-version
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
