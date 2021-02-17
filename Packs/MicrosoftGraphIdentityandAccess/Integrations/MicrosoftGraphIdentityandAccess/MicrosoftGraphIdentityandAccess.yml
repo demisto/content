@@ -17,7 +17,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Identity & Access integration to manage roles
+description: Use the Microsoft Graph Identity and Access integration to manage roles
   and members.
 display: Microsoft Graph Identity & Access
 name: MicrosoftGraphIdentityandAccess
@@ -44,74 +44,74 @@ script:
     execution: false
     name: msgraph-identity-auth-test
   - deprecated: false
-    description: Lists roles in the directory.
+    description: Lists the roles in the directory.
     execution: false
     name: msgraph-identity-directory-roles-list
     arguments:
     - name: limit
       default: false
-      description: Maximum results to fetch
+      description: Maximum number of results to fetch.
       isArray: false
       required: false
       defaultValue: 10
       secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: The time which the role has been deleted. Presents if role is deleted.
+      description: The time when a role was deleted. Displays only if a role was deleted.
       type: Date
     - contextPath: MSGraphIdentity.Role.description
-      description: The description for the directory role.
+      description: The description of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.displayName
-      description: The display name for the directory role.
+      description: The display name of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.id
-      description: The unique identifier for the directory role.
+      description: The unique identifier of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.roleTemplateId
-      description: The id of the directoryRoleTemplate that this role is based on.
+      description: The ID of the directory role template on which the role is based.
       type: String
   - deprecated: false
-    description: Activate a role by its template id.
+    description: Activates a role by its template ID.
     execution: false
     name: msgraph-identity-directory-role-activate
     arguments:
     - name: role_template_id
       default: false
-      description: Role template to activate. Can be retrieved from msgraph-identity-directory-roles-list.
+      description: ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: The time which the role has been deleted. Presents if role is deleted.
+      description: The time when the role was deleted. Displays only if the role was deleted.
       type: Date
     - contextPath: MSGraphIdentity.Role.description
-      description: The description for the directory role.
+      description: The description of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.displayName
-      description: The display name for the directory role.
+      description: The display name of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.id
-      description: The unique identifier for the directory role.
+      description: The unique identifier of the directory role.
       type: String
     - contextPath: MSGraphIdentity.Role.roleTemplateId
-      description: The id of the directoryRoleTemplate that this role is based on.
+      description: The ID of the directory role template on which this role is based.
       type: String
   - deprecated: false
-    description: Gets all members in the role ID.
+    description: Gets all members in a role ID.
     execution: false
     name: msgraph-identity-directory-role-members-list
     arguments:
     - name: role_id
       default: false
-      description: The ID of the service to remove. Can be retrieved from msgraph-identity-directory-roles-list.
+      description: The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     - name: limit
       default: false
-      description: The maximum members to fetch.
+      description: The maximum number of members to fetch.
       defaultValue: 10
       isArray: false
       required: false
@@ -121,22 +121,22 @@ script:
       description: The unique identifier of the user in the role.
       type: String
     - contextPath: MSGraphIdentity.RoleMember.role_id
-      description: The unique identifier of the role which given in the input.
+      description: The unique identifier of the role specified in the input.
       type: String
   - deprecated: false
-    description: Add a user to a role.
+    description: Adds a user to a role.
     execution: false
     name: msgraph-identity-directory-role-member-add
     arguments:
     - name: role_id
       default: false
-      description: Role ID to add the user to. Can be retrieved from msgraph-identity-directory-roles-list.
+      description: The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     - name: user_id
       default: false
-      description: A user ID to add to the role. Can be retrieved from msgraph-identity-directory-role-members-list.
+      description: The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
       isArray: false
       required: true
       secret: false
@@ -147,13 +147,13 @@ script:
     arguments:
     - name: role_id
       default: false
-      description: Role ID to remove the user from. Can be retrieved from msgraph-identity-directory-roles-list.
+      description: ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     - name: user_id
       default: false
-      description: A user ID to remove from the role. Can be retrieved from msgraph-identity-directory-role-members-list.
+      description: ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
       isArray: false
       required: true
       secret: false
