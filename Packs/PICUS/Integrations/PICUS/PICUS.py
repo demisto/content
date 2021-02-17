@@ -631,10 +631,10 @@ def mitigationList(requestContent):
   "begin_date": "2018-10-29",
   "end_date": "2019-10-29",
   "page": 5,
-  "products": "SourceFire IPS",
-  "signature_id": "27726",
+  "products": "Product1",
+  "signature_id": "12345",
   "size": 10,
-  "threat_id": 100682
+  "threat_id": 123456
 }
 '''
 
