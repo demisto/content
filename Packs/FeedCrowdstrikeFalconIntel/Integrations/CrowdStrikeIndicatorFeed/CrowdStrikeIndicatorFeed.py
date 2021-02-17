@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa
 # IMPORTS
 from datetime import datetime
 import requests
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -38,24 +39,40 @@ class Client(BaseClient):
         self._client_secret = client_secret
         self._verify_certificate = verify
         self._base_url = base_url
-        super().__init__(base_url=base_url, verify=self._verify_certificate,
-                         ok_codes=tuple(), proxy=proxy)
+        super().__init__(
+            base_url=base_url,
+            verify=self._verify_certificate,
+            ok_codes=tuple(),
+            proxy=proxy
+        )
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
 
     def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
                      timeout=10, auth=None) -> dict:
 
-        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     params=params, data=data, timeout=timeout, auth=auth)
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            full_url=full_url,
+            headers=headers,
+            params=params,
+            data=data,
+            timeout=timeout,
+            auth=auth
+        )
 
     def _get_access_token(self):
         body = {
             'client_id': self._client_id,
             'client_secret': self._client_secret
         }
-        token_res = self.http_request(method='POST', url_suffix='/oauth2/token', data=body,
-                                      auth=(self._client_id, self._client_secret))
+        token_res = self.http_request(
+            method='POST',
+            url_suffix='/oauth2/token',
+            data=body,
+            auth=(self._client_id, self._client_secret)
+        )
         return token_res.get('access_token')
 
     def set_last_run(self):
@@ -74,7 +91,7 @@ class Client(BaseClient):
         return params
 
     def get_indicators(self, type=None, malicious_confidence='', filter='', q='',
-                       limit: int = 100, offset: int = 0, include_deleted=False,
+                       limit: int = 200, offset: int = 0, include_deleted=False,
                        get_indicators_command=False) -> Dict[str, Any]:
         if type:
             type_fql = self.build_type_fql(type)
@@ -91,8 +108,12 @@ class Client(BaseClient):
 
         params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
 
-        response = self.http_request(method='GET', params=params, headers=self._headers,
-                                     url_suffix='intel/combined/indicators/v1')
+        response = self.http_request(
+            method='GET',
+            params=params,
+            headers=self._headers,
+            url_suffix='intel/combined/indicators/v1'
+        )
         return response
 
     def build_type_fql(self, types_list: list) -> str:
@@ -111,7 +132,7 @@ class Client(BaseClient):
         return result
 
 
-def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q, feed_tags):
+def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q, limit):
     """ fetch indicators from the Crowdstrike Intel
 
     Args:
@@ -122,13 +143,19 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
         malicious_confidence(str): medium, low, high
         filter (str): indicators filter.
         q (str): generic phrase match
-        feed_tags (list): tags to assign fetched indicators
+        limit (int): max num of indicators to fetch
 
     Returns:
         list of indicators(list)
     """
-    raw_response = client.get_indicators(type=type, malicious_confidence=malicious_confidence, filter=filter, q=q,
-                                         include_deleted=include_deleted, get_indicators_command=True)
+    raw_response = client.get_indicators(
+        type=type,
+        malicious_confidence=malicious_confidence,
+        filter=filter, q=q,
+        include_deleted=include_deleted,
+        get_indicators_command=True,
+        limit=limit
+    )
     parsed_indicators = []  # type: List
     indicator = {}  # type: Dict
     for resource in raw_response['resources']:
@@ -137,11 +164,9 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
             'value': resource.get('indicator'),
             'rawJSON': resource,
             'fields': {
-                'tags': [label.get('name') for label in indicator.get('labels')]  # type: ignore
+                'tags': [label.get('name') for label in resource.get('labels')]  # type: ignore
             }
         }
-        if feed_tags:
-            indicator['fields']['tags'] = feed_tags
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         parsed_indicators.append(indicator)
@@ -167,9 +192,15 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     offset = int(args.get('offset', 0))
     limit = int(args.get('limit', 50))
 
-    raw_response = client.get_indicators(type=type_, malicious_confidence=malicious_confidence, filter=filter, q=q,
-                                         limit=limit, offset=offset, include_deleted=include_deleted,
-                                         get_indicators_command=True)
+    raw_response = client.get_indicators(
+        type=type_,
+        malicious_confidence=malicious_confidence,
+        filter=filter, q=q,
+        limit=limit,
+        offset=offset,
+        include_deleted=include_deleted,
+        get_indicators_command=True
+    )
     indicators_list = raw_response.get('resources')
     if outputs := copy.deepcopy(indicators_list):
         for indicator in outputs:
@@ -217,7 +248,6 @@ def main() -> None:
     client_secret = params.get('client_secret')
     proxy = params.get('proxy', False)
     verify_certificate = not demisto.params().get('insecure', False)
-    feed_tags = argToList(params.get('feedTags'))
     base_url = "https://api.crowdstrike.com/"
     tlp_color = params.get('tlp_color')
     include_deleted = argToBoolean(params.get('include_deleted', False))
@@ -225,6 +255,7 @@ def main() -> None:
     malicious_confidence = params.get('malicious_confidence')
     filter = params.get('filter')
     q = params.get('q')
+    max_fetch = int(params.get('max_indicator_to_fetch', '500'))
     command = demisto.command()
     args = demisto.args()
 
@@ -235,7 +266,8 @@ def main() -> None:
             client_secret=client_secret,
             base_url=base_url,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy
+        )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -243,9 +275,15 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(client=client, tlp_color=tlp_color, include_deleted=include_deleted,
-                                          type=type, malicious_confidence=malicious_confidence,
-                                          filter=filter, q=q, feed_tags=feed_tags)
+            indicators = fetch_indicators(
+                client=client,
+                tlp_color=tlp_color,
+                include_deleted=include_deleted,
+                type=type,
+                malicious_confidence=malicious_confidence,
+                filter=filter, q=q,
+                limit=max_fetch
+            )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

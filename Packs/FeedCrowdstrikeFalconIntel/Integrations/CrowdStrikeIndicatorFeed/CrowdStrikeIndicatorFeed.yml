@@ -123,6 +123,12 @@ configuration:
   - URL
   required: false
   type: 16
+- defaultvalue: '200'
+  display: Max. indicators per fetch (default is 200)
+  hidden: false
+  name: max_indicator_to_fetch
+  required: false
+  type: 0
 - additionalinfo: Malicious confidence level of the indicator.
   display: Malicious confidence
   hidden: false
