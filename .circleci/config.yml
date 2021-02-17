@@ -285,7 +285,7 @@ references:
       name: Create Content Artifacts
       when: always
       command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --content_version $CONTENT_VERSION
 
         GCS_PATH=$(mktemp)
         echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
