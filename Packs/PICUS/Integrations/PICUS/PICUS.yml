@@ -196,7 +196,7 @@ script:
     description: Returns the list of the sigma rules of scenario actions\nhave optional
       parameters for pagination and filtration, this route may not be used associated
       with your license
-    name: Picus-Sigma-Rules-List
+    name: picus-sigma-rules-list
   - arguments:
     - defaultValue: "True"
       description: boolean - Add vectors' assigned user details to the response
