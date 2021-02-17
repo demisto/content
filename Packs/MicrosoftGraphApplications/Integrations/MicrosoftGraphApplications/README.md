@@ -1,4 +1,4 @@
-Use the Microsoft Graph Services integration to manage authorized application.
+Use the Microsoft Graph Applications integration to manage authorized application.
 This integration was integrated and tested with version v1.0 of Microsoft Graph Services API.
 ## Configure MicrosoftGraphServices on Cortex XSOAR
 
@@ -35,7 +35,7 @@ Tests connectivity to Microsoft.
 
 ### msgraph-apps-service-principal-list
 ***
-Retrieves a list of service principals.
+Retrieves a list of applications.
 
 
 #### Base Command
@@ -52,19 +52,19 @@ Retrieves a list of service principals.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphService.accountEnabled | Boolean | true if the service principal account is enabled; otherwise, false. | 
+| MSGraphService.accountEnabled | Boolean | true if the application account is enabled; otherwise, false. | 
 | MSGraphService.appDescription | String | A brief description of the application. | 
 | MSGraphService.appDisplayName | String | The display name exposed by the associated application. | 
 | MSGraphService.appId | String | The unique identifier for the associated application \(its appId property\). | 
 | MSGraphService.appOwnerOrganizationId | String | Contains the tenant ID where the application is registered. This is applicable only to service principals backed by applications. | 
-| MSGraphService.appRoleAssignmentRequired | Boolean | Whether users or other service principals need to be granted an application role assignment for this service principal before users can sign in or apps can get tokens. Default is false. | 
-| MSGraphService.applicationTemplateId | String | Unique identifier of the applicationTemplate that the servicePrincipal was created from.  | 
-| MSGraphService.createdDateTime | Date | Time  the application was created. | 
-| MSGraphService.deletedDateTime | Date | Time  the application was deleted. | 
+| MSGraphService.appRoleAssignmentRequired | Boolean | Whether users or other applications need to be granted an application role assignment for this service principal before users can sign in or apps can get tokens. Default is false. | 
+| MSGraphService.applicationTemplateId | String | Unique identifier of the application template that the service principal was created from.  | 
+| MSGraphService.createdDateTime | Date | Time the application was created. | 
+| MSGraphService.deletedDateTime | Date | Time the application was deleted. | 
 | MSGraphService.description | String | A brief description of the application. | 
-| MSGraphService.displayName | String | The display name for the service principal. | 
+| MSGraphService.displayName | String | The display name for the application. | 
 | MSGraphService.homepage | String | Home page or landing page of the application. | 
-| MSGraphService.id | String | The unique identifier for the service principal. | 
+| MSGraphService.id | String | The unique identifier for the application. | 
 | MSGraphService.info.logoUrl | String | Content delivery network (CDN) URL to the application's logo. | 
 | MSGraphService.info.marketingUrl | String | Link to the application's marketing page. | 
 | MSGraphService.info.privacyStatementUrl | String | Link to the application's privacy statement. | 
