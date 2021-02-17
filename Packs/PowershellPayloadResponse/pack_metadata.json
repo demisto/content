@@ -1,6 +1,6 @@
 {
     "name": "Powershell Payload Response",
-    "description": "PowerShell is an automated task framework with a command line shell and a scripting language integrated into the .NET framework. Cyber threat actors often leverage PowerShell once they gain access to a system. It provides them access to the command line, stored data, local and remote systems. This in turn provides them the ability to hide malicious commands and scripts and run locally or over a target network as if the system administrator was performing a legitimate task.",
+    "description": "The Powershell Payload Response playbook is designed to handle a suspected file/payload execution within Powershell. The playbook will isolate the endpoint machine, detonate the suspected file in an isolated environment, and then check to see if other endpoint machines have this same executable stored somewhere. All of this can be configured to update to a specified SIEM/Ticket Tracking platform of your choosing. This will help improve remediation time by doing the busy work of investigating and detonating files, isolating endpoints, and checking for other files like it in the system, and present the analyst with a series of findings for them to make a judgement call on, as well as pre-scripted remediation actions in order to remove said files from the infected endpoint machines and get them back online.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Accenture",
