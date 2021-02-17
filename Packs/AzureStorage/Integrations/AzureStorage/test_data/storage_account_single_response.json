@@ -46,10 +46,10 @@
     "provisioningState": "Succeeded",
     "creationTime": "2021-02-09T14:45:18.3075946Z",
     "primaryEndpoints": {
-      "blob": "https://yaakov.blob.core.windows.net/",
-      "queue": "https://yaakov.queue.core.windows.net/",
-      "table": "https://yaakov.table.core.windows.net/",
-      "file": "https://yaakov.file.core.windows.net/"
+      "blob": "",
+      "queue": "",
+      "table": "",
+      "file": ""
     },
     "primaryLocation": "eastus",
     "statusOfPrimary": "available",

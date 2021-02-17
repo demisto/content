@@ -40,10 +40,10 @@
         "provisioningState": "Succeeded",
         "creationTime": "2018-10-22T22:38:38.8180662Z",
         "primaryEndpoints": {
-          "blob": "https://cs20f907ea4bc8bx4c11x9d7.blob.core.windows.net/",
-          "queue": "https://cs20f907ea4bc8bx4c11x9d7.queue.core.windows.net/",
-          "table": "https://cs20f907ea4bc8bx4c11x9d7.table.core.windows.net/",
-          "file": "https://cs20f907ea4bc8bx4c11x9d7.file.core.windows.net/"
+          "blob": "",
+          "queue": "",
+          "table": "",
+          "file": ""
         },
         "primaryLocation": "location1",
         "statusOfPrimary": "available"
@@ -97,10 +97,10 @@
         "provisioningState": "Succeeded",
         "creationTime": "2021-02-09T14:45:18.3075946Z",
         "primaryEndpoints": {
-          "blob": "https://yaakov.blob.core.windows.net/",
-          "queue": "https://yaakov.queue.core.windows.net/",
-          "table": "https://yaakov.table.core.windows.net/",
-          "file": "https://yaakov.file.core.windows.net/"
+          "blob": "",
+          "queue": "",
+          "table": "",
+          "file": ""
         },
         "primaryLocation": "eastus",
         "statusOfPrimary": "available",
