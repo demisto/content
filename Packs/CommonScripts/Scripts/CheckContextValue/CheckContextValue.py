@@ -3,7 +3,7 @@ from typing import Dict
 from CommonServerPython import *
 
 
-def check_field(field_value, regex=None):
+def check_key(field_value, regex=None):
     if regex:
         if re.search(regex, field_value):
             return True
@@ -14,32 +14,28 @@ def check_field(field_value, regex=None):
 
 
 def poll_field(args: Dict[str, Any]) -> CommandResults:
-    field = args.get('field')
+    keys_list = args.get('key', '').split(".")
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
+
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
     regex = re.compile(regex, regex_ignore_case_flag) if regex else None
 
-    incident = demisto.incidents()[0]
+    context = dict_safe_get(demisto.context(), keys_list)
 
     data = {
-        'field': field,
+        'key': '.'.join(keys_list),
         'exists': False
     }
 
-    if field in incident:
-        data['exists'] = check_field(incident.get(field), regex)
-
-    else:
-        custom_fields = incident.get('CustomFields', {})
-        if field in custom_fields:
-            data['exists'] = check_field(custom_fields.get(field), regex)
+    if context:
+        data['exists'] = check_key(context, regex)
 
     command_results = CommandResults(
-        outputs_key_field='field',
-        outputs_prefix='CheckFieldValue',
+        outputs_key_field='key',
+        outputs_prefix='CheckContextKey',
         outputs=data,
-        readable_output='The field exists.' if data['exists'] else 'The field does not exist.',
+        readable_output='The key exists.' if data['exists'] else 'The key does not exist.',
         raw_response=data
     )
     return command_results
@@ -49,9 +45,9 @@ def main():
     try:
         args = demisto.args()
         return_results(poll_field(*args))
-    except Exception as ex:
+    except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CheckFieldValue script. Error: {str(ex)}')
+        return_error(f'Failed to execute CheckFieldValue script. Error: {str(err)}')
 
 
 ''' ENTRY POINT '''
