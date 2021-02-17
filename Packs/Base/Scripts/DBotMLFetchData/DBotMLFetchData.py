@@ -595,8 +595,8 @@ def extract_features_from_incident(row, label_fields):
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
     email_html = row[EMAIL_HTML_FIELD] if EMAIL_HTML_FIELD in row and isinstance(row[EMAIL_HTML_FIELD], str) else ''
-    email_headers = row[EMAIL_HEADERS_FIELD] if EMAIL_HEADERS_FIELD in row and \
-                                                isinstance(row[EMAIL_HEADERS_FIELD], list) else []
+    email_headers = row[EMAIL_HEADERS_FIELD] if \
+        EMAIL_HEADERS_FIELD in row and isinstance(row[EMAIL_HEADERS_FIELD], list) else []
     email_attachments = row[EMAIL_ATTACHMENT_FIELD] if EMAIL_ATTACHMENT_FIELD in row else []
     email_attachments = email_attachments if email_attachments is not None else []
     if isinstance(email_html, float):
