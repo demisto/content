@@ -4,6 +4,7 @@ import threading
 
 import pytest
 import slack
+from slack.web.slack_response import SlackResponse
 
 from CommonServerPython import *
 
@@ -307,6 +308,11 @@ PAYLOAD_JSON = r'''
      ]
   }
 '''
+
+SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'ts': 'cool'}, headers={},
+                               status_code=0)
+SLACK_RESPONSE_2 = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'cool': 'cool'}, headers={},
+                                 status_code=0)
 
 
 def test_exception_in_invite_to_mirrored_channel(mocker):
@@ -2767,7 +2773,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2821,7 +2827,7 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2874,7 +2880,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2929,7 +2935,7 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
@@ -2995,7 +3001,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
@@ -3062,8 +3068,9 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
@@ -3122,7 +3129,7 @@ def test_send_to_user_lowercase(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
 
@@ -3178,7 +3185,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with capfd.disabled():
@@ -3226,7 +3233,7 @@ def test_send_request_no_user(mocker, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value='cool')
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
 
@@ -3273,7 +3280,7 @@ def test_send_request_no_severity(mocker):
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with pytest.raises(InterruptedError):
@@ -3318,7 +3325,7 @@ def test_send_request_zero_severity(mocker):
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with pytest.raises(InterruptedError):
@@ -4259,13 +4266,13 @@ def test_fail_connect_threads(mocker):
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
 
 
-def test_slack_send_filter_one_mirro_tag(mocker):
+def test_slack_send_filter_one_mirror_tag(mocker):
     # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
     import Slack
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
 
     mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
                                                        'entryObject': {'tags': ['tag1']}})
@@ -4281,7 +4288,7 @@ def test_slack_send_filter_no_mirror_tags(mocker):
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
-    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
 
     mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
                                                        'entryObject': {'tags': ['tag1']}})
