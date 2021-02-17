@@ -346,10 +346,11 @@ script:
         case 'fe-submit-status':
             submissionKeyList = argToList(args.submission_Key);
             result = [];
+            method = commandDictionary[command].method
+            setContentType = commandDictionary[command].setContentType
+
             for (var i=0; i < submissionKeyList.length; i++) {
                 url = commandDictionary[command].url + '/' + submissionKeyList[i]
-                method = commandDictionary[command].method
-                setContentType = commandDictionary[command].setContentType
 
                 response = sendRequest(url, method, token, setContentType);
                 status_result = response.Body;
