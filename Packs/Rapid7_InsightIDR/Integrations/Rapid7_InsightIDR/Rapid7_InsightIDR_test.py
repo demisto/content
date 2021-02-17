@@ -28,7 +28,7 @@ def test_insight_idr_list_investigations(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_list_investigations_command
+    from Rapid7_InsightIDR import Client, insight_idr_list_investigations_command
 
     mock_response = util_load_json('test_data/list_investigations.json')
     requests_mock.get(
@@ -65,7 +65,7 @@ def test_insight_idr_get_investigation(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_get_investigation_command
+    from Rapid7_InsightIDR import Client, insight_idr_get_investigation_command
 
     mock_response = util_load_json('test_data/get_investigation.json')
     requests_mock.get(
@@ -100,7 +100,7 @@ def test_close_investigation(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure the amount of ids that were closed
     """
-    from insightidr import Client, insight_idr_close_investigations_command
+    from Rapid7_InsightIDR import Client, insight_idr_close_investigations_command
 
     mock_response = util_load_json('test_data/close_investigations.json')
     requests_mock.post(
@@ -136,7 +136,7 @@ def test_assign_user(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure email field is as expected
     """
-    from insightidr import Client, insight_idr_assign_user_command
+    from Rapid7_InsightIDR import Client, insight_idr_assign_user_command
 
     investigation_id = '174e4f99-2ac7-4481-9301-4d24c34baf06'
     email = 'example@test.com'
@@ -178,7 +178,7 @@ def test_set_status(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure status field is as expected
     """
-    from insightidr import Client, insight_idr_set_status_command
+    from Rapid7_InsightIDR import Client, insight_idr_set_status_command
 
     investigation_id = '174e4f99-2ac7-4481-9301-4d24c34baf06'
     status = 'OPEN'
@@ -221,7 +221,7 @@ def test_insight_idr_add_threat_indicators(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_add_threat_indicators_command
+    from Rapid7_InsightIDR import Client, insight_idr_add_threat_indicators_command
 
     mock_response = util_load_json('test_data/add_threat_indicators.json')
     requests_mock.post(
@@ -260,7 +260,7 @@ def test_insight_idr_replace_threat_indicators(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_replace_threat_indicators_command
+    from Rapid7_InsightIDR import Client, insight_idr_replace_threat_indicators_command
 
     mock_response = util_load_json('test_data/replace_threat_indicators.json')
     requests_mock.post(
@@ -298,7 +298,7 @@ def test_insight_idr_list_logs(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_list_logs_command
+    from Rapid7_InsightIDR import Client, insight_idr_list_logs_command
 
     mock_response = util_load_json('test_data/list_logs.json')
     requests_mock.get(
@@ -335,7 +335,7 @@ def test_insight_idr_list_log_sets(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_list_log_sets_command
+    from Rapid7_InsightIDR import Client, insight_idr_list_log_sets_command
 
     mock_response = util_load_json('test_data/list_log_sets.json')
     requests_mock.get(
@@ -372,7 +372,7 @@ def test_insight_idr_download_logs(requests_mock) -> None:
     Then:
      - Ensure file type
     """
-    from insightidr import Client, insight_idr_download_logs_command
+    from Rapid7_InsightIDR import Client, insight_idr_download_logs_command
 
     mock_response = util_load_file('test_data/download_logs.txt')
     requests_mock.get(
@@ -404,7 +404,7 @@ def test_insight_idr_query_log(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_query_log_command
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_command
 
     mock_response = util_load_json('test_data/list_log_sets.json')
     requests_mock.get(
@@ -442,7 +442,7 @@ def test_insight_idr_query_log_set(requests_mock) -> None:
      - Ensure key field is correct
      - Ensure output is as expected
     """
-    from insightidr import Client, insight_idr_query_log_set_command
+    from Rapid7_InsightIDR import Client, insight_idr_query_log_set_command
 
     mock_response = util_load_json('test_data/list_log_sets.json')
     requests_mock.get(
@@ -480,7 +480,7 @@ def test_fetch_incidents(requests_mock) -> None:
      - Ensure output is as expected
      - Ensure timestamp is as expected (+1 Miliseconds)
     """
-    from insightidr import Client, fetch_incidents
+    from Rapid7_InsightIDR import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/list_investigations.json')
     requests_mock.get(
