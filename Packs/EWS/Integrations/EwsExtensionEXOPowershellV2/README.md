@@ -33,6 +33,7 @@ Displays mailbox objects and attributes, populate property pages, or supplies ma
 | organizational_unit | The object's location in Active Directory by which to filter the results. | Optional | 
 | primary_smtp_address | The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command. | Optional | 
 | user_principal_name | The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command. | Optional | 
+| property_sets | A comma-separated list of property sets to fetch. These property sets will supplement the outputs of this integration. Default is "Minimum".  Available properties are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold", "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention", "SCL", "SoftDelete", "StatisticsSeed". | Optional
 | limit | The maximum number of results to retrieve. Default is 10. Default is 10. | Optional | 
 
 
