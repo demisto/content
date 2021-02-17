@@ -3,7 +3,6 @@
     "associatedTypes": [
         "QSS SOC Monitoring"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "qsscaseassets",
     "closeForm": false,
@@ -33,42 +32,35 @@
             "width": 150
         }
     ],
-    "content": false,
+    "content": true,
     "defaultRows": [
-        {},
-        {},
-        {}
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
     ],
-    "description": "",
     "editForm": true,
-    "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_qsscaseassets",
     "isReadOnly": false,
-    "itemVersion": "",
     "locked": false,
-    "mergeStrategy": "",
     "name": "QSS Case Assets",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "packID": "",
-    "placeholder": "",
     "required": false,
-    "script": "",
-    "selectValues": null,
     "sla": 0,
-    "sortValues": null,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
-    "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "validatedError": "",
-    "validationRegex": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

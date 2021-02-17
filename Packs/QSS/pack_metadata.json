@@ -1,13 +1,17 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
-    "support": "xsoar",
+    "name": "SOC Case Management Platform",
+    "description": "Use SOC Case Management Platform (SCMP) solution to manage and automated SOC activities in an efficient way",
+    "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "author": "Quantum Security Systems",
+    "url": "https://www.qss.com.sa",
+    "email": "dev@qss.com.sa",
     "created": "2020-12-17T10:44:19Z",
-    "categories": [],
+    "categories": [
+    	"Case Management",
+    	"SOC Management",
+    	"Incident Response"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": []

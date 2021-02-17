@@ -1,32 +1,16 @@
 {
-    "brands": null,
-    "defaultIncidentType": "",
     "description": "Classifies QSS SOC Monitoring cases based on category classification.",
     "feed": false,
-    "fromServerVersion": "",
     "id": "dec05662-910b-4eea-8a01-7b42e0762348",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
     "keyTypeMap": {
         "SOC Monitoring": "QSS SOC Monitoring"
     },
-    "locked": false,
-    "logicalVersion": 0,
-    "mapping": null,
     "name": "QSS Classifier",
-    "nameRaw": "QSS Classifier",
-    "packID": "",
-    "sortValues": null,
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
     "transformer": {
         "complex": null,
         "simple": "category"
     },
     "type": "classification",
-    "unclassifiedCases": null,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

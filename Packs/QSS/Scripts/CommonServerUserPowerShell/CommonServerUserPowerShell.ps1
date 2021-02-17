@@ -1,2 +1,0 @@
-. $PSScriptRoot\CommonServerPowerShell.ps1
-
