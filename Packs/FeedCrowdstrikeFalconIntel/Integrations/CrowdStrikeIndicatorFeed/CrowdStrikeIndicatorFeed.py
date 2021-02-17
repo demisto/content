@@ -255,7 +255,7 @@ def main() -> None:
     malicious_confidence = params.get('malicious_confidence')
     filter = params.get('filter')
     q = params.get('q')
-    max_fetch = int(params.get('max_indicator_to_fetch', '500'))
+    max_fetch = params.get('max_indicator_to_fetch') if params.get('max_indicator_to_fetch') else 500
     command = demisto.command()
     args = demisto.args()
 
