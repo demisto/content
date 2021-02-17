@@ -6,4 +6,3 @@
 !opencti-indicator-field-add label=new-label id=676c1652-e9b6-48d1-bf14-c509e4c3a6fd
 !opencti-organization-list
 !opencti-organization-create name=ExampleOrganization description="create organization" reliability="C"
-!opencti-reset-fetch-indicators
