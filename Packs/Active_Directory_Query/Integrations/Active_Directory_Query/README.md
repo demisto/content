@@ -64,6 +64,8 @@ The premium ILM content pack introduces new functionality that uses both an inco
 1. Configure the "Incoming Mapper" with the name of the incoming mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Incoming)".
 2. Configure the "Outgoing Mapper" with the name of the outgoing mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Outgoing)".
 
+    As part of the configuration of the mapper,  create a transformer that maps an attribute to the OU (organization unit) field. This is a required attribute for Active Directory.
+
 To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and *not* in the "Mapper (outgoing)" dropdown list selector.
 
 Commands
