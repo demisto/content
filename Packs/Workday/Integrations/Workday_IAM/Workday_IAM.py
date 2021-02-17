@@ -37,7 +37,7 @@ class Client(BaseClient):
 def convert_incident_fields_to_cli_names(data):
     converted_data = {}
     for k, v in data.items():
-        key_machine_name = k.lower().replace(' ', '')
+        key_machine_name = k.lower().replace(' ', '').replace('_', '')
         converted_data[key_machine_name] = v
     return converted_data
 
@@ -296,13 +296,14 @@ def main():
             events = last_run.get('events', [])
             report_url = params.get('report_url')
 
-            if params.get('fetch_samples'):
+            if params.get('fetch_samples') and not last_run.get('fetched_samples'):
                 sample_events = fetch_samples(
                     client=client,
                     mapper_in=mapper_in,
                     report_url=report_url
                 )
                 demisto.incidents(sample_events)
+                demisto.setLastRun({'fetched_samples': True})
 
             else:
                 if not last_run.get('synced_users') and params.get('first_run'):

@@ -397,6 +397,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - Okta IAM - Test Playbook
 defaultmapperin: Okta IAM - App Sync (mapper)
