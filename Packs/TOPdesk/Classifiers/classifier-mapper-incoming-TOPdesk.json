@@ -15,10 +15,6 @@
      "complex": null,
      "simple": "callerBranch.name"
     },
-    "TOPdesk Caller Id": {
-     "complex": null,
-     "simple": "caller.id"
-    },
     "TOPdesk Caller Location": {
      "complex": null,
      "simple": "callerLocation"
@@ -134,10 +130,6 @@
      "simple": "priority.name"
     },
     "TOPdesk Processing Status": {
-     "complex": null,
-     "simple": "processingStatus.name"
-    },
-    "TOPdesk Progress Status": {
      "complex": null,
      "simple": "processingStatus.name"
     },
