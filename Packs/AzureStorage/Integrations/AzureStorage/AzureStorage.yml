@@ -754,7 +754,7 @@ script:
       description: An array of predefined supported blob types. Only blockBlob is
         the supported value.
       type: String
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: false
   longRunning: false
@@ -764,3 +764,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests
