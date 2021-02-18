@@ -1835,7 +1835,7 @@ tasks:
     task:
       id: 6b55d2d9-d07b-491d-81ba-37c03597a865
       version: -1
-      name: panorama-get-pcap from the FW
+      name: panorama-get-pcap from the 8.1 FW(Will fail on the 9.0 Panorama instance)
       description: Returns information for a Panorama PCAP file. The recommended maximum
         file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
         and run the scp export command to export the PCAP file. For more information,
@@ -1861,6 +1861,7 @@ tasks:
       searchTime: {}
       serialNo: {}
       sessionID: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {

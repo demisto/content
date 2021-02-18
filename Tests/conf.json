@@ -3248,7 +3248,6 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
