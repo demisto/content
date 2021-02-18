@@ -140,12 +140,12 @@ def set_dbot_score(threatx_score):
 
 
 @logger
-def block_ip(ip):
+def block_ip(ip, description):
     commands = {
         'command': 'new_blocklist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -156,7 +156,8 @@ def block_ip(ip):
 @logger
 def block_ip_command(args):
     ip = args.get('ip', None)
-    results = block_ip(ip)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = block_ip(ip, description)
 
     md = tableToMarkdown('Block IP',
                          results,
@@ -202,12 +203,12 @@ def unblock_ip_command(args):
 
 
 @logger
-def blacklist_ip(ip):
+def blacklist_ip(ip, description):
     commands = {
         'command': 'new_blacklist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -218,7 +219,8 @@ def blacklist_ip(ip):
 @logger
 def blacklist_ip_command(args):
     ip = args.get('ip', None)
-    results = blacklist_ip(ip)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = blacklist_ip(ip, description)
 
     md = tableToMarkdown('Blacklist IP',
                          results,
@@ -264,12 +266,12 @@ def unblacklist_ip_command(args):
 
 
 @logger
-def whitelist_ip(ip):
+def whitelist_ip(ip, description):
     commands = {
         'command': 'new_whitelist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -280,7 +282,8 @@ def whitelist_ip(ip):
 @logger
 def whitelist_ip_command(args):
     ip = args.get('ip', None)
-    results = whitelist_ip(ip)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = whitelist_ip(ip, description)
 
     md = tableToMarkdown('Whitelist IP',
                          results,

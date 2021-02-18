@@ -43,6 +43,13 @@ script:
       name: ip
       required: true
       secret: false
+    - default: false
+      defaultValue: 'Added by ThreatX Demisto Integration'
+      description: 'The description of the IP record in the block list.'
+      isArray: false
+      name: description
+      required: false
+      secret: false
     deprecated: false
     description: Temporarily blocks an IP address or CIDR. Default is 30 minutes.
     execution: true
@@ -73,6 +80,13 @@ script:
       name: ip
       required: true
       secret: false
+    - default: false
+      defaultValue: 'Added by ThreatX Demisto Integration'
+      description: 'The description of the IP record in the blacklist.'
+      isArray: false
+      name: description
+      required: false
+      secret: false
     deprecated: false
     description: Adds an IP address or CIDR to the blacklist.
     execution: true
@@ -102,6 +116,13 @@ script:
       isArray: false
       name: ip
       required: true
+      secret: false
+    - default: false
+      defaultValue: 'Added by ThreatX Demisto Integration'
+      description: 'The description of the IP record in the whitelist.'
+      isArray: false
+      name: description
+      required: false
       secret: false
     deprecated: false
     description: Adds an IP address or CIDR to the whitelist.
