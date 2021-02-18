@@ -2248,6 +2248,7 @@ def sub_main():
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
+    # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox',
                                                 args.get('source_mailbox', params['default_target_mailbox']))
     client = EWSClient(**params)
