@@ -118,7 +118,6 @@ configuration:
   - File MD5
   - File SHA-256
   - IP
-  - IPv6
   - Registry Key
   - URL
   required: false
@@ -193,7 +192,6 @@ script:
       - File MD5
       - File SHA-256
       - IP
-      - IPv6
       - Registry Key
       - URL
       required: false

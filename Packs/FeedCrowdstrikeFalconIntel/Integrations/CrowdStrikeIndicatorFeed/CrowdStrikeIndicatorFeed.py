@@ -15,9 +15,8 @@ XSOHR_TYPES_TO_CROWDSTRIKE = {
     'domain': "domain",
     'email': "email_address",
     'file md5': "hash_md5",
-    'file sha256': "hash_sha256",
+    'file sha-256': "hash_sha256",
     'ip': "ip_address",
-    'ipv6': "ip_address",
     'registry key': "registry",
     'url': "url"
 }
@@ -28,7 +27,8 @@ CROWDSTRIKE_TO_XSOHR_TYPES = {
     'hash_md5': 'File MD5',
     'hash_sha256': 'File SHA-256',
     'registry': 'Registry Key',
-    'url': 'URL'
+    'url': 'URL',
+    "ip_address": 'IP'
 }
 
 
