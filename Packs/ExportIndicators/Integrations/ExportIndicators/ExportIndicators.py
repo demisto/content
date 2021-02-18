@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
+
+
 
 import re
 import json
@@ -81,7 +81,7 @@ class RequestArguments:
     def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
-                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False):
+                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = 'lastSeen', sort_order: str = 'ascending'):
 
         self.query = query
         self.out_format = out_format
@@ -94,6 +94,8 @@ class RequestArguments:
         self.category_attribute = []  # type:List
         self.collapse_ips = collapse_ips
         self.csv_text = csv_text
+        self.sort_field = sort_field
+        self.sort_order = sort_order
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -130,6 +132,12 @@ class RequestArguments:
             return True
 
         elif self.csv_text != last_update_data.get('csv_text'):
+            return True
+
+        elif self.sort_field != last_update_data.get('sort_field'):
+            return True
+
+        elif self.sort_order != last_update_data.get('sort_order'):
             return True
 
         return False
@@ -177,6 +185,14 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     now = datetime.now()
     # poll indicators into list from demisto
     iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
+
+    # Sort IOCs
+    if request_args.sort_field != '':
+        if request_args.sort_order == 'ascending':
+            iocs = sorted(iocs, key=lambda x:x[request_args.sort_field], reverse=False)
+        else:
+            iocs = sorted(iocs, key=lambda x:x[request_args.sort_field], reverse=True)
+
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     # if in CSV format - the "indicator" header
@@ -235,7 +251,9 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         'category_default': request_args.category_default,
         'category_attribute': request_args.category_attribute,
         'collapse_ips': request_args.collapse_ips,
-        'csv_text': request_args.csv_text
+        'csv_text': request_args.csv_text,
+        'sort_field': request_args.sort_field,
+        'sort_order': request_args.sort_order
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -263,7 +281,6 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
 
     return iocs[offset_in_page:limit + offset_in_page]
 
-
 def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
                                     last_found_len: int = PAGE_SIZE):
     """
@@ -279,7 +296,6 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
         total_fetched += last_found_len
         next_page += 1
     return iocs, next_page
-
 
 def ip_groups_to_cidrs(ip_range_groups: list):
     """Collapse ip groups list to CIDRs
@@ -301,7 +317,6 @@ def ip_groups_to_cidrs(ip_range_groups: list):
         ip_ranges.append(str(cidr))
 
     return ip_ranges
-
 
 def ip_groups_to_ranges(ip_range_groups: list):
     """Collapse ip groups list to ranges.
@@ -334,6 +349,30 @@ def ips_to_ranges(ips: list, collapse_ips: str):
     Returns:
         list. a list to Ranges or CIDRs.
     """
+    ips_range_groups = []  # type:List
+    ips = sorted(ips)
+    if len(ips) > 0:
+        ips_range_groups.append([ips[0]])
+
+    if len(ips) > 1:
+        for ip in ips[1:]:
+            appended = False
+
+            if len(ips_range_groups) == 0:
+                ips_range_groups.append([ip])
+                continue
+
+            for group in ips_range_groups:
+                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                    group.append(ip)
+                    sorted(group)
+                    appended = True
+
+            if not appended:
+                ips_range_groups.append([ip])
+
+    for group in ips_range_groups:
+        sorted(group)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
         ips_range_groups = IPSet(ips).iter_ipranges()
@@ -651,6 +690,8 @@ def get_request_args(params):
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
     csv_text = request.args.get('tx', params.get('csv_text', False))
+    sort_field = request.args.get('sf', params.get('sort_field'))
+    sort_order = request.args.get('so', params.get('sort_order'))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -709,7 +750,7 @@ def get_request_args(params):
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text)
+                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
 
 @APP.route('/', methods=['GET'])
@@ -872,7 +913,7 @@ def update_outbound_command(args, params):
     csv_text = args.get('csv_text') == 'True'
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text)
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
     indicators = refresh_outbound_context(request_args)
     if indicators:
