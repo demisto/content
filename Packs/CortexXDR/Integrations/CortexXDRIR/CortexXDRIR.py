@@ -2797,7 +2797,7 @@ def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     try:
         parameters = json.loads(args.get('parameters', '{}'))
     except json.decoder.JSONDecodeError as e:
-        raise ValueError(f'The parameters argument is not in valid JSON structure. {e}')
+        raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return (
