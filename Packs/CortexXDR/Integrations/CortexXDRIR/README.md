@@ -2044,7 +2044,7 @@ Initiates a new endpoint script execution action using a script from the script 
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
 | parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Optional |
-| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2318,7 +2318,7 @@ Initiates a new endpoint script execution of shell commands.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | commands | Comma-separated list of shell commands to execute. | Required |
-| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2370,7 +2370,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | file_path | Path of the file to delete. | Required |
-| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2421,7 +2421,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | file_path | Path of the file to check for existence. | Required |
-| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output
@@ -2472,7 +2472,7 @@ Initiates a new endpoint script execution kill process.
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | process_name | Name of the process to kill. | Required |
-| timeout | Integer representing the timeout in seconds for this execution. Default is 600. | Optional |
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
 #### Context Output

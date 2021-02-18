@@ -2255,7 +2255,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Integer representing the timeout in seconds for this execution.
+      description: The timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
@@ -2459,7 +2459,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer representing the timeout in seconds for this execution.
+      description: The timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
@@ -2491,7 +2491,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer representing the timeout in seconds for this execution.
+      description: The timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
@@ -2523,7 +2523,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer representing the timeout in seconds for this execution.
+      description: The timeout in seconds for this execution.
       isArray: false
       name: timeout
       required: false
@@ -2555,7 +2555,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integer representing the timeout in seconds for this execution.
+      description: The timeout in seconds for this execution.
       isArray: false
       name: timeout
       defaultValue: 600
