@@ -79,12 +79,10 @@ class Client(BaseClient):
         current_time = datetime.now()
         current_timestamp = datetime.timestamp(current_time)
         timestamp = str(int(current_timestamp))
-        demisto.setLastRun({'last_modified_time': timestamp})
-        demisto.info(f'set last_modified_time: {timestamp}')
+        demisto.setIntegrationContext({'last_modified_time': timestamp})
 
     def get_last_run(self) -> str:
-        demisto.info(f'get last_modified_time: {demisto.getLastRun().get("last_modified_time")}')
-        if last_run := demisto.getLastRun().get('last_modified_time'):
+        if last_run := demisto.getIntegrationContext().get('last_modified_time'):
             params = f'last_updated:>{last_run}'
             self.set_last_run()
         else:
