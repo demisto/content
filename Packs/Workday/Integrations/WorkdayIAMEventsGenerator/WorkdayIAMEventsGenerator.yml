@@ -94,10 +94,11 @@ script:
     name: workday-generate-rehire-event
   - arguments:
     - default: false
-      description: 'The last hire date of the user. For example: "06/15/2020"'
+      description: 'The last hire date of the user. For example: "06/15/2020". The
+        default is today.'
       isArray: false
       name: last_day_of_work
-      required: true
+      required: false
       secret: false
     - default: false
       description: The user email to termniate.
@@ -106,10 +107,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The user termination date. For example: "06/15/2020"'
+      description: 'The user termination date. For example: "06/15/2020". The default
+        is today.'
       isArray: false
       name: termination_date
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Generate workday terminate event.

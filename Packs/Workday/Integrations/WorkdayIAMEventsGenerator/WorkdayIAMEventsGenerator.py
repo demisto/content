@@ -2,6 +2,7 @@
 from flask import Flask, jsonify
 from gevent.pywsgi import WSGIServer
 from CommonServerPython import *
+import datetime
 
 FIRST_RUN_REPORT = {
     "Report_Entry": [
@@ -518,9 +519,19 @@ def get_full_reports():
     return jsonify(integration_context)
 
 
+def get_full_report():
+    set_integration_context(FIRST_RUN_REPORT)
+    integration_context = get_integration_context()
+    return integration_context['Report_Entry'][0]
+
+
 def test_module():
     if int(demisto.params().get('longRunningPort', '')) and demisto.params().get("longRunning"):
-        demisto.results('ok')
+        user_report =  get_full_report()
+        if user_report:
+            demisto.results('ok')
+        else:
+            return_error('Could not connect to the long running server. Please make sure everything is configured.')
     else:
         return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
 
@@ -573,6 +584,8 @@ def get_terminate_report():
     user_email = demisto.args().get('user_email')
     integration_context = get_integration_context()
     existing_email_addressees = []
+    now = datetime.datetime.now()
+    current_date = now.strftime("%m/%d/%Y")
     for report in integration_context['Report_Entry']:
         email_address = report.get('Email_Address')
         existing_email_addressees.append(email_address)
@@ -588,8 +601,8 @@ def get_terminate_report():
             raise Exception(f'The user {user_email} is already terminated.')
 
         user_report['Employment_Status'] = 'Terminated'
-        user_report['Last_Day_of_Work'] = demisto.args().get('last_day_of_work')
-        user_report['Termination_Date'] = demisto.args().get('termination_date')
+        user_report['Last_Day_of_Work'] = demisto.args().get('last_day_of_work', str(current_date))
+        user_report['Termination_Date'] = demisto.args().get('termination_date', str(current_date))
         set_integration_context(integration_context)
         return_results('Successfully generated the Terminate user event.')
 
