@@ -236,7 +236,12 @@ def activate_directory_role_command(ms_client: Client, args: dict) -> CommandRes
     return CommandResults(
         "MSGraphIdentity.Role",
         "id",
-        outputs=results
+        outputs=results,
+        readable_output=tableToMarkdown(
+            'Role has been activated',
+            results,
+            ['id', 'roleTemplateId', 'displayName', 'description', 'deletedDateTime']
+        )
     )
 
 
