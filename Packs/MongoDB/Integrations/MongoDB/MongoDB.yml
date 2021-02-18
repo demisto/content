@@ -227,7 +227,7 @@ script:
       description: 'A JSON pipeline query to search by for in the collection. Pipeline
         query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
       isArray: false
-      name: query
+      name: pipeline
       required: true
       secret: false
     - default: false
