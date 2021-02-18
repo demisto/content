@@ -440,6 +440,10 @@ script:
     - contextPath: OpenCTI.Organization.id
       description: New organization id.
       type: String
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: opencti-reset-fetch-indicators
   dockerimage: demisto/opencti-v4:1.0.0.16772
   feed: true
   isfetch: false

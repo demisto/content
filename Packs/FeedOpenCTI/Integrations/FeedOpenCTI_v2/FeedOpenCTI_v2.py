@@ -69,6 +69,14 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
     return result
 
 
+def reset_last_run():
+    """
+    Reset the last run from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Fetch history deleted successfully')
+
+
 def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
@@ -120,26 +128,12 @@ def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_c
         list of indicators(list)
     """
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
-    last_run_id2 = demisto.getLastRun().get('last_run_id')
-    last_timestamp = demisto.getLastRun().get('last_timestamp')
-    last_a = demisto.getLastRun().get('last_a')
-    demisto.info(f'last_id 1: {last_run_id}, last_id2: {last_run_id2}, last_timestamp: {last_timestamp}, last_a: {last_a}')
 
     new_last_run, indicators_list = get_indicators(client, indicator_type, limit=max_fetch, last_run_id=last_run_id,
                                                    tlp_color=tlp_color)
 
-    demisto.info(f'new last id: {new_last_run}')
-
-    current_time = datetime.now()
-    current_timestamp = datetime.timestamp(current_time)
-    timestamp = str(int(current_timestamp))
-    demisto.setLastRun({'last_a': 'a',
-                        'last_timestamp': timestamp})
-
     if new_last_run and not is_test:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
-        # demisto.setLastRun({'last_run_id': new_last_run})
-        demisto.info(f'new last id here: {new_last_run}')
 
     return indicators_list
 
@@ -474,6 +468,9 @@ def main():
 
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
+
+        elif command == "opencti-reset-fetch-indicators":
+            return_results(reset_last_run())
 
         elif command == "opencti-indicator-delete":
             return_results(indicator_delete_command(client, args))
