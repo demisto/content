@@ -124,25 +124,11 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         domain_data = client.get_domain_data(domain)
         domain_data['domain'] = domain
 
-        score = Common.DBotScore.NONE
-        readable_output = tableToMarkdown('Domain', domain_data)
-
-        # if not enough, raise error??
-        # if not domain_data['web']:
-        #     readable_output = f'No information given about {domain}'
-
-        if 'date' in domain_data['web']:
+        if domain_data['web'] and 'date' in domain_data['web']:
             domain_data['updated_date'] = parse_domain_date(domain_data['web']['date'])
 
         reputation = int(domain_data['web'].get('rank', 0))
-        # if reputation == 0:
-        #     score = Common.DBotScore.NONE  # unknown
-        # elif reputation >= threshold:
-        #     score = Common.DBotScore.BAD  # bad
-        # elif reputation >= threshold / 2:
-        #     score = Common.DBotScore.SUSPICIOUS  # suspicious
-        # else:
-        #     score = Common.DBotScore.GOOD  # good
+        score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(
             indicator=domain,
             integration_name='HostIo',
@@ -162,6 +148,8 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             dns=domain_data.get('dns', None),
             dbot_score=dbot_score
         )
+
+        readable_output = tableToMarkdown('Domain', domain_data)
 
         command_results.append(CommandResults(
             readable_output=readable_output,
