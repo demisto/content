@@ -107,7 +107,11 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
-- defaultvalue: source
+- additionalinfo: Used only for Mapping with the Select Schema option. The name of
+    the field that contains the type of the event or alert. The default value is "source",
+    which is a good option for Notable Events, however you may choose any custom field
+    that suits the need.
+  defaultvalue: source
   display: Event Type Field
   hidden: false
   name: type_field
