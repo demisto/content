@@ -669,7 +669,7 @@ def panorama_push_status_command(job_id: str):
         raise Exception('JobID given is not of a Push.')
 
     push_status_output = {'JobID': job.get('id')}
-    if job.get('status', '') == 'FIN':
+    if job.get('status', '') or job.get('@status', '') == 'FIN':
         if job.get('result', '') == 'OK':
             push_status_output['Status'] = 'Completed'
         else:
