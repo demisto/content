@@ -15,7 +15,7 @@ class Client:
 def test_get_indicators(mocker):
     """Tests get_indicators function
     Given
-        The following indicator types: 'registry-key-value', 'user-account' that were chosen by the user.
+        The following indicator types: 'registry key', 'account' that were chosen by the user.
     When
         - `fetch_indicators_command` or `get_indicators_command` are calling the get_indicators function
     Then
@@ -26,7 +26,7 @@ def test_get_indicators(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    new_last_id, indicators = get_indicators(client, indicator_type=['registry-key-value', 'user-account'], limit=10)
+    new_last_id, indicators = get_indicators(client, indicator_type=['registry key', 'account'], limit=10)
     assert len(indicators) == 2
     assert new_last_id == 'YXJyYXljb25uZWN0aW9uOjI='
 
@@ -34,7 +34,7 @@ def test_get_indicators(mocker):
 def test_fetch_indicators_command(mocker):
     """Tests fetch_indicators_command function
     Given
-        The following indicator types: 'registry-key-value', 'user-account' that were chosen by the user.
+        The following indicator types: 'registry key', 'account' that were chosen by the user.
     When
         - Calling `fetch_indicators_command`
     Then
@@ -43,14 +43,14 @@ def test_fetch_indicators_command(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    indicators = fetch_indicators_command(client, indicator_type=['registry-key-value', 'user-account'], max_fetch=200)
+    indicators = fetch_indicators_command(client, indicator_type=['registry key', 'account'], max_fetch=200)
     assert len(indicators) == 2
 
 
 def test_get_indicators_command(mocker):
     """Tests get_indicators_command function
     Given
-        The following indicator types: 'registry-key-value', 'user-account' that were chosen by the user and 'limit': 2
+        The following indicator types: 'registry key', 'account' that were chosen by the user and 'limit': 2
     When
         - Calling `get_indicators_command`
     Then
@@ -59,7 +59,7 @@ def test_get_indicators_command(mocker):
     """
     client = Client
     args = {
-        'indicator_types': 'registry-key-value,user-account',
+        'indicator_types': 'registry key,account',
         'limit': 2
     }
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
@@ -71,7 +71,7 @@ def test_get_indicators_command(mocker):
 def test_get_indicators_command_with_no_data_to_return(mocker):
     """Tests get_indicators_command function with no data to return
     Given
-        The following indicator types: 'registry-key-value', 'user-account' that were chosen by the user.
+        The following indicator types: 'registry key', 'account' that were chosen by the user.
     When
         - Calling `get_indicators_command`
     Then
@@ -79,7 +79,7 @@ def test_get_indicators_command_with_no_data_to_return(mocker):
     """
     client = Client
     args = {
-        'indicator_types': ['registry-key-value', 'user-account']
+        'indicator_types': ['registry key', 'account']
     }
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
     results: CommandResults = get_indicators_command(client, args)
@@ -144,7 +144,7 @@ def test_indicator_create_command(mocker):
     client = Client
     args = {
         'score': '20',
-        'type': 'Domain-Name',
+        'type': 'Domain',
         'data': "{\"value\": \"devtest.com\"}"
     }
     mocker.patch.object(client.stix_cyber_observable, 'create', return_value={'id': '123456'})

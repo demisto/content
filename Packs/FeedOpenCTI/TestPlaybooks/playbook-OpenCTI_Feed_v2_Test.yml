@@ -266,7 +266,7 @@ tasks:
       score:
         simple: "70"
       type:
-        simple: HostName
+        simple: Host
     separatecontext: false
     view: |-
       {

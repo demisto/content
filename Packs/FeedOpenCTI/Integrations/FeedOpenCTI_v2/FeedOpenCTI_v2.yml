@@ -14,25 +14,23 @@ configuration:
   required: true
   type: 4
 - additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
-    in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-    "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and
-    "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer
-    to the integration documentation for more information. The default is "ALL".'
+    in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key",
+    and "URL". The rest will not cause automatic indicator creation in XSOAR.
+    Please refer to the integration documentation for more information. The default
+    is "ALL".'
   defaultvalue: ALL
   display: Indicators Type to fetch
   name: indicator_types
   options:
   - ALL
-  - User-Account
+  - Account
   - Domain
-  - Email-Address
-  - File-MD5
-  - File-SHA1
-  - File-SHA256
-  - HostName
-  - IPV4-Addr
-  - IPV6-Addr
-  - Registry-Key-Value
+  - Email
+  - File
+  - Host
+  - IP
+  - IPv6
+  - Registry Key
   - URL
   required: true
   type: 16
@@ -142,8 +140,7 @@ script:
       default: false
       defaultValue: ALL
       description: 'The indicator types to fetch. Out of the box indicator types supported
-        in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-        "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
+        in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key",
         and "URL". The rest will not cause automatic indicator creation in XSOAR.
         Please refer to the integration documentation for more information. The default
         is "ALL".'
@@ -151,16 +148,14 @@ script:
       name: indicator_types
       predefined:
       - ALL
-      - User-Account
+      - Account
       - Domain
-      - Email-Address
-      - File-MD5
-      - File-SHA1
-      - File-SHA256
-      - HostName
-      - IPV4-Addr
-      - IPV6-Addr
-      - Registry-Key-Value
+      - Email
+      - File
+      - Host
+      - IP
+      - IPv6
+      - Registry Key
       - URL
       required: false
       secret: false
@@ -239,22 +234,22 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The indicator type to create. Out of the box indicator types supported
-        in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
-        "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
+        in XSOAR are: "Account", "Domain", "Email", "File-md5", "File-sha1",
+        "File-sha256", "Host", "IP", "IPV6", "Registry Key",
         and "URL". The rest will not cause automatic indicator creation in XSOAR.'
       isArray: false
       name: type
       predefined:
-      - User-Account
+      - Account
       - Domain
-      - Email-Address
+      - Email
       - File-MD5
       - File-SHA1
       - File-SHA256
-      - HostName
-      - IPV4-Addr
-      - IPV6-Addr
-      - Registry-Key-Value
+      - Host
+      - IP
+      - IPv6
+      - Registry Key
       - URL
       required: true
       secret: false

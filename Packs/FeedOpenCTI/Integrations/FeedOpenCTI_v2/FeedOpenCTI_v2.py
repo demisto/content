@@ -13,27 +13,28 @@ urllib3.disable_warnings()
 logging.getLogger().setLevel(logging.ERROR)
 
 XSOHR_TYPES_TO_OPENCTI = {
-    'user-account': "User-Account",
+    'account': "User-Account",
     'domain': "Domain-Name",
-    'email-address': "Email-Addr",
+    'email': "Email-Addr",
     'file-md5': "StixFile",
     'file-sha1': "StixFile",
     'file-sha256': "StixFile",
-    'hostname': "X-OpenCTI-Hostname",
-    'ipv4-addr': "IPv4-Addr",
-    'ipv6-addr': "IPv6-Addr",
-    'registry-key-value': "Windows-Registry-Key",
+    'file': 'File',
+    'host': "X-OpenCTI-Hostname",
+    'ip': "IPv4-Addr",
+    'ipv6': "IPv6-Addr",
+    'registry key': "Windows-Registry-Key",
     'url': "Url"
 }
 OPENCTI_TYPES_TO_XSOAR = {
-    "User-Account": 'User-Account',
+    "User-Account": 'Account',
     "Domain-Name": 'Domain',
-    "Email-Addr": 'Email-Address',
+    "Email-Addr": 'Email',
     "StixFile": "File",
-    "X-OpenCTI-Hostname": 'HostName',
-    "IPv4-Addr": 'IPV4-Addr',
-    "IPv6-Addr": 'IPV6-Addr',
-    "Windows-Registry-Key": 'Registry-Key-Value',
+    "X-OpenCTI-Hostname": 'Host',
+    "IPv4-Addr": 'IP',
+    "IPv6-Addr": 'IPv6',
+    "Windows-Registry-Key": 'Registry Key',
     "Url": 'URL'
 }
 KEY_TO_CTI_NAME = {
@@ -47,7 +48,7 @@ KEY_TO_CTI_NAME = {
 FILE_TYPES = {
     'file-md5': "file.hashes.md5",
     'file-sha1': "file.hashes.sha-1",
-    'file-sha256': "file.hashes.sha-256",
+    'file-sha256': "file.hashes.sha-256"
 }
 
 
