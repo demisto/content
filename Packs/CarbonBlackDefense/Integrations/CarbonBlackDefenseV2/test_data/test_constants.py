@@ -1,8 +1,4 @@
-GET_ALERT_BY_ID_MOCK_RES = {'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'}
-ALERT_DETAILS_COMMAND_RES = {
-    'CarbonBlackDefense.GetAlertDetails(val.id == obj.id)': {'id': '1234', 'severity': 7, 'category': 'THREAT',
-                                                             'device_username': 'demo'}
-}
+
 PROCESS_CASES = [
     (
         'get_alert_by_id',
@@ -33,6 +29,15 @@ PROCESS_CASES = [
     (
         'get_events',
         'find_events_command',
-
+        {},
+        {'job_id': '123456'},
+        {'CarbonBlackDefense.Events(val.job_id == obj.job_id)': {'job_id': '123456'}}
+    ),
+    (
+        'get_processes',
+        'processes_search_command',
+        {},
+        {'job_id': '123456'},
+        {'CarbonBlackDefense.Process(val.job_id == obj.job_id)': {'job_id': '123456'}}
     )
 ]
