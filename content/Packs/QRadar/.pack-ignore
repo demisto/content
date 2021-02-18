@@ -1,0 +1,17 @@
+[file:playbook-Access_Investigation_-_QRadar.yml]
+ignore=BA101
+
+[file:QRadar]
+ignore=PA116
+
+[file:QRadar.yml]
+ignore=IN126
+
+[file:playbook-QRadar_Indicator_Hunting.yml]
+ignore=PB111
+
+[file:playbook-QRadarFullSearch.yml]
+ignore=PB111
+
+[file:playbook-QRadar_Indicator_Hunting_V2.yml]
+ignore=PB111

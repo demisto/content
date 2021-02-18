@@ -1,0 +1,16 @@
+comment: Retrieves the number of on call hours per user.
+commonfields:
+  id: GetOnCallHoursPerUser
+  version: -1
+enabled: false
+name: GetOnCallHoursPerUser
+script: '-'
+tags:
+- Shift Management
+- widget
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.5.0

@@ -1,0 +1,451 @@
+commonfields:
+  id: CounterCraft Deception Director
+  version: -1
+name: CounterCraft Deception Director
+display: CounterCraft Deception Director
+category: Deception
+description: CounterCraft Deception Solution detects advanced adversaries. Automate
+  counterintelligence campaigns to discover targeted attacks with real-time active
+  response.
+configuration:
+- display: Deception Director Domain or IP Address
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key for Deception Director connection
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Secret Key for Deception Director connection
+  name: secret_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: countercraft-list-campaigns
+    arguments:
+    - name: name
+      description: Campaign Name
+    outputs:
+    - contextPath: CounterCraft.Campaign.ID
+      description: Campaign ID
+      type: number
+    - contextPath: CounterCraft.Campaign.Name
+      description: Campaign Name
+      type: string
+    - contextPath: CounterCraft.Campaign.Description
+      description: Campaign Description
+      type: string
+    - contextPath: CounterCraft.Campaign.StatusCode
+      description: Campaign Status
+      type: string
+    description: 'List all deception campaigns'
+  - name: countercraft-list-hosts
+    arguments:
+    - name: campaign_id
+      description: Campaign ID
+    outputs:
+    - contextPath: CounterCraft.Host.ID
+      description: Host Id
+      type: number
+    - contextPath: CounterCraft.Host.Name
+      description: Host Name
+      type: string
+    - contextPath: CounterCraft.Host.Description
+      description: Host Description
+      type: string
+    - contextPath: CounterCraft.Host.StatusCode
+      description: Host Status
+      type: string
+    - contextPath: CounterCraft.Host.TypeCode
+      description: Host Type
+      type: string
+    - contextPath: Host.Domain
+      description: The domain of the host
+      type: string
+    - contextPath: Host.Hostname
+      description: The name of the host
+      type: string
+    - contextPath: Host.BIOSVersion
+      description: The BIOS version of the host
+      type: string
+    - contextPath: Host.ID
+      description: The UUID of the host
+      type: string
+    - contextPath: Host.IP
+      description: The IP address of the host
+      type: string
+    - contextPath: Host.Memory
+      description: The memory of the host
+      type: string
+    - contextPath: Host.Model
+      description: The model of the host
+      type: string
+    - contextPath: Host.OS
+      description: The OS of the host
+      type: string
+    - contextPath: Host.OSVersion
+      description: The OS version of the host
+      type: string
+    - contextPath: Host.Processor
+      description: The processor of the host
+      type: string
+    - contextPath: Host.Processors
+      description: The number of processors of the host
+      type: string
+    description: Lists all deception hosts
+  - name: countercraft-list-services
+    arguments:
+    - name: host_id
+      description: Host Id
+    outputs:
+    - contextPath: CounterCraft.Service.ID
+      description: Service ID
+      type: number
+    - contextPath: CounterCraft.Service.Name
+      description: Service Name
+      type: string
+    - contextPath: CounterCraft.Service.Description
+      description: Service.Description
+      type: string
+    - contextPath: CounterCraft.Service.StatusCode
+      description: Service Status
+      type: string
+    - contextPath: CounterCraft.Service.TypeCode
+      description: Service Type
+      type: string
+    description: 'List services currently deployed on deception hosts'
+  - name: countercraft-list-breadcrumbs
+    arguments:
+    - name: campaign_id
+      description: Campaign ID
+    outputs:
+    - contextPath: CounterCraft.Breadcrumb.ID
+      description: Breadcrumb ID
+      type: number
+    - contextPath: CounterCraft.Breadcrumb.Name
+      description: Breadcrumb Name
+      type: string
+    - contextPath: CounterCraft.Breadcrumb.Description
+      description: Breadcrumb Description
+      type: string
+    - contextPath: CounterCraft.Breadcrumb.StatusCode
+      description: Breadcrumb Status
+      type: string
+    - contextPath: CounterCraft.Breadcrumb.TypeCode
+      description: Breadcrumb Type
+      type: string
+    description: List breadcrumbs in a campaign
+  - name: countercraft-get-object
+    arguments:
+    - name: value
+      required: true
+      description: Object value. For example 'root' or '192.168.1.1'
+    outputs:
+    - contextPath: CounterCraft.Object.ID
+      description: Object ID
+      type: number
+    - contextPath: CounterCraft.Object.Value
+      description: Object value
+      type: string
+    - contextPath: CounterCraft.Object.Hits
+      description: Object hits
+      type: number
+    - contextPath: CounterCraft.Object.Score
+      description: Object score
+      type: number
+    - contextPath: CounterCraft.Object.TypeCode
+      description: Object type
+      type: string
+    - contextPath: CounterCraft.Object.FirstSeen
+      description: Object first seen
+      type: date
+    - contextPath: CounterCraft.Object.LastSeen
+      description: Object last seen
+      type: date
+    - contextPath: CounterCraft.Object.EventsCount
+      description: Object events count
+      type: number
+    - contextPath: CounterCraft.Object.Tags
+      description: Object tags
+      type: string
+    description: Get information about an object (IoC)
+  - name: countercraft-get-events
+    arguments:
+    - name: criteria
+      required: true
+      description: Search criteria. For example 'type_code:ValidAuth'
+    - name: max_results
+      default: true
+      description: Maximum number of results
+      defaultValue: "50"
+    outputs:
+    - contextPath: CounterCraft.Event.ID
+      description: Event id
+      type: number
+    - contextPath: CounterCraft.Event.CampaignName
+      description: Campaign name
+      type: string
+    - contextPath: CounterCraft.Event.CategoryCode
+      description: Category Code
+      type: string
+    - contextPath: CounterCraft.Event.EventDate
+      description: Event date
+      type: date
+    - contextPath: CounterCraft.Event.HostName
+      description: Host name
+      type: string
+    - contextPath: CounterCraft.Event.ServiceName
+      description: Service name
+      type: string
+    - contextPath: CounterCraft.Event.TypeCode
+      description: Type
+      type: string
+    - contextPath: CounterCraft.Event.Score
+      description: Score
+      type: number
+    - contextPath: CounterCraft.Event.Tags
+      description: Tags
+      type: string
+    - contextPath: CounterCraft.Events.Data
+      description: Data
+      type: unknown
+    description: Get full list of Events
+  - name: countercraft-create-campaign
+    arguments:
+    - name: name
+      required: true
+      description: Campaign name
+    - name: description
+      required: true
+      description: Campaign description
+    outputs:
+    - contextPath: CounterCraft.Campaign.ID
+      description: Campaign ID
+      type: number
+    - contextPath: CounterCraft.Campaign.Name
+      description: Name
+      type: string
+    - contextPath: CounterCraft.Campaign.Description
+      description: Description
+      type: string
+    - contextPath: CounterCraft.Campaign.StatusCode
+      description: Status Code
+      type: string
+    description: Create a new deception campaign
+  - name: countercraft-list-dsns
+    arguments: []
+    outputs:
+    - contextPath: CounterCraft.DSN.ID
+      description: ID
+      type: number
+    - contextPath: CounterCraft.DSN.Name
+      description: Name
+      type: string
+    - contextPath: CounterCraft.DSN.Description
+      description: Description
+      type: string
+    - contextPath: CounterCraft.DSN.Hostname
+      description: Hostname
+      type: string
+    - contextPath: CounterCraft.DSN.Port
+      description: Port
+      type: number
+    description: List Deception Support Nodes (DSNs)
+  - name: countercraft-list-providers
+    arguments: []
+    outputs:
+    - contextPath: ID
+      description: ID
+      type: number
+    - contextPath: CounterCraft.Provider.Name
+      description: Name
+      type: string
+    - contextPath: CounterCraft.Provider.Description
+      description: Description
+      type: string
+    - contextPath: CounterCraft.Provider.TypeCode
+      description: Type
+      type: string
+    - contextPath: CounterCraft.Provider.StatusCode
+      description: Status
+      type: string
+    description: 'List providers (providers for hosts or services i.e. AWS or Office365) '
+  - name: countercraft-create-host-machine
+    arguments:
+    - name: name
+      required: true
+      description: Name
+    - name: description
+      description: Description
+    - name: provider_id
+      required: true
+      description: Provider
+    - name: deception_support_node_id
+      required: true
+      description: Deception Support Node ID
+    - name: campaign_id
+      required: true
+      description: ID of the campaign where you want to deploy a new host. You can execute countercraft-list-campaigns in order to obtain the ID
+    - name: os_family
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - windows
+      - linux
+      description: Operating System
+    - name: ip_address
+      required: true
+      description: IP Address
+    - name: port
+      required: true
+      description: Port
+    - name: username
+      required: true
+      description: Username
+    - name: password
+      required: true
+      description: Password
+    outputs:
+    - contextPath: CounterCraft.Host.Id
+      description: Host ID
+      type: number
+    description: Deploy a new deception host
+  - name: countercraft-list-incidents
+    arguments:
+    - name: campaign_id
+      required: true
+      description: Campaign ID
+    outputs:
+    - contextPath: CounterCraft.Incident.ID
+      description: Incident ID
+      type: number
+    - contextPath: CounterCraft.Incident.Name
+      description: Name
+      type: string
+    - contextPath: CounterCraft.Incident.Description
+      description: Description
+      type: string
+    - contextPath: CounterCraft.Incident.StatusCode
+      description: Status
+      type: string
+    - contextPath: CounterCraft.Incident.TLPCode
+      description: TLP code
+      type: string
+    description: List all incidents currently active
+  - name: countercraft-manage-campaign
+    arguments:
+    - name: campaign_id
+      required: true
+      description: Campaign ID
+    - name: operation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
+      description: Operation
+    outputs:
+    - contextPath: CounterCraft.Campaign.Message
+      description: Result message
+      type: string
+    - contextPath: CounterCraft.Campaign.ID
+      description: Campaign ID
+      type: number
+    description: Manage Campaign parameters
+  - name: countercraft-manage-host
+    arguments:
+    - name: host_id
+      required: true
+      description: Host ID
+    - name: operation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
+      description: Operation
+    outputs:
+    - contextPath: CounterCraft.Host.Message
+      description: Result message
+      type: string
+    - contextPath: CounterCraft.Host.ID
+      description: Host ID
+      type: number
+    description: Manage a deception host
+  - name: countercraft-manage-service
+    arguments:
+    - name: service_id
+      required: true
+      description: Service ID
+    - name: operation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
+      description: Operation
+    outputs:
+    - contextPath: CounterCraft.Service.Message
+      description: Result message
+      type: string
+    - contextPath: CounterCraft.Service.ID
+      description: Service ID
+      type: number
+    description: Manage a deception service
+  - name: countercraft-manage-breadcrumb
+    arguments:
+    - name: breadcrumb_id
+      required: true
+      description: Breadcrumb ID
+    - name: operation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
+      description: Operation
+    outputs:
+    - contextPath: CounterCraft.Breadcrumb.Message
+      description: Result message
+      type: string
+    - contextPath: CounterCraft.Breadcrumb.ID
+      description: Breadcrumb ID
+      type: number
+    description: Manage  breadcrumb
+  dockerimage: demisto/python3:3.8.2.6981
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+  - CounterCraft - Test

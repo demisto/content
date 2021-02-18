@@ -1,0 +1,153 @@
+id: Prisma Access -  Logout User
+version: -1
+name: Prisma Access -  Logout User
+description: This playbook forces logout of a specific user and computer from Prisma Access.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 284e6f14-44a0-4da7-8a8b-3d97cb86b4a7
+    type: start
+    task:
+      id: 284e6f14-44a0-4da7-8a8b-3d97cb86b4a7
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 4c20fc52-4608-4b86-8ce9-f28389fec21d
+    type: condition
+    task:
+      id: 4c20fc52-4608-4b86-8ce9-f28389fec21d
+      version: -1
+      name: Is 'Prisma Access' integration enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Prisma Access
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Prisma Access
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: c54e5e67-06a3-4a6d-8299-ae5348de2f7c
+    type: title
+    task:
+      id: c54e5e67-06a3-4a6d-8299-ae5348de2f7c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 690\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: cc503715-2253-4246-81bd-80e5cf3ea2e0
+    type: regular
+    task:
+      id: cc503715-2253-4246-81bd-80e5cf3ea2e0
+      version: -1
+      name: Prisma Access - Logout User
+      description: Force logout a specific user from Prisma Access
+      script: Prisma Access|||prisma-access-logout-user
+      type: regular
+      iscommand: true
+      brand: Prisma Access
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      computer:
+        simple: ${inputs.hostname}
+      domain:
+        simple: ${inputs.domain}
+      user:
+        simple: ${inputs.username}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 730,\n    \"y\": 420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {\n    \"2_3_#default#\": 0.52\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 705,\n      \"width\": 660,\n    \
+  \  \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: username
+  value: {}
+  required: true
+  description: Username to log out  with Prisma Access
+  playbookInputQuery:
+- key: domain
+  value: {}
+  required: true
+  description: Domain name for the user
+  playbookInputQuery:
+- key: hostname
+  value: {}
+  required: true
+  description: Hostname of  the machine to log out
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests

@@ -1,0 +1,355 @@
+{
+  "id": "domainRep",
+  "version": -1,
+  "fromVersion": "5.0.0",
+  "toVersion": "5.4.9",
+  "modified": "2019-07-18T07:37:50.270500504Z",
+  "sortValues": null,
+  "commitMessage": "",
+  "shouldPublish": false,
+  "shouldCommit": false,
+  "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+  "details": "Domain",
+  "prevDetails": "Domain",
+  "reputationScriptName": "",
+  "reputationCommand": "domain",
+  "enhancementScriptNames": [
+    "DomainReputation"
+  ],
+  "system": true,
+  "locked": false,
+  "disabled": false,
+  "file": false,
+  "updateAfter": 0,
+  "mergeContext": false,
+  "formatScript": "ExtractDomainFromUrlAndEmail",
+  "contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
+  "contextValue": "Name",
+  "excludedBrands": [],
+  "defaultMapping": {
+    "admincountry": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Admin.Country",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "adminemail": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Admin.Email",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "adminname": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Admin.Name",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "adminphone": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Admin.Phone",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "blocked": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Blocked",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "creationdate": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "CreationDate",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "detectionengines": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "DetectionEngines",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "dns": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "DNS",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "domainstatus": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "DomainStatus",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "expirationdate": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "ExpirationDate",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "internal": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Internal",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "nameservers": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "NameServers",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "organization": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Organization",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "positivedetections": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "PositiveDetections",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrantcountry": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrant.Country",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrantemail": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrant.Email",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrantname": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrant.Name",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrantphone": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrant.Phone",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrarabuseemail": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrar.AbuseEmail",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrarabusephone": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrar.AbusePhone",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "registrarname": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Registrar.Name",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "subdomains": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "Subdomains",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "updateddate": {
+      "simple": "",
+      "complex": {
+        "root": "Domain",
+        "filters": [],
+        "accessor": "UpdatedDate",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    }
+  },
+  "manualMapping": null,
+  "fileHashesPriority": null
+}

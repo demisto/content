@@ -1,0 +1,280 @@
+id: entity_enrichment_generic_test
+version: -1
+fromversion: 5.0.0
+name: Entity Enrichment - Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 465ed533-9ff9-4377-8f85-e3f71a95b756
+    type: start
+    task:
+      id: 465ed533-9ff9-4377-8f85-e3f71a95b756
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: bc954f05-5238-40ff-8020-027a1097ad1a
+    type: regular
+    task:
+      id: bc954f05-5238-40ff-8020-027a1097ad1a
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 187
+        }
+      }
+  "2":
+    id: "2"
+    taskid: f7759517-fbbd-44cb-899a-7e068045585e
+    type: regular
+    task:
+      id: f7759517-fbbd-44cb-899a-7e068045585e
+      version: -1
+      name: Set IP
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test.Address
+      value:
+        simple: 10.0.0.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 354
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
+    type: regular
+    task:
+      id: 7bfa19cf-0ba9-4b3a-8b64-7466f0904faa
+      version: -1
+      name: Set Account
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test.Username
+      value:
+        simple: admin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 514
+        }
+      }
+  "8":
+    id: "8"
+    taskid: a18fa053-ba81-48f0-8339-bd3d6a09d03a
+    type: regular
+    task:
+      id: a18fa053-ba81-48f0-8339-bd3d6a09d03a
+      version: -1
+      name: Verify IP Object
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 721,
+          "y": 858
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 5cb139be-bdaf-4409-82d2-424c2ba0775f
+    type: regular
+    task:
+      id: 5cb139be-bdaf-4409-82d2-424c2ba0775f
+      version: -1
+      name: Verify DBotScore
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator, Score, Type, Vendor
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 465,
+          "y": 1077
+        }
+      }
+  "10":
+    id: "10"
+    taskid: ae6f1249-d1ca-4084-8447-559fb483ab1b
+    type: regular
+    task:
+      id: ae6f1249-d1ca-4084-8447-559fb483ab1b
+      version: -1
+      name: Verify Account fields
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Type,ID
+      path:
+        simple: Account
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 248,
+          "y": 860
+        }
+      }
+  "11":
+    id: "11"
+    taskid: eebeda4c-9655-4d21-8194-27313c1e3357
+    type: playbook
+    task:
+      id: eebeda4c-9655-4d21-8194-27313c1e3357
+      version: -1
+      name: Entity Enrichment - Generic
+      description: Enrich entities using one or more integrations
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "8"
+    scriptarguments:
+      Domain:
+        simple: ${Domain.Name}
+      Email:
+        simple: ${Account.Email.Address}
+      Hostname:
+        simple: ${Endpoint.Hostname}
+      IP:
+        simple: ${Test.Address}
+      InternalRange: {}
+      MD5:
+        simple: ${File.MD5}
+      SHA1:
+        simple: ${File.SHA1}
+      SHA256:
+        simple: ${File.SHA256}
+      Username:
+        simple: ${Test.Username}
+      url:
+        simple: ${URL.Data}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 702
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1122,
+        "width": 853,
+        "x": 248,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

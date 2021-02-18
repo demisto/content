@@ -1,0 +1,3752 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RiskIQDigitalFootprint
+  version: -1
+configuration:
+- defaultvalue: https://api.riskiq.net
+  display: API URL
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: API Secret
+  name: secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: The RiskIQ Digital Footprint integration enables your security team to manage
+  assets outside your firewall. Using the integration, you can view asset details, add or update
+  assets and analyze your digital footprint from the adversary's perspective.
+display: RiskIQ Digital Footprint
+name: RiskIQDigitalFootprint
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the asset for which connections are to be fetched. Valid
+        types include: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This
+        argument supports a single value only.'
+      isArray: false
+      name: type
+      predefined:
+      - Domain
+      - Host
+      - IP Address
+      - IP Block
+      - ASN
+      - Page
+      - SSL Cert
+      - Contact
+      required: true
+      secret: false
+    - default: false
+      description: The name of the asset for which connections are to be fetched.
+        For example riskiq.com, 8.8.8.8, mail.net, etc. This argument supports a single
+        value only.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Setting this value to true will search the entire global inventory.
+        Setting it to false will search for assets in the workspace associated with
+        the authentication token. The default value for this argument is false. This argument supports a single value only.
+      isArray: false
+      name: global
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The index of the page to retrieve. The index is zero based so the
+        first page is page 0. The default value for this argument is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The response contains a page of assets for each related asset type.
+        Size determines the number of associated assets of each type that are returned.
+        The default value for this argument is 20. The more associated assets you retrive, the longer it will take 
+        to fetch the response.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the set of assets that are connected to the requested asset.
+    execution: false
+    name: df-asset-connections
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.name
+      description: Name of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.type
+      description: Type of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.state
+      description: State of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.firstSeen
+      description: Date and time when the connected asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.lastSeen
+      description: Date and time when the connected asset was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.uuid
+      description: UUID of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.label
+      description: Label of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.description
+      description: Description of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.confidence
+      description: Discovery confidence level of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.priority
+      description: Priority of the connected asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.autoConfirmed
+      description: Was the connected asset auto-confirmed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.enterprise
+      description: Has the connected asset been designated as an enterprise asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.keystone
+      description: Was the connected asset designated as a discovery keystone.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.createdAt
+      description: Date and time when the organization applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.updatedAt
+      description: Date and time when the organization applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.status
+      description: Status of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.workspaceOrganizationID
+      description: ID of the organization applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.name
+      description: Name of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.id
+      description: ID of the organization applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.createdAt
+      description: Date and time when the tag applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.updatedAt
+      description: Date and time when the tag applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.status
+      description: Status of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceTagID
+      description: ID of the tag applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceTagType
+      description: Workspace type of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.color
+      description: Color of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.name
+      description: Name of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.id
+      description: ID of the tag applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.createdAt
+      description: Date and time when the brand applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.updatedAt
+      description: Date and time when the brand applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.status
+      description: Status of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.workspaceBrandID
+      description: ID of the brand applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.name
+      description: Name of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.id
+      description: ID of the brand applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.createdAt
+      description: The date that the connected asset was added to inventory.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.updatedAt
+      description: The date of the most recent update performed by a user action for
+        the connected asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.hostExcluded
+      description: 'When true, only IP Addresses associated with confirmed IP Blocks
+        will be included in the results. Possible Values: True, False.'
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.id
+      description: ID of the connected asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.source
+      description: Indicates if the source of the connected asset is known.
+      type: String
+  - arguments:
+    - default: false
+      description: The date of the run in which the changes were identified (YYYY-MM-DD).
+        If not passed, it would consider the most recently run date when the discovery
+        was run on RiskIQ Digital Footprint. This argument supports a single value
+        only.
+      isArray: false
+      name: date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The period of time for which the changes summary is to be fetched.
+        Supported ranges are 1, 7, and 30 days. The default value is 1. This argument supports a single value only.
+      isArray: false
+      name: range
+      predefined:
+      - '1'
+      - '7'
+      - '30'
+      required: false
+      secret: false
+    - default: false
+      description: Filter summary of changed assets based on the brand associated
+        with the assets. This argument supports a single value only.
+      isArray: false
+      name: brand
+      required: false
+      secret: false
+    - default: false
+      description: Filter summary of changed assets based on the organization associated
+        with the assets. This argument supports a single value only.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Filter summary of changed assets based on the tag associated with
+        the assets. This argument supports a single value only.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve summary information describing counts of confirmed assets
+      that have been added, removed or changed in inventory over the given time period.
+    execution: false
+    name: df-asset-changes-summary
+    outputs:
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.runDate
+      description: The date of the run in which the changes were identified.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.type
+      description: Type of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.removed
+      description: Count of removed assets from Global Inventory in range of 1, 7,
+        and 30 days from the most recently run date.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.added
+      description: Count of added assets to Global Inventory in range of 1, 7, and
+        30 days from the most recently run date.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.changed
+      description: Count of changed assets from Global Inventory in range of 1, 7,
+        and 30 days from the most recently run date.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.count
+      description: It indicates the number of confirmed assets in inventory
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.range
+      description: The period of time over which the changes were identified. Supported
+        ranges are 1, 7, and 30 days.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.difference
+      description: Indicates the result of added minus removed assets.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: 'Either the type of asset or asset detail to retrieve. Valid asset
+        types: Domain, Host, IP Address, IP Block, ASN, Page, SSL Cert,  Contact.
+        Valid asset detail types: Self Hosted Resource, ThirdParty Hosted Resource.
+        This argument supports a single value only.'
+      isArray: false
+      name: type
+      predefined:
+      - Domain
+      - Host
+      - IP Address
+      - IP Block
+      - ASN
+      - Page
+      - SSL Cert
+      - Contact
+      - Self Hosted Resource
+      - ThirdParty Hosted Resource
+      required: true
+      secret: false
+    - default: false
+      description: The date of the run in which the changes were identified (YYYY-MM-DD).
+        If not passed, it would consider the most recently run date when the discovery
+        was run on RiskIQ Digital Footprint. This argument supports a single value
+        only.
+      isArray: false
+      name: date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The period of time over which the changes were identified. Supported
+        ranges are 1, 7, and 30 days. The default value for this argument from RiskIQ
+        platform is 1. This argument supports a single value only.
+      isArray: false
+      name: range
+      predefined:
+      - '1'
+      - '7'
+      - '30'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of change. Valid options for asset types are Added or
+        Removed and for asset detail types are Added or Changed. The default value
+        for this argument is Added. This argument supports a
+        single value only.
+      isArray: false
+      name: measure
+      predefined:
+      - Added
+      - Removed
+      - Changed
+      required: false
+      secret: false
+    - default: false
+      description: Filter changed assets based on the brand associated with the assets.
+        This argument supports a single value only.
+      isArray: false
+      name: brand
+      required: false
+      secret: false
+    - default: false
+      description: Filter changed assets based on the organization associated with
+        the assets. This argument supports a single value only.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Filter changed assets based on the tag associated with the assets.
+        This argument supports a single value only.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: The index of the page to retrieve. The index is zero based so the
+        first page is page 0. The default value for this argument from RiskIQ platform
+        is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of matching assets to return per page. The default value for this argument is 20. 
+                   The more associated assets you retrive, the longer it will take to fetch the response.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the list of confirmed assets that have been added or removed
+      from inventory over the given time period. Retrieve the list of asset detail
+      changes in inventory over the given time period.
+    execution: false
+    name: df-asset-changes
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file, in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Hostname
+      description: The name of the host where the file was found. Should match Path.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.name
+      description: Name of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.runDate
+      description: The date of the run in which the changes were identified.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.measure
+      description: The type of change.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.autoConfirmed
+      description: Was the asset auto-confirmed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.enterprise
+      description: Has the asset been designated as an enterprise asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.state
+      description: State of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.priority
+      description: Priority of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.keystone
+      description: Was the asset designated as a discovery keystone.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.type
+      description: Type of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.description
+      description: Description of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.hostExcluded
+      description: 'When set to True, only IP Addresses associated with confirmed IP Blocks
+        will be included in the results. Possible values: True, False.'
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.id
+      description: ID of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.createdAt
+      description: The date that the asset was added to inventory.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.updatedAt
+      description: The date of the most recent update performed by a user action.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.confidence
+      description: Discovery confidence level of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.wildcard
+      description: Has the asset been designated as a wildcard asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.discoveryRun
+      description: The id of the discovery run in which the asset was discovered.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.childUrlFirstSeen
+      description: The date and time when the child URl was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.childUrlLastSeen
+      description: The date and time when the child URL was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.resourceFirstSeen
+      description: The date and time when the resource was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.resourceLastSeen
+      description: The date and time when the resource was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.dynamicScore
+      description: The dynamic score of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.originalUrl
+      description: The original URL of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.firstSeenResourceGuid
+      description: Resource GUID that was first observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.lastSeenResourceGuid
+      description: Resource GUID that was most recently observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.firstSeenCrawlGuid
+      description: Crawl GUID that was first observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.lastSeenCrawlGuid
+      description: Crawl GUID that was most recently observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.firstSeenPageGuid
+      description: Page GUID that was first observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.lastSeenPageGuid
+      description: Page GUID that was most recently observed for the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.contentType
+      description: The content type of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.responseBodySize
+      description: The response body size of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.md5
+      description: The md5 hash of the content of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.resource
+      description: The url of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.resourceHost
+      description: The hostname of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.microDeltaType
+      description: The type of the resource included in the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.source
+      description: If the source of the asset is known.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.createdAt
+      description: Date and time when the organization applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.updatedAt
+      description: Date and time when the organization applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.status
+      description: Status of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.workspaceOrganizationID
+      description: ID of the organization applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.name
+      description: Name of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.organizations.id
+      description: ID of the organization applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.createdAt
+      description: Date and time when the tag applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.updatedAt
+      description: Date and time when the tag applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.status
+      description: Status of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.workspaceOrganizationID
+      description: ID of the tag applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.workspaceTagType
+      description: Workspace type of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.color
+      description: Color of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.name
+      description: Name of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.tags.id
+      description: ID of the tag applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.createdAt
+      description: Date and time when the brand applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.updatedAt
+      description: Date and time when the brand applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.status
+      description: Status of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.workspaceOrganizationID
+      description: ID of the brand applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.name
+      description: Name of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.AssetChanges.brands.id
+      description: ID of the brand applied to the asset.
+      type: Number
+  - arguments:
+    - default: false
+      description: The unique identifier of an asset in global inventory. This argument
+        supports a single value only.
+      isArray: false
+      name: uuid
+      required: false
+      secret: false
+    - default: false
+      description: The name of the asset to retrieve. For example riskiq.com, 8.8.8.8,
+        mail.net, etc. This argument supports a single value only.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the asset to retrieve. Valid Types: Domain, Host,
+        IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports
+        a single value only.'
+      isArray: false
+      name: type
+      predefined:
+      - Domain
+      - Host
+      - IP Address
+      - IP Block
+      - ASN
+      - Page
+      - SSL Cert
+      - Contact
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Setting this value to true will search the entire global inventory.
+        Setting it to false will search for assets in the workspace associated with
+        the authentication token. The default value for this argument is false. 
+        This argument supports a single value only.
+      isArray: false
+      name: global
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When specified and set as 'true', only return recent data on the asset.
+        The default value for this argument is false. This argument
+        supports a single value only.
+      isArray: false
+      name: recent
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Digital Footprint (Global Inventory) assets potentially contain
+        pages of related data, for example attributes, cookies and host pairs. Size
+        determines the number for each of these associated items that are returned.
+        The more associated assets you retrive, the longer it will take 
+        to fetch the response.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the asset of the specified UUID or type and name from Global
+      Inventory.
+    execution: false
+    name: df-get-asset
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the domain registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the domain registrant.
+      type: String
+    - contextPath: Domain.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy".'
+      type: String
+    - contextPath: Domain.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: Domain.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: String
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: 'A list of name servers, for example: "ns1.bla.com, ns2.bla.com".'
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the domain registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the domain registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy".'
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: CVE.CVSS
+      description: 'The CVSS of the CVE, for example: 10.0'
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.name
+      description: Name of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.type
+      description: Type of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.firstSeen
+      description: Date and time when the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.lastSeen
+      description: Date and time when the asset was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.uuid
+      description: UUID of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.label
+      description: Label of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.description
+      description: Description of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.autoConfirmed
+      description: Was the asset auto-confirmed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.enterprise
+      description: Has the asset been designated as an enterprise asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.state
+      description: State of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.priority
+      description: Priority of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.keystone
+      description: Was the asset designated as a discovery keystone.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.hostExcluded
+      description: 'When true, only IP Addresses associated with confirmed IP Blocks
+        will be included in the results. Possible values: True, False.'
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.id
+      description: ID of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.createdAt
+      description: The date that the asset was added to inventory.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.updatedAt
+      description: The date of the most recent update was performed on the asset by
+        a user action.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.confidence
+      description: Discovery confidence level of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.source
+      description: If the source of the asset is known.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.createdAt
+      description: Date and time when the organization applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.updatedAt
+      description: Date and time when the organization applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.status
+      description: Status of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.workspaceOrganizationID
+      description: ID of the organization applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.name
+      description: Name of the organization applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.organizations.id
+      description: ID of the organization applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.createdAt
+      description: Date and time when the tag applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.updatedAt
+      description: Date and time when the tag applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.status
+      description: Status of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceOrganizationID
+      description: ID of the tag applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.workspaceTagType
+      description: Workspace type of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.color
+      description: Color of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.name
+      description: Name of the tag applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.tags.id
+      description: ID of the tag applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.createdAt
+      description: Date and time when the brand applied to the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.updatedAt
+      description: Date and time when the brand applied to the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.status
+      description: Status of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.workspaceOrganizationID
+      description: ID of the brand applied to the asset in the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.workspaceID
+      description: ID of the user's workspace.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.name
+      description: Name of the brand applied to the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.brands.id
+      description: ID of the brand applied to the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.auditTrail.name
+      description: Name of audit trail detected for the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.auditTrail.type
+      description: Type of audit trail detected for the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.auditTrail.description
+      description: Description of audit trail detected for the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.contactID
+      description: Contact ID of primary contact of the requested asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.firstName
+      description: First name of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.lastName
+      description: Last name of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.fullName
+      description: Full name of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.email
+      description: Email of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.userId
+      description: User ID of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.name
+      description: Name of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.primaryContact.id
+      description: ID of primary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.contactID
+      description: Contact ID of secondary contact of the requested asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.firstName
+      description: First name of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.lastName
+      description: Last name of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.fullName
+      description: Full name of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.email
+      description: Email of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.userId
+      description: User ID of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.name
+      description: Name of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.secondaryContact.id
+      description: ID of secondary contact of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.externalID
+      description: External ID of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.externalMetadata
+      description: External metadata of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.note
+      description: Note of the requested asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.removedState
+      description: State of the asset after removing that asset from the inventory.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.wildcard
+      description: Has the asset been designated as a wildcard asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomain
+      description: Domain of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisId
+      description: Whois ID of the domain.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarIanaIds.value
+      description: The IANA id associated with the domain registrar.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarIanaIds.firstSeen
+      description: Date and time when the Registrar IanaID of the domain was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarIanaIds.lastSeen
+      description: Date and time when the Registrar IanaID of the domain was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarIanaIds.recent
+      description: If the Registrar IanaID of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarIanaIds.current
+      description: If the Registrar IanaID of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.value
+      description: Registrant Contact of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.firstSeen
+      description: Date and time when the Registrant Contact of the domain was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.lastSeen
+      description: Date and time when the Registrant Contact of the domain was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.recent
+      description: If the Registrant Contact of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.current
+      description: If the Registrant Contact of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantOrgs.value
+      description: Registrant Organization of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantOrgs.firstSeen
+      description: Date and time when the Registrant Organization of the asset was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantOrgs.lastSeen
+      description: Date and time when the Registrant Organization of the asset was
+        last seen.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantOrgs.recent
+      description: If the Registrant Organization of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantOrgs.current
+      description: If the Registrant Organization of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAdminContacts.value
+      description: Administrator Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAdminContacts.firstSeen
+      description: Date and time when the Administrator Contact of the asset was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAdminContacts.lastSeen
+      description: Date and time when the Administrator Contact of the asset was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAdminContacts.recent
+      description: If the Administrator Contact of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAdminContacts.current
+      description: If the Administrator Contact of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTechnicalContacts.value
+      description: Technical Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTechnicalContacts.firstSeen
+      description: Date and time when the Technical Contact of the asset was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTechnicalContacts.lastSeen
+      description: Date and time when the Technical Contact of the asset was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTechnicalContacts.recent
+      description: If the Technical Contact of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTechnicalContacts.current
+      description: If the Technical Contact of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNameServers.value
+      description: Name Server of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNameServers.firstSeen
+      description: Date and time when the Name Server of the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNameServers.lastSeen
+      description: Date and time when the Name Server of the asset was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNameServers.recent
+      description: If the Name Server of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNameServers.current
+      description: If the Name Server of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMailServers.value
+      description: Mail Server of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMailServers.firstSeen
+      description: Date and time when the Mail Server of the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMailServers.lastSeen
+      description: Date and time when the Mail Server of the asset was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMailServers.recent
+      description: If the Mail Server of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMailServers.current
+      description: If the Mail Server of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisServers.value
+      description: Whois Server of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisServers.firstSeen
+      description: Date and time when the Whois Server of the domain was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisServers.lastSeen
+      description: Date and time when the Whois Server of the domain was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisServers.recent
+      description: If the Whois Server of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWhoisServers.current
+      description: If the Whois Server of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomainStatuses.value
+      description: Domain Status of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomainStatuses.firstSeen
+      description: Date and time when the Domain Status of the domain was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomainStatuses.lastSeen
+      description: Date and time when the Domain Status of the domain was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomainStatuses.recent
+      description: If the Domain Status of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDomainStatuses.current
+      description: If the Domain Status of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarCreatedAt.value
+      description: Date and time when the Registrar of the asset was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarCreatedAt.firstSeen
+      description: Date and time when the Registrar's created date of the asset was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarCreatedAt.lastSeen
+      description: Date and time when the Registrar's created date of the asset was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarCreatedAt.recent
+      description: If the Registrar's created date of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarCreatedAt.current
+      description: If the Registrar's created date of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarUpdatedAt.value
+      description: Date and time when the Registrar of the asset was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarUpdatedAt.firstSeen
+      description: Date and time when the Registrar's updated date of the asset was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarUpdatedAt.lastSeen
+      description: Date and time when the Registrar's updated date of the asset was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarUpdatedAt.recent
+      description: If the Registrar's updated at date of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarUpdatedAt.current
+      description: If the Registrar's updated date of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarExpiresAt.value
+      description: Date and time when the Registrar of the domain expires at.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarExpiresAt.firstSeen
+      description: Date and time when the Registrar's expiry date of the domain was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarExpiresAt.lastSeen
+      description: Date and time when the Registrar's expiry date of the domain was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarExpiresAt.recent
+      description: If the Registrar's expiry date of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarExpiresAt.current
+      description: If the Registrar's expiry date of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.nameServer
+      description: Name Server for the SOA record of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.email
+      description: Email for the SOA record of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.firstSeen
+      description: Date and time when the SOA record of the domain was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.lastSeen
+      description: Date and time when the SOA record of the domain was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.serialNumber
+      description: Serial Number for the SOA record of the domain.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.recent
+      description: If the SOA record of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSoaRecords.current
+      description: If the SOA record of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetDetailedFromWhoisAt
+      description: Date and time when the details from the whois was fetched.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarNames.value
+      description: Registrar Name of the domain.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarNames.firstSeen
+      description: Date and time when the Registrar Name of the domain was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarNames.lastSeen
+      description: Date and time when the Registrar Name of the domain was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarNames.recent
+      description: If the Registrar Name of the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrarNames.current
+      description: If the Registrar Name of the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFirstSeen
+      description: Date and time when the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLastSeen
+      description: Date and time when the asset was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCount
+      description: Count for the number of times this asset has been observed.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedDomain.value
+      description: Has the domain been identified as parked.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedDomain.firstSeen
+      description: Date and time when the Parked domain value for the domain was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedDomain.lastSeen
+      description: Date and time when the Parked domain value for the domain was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedDomain.recent
+      description: If the Parked domain value for the domain is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedDomain.current
+      description: If the Parked domain value for the domain is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAlexaRank
+      description: Alexa Rank of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisCreatedAt
+      description: Date and time when the whois details of the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisUpdatedAt
+      description: Date and time when the whois details of the asset was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisStatus
+      description: Whois Status of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisID
+      description: Whois ID of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisDomain
+      description: Domain fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisDomainMd5
+      description: Domain MD5 fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisDomainUnicode
+      description: Domain Unicode fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTld
+      description: Whois TLD of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisNameservers
+      description: Name servers fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisServer
+      description: Whois server fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantAddress
+      description: Address of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantCity
+      description: City of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantCountry
+      description: Country of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantEmail
+      description: Email address of the Registrant fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantFax
+      description: Fax of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantId
+      description: ID of the Registrant fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantName
+      description: Name of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantOrganization
+      description: Organization of the Registrant fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantPhone
+      description: Phone number of the Registrant fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantState
+      description: State of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantStreet
+      description: Street of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantWhoisContactID
+      description: Whois Contact ID of the Registrant fetched from whois details of
+        the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrantZip
+      description: Zip code of the Registrant fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarIanaID
+      description: The IANA id associated with the domain registrar fetched from whois
+        details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarCreatedAt
+      description: Date and time when Registrar was created fetched from whois details
+        of the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarUpdatedAt
+      description: Date and time when Registrar was updated fetched from whois details
+        of the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarExpiresAt
+      description: Date and time when Registrar expires fetched from whois details
+        of the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarAddress
+      description: Address of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarCity
+      description: City of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarCountry
+      description: Country of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarEmail
+      description: Email address of the Registrar fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarFax
+      description: Fax of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarId
+      description: ID of the Registrar fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarName
+      description: Name of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarOrganization
+      description: Organization of the Registrar fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarPhone
+      description: Phone number of the Registrar fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarState
+      description: State of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarStreet
+      description: Street of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarWhoisContactID
+      description: Whois Contact ID of the Registrar fetched from whois details of
+        the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarZip
+      description: Zip code of the Registrar fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.address
+      description: Address of the Registrar fetched from registrar details of whois
+        details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.city
+      description: City of the Registrar fetched from registrar details of whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.country
+      description: Country of the Registrar fetched from registrar details of whois
+        details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.email
+      description: Email address of the Registrar fetched from registrar details of
+        whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.fax
+      description: Fax of the Registrar fetched from registrar details of whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.id
+      description: ID of the Registrar fetched from registrar details of whois details
+        of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.name
+      description: Name of the Registrar fetched from registrar details of whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.organization
+      description: Organization of the Registrar fetched from registrar details of
+        whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.phone
+      description: Phone number of the Registrar fetched from registrar details of
+        whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.state
+      description: State of the Registrar fetched from registrar details of whois
+        details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.street
+      description: Street of the Registrar fetched from registrar details of whois
+        details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.whoisContactID
+      description: Whois Contact ID of the Registrar fetched from registrar details
+        of whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrar.zip
+      description: Zip code of the Registrar fetched from registrar details of whois
+        details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminAddress
+      description: Address of the Administrator fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminCity
+      description: City of the Administrator fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminCountry
+      description: Country of the Administrator fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminEmail
+      description: Email address of the Administrator fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminFax
+      description: Fax of the Administrator fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminId
+      description: ID of the Administrator fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminName
+      description: Name of the Administrator fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminOrganization
+      description: Organization of the Administrator fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminPhone
+      description: Phone number of the Administrator fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminState
+      description: State of the Administrator fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminStreet
+      description: Street of the Administrator fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminWhoisContactID
+      description: Whois Contact ID of the Administrator fetched from whois details
+        of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAdminZip
+      description: Zip code of the Administrator fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAuditCreatedAt
+      description: Date and Time when the whois audit was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisAuditUpdatedAt
+      description: Date and Time when the whois audit was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingAddress
+      description: Address of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingCity
+      description: City of the Billing contact fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingCountry
+      description: Country of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingEmail
+      description: Email address of the Billing contact fetched from whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingFax
+      description: Fax of the Billing contact fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingId
+      description: ID of the Billing contact fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingName
+      description: Name of the Billing contact fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingOrganization
+      description: Organization of the Billing contact fetched from whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingPhone
+      description: Phone of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingState
+      description: State of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingStreet
+      description: Street of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingWhoisContactID
+      description: Whois Contact ID of the Billing contact fetched from whois details
+        of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisBillingZip
+      description: Zip code of the Billing contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisCompositeParseCode
+      description: Composite Parse code fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContactCountries
+      description: Contact Countries fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContactOrganizations
+      description: Contact Organizations fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContactEmails
+      description: Contact Emails fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContactNames
+      description: Contact Names fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.address
+      description: Address of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.state
+      description: State of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.street
+      description: Street of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.email
+      description: Email of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.phone
+      description: Phone of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.fax
+      description: Fax of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.name
+      description: Name of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.zip
+      description: Zip of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.country
+      description: Country of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.id
+      description: ID of Whois Contact of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.organization
+      description: Organization of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.state
+      description: State of Whois Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisContacts.whoisContactID
+      description: Whois Contact ID of Whois Contact of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisDomainAvailable
+      description: If the domain is available fetched from whois details of the asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisDomainStatus
+      description: Domain Status fetched from whois details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisExpired
+      description: If Whois is expired fetched from whois details of the asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisId
+      description: ID fetched from the whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisNoRecord
+      description: If there is no whois record for the asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistrarParseCode
+      description: Parse Code of Registrar fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisRegistryParseCode
+      description: Parse Code of Registry fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalAddress
+      description: Address of the Technical contact fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalCity
+      description: City of the Technical contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalCountry
+      description: Country of the Technical contact fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalEmail
+      description: Email address of the Technical contact fetched from whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalFax
+      description: Fax of the Technical contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalId
+      description: ID of the Technical contact fetched from whois details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalName
+      description: Name of the Technical contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalOrganization
+      description: Organization of the Technical contact fetched from whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalPhone
+      description: Phone number of the Technical contact fetched from whois details
+        of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalStreet
+      description: Street of the Technical contact fetched from whois details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalWhoisContactID
+      description: Whois Contact ID of the Technical contact fetched from whois details
+        of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.whoisTechnicalZip
+      description: Zip code of the Technical contact fetched from whois details of
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHost
+      description: Host of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.value
+      description: IP address which the host has resolved to.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.firstSeen
+      description: Date and time when the IP Address of the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.lastSeen
+      description: Date and time when the IP Address of the asset was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.recent
+      description: If the IP Address of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.current
+      description: If the IP Address of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddresses.count
+      description: The number of times that IP Address is observed for this asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.firstSeen
+      description: Date and time when the web component was first observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.lastSeen
+      description: Date and time when the web component was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.recent
+      description: If the web component observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.ports.port
+      description: Port on which the web component observed on the asset is running.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.ports.firstSeen
+      description: Date and time when the port value for the web component observed
+        on the asset was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.ports.lastSeen
+      description: Date and time when the port value for the web component observed
+        on the asset was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.ports.count
+      description: The number of times the port was observed for that web component
+        observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.webComponentName
+      description: Name of web component observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.webComponentCategory
+      description: Category of web component observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.webComponentVersion
+      description: Version of web component observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.cves.name
+      description: The id of a CVE identified on the web component observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.cves.cvssScore
+      description: CVSS score reflecting the severity of a CVE found on the web component
+        observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.cves.cweID
+      description: The id of a CWE identified on the web component observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebComponents.current
+      description: If the web component observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.headerName
+      description: Name of the header observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.headerValue
+      description: Value of the header observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.firstSeen
+      description: Date and time when the header was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.lastSeen
+      description: Date and time when the header was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.recent
+      description: If the header observed on the asset is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHeaders.current
+      description: If the header observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.attributeType
+      description: Attribute/Tracker type observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.attributeValue
+      description: Attribute/Tracker value observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.firstSeen
+      description: Date and time when the attribute/tracker was first observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.lastSeen
+      description: Date and time when the attribute/tracker was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.recent
+      description: If the attribute/tracker observed on the asset is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAttributes.current
+      description: If the attribute/tracker observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.cookieName
+      description: Name of the cookie observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.cookieDomain
+      description: Domain of the cookie observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.firstSeen
+      description: Date and time when the cookie was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.lastSeen
+      description: Date and time when the cookie was most recently seen on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.recent
+      description: If the cookie observed on the asset is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCookies.current
+      description: If the cookie observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.sha1
+      description: SHA1 of the SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.serialNumber
+      description: Serial number of the SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subjectAlternativeNames
+      description: Subject alternative names of the SSL certificate observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.issuerAlternativeNames
+      description: Issuer alternative names of the SSL certificate observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.firstSeen
+      description: Date and time when the SSL certificate was first observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.lastSeen
+      description: Date and time when the SSL certificate was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.keySize
+      description: Key size of the SSL certificate observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.version
+      description: Version of the SSL certificate observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.certificateAuthority
+      description: If the authority of the SSL certificate observed on the asset is
+        certified.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.selfSigned
+      description: If the SSL certificate observed on the asset is self signed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.recent
+      description: If the SSL certificate of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.signatureAlgorithm
+      description: Signature Algorithm of the SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.signatureAlgorithmOid
+      description: Signature Algorithm OID of the SSL certificate observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.notBefore
+      description: Date and time before which the SSL certificate observed on the
+        asset is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.notAfter
+      description: Date and time after which the SSL certificate observed on the asset
+        is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.publicKeyAlgorithm
+      description: Public Key Algorithm of the SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.id
+      description: ID of the SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.issuer.country
+      description: Country of the issuer of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.issuer.unit
+      description: Organization unit of the issuer of SSL certificate observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.issuer.organization
+      description: Organization of the issuer of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.issuer.commonname
+      description: Common Name of the issuer of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.state
+      description: State of the issuer of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.locale
+      description: Locale of the issuer of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.country
+      description: Country of the subject of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.unit
+      description: Organization Unit of the subject of SSL certificate observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.organization
+      description: Organization of the subject of SSL certificate observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.commonname
+      description: Common Name of the subject of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.state
+      description: State of the subject of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.subject.locale
+      description: Locale of the subject of SSL certificate observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSslCerts.current
+      description: If the ssl certificate observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.host
+      description: Host observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domain
+      description: Domain observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.firstSeen
+      description: Date and time when the host was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.lastSeen
+      description: Date and time when the host was most recently observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.count
+      description: Number of times the host was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.blacklistSequenceCount
+      description: Black list sequence count of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.phishSequenceCount
+      description: Phish sequence count of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.malwareSequenceCount
+      description: Malware sequence count of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.spamSequenceCount
+      description: Spam sequence count of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.scamSequenceCount
+      description: Scam sequence count of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.hostReputationScore
+      description: Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.hostPhishReputationScore
+      description: Phish Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.hostMalwareReputationScore
+      description: Malware Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.hostSpamReputationScore
+      description: Host Spam Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.hostScamReputationScore
+      description: Host Scam Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domainReputationScore
+      description: Domain Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domainPhishReputationScore
+      description: Domain Phish Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domainMalwareReputationScore
+      description: Domain Malware Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domainSpamReputationScore
+      description: Domain Spam Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostCore.domainScamReputationScore
+      description: Domain Scam Reputation score of the host observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.scheme
+      description: Scheme for the services observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.port
+      description: Port for the services observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.firstSeen
+      description: Date and time when the service was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.lastSeen
+      description: Date and time when the service was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.recent
+      description: If the service observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.port
+      description: Port for the banner of the service observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.banner
+      description: Banner of the service observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.firstSeen
+      description: Date and time when the banner of the service was first observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.lastSeen
+      description: Date and time when the banner of the service was most recently
+        observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.count
+      description: Number of times the banner of the service is observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.scanType
+      description: Scan type fetched from the banners details of the service observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.bannerMetadata
+      description: Banner metadata fetched from the banners details of the service
+        observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.banners.recent
+      description: If the banner of the service observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.scanMetadata.port
+      description: Port fetched from the scan metadata details of the service observed
+        on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.scanMetadata.bannerMetadata
+      description: Banner metadata fetched from the scan metadata details of the service
+        observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.scanMetadata.startScan
+      description: Date and time when metadata scan of the service observed on the
+        asset started.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.scanMetadata.endScan
+      description: Date and time when metadata scan of the service observed on the
+        asset ended.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetServices.current
+      description: If the service observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCnames.value
+      description: Cname of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCnames.firstSeen
+      description: Date and time when the Cname was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCnames.lastSeen
+      description: Date and time when the Cname was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCnames.recent
+      description: If the cname observed on the asset is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCnames.current
+      description: If the cname observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.url
+      description: URL fetched from the Resource URL details of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.md5
+      description: MD5 of the resource fetched from the Resource URL details of the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.responseBodySize
+      description: Response body size of the resource fetched from the Resource URL
+        details of the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.firstSeen
+      description: Date and time when the resource was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.lastSeen
+      description: Date and time when the resource was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.count
+      description: The number of times when the resource was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.firstSeenCrawlGuid
+      description: Crawl GUID that was first observed for the resource observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.firstSeenPageGuid
+      description: Page GUID that was first observed for the resource observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.firstSeenResourceGuid
+      description: Resource GUID that was first observed for the resource observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.lastSeenCrawlGuid
+      description: Crawl GUID that was first observed for the resource observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.lastSeenPageGuid
+      description: Page GUID that was first observed for the resource observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.lastSeenResourceGuid
+      description: Resource GUID that was first observed for the resource observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.responseBodyMinhash
+      description: Response body minimum hash for the resource observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.contentType
+      description: Content type of the resource observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.sha256
+      description: SHA256 of the resource observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.sha384
+      description: SHA384 of the resource observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.sha512
+      description: SHA512 of the resource observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.url
+      description: URL of the resource fetched from the resources details of resource
+        URLs observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.cached
+      description: If the resource observed on the asset is cached.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.host
+      description: Host of the resource observed on the asset
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.firstSeen
+      description: Date and time when the Resource URL was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.lastSeen
+      description: Date and time when the Resource URL was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.recent
+      description: If the Resource URL observed on the asset is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.current
+      description: If the Resource URL observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.ipBlock
+      description: IP Block containing the IP Address.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.count
+      description: The number of times that IP Block is observed for this asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.firstSeen
+      description: Date and time when the IP Block was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.lastSeen
+      description: Date and time when the IP Block was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.recent
+      description: Is IP Block observed on the asset recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlocks.current
+      description: Is IP Block observed on the asset current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNsRecord.value
+      description: If this record is observed as an NS record on the asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNsRecord.firstSeen
+      description: Date and time when the NS record was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNsRecord.lastSeen
+      description: Date and time when the NS record was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNsRecord.recent
+      description: If NS record value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNsRecord.current
+      description: If NS record value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMxRecord.value
+      description: If this record is observed as an MX record on the asset.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMxRecord.firstSeen
+      description: Date and time when the MX record was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMxRecord.lastSeen
+      description: Date and time when the MX record was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMxRecord.recent
+      description: If MX record value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetMxRecord.current
+      description: If MX record value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebserver.value
+      description: If a Web Server is observed on the asset.
+      type: Booolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebserver.firstSeen
+      description: Date and time when the web server record was first observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebserver.lastSeen
+      description: Date and time when the web server record was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebserver.recent
+      description: If the web server observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWebserver.current
+      description: If the web server observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.countrycode
+      description: Country code of the location observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.countryname
+      description: Country name of the location observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.region
+      description: Region of the location observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.regionname
+      description: Region name of the location observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.postalcode
+      description: Postal code of the location observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.latitude
+      description: Latitude of the location observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.longitude
+      description: Longitude of the location observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.value.metrocodeid
+      description: Metro code ID of the location observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.firstSeen
+      description: Date and time when the location was first observed for the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLocation.lastSeen
+      description: Date and time when the location was most recently observed for
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumbers.value
+      description: ASN number observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumbers.firstSeen
+      description: Date and time when the ASN number was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumbers.lastSeen
+      description: Date and time when the ASN number was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumbers.recent
+      description: If the ASN number observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumbers.current
+      description: If the ASN number observed on the asset is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.firstSeen
+      description: Date and time when the host pair was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.lastSeen
+      description: Date and time when the host pair was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.recent
+      description: If the host pair observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.childHostname
+      description: Child hostname of the host pair observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.parentHostname
+      description: Parent hostname of the host pair observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHostPairs.current
+      description: If the host pair observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunID
+      description: The id of the discovery run in which the asset was discovered.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunWorkspaceID
+      description: ID of the workspace in which the discovery took place.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunRunType
+      description: Run type of the discovery.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunUserID
+      description: ID of the user who run the discovery.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunRunDate
+      description: Run Date of the discovery.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunAssetType
+      description: Asset type for which the discovery was run.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchCreatedAt
+      description: Date and time when the discovery run search was created.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchUpdatedAt
+      description: Date and time when the discovery run search was updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchStatus
+      description: Status of the discovery run search.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchAssetSearchID
+      description: Asset search ID of the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchName
+      description: Name of the discovery run search
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchWorkspaceID
+      description: Workspace ID fetched from discovery run search details.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchSourceID
+      description: Source ID of the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchQuery
+      description: Query applied to the discovery run search.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchMaxResults
+      description: Max results fetched in the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchLastSearchDate
+      description: Date and time when the most recent discovery search was run.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchEnabled
+      description: If the discovery search is enabled.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchScheduled
+      description: Date and time when the discovery run search is scheduled.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchFrequency
+      description: Frequency of the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchDiscoveredCount
+      description: Count of discovered assets in the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchAssetSearchState
+      description: Asset search state fetched from discovery run search details.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchAssetSearchType
+      description: Asset search type fetched from discovery run search details.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchNotes
+      description: Notes for the discovery run search.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchId
+      description: ID of the discovery run search.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunFullName
+      description: Full name of the discovery run.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpAddress
+      description: IP address of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.listName
+      description: Reputation list name observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.threatType
+      description: Reputation threat type observed on the asset
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.trusted
+      description: If the reputation can be trusted.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.cidr
+      description: Reputation CIDR observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.firstSeen
+      description: Date and time when the Reputation was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.lastSeen
+      description: Date and time when the Reputation was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.listUpdatedAt
+      description: Date and time when the Reputation list observed on the asset was
+        most recently updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.recent
+      description: If the Reputation observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.current
+      description: If the Reputation observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetRanges.value
+      description: Net Range associated with the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetRanges.firstSeen
+      description: Date and time when the net range associated with the asset was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetRanges.lastSeen
+      description: Date and time when the net range associated with the asset was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetRanges.recent
+      description: If net range value observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetRanges.current
+      description: If net range value observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHosts.value
+      description: Host observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHosts.firstSeen
+      description: Date and time when the host was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHosts.lastSeen
+      description: Date and time when the host was most recently observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHosts.recent
+      description: If the host observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHosts.current
+      description: If the host observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.asnID
+      description: ASN ID of the ASN observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.description
+      description: Description of the ASN observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.registry
+      description: Registry of the ASN observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.countryCode
+      description: Country code of the ASN observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.name
+      description: Name of the ASN observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.id
+      description: ID of the ASN observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsns.fullName
+      description: Full name of the ASN observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetUrl
+      description: URL of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpMethod
+      description: HTTP method used for the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetService
+      description: Service of the page on which it is available.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSuccessful.value
+      description: If the HTTP call made was successful for the page.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSuccessful.firstSeen
+      description: Date and time when the HTTP call was first observed to be successful
+        for the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSuccessful.lastSeen
+      description: Date and time when the HTTP call was most recently observed to
+        be successful for the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSuccessful.recent
+      description: If the successful value for the page is recent.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSuccessful.current
+      description: If the successful value for the page is current.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseCodes.value
+      description: The http response code returned by the page.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseCodes.firstSeen
+      description: Date and time when the http response code returned by the page
+        was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseCodes.lastSeen
+      description: Date and time when the http response code returned by the page
+        was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseCodes.recent
+      description: If the http response code returned by the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseCodes.current
+      description: If the http response code returned by the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseMessages.value
+      description: The http response message returned by the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseMessages.firstSeen
+      description: Date and time when the http response message returned by the page
+        was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseMessages.lastSeen
+      description: Date and time when the http response message returned by the page
+        was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseMessages.recent
+      description: If the http response message returned by the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetHttpResponseMessages.current
+      description: If the http response message returned by the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseTimes.value
+      description: The time taken by the page to respond.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseTimes.firstSeen
+      description: Date and time when the response time was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseTimes.lastSeen
+      description: Date and time when the response time was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseTimes.recent
+      description: If the response time value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseTimes.current
+      description: If the response time value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFrames.value
+      description: If a frame is observed on the page.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFrames.firstSeen
+      description: Date and time when the frame was first observed on the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFrames.lastSeen
+      description: Date and time when the frame was most recently observed on the
+        page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFrames.recent
+      description: If the frame value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFrames.current
+      description: If the frame value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindows.value
+      description: If a window is observed on the page.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindows.firstSeen
+      description: Date and time when the window was first observed on the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindows.lastSeen
+      description: Date and time when the window was most recently observed on the
+        page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindows.recent
+      description: If the window value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindows.current
+      description: If the window value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentTypes.value
+      description: Content type of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentTypes.firstSeen
+      description: Date and time when the content type of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentTypes.lastSeen
+      description: Date and time when the content type of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentTypes.recent
+      description: If the content type of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentTypes.current
+      description: If the content type of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentLengths.value
+      description: Content length of the page.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentLengths.firstSeen
+      description: Date and time when the content length of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentLengths.lastSeen
+      description: Date and time when the content length of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentLengths.recent
+      description: If the content length is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetContentLengths.current
+      description: If the content length of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindowNames.value
+      description: Window name of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindowNames.firstSeen
+      description: Date and time when the window name of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindowNames.lastSeen
+      description: Date and time when the window name of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindowNames.recent
+      description: If the window name value of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetWindowNames.current
+      description: If the window name value of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCharsets.value
+      description: Charset of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCharsets.firstSeen
+      description: Date and time when the charset of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCharsets.lastSeen
+      description: Date and time when the charset of the page was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCharsets.recent
+      description: If the charset value of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCharsets.current
+      description: If the charset value of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTitles.value
+      description: Title of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTitles.firstSeen
+      description: Date and time when the title of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTitles.lastSeen
+      description: Date and time when the title of the page was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTitles.recent
+      description: If the title of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetTitles.current
+      description: If the title of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLanguages.value
+      description: Language of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLanguages.firstSeen
+      description: Date and time when the language of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLanguages.lastSeen
+      description: Date and time when the language of the page was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLanguages.recent
+      description: If the language of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetLanguages.current
+      description: If the language of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.headerName
+      description: Header Name of the response header returned from the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.headerValue
+      description: Header Value of the response header returned from the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.firstSeen
+      description: Date and time when the response header returned from the page was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.lastSeen
+      description: Date and time when the response header returned from the page was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.recent
+      description: If the response header of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseHeaders.current
+      description: If the response header of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.policyName
+      description: Security policy violation identified on the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.isAffected
+      description: If the page is affected by the security policy violation identified.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.description
+      description: Description of the security policy violation identified on the
+        page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.firstSeen
+      description: Date and time when the security policy violation was first observed
+        on the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.lastSeen
+      description: Date and time when the security policy violation was most recently
+        observed on the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.recent
+      description: If the security policy violation of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSecurityPolicies.current
+      description: If the security policy violation of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseBodyHashSignatures.value
+      description: Response body has signature of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseBodyHashSignatures.firstSeen
+      description: Date and time when the response body hash signature of the asset
+        was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseBodyHashSignatures.lastSeen
+      description: Date and time when the response body hash signature of the asset
+        was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseBodyHashSignatures.recent
+      description: If response body hash signature of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetResponseBodyHashSignatures.current
+      description: If response body hash signature of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetErrors.value
+      description: The error encountered while crawling the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetErrors.firstSeen
+      description: Date and time when the error was first encountered while crawling
+        the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetErrors.lastSeen
+      description: Date and time when the error was most recently encountered while
+        crawling the page.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetErrors.recent
+      description: If the error encountered while crawling the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetErrors.current
+      description: If the error encountered while crawling the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.causepageguid
+      description: Cause Page GUID observed on the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.cause
+      description: Cause observed on the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.location
+      description: Location of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.possiblematches
+      description: Posible matches of the page.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.loopdetected
+      description: If the loop was detected due to the cause observed on the page.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCause.version
+      description: Version of the cause observed on the page.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetReferrer
+      description: Referrer of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRedirectType
+      description: Redirect type of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalUrls.value
+      description: Final URL of the page after following one or more redirects.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalUrls.firstSeen
+      description: Date and time when the final url of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalUrls.lastSeen
+      description: Date and time when the final url of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalUrls.recent
+      description: If final url of the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalUrls.current
+      description: If final url of the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalResponseCodes.value
+      description: Final response codes of the page after following one or more redirects.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalResponseCodes.firstSeen
+      description: Date and time when the final response code was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalResponseCodes.lastSeen
+      description: Date and time when the final response code was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalResponseCodes.recent
+      description: If the final response code is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalResponseCodes.current
+      description: If the final response code is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedPage.value
+      description: Has the page been identified as parked.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedPage.firstSeen
+      description: Date and time when the identified parked value of the page was
+        first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedPage.lastSeen
+      description: Date and time when the identified parked value of the page was
+        most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedPage.recent
+      description: If the parked page value is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetParkedPage.current
+      description: If the parked page value is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetGuids.pageGuid
+      description: GUID of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetGuids.crawlStateGuid
+      description: Crawl state GUID of the page.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetGuids.loadDate
+      description: Date and time when the GUIDs of the page were loaded.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpAddresses.value
+      description: Final IP Address of the page after following one or more redirects.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpAddresses.firstSeen
+      description: Date and time when the final IP Address of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpAddresses.lastSeen
+      description: Date and time when the final IP Address of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpAddresses.recent
+      description: If the final IP Address observed for the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpAddresses.current
+      description: If the final IP Address observed for the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalAsns.value
+      description: Final ASN of the page after following one or more redirects.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalAsns.firstSeen
+      description: Date and time when the final asn of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalAsns.lastSeen
+      description: Date and time when the final asn of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalAsns.recent
+      description: If the final asn observed for the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalAsns.current
+      description: If the final asn observed for the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpBlocks.ipBlock
+      description: Final IP Block of the page after following one or more redirects.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpBlocks.firstSeen
+      description: Date and time when the final IP Block of the page was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpBlocks.lastSeen
+      description: Date and time when the final IP Block of the page was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpBlocks.recent
+      description: If the final IP Block observed for the page is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetFinalIpBlocks.current
+      description: If the final IP Block observed for the page is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIsRootUrl
+      description: If the URl is root URL.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsNames.value
+      description: Name of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsNames.firstSeen
+      description: Date and time when the ASN name was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsNames.lastSeen
+      description: Date and time when the ASN name was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsNames.recent
+      description: If the ASN name is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsNames.current
+      description: If the ASN name is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgNames.value
+      description: Organization name of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgNames.firstSeen
+      description: Date and time when the organization name of the ASN was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgNames.lastSeen
+      description: Date and time when the organization name of the ASN was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgNames.recent
+      description: If the organization name is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgNames.current
+      description: If the organization name is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgIds.value
+      description: Organization ID of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgIds.firstSeen
+      description: Date and time when the organization ID of the ASN was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgIds.lastSeen
+      description: Date and time when the organization ID of the ASN was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgIds.recent
+      description: If the organization id of the ASN is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrgIds.current
+      description: If the organization id of the ASN is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCountries.value
+      description: Country of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCountries.firstSeen
+      description: Date and time when the Country of ASN was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCountries.lastSeen
+      description: Date and time when the Country of ASN was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCountries.recent
+      description: If the country of the ASN is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCountries.current
+      description: If the country of the ASN is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistries.value
+      description: Registry of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistries.firstSeen
+      description: Date and time when the registry of the ASN was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistries.lastSeen
+      description: Date and time when the registry of the ASN was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistries.recent
+      description: If the registry of ASN is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistries.current
+      description: If the registry of ASN is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsnNumber
+      description: ASN Number of the ASN.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.asnID
+      description: ASN ID of the ASN.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.description
+      description: Description of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.registry
+      description: Registry of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.countryCode
+      description: Country code of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.name
+      description: Name of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.id
+      description: ID of the ASN.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetAsn.fullName
+      description: Full name of the ASN.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetIpBlock
+      description: IP Block of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetBgpPrefixes.value
+      description: The BGP prefix for the IP Block.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetBgpPrefixes.firstSeen
+      description: Date and time when the BGP prefix for the IP Block was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetBgpPrefixes.lastSeen
+      description: Date and time when the BGP prefix for the IP Block was most recently
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetBgpPrefixes.recent
+      description: If the BGP prefix for the IP Block is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetBgpPrefixes.current
+      description: If the BGP prefix for the IP Block is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetNames.value
+      description: Net name observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetNames.firstSeen
+      description: Date and time when the net name was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetNames.lastSeen
+      description: Date and time when the net name was most recently observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetNames.recent
+      description: If the net name value observed on the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNetNames.current
+      description: If the net name value observed on the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetStartIp
+      description: Start IP Address of the IP Block.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetEndIp
+      description: End IP Address of the IP Block.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.value
+      description: Registrant Contact of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.firstSeen
+      description: Date and time when the registrant contact was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.lastSeen
+      description: Date and time when the registrant contact was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.recent
+      description: If the registrant contact of the asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetRegistrantContacts.current
+      description: If the registrant contact of the asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSha1
+      description: SHA1 key of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSerialNumber
+      description: Serial number of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetKeySize
+      description: Key size of the SSL certicate's key.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetVersion
+      description: Version of the SSL certificate.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.assetCertificateAuthority
+      description: If the authority of the SSL certificate is certified.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSelfSigned
+      description: If the SSL certificate observed on the asset is self signed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSignatureAlgorithm
+      description: Signature Algorithm of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetSignatureAlgorithmOid
+      description: Signature Algorithm OID of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNotBefore
+      description: Date and time before which the SSL certificate is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNotAfter
+      description: Date and time after which the SSL certificate is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetPublicKeyAlgorithm
+      description: Public Key Algorithm of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetId
+      description: ID of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerCountry
+      description: Country of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerUnit
+      description: Organization unit of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerOrganization
+      description: Organization of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerCommonname
+      description: Common Name of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerState
+      description: State of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerLocale
+      description: Locale of the issuer of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectCommonname
+      description: Common Name of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectCountry
+      description: Country of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectUnit
+      description: Organization unit of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectOrganization
+      description: Organization of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectState
+      description: State of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectLocale
+      description: Locale of the subject of SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.issuerAlternativeNames
+      description: Issuer alternative names of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.subjectAlternativeNames
+      description: Subject alternative names of the SSL certificate.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetEmail
+      description: Email address associated with the contact asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNames.value
+      description: Name associated with the contact asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNames.firstSeen
+      description: Date and time when the name associated with contact asset was first
+        observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNames.lastSeen
+      description: Date and time when the name associated with contact asset was most
+        recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNames.recent
+      description: If the name associated with contact asset is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetNames.current
+      description: If the name associated with contact asset is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrganizations.value
+      description: Organization associated with the contact asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrganizations.firstSeen
+      description: Date and time when the organization associated with contact asset
+        was first observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrganizations.lastSeen
+      description: Date and time when the organization associated with contact asset
+        was most recently observed.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrganizations.recent
+      description: If the organization associated with contact is recent.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.assetOrganizations.current
+      description: If the organization associated with contact is current.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.history.added
+      description: Added property value of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.changedBy
+      description: Name of the user who performed the change.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.property
+      description: Property name that was updated.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.updatedAt
+      description: Date and time when the change was most recently updated.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.history.removed
+      description: Removed property value of the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.newValue
+      description: Value of the property after the change was performed.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.oldValue
+      description: Value of the property before the change was performed.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.history.reason
+      description: Reason for performing this update.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.firstSeen
+      description: Date and time when the host pair data was first observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.lastSeen
+      description: Date and time when the host pair data was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.count
+      description: Number of times the host pair data was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.id
+      description: ID of the host pair data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.childHostname
+      description: Child hostname of the host pair data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.parentHostname
+      description: Parent hostname of the host pair data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.cause
+      description: Cause of the host pair data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.childCount
+      description: Number of times the child hostname for host pair data was observed
+        on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.parentCount
+      description: Number of times the parent hostname for host pair data was observed
+        on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.childScore
+      description: Score of the child hostname for host pair data observed on the
+        asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.parentScore
+      description: Score of the parent hostname for host pair data observed on the
+        asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.hostPairs.pairScore
+      description: Score of the host pair data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.firstSeen
+      description: Date and time when the attribute data was first observed on the
+        asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.lastSeen
+      description: Date and time when the attribute data was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.count
+      description: Number of times the attribute data was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.id
+      description: ID of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.hostname
+      description: Hostname of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.domain
+      description: Domain of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.attributeValue
+      description: Attribute value of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.attributeType
+      description: Attribute type of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.address
+      description: Address of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.asn
+      description: ASN number of the attribute data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.attributes.bgpPrefix
+      description: BGP Prefix of the attribute data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.firstSeen
+      description: Date and time when the web component data was first observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.lastSeen
+      description: Date and time when the web component data was most recently observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.count
+      description: Number of times the web component data was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.id
+      description: ID of the web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.hostname
+      description: Hostname of the web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.domain
+      description: Domain of the web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.webComponentName
+      description: Name of the web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.webComponentCategory
+      description: Category of the web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.ports.firstSeen
+      description: Date and time when the ports of web component data was first observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.ports.lastSeen
+      description: Date and time when the ports of web component data was most recently
+        observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.ports.count
+      description: Number of times the port of web component data was observed on
+        the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.ports.portNumber
+      description: Port number of web component data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.webComponentVersion
+      description: Web component version of web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.address
+      description: Address of web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.asn
+      description: ASN number of web component data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.bgpPrefix
+      description: BGP prefix of web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.cves.name
+      description: CVE name of web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.cves.cweID
+      description: CWE ID of web component data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.webComponents.cves.cvssScore
+      description: CVSS score of web component data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.firstSeen
+      description: Date and time when when the SSL certificate data was first observed
+        on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.lastSeen
+      description: Date and time when when the SSL certificate data was most recently
+        observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.count
+      description: Number of times the SSL certificate data was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.id
+      description: ID of the SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.sha1
+      description: SHA1 of the SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.version
+      description: Version of the SSL certificate data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.serialNumber
+      description: Serial number of the SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.signatureAlgorithm
+      description: Signature algorithm of the SSL certificate data observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.signatureAlgorithmOid
+      description: Signature algorithm OID of the SSL certificate data observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.country
+      description: Country of the issuer of SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.unit
+      description: Organization Unit of the issuer of SSL certificate data observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.organization
+      description: Organization of the issuer of SSL certificate data observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.commonname
+      description: Common Name of the issuer of SSL certificate data observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.state
+      description: State of the issuer of SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuer.locale
+      description: Locale of the issuer of SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.commonname
+      description: Common Name of the subject of SSL certificate data observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.country
+      description: Country of the subject of SSL certificate data observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.unit
+      description: Organization Unit of the subject of SSL certificate data observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.organization
+      description: Organization of the subject of SSL certificate data observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.state
+      description: State of the subject of SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subject.locale
+      description: Locale of the subject of SSL certificate data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.notBefore
+      description: Date and Time before which the SSL certificate data observed on
+        the asset is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.notAfter
+      description: Date and Time after which the SSL certificate data observed on
+        the asset is invalid.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.subjectAlternativeNames
+      description: Subject alternative names of the SSL certificate data observed
+        on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.issuerAlternativeNames
+      description: Issuer alternative names of the SSL certificate data observed on
+        the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.publicKeyAlgorithm
+      description: Public Key Algorithm of the SSL certificate data observed on the
+        asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.certificateAuthority
+      description: If the authority of the SSL certificate data observed on the asset
+        is certified.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.data.sslCerts.selfSigned
+      description: If the SSL certificate data observed on the asset is self signed.
+      type: Boolean
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.firstSeen
+      description: Date and Time when the cookie data was first observed on the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.lastSeen
+      description: Date and Time when the cookie data was most recently observed on
+        the asset.
+      type: Date
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.count
+      description: Number of times the cookie data was observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.id
+      description: ID of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.hostname
+      description: Host name of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.domain
+      description: Domain of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.cookieDomain
+      description: Cookie Domain of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.cookieName
+      description: Cookie name of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.address
+      description: Address of the cookie data observed on the asset.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.asn
+      description: ASN number of the cookie data observed on the asset.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Asset.data.cookies.bgpPrefix
+      description: BGP prefix of the cookie data observed on the asset.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the asset to be added. This argument supports a single
+        value only.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Asset type. Possible values are: Domain, Host, IP Address, IP Block,
+        ASN, Page, SSL Cert, Contact. This argument supports a single value only.'
+      isArray: true
+      name: type
+      predefined:
+      - Domain
+      - Host
+      - IP Address
+      - IP Block
+      - ASN
+      - Page
+      - SSL Cert
+      - Contact
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Set the asset state. Possible values are: Candidate, Approved Inventory,
+        Requires Investigation, Dependencies, Monitor Only. This argument supports
+        a single value only.'
+      isArray: false
+      name: state
+      predefined:
+      - Candidate
+      - Approved Inventory
+      - Requires Investigation
+      - Dependencies
+      - Monitor Only
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Set the asset Priority. Possible values are: High, Medium, Low, None.
+        The default value for this argument from RiskIQ platform is None. This argument
+        supports a single value only.'
+      isArray: false
+      name: priority
+      predefined:
+      - High
+      - Medium
+      - Low
+      - None
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'A boolean value to indicate if the asset state should be CONFIRMED
+        into inventory (confirm: true) or as a CANDIDATE asset in inventory (confirm:
+        false or not specified). This argument supports a single value only.'
+      isArray: false
+      name: confirm
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A list of target asset types to also add to inventory, along with
+        any supplied properties, that are connected to the asset identifiers (e.g.
+        an asset identifier for a PAGE can cascade the properties to all known IPs
+        for that PAGE). Provide comma separated values to add multiple target asset
+        types.
+      isArray: true
+      name: target_asset_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When true, the request will fail if an invalid update is detected.
+        If false, any invalid updates will be skipped but others will continue.
+        The default value for this argumentis true. This argument
+        supports a single value only.
+      isArray: false
+      name: fail_on_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      description: A raw JSON payload or a file entry ID that consists of a JSON payload
+        which has the set of properties for the asset(s) to be added to inventory.
+      isArray: false
+      name: asset_json
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of a brand to be applied to the asset. Provide
+        comma separated values to add multiple brand values.
+      isArray: true
+      name: brand
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of an organization to be applied to the asset.
+        Provide comma separated values to add multiple organization values.
+      isArray: true
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of a tag to be applied to the asset. Provide
+        comma separated values to add multiple tags.
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Designated as an enterprise asset. Possible values are: true or false.
+        This argument supports a single value only.'
+      isArray: false
+      name: enterprise
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Add one or more assets to Global Inventory with a provided set of
+      properties to apply to all assets.
+    execution: false
+    name: df-add-assets
+    outputs:
+    - contextPath: RiskIQDigitalFootprint.Task.uuid
+      description: Unique Identifier to check the status of the added asset using
+        Get Task Status request.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.state
+      description: The state of the task for adding the asset according to the last
+        fetch.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.reason
+      description: The reason mentioned in the task for adding the asset according
+        to the last fetch.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.estimated
+      description: Number of estimated asset(s) that should be added.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Task.totalUpdates
+      description: Number of total assets that have been added.
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the asset to be updated. This argument supports a single
+        value only.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the asset to be updated. Possible values are: Domain,
+        Host, IP Address, IP Block, ASN, Page, SSL Cert, Contact. This argument supports
+        a single value only.'
+      isArray: true
+      name: type
+      predefined:
+      - Domain
+      - Host
+      - IP Address
+      - IP Block
+      - ASN
+      - Page
+      - SSL Cert
+      - Contact
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Set the asset state. Possible values are: Candidate, Approved Inventory,
+        Requires Investigation, Dependencies, Monitor Only. This argument supports
+        a single value only.'
+      isArray: false
+      name: state
+      predefined:
+      - Candidate
+      - Approved Inventory
+      - Requires Investigation
+      - Dependencies
+      - Monitor Only
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Set the asset priority. Possible values are: High, Medium, Low, None.
+        The default value for this argument is None. This argument
+        supports a single value only.'
+      isArray: false
+      name: priority
+      predefined:
+      - High
+      - Medium
+      - Low
+      - None
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Remove an asset from inventory. Possible value is: Dismissed. This
+        argument supports a single value only.'
+      isArray: false
+      name: removed_state
+      predefined:
+      - Dismissed
+      required: false
+      secret: false
+    - default: false
+      description: An array of related asset types which will also be updated. (e.g.
+        an asset identifier for a PAGE can cascade the properties to all known IPs
+        for that PAGE).
+      isArray: true
+      name: target_asset_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When true, the request will fail if an invalid update is detected.
+        When false, any invalid updates will be skipped but others will continue.
+        The default value for this argumentis true. This argument
+        supports a single value only.
+      isArray: false
+      name: fail_on_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      description: A raw JSON payload or a file entry ID that consists of a JSON payload
+        which has the set of properties for the asset(s) to be updated in inventory.
+      isArray: false
+      name: asset_json
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of a brand to be applied to the asset. Provide
+        comma separated values to update multiple brand values.
+      isArray: true
+      name: brand
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of an organization to be applied to the asset.
+        Provide comma separated values to update multiple organization values.
+      isArray: true
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Name or numeric id of a tag to be applied to the asset. Provide
+        comma separated values to update multiple tags.
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The action to be performed for updating the given properties.
+        The possible values are: Update, Add, Remove with Update being the default.
+        The value for this argument will be considered as action for all the properties
+        passed by the user. This argument supports a single value only.'
+      isArray: false
+      name: action
+      predefined:
+      - Add
+      - Update
+      - Remove
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Designated as an enterprise asset. Possible values are: true or false.
+        This argument supports a single value only.'
+      isArray: false
+      name: enterprise
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Update one or more assets in Global Inventory with provided set of
+      properties.
+    execution: false
+    name: df-update-assets
+    outputs:
+    - contextPath: RiskIQDigitalFootprint.Task.uuid
+      description: Unique Identifier to check the status of the updating asset using
+        Get Task Status request.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.state
+      description: The state of the task for updating the asset according to the last
+        fetch.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.reason
+      description: The reason mentioned in the task for updating the asset according
+        to the last fetch.
+      type: String
+    - contextPath: RiskIQDigitalFootprint.Task.estimated
+      description: Number of estimated asset(s) that should be updated.
+      type: Number
+    - contextPath: RiskIQDigitalFootprint.Task.totalUpdates
+      description: Number of total asset(s) that have been updated.
+      type: Number
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- RiskIQDigitalFootprint-Test
+fromversion: 5.5.0

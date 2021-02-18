@@ -1,0 +1,239 @@
+id: Code42 File Search Test
+version: -1
+name: Code42 File Search Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 25c9ef7f-a22f-48ec-874a-fd8cbf9d76d3
+    type: start
+    task:
+      id: 25c9ef7f-a22f-48ec-874a-fd8cbf9d76d3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 3ea241fd-152c-4f14-8008-235468349a2f
+    type: regular
+    task:
+      id: 3ea241fd-152c-4f14-8008-235468349a2f
+      version: -1
+      name: Delete Context
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 5c4332f4-52c8-4e87-8958-2af95f661081
+    type: title
+    task:
+      id: 5c4332f4-52c8-4e87-8958-2af95f661081
+      version: -1
+      name: Test Succeeded
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 3a624a27-8587-4a8a-8725-1d29ce5c045f
+    type: regular
+    task:
+      id: 3a624a27-8587-4a8a-8725-1d29ce5c045f
+      version: -1
+      name: Close Incident
+      description: ''
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 718a6d75-57ec-47cf-8177-30ec7a278fda
+    type: playbook
+    task:
+      id: 718a6d75-57ec-47cf-8177-30ec7a278fda
+      version: -1
+      name: Code42 File Search
+      playbookName: Code42 File Search
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      MD5:
+        simple: 72e6adccb0782b858754327292eaed22
+      SHA256: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 02b14138-3f7d-462b-88f0-69b955df1e84
+    type: condition
+    task:
+      id: 02b14138-3f7d-462b-88f0-69b955df1e84
+      version: -1
+      name: Check for results
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Code42.SecurityData
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: bc250878-f5e6-4ab5-8d4a-f3b4f73c726c
+    type: regular
+    task:
+      id: bc250878-f5e6-4ab5-8d4a-f3b4f73c726c
+      version: -1
+      name: Print Error Message
+      description: ''
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      message:
+        simple: 'Test failure: search did not return any results'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1135,
+        "width": 530,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0

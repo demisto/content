@@ -1,0 +1,549 @@
+id: CVE Enrichment - Generic v2
+version: -1
+fromversion: 5.0.0
+name: CVE Enrichment - Generic v2
+description: |-
+  This playbook performs CVE Enrichment using the following integrations:
+  - VulnDB
+  - CVE Search
+  - IBM X-Force Exchange
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+    type: start
+    task:
+      id: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4cfa2898-da16-4d61-839a-cc66e5492541
+    type: condition
+    task:
+      id: 4cfa2898-da16-4d61-839a-cc66e5492541
+      version: -1
+      name: Is there a CVE to enrich?
+      description: Verify that the playbook input includes at least one CVE ID to
+        enrich.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.cve_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+    type: title
+    task:
+      id: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 842e273c-40ee-46c1-837d-f7e09bcefef0
+    type: condition
+    task:
+      id: 842e273c-40ee-46c1-837d-f7e09bcefef0
+      version: -1
+      name: Is IBM X-Force Exchange integration enabled?
+      description: Verify that there's a valid instance of XFE enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: XFE
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
+    type: condition
+    task:
+      id: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
+      version: -1
+      name: Is "CVE Search" integration enabled?
+      description: Verify that there's a valid instance of "CVE Search" enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE Search
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+    type: regular
+    task:
+      id: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+      version: -1
+      name: Get CVE info from "CVE Search"
+      description: Returns CVE information by CVE ID.
+      script: '|||cve'
+      type: regular
+      iscommand: true
+      brand: CVE Search
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      cve_id:
+        complex:
+          root: inputs.cve_id
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: d2ff276a-dd81-4805-80c3-ee44976b4020
+    type: regular
+    task:
+      id: d2ff276a-dd81-4805-80c3-ee44976b4020
+      version: -1
+      name: Get CVE information from XFE
+      description: Retrieve CVE information from XFE.
+      script: XFE|||cve-search
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      cveId:
+        complex:
+          root: inputs.cve_id
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 81a2e52a-0a2a-4791-8a55-e4249923b7b3
+    type: title
+    task:
+      id: 81a2e52a-0a2a-4791-8a55-e4249923b7b3
+      version: -1
+      name: CVE enrichment
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+      - '14'
+      - '26'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: bee9dcb2-a07f-4362-8e17-df1458d42051
+    type: regular
+    task:
+      id: bee9dcb2-a07f-4362-8e17-df1458d42051
+      version: -1
+      name: VulnDB - Get vulnerability details by CVE
+      description: Returns full details about vulnerabilities, by CVE ID.
+      script: VulnDB|||vulndb-get-vuln-by-cve-id
+      type: regular
+      iscommand: true
+      brand: VulnDB
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      cve_id:
+        complex:
+          root: inputs.cve_id
+      max_size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 2c6008cc-e42b-4976-86c8-92123558d6b6
+    type: title
+    task:
+      id: 2c6008cc-e42b-4976-86c8-92123558d6b6
+      version: -1
+      name: VulnDB
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: da54676a-2737-437d-8f74-cf90095e20b0
+    type: title
+    task:
+      id: da54676a-2737-437d-8f74-cf90095e20b0
+      version: -1
+      name: CVE Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: 85a2fa30-ef67-4272-8867-18116129def3
+    type: title
+    task:
+      id: 85a2fa30-ef67-4272-8867-18116129def3
+      version: -1
+      name: IBM X-Force Exchange
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: 3b7877c8-6321-4a1c-8444-d2bd91aae191
+    type: condition
+    task:
+      id: 3b7877c8-6321-4a1c-8444-d2bd91aae191
+      version: -1
+      name: Is VulnDB integration enabled?
+      description: Verify that there's a valid instance of XFE enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VulnDB
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_11_yes": 0.52,
+      "1_2_#default#": 0.25,
+      "27_2_#default#": 0.39,
+      "4_2_#default#": 0.1,
+      "4_7_yes": 0.46,
+      "5_2_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 995,
+        "width": 1937.5,
+        "x": 162.5,
+        "y": 200
+      }
+    }
+  }
+inputs:
+- key: cve_id
+  value:
+    complex:
+      root: CVE
+      accessor: ID
+  required: false
+  description: The CVE ID to enrich.
+outputs:
+- contextPath: CVE
+  description: The CVE object
+  type: unknown
+- contextPath: CVE.ID
+  description: The ID of the CVE
+  type: string
+- contextPath: CVE.CVSS
+  description: The CVSS score of the CVE
+  type: number
+- contextPath: CVE.Published
+  description: The date this was published
+  type: date
+- contextPath: CVE.Modified
+  description: When CVE was last modified
+  type: date
+- contextPath: CVE.Description
+  description: The CVE description
+  type: string
+- contextPath: VulnDB.Vulnerability.ID
+  description: Vulnerability ID.
+- contextPath: VulnDB.Vulnerability.Title
+  description: Vulnerability title (human readable).
+- contextPath: VulnDB.Vulnerability.Description
+  description: Vulnerability description (human readable).
+- contextPath: VulnDB.Vulnerability.Solution
+  description: Vulnerability solution (human readable).
+- contextPath: VulnDB.CvssMetrics.Id
+  description: CVSS reference value.
+- contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+  description: CVSS confidentiality impact.
+- contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+  description: CVSS availability impact.
+- contextPath: VulnDB.CvssMetrics.Score
+  description: CVSS score.
+- contextPath: VulnDB.cvssMetrics.integrity_impact
+  description: CVSS integrity impact.
+- contextPath: VulnDB.Vendors.Id
+  description: Vendor ID.
+- contextPath: VulnDB.Products.Id
+  description: Product IDs.
+sourceplaybookid: cve_enrichment_-_generic
+tests:
+- No test

@@ -1,0 +1,137 @@
+{
+ "id": "6f0fa57c-f3ea-4267-883b-e43d55086223",
+ "version": -1,
+ "modified": "2019-04-24T14:13:16.362251+03:00",
+ "defaultIncidentType": "Phishing",
+ "mapping": {
+  "Phishing": {
+   "internalMapping": {
+    "Email BCC": {
+     "simple": "BCC",
+     "complex": null
+    },
+    "Email Body": {
+     "simple": "Text",
+     "complex": null
+    },
+    "Email HTML": {
+     "simple": "Body",
+     "complex": null
+    },
+    "Email Body HTML": {
+     "simple": "Body",
+     "complex": null
+    },
+    "Email CC": {
+     "simple": "CC",
+     "complex": null
+    },
+    "Email From": {
+     "simple": "From",
+     "complex": null
+    },
+    "Email Message ID": {
+     "simple": "Message-ID",
+     "complex": null
+    },
+    "Email Received": {
+     "simple": "Received",
+     "complex": null
+    },
+    "Email Reply To": {
+     "simple": "Reply-To",
+     "complex": null
+    },
+    "Email Sender IP": {
+     "simple": "",
+     "complex": {
+      "root": "Received",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "substringFrom",
+        "args": {
+         "from": {
+          "value": {
+           "simple": "(",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       },
+       {
+        "operator": "substringTo",
+        "args": {
+         "to": {
+          "value": {
+           "simple": ")",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       }
+      ]
+     }
+    },
+    "Email Subject": {
+     "simple": "Subject",
+     "complex": null
+    },
+    "Email To": {
+     "simple": "To",
+     "complex": null
+    },
+    "Email To Count": {
+     "simple": "",
+     "complex": {
+      "root": "To",
+      "filters": [
+
+      ],
+      "accessor": "",
+      "transformers": [
+       {
+        "operator": "splitAndTrim",
+        "args": {
+         "delimiter": {
+          "value": {
+           "simple": ",",
+           "complex": null
+          },
+          "isContext": false
+         }
+        }
+       },
+       {
+        "operator": "count",
+        "args": {
+
+        }
+       }
+      ]
+     }
+    }
+   },
+   "dontMapEventToLabels": false
+  }
+ },
+ "unclassifiedCases": {
+
+ },
+ "custom": true,
+ "transformer": {
+  "simple": "",
+  "complex": null
+ },
+ "keyTypeMap": {
+
+ },
+ "brandName": "OnboardingIntegration",
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,129 @@
+{
+  "alerts": [
+    {
+      "asset": {
+        "hostname": "dc12"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2019-12-30T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-16T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "asset": {
+        "hostname": "david-lee-laptop"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-01T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-18T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "asset": {
+        "hostname": "shannon-pc"
+      },
+      "alertInfos": [
+        {
+          "name": "Suspicious Powershell Ancestry",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-13T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "asset": {
+        "hostname": "shannon-pc"
+      },
+      "alertInfos": [
+        {
+          "name": "Suspicious Powershell Ancestry",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-13T18:49:33.923249Z"
+        }
+      ]
+    }
+  ],
+
+  "userAlerts": [
+    {
+      "user": {
+        "username": "dc12"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-12-30T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-16T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "user": {
+        "email": "david-lee-laptop"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-01T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-18T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "user": {
+        "username": "shannon-pc"
+      },
+      "alertInfos": [
+        {
+          "name": "Suspicious Powershell Ancestry",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-13T18:49:33.923249Z"
+        }
+      ]
+    },
+    {
+      "user": {
+        "username": "shannon-pc"
+      },
+      "alertInfos": [
+        {
+          "name": "Suspicious Powershell Ancestry",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-13T18:49:33.923249Z"
+        }
+      ]
+    }
+  ]
+}

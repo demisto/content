@@ -1,0 +1,523 @@
+id: Flashpoint_report-Test
+version: -1
+name: Flashpoint_report-Test
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c193fb00-d70b-4ebe-80c5-f5e38d56627e
+    type: start
+    task:
+      id: c193fb00-d70b-4ebe-80c5-f5e38d56627e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: eea3444f-5ca4-4ab7-8efe-863e18e6827e
+    type: regular
+    task:
+      id: eea3444f-5ca4-4ab7-8efe-863e18e6827e
+      version: -1
+      name: flashpoint-search-intelligence-reports
+      description: Search for the Intelligence Reports using a keyword
+      script: Flashpoint|||flashpoint-search-intelligence-reports
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      report_search:
+        simple: isis
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: af29beec-63e1-4ab9-8efc-ddbfdbc166c7
+    type: regular
+    task:
+      id: af29beec-63e1-4ab9-8efc-ddbfdbc166c7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: bb92bf67-b955-4bcd-840c-6364abcedd48
+    type: condition
+    task:
+      id: bb92bf67-b955-4bcd-840c-6364abcedd48
+      version: -1
+      name: verify report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Report}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Title}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.UpdatedAt}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: d735f8f5-c2e3-4339-8b19-ff4d12348c61
+    type: title
+    task:
+      id: d735f8f5-c2e3-4339-8b19-ff4d12348c61
+      version: -1
+      name: Process Single Intelligence report
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 810740c6-59fe-472c-85f8-a75cc7f57f84
+    type: regular
+    task:
+      id: 810740c6-59fe-472c-85f8-a75cc7f57f84
+      version: -1
+      name: flashpoint-get-single-intelligence-report
+      description: Get a single report by its ID
+      script: Flashpoint|||flashpoint-get-single-intelligence-report
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      report_id:
+        simple: e-QdYuuwRwCntzRljzn9-A
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: fc386795-57c5-4020-8a99-b7fc93e061cd
+    type: regular
+    task:
+      id: fc386795-57c5-4020-8a99-b7fc93e061cd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 599245b5-d5f7-4370-8a89-18cafdd0dab7
+    type: condition
+    task:
+      id: 599245b5-d5f7-4370-8a89-18cafdd0dab7
+      version: -1
+      name: Verify single intelligence report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Report.Title}
+            iscontext: true
+          right:
+            value:
+              simple: ISIS
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.UpdatedAt}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d47f1166-c12c-4faa-8430-34fd9f5a3a08
+    type: title
+    task:
+      id: d47f1166-c12c-4faa-8430-34fd9f5a3a08
+      version: -1
+      name: Process get related reoprt
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 89f218aa-affd-4c64-815e-c41da8098dae
+    type: regular
+    task:
+      id: 89f218aa-affd-4c64-815e-c41da8098dae
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 219d1ba2-724c-4713-813f-98bbab9562af
+    type: regular
+    task:
+      id: 219d1ba2-724c-4713-813f-98bbab9562af
+      version: -1
+      name: flashpoint-get-related-reports
+      description: Get related reports for a given report id
+      script: Flashpoint|||flashpoint-get-related-reports
+      type: regular
+      iscommand: true
+      brand: Flashpoint
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      report_id:
+        simple: tiPqg51OQpOTsoFyTaYa_w
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: dc552997-592e-4418-88bd-659189009f7c
+    type: condition
+    task:
+      id: dc552997-592e-4418-88bd-659189009f7c
+      version: -1
+      name: Verify report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Report}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Title}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: eeed47e4-b3a3-4f43-8c4b-4f7abddbfe2a
+    type: regular
+    task:
+      id: eeed47e4-b3a3-4f43-8c4b-4f7abddbfe2a
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2005,
+        "width": 620,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,58 @@
+[
+      {
+          "CaseID": "daa1e25e",
+          "Title": "Test-title",
+          "Description": "Test-description",
+          "CaseNumber": 1378051,
+          "ResolutionStatus": "Threat Offline",
+          "CreatedBy": {
+              "ID": "30c2e916",
+              "Name": "soc",
+              "DisplayName": "SOC PhishLabs"
+          },
+          "CaseType": "Other",
+          "CaseStatus": "Closed",
+          "DateCreated": "2019-11-12T08:46:01Z",
+          "DateClosed": "2019-11-12T09:20:06Z",
+          "DateModified": "2019-11-12T09:20:06Z",
+          "Customer": "PhishLabs",
+          "Attachments": [
+              {
+                  "ID": "dab753fa-0528-11ea-909b-0eb92493f786",
+                  "Type": "Email",
+                  "Description": "Source Email for case creation",
+                  "DateAdded": "2019-11-12T08:46:01Z",
+                  "FileName": "msg.z6AH.eml",
+                  "FileURL": "https://caseapi.phishlabs.com/v1/data/attachment/dab753fa"
+              }
+          ]
+      },
+      {
+          "CaseID": "83294b8d",
+          "Title": "Test-title",
+          "Description": "Test-description",
+          "CaseNumber": 1377827,
+          "ResolutionStatus": "Threat Offline",
+          "CreatedBy": {
+              "ID": "30c2e916-c72d-11e3-860e-002590387e36",
+              "Name": "soc.phishlabs",
+              "DisplayName": "SOC PhishLabs"
+          },
+          "CaseType": "Other",
+          "CaseStatus": "Closed",
+          "DateCreated": "2019-11-12T04:33:02Z",
+          "DateClosed": "2019-11-12T04:53:24Z",
+          "DateModified": "2019-11-12T04:53:24Z",
+          "Customer": "PhishLabs",
+          "Attachments": [
+              {
+                  "ID": "833ecee6-0505-11ea-9b11-0ad24386a0d6",
+                  "Type": "Email",
+                  "Description": "Source Email for case creation",
+                  "DateAdded": "2019-11-12T04:33:02Z",
+                  "FileName": "msg.K-AH.eml",
+                  "FileURL": "https://caseapi.phishlabs.com/v1/data/attachment/833ecee6-0505-11ea-9b11-0ad24386a0d6"
+              }
+          ]
+      }
+  ]

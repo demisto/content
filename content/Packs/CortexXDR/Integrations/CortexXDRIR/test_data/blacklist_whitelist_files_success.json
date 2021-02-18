@@ -1,0 +1,26 @@
+{
+    "multi_command_args": {
+          "hash_list":[
+             "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0",
+             "365296EB1BC01311B4AA1A7D0FD5EB5F420CA9B215AFE24234DFCF69E7D553E4",
+             "365296EB1BC01311B4AA1A7D0FD5EB5F420CA9B215AFE24214DFCF69E5D523E4",
+             "365296EB1BC01311B4AA1A7D0FD5EB5F420CA9B215AFE24234DFCF69E5D553D4",
+             "365296EB1BC01311B4AA1A7D0FD5EB5F420CA9B215AFE24234DFCF63E5D553D4"
+          ],
+          "comment":"test"
+    },
+  "single_command_args": {
+          "hash_list":[
+             "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
+          ],
+          "comment":"test"
+    },
+  "no_comment_command_args": {
+          "hash_list":[
+             "032196FB1AC01311B4AA1A7D0FD5EB5F420CA9B215AFE54234DFCF69E5D553F0"
+          ]
+    },
+    "api_response": {
+       "reply": true
+    }
+}

@@ -1,0 +1,210 @@
+id: MongoDBLog - Test
+version: -1
+name: MongoDBLog - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10187267-0f9e-496b-8c3d-d7193b31c3de
+    type: start
+    task:
+      id: 10187267-0f9e-496b-8c3d-d7193b31c3de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d697cc7c-b2d3-4ff7-8603-f0ca303e27a5
+    type: regular
+    task:
+      id: d697cc7c-b2d3-4ff7-8603-f0ca303e27a5
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 743e367a-ffad-4757-8c7f-37e9979ecc5f
+    type: regular
+    task:
+      id: 743e367a-ffad-4757-8c7f-37e9979ecc5f
+      version: -1
+      name: MongoDB write log
+      description: Add log entry.
+      script: '|||mongodb-write-log'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action:
+        simple: create
+      analyst:
+        simple: admin
+      entity:
+        simple: incident_log
+      playbook:
+        simple: Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 98ac102a-81af-4d5a-81d0-d650127ec3d7
+    type: regular
+    task:
+      id: 98ac102a-81af-4d5a-81d0-d650127ec3d7
+      version: -1
+      name: MongoDB read log
+      description: Returns all log entries.
+      script: '|||mongodb-read-log'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: efc09c62-df24-4d1c-883e-e5fde4202f13
+    type: regular
+    task:
+      id: efc09c62-df24-4d1c-883e-e5fde4202f13
+      version: -1
+      name: MongoDB get number of logs
+      description: Returns the number of log entries.
+      script: '|||mongodb-logs-number'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9fa39a93-b0c8-455a-8f30-18b50b9fff76
+    type: condition
+    task:
+      id: 9fa39a93-b0c8-455a-8f30-18b50b9fff76
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MongoDB.Entry.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

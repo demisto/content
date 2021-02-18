@@ -1,0 +1,120 @@
+{
+    "id": "OnboardingIntegration-mapper",
+    "name": "Onboarding Integration - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Onboarding integration incident fields.",
+	"version": -1,
+	"defaultIncidentType": "Phishing",
+	"mapping": {
+		"Phishing": {
+			"internalMapping": {
+				"Email BCC": {
+					"simple": "BCC",
+					"complex": null
+				},
+				"Email Body": {
+					"simple": "Text",
+					"complex": null
+				},
+				"Email HTML": {
+					"simple": "Body",
+					"complex": null
+				},
+				"Email Body HTML": {
+					"simple": "Body",
+					"complex": null
+				},
+				"Email CC": {
+					"simple": "CC",
+					"complex": null
+				},
+				"Email From": {
+					"simple": "From",
+					"complex": null
+				},
+				"Email Message ID": {
+					"simple": "Message-ID",
+					"complex": null
+				},
+				"Email Received": {
+					"simple": "Received",
+					"complex": null
+				},
+				"Email Reply To": {
+					"simple": "Reply-To",
+					"complex": null
+				},
+				"Email Sender IP": {
+					"simple": "",
+					"complex": {
+						"root": "Received",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "substringFrom",
+								"args": {
+									"from": {
+										"value": {
+											"simple": "(",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "substringTo",
+								"args": {
+									"to": {
+										"value": {
+											"simple": ")",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Subject": {
+					"simple": "Subject",
+					"complex": null
+				},
+				"Email To": {
+					"simple": "To",
+					"complex": null
+				},
+				"Email To Count": {
+					"simple": "",
+					"complex": {
+						"root": "To",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "splitAndTrim",
+								"args": {
+									"delimiter": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "count",
+								"args": {}
+							}
+						]
+					}
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"fromVersion": "6.0.0"
+}

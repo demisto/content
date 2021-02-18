@@ -1,0 +1,19 @@
+{
+    "id": "PaloAltoNetworks_PrismaCloudCompute",
+    "name": "Palo Alto Networks Prisma Cloud Compute - Classifier",
+    "type": "classification",
+    "description": "Classifies Palo Alto Networks Prisma Cloud Compute events.",
+	"defaultIncidentType": "",
+	"keyTypeMap": {
+		"audit": "Prisma Cloud Compute Audit",
+		"cloudDiscovery": "Prisma Cloud Compute Cloud Discovery",
+		"compliance": "Prisma Cloud Compute Compliance",
+		"vulnerability": "Prisma Cloud Compute Vulnerability"
+	},
+	"transformer": {
+		"complex": null,
+		"simple": "kind"
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

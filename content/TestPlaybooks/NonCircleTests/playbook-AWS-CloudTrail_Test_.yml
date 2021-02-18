@@ -1,0 +1,445 @@
+id: 3da2e31b-f114-4d7f-8702-117f3b498de9
+version: -1
+fromversion: 5.0.0
+name: AWS - CloudTrail Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ed045bb-7326-46e4-86fd-836a6c494c1b
+    type: start
+    task:
+      id: 5ed045bb-7326-46e4-86fd-836a6c494c1b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 1f86bb1a-58e8-408a-8e11-0c936266b75a
+    type: regular
+    task:
+      id: 1f86bb1a-58e8-408a-8e11-0c936266b75a
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudTrail.Trails.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 703acec3-7b36-4c50-8d1e-be784528f0d2
+    type: regular
+    task:
+      id: 703acec3-7b36-4c50-8d1e-be784528f0d2
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudTrail.Trails.TrailARN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: fb01caa9-419c-437d-863a-8757cb8c5991
+    type: regular
+    task:
+      id: fb01caa9-419c-437d-863a-8757cb8c5991
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: AWS.CloudTrail.Trails.S3BucketName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: e09ba119-5e3a-42ba-81ad-a21a5ded9a94
+    type: regular
+    task:
+      id: e09ba119-5e3a-42ba-81ad-a21a5ded9a94
+      version: -1
+      name: aws-cloudtrail-create-trail
+      description: Creates a trail that specifies the settings for delivery of log
+        data to an Amazon S3 bucket. A maximum of five trails can exist in a region,
+        irrespective of the region in which they were created.
+      script: AWS - CloudTrail|||aws-cloudtrail-create-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "15"
+      - "8"
+      - "14"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn: {}
+      cloudWatchLogsRoleArn: {}
+      enableLogFileValidation: {}
+      includeGlobalServiceEvents: {}
+      isMultiRegionTrail: {}
+      kmsKeyId: {}
+      name:
+        simple: test
+      s3BucketName:
+        simple: demisto-ct-test
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 491ab5f9-1c4a-4207-81b0-e51c45a6a1c7
+    type: regular
+    task:
+      id: 491ab5f9-1c4a-4207-81b0-e51c45a6a1c7
+      version: -1
+      name: aws-cloudtrail-start-logging
+      description: Starts the recording of AWS API calls and log file delivery for
+        a trail. For a trail that is enabled in all regions, this operation must be
+        called from the region in which the trail was created. This operation cannot
+        be called on the shadow trails (replicated trails in other regions) of a trail
+        that is enabled in all regions.
+      script: AWS - CloudTrail|||aws-cloudtrail-start-logging
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      name:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 440034d7-fb12-4fa8-86d7-8badb49eb2ce
+    type: regular
+    task:
+      id: 440034d7-fb12-4fa8-86d7-8badb49eb2ce
+      version: -1
+      name: aws-cloudtrail-update-trail
+      description: Updates the settings that specify delivery of log files. Changes
+        to a trail do not require stopping the CloudTrail service.
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn: {}
+      cloudWatchLogsRoleArn: {}
+      enableLogFileValidation: {}
+      includeGlobalServiceEvents: {}
+      isMultiRegionTrail:
+        simple: "true"
+      kmsKeyId: {}
+      name:
+        simple: test
+      s3BucketName: {}
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: d88ee670-7619-4de6-83f3-ad7a73f06741
+    type: regular
+    task:
+      id: d88ee670-7619-4de6-83f3-ad7a73f06741
+      version: -1
+      name: aws-cloudgtrail-lookup-events
+      description: Looks up API activity events captured by CloudTrail that create,
+        update, or delete resources in your account. Events for a region can be looked
+        up for the times in which you had CloudTrail turned on in that region during
+        the last seven days.
+      script: AWS - CloudTrail|||aws-cloudtrail-lookup-events
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attributeKey:
+        simple: EventName
+      attributeValue:
+        simple: StartLogging
+      endTime: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      startTime: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: f2d99626-5357-4dda-8f21-0cd86f5716a6
+    type: regular
+    task:
+      id: f2d99626-5357-4dda-8f21-0cd86f5716a6
+      version: -1
+      name: aws-cloudtrail-stop-logging
+      description: Suspends the recording of AWS API calls and log file delivery for
+        the specified trail. Under most circumstances, there is no need to use this
+        action. You can update a trail without stopping it first. This action is the
+        only way to stop recording. For a trail enabled in all regions, this operation
+        must be called from the region in which the trail was created, or an InvalidHomeRegionException
+        will occur. This operation cannot be called on the shadow trails (replicated
+        trails in other regions) of a trail enabled in all regions.
+      script: AWS - CloudTrail|||aws-cloudtrail-stop-logging
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      name:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 12515034-0279-4f9d-8ca0-84374c665bd1
+    type: regular
+    task:
+      id: 12515034-0279-4f9d-8ca0-84374c665bd1
+      version: -1
+      name: aws-cloudtrail-describe-trails
+      description: Retrieves settings for the trail associated with the current region
+        for your account.
+      script: AWS - CloudTrail|||aws-cloudtrail-describe-trails
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      includeShadowTrails: {}
+      trailNameList: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: 8a162cef-77c3-46bd-85df-d856938b1aaf
+    type: regular
+    task:
+      id: 8a162cef-77c3-46bd-85df-d856938b1aaf
+      version: -1
+      name: aws-cloudtrail-delete-trail
+      description: Deletes a trail. This operation must be called from the region
+        in which the trail was created. DeleteTrail cannot be called on the shadow
+        trails (replicated trails in other regions) of a trail that is enabled in
+        all regions.
+      script: AWS - CloudTrail|||aws-cloudtrail-delete-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      name:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: 2c968e3b-22ef-4789-8692-9e9ba779f98b
+    type: regular
+    task:
+      id: 2c968e3b-22ef-4789-8692-9e9ba779f98b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 303b78bc-2e29-4600-8618-f984f1d00a2d
+    type: title
+    task:
+      id: 303b78bc-2e29-4600-8618-f984f1d00a2d
+      version: -1
+      name: End of Playbook
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

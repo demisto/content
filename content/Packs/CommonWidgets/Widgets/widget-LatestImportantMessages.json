@@ -1,0 +1,19 @@
+{
+ "id": "latest-important-messages",
+ "size": 10,
+ "fromVersion": "5.0.0",
+ "dataType": "messages",
+ "query": "type:investigation* or type:newContentAvailable or type:mention*",
+ "name": "Important Messages",
+ "dateRange": {
+  "period": {
+   "byFrom": "days",
+   "fromValue": null
+  }
+ },
+ "isPredefined": true,
+ "version": -1,
+ "category": "others",
+ "widgetType": "list",
+ "description": ""
+}

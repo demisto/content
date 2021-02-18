@@ -1,0 +1,506 @@
+id: rsa_packets_and_logs_test
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: RSA Packets And Logs test
+description: Test RSA P&L integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bdf24cf0-515e-4d2d-8ad3-d841d65b8017
+    type: start
+    task:
+      id: bdf24cf0-515e-4d2d-8ad3-d841d65b8017
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6bad06e4-975e-46f0-8d2c-ffe873025f58
+    type: regular
+    task:
+      id: 6bad06e4-975e-46f0-8d2c-ffe873025f58
+      version: -1
+      name: netwitness-msearch
+      description: Search for pattern matches in many sessions or packets
+      script: RSA NetWitness Packets and Logs|||netwitness-msearch
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags:
+        simple: regex,sp,si,sm
+      limit:
+        simple: "1"
+      packets: {}
+      search:
+        simple: ^(.*)
+      sessions: {}
+      where: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8a2b7b6f-aa7c-4303-8395-cd84f3454f29
+    type: regular
+    task:
+      id: 8a2b7b6f-aa7c-4303-8395-cd84f3454f29
+      version: -1
+      name: netwitness-query-standard
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours: {}
+      lastMinutes: {}
+      query:
+        simple: select alias.host where alias.host contains 'skimresources'
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3043e05e-ead5-49c6-866b-263adc3b8b17
+    type: regular
+    task:
+      id: 3043e05e-ead5-49c6-866b-263adc3b8b17
+      version: -1
+      name: nw-sdk-values
+      description: Performs a value count query and returns the matching values for
+        a report
+      script: RSA NetWitness Packets and Logs|||nw-sdk-values
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      aggregateFieldName: {}
+      aggregateFunction: {}
+      concentratorIP: {}
+      concentratorPort: {}
+      fieldName:
+        simple: ip.src
+      flags:
+        simple: sessions,sort-total,order-ascending
+      id1: {}
+      id2: {}
+      max: {}
+      min: {}
+      size:
+        simple: "20"
+      threshold:
+        simple: "100000"
+      where:
+        simple: time="2016-Jan-30 13:56:30"-"2018-May-21 12:20:49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5d0c6722-ce3c-4aa2-8a8f-346541bc5658
+    type: regular
+    task:
+      id: 5d0c6722-ce3c-4aa2-8a8f-346541bc5658
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: hit
+      path:
+        simple: NetWitness.SearchHits
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 69837a16-595c-44f6-8782-93220ee4e598
+    type: regular
+    task:
+      id: 69837a16-595c-44f6-8782-93220ee4e598
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b949bbb5-1ee0-4b3f-8730-b8ff546fe89d
+    type: regular
+    task:
+      id: b949bbb5-1ee0-4b3f-8730-b8ff546fe89d
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: aliasHost
+      path:
+        simple: NetWitness.Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c2af2459-39ce-47db-8868-04d5b3d76236
+    type: regular
+    task:
+      id: c2af2459-39ce-47db-8868-04d5b3d76236
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ipSrc
+      path:
+        simple: NetWitness.Values
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5a84e5b2-9d39-4ef2-8862-5911446af4fd
+    type: regular
+    task:
+      id: 5a84e5b2-9d39-4ef2-8862-5911446af4fd
+      version: -1
+      name: nw-sdk-content
+      description: Returns the packet content for a session
+      script: RSA NetWitness Packets and Logs|||nw-sdk-content
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      base64: {}
+      concentratorIP: {}
+      concentratorPort: {}
+      excludeFileTypes: {}
+      fileExt: {}
+      flags: {}
+      includeFileTypes: {}
+      maxDirSize: {}
+      maxSize: {}
+      renameFileTypes: {}
+      renderFlags: {}
+      renderType: {}
+      session:
+        simple: "61"
+      subdirFileTypes: {}
+      where: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e76b7da3-c629-4954-8548-e7dbefd3be7a
+    type: regular
+    task:
+      id: e76b7da3-c629-4954-8548-e7dbefd3be7a
+      version: -1
+      name: Verify Context
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: MD5
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 867d2922-85ea-41b5-80e9-21227da0f8a5
+    type: regular
+    task:
+      id: 867d2922-85ea-41b5-80e9-21227da0f8a5
+      version: -1
+      name: netwitness-query-where-and-group-by
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours:
+        simple: "48"
+      lastMinutes: {}
+      query:
+        simple: select alias.host where alias.host contains 'skimresources' group
+          by alias.host
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 9285deed-0147-46ce-86a8-6d80b9908d96
+    type: regular
+    task:
+      id: 9285deed-0147-46ce-86a8-6d80b9908d96
+      version: -1
+      name: netwitness-query-group-by-only
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours:
+        simple: "48"
+      lastMinutes: {}
+      query:
+        simple: select alias.host group by alias.host
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1990,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

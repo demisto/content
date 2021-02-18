@@ -1,0 +1,1701 @@
+id: GoogleKubernetesEngine_Test
+version: -1
+name: GoogleKubernetesEngine_Test
+starttaskid: "0"
+description: ''
+tasks:
+  "0":
+    id: "0"
+    taskid: 73b58422-5c6f-4ee5-84dc-a4e207f5004f
+    type: start
+    task:
+      id: 73b58422-5c6f-4ee5-84dc-a4e207f5004f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fcab5f16-a991-43d8-8378-30a9220291a6
+    type: regular
+    task:
+      id: fcab5f16-a991-43d8-8378-30a9220291a6
+      version: -1
+      name: List clusters command
+      description: Lists all clusters owned by a project in either the specified zone
+        or all zones.
+      script: '|||gcloud-clusters-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: dd3e7e68-9478-42a8-87d1-eca87e579bc7
+    type: regular
+    task:
+      id: dd3e7e68-9478-42a8-87d1-eca87e579bc7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7852d6a1-2a43-423b-8737-a36a1d74ee7c
+    type: condition
+    task:
+      id: 7852d6a1-2a43-423b-8737-a36a1d74ee7c
+      version: -1
+      name: Verify list clusters command
+      description: Check whether clusters name exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Cluster.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5c867528-19dd-4287-84bb-b7e45656537e
+    type: regular
+    task:
+      id: 5c867528-19dd-4287-84bb-b7e45656537e
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: List clusters entry context is not available.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f2d8298f-fb5c-456a-8d45-415ec6b1b98f
+    type: regular
+    task:
+      id: f2d8298f-fb5c-456a-8d45-415ec6b1b98f
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b6724012-78e6-4054-81ea-ee6a109826f6
+    type: regular
+    task:
+      id: b6724012-78e6-4054-81ea-ee6a109826f6
+      version: -1
+      name: Describe cluster command
+      description: Gets the details of a specific cluster.
+      script: '|||gcloud-clusters-describe'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 14ce5336-cc99-4b11-8811-1c1d48a47663
+    type: condition
+    task:
+      id: 14ce5336-cc99-4b11-8811-1c1d48a47663
+      version: -1
+      name: Verify describe cluster command
+      description: Check whether clusters name exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Cluster.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8401ff4b-d4cc-42b7-8266-e80ecf3cd309
+    type: regular
+    task:
+      id: 8401ff4b-d4cc-42b7-8266-e80ecf3cd309
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: List clusters entry context is not available.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 405525bd-d7ae-4074-82d2-4b1ae5fdc363
+    type: regular
+    task:
+      id: 405525bd-d7ae-4074-82d2-4b1ae5fdc363
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 57f775d8-e0e8-4a41-82e8-4afb89635bdd
+    type: regular
+    task:
+      id: 57f775d8-e0e8-4a41-82e8-4afb89635bdd
+      version: -1
+      name: gcloud-clusters-set-muster-auth command
+      description: Enable basic (username/password) auth for the cluster. Enable will
+        create user admin with generated password.
+      script: '|||gcloud-clusters-set-muster-auth'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      basic_auth:
+        simple: disable
+      cluster:
+        simple: ${inputs.cluster}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7ccdd779-ee2b-4ee8-8eec-1b89b3ae757a
+    type: playbook
+    task:
+      id: 7ccdd779-ee2b-4ee8-8eec-1b89b3ae757a
+      version: -1
+      name: Google Kubernetes Engine Operations Generic Polling
+      description: This playbook check operations status in Google Kubernetes Engine,
+        Will run until operation from argument will finish, This will allow waiting
+        between steps in Cluster configuration.
+      playbookName: Google Kubernetes Engine Operations Generic Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      operation:
+        simple: ${GKE.Operation.Name}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 332b1e72-48a3-4ca7-8ef8-4fcc58455c99
+    type: regular
+    task:
+      id: 332b1e72-48a3-4ca7-8ef8-4fcc58455c99
+      version: -1
+      name: gcloud-clusters-set-addons command
+      description: Sets the addons for a specific cluster.
+      script: '|||gcloud-clusters-set-addons'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      http_load_balancing:
+        simple: disable
+      kubernetes_dashboard:
+        simple: disable
+      network_policy:
+        simple: disable
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: c8d96459-7f30-4a8a-8829-67b9c6f8df7a
+    type: playbook
+    task:
+      id: c8d96459-7f30-4a8a-8829-67b9c6f8df7a
+      version: -1
+      name: Google Kubernetes Engine Operations Generic Polling
+      description: This playbook check operations status in Google Kubernetes Engine,
+        Will run until operation from argument will finish, This will allow waiting
+        between steps in Cluster configuration.
+      playbookName: Google Kubernetes Engine Operations Generic Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      operation:
+        simple: ${GKE.Operation.Name}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d84054fe-560d-4a7b-8c44-a29eacb5959d
+    type: regular
+    task:
+      id: d84054fe-560d-4a7b-8c44-a29eacb5959d
+      version: -1
+      name: gcloud-clusters-set-legacy-auth command
+      description: Configuration for the legacy Attribute Based Access Control authorization
+        mode.
+      script: '|||gcloud-clusters-set-legacy-auth'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      enable:
+        simple: "false"
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: cb240ac1-7316-47e2-8679-55c08ab0520b
+    type: playbook
+    task:
+      id: cb240ac1-7316-47e2-8679-55c08ab0520b
+      version: -1
+      name: Google Kubernetes Engine Operations Generic Polling
+      description: This playbook check operations status in Google Kubernetes Engine,
+        Will run until operation from argument will finish, This will allow waiting
+        between steps in Cluster configuration.
+      playbookName: Google Kubernetes Engine Operations Generic Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      operation:
+        simple: ${GKE.Operation.Name}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ff523033-88f3-4e73-8f2c-39564ea80deb
+    type: regular
+    task:
+      id: ff523033-88f3-4e73-8f2c-39564ea80deb
+      version: -1
+      name: gcloud-clusters-set-master-authorized-network command
+      description: |-
+        Configuration options for the master authorized networks feature.
+        Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
+      script: '|||gcloud-clusters-set-master-authorized-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      cidrs:
+        simple: 10.0.0.0/24
+      cluster:
+        simple: ${inputs.cluster}
+      enable:
+        simple: "true"
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 989f6a18-cf10-4b24-88bf-0c41b08b453f
+    type: playbook
+    task:
+      id: 989f6a18-cf10-4b24-88bf-0c41b08b453f
+      version: -1
+      name: Google Kubernetes Engine Operations Generic Polling
+      description: This playbook check operations status in Google Kubernetes Engine,
+        Will run until operation from argument will finish, This will allow waiting
+        between steps in Cluster configuration.
+      playbookName: Google Kubernetes Engine Operations Generic Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      operation:
+        simple: ${GKE.Operation.Name}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: e521ec97-f25b-4a62-8c0c-c30e55402b12
+    type: regular
+    task:
+      id: e521ec97-f25b-4a62-8c0c-c30e55402b12
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e27f2260-1dd8-4aa5-8a55-563cf3bafba2
+    type: condition
+    task:
+      id: e27f2260-1dd8-4aa5-8a55-563cf3bafba2
+      version: -1
+      name: Verify operation
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Operation.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 1e1f0fae-c987-4ac7-86a0-ea6fac637bcd
+    type: regular
+    task:
+      id: 1e1f0fae-c987-4ac7-86a0-ea6fac637bcd
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message:
+        simple: Operation exists
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: c61d17d5-c0c9-4040-8375-5ff51c95ba25
+    type: regular
+    task:
+      id: c61d17d5-c0c9-4040-8375-5ff51c95ba25
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0a80beb5-ee8d-4c71-851c-3debb1d9875f
+    type: condition
+    task:
+      description: ''
+      id: 0a80beb5-ee8d-4c71-851c-3debb1d9875f
+      version: -1
+      name: Verify operation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Operation.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 2f8329b2-bb0c-40d6-85a8-e85279f5e8a5
+    type: regular
+    task:
+      id: 2f8329b2-bb0c-40d6-85a8-e85279f5e8a5
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      message:
+        simple: Operation exists
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b631b7fc-7807-4c9b-82f3-f5aca81c930b
+    type: regular
+    task:
+      id: b631b7fc-7807-4c9b-82f3-f5aca81c930b
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 05d4b42c-3e14-432a-8d2a-0e7ad7b50e99
+    type: condition
+    task:
+      description: ''
+      id: 05d4b42c-3e14-432a-8d2a-0e7ad7b50e99
+      version: -1
+      name: Verify operation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Operation.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: cf20b1f0-8e11-4fe6-8fed-4042b22a0d7e
+    type: regular
+    task:
+      id: cf20b1f0-8e11-4fe6-8fed-4042b22a0d7e
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      message:
+        simple: Operation exists
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: d3084f98-6d85-48cb-8237-96683a2ad711
+    type: regular
+    task:
+      id: d3084f98-6d85-48cb-8237-96683a2ad711
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: a0d708a0-cafe-467b-833b-cc46a9077ba2
+    type: condition
+    task:
+      description: ''
+      id: a0d708a0-cafe-467b-833b-cc46a9077ba2
+      version: -1
+      name: Verify operation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Operation.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 1eb7f828-1767-41cc-8d9a-7a72bafb5b06
+    type: regular
+    task:
+      id: 1eb7f828-1767-41cc-8d9a-7a72bafb5b06
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      message:
+        simple: Operation exists
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 51f3aa9d-67e2-403f-8d97-f0a06cb1c4d4
+    type: regular
+    task:
+      id: 51f3aa9d-67e2-403f-8d97-f0a06cb1c4d4
+      version: -1
+      name: gcloud-clusters-set-intra-node-visibility command
+      description: Enable or Disable for intra node visibility in cluster.
+      script: '|||gcloud-clusters-set-intra-node-visibility'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      enable:
+        simple: "false"
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 16a28624-18cb-4ff6-8cc8-a41caa24879f
+    type: regular
+    task:
+      id: 16a28624-18cb-4ff6-8cc8-a41caa24879f
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 1f904d24-8ff0-4761-861f-b1fe4a7297c8
+    type: condition
+    task:
+      description: ''
+      id: 1f904d24-8ff0-4761-861f-b1fe4a7297c8
+      version: -1
+      name: Verify operation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.Operation.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: d04c75b0-2cec-4309-8430-b483bba5b38a
+    type: regular
+    task:
+      id: d04c75b0-2cec-4309-8430-b483bba5b38a
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      message:
+        simple: Operation exists
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 3b5b950d-12d4-46d5-8139-57f04467a87e
+    type: regular
+    task:
+      id: 3b5b950d-12d4-46d5-8139-57f04467a87e
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 8340901c-40ac-4f40-87dd-56134cb5bb08
+    type: regular
+    task:
+      id: 8340901c-40ac-4f40-87dd-56134cb5bb08
+      version: -1
+      name: gcloud-node-pool-list command
+      description: Lists the node pools for a cluster.
+      script: '|||gcloud-node-pool-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 51964ba5-6723-456a-8351-da127d1c41b5
+    type: condition
+    task:
+      id: 51964ba5-6723-456a-8351-da127d1c41b5
+      version: -1
+      name: Verify list node pool command
+      description: Check whether clusters name exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.NodePool.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: d0ce9417-d270-4830-8fa8-b5154ca3a477
+    type: regular
+    task:
+      id: d0ce9417-d270-4830-8fa8-b5154ca3a477
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      message:
+        simple: Node pool not found
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: ed70293e-d81f-423c-8300-ae32fae5dcec
+    type: regular
+    task:
+      id: ed70293e-d81f-423c-8300-ae32fae5dcec
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 12499a52-b9e9-4943-8d4f-16766ec397ae
+    type: condition
+    task:
+      id: 12499a52-b9e9-4943-8d4f-16766ec397ae
+      version: -1
+      name: Verify list node pool command
+      description: Check whether clusters name exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GKE.NodePool.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 0a9d3f0f-93b6-4a32-8723-f42eb0855e9b
+    type: regular
+    task:
+      id: 0a9d3f0f-93b6-4a32-8723-f42eb0855e9b
+      version: -1
+      name: gcloud-node-pool-list command
+      description: Retrieves the requested node pool.
+      script: '|||gcloud-node-pool-describe'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      cluster:
+        simple: ${inputs.cluster}
+      node_pool:
+        simple: ${inputs.node_pools}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 6f4560c5-2f7d-4f86-829d-34423ee419f7
+    type: regular
+    task:
+      id: 6f4560c5-2f7d-4f86-829d-34423ee419f7
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message, the name attribute
+        is not available in cluster object.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      message:
+        simple: Node pool not found
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: a4e34ea7-0a7d-4b74-8f49-21b6939e32f2
+    type: regular
+    task:
+      id: a4e34ea7-0a7d-4b74-8f49-21b6939e32f2
+      version: -1
+      name: DeleteContext
+      description: Delete a field from context, for testing describe command.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 0e1c5169-a763-4a77-8eee-84d2e6ce7ef8
+    type: regular
+    task:
+      id: 0e1c5169-a763-4a77-8eee-84d2e6ce7ef8
+      version: -1
+      name: gcloud-node-pool-list command
+      description: Sets the NodeManagement options for a node pool.
+      script: '|||gcloud-node-pool-set-management'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      auto_repair:
+        simple: disable
+      auto_upgrade:
+        simple: disable
+      cluster:
+        simple: ${inputs.cluster}
+      node_pool:
+        simple: ${inputs.node_pools}
+      project:
+        simple: ${inputs.project}
+      zone:
+        simple: ${inputs.zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 09969396-932d-47bf-8d87-eb74d65d7ddd
+    type: title
+    task:
+      id: 09969396-932d-47bf-8d87-eb74d65d7ddd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: project
+  value:
+    simple: gcp-integrations
+  required: true
+  description: The Google Developers Console project ID or project number.
+  playbookInputQuery:
+- key: cluster
+  value:
+    simple: xsoar-integration
+  required: true
+  description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+  playbookInputQuery:
+- key: zone
+  value:
+    simple: us-central1-c
+  required: true
+  description: The name of the Google Compute Engine zone in which the cluster resides.
+  playbookInputQuery:
+- key: node_pools
+  value:
+    simple: default-pool
+  required: true
+  description: The name of the Google Compute Engine node pool.
+  playbookInputQuery:
+outputs: []
+tests:
+- GoogleKubernetesEngine_Test
+fromversion: 5.0.0

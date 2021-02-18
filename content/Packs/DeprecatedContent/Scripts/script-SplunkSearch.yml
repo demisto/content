@@ -1,0 +1,47 @@
+commonfields:
+  id: SplunkSearch
+  version: -1
+name: SplunkSearch
+script: >-
+  var rows = args.rows ? args.rows : 30;
+
+  var query = (args.query.indexOf('|') > 0) ? args.query : args.query + ' | head ' + rows;
+
+  var res = executeCommand('search', {'using-brand': 'splunk', query: query});
+
+  var table = {
+      Type: 1,
+      ContentsFormat: 'table',
+      Contents: []
+  };
+
+  for (var i=0; i<res[0].Contents.length; i++) {
+      data = res[0].Contents[i].result['_raw'];
+      table.Contents.push({Time: res[0].Contents[i].result['_time'], Host: res[0].Contents[i].result['host'], Source: res[0].Contents[i].result['source'], Data: data});
+  }
+
+  if (table.Contents.length > 0) {
+    return table;
+  } else {
+    return 'No results.'
+  }
+type: javascript
+tags:
+- enhancement
+- splunk
+comment: Deprecated. Run a query through Splunk and format the results as a table
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Splunk query to execute
+- name: rows
+  description: Return up to X first rows. If omitted, defaults to 30.
+scripttarget: 0
+dependson:
+  must:
+  - splunk|||search
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0

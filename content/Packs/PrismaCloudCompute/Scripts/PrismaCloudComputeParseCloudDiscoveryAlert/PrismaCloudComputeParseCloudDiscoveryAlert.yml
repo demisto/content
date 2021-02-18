@@ -1,0 +1,101 @@
+args:
+- default: false
+  description: The compliance alert raw JSON
+  isArray: false
+  name: alert_raw_json
+  required: true
+  secret: false
+tags:
+- Prisma Cloud Compute
+comment: Parse Cloud Discovery alert raw JSON data
+commonfields:
+  id: PrismaCloudComputeParseCloudDiscoveryAlert
+  version: -1
+enabled: false
+name: PrismaCloudComputeParseCloudDiscoveryAlert
+outputs:
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.time
+  description: 'Time represents the alert creation timestamp'
+  type: Date
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.credentialId
+  description: 'CredentialID is the id reference of the credential used'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.provider
+  description: 'Provider is the cloud provider for example: AWS, GCP'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.serviceType
+  description: 'ServiceType is the cloud service type for example: ECR, GCR'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.region
+  description: 'Region is the region that was scanned, for example: GCP - "us-east-1", Azure - "westus"'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.project
+  description: 'Project is the GCP project that was scanned'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.registry
+  description: 'Registry is the Azure registry that was scanned, for example: testcloudscanregistry.azurecr.io'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.protected
+  description: 'Protected is the number of protected entities (registries, functions, clusters)'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.total
+  description: 'Total is total number of entities found in cloud scan'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.err
+  description: 'Err holds any error found during a scan'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.name
+  description: 'Name is the name of the entity'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.protected
+  description: 'Protected indicates if the entity is protected'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.lastModified
+  description: 'LastModified is the modification time of the function'
+  type: Date
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.runtime
+  description: 'Runtime is runtime environment for the function, e.g. nodejs'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.version
+  description: 'Version is the version of the entity'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.arn
+  description: 'The Amazon Resource Name (ARN) assigned to the entity'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.status
+  description: 'Status is the current status of entity'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.runningTasksCount
+  description: 'RunningTasksCount is the number of running tasks in ecs cluster'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.activeServicesCount
+  description: 'ActiveServicesCount is the number of active services in ecs cluster'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.createdAt
+  description: 'CreatedAt is the time when the entity was created'
+  type: Date
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.nodesCount
+  description: 'NodesCount is the number of nodes in the cluster (aks, gke)'
+  type: Number
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.resourceGroup
+  description: 'ResourceGroup is the the azure resource group containing the entity'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.containerGroup
+  description: 'ContainerGroup is the azure aci container group the container belongs to'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.entities.image
+  description: 'Image is the image of an aci container'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.collections
+  description: 'Collections are the matched result collections'
+  type: String
+- contextPath: PrismaCloudCompute.CloudDiscoveryAlert.accountID
+  description: 'AccountID is the cloud account ID'
+  type: Date
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.2245
+fromversion: 5.0.0

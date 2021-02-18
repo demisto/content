@@ -1,0 +1,344 @@
+id: awake_security_test_pb
+version: -1
+name: awake_security_test_pb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e1bac280-aa77-403e-8469-70eb46aa4f0e
+    type: start
+    task:
+      id: e1bac280-aa77-403e-8469-70eb46aa4f0e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1c86f0e7-fe0e-48c4-814a-003b81787600
+    type: regular
+    task:
+      id: 1c86f0e7-fe0e-48c4-814a-003b81787600
+      version: -1
+      name: awake-query-domains
+      description: Query domains
+      script: '|||awake-query-domains'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      deviceName: {}
+      domainName: {}
+      endTime:
+        simple: "2020-06-18T07:30:00Z"
+      ipAddress: {}
+      protocol: {}
+      queryExpression: {}
+      startTime:
+        simple: "2018-07-18T07:00:00Z"
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6214ad23-19a9-456d-8a52-d867ef944d7a
+    type: title
+    task:
+      id: 6214ad23-19a9-456d-8a52-d867ef944d7a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: dc3aa3b2-32bc-4f48-806f-de601076f7b5
+    type: condition
+    task:
+      id: dc3aa3b2-32bc-4f48-806f-de601076f7b5
+      version: -1
+      name: Test awake-query-domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: AwakeSecurity
+                accessor: Domains.name
+            iscontext: true
+          right:
+            value:
+              simple: amazonaws.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ec71359f-7998-41f3-82dc-b5dd87eb77b6
+    type: regular
+    task:
+      id: ec71359f-7998-41f3-82dc-b5dd87eb77b6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 43fabfb9-0664-490e-8824-4c43974931fa
+    type: regular
+    task:
+      id: 43fabfb9-0664-490e-8824-4c43974931fa
+      version: -1
+      name: awake-query-activities
+      description: Query activities in Awake Security
+      script: '|||awake-query-activities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      deviceName: {}
+      domainName: {}
+      endTime:
+        simple: "2020-06-01T00:00:00Z"
+      ipAddress: {}
+      protocol: {}
+      queryExpression: {}
+      startTime:
+        simple: "2020-01-01T00:00:00Z"
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ea57b365-54fc-445e-846b-179c8a84d482
+    type: condition
+    task:
+      id: ea57b365-54fc-445e-846b-179c8a84d482
+      version: -1
+      name: Test awake-query-activities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AwakeSecurity
+                accessor: Activities.sourceIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: c1202631-311d-4130-8d90-d7ba643218f7
+    type: regular
+    task:
+      id: c1202631-311d-4130-8d90-d7ba643218f7
+      version: -1
+      name: awake-query-devices
+      description: Query devices
+      script: '|||awake-query-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      deviceName: {}
+      domainName: {}
+      endTime:
+        simple: "2020-07-18T07:30:00Z"
+      ipAddress: {}
+      protocol: {}
+      queryExpression: {}
+      startTime:
+        simple: "2018-07-18T07:00:00Z"
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3895371c-6c74-4598-8caa-ea30b4eed1e3
+    type: condition
+    task:
+      id: 3895371c-6c74-4598-8caa-ea30b4eed1e3
+      version: -1
+      name: Test awake-query-devices
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AwakeSecurity
+                accessor: Devices.deviceName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_15_yes": 0.89,
+      "16_17_yes": 0.87,
+      "18_12_yes": 0.81
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1455,
+        "width": 380,
+        "x": 50,
+        "y": 1750
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

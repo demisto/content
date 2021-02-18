@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+
+[packages]
+cybox = "==2.1.0.13"
+lxml = "==3.7.2"
+mixbox = "==1.0.1"
+olefile = "==0.44"
+ordered-set = "==2.0.1"
+python-dateutil = "==2.6.0"
+python-libnmap = "==0.7.0"
+requests = "==2.13.0"
+six = "==1.10.0"
+stix = "==1.2.0.2"
+virtualenv = "==15.0.3"
+weakrefmethod = "==1.0.3"
+
+[requires]
+python_version = "2.7"

@@ -1,0 +1,239 @@
+id: Pipl Test
+version: -1
+name: Pipl Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e78f6c4a-9a8c-428a-832a-0501a7e4f857
+    type: start
+    task:
+      id: e78f6c4a-9a8c-428a-832a-0501a7e4f857
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: a868200a-6d56-4c48-8a01-3cce9b00fe31
+    type: regular
+    task:
+      id: a868200a-6d56-4c48-8a01-3cce9b00fe31
+      version: -1
+      name: pipl-search
+      description: Search for required query
+      script: Pipl1|||pipl-search
+      type: regular
+      iscommand: true
+      brand: Pipl1
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+      - "3"
+      - "2"
+      - "5"
+    scriptarguments:
+      age: {}
+      city: {}
+      columns: {}
+      country: {}
+      email:
+        simple: clark.kent@example.com
+      first-name:
+        simple: Clark
+      last-name:
+        simple: Kent
+      middle-name: {}
+      phone: {}
+      raw-address: {}
+      raw-name: {}
+      state: {}
+      username: {}
+      zipcode: {}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 665a9b9d-fde1-4288-8885-7217a26fc51a
+    type: regular
+    task:
+      id: 665a9b9d-fde1-4288-8885-7217a26fc51a
+      version: -1
+      name: Verify Names
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"Clark Joseph Kent\nKal El\n"'
+      fields: {}
+      path:
+        simple: Account.[0].Names
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 61a6757c-2390-4039-890f-f1a0541f4a33
+    type: regular
+    task:
+      id: 61a6757c-2390-4039-890f-f1a0541f4a33
+      version: -1
+      name: Verify Phones
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"978-555-0145 +1 978-555-0145\n"'
+      fields: {}
+      path:
+        simple: Account.[0].Phones
+    view: |-
+      {
+        "position": {
+          "x": 56,
+          "y": 410
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 9700610d-7ae2-4648-8409-4475147d47dc
+    type: regular
+    task:
+      id: 9700610d-7ae2-4648-8409-4475147d47dc
+      version: -1
+      name: Verify IDs
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"11231@facebook\n"'
+      fields: {}
+      path:
+        simple: Account.[0].IDs
+    view: |-
+      {
+        "position": {
+          "x": 845,
+          "y": 410
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 4fcbd4be-1d7e-4177-8bc6-55e8ce1f06b3
+    type: regular
+    task:
+      id: 4fcbd4be-1d7e-4177-8bc6-55e8ce1f06b3
+      version: -1
+      name: Verify Addresses
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '"10-1 Hickory Lane, Smallville, Kansas\n1000-355 Broadway, Metropolis, Kansas\n"'
+      fields: {}
+      path:
+        simple: Account.[0].Addresses
+    view: |-
+      {
+        "position": {
+          "x": 1238,
+          "y": 410
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 71b429d5-7523-4278-8d5b-3e907653dbc3
+    type: regular
+    task:
+      id: 71b429d5-7523-4278-8d5b-3e907653dbc3
+      version: -1
+      name: Verify Emails
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '[{"Address":"full.email.available@business.subscription"},{"Address":"full.email.available@business.subscription"},{"Address":"full.email.available@business.subscription"}]'
+      fields: {}
+      path:
+        simple: Account.Email
+    view: |-
+      {
+        "position": {
+          "x": -338,
+          "y": 410
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 1956,
+        "x": -338,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+fromversion: 5.0.0

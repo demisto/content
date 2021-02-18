@@ -1,0 +1,582 @@
+elasticcommonfields: {}
+id: FetchIndicatorsFromFile-test
+version: -1
+name: FetchIndicatorsFromFile-test
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a507d34-0e72-4975-8e2f-26eca1dcecf3
+    type: start
+    task:
+      id: 2a507d34-0e72-4975-8e2f-26eca1dcecf3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c78406e1-535c-402e-8cc4-4e9837836458
+    type: regular
+    task:
+      id: c78406e1-535c-402e-8cc4-4e9837836458
+      version: -1
+      name: http - GET CSV
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: csvFile.csv
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Hashes_list.csv
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e304796e-e88f-4f68-8808-fb5be321b030
+    type: regular
+    task:
+      id: e304796e-e88f-4f68-8808-fb5be321b030
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "6"
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 541d8068-8caf-447b-898d-7cc13c9495ba
+    type: regular
+    task:
+      id: 541d8068-8caf-447b-898d-7cc13c9495ba
+      version: -1
+      name: FetchIndicatorsFromFile
+      description: Fetch indicators from a file.
+      scriptName: FetchIndicatorsFromFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      auto_detect:
+        simple: "True"
+      default_type: {}
+      entry_id:
+        complex:
+          root: ${File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${File.Name}
+                iscontext: true
+              right:
+                value:
+                  simple: csvFile.csv
+          accessor: EntryID}
+      extend-context:
+        simple: Indicator=.[0]
+      indicator_column_number: {}
+      indicator_type_column_number: {}
+      limit: {}
+      offset: {}
+      sheet_name: {}
+      starting_row: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 04078c92-656d-4dbb-8ea1-4357d3f3f8be
+    type: condition
+    task:
+      id: 04078c92-656d-4dbb-8ea1-4357d3f3f8be
+      version: -1
+      name: Test Context CSV
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+          right:
+            value:
+              simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0
+      - - operator: containsString
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+          right:
+            value:
+              simple: File
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 622c90bc-c619-4206-8804-da4364900d8c
+    type: title
+    task:
+      id: 622c90bc-c619-4206-8804-da4364900d8c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e298d2ab-77b1-48ae-8850-08d3f062e87f
+    type: regular
+    task:
+      id: e298d2ab-77b1-48ae-8850-08d3f062e87f
+      version: -1
+      name: http - GET TXT
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: txtFile.txt
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 049dceea-e78c-4fe8-8da3-a951567ffac6
+    type: regular
+    task:
+      id: 049dceea-e78c-4fe8-8da3-a951567ffac6
+      version: -1
+      name: FetchIndicatorsFromFile
+      description: Fetch indicators from a file.
+      scriptName: FetchIndicatorsFromFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      auto_detect:
+        simple: "True"
+      default_type: {}
+      entry_id:
+        complex:
+          root: ${File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${File.Name}
+                iscontext: true
+              right:
+                value:
+                  simple: txtFile.txt
+          accessor: EntryID}
+      extend-context:
+        simple: Indicator2=.[0]
+      indicator_column_number: {}
+      indicator_type_column_number: {}
+      limit: {}
+      offset: {}
+      sheet_name: {}
+      starting_row: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d51d09df-bff4-424e-86a5-962859c95fa1
+    type: condition
+    task:
+      id: d51d09df-bff4-424e-86a5-962859c95fa1
+      version: -1
+      name: Test Context TXT
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Indicator2.value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: containsString
+          left:
+            value:
+              simple: Indicator2.type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Domain
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9de51f8a-61fd-4657-8cc3-32775914608e
+    type: regular
+    task:
+      id: 9de51f8a-61fd-4657-8cc3-32775914608e
+      version: -1
+      name: http - GET XLSX
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: xlsFile.xlsx
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsXls.xlsx
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1157cc1a-b749-41d2-8910-fda8dde7f10e
+    type: regular
+    task:
+      id: 1157cc1a-b749-41d2-8910-fda8dde7f10e
+      version: -1
+      name: FetchIndicatorsFromFile
+      description: Fetch indicators from a file.
+      scriptName: FetchIndicatorsFromFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      auto_detect:
+        simple: "False"
+      default_type: {}
+      entry_id:
+        complex:
+          root: ${File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${File.Name}
+                iscontext: true
+              right:
+                value:
+                  simple: xlsFile.xlsx
+          accessor: EntryID}
+      extend-context:
+        simple: Indicator3=.[0]
+      indicator_column_number:
+        simple: "2"
+      indicator_type_column_number:
+        simple: "4"
+      limit: {}
+      offset: {}
+      sheet_name: {}
+      starting_row:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 92e4908d-ac4e-4678-80d4-58ec1b8130f3
+    type: condition
+    task:
+      id: 92e4908d-ac4e-4678-80d4-58ec1b8130f3
+      version: -1
+      name: Test Context XLS
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Indicator3.value
+            iscontext: true
+          right:
+            value:
+              simple: www.demisto.com
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Indicator3.value
+            iscontext: true
+          right:
+            value:
+              simple: not an indicator
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Domain
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Name
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1155,
+        "width": 1350,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

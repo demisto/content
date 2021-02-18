@@ -1,0 +1,429 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AWS - AccessAnalyzer
+  version: -1
+fromversion: 5.0.0
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  required: false
+  type: 15
+- display: Role Arn
+  name: roleArn
+  required: false
+  type: 0
+- display: Role Session Name
+  name: roleSessionName
+  required: false
+  type: 0
+- display: Role Session Duration
+  name: sessionDuration
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch Analyzer ARN
+  name: analyzerArn
+  additionalinfo: The ARN to fetch findings for
+  defaultvalue: ""
+  type: 0
+  required: false
+description: Amazon Web Services IAM Access Analyzer
+display: AWS - AccessAnalyzer (beta)
+name: AWS - AccessAnalyzer
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of analyzers.
+    execution: false
+    name: aws-access-analyzer-list-analyzers
+    outputs:
+    - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+      description: List of Analyzers and their details.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to retrieve a list of analyzed resources from.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return in the response.
+      isArray: false
+      name: maxResults
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter findings by one of the resource type.
+      isArray: false
+      name: resourceType
+      predefined:
+      - AWS::IAM::Role
+      - AWS::KMS::Key
+      - AWS::Lambda::Function
+      - AWS::Lambda::LayerVersion
+      - AWS::S3::Bucket
+      - AWS::SQS::Queue
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of resources that have been analyzed.
+    execution: false
+    name: aws-access-analyzer-list-analyzed-resource
+    outputs:
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+      description: List of analyzed resources.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to retrieve findings from.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return in the response.
+      isArray: false
+      name: maxResults
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter findings by one of the resource type.
+      isArray: false
+      name: resourceType
+      predefined:
+      - AWS::IAM::Role # disable-secrets-detection
+      - AWS::KMS::Key # disable-secrets-detection
+      - AWS::Lambda::Function # disable-secrets-detection
+      - AWS::Lambda::LayerVersion # disable-secrets-detection
+      - AWS::S3::Bucket # disable-secrets-detection
+      - AWS::SQS::Queue # disable-secrets-detection
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter findings by status
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - ARCHIVED
+      - RESOLVED
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of findings generated by the specified analyzer.
+    execution: false
+    name: aws-access-analyzer-list-findings
+    outputs:
+    - contextPath: AWS.AccessAnalyzer.Findings
+      description: Access Analyzer findings.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to retrieve information from.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The ARN of the resource to retrieve information about.
+      isArray: false
+      name: resourceArn
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about an analyzed resource.
+    execution: false
+    name: aws-access-analyzer-get-analyzed-resource
+    outputs:
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+      description: Analyzed resource detail.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to retrieve information from.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the finding to retrieve.
+      isArray: false
+      name: findingId
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about the specified finding.
+    execution: false
+    name: aws-access-analyzer-get-finding
+    outputs:
+    - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
+      description: Finding details.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to use to scan the policies applied to the specified resource.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The ARN of the resource to scan.
+      isArray: false
+      name: resourceArn
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Starts a scan of the policies applied to the specified resource.
+    execution: false
+    name: aws-access-analyzer-start-resource-scan
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer that generated the findings to update.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The IDs of the findings to update (comma separated).
+      isArray: true
+      name: findingIds
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The ARN of the resource to scan.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - ARCHIVED
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates findings with the new values provided in the request.
+    execution: false
+    name: aws-access-analyzer-update-findings
+  dockerimage: demisto/boto3py3:1.0.0.4409
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+beta: true
+tests:
+- No test

@@ -1,0 +1,109 @@
+id: PostgreSQL Test
+version: -1
+fromversion: 5.0.0
+name: PostgreSQL Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: da241676-a328-4850-8552-3449a1797625
+    type: start
+    task:
+      id: da241676-a328-4850-8552-3449a1797625
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+  "1":
+    id: "1"
+    taskid: 9674640e-c06c-473e-8592-fa33e2806248
+    type: regular
+    task:
+      description: ""
+      id: 9674640e-c06c-473e-8592-fa33e2806248
+      version: -1
+      name: Run a PostgreSQL Query
+      script: PostgreSQL|||pgsql-query
+      type: regular
+      iscommand: true
+      brand: PostgreSQL
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: select 'ALLGOOD' as val
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 630d0a33-3041-4259-86fc-ea3d86bb3d61
+    type: regular
+    task:
+      id: 630d0a33-3041-4259-86fc-ea3d86bb3d61
+      version: -1
+      name: VerifyHumanReadableEquals
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableEquals
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      string:
+        simple: val,ALLGOOD
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    evidencedata:
+      description: null
+      occurred: null
+      tags: null
+      customfields: {}
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

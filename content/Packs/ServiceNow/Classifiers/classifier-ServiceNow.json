@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "ServiceNow Ticket",
+    "description": "Classifies ServiceNow tickets.",
+    "feed": false,
+    "id": "ServiceNow",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {
+        "incident": "ServiceNow Ticket"
+    },
+    "name": "ServiceNow Classifier",
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": "sys_class_name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

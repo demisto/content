@@ -1,0 +1,73 @@
+{
+    "id": "registryKey",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.4.9",
+    "modified": "2019-07-18T11:06:36.958983926Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Registry Key",
+    "prevDetails": "Registry Key",
+    "reputationScriptName": "",
+    "reputationCommand": "",
+    "enhancementScriptNames": [],
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "",
+    "contextPath": "",
+    "contextValue": "",
+    "excludedBrands": [],
+    "defaultMapping": {
+        "namefield": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "Name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "path": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "Path",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registryvalue": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "Value",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null
+}

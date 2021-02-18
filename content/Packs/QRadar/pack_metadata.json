@@ -1,0 +1,45 @@
+{
+    "name": "IBM QRadar",
+    "description": "Fetch offenses as incidents and search QRadar",
+    "support": "xsoar",
+    "currentVersion": "1.2.11",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "AccessInvestigation": {
+            "mandatory": true,
+            "display_name": "Access Investigation"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Asset": {
+            "mandatory": true,
+            "display_name": "Asset"
+        }
+    },
+    "displayedImages": [
+        "CommonPlaybooks",
+        "CommonScripts",
+        "AccessInvestigation",
+        "CommonTypes",
+        "Asset"
+    ]
+}

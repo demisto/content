@@ -1,0 +1,319 @@
+id: Zimperium_Test
+version: -1
+fromversion: 5.0.0
+name: Zimperium_Test
+description: A test playbook for Zimperium.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b578eaee-3ea3-dead-beef-b95038d6c1b4
+    type: start
+    task:
+      id: b578eaee-3ea3-dead-beef-b95038d6c1b4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b578eaee-3ea3-4dd4-beef-b95038d6c1b4
+    type: regular
+    task:
+      id: b578eaee-3ea3-4dd4-beef-b95038d6c1b4
+      version: -1
+      name: zimperium-events-search
+      description: ""
+      script: '|||zimperium-events-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 704ce753-4bd3-48c8-8a39-860135ccf82e
+    type: regular
+    task:
+      id: 704ce753-4bd3-48c8-8a39-860135ccf82e
+      version: -1
+      name: zimperium-users-search
+      description: ""
+      script: '|||zimperium-users-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      page: {}
+      query: {}
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4c137532-6cb9-4b29-8d0e-a15310019a70
+    type: regular
+    task:
+      id: 4c137532-6cb9-4b29-8d0e-a15310019a70
+      version: -1
+      name: zimperium-user-get-by-id
+      description: ""
+      script: '|||zimperium-user-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      object_id:
+        simple: 3d588112-6467-4c2d-932a-b728f866163d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 9238f51b-7de9-4122-84bd-7e565daad6e2
+    type: regular
+    task:
+      id: 9238f51b-7de9-4122-84bd-7e565daad6e2
+      version: -1
+      name: zimperium-devices-search
+      description: ""
+      script: '|||zimperium-devices-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      page: {}
+      query: {}
+      size:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 738fdbd0-4ee3-4981-86d8-944b6409dcc7
+    type: regular
+    task:
+      id: 738fdbd0-4ee3-4981-86d8-944b6409dcc7
+      version: -1
+      name: zimperium-device-get-by-id
+      description: ""
+      script: '|||zimperium-device-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      device_id: {}
+      zdid:
+        simple: c728a9f1-dbcc-4b0f-84b2-5dc07e80b6e5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 4bd665d1-0ba4-4290-8cf0-460f633bcd23
+    type: regular
+    task:
+      id: 4bd665d1-0ba4-4290-8cf0-460f633bcd23
+      version: -1
+      name: zimperium-devices-get-last-updated
+      description: ""
+      script: '|||zimperium-devices-get-last-updated'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      exclude_deleted: {}
+      from_last_update:
+        simple: 5 days
+      page: {}
+      size:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a56bee59-9f1b-4739-8df0-1531f13fb887
+    type: regular
+    task:
+      id: a56bee59-9f1b-4739-8df0-1531f13fb887
+      version: -1
+      name: zimperium-app-classification-get
+      description: ""
+      script: '|||zimperium-app-classification-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      app_hash: {}
+      app_name:
+        simple: Duo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b578eaee-3ea3-dead-8a45-b95038d6c1b4
+    type: title
+    task:
+      id: b578eaee-3ea3-dead-8a45-b95038d6c1b4
+      version: -1
+      name: Test Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: b578eaee-3ea3-4dd4-8a45-b95038d6c1b4
+    type: regular
+    task:
+      id: b578eaee-3ea3-4dd4-8a45-b95038d6c1b4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

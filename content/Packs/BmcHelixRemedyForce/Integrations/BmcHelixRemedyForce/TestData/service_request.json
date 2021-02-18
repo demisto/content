@@ -1,0 +1,13 @@
+{
+    "Success": true,
+    "Result": {
+        "Number": "00000132",
+        "Id": "adfghjkl"
+    },
+    "ErrorMessage": null,
+    "ErrorCode": null,
+    "records": [{
+        "Id": "id1",
+        "BMCServiceDesk__isServiceRequest__c": true
+    }]
+}

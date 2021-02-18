@@ -1,0 +1,905 @@
+id: TIM - QRadar Add Url Indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - QRadar Add Url Indicators
+description: This playbook queries indicators based on a pre-defined
+  query or results from a parent playbook, and adds the resulting indicators to a QRadar
+  Reference Set. The Reference Set name must be defined in the playbook inputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dfe3443b-d2bc-40c5-8291-35be6e9f4113
+    type: start
+    task:
+      id: dfe3443b-d2bc-40c5-8291-35be6e9f4113
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0c79bfb8-bd4a-4ee8-848a-1ffce8bb5cd5
+    type: condition
+    task:
+      id: 0c79bfb8-bd4a-4ee8-848a-1ffce8bb5cd5
+      version: -1
+      name: Is QRadarEnabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "31"
+      - "32"
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6b55a0c6-8594-4bf7-8d98-3721e7338536
+    type: condition
+    task:
+      id: 6b55a0c6-8594-4bf7-8d98-3721e7338536
+      version: -1
+      name: Are there filtered results?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e4fc4908-2e40-4aa3-8e09-d5e174c96535
+    type: regular
+    task:
+      id: e4fc4908-2e40-4aa3-8e09-d5e174c96535
+      version: -1
+      name: Add urls to QRadar black list Url reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarBlackListUrlReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: playbookQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 7eed9a8b-352e-4eb9-85cc-3281501bf0fa
+    type: condition
+    task:
+      id: 7eed9a8b-352e-4eb9-85cc-3281501bf0fa
+      version: -1
+      name: Is there a Qradar black list Url Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarBlackListUrlReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 1c35b4d2-3a71-4d34-8e4b-f3f95a147c96
+    type: condition
+    task:
+      id: 1c35b4d2-3a71-4d34-8e4b-f3f95a147c96
+      version: -1
+      name: Is there a Qradar white list Url Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarWhiteistUrlReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 8d116308-62e4-4275-88ab-75fae486c9d5
+    type: regular
+    task:
+      id: 8d116308-62e4-4275-88ab-75fae486c9d5
+      version: -1
+      name: Add urls to QRadar white list url reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarWhiteListUrlReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: inputs.playbookQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: aef2cf54-7be8-45f6-892d-a426ff55c7a2
+    type: title
+    task:
+      id: aef2cf54-7be8-45f6-892d-a426ff55c7a2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 50ab74f1-270e-4ca9-86f7-b3d9ca0a1e3d
+    type: regular
+    task:
+      id: 50ab74f1-270e-4ca9-86f7-b3d9ca0a1e3d
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 8416e07d-d625-418c-8819-6f82dc287cfe
+    type: regular
+    task:
+      id: 8416e07d-d625-418c-8819-6f82dc287cfe
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 5329e280-fb9a-414a-872b-3f95e9c4cf91
+    type: condition
+    task:
+      id: 5329e280-fb9a-414a-872b-3f95e9c4cf91
+      version: -1
+      name: Is there a Qradar watch list Url Reference Set and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QRadarWatchListUrlReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 3b2f97d4-ca7a-4953-815b-4616d6f348fd
+    type: regular
+    task:
+      id: 3b2f97d4-ca7a-4953-815b-4616d6f348fd
+      version: -1
+      name: Add urls to QRadar watch list url reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarWatchListUrlReferenceSetName}
+      source: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+      values:
+        complex:
+          root: inputs.playbookQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 574dd262-31c6-47d4-8456-f0e6158b1074
+    type: regular
+    task:
+      id: 574dd262-31c6-47d4-8456-f0e6158b1074
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 5f06804e-f4d6-4d46-83dd-725ab6639b34
+    type: condition
+    task:
+      id: 5f06804e-f4d6-4d46-83dd-725ab6639b34
+      version: -1
+      name: Are there indicators with a watchlist tag?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: approved_watchlist
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: ba7fe2f8-5332-43c2-8a02-5e378db39c05
+    type: condition
+    task:
+      id: ba7fe2f8-5332-43c2-8a02-5e378db39c05
+      version: -1
+      name: Are there indicators with a white tag?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: approved_white
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: aab2d293-915d-4ed6-8aca-004d21f313bc
+    type: condition
+    task:
+      id: aab2d293-915d-4ed6-8aca-004d21f313bc
+      version: -1
+      name: Are there indicators with a black tag?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.CustomFields.tags
+            iscontext: true
+          right:
+            value:
+              simple: approved_black
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1705,
+        "width": 3280,
+        "x": 340,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: QRadarBlackListUrlReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar black list Url reference set to insert the data
+    in to.
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: QRadarWhiteListUrlReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar white list Url reference set to insert the data
+    in to.
+  playbookInputQuery: null
+- key: QRadarWatchListUrlReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar watch list Url reference set to insert the data
+    in to.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test

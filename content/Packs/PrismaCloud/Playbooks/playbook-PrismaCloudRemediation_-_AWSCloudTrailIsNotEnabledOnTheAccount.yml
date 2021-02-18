@@ -1,0 +1,537 @@
+id: Prisma Cloud Remediation - AWS CloudTrail is not Enabled on the Account
+version: -1
+name: Prisma Cloud Remediation - AWS CloudTrail is not Enabled on the Account
+description: AWS Cloudtrail is a service which provides event history of your AWS
+  account activity, including actions taken through the AWS Management Console, AWS
+  SDKs, command line tools, and other AWS services. To remediate Prisma Cloud Alert
+  "CloudTrail is not enabled on the account", this playbook creates an S3 bucket to
+  host Cloudtrail logs and enable Cloudtrail (includes all region events and global
+  service events).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c1cb0d12-bd26-480b-8e04-c4ce9f412a2b
+    type: start
+    task:
+      id: c1cb0d12-bd26-480b-8e04-c4ce9f412a2b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 82c65074-07ec-49ca-8a83-2a8c39affe12
+    type: regular
+    task:
+      id: 82c65074-07ec-49ca-8a83-2a8c39affe12
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+      mndadone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 28752caf-c19b-404e-8c39-af4103c18bdc
+    type: regular
+    task:
+      id: 28752caf-c19b-404e-8c39-af4103c18bdc
+      version: -1
+      name: Create S3 bucket for Cloudtrail
+      description: Create AWS S3 bucket.
+      script: '|||aws-s3-create-bucket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      acl: {}
+      bucket:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: accountId
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: cloudtrail-
+              suffix:
+                value:
+                  simple: -logging
+      grantFullControl: {}
+      grantRead: {}
+      grantReadACP: {}
+      grantWrite: {}
+      grantWriteACP: {}
+      locationConstraint:
+        complex:
+          root: inputs.CloudTrailRegion
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1f8c90df-c081-4ed3-8924-5d463369ce24
+    type: regular
+    task:
+      id: 1f8c90df-c081-4ed3-8924-5d463369ce24
+      version: -1
+      name: Allow Cloudtrail to write to S3 bucket
+      description: Replaces a policy on a bucket. If the bucket already has a policy,
+        the one in this request completely replaces it.
+      script: '|||aws-s3-put-bucket-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      bucket:
+        complex:
+          root: AWS
+          accessor: S3.Buckets.[0].BucketName
+      confirmRemoveSelfBucketAccess: {}
+      policy:
+        simple: '{"Version":"2012-10-17","Statement":[{"Sid":"AWSCloudTrailAclCheck20150319","Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},"Action":"s3:GetBucketAcl","Resource":"arn:aws:s3:::${AWS.S3.Buckets.[0].BucketName}"},{"Sid":"AWSCloudTrailWrite20150319","Effect":"Allow","Principal":{"Service":"cloudtrail.amazonaws.com"},"Action":"s3:PutObject","Resource":"arn:aws:s3:::${AWS.S3.Buckets.[0].BucketName}/AWSLogs/*","Condition":{"StringEquals":{"s3:x-amz-acl":"bucket-owner-full-control"}}}]}'
+      region: {}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a13aaab9-61e4-4d50-8114-f873584423d3
+    type: regular
+    task:
+      id: a13aaab9-61e4-4d50-8114-f873584423d3
+      version: -1
+      name: Create Cloudtrail
+      description: Creates a trail that specifies the settings for delivery of log
+        data to an Amazon S3 bucket. A maximum of five trails can exist in a region,
+        irrespective of the region in which they were created.
+      script: '|||aws-cloudtrail-create-trail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn: {}
+      cloudWatchLogsRoleArn: {}
+      enableLogFileValidation:
+        simple: "True"
+      includeGlobalServiceEvents:
+        simple: "True"
+      isMultiRegionTrail:
+        simple: "True"
+      kmsKeyId: {}
+      name:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: accountId
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: cloudtrail-
+              suffix: {}
+      region:
+        complex:
+          root: inputs.CloudTrailRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      s3BucketName:
+        complex:
+          root: AWS
+          accessor: S3.Buckets.[0].BucketName
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: bcfc6579-7116-44a2-8457-711819d46a94
+    type: title
+    task:
+      id: bcfc6579-7116-44a2-8457-711819d46a94
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c2a083f0-cbf8-4f43-8e4c-607a622d2ba1
+    type: condition
+    task:
+      id: c2a083f0-cbf8-4f43-8e4c-607a622d2ba1
+      version: -1
+      name: Enable CloudTrail Automatically?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEnableCloudTrail
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 51c1f706-c182-4a59-88e9-5fd43d16c37b
+    type: regular
+    task:
+      id: 51c1f706-c182-4a59-88e9-5fd43d16c37b
+      version: -1
+      name: Manually enable CloudTrail
+      description: |-
+        Follow the instructions below to enable CloudTrail on the account.
+
+        http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 97306837-1cbd-46cf-85f1-f45f09e81b98
+    type: condition
+    task:
+      id: 97306837-1cbd-46cf-85f1-f45f09e81b98
+      version: -1
+      name: Is AWS S3 integration enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - S3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 2e9a3412-f811-4660-896d-da247355c2c2
+    type: condition
+    task:
+      id: 2e9a3412-f811-4660-896d-da247355c2c2
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 12e7d629-8970-49bb-86cf-63522044a276
+    type: regular
+    task:
+      id: 12e7d629-8970-49bb-86cf-63522044a276
+      version: -1
+      name: Enable Cloudtrail
+      description: Starts the recording of AWS API calls and log file delivery for
+        a trail. For a trail that is enabled in all regions, this operation must be
+        called from the region in which the trail was created. This operation cannot
+        be called on the shadow trails (replicated trails in other regions) of a trail
+        that is enabled in all regions.
+      script: '|||aws-cloudtrail-start-logging'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: accountId
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: cloudtrail-
+              suffix: {}
+      region:
+        complex:
+          root: inputs.CloudTrailRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.71,
+      "12_4_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1675,
+        "width": 1420,
+        "x": -270,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: AutoEnableCloudTrail
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    The following resources will be created:
+    - S3 bucket cloudtrail-<account_id>
+    - Cloudtrail cloudtrail-<account_id>
+
+    Type 'Yes' to auto-enable CloudTrail.
+- key: CloudTrailRegion
+  value:
+    simple: us-west-2
+  required: false
+  description: S3 bucket and (global) Cloudtrail will be created on this region
+outputs: []
+tests:
+  - No test
+fromversion: 5.0.0

@@ -1,0 +1,1323 @@
+id: Process Survey Response
+version: -1
+name: Process Survey Response
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 19b04243-d2b4-4469-8793-28a0791fd874
+    type: start
+    task:
+      id: 19b04243-d2b4-4469-8793-28a0791fd874
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 0e6d43f0-758e-4159-8d99-daf0f8213410
+    type: title
+    task:
+      id: 0e6d43f0-758e-4159-8d99-daf0f8213410
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 1065\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 93d7947c-976e-4938-8283-da7c6ea4fd09
+    type: regular
+    task:
+      id: 93d7947c-976e-4938-8283-da7c6ea4fd09
+      version: -1
+      name: Update survey response tracker
+      description: Updates the lastupdatedindex context key used to track the processed employee responses.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      append: {}
+      key:
+        simple: lastupdatedindex
+      stringify: {}
+      value:
+        complex:
+          root: lastupdatedindex
+          transformers:
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 920\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: e2db82e4-8e7d-4cf6-8a11-b5d8520c0c8f
+    type: condition
+    task:
+      id: e2db82e4-8e7d-4cf6-8a11-b5d8520c0c8f
+      version: -1
+      name: Does the employee need IT help?
+      description: Checks whether the employee responded with a need for IT-related
+        help.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: ConvertToSingleElementArray
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: lastupdatedindex
+                      iscontext: true
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: '2'
+            iscontext: true
+          right:
+            value:
+              simple: Yes
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 76f5afa1-282f-461d-8df2-a22fa98ee160
+    type: regular
+    task:
+      id: 76f5afa1-282f-461d-8df2-a22fa98ee160
+      version: -1
+      name: Create new IT incident for the employee
+      description: Creates a new IT incident for the employee in Cortex XSOAR.
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      a: {}
+      accountgroups: {}
+      accountid: {}
+      accountname: {}
+      activeconfig: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      apinotes: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      b: {}
+      blockedaction: {}
+      bucketowner: {}
+      bugtraq: {}
+      candidateconfig: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssscore: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destntdomain: {}
+      destos: {}
+      details:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: '3'
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      manageremail: {}
+      endpointstatus: {}
+      entryIDs: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      fieldcopy: {}
+      fielddisplay1: {}
+      fielddisplay2: {}
+      fieldoriginal: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      importfield: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      multiplefield: {}
+      name:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'New IT incident for '
+              suffix: {}
+      nessusseverity: {}
+      niststage: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      pocname: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      querytype: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionaccess: {}
+      regionid: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      requestedsource: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      rodrigo: {}
+      rodrigoonly: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scenario: {}
+      sectorofaffectedparty: {}
+      serverip: {}
+      severity: {}
+      severitycount: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      snowcaller: {}
+      softwarename: {}
+      softwarevendor: {}
+      softwareversion: {}
+      sourcehostname: {}
+      sourceip: {}
+      splunkerror: {}
+      splunktest: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      staticroute: {}
+      subregions: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      sysid: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      test1: {}
+      test2: {}
+      testnum1: {}
+      threatactor: {}
+      ticketnumber: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: IT Ticket
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      userid: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      vulnerabilitycreationtime: {}
+      vulnerabilityendtime: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -160,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: c8d8aa88-d3a2-44e3-8b9a-48c974471a6e
+    type: condition
+    task:
+      id: c8d8aa88-d3a2-44e3-8b9a-48c974471a6e
+      version: -1
+      name: Does the employee need HR help?
+      description: Checks whether the employee responded with a need for HR-related
+        help.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: ConvertToSingleElementArray
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: lastupdatedindex
+                      iscontext: true
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: '0'
+            iscontext: true
+          right:
+            value:
+              simple: I am not feeling well
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: 6527ec83-3d76-4944-82e8-fbf6ed7953bf
+    type: regular
+    task:
+      id: 6527ec83-3d76-4944-82e8-fbf6ed7953bf
+      version: -1
+      name: Create new HR incident for the employee
+      description: Creates a new HR incident for the employee in Cortex XSOAR.
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      a: {}
+      accountgroups: {}
+      accountid: {}
+      accountname: {}
+      activeconfig: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      apinotes: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      b: {}
+      blockedaction: {}
+      bucketowner: {}
+      bugtraq: {}
+      candidateconfig: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssscore: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destntdomain: {}
+      destos: {}
+      details:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: '1'
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      manageremail: {}
+      endpointstatus: {}
+      entryIDs: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      fieldcopy: {}
+      fielddisplay1: {}
+      fielddisplay2: {}
+      fieldoriginal: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      importfield: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      multiplefield: {}
+      name:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'New HR incident for '
+              suffix: {}
+      nessusseverity: {}
+      niststage: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      pocname: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      querytype: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionaccess: {}
+      regionid: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      requestedsource: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      rodrigo: {}
+      rodrigoonly: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scenario: {}
+      sectorofaffectedparty: {}
+      serverip: {}
+      severity: {}
+      severitycount: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      snowcaller: {}
+      softwarename: {}
+      softwarevendor: {}
+      softwareversion: {}
+      sourcehostname: {}
+      sourceip: {}
+      splunkerror: {}
+      splunktest: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      staticroute: {}
+      subregions: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      sysid: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      test1: {}
+      test2: {}
+      testnum1: {}
+      threatactor: {}
+      ticketnumber: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: HR Ticket
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      userid: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      vulnerabilitycreationtime: {}
+      vulnerabilityendtime: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: e9ae1f96-a918-450c-8c4f-d61ba446c8bf
+    type: regular
+    task:
+      id: e9ae1f96-a918-450c-8c4f-d61ba446c8bf
+      version: -1
+      name: Update employee response status
+      description: Updates the employee response status to "Responded" in Cortex XSOAR.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '4'
+      - '6'
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus:
+        simple: Responded
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstlogin: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastlogin: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      trafficlightprotocoltlp: {}
+      type:
+        simple: Employee
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 6138ef7b-2669-4730-809c-4f7651655153
+    type: regular
+    task:
+      id: 6138ef7b-2669-4730-809c-4f7651655153
+      version: -1
+      name: Update employee health status
+      description: Updates the health status of the employee in Cortex XSOAR.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: '0'
+      employeeresponsestatus:
+        simple: Responded
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstlogin: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastlogin: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      trafficlightprotocoltlp: {}
+      type:
+        simple: Employee
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: Employee Status Report
+          accessor: Answers
+          transformers:
+          - operator: ConvertToSingleElementArray
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: lastupdatedindex
+                iscontext: true
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 740\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {\n    \"4_9_#default#\": 0.41,\n    \"6_9_#default#\"\
+  : 0.4\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1080,\n  \
+  \    \"width\": 1240,\n      \"x\": -160,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
+description: "Note: This is a beta playbook, which lets you implement and test pre-release
+               software. Since the playbook is in beta, it might contain bugs. Updates to the playbook
+               during the beta phase might include non-backward compatible features. We appreciate
+               your feedback on the quality and usability of the playbook to help us identify issues,
+               fix them, and continually improve. This playbook processes the survery responses. It updates that the employee responded to the survey and what their health status is. If necessary, it opens IT or HR incidents, and updates the process survey tracker."

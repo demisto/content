@@ -1,0 +1,649 @@
+id: Palo Alto Networks Cortex Test
+version: -1
+name: Palo Alto Networks Cortex Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: edf28dd0-abd7-4bd6-8247-fdc9093505af
+    type: start
+    task:
+      description: ""
+      id: edf28dd0-abd7-4bd6-8247-fdc9093505af
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fc21e1dd-eb73-4c6f-8a51-efa34e802a98
+    type: regular
+    task:
+      id: fc21e1dd-eb73-4c6f-8a51-efa34e802a98
+      version: -1
+      name: Query Logs
+      description: Query Cortex Logging service
+      script: '|||cortex-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endTime: {}
+      query: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b41f9512-fb16-4568-8457-73b0e988f08c
+    type: condition
+    task:
+      description: ""
+      id: b41f9512-fb16-4568-8457-73b0e988f08c
+      version: -1
+      name: Verify Query Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+      - "9"
+      - "11"
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.action
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.app
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.dst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.rule
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.src
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.category-of-app
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.srcloc
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.dstloc
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.characteristic-of-app
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.device_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.natdport
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.natdst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cortex.Logging.natsrc
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 17527902-aa07-4acc-8db5-1f3aba1533f5
+    type: title
+    task:
+      id: 17527902-aa07-4acc-8db5-1f3aba1533f5
+      version: -1
+      name: Success
+      description: Query Cortex Logging service according to pre-set queries
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4fb983b7-2e2b-4b89-8411-8f967774fd0f
+    type: regular
+    task:
+      id: 4fb983b7-2e2b-4b89-8411-8f967774fd0f
+      version: -1
+      name: Fetch events
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Palo Alto Networks Cortex
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 2a7f60cd-c668-4cb8-85af-ab7de14bfa33
+    type: regular
+    task:
+      id: 2a7f60cd-c668-4cb8-85af-ab7de14bfa33
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 1d338cf1-a603-4dd7-8eb6-92b5301287dd
+    type: regular
+    task:
+      id: 1d338cf1-a603-4dd7-8eb6-92b5301287dd
+      version: -1
+      name: cortex-query-threat-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-threat-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action: {}
+      endTime: {}
+      fields: {}
+      from_zone: {}
+      hash: {}
+      ip: {}
+      port: {}
+      query: {}
+      rangeValue: {}
+      rule: {}
+      startTime: {}
+      timeRange: {}
+      to_zone: {}
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c409f106-b13e-4566-8e43-60ad0756075e
+    type: condition
+    task:
+      description: ""
+      id: c409f106-b13e-4566-8e43-60ad0756075e
+      version: -1
+      name: Verify Query Threat Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.Src
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.Dst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.Rule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a38e4c3a-283d-4056-82e3-db119769db60
+    type: regular
+    task:
+      id: a38e4c3a-283d-4056-82e3-db119769db60
+      version: -1
+      name: cortex-query-traffic-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-traffic-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      action: {}
+      endTime: {}
+      fields: {}
+      from_zone: {}
+      ip: {}
+      port: {}
+      query: {}
+      rangeValue: {}
+      rule: {}
+      startTime: {}
+      timeRange: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: bf212a19-2209-4316-860f-a879c39cd06c
+    type: condition
+    task:
+      description: ""
+      id: bf212a19-2209-4316-860f-a879c39cd06c
+      version: -1
+      name: Verify Query Traffic Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.Src
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.Dst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.Rule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ccadc483-ddd0-4466-83e4-e7d1c55ea670
+    type: regular
+    task:
+      id: ccadc483-ddd0-4466-83e4-e7d1c55ea670
+      version: -1
+      name: cortex-query-traps-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-traps-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      category: {}
+      endTime: {}
+      fields: {}
+      hash: {}
+      host: {}
+      ip: {}
+      query: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 28a1aabd-6c4d-4f89-8164-ac13d30278b9
+    type: regular
+    task:
+      id: 28a1aabd-6c4d-4f89-8164-ac13d30278b9
+      version: -1
+      name: cortex-query-analytics-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-analytics-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      category: {}
+      endTime: {}
+      fields: {}
+      hash: {}
+      host: {}
+      ip: {}
+      query: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: de7978f6-928b-4385-8479-1fd2fc37a82a
+    type: condition
+    task:
+      description: ""
+      id: de7978f6-928b-4385-8479-1fd2fc37a82a
+      version: -1
+      name: Verify Query Traps Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.AgentID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.EndPointHeader.DeviceName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.EndPointHeader.AgentIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.MessageData
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
+    type: condition
+    task:
+      description: ""
+      id: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
+      version: -1
+      name: Verify Query Analytics Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.AgentID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.EndPointHeader.DeviceName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.EndPointHeader.AgentIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.MessageData
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1455,
+        "width": 1660,
+        "x": -370,
+        "y": -170
+      }
+    }
+  }
+inputs: []
+outputs: []

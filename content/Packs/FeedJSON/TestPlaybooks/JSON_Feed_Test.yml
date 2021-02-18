@@ -1,0 +1,189 @@
+id: JSON_Feed_Test
+version: -1
+name: JSON_Feed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 28e2fa62-b97e-4345-8391-25df8bd9f7d8
+    type: start
+    task:
+      id: 28e2fa62-b97e-4345-8391-25df8bd9f7d8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: beca0a37-c248-4c36-8c08-1e6fa4b1d084
+    type: regular
+    task:
+      id: beca0a37-c248-4c36-8c08-1e6fa4b1d084
+      version: -1
+      name: Get Indicators
+      description: Gets the feed indicators.
+      script: JSON Feed|||json-get-indicators
+      type: regular
+      iscommand: true
+      brand: JSON Feed
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: JSONFeed.value=value::JSONFeed.type=type
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f4c52ff8-afb4-4ba3-897d-618dd257d0e4
+    type: condition
+    task:
+      id: f4c52ff8-afb4-4ba3-897d-618dd257d0e4
+      version: -1
+      name: Assert Output
+      description: Asserts output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: JSONFeed
+                accessor: value
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: JSONFeed
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: CIDR
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4056602e-6578-4559-8dbc-b857f09115a1
+    type: title
+    task:
+      id: 4056602e-6578-4559-8dbc-b857f09115a1
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: caed5d30-e844-429f-890a-73959c5a44a9
+    type: regular
+    task:
+      id: caed5d30-e844-429f-890a-73959c5a44a9
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

@@ -1,0 +1,275 @@
+id: RiskSense Apply Tag - Test
+version: -1
+name: RiskSense Apply Tag - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-apply-tag" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 57ee33fd-17d6-485d-821b-81a5085259c3
+    type: start
+    task:
+      id: 57ee33fd-17d6-485d-821b-81a5085259c3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6d541e11-b443-4ce8-883d-8a56aa5f86b7
+    type: regular
+    task:
+      id: 6d541e11-b443-4ce8-883d-8a56aa5f86b7
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b7035cd1-1446-43b5-872f-14f3335c53da
+    type: regular
+    task:
+      id: b7035cd1-1446-43b5-872f-14f3335c53da
+      version: -1
+      name: Execute risksense-apply-tag command from Demisto.
+      description: Apply the new or existing tag to the asset, creates a new tag if
+        it does not exist in RiskSense.
+      script: RiskSense|||risksense-apply-tag
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assettype:
+        simple: host
+      exclude: {}
+      fieldname:
+        simple: id
+      operator: {}
+      tagname:
+        simple: Test-Tag
+      value:
+        simple: "3842115"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ee3ace19-8e40-43c2-8f58-bc4d4d36b80a
+    type: condition
+    task:
+      id: ee3ace19-8e40-43c2-8f58-bc4d4d36b80a
+      version: -1
+      name: Is context data exists?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: TagAssociation.AssociationID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: TagAssociation.TagName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: TagAssociation.Created
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 81cd7cec-0c31-4f24-898e-dc750ce939a6
+    type: regular
+    task:
+      id: 81cd7cec-0c31-4f24-898e-dc750ce939a6
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 33f0fb69-28cf-4f19-8aa0-9c6037201e43
+    type: title
+    task:
+      id: 33f0fb69-28cf-4f19-8aa0-9c6037201e43
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 05b7fee1-df0f-4efc-8acb-a1954a91863e
+    type: regular
+    task:
+      id: 05b7fee1-df0f-4efc-8acb-a1954a91863e
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

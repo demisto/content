@@ -1,0 +1,160 @@
+[
+  {
+    "id": 13461,
+    "cluster_id": 3887,
+    "reporter_id": 222,
+    "location": "Inbox",
+    "primary_recipe_id": null,
+    "recipe_name": null,
+    "processing_operator_id": null,
+    "created_at": "2020-08-26T15:13:30.920Z",
+    "updated_at": "2020-08-26T15:13:35.200Z",
+    "reported_at": "2020-08-26T14:36:43.000Z",
+    "processed_at": null,
+    "report_subject": "Report subject 1 aaa",
+    "report_headers": "Date: Wed, 26 Aug 2020 15:13:30 +0000\r\nSubject: Report subject 1\r\nMime-Version: 1.0\r\nContent-Type: multipart/mixed;\r\ncharset=UTF-8\r\nContent-Transfer-Encoding: 7bit",
+    "report_body": "Report body 1",
+    "md5": "555",
+    "sha256": "555555",
+    "category_id": null,
+    "match_priority": 1,
+    "tags": [],
+    "reporter_phishme_reports_count": 0,
+    "suspect_received_at": "2020-08-26T14:36:51.000Z",
+    "suspect_from_address": null,
+    "email_attachments": [
+      {
+        "id": 18054,
+        "report_id": 13363,
+        "decoded_filename": "image003.png",
+        "content_type": "image/png; name=image003.png",
+        "size_in_bytes": 7286,
+        "email_attachment_payload": {
+          "id": 7082,
+          "md5": "123",
+          "sha256": "1234",
+          "mime_type": "image/png; charset=binary"
+        }
+      }
+    ],
+    "email_urls": [
+      {
+        "url": "https://example.com/url1.png"
+      },
+      {
+        "url": "https://example.com/url2.png"
+      },
+      {
+        "url": "https://example.com/url3.png"
+      }
+    ],
+    "rules": [
+      {
+        "id": 6417,
+        "name": "Triage_rule_1",
+        "reports_count": 67,
+        "active": true,
+        "created_at": "2019-04-11T17:15:53.940Z",
+        "updated_at": "2019-04-11T17:15:53.940Z",
+        "priority": 1,
+        "author_name": "Cofense"
+      }
+    ]
+  },
+  {
+    "id": 13459,
+    "cluster_id": 3885,
+    "reporter_id": 222,
+    "location": "Inbox",
+    "primary_recipe_id": null,
+    "recipe_name": null,
+    "processing_operator_id": null,
+    "created_at": "2020-08-24T19:48:34.938Z",
+    "updated_at": "2020-08-24T19:48:37.433Z",
+    "reported_at": "2020-08-24T19:36:04.000Z",
+    "processed_at": null,
+    "report_subject": "Report subject 2",
+    "report_headers": "Date: Wed, 26 Aug 2020 15:13:30 +0000\r\nSubject: Report subject 2\r\nMime-Version: 1.0\r\nContent-Type: multipart/mixed;\r\ncharset=UTF-8\r\nContent-Transfer-Encoding: 7bit",
+    "report_body": "Report body 2",
+    "md5": "555",
+    "sha256": "555555",
+    "category_id": null,
+    "match_priority": 1,
+    "tags": [],
+    "reporter_phishme_reports_count": 0,
+    "suspect_received_at": "2020-08-24T19:36:12.000Z",
+    "suspect_from_address": null,
+    "email_attachments": [],
+    "email_urls": [
+      {
+        "url": "https://example.com/url1.png"
+      },
+      {
+        "url": "https://example.com/url2.png"
+      },
+      {
+        "url": "https://example.com/url3.png"
+      }
+    ],
+    "rules": [
+      {
+        "id": 6417,
+        "name": "Triage_rule_1",
+        "reports_count": 67,
+        "active": true,
+        "created_at": "2019-04-11T17:15:53.940Z",
+        "updated_at": "2019-04-11T17:15:53.940Z",
+        "priority": 1,
+        "author_name": "Cofense"
+      }
+    ]
+  },
+  {
+    "id": 13458,
+    "cluster_id": 3884,
+    "reporter_id": 222,
+    "location": "Inbox",
+    "primary_recipe_id": null,
+    "recipe_name": null,
+    "processing_operator_id": null,
+    "created_at": "2020-08-24T16:43:04.412Z",
+    "updated_at": "2020-08-24T16:43:05.946Z",
+    "reported_at": "2020-08-24T16:15:52.000Z",
+    "processed_at": null,
+    "report_subject": "Report subject 3 aaa",
+    "report_headers": "Date: Wed, 26 Aug 2020 15:13:30 +0000\r\nSubject: Report subject 3\r\nMime-Version: 1.0\r\nContent-Type: multipart/mixed;\r\ncharset=UTF-8\r\nContent-Transfer-Encoding: 7bit",
+    "report_body": "Report body 3",
+    "md5": "555",
+    "sha256": "555555",
+    "category_id": null,
+    "match_priority": 1,
+    "tags": [],
+    "reporter_phishme_reports_count": 0,
+    "suspect_received_at": "2020-08-24T16:21:07.000Z",
+    "suspect_from_address": null,
+    "email_attachments": [],
+    "email_urls": [
+      {
+        "url": "https://example.com/url1.png"
+      },
+      {
+        "url": "https://example.com/url2.png"
+      },
+      {
+        "url": "https://example.com/url3.png"
+      }
+    ],
+    "rules": [
+      {
+        "id": 667,
+        "name": "Triage_rule_1",
+        "reports_count": 41,
+        "active": true,
+        "created_at": "2019-04-11T16:46:11.078Z",
+        "updated_at": "2019-04-11T16:46:11.078Z",
+        "priority": 1,
+        "author_name": "Cofense"
+      }
+    ]
+  }
+]

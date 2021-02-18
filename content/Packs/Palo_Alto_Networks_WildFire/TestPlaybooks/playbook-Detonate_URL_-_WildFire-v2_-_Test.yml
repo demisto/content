@@ -1,0 +1,282 @@
+id: Detonate URL - WildFire-v2 - Test
+version: -1
+name: Detonate URL - WildFire-v2 - Test
+description: |-
+  test pb of:
+  Detonate URL - WildFire-v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+    type: start
+    task:
+      id: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
+    type: regular
+    task:
+      id: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
+      version: -1
+      name: set remote file url
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: http://www.software995.net/bin/pdf995s.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 7f491fe6-aa7f-450c-8bda-797c9b140a20
+    type: playbook
+    task:
+      id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
+      version: -1
+      name: Detonate URL - WildFire-v2
+      description: |-
+        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+      playbookName: Detonate URL - WildFire-v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 38798132-af2b-43ff-89f3-235c1ba139d3
+    type: regular
+    task:
+      id: 38798132-af2b-43ff-89f3-235c1ba139d3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: be794cad-cb1f-4558-86df-1be6ba5f1941
+    type: regular
+    task:
+      id: be794cad-cb1f-4558-86df-1be6ba5f1941
+      version: -1
+      name: wildfire-report
+      description: Retrieves results for a file hash using WildFire.
+      script: WildFire-v2|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      format:
+        simple: pdf
+      hash: {}
+      md5: {}
+      sha256:
+        simple: 253d142703041dd25197550a0fc11d6ac03befc1e64a1320009f1edf400c39aa
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+    type: condition
+    task:
+      id: 657dd2ec-fa79-4f15-8f43-eddc7a21915c
+      version: -1
+      name: Check status Notfound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire
+                accessor: Report.Status
+            iscontext: true
+          right:
+            value:
+              simple: NotFound
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+    type: title
+    task:
+      id: 511b9b93-e75d-4f66-86cc-b784a443b0f0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
+    type: regular
+    task:
+      id: b68af2f6-686b-4c68-8b05-4b6baac2c0c9
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Status for the benign URL is not "NotFound"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

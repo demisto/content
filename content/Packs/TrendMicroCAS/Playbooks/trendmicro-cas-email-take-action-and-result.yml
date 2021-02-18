@@ -1,0 +1,274 @@
+id: Trend Micro CAS - Take Action On Emails
+version: -1
+name: Trend Micro CAS - Take Action On Emails
+description: This playbook runs various actions on emails, such as deleting and quarantine email messages, using the "trendmicro-cas-email-take-action" command and returns the results from the "trendmicro-cas-email-action-result-query" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09dd8f7c-198b-4c3b-8cf1-19b21b4063e0
+    type: start
+    task:
+      id: 09dd8f7c-198b-4c3b-8cf1-19b21b4063e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d2529e8f-e596-4d9f-8130-44b9c32442d8
+    type: regular
+    task:
+      id: d2529e8f-e596-4d9f-8130-44b9c32442d8
+      version: -1
+      name: email-take-action
+      description: |-
+        Takes actions on a batch of specified email messages.
+        Relevant for office365 - exchange only.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-take-action
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action_type:
+        simple: ${inputs.action_type}
+      mail_message_delivery_time:
+        simple: ${inputs.mail_message_delivery_time}
+      mail_message_id:
+        simple: ${inputs.mail_messge_id}
+      mail_unique_id:
+        simple: ${inputs.mail_unique_id}
+      mailbox:
+        simple: ${inputs.mailbox}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1066de77-9fe8-4cb4-861a-988732927838
+    type: playbook
+    task:
+      id: 1066de77-9fe8-4cb4-861a-988732927838
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: TrendMicroCAS
+          accessor: EmailTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: batch_id
+      PollingCommandName:
+        simple: trendmicro-cas-email-action-result-query
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: TrendMicroCAS.EmailActionResult(val.status!=='Success'&&val.status!=='Failed'&&val.status!=='Skipped').batch_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 355dc240-2715-4504-8041-ae337199e37b
+    type: regular
+    task:
+      id: 355dc240-2715-4504-8041-ae337199e37b
+      version: -1
+      name: trendmicro-cas-email-action-result-query
+      description: Queries the results of actions on email messages
+      script: '|||trendmicro-cas-email-action-result-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      batch_id:
+        complex:
+          root: TrendMicroCAS
+          accessor: EmailTakeAction.batch_id
+          transformers:
+          - operator: LastArrayElement
+      end: {}
+      limit: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: action_type
+  value: {}
+  required: true
+  description: 'The action to take on an email message, such as delete or quarantine. Can be: "MAIL_DELETE", or
+    "MAIL_QUARANTINE".'
+  playbookInputQuery:
+- key: mailbox
+  value: {}
+  required: true
+  description: The email address of an email message for which to take action.
+  playbookInputQuery:
+- key: mail_messge_id
+  value: {}
+  required: true
+  description: The Internet message ID of an email message for which to take action. To retrieve the ID
+    use the "trendmicro-cas-email-sweep" command.
+  playbookInputQuery:
+- key: mail_unique_id
+  value: {}
+  required: true
+  description: The unique ID of an email message for which to take action. To retrieve the ID use the 
+    "trendmicro-cas-email-sweep" command.
+  playbookInputQuery:
+- key: mail_message_delivery_time
+  value: {}
+  required: true
+  description: The time and date when an email message is sent. To retrieve the information, use the
+    "trendmicro-cas-email-sweep" command.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: TrendMicroCAS.EmailActionResult.account_provider
+  description: The provider of the protected service.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.account_user_email
+  description: The email address used to create the user account on which an action.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.action_executed_at
+  description: The time and date when the action was processed.
+  type: date
+- contextPath: TrendMicroCAS.EmailActionResult.action_id
+  description: The unique ID of a threat mitigation task.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.action_requested_at
+  description: The time and date when the API request containing the action was received.
+  type: date
+- contextPath: TrendMicroCAS.EmailActionResult.action_type
+  description: The action taken on an email message.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.batch_id
+  description: The unique ID of the Threat Mitigation API request.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.error_code
+  description: The result code of the action.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.error_message
+  description: The string describing the result code.
+  type: number
+- contextPath: TrendMicroCAS.EmailActionResult.status
+  description: |-
+    The status of an action taken. Can be: "Created": The API request
+            containing the action was received. "Executing": The action is executing.
+            "Success": The action was successful. "Skipped": The action is skipped.
+            "Failed": The action failed.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.service
+  description: The name of the protected service.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mail_unique_id
+  description: The Unique ID of an email message on which an action was taken.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mail_message_id
+  description: The Internet message ID of an email message on which an action was taken.
+  type: string
+- contextPath: TrendMicroCAS.EmailActionResult.mailbox
+  description: The email address of an email message on which an action was taken.
+  type: string
+fromversion: 5.0.0
+tests:
+- playbook_TrendmicroCAS_Test

@@ -1,0 +1,190 @@
+id: playbook-FeedAutofocus_daily_test
+version: -1
+fromversion: 5.5.0
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: playbook-FeedAutofocus_daily_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5617ffd4-8215-4fbf-889c-97826ea22934
+    type: start
+    task:
+      id: 5617ffd4-8215-4fbf-889c-97826ea22934
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ef517668-db34-44df-8859-d676f3545699
+    type: regular
+    task:
+      id: ef517668-db34-44df-8859-d676f3545699
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b4da8012-50a4-4684-83da-a2ae14aa138c
+    type: regular
+    task:
+      id: b4da8012-50a4-4684-83da-a2ae14aa138c
+      version: -1
+      name: autofocus-get-indicators
+      description: Gets indicators from AutoFocus.
+      script: '|||autofocus-daily-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "10"
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 38f31744-9b25-4933-821d-72a55c926755
+    type: condition
+    task:
+      id: 38f31744-9b25-4933-821d-72a55c926755
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.rawJSON
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: df4e8e47-5d8d-4462-8ecd-a464e6700940
+    type: title
+    task:
+      id: df4e8e47-5d8d-4462-8ecd-a464e6700940
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

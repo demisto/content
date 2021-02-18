@@ -1,0 +1,35 @@
+{
+	"fromVersion": "6.0.0",
+	"name": "Cortex XDR - Classifier",
+	"type": "classification",
+	"id": "Cortex XDR - IR",
+	"description": "Classifies Cortex XDR incidents.",
+	"defaultIncidentType": "",
+	"keyTypeMap": {
+		"PortScan": "Cortex XDR Port Scan",
+		"XDR Incident": "Cortex XDR Incident"
+	},
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "description",
+			"transformers": [
+				{
+					"args": {
+						"dt": {
+							"isContext": false,
+							"value": {
+								"complex": null,
+								"simple": ".=val \u0026\u0026 val.toLowerCase().indexOf(\"port scan\") \u003e -1 ? \"PortScan\" : \"XDR Incident\""
+							}
+						}
+					},
+					"operator": "DT"
+				}
+			]
+		},
+		"simple": ""
+	},
+	"version": -1
+}

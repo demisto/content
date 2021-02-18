@@ -1,0 +1,419 @@
+id: D2 - Endpoint data collection
+version: -1
+name: D2 - Endpoint data collection
+fromversion: "5.0.0"
+description: |-
+  Uses Demisto's d2 agent to collect data from an endpoint for IR purposes.
+
+  Input:
+  * Hostname (default: ${Endpoint.Hostname})
+  * OS (default: windows)
+  * Credentials (default: Admin)
+  * Path (default: None)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 816b1abc-8a51-4b98-8edb-8f200d16f878
+    type: start
+    task:
+      id: 816b1abc-8a51-4b98-8edb-8f200d16f878
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+    type: regular
+    task:
+      id: ffd5619d-eb26-4f14-8d71-b62e1e6bc97d
+      version: -1
+      name: Add the endpoint as a System to this incident
+      description: Add the relevant endpoint to the System
+      scriptName: IncidentAddSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ${inputs.Host}
+      os:
+        simple: ${inputs.OS}
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a3cd0e59-5d57-4782-8795-0ea3811ec4d6
+    type: regular
+    task:
+      id: a3cd0e59-5d57-4782-8795-0ea3811ec4d6
+      version: -1
+      name: d2 agent - Get process list
+      scriptName: D2ExecuteCommand
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      arguments: {}
+      commandName:
+        simple: D2Processes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7411d33a-9c1c-494f-8422-c972b524abe2
+    type: regular
+    task:
+      id: 7411d33a-9c1c-494f-8422-c972b524abe2
+      version: -1
+      name: d2 agent - Get hardware details
+      description: Get Hardware details from endpoint
+      scriptName: D2ExecuteCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      arguments: {}
+      commandName:
+        simple: D2Hardware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 857
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 34499d4a-e00a-4886-8882-e5bcddf3a892
+    type: regular
+    task:
+      id: 34499d4a-e00a-4886-8882-e5bcddf3a892
+      version: -1
+      name: d2 agent - Get active users
+      scriptName: ActiveUsersD2
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -479,
+          "y": 1008
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bfdb339a-a8b5-4b46-822c-23b4d515787e
+    type: condition
+    task:
+      id: bfdb339a-a8b5-4b46-822c-23b4d515787e
+      version: -1
+      name: Does 'Host' input exist?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${inputs.Host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 196
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 51867be7-4781-4482-87aa-2181e138b651
+    type: condition
+    task:
+      id: 51867be7-4781-4482-87aa-2181e138b651
+      version: -1
+      name: Any files on endpoint that we should collect?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: ${inputs.Path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6289197b-4aa9-4e44-8b96-d5abd1a9dbb3
+    type: regular
+    task:
+      id: 6289197b-4aa9-4e44-8b96-d5abd1a9dbb3
+      version: -1
+      name: d2 agent - Collect file from endpoint
+      scriptName: FetchFileD2
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      filepath:
+        simple: ${File.Path}
+      using: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -41,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+    type: title
+    task:
+      id: b58ccd0e-1dbf-474b-8c8c-9de42f74d7bb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 175,
+          "y": 1668
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 3d43e539-869a-4386-8395-2e7c6e2c91bc
+    type: title
+    task:
+      id: 3d43e539-869a-4386-8395-2e7c6e2c91bc
+      version: -1
+      name: Collect data from endpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 529
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3a82031b-c9ed-4dff-8336-12c8279afc02
+    type: condition
+    task:
+      id: 3a82031b-c9ed-4dff-8336-12c8279afc02
+      version: -1
+      name: Is the OS type Windows?
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${inputs.OS}
+      right:
+        simple: Windows
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -251,
+          "y": 691
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_12_#default#": 0.11,
+      "15_6_yes": 0.58,
+      "7_12_no": 0.1,
+      "8_11_yes": 0.52,
+      "8_12_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1683,
+        "width": 1359,
+        "x": -479,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Host
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: Deploy D2 on target Host
+  playbookInputQuery:
+- key: OS
+  value:
+    simple: windows
+  required: false
+  description: The default OS type of target host
+  playbookInputQuery:
+- key: Credentials
+  value:
+    simple: Admin
+  required: false
+  description: Name of the credential set from Demisto Settings -> Integrations -> Credentials
+  playbookInputQuery:
+- key: Path
+  value: {}
+  required: false
+  description: If initialized, D2 will try and collect the file at target path
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test

@@ -1,0 +1,27 @@
+{
+  "id": "mean-time-to-assignment",
+  "version": -1,
+  "fromVersion": "5.5",
+  "name": "Mean Time to Assignment (Time to Assignment)",
+  "dataType": "incidents",
+  "widgetType": "duration",
+  "query": "-category:job and timetoassignment.runStatus:ended",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 30,
+      "field": ""
+    }
+  },
+  "params": {
+    "keys": [
+      "avg|timetoassignment.totalDuration"
+    ]
+  },
+  "description": "The mean time (average time) to remediation across all incidents where the time to assignment sla timer completed. The widget takes into account incidents from the last 30 days by default."
+}

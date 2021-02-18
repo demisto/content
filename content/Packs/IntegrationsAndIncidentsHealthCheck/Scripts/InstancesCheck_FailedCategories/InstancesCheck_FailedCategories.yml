@@ -1,0 +1,20 @@
+comment: Health Check dynamic section, showing the top ten categories of the failed
+  integrations in a pie chart.
+commonfields:
+  id: InstancesCheck-FailedCategories
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: InstancesCheck-FailedCategories
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- failedInstances
+- dynamic-section
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,19 @@
+{"objects":
+[
+  {"uid": "123",
+  "name": "list 1",
+  "type": "host",
+  "domain": {"uid": "456",
+             "name": "SMC User",
+             "domain-type": "domain"},
+  "ipv4-address": "8.8.8.8"},
+  {
+    "uid": "789",
+    "name": "format list test2",
+    "type": "host",
+    "domain": {"uid": "1011",
+               "name": "SMC User",
+               "domain-type": "domain"},
+    "ipv4-address": "9.9.9.9"}
+]
+}

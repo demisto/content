@@ -1,0 +1,101 @@
+id: vt-detonate test
+version: -1
+name: vt-detonate test
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 722419e3-5562-4403-8695-15ce3a53dee1
+    type: start
+    task:
+      id: 722419e3-5562-4403-8695-15ce3a53dee1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c1dd82a8-769e-4c68-832d-7cae10892981
+    type: regular
+    task:
+      id: c1dd82a8-769e-4c68-832d-7cae10892981
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data:
+        simple: PDF!
+      entryId: {}
+      filename:
+        simple: or.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 2fb5213b-3f7f-4c3e-828c-866866e3ccb8
+    type: playbook
+    task:
+      id: 2fb5213b-3f7f-4c3e-828c-866866e3ccb8
+      version: -1
+      name: Detonate File - VirusTotal
+      playbookName: Detonate File - VirusTotal
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,867 @@
+id: Google BigQuery Test
+version: -1
+name: Google BigQuery Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f98213ff-c565-4cd8-8584-a38bf5d95cd6
+    type: start
+    task:
+      id: f98213ff-c565-4cd8-8584-a38bf5d95cd6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7f3ac917-4891-450e-849d-6b45a2725851
+    type: regular
+    task:
+      id: 7f3ac917-4891-450e-849d-6b45a2725851
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 29dbb593-3c15-4ce1-85c4-8f0dfe72545b
+    type: regular
+    task:
+      id: 29dbb593-3c15-4ce1-85c4-8f0dfe72545b
+      version: -1
+      name: Query Demisto DB
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT * FROM `content-test-236508.test_dataset.test_table`
+      use_legacy_sql: {}
+      use_query_cache: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 82d3b54d-0550-4125-864e-2c1f5c896b9e
+    type: condition
+    task:
+      id: 82d3b54d-0550-4125-864e-2c1f5c896b9e
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 849d88f0-7bf4-4de4-871f-8196667bd7b3
+    type: title
+    task:
+      id: 849d88f0-7bf4-4de4-871f-8196667bd7b3
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: d0961c35-69b2-46fd-8878-0fce4feb23f2
+    type: regular
+    task:
+      id: d0961c35-69b2-46fd-8878-0fce4feb23f2
+      version: -1
+      name: Query Demisto DB - dry run query
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run:
+        simple: "True"
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT * FROM `content-test-236508.test_dataset.test_table`
+      use_legacy_sql: {}
+      use_query_cache: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 12fc03c1-179f-4e20-8a7f-62004ad87079
+    type: regular
+    task:
+      id: 12fc03c1-179f-4e20-8a7f-62004ad87079
+      version: -1
+      name: Query Demisto DB - specify location
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location:
+        simple: US
+      priority: {}
+      query:
+        simple: SELECT * FROM `content-test-236508.test_dataset.test_table`
+      use_legacy_sql: {}
+      use_query_cache: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b3be5003-cce1-4d66-8050-cba6b9c36072
+    type: regular
+    task:
+      id: b3be5003-cce1-4d66-8050-cba6b9c36072
+      version: -1
+      name: Query Demisto DB - allow large results, use legacy sql and destination table
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      allow_large_results:
+        simple: "True"
+      default_dataset: {}
+      destination_table:
+        simple: content-test-236508.test_dataset.test_destination_table
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT names_for_test FROM [content-test-236508.test_dataset.test_table]
+      use_legacy_sql:
+        simple: "True"
+      use_query_cache: {}
+      write_disposition:
+        simple: WRITE_TRUNCATE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 8d088527-36bb-419b-846d-67eb428d5c34
+    type: regular
+    task:
+      id: 8d088527-36bb-419b-846d-67eb428d5c34
+      version: -1
+      name: Query Demisto DB - priority
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority:
+        simple: INTERACTIVE
+      query:
+        simple: SELECT * FROM `content-test-236508.test_dataset.test_table`
+      use_legacy_sql: {}
+      use_query_cache: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 87021727-4a86-4cc4-8c65-4fc0d72a58c1
+    type: regular
+    task:
+      id: 87021727-4a86-4cc4-8c65-4fc0d72a58c1
+      version: -1
+      name: Query Demisto DB -default dataset
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset:
+        simple: content-test-236508.test_dataset
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT * FROM `test_table`
+      use_legacy_sql: {}
+      use_query_cache: {}
+      write_disposition: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b49a0aef-064b-49a9-8492-eb3e6ee979b7
+    type: regular
+    task:
+      id: b49a0aef-064b-49a9-8492-eb3e6ee979b7
+      version: -1
+      name: Query Demisto DB -Use query cache
+      description: Perform a query on BigQuery
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT * FROM `content-test-236508.test_dataset.test_table`
+      use_legacy_sql: {}
+      use_query_cache:
+        simple: "True"
+      write_disposition: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: de7aafb8-f8cb-4f86-814b-03e186bc4774
+    type: regular
+    task:
+      id: de7aafb8-f8cb-4f86-814b-03e186bc4774
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 6493417f-c44c-405d-8afa-767e2be05c29
+    type: condition
+    task:
+      id: 6493417f-c44c-405d-8afa-767e2be05c29
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: eab9238b-2035-4cfb-855b-96b6fcda2f91
+    type: regular
+    task:
+      id: eab9238b-2035-4cfb-855b-96b6fcda2f91
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 0a139cf9-f899-486e-818d-44aa3c76ef89
+    type: condition
+    task:
+      id: 0a139cf9-f899-486e-818d-44aa3c76ef89
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 78181788-1224-44c2-8c69-7872694e10b5
+    type: condition
+    task:
+      id: 78181788-1224-44c2-8c69-7872694e10b5
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: dd5c7a28-6b05-4cdd-8f84-1e9b370ba62d
+    type: regular
+    task:
+      id: dd5c7a28-6b05-4cdd-8f84-1e9b370ba62d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 1c507ef3-48cf-4d7e-8d6b-a86c32a255d8
+    type: regular
+    task:
+      id: 1c507ef3-48cf-4d7e-8d6b-a86c32a255d8
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 41ffc57b-8290-4e02-838a-b418f51a3477
+    type: condition
+    task:
+      id: 41ffc57b-8290-4e02-838a-b418f51a3477
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 8e5f1803-0762-492c-86e5-8986b439975a
+    type: regular
+    task:
+      id: 8e5f1803-0762-492c-86e5-8986b439975a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b7ac4025-444b-4597-8f07-f0c6f952f5c1
+    type: condition
+    task:
+      id: b7ac4025-444b-4597-8f07-f0c6f952f5c1
+      version: -1
+      name: Verify query worked as planned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BigQuery
+                accessor: Row
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: NamesForTest
+            iscontext: true
+          right:
+            value:
+              simple: Donald
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 2b5a1130-6ef3-49af-8b20-7380a7503f6a
+    type: regular
+    task:
+      id: 2b5a1130-6ef3-49af-8b20-7380a7503f6a
+      version: -1
+      name: Test date results handling
+      description: Performs a query on BigQuery.
+      script: '|||bigquery-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      allow_large_results: {}
+      default_dataset: {}
+      destination_table: {}
+      dry_run: {}
+      job_id: {}
+      kms_key_name: {}
+      location: {}
+      priority: {}
+      query:
+        simple: SELECT status_change_date FROM `bigquery-public-data.austin_311.311_service_requests` LIMIT 1000
+      use_legacy_sql: {}
+      use_query_cache: {}
+      write_disposition: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3735,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

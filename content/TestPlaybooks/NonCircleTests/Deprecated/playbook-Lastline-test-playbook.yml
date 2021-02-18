@@ -1,0 +1,235 @@
+id: Lastline - testplaybook
+version: -1
+rolename: []
+name: Lastline - testplaybook
+description: Test PB for Lastline integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1647e00c-751a-4cf0-83ec-d0b30f76b12f
+    type: start
+    task:
+      id: 1647e00c-751a-4cf0-83ec-d0b30f76b12f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 02f37b39-5a1b-422a-88f5-22667044dbe8
+    type: playbook
+    task:
+      id: 02f37b39-5a1b-422a-88f5-22667044dbe8
+      version: -1
+      name: Detonate File - Lastline
+      playbookName: Detonate File - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: f8947776-c5a9-4565-84c1-89fb7d343cfb
+    type: playbook
+    task:
+      id: f8947776-c5a9-4565-84c1-89fb7d343cfb
+      version: -1
+      name: Detonate URL - Lastline
+      playbookName: Detonate URL - Lastline
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 1e597c6e-d547-4d0c-8de6-5d0be300361d
+    type: regular
+    task:
+      id: 1e597c6e-d547-4d0c-8de6-5d0be300361d
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: ca9e8a7b-60f2-491b-8cc4-2a9fdfe83d07
+    type: regular
+    task:
+      id: ca9e8a7b-60f2-491b-8cc4-2a9fdfe83d07
+      version: -1
+      name: get pdf file
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 0edeff33-2b87-4f81-8230-6720df23aecc
+    type: regular
+    task:
+      id: 0edeff33-2b87-4f81-8230-6720df23aecc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 37a616c3-766a-4ea0-8353-3a579bc37e7f
+    type: regular
+    task:
+      id: 37a616c3-766a-4ea0-8353-3a579bc37e7f
+      version: -1
+      name: Set2
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

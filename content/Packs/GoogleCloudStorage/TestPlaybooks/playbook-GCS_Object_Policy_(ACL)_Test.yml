@@ -1,0 +1,1386 @@
+id: GCS Object Policy (ACL) - Test
+version: -1
+name: GCS Object Policy (ACL) - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 88374354-befd-4bb8-80b6-248c13f556bd
+    type: start
+    task:
+      id: 88374354-befd-4bb8-80b6-248c13f556bd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8b84bdd2-ccac-45bb-8cba-2e261f467b76
+    type: regular
+    task:
+      id: 8b84bdd2-ccac-45bb-8cba-2e261f467b76
+      version: -1
+      name: Create bucket demisto-test-4 with default object ACL = publicRead
+      description: Creates a new bucket
+      script: Google Cloud Storage|||gcs-create-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      bucket_acl: {}
+      bucket_name:
+        simple: demisto-test-4
+      default_object_acl:
+        simple: publicRead
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 60cddf9e-e0a4-4f93-8526-1b6a8d8fbd78
+    type: regular
+    task:
+      id: 60cddf9e-e0a4-4f93-8526-1b6a8d8fbd78
+      version: -1
+      name: Upload file (create object) foo.txt without explicit permission
+      description: Uploads a file (object) into a bucket
+      script: Google Cloud Storage|||gcs-upload-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      entry_id:
+        simple: ${File.EntryID}
+      object_acl: {}
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e350c1a0-3df9-4e14-841e-ed349c6758bb
+    type: regular
+    task:
+      id: e350c1a0-3df9-4e14-841e-ed349c6758bb
+      version: -1
+      name: Upload file (create object) bar.txt with explicit permission = authenticatedRead
+      description: Uploads a file (object) into a bucket
+      script: Google Cloud Storage|||gcs-upload-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      entry_id:
+        simple: ${File.EntryID}
+      object_acl:
+        simple: authenticatedRead
+      object_name:
+        simple: folder/bar.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6e56688f-0853-4bb4-8573-0f3ae027ef91
+    type: regular
+    task:
+      id: 6e56688f-0853-4bb4-8573-0f3ae027ef91
+      version: -1
+      name: Create test file
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      data:
+        simple: The true enemy won't wait out the storm. He BRINGS the storm.
+      entryId: {}
+      filename:
+        simple: local_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 415ad176-3477-4a34-8260-560f9758907c
+    type: regular
+    task:
+      id: 415ad176-3477-4a34-8260-560f9758907c
+      version: -1
+      name: Get object ACL for foo.txt
+      description: Retrieves the access control list of an object
+      script: Google Cloud Storage|||gcs-list-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: c7c43d91-c2ae-4633-8012-4b64698a0d15
+    type: regular
+    task:
+      id: c7c43d91-c2ae-4633-8012-4b64698a0d15
+      version: -1
+      name: Get object ACL for bar.txt
+      description: Retrieves the access control list of an object
+      script: Google Cloud Storage|||gcs-list-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      object_name:
+        simple: folder/bar.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6c9fbf4b-09ee-481b-82a0-82c96a79cd99
+    type: regular
+    task:
+      id: 6c9fbf4b-09ee-481b-82a0-82c96a79cd99
+      version: -1
+      name: Get object ACL for foo.txt
+      description: Retrieves the access control list of an object
+      script: Google Cloud Storage|||gcs-list-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 5f07336e-eb16-4f33-80d9-3804e706749c
+    type: regular
+    task:
+      id: 5f07336e-eb16-4f33-80d9-3804e706749c
+      version: -1
+      name: Update allAuthenticatedUsers to OWNER
+      description: |-
+        Updates an existing entity in an object's access control list
+        Note: use gcs-create-bucket-object-policy to create a new entry
+      script: Google Cloud Storage|||gcs-put-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      entity:
+        simple: allAuthenticatedUsers
+      object_name:
+        simple: folder/foo.txt
+      role:
+        simple: OWNER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 52ddf0a6-9dcf-4ea6-89f7-9df3a8532f57
+    type: regular
+    task:
+      id: 52ddf0a6-9dcf-4ea6-89f7-9df3a8532f57
+      version: -1
+      name: Get object ACL for foo.txt
+      description: Retrieves the access control list of an object
+      script: Google Cloud Storage|||gcs-list-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 38d5d867-5b63-462a-8e9a-49a37a2db661
+    type: regular
+    task:
+      id: 38d5d867-5b63-462a-8e9a-49a37a2db661
+      version: -1
+      name: Remove allAuthenticatedUsers from ACL of foo.txt
+      description: Removes an entity from an object's access control list
+      script: Google Cloud Storage|||gcs-delete-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      entity:
+        simple: allAuthenticatedUsers
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 2799915c-9816-49e2-893c-ad592baad56c
+    type: regular
+    task:
+      id: 2799915c-9816-49e2-893c-ad592baad56c
+      version: -1
+      name: Get object ACL for foo.txt
+      description: Retrieves the access control list of an object
+      script: Google Cloud Storage|||gcs-list-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      object_name:
+        simple: folder/foo.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 82bd1cdd-75d9-4fd1-89c7-5a1232a6d3b1
+    type: regular
+    task:
+      id: 82bd1cdd-75d9-4fd1-89c7-5a1232a6d3b1
+      version: -1
+      name: Delete bucket with force=true
+      description: Permanently deletes a bucket
+      script: Google Cloud Storage|||gcs-delete-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      force:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 3bd85011-bfe8-4654-8f62-b7c7b079a8f2
+    type: regular
+    task:
+      id: 3bd85011-bfe8-4654-8f62-b7c7b079a8f2
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 766f3d9b-584f-4314-80b6-748dac72badd
+    type: condition
+    task:
+      id: 766f3d9b-584f-4314-80b6-748dac72badd
+      version: -1
+      name: Verify default ACL (entity allUsers should have role READER)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allUsers
+                accessor: BucketObjectPolicy.Entity
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allUsers
+                accessor: BucketObjectPolicy.Bucket
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allUsers
+                accessor: BucketObjectPolicy.Object
+            iscontext: true
+          right:
+            value:
+              simple: folder/foo.txt
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allUsers
+                accessor: BucketObjectPolicy.Role
+            iscontext: true
+          right:
+            value:
+              simple: READER
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 75586614-83f7-4a37-883c-5d75a730f97b
+    type: regular
+    task:
+      id: 75586614-83f7-4a37-883c-5d75a730f97b
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 52fa74e0-acab-4506-8966-ec3a5bc7b7ee
+    type: condition
+    task:
+      id: 52fa74e0-acab-4506-8966-ec3a5bc7b7ee
+      version: -1
+      name: Verify explicit ACL (entity allAuthenticatedUsers should have role READER)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Entity
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Bucket
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Object
+            iscontext: true
+          right:
+            value:
+              simple: folder/bar.txt
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Role
+            iscontext: true
+          right:
+            value:
+              simple: READER
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 723e0e9d-7c6b-4414-8a20-c50b855269aa
+    type: regular
+    task:
+      id: 723e0e9d-7c6b-4414-8a20-c50b855269aa
+      version: -1
+      name: Add allAuthenticatedUsers to ACL of foo.txt as READER
+      description: |-
+        Adds a new entity to an object's access control list
+        Note: use gcs-put-bucket-object-policy to update an existing entry
+      script: Google Cloud Storage|||gcs-create-bucket-object-policy
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Role:
+        simple: READER
+      bucket_name:
+        simple: demisto-test-4
+      entity:
+        simple: allAuthenticatedUsers
+      object_name:
+        simple: folder/foo.txt
+      role:
+        simple: READER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 45f372a1-5456-4cfa-85f9-d2aaf84b6593
+    type: regular
+    task:
+      id: 45f372a1-5456-4cfa-85f9-d2aaf84b6593
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 4f4adb4c-5b39-4e19-86ed-1363753e89f7
+    type: condition
+    task:
+      id: 4f4adb4c-5b39-4e19-86ed-1363753e89f7
+      version: -1
+      name: Verify permission was added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Entity
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Bucket
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Object
+            iscontext: true
+          right:
+            value:
+              simple: folder/foo.txt
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Role
+            iscontext: true
+          right:
+            value:
+              simple: READER
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 2c3eca36-0bc9-488f-8105-93fa4d41f997
+    type: regular
+    task:
+      id: 2c3eca36-0bc9-488f-8105-93fa4d41f997
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 586bfe11-5b28-43c7-8873-6a5d40d00263
+    type: condition
+    task:
+      id: 586bfe11-5b28-43c7-8873-6a5d40d00263
+      version: -1
+      name: Verify permission was updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Entity
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Bucket
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Object
+            iscontext: true
+          right:
+            value:
+              simple: folder/foo.txt
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Role
+            iscontext: true
+          right:
+            value:
+              simple: OWNER
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 18bfdc32-85d9-4036-83db-44884feccdff
+    type: title
+    task:
+      id: 18bfdc32-85d9-4036-83db-44884feccdff
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 90dbfa40-be8a-4121-89e0-89e560f34f41
+    type: regular
+    task:
+      id: 90dbfa40-be8a-4121-89e0-89e560f34f41
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 479a5e94-7f87-4148-8236-cfba5b420a45
+    type: condition
+    task:
+      id: 479a5e94-7f87-4148-8236-cfba5b420a45
+      version: -1
+      name: Verify permission was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.BucketObjectPolicy.Entity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allAuthenticatedUsers
+                accessor: BucketObjectPolicy.Entity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 83deae96-e845-4a5b-8520-8623c5721fc5
+    type: regular
+    task:
+      id: 83deae96-e845-4a5b-8520-8623c5721fc5
+      version: -1
+      name: List buckets
+      description: Retrieves the list of buckets in the project
+      script: Google Cloud Storage|||gcs-list-buckets
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 8787c0ca-8559-49ea-86ef-1b1e8c358093
+    type: condition
+    task:
+      id: 8787c0ca-8559-49ea-86ef-1b1e8c358093
+      version: -1
+      name: Bucket demisto-test-4 exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GCS.Bucket.Name
+            iscontext: true
+          right:
+            value:
+              simple: demisto-test-4
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: fbe534fc-8fbf-4345-84a4-957e6fd9154c
+    type: regular
+    task:
+      id: fbe534fc-8fbf-4345-84a4-957e6fd9154c
+      version: -1
+      name: Delete bucket
+      description: Permanently deletes a bucket
+      script: Google Cloud Storage|||gcs-delete-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-4
+      force:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: cecd738e-68be-401c-8b75-e686eb202358
+    type: title
+    task:
+      id: cecd738e-68be-401c-8b75-e686eb202358
+      version: -1
+      name: 'Test: Create Objects with Predefined ACLs + Get Object ACL'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 87b090a4-62e0-431d-80ad-74db26055a7b
+    type: title
+    task:
+      id: 87b090a4-62e0-431d-80ad-74db26055a7b
+      version: -1
+      name: 'Test: Add Entry to Object ACL'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 6c875baf-c0ae-4ea0-8e58-77516943eb41
+    type: title
+    task:
+      id: 6c875baf-c0ae-4ea0-8e58-77516943eb41
+      version: -1
+      name: 'Test: Update Entry in Object ACL'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: c4f18e02-14b6-420b-8d81-46ff7223099c
+    type: title
+    task:
+      id: c4f18e02-14b6-420b-8d81-46ff7223099c
+      version: -1
+      name: 'Test: Remove Entry from Object ACL'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 45e27cd7-cdd7-4d40-8218-5bddc965e120
+    type: title
+    task:
+      id: 45e27cd7-cdd7-4d40-8218-5bddc965e120
+      version: -1
+      name: Cleanup
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 5e0b07cc-9efd-4c5d-83fd-a31235d6f508
+    type: condition
+    task:
+      id: 5e0b07cc-9efd-4c5d-83fd-a31235d6f508
+      version: -1
+      name: Test sanity - verify context cleared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GCS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5660,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,78 @@
+{
+    "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+    "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
+    "support": "xsoar",
+    "currentVersion": "2.8.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-11T13:16:53Z",
+    "categories": [
+        "Endpoint",
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Incident Mirroring"
+    ],
+    "useCases": [
+        "Malware"
+    ],
+    "keywords": [
+        "adaptive cyber protection",
+        "apt"
+    ],
+    "dependencies": {
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        }
+    }
+}

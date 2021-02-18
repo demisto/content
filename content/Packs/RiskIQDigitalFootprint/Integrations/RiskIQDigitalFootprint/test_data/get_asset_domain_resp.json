@@ -1,0 +1,499 @@
+{
+  "name": "dummydomain.com",
+  "type": "DOMAIN",
+  "state": "CANDIDATE",
+  "firstSeen": 1322692530000,
+  "lastSeen": 1591634266660,
+  "uuid": "42696470-7b2a-617b-2f5e-ab674438e4f5",
+  "label": "dummydomain.com",
+  "description": "dummydomain.com",
+  "createdAt": 1322692530000,
+  "updatedAt": 1591634266660,
+  "confidence": "ABSOLUTE",
+  "enterprise": false,
+  "priority": "HIGH",
+  "asset": {
+    "domain": "dummydomain.com",
+    "whoisId": 6674824394369493291,
+    "registrarIanaIds": [
+      {
+        "value": 146,
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "registrantContacts": [
+      {
+        "value": "abuse@dummydomain.com",
+        "firstSeen": 1541251425162,
+        "lastSeen": 1591402147854,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "registrantOrgs": [
+      {
+        "value": "Dummy Organization",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "adminContacts": [
+      {
+        "value": "Dummy Admin",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "technicalContacts": [
+      {
+        "value": "Dummy Technical",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "nameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "mailServers": [
+      {
+        "value": "dummy.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy4.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "whoisServers": [
+      {
+        "value": "dummy.com",
+        "firstSeen": 1591402147858,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "whois.dummy.com",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147854,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "domainStatuses": [
+      {
+        "value": "clientDeleteProhibited",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147854,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "registrarCreatedAt": [
+      {
+        "value": 1137076406000,
+        "firstSeen": 1591402147858,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "registrarUpdatedAt": [
+      {
+        "value": 1483618972000,
+        "firstSeen": 1591402147858,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "registrarExpiresAt": [
+      {
+        "value": 1768228406000,
+        "firstSeen": 1591402147858,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "soaRecords": [
+      {
+        "nameServer": "ns-1502.awsdns-59.org",
+        "email": "awsdns-hostmaster@amazon.com",
+        "firstSeen": 1475940329000,
+        "lastSeen": 1591481866000,
+        "serialNumber": 1,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "detailedFromWhoisAt": 1591402147858,
+    "registrarNames": [
+      {
+        "value": "Dummy, LLC",
+        "firstSeen": 1538755727118,
+        "lastSeen": 1591402147858,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "firstSeen": 1322692530000,
+    "lastSeen": 1591600288590,
+    "count": 29162,
+    "parkedDomain": [
+      {
+        "value": false,
+        "firstSeen": 1543936216196,
+        "lastSeen": 1591598768649,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "alexaRank": "Not in Alexa",
+    "whois": {
+      "createdAt": 1591402147858,
+      "updatedAt": 1591402147858,
+      "status": "ACTIVE",
+      "whoisID": 6674824394369493291,
+      "domain": "dummydomain.com",
+      "domainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+      "domainUnicode": "dummydomain.com",
+      "tld": "com",
+      "nameservers": [
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
+      ],
+      "whoisServer": "dummy.com",
+      "registrarIanaID": 146,
+      "registrarName": "Dummy, LLC",
+      "registrarEmail": "abuse@dummydomain.com",
+      "registrarCreatedAt": 1137076406000,
+      "registrarUpdatedAt": 1483618972000,
+      "registrarExpiresAt": 1768228406000,
+      "registrant": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "state": "cyprus",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "admin": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "technical": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "billing": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+      "auditCreatedAt": 1591402147834,
+      "auditUpdatedAt": 1591402147834,
+      "registrarParseCode": 36643,
+      "noRecord": false,
+      "domainAvailable": false,
+      "contactEmails": [
+        "dummy@dummy.com"
+      ],
+      "expired": false,
+      "contacts": [
+        {
+          "whoisContactID": 0,
+          "organization": "Dummy Organization",
+          "state": "california",
+          "country": "united states",
+          "address": "california\nunited states\n",
+          "id": 0
+        }
+      ],
+      "zone": {
+        "whoisContactID": 0,
+        "email": "parkadm@isnic.is",
+        "organization": "Domain Parking Admin",
+        "phone": "354 5782030",
+        "address": "",
+        "id": 0
+      },
+      "contactNames": [
+        "Dummy"
+      ],
+      "contactOrganizations": [
+        "Dummy Organization"
+      ],
+      "contactCountries": [
+        "united states"
+      ],
+      "compositeParseCode": 36643,
+      "id": 6674824394369493291,
+      "raw": "Registrar: \n  Handle: DUMMY_DOMAIN_COM\n  LDH Name: dummydomain.com\n  Nameserver: \n    LDH Name: DUMMY.NAMESERVER.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.743Z\n      Status: active\n  Nameserver: \n    LDH Name: DUMMY1.NAMESERVER.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.84Z\n      Status: active\n  Nameserver: \n    LDH Name: DUMMY2.NAMESERVER.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.107Z\n      Status: active\n  Nameserver: \n    LDH Name: DUMMY3.NAMESERVER.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.163Z\n      Status: active\n  SecureDNS: \n    Delegation Signed: false\n  Event: \n    Action: last update of DUMMY database\n    Date: 2020-06-06T00:09:07.492949419Z\n  Event: \n    Action: expiration\n    Date: 2026-01-12T14:33:26Z\n  Event: \n    Action: registration\n    Date: 2006-01-12T14:33:26Z\n  Event: \n    Action: last update\n    Date: 2017-01-05T12:22:52Z\n  Status: \n    delete prohibited\n    transfer prohibited\n    renew prohibited\n    update prohibited\n  Entity: \n    Handle: 1\n    Role: \n      REGISTRANT\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 2\n    Role: \n      ADMINISTRATIVE\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 3\n    Role: \n      TECHNICAL\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 4\n    Role: \n      BILLING\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 146\n    Role: \n      REGISTRAR\n    VCard: \n      Formatted Name: Dummy, LLC\n      Address: \n          Street: 14455 N Hayden Suite 226\n          Locale: Scottsdale\n          Region: AZ\n          Postal Code: 85260\n          Country: US\n      Email: abuse@dummydomain.com\n          TYPE: work\n    Entity: \n      Handle: \n      Role: \n        ABUSE\n      VCard: \n            TYPE: voice\n        Email: abuse@dummydomain.com\n            TYPE: work\n    DUMMY Conformance: \n      dummy_level_0\n      fake_dummy_response_profile_0\n      fake_dummy_technical_implementation_guide_0\n  Link: \n    Rel: self\n    Value: https://dummy.dummy.com/v1/domain/dummydomain.com\n    Type: application/dummy+json\n    Href: https://dummy.dummy.com/v1/domain/dummydomain.com\n  Notice: \n    Title: Epp Status Codes\n      Description: For more information on domain status codes, please visit https://fake.org/epp.\n      Link: \n        Rel: related\n        Value: https://fake.org/epp\n        Type: text/html\n        Href: https://fake.org/epp\n  Notice: \n    Title: Whois Inaccuracy Complaint Form\n      Description: URL of the ICANN Whois Inaccuracy Complaint Form: https://www.fake.org/wicf.\n      Link: \n        Rel: related\n        Value: https://www.fake.org/wicf\n        Type: text/html\n        Href: https://www.fake.org/wicf\n  Notice: \n    Title: Terms of Use\n    Description: \n      By submitting an inquiry, you agree to these Universal Terms of Service\n      and limitations of warranty. In particular, you agree not to use this\n      data to allow, enable, or otherwise make possible, dissemination or\n      collection of this data, in part or in its entirety, for any purpose,\n      such as the transmission of unsolicited advertising and solicitations of\n      any kind, including spam. You further agree not to use this data to enable\n      high volume, automated or robotic electronic processes designed to collect\n      or compile this data for any purpose, including mining this data for your\n      own personal or commercial purposes, or use this data in any way that violates\n      applicable laws and regulations.\n      Link: \n        Rel: related\n        Value: https://www.dummy.com/agreements/showdoc?pageid=5403\n        Type: text/html\n        Href: https://www.dummy.com/agreements/showdoc?pageid=5403\n  DUMMY Conformance: \n    dummy_level_0\n    fake_dummy_response_profile_0\n    fake_dummy_technical_implementation_guide_0\n\n\n  Registry: \n    Handle: 314061295_DOMAIN_COM-VRSN\n    LDH Name: dummydomain.com\n    Nameserver: \n      LDH Name: NS-1502.AWSDNS-59.ORG\n    Nameserver: \n      LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Nameserver: \n      LDH Name: NS-295.AWSDNS-36.COM\n    Nameserver: \n      LDH Name: NS-625.AWSDNS-14.NET\n    SecureDNS: \n      Delegation Signed: false\n    Event: \n      Action: registration\n      Date: 2006-01-12T19:33:26Z\n    Event: \n      Action: expiration\n      Date: 2026-01-12T19:33:26Z\n    Event: \n      Action: last update of DUMMY database\n      Date: 2020-06-05T17:49:42Z\n    Status: \n      client delete prohibited\n      client renew prohibited\n      client transfer prohibited\n      client update prohibited\n    Entity: \n      Handle: 146\n      Role: \n        REGISTRAR\n      VCard: \n        Formatted Name: Dummy, LLC\n      Entity: \n        Role: \n          ABUSE\n        VCard: \n          Formatted Name: \n              TYPE: voice\n          Email: abuse@dummydomain.com\n    Link: \n      Rel: self\n      Value: https://dummy.verisign.com/com/v1/domain/dummydomain.com\n      Type: application/dummy+json\n      Href: https://dummy.verisign.com/com/v1/domain/dummydomain.com\n    Link: \n      Rel: related\n      Value: https://dummy.dummy.com/v1/domain/dummydomain.com\n      Type: application/dummy+json\n      Href: https://dummy.dummy.com/v1/domain/dummydomain.com\n    Notice: \n      Title: Terms of Use\n        Description: Service subject to Terms of Use.\n        Link: \n          Type: text/html\n          Href: https://www.verisign.com/domain-names/registration-data-access-protocol/terms-service/index.xhtml\n    Notice: \n      Title: Status Codes\n        Description: For more information on domain status codes, please visit https://fake.org/epp\n        Link: \n          Type: text/html\n          Href: https://fake.org/epp\n    Notice: \n      Title: RDDS Inaccuracy Complaint Form\n        Description: URL of the ICANN RDDS Inaccuracy Complaint Form: https://fake.org/wicf\n        Link: \n          Type: text/html\n          Href: https://fake.org/wicf\n    DUMMY Conformance: \n      dummy_level_0\n      fake_dummy_technical_implementation_guide_0\n      fake_dummy_response_profile_0\n"
+    }
+  },
+  "primaryContact": {
+    "contactID": 5783389,
+    "firstName": null,
+    "lastName": null,
+    "fullName": null,
+    "email": "john.doe@riskiq.com",
+    "userId": null,
+    "name": "john.doe@riskiq.com",
+    "id": "contact-5783389"
+  },
+  "secondaryContact": {
+    "contactID": 5783390,
+    "firstName": null,
+    "lastName": null,
+    "fullName": null,
+    "email": "jane.smith@riskiq.com",
+    "userId": null,
+    "name": "jane.smith@riskiq.com",
+    "id": "contact-5783390"
+  },
+  "data": {
+    "hostPairs": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [
+        {
+          "firstSeen": 1513075987356,
+          "lastSeen": 1591599597150,
+          "count": 2350025,
+          "id": "com.dummy.www$FacebookPixelId$1558019831190971",
+          "hostname": "www.dummydomain.com",
+          "domain": "dummydomain.com",
+          "attributeValue": "1558019831190971",
+          "attributeType": "FacebookPixelId"
+        },
+        {
+          "firstSeen": 1419279039648,
+          "lastSeen": 1591599597150,
+          "count": 3503095,
+          "id": "com.dummy.www$LinkedInId$dummy_2",
+          "hostname": "www.dummydomain.com",
+          "domain": "dummydomain.com",
+          "attributeValue": "dummy_2",
+          "attributeType": "LinkedInId"
+        }
+      ],
+      "totalElements": 790,
+      "totalPages": 395,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [
+        {
+          "firstSeen": 1588827292602,
+          "lastSeen": 1591686077053,
+          "count": 11045986,
+          "id": "com.dummy.cdn$NetDNA CDN httpd$Server$2.2",
+          "hostname": "cdn.dummydomain.com",
+          "domain": "dummydomain.com",
+          "webComponentVersion": "2.2",
+          "webComponentName": "NetDNA CDN httpd",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1588827292602,
+              "lastSeen": 1591686077053,
+              "count": 11045924,
+              "portNumber": 443
+            },
+            {
+              "firstSeen": 1588881961599,
+              "lastSeen": 1591676835298,
+              "count": 62,
+              "portNumber": 80
+            }
+          ]
+        },
+        {
+          "firstSeen": 1500459828688,
+          "lastSeen": 1591686077053,
+          "count": 245625564,
+          "id": "com.dummy.cdn$NetDNA-cache$Server$2.2",
+          "hostname": "cdn.dummydomain.com",
+          "domain": "dummydomain.com",
+          "webComponentVersion": "2.2",
+          "webComponentName": "NetDNA-cache",
+          "webComponentCategory": "Server",
+          "cves": [
+            {
+              "name": "CVE-2011-3624",
+              "cweID": "CWE-74",
+              "cvssScore": 5.0
+            },
+            {
+              "name": "CVE-2013-4287",
+              "cweID": "CWE-310",
+              "cvssScore": 4.300000190734863
+            },
+            {
+              "name": "CVE-2013-1821",
+              "cweID": "CWE-20",
+              "cvssScore": 5.0
+            }
+          ],
+          "ports": [
+            {
+              "firstSeen": 1530428445134,
+              "lastSeen": 1591686077053,
+              "count": 169724921,
+              "portNumber": 443
+            },
+            {
+              "firstSeen": 1530435644291,
+              "lastSeen": 1591676835298,
+              "count": 985,
+              "portNumber": 80
+            }
+          ]
+        }
+      ],
+      "totalElements": 7508,
+      "totalPages": 3754,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

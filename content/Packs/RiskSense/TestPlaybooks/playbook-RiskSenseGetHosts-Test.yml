@@ -1,0 +1,429 @@
+id: RiskSense Get Hosts - Test
+version: -1
+name: RiskSense Get Hosts - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-hosts" command.  
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 60735bea-3e37-4946-86c0-94dc60b59fcd
+    type: start
+    task:
+      id: 60735bea-3e37-4946-86c0-94dc60b59fcd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 331b4be0-b091-4dd8-8d50-f8c5d77f226e
+    type: title
+    task:
+      id: 331b4be0-b091-4dd8-8d50-f8c5d77f226e
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 0d0fbdb5-4076-4ffb-85b4-4e4f2f62dfa6
+    type: regular
+    task:
+      id: 0d0fbdb5-4076-4ffb-85b4-4e4f2f62dfa6
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 0e38d6c0-6fc9-445a-86f4-2bf3cb12d62b
+    type: condition
+    task:
+      id: 0e38d6c0-6fc9-445a-86f4-2bf3cb12d62b
+      version: -1
+      name: Is context data exists?
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Rs3
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Criticality
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Total
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Critical
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.High
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Medium
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Low
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Info
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.OS.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Tag.ID
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Tag.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Note.Note
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: RiskSense.Host.Note.Note
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.IpAddress
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.NetworkID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.GroupID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.LastScanTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.DiscoveredOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.LastFoundOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.ClientID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.PortNumbers
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Source.UuID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.Services
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.CMDB.Key
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Host.OldestOpenFindingWithThreatDiscoveredOn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 1e4658d6-1555-45f0-861c-08af58c2e76e
+    type: regular
+    task:
+      id: 1e4658d6-1555-45f0-861c-08af58c2e76e
+      version: -1
+      name: Execute risksense-get-hosts command from Demisto
+      description: Lookup the host details. The host details can be searched based
+        on input parameters like fieldname (hostname, ipaddress, criticality etc),
+        operator (exactly, one of, like, wildcard), page and size.
+      script: RiskSense|||risksense-get-hosts
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      exclude: {}
+      fieldname: {}
+      operator: {}
+      page: {}
+      size:
+        simple: "5"
+      sort_by: {}
+      sort_direction:
+        simple: DESC
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 8afdad19-fcfb-46a5-80b8-fc1c0c4464a4
+    type: regular
+    task:
+      id: 8afdad19-fcfb-46a5-80b8-fc1c0c4464a4
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: b9cded71-be5a-427b-80a7-06f9ece22ff7
+    type: regular
+    task:
+      id: b9cded71-be5a-427b-80a7-06f9ece22ff7
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Passed all the testcases.
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

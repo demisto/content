@@ -1,0 +1,133 @@
+commonfields:
+  id: TaniumAskQuestion
+  version: -1
+name: TaniumAskQuestion
+deprecated: true
+script: >-
+  // An example script for asking Tanium a question
+
+  /* name - The name of the Saved-Question in Tanium server (mandatory if no 'id' was specified)
+
+  For example:
+   Computer Name
+   User Information
+   Adobe Acrobat Versions
+   BIOS Information
+   CPU Utilization Over 75%
+   Installed Applications
+   ...
+  */
+
+  // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
+
+  // timeout - seconds to wait while waiting for the question's result
+
+
+  var entry = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
+  };
+
+  if (!args.name && !args.id)
+      return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'You must provide name or id.' };
+  var res = executeCommand('tn-result-info', args);
+
+  if (res[0].Type !== entryTypes.error) {
+      if (!res[0].Contents.result_infos) {
+          return res[0].Contents.Envelope.Body.return.command;
+      }
+      // Need to compare 'mr_passed' and 'estimated_total' values,
+      // to confirm that all machines have answered
+      var answers = res[0].Contents.result_infos.result_info.mr_passed;
+      var expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
+
+      var timeout = parseInt(args.timeout) || 30; // seconds
+      var pollFreq = parseInt(args.pollfreq) || 3; // seconds
+
+      var polled = false;
+      sec = 0;
+      do {
+          if (polled) {
+              sec += pollFreq;
+              wait(pollFreq);
+          }
+          res = executeCommand('tn-result-info', args);
+          if (res[0].Type === entryTypes.error) {
+              return res[0];
+          }
+          answers = res[0].Contents.result_infos.result_info.mr_passed;
+          expectedAnswers = res[0].Contents.result_infos.result_info.estimated_total;
+          polled = true;
+      } while (answers !== expectedAnswers && sec < timeout);
+      if (sec >= timeout) {
+          log("Timed out. Results may be incomplete. Run the query again to allow Tanium to reach full results.");
+      } else {
+          log("Full results. It took " + sec + " seconds, polling at " + pollFreq + " second intervals.");
+      }
+
+      // Get question data (i.e. question result)
+      var qDataRes = executeCommand('tn-result-data', args);
+      if (!qDataRes[0].Contents.result_sets) {
+          return qDataRes[0].Contents.Envelope.Body.return.command;
+      }
+      // Extract the relevant fields from the data
+      itemCount = parseInt(qDataRes[0].Contents.result_sets.result_set.item_count);
+      if (itemCount === 0) {
+          return 'No results';
+      }
+      var output = "";
+      var cs = qDataRes[0].Contents.result_sets.result_set.cs;
+      var rs = qDataRes[0].Contents.result_sets.result_set.rs;
+      // When a single item is returned, rs.r is a single object. Otherwise, it is an array...
+      if (itemCount === 1) {
+          var row = {};
+          for (var i=0; i < cs.c.length; i++) {
+              row[cs.c[i].dn] = formatCell(rs.r.c[i].v);
+          }
+          entry.Contents.push(row);
+      } else {
+          for (var item=0; item < itemCount; item++) {
+              var row = {};
+              for (var j=0; j < cs.c.length; j++) {
+                  row[cs.c[j].dn] = formatCell(rs.r[item].c[j].v);
+              }
+              entry.Contents.push(row);
+          }
+      }
+      if (entry.Contents.length === 0) {
+         return 'No Results';
+      }
+      var title = args.name ? args.name : "Tanium ask question";
+      var headers = 'headers' in args ? argToList(args.headers) : null;
+      entry.HumanReadable = tableToMarkdown(title, entry.Contents, headers);
+      return entry;
+  }
+
+  return res;
+type: javascript
+tags:
+- tanium
+comment: Deprecated. Send a request for a formatted result of a saved question. To receive the most up to date data, run the same command twice. See https://kb.tanium.com/SOAP for more information
+system: true
+args:
+- name: name
+  default: true
+  description: Retrieve the question by its name. E.g. !TaniumAskQuestion name="Running Services"
+- name: id
+  description: 'Retrieve the question by its ID.  To view ID in the Tanium console go to: Authoring -> Saved Questions tab. This shows you a list of Saved Questions. Click the edit button on a Saved Question and the ID will be shown in the lower left corner'
+- name: timeout
+  description: Force Tanium to respond after x seconds (even if data was not collected fully by Tanium).  Default is 30 seconds.
+- name: pollfreq
+  description: Frequency of polling Tanium for more answers. Default is each second.
+- name: headers
+  description: Table's headers to be shown by order
+scripttarget: 0
+dependson:
+  must:
+  - tn-result-data
+  - tn-result-info
+timeout: 0s
+fromversion: 5.0.0

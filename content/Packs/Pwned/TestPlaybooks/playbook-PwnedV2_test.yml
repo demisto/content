@@ -1,0 +1,797 @@
+id: Pwned v2 test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Pwned v2 test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b82ab1e-c38c-425d-823a-a69b8dd45286
+    type: start
+    task:
+      id: 4b82ab1e-c38c-425d-823a-a69b8dd45286
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6c7ab62b-9537-4f4b-8cf8-ce210c14b6c0
+    type: regular
+    task:
+      id: 6c7ab62b-9537-4f4b-8cf8-ce210c14b6c0
+      version: -1
+      name: Get email
+      description: Checks if an email has been compromised, as part of previous breaches.
+      script: Have I Been Pwned? V2|||email
+      type: regular
+      iscommand: true
+      brand: Have I Been Pwned? V2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email:
+        simple: example@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f4d26da3-251b-4be3-8fb1-f441c0a29328
+    type: regular
+    task:
+      id: f4d26da3-251b-4be3-8fb1-f441c0a29328
+      version: -1
+      name: Get domain
+      description: Checks if domain has been compromised.
+      script: Have I Been Pwned? V2|||domain
+      type: regular
+      iscommand: true
+      brand: Have I Been Pwned? V2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: adobe.com
+      fullResponse: {}
+      include_inactive: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a2f750db-6b8c-4863-8b95-f9864acd160c
+    type: condition
+    task:
+      id: a2f750db-6b8c-4863-8b95-f9864acd160c
+      version: -1
+      name: Check domain dBot score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: adobe.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Have I Been Pwned? V2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 63c01867-7973-4bf1-8053-db39c45e9c0b
+    type: condition
+    task:
+      id: 63c01867-7973-4bf1-8053-db39c45e9c0b
+      version: -1
+      name: Check email dBot score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: example@demisto.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: email
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Have I Been Pwned? V2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 61a828f0-70b4-47da-89f9-dcc1bef322db
+    type: title
+    task:
+      id: 61a828f0-70b4-47da-89f9-dcc1bef322db
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 1428d5e2-8d5f-4902-8e00-34d12cd0957e
+    type: regular
+    task:
+      id: 1428d5e2-8d5f-4902-8e00-34d12cd0957e
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 1d678e6c-a3b7-43bb-84ae-87f9bbf277aa
+    type: regular
+    task:
+      id: 1d678e6c-a3b7-43bb-84ae-87f9bbf277aa
+      version: -1
+      name: check email indicator regex (auto enrich)
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      value:
+        simple: bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: a9d8365a-df97-403c-8195-556f06229e89
+    type: regular
+    task:
+      id: a9d8365a-df97-403c-8195-556f06229e89
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ff0b5f5a-1913-406f-8052-8d5f1fe68ea2
+    type: condition
+    task:
+      id: ff0b5f5a-1913-406f-8052-8d5f1fe68ea2
+      version: -1
+      name: Check email with `=` in DBotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 546badfd-61bc-4145-825b-60558cc4bf2c
+    type: regular
+    task:
+      id: 546badfd-61bc-4145-825b-60558cc4bf2c
+      version: -1
+      name: Get Email2
+      description: Checks if an email has been compromised, as part of previous breaches.
+      script: Have I Been Pwned? V2|||email
+      type: regular
+      iscommand: true
+      brand: Have I Been Pwned? V2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      email:
+        simple: joe@gmail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: fbe135b2-d21b-417a-8f4f-897719c0a458
+    type: condition
+    task:
+      id: fbe135b2-d21b-417a-8f4f-897719c0a458
+      version: -1
+      name: Check email domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email.Pwned-V2.Compromised.Reporters
+            iscontext: true
+          right:
+            value:
+              simple: 000webhost
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 9b01bfc9-6f5f-420d-809d-e4a8f7ff21b4
+    type: regular
+    task:
+      id: 9b01bfc9-6f5f-420d-809d-e4a8f7ff21b4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 4331d0a8-e575-4e30-89d4-69c5f2e1f6d4
+    type: condition
+    task:
+      id: 4331d0a8-e575-4e30-89d4-69c5f2e1f6d4
+      version: -1
+      name: Check paste
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.Email.Pwned-V2.Compromised.Reporters
+            iscontext: true
+          right:
+            value:
+              simple: Pastebin
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: c53a54aa-5645-4698-8e79-a5fc4f5948f3
+    type: regular
+    task:
+      id: c53a54aa-5645-4698-8e79-a5fc4f5948f3
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: ea7cf5c2-71bd-4200-80c1-59f2f07ceba0
+    type: regular
+    task:
+      id: ea7cf5c2-71bd-4200-80c1-59f2f07ceba0
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: a7abdcb7-d101-46d5-815b-6f098a0e6bd6
+    type: regular
+    task:
+      id: a7abdcb7-d101-46d5-815b-6f098a0e6bd6
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: b1b46e62-70b3-4369-8e2f-f47b7ec8c944
+    type: regular
+    task:
+      id: b1b46e62-70b3-4369-8e2f-f47b7ec8c944
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: e889b7b7-714a-4c98-8d03-051caf0f5d7a
+    type: regular
+    task:
+      id: e889b7b7-714a-4c98-8d03-051caf0f5d7a
+      version: -1
+      name: Test domain with CSV
+      description: Checks if a domain was compromised.
+      script: Have I Been Pwned? V2|||domain
+      type: regular
+      iscommand: true
+      brand: Have I Been Pwned? V2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      domain:
+        simple: AbuseWith.Us,Acne.org
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 241dfdd5-8908-4090-8b70-cc4907832e35
+    type: condition
+    task:
+      id: 241dfdd5-8908-4090-8b70-cc4907832e35
+      version: -1
+      name: Verify domain with CSV outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: Acne.org
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: AbuseWith.Us
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 9511e15b-5861-4b6f-8dea-5c338d9e498b
+    type: regular
+    task:
+      id: 9511e15b-5861-4b6f-8dea-5c338d9e498b
+      version: -1
+      name: Test email with CSV
+      description: Checks if an email address was compromised.
+      script: Have I Been Pwned? V2|||email
+      type: regular
+      iscommand: true
+      brand: Have I Been Pwned? V2
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      email:
+        simple: test@adobe.com,support@adobe.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: c75e048c-3dab-466f-884e-9730829e5a07
+    type: condition
+    task:
+      id: c75e048c-3dab-466f-884e-9730829e5a07
+      version: -1
+      name: Verify email with CSV outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: test@adobe.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: support@adobe.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_10_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3710,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

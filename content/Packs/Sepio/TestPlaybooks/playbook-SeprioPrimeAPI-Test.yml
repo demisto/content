@@ -1,0 +1,815 @@
+id: SepioPrimeAPI-Test
+version: -1
+name: SepioPrimeAPI-Test
+description: Sepio Prime API Test Playbook with all the integration supported commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2b7d63cc-e567-4925-8dc6-2c5384852bb6
+    type: start
+    task:
+      id: 2b7d63cc-e567-4925-8dc6-2c5384852bb6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7fe24dfa-1781-4e35-8e78-ef2b01eb1653
+    type: regular
+    task:
+      id: 7fe24dfa-1781-4e35-8e78-ef2b01eb1653
+      version: -1
+      name: DeleteContext
+      description: Delete previous context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4c26a32b-c8e0-49f6-8807-8c8cdb188305
+    type: regular
+    task:
+      id: 4c26a32b-c8e0-49f6-8807-8c8cdb188305
+      version: -1
+      name: sepio-query-agents
+      description: Run sepio-query-agents command
+      script: '|||sepio-query-agents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      has_known_attack_tools: {}
+      has_unapproved_peripherals: {}
+      has_vulnerable_peripherals: {}
+      host_identifier: {}
+      ip_address: {}
+      limit: {}
+      uuid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 01956b19-0022-4c6c-89dd-03752e4fd5d1
+    type: condition
+    task:
+      id: 01956b19-0022-4c6c-89dd-03752e4fd5d1
+      version: -1
+      name: Verify Outputs
+      description: Verify sepio-query-agents command outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.HostIdentifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.IpAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.OsVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.HardwareModel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.NicInfo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.LastUpdate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.Status
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Agent.HasUnapprovedPeripherals
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Agent.HasUnapprovedPeripherals
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Agent.HasVulnerablePeripherals
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Agent.HasVulnerablePeripherals
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Agent.HasKnownAttackTools
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Agent.HasKnownAttackTools
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.LastConfiguration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.Version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Agent.License
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e47b4694-ea52-4e86-8cd1-939d6be03342
+    type: regular
+    task:
+      id: e47b4694-ea52-4e86-8cd1-939d6be03342
+      version: -1
+      name: sepio-query-peripherals
+      description: |
+        Run sepio-query-peripherals command
+      script: '|||sepio-query-peripherals'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      host_identifier: {}
+      host_uuid: {}
+      is_known_attack-tools: {}
+      is_unapproved_peripherals: {}
+      is_vulnerable_peripherals: {}
+      limit: {}
+      product_name: {}
+      serial_number: {}
+      vendor_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2261d1a0-f6eb-483f-846d-97a8bd0ae09b
+    type: condition
+    task:
+      id: 2261d1a0-f6eb-483f-846d-97a8bd0ae09b
+      version: -1
+      name: Verify Outputs
+      description: Verify sepio-query-peripherals command outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.HostIdentifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.HostUUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.DeviceID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.VID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.PID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Peripheral.Status
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Peripheral.IsUnapprovedPeripheral
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Peripheral.IsUnapprovedPeripheral
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Peripheral.IsVulnerablePeripheral
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Peripheral.IsVulnerablePeripheral
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Peripheral.IsKnownAttackTool
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Peripheral.IsKnownAttackTool
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0c3250c4-313b-42ed-8932-0cace827279a
+    type: regular
+    task:
+      id: 0c3250c4-313b-42ed-8932-0cace827279a
+      version: -1
+      name: sepio-query-switches
+      description: |
+        Run sepio-query-switches command
+      script: '|||sepio-query-switches'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ios_version: {}
+      ip_address: {}
+      is_alarmed: {}
+      limit: {}
+      model: {}
+      switch_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5a564e5b-4666-4f70-8ed4-ac3a6dfbfbe4
+    type: condition
+    task:
+      id: 5a564e5b-4666-4f70-8ed4-ac3a6dfbfbe4
+      version: -1
+      name: Verify Outputs
+      description: Verify sepio-query-switches command outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.SwitchID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.IpAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.Model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.IosVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.LastUpdate
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Sepio.Switch.NumberOfPorts
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Switch.Status
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Switch.IsAlarmed
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Switch.IsAlarmed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9c1edca4-20e0-49cc-89a4-e8a439c26960
+    type: regular
+    task:
+      id: 9c1edca4-20e0-49cc-89a4-e8a439c26960
+      version: -1
+      name: sepio-query-switch-ports
+      description: |
+        Run  sepio-query-switch-ports command
+      script: '|||sepio-query-switch-ports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      is_alarmed: {}
+      limit: {}
+      link_partner_data_contains: {}
+      port_id: {}
+      port_name: {}
+      switch_ip_address: {}
+      switch_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 06da1212-9e74-418c-8ebe-002cc1313e0c
+    type: condition
+    task:
+      id: 06da1212-9e74-418c-8ebe-002cc1313e0c
+      version: -1
+      name: Verify Outputs
+      description: Verify sepio-query-switch-ports command outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Port.SwitchID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Port.SwitchIpAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Port.PortID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Port.LastUpdate
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Sepio.Port.NumberOfMacAddresses
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Port.Status
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: Sepio.Switch.IsAlarmed
+            iscontext: true
+        - operator: isFalse
+          left:
+            value:
+              simple: Sepio.Switch.IsAlarmed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4468c802-9896-468a-8507-516f0c6e2b5a
+    type: regular
+    task:
+      id: 4468c802-9896-468a-8507-516f0c6e2b5a
+      version: -1
+      name: sepio-query-system-events
+      description: |
+        Run  sepio-query-system-events command
+      script: '|||sepio-query-system-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      category: {}
+      end_datetime: {}
+      limit: {}
+      min_severity: {}
+      peripheral_type: {}
+      source: {}
+      start_datetime: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 8076ab71-acde-40c9-8de1-92464ffbcb35
+    type: condition
+    task:
+      id: 8076ab71-acde-40c9-8de1-92464ffbcb35
+      version: -1
+      name: Verify Outputs
+      description: |
+        Verify sepio-query-system-events command outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.CreationDatetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.Category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.PeripheralType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Sepio.Event.Details
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 959c4e6b-d8a5-429c-897c-5738c61fdf88
+    type: regular
+    task:
+      id: 959c4e6b-d8a5-429c-897c-5738c61fdf88
+      version: -1
+      name: sepio-set-agent-mode
+      description: |
+        Run  sepio-set-agent-mode command
+      script: '|||sepio-set-agent-mode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      host_identifier: {}
+      ip_address: {}
+      mode:
+        simple: Free
+      uuid:
+        complex:
+          root: Sepio
+          accessor: Agent.UUID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fb7e352c-16ae-498f-8cb4-dffdef62dd8a
+    type: regular
+    task:
+      id: fb7e352c-16ae-498f-8cb4-dffdef62dd8a
+      version: -1
+      name: sepio-set-peripherals-mode
+      description: |
+        Run  sepio-set-peripherals-mode command
+      script: '|||sepio-set-peripherals-mode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      host_identifier: {}
+      ip_address: {}
+      mode:
+        simple: Approve
+      pid:
+        complex:
+          root: Sepio
+          accessor: Peripheral.PID
+          transformers:
+          - operator: FirstArrayElement
+      uuid:
+        complex:
+          root: Sepio
+          accessor: Peripheral.HostUUID
+          transformers:
+          - operator: FirstArrayElement
+      vid:
+        complex:
+          root: Sepio
+          accessor: Peripheral.VID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a6adfb7d-1e05-49ce-88b5-5280976ebd2d
+    type: title
+    task:
+      id: a6adfb7d-1e05-49ce-88b5-5280976ebd2d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

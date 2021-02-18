@@ -1,0 +1,1258 @@
+id: Illusive - Data Enrichment
+version: -1
+name: Illusive - Data Enrichment
+description: This playbook is used for automatic enrichment of incidents in the organization
+  network, with Illusive's set of forensics and data
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: be6b2a8f-97d6-4cd8-8657-8839adb655aa
+    type: start
+    task:
+      id: be6b2a8f-97d6-4cd8-8657-8839adb655aa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7db944b3-07a9-419f-80f5-5ea881eff680
+    type: regular
+    task:
+      id: 7db944b3-07a9-419f-80f5-5ea881eff680
+      version: -1
+      name: Illusive - get incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2ac198a3-76a7-4234-8e76-dcc61bbe993e
+    type: condition
+    task:
+      id: 2ac198a3-76a7-4234-8e76-dcc61bbe993e
+      version: -1
+      name: 'Incident  has forensics? '
+      description: Check If incident has forensics
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Illusive.Incident.hasForensics
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0f5549ae-a6ac-4190-8258-fe9d1de6e788
+    type: regular
+    task:
+      id: 0f5549ae-a6ac-4190-8258-fe9d1de6e788
+      version: -1
+      name: Illusive - get incident events
+      description: Retrieve all the events that are associated with an incident
+      script: IllusiveNetworks|||illusive-get-incident-events
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 81693faf-e408-4d97-85f9-7e58f6856385
+    type: playbook
+    task:
+      id: 81693faf-e408-4d97-85f9-7e58f6856385
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      description: This playbook is used to collect forensics on-demand on any compromised
+        host and retrieve the forensics timeline upon successful collection.
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      end_date: {}
+      'fqdn_or_ip ':
+        simple: ${inputs.fqdn_or_ip}
+      start_date: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: afeb322b-49a0-4111-84cf-7adb048d1659
+    type: condition
+    task:
+      id: afeb322b-49a0-4111-84cf-7adb048d1659
+      version: -1
+      name: Check input - incident id
+      description: Check what input was inserted to playbook
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 53fb022e-65e8-4cec-85ed-31972ec74ddc
+    type: condition
+    task:
+      id: 53fb022e-65e8-4cec-85ed-31972ec74ddc
+      version: -1
+      name: Input Validation
+      description: 'Check we get only one of the following inputs: illusive_incident_id
+        OR fqdn_or_ip'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.fqdn_or_ip
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.illusive_incident_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: inputs.fqdn_or_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e0955273-9460-4318-8567-4ea7c8375d2b
+    type: regular
+    task:
+      id: e0955273-9460-4318-8567-4ea7c8375d2b
+      version: -1
+      name: Illusive - get incidents
+      description: Retrieve incidents
+      script: IllusiveNetworks|||illusive-get-incidents
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      has_forensics: {}
+      hostnames: {}
+      incident_id:
+        simple: ${Illusive.Forensics.IncidentId}
+      limit: {}
+      offset: {}
+      start_date: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 86788284-8fa5-4b81-88f3-4f5db1ac0fa8
+    type: regular
+    task:
+      id: 86788284-8fa5-4b81-88f3-4f5db1ac0fa8
+      version: -1
+      name: Illusive - get forensics analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 830
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve Illusive's forensics analyzers on a certain event
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 9311652d-a40e-42c2-8ad0-6f7095a51f94
+    type: regular
+    task:
+      id: 9311652d-a40e-42c2-8ad0-6f7095a51f94
+      version: -1
+      name: Illusive - get forensics analyzers
+      description: Retrieve Illusive?s forensics analyzers on a certain event
+      script: IllusiveNetworks|||illusive-get-forensics-analyzers
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1275
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve Illusive's forensics analyzers on a certain event
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4c2e4b5e-cc1b-4d84-89d1-0d7549d80e53
+    type: playbook
+    task:
+      id: 4c2e4b5e-cc1b-4d84-89d1-0d7549d80e53
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      description: This playbook is used to collect forensics on-demand on any compromised
+        host and retrieve the forensics timeline upon successful collection.
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      end_date: {}
+      'fqdn_or_ip ':
+        simple: ${Illusive.Incident.sourceIp}
+      start_date: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 4548edac-abd0-4d0e-800f-7c99700ff6fc
+    type: regular
+    task:
+      id: 4548edac-abd0-4d0e-800f-7c99700ff6fc
+      version: -1
+      name: Illusive - get forensics timeline
+      description: Retrieve forensics timeline for a specific incident
+      script: IllusiveNetworks|||illusive-get-forensics-timeline
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      end_date: {}
+      incident_id:
+        simple: ${inputs.illusive_incident_id}
+      start_date: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1110
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics timeline for a specific incident
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1c795cbe-e2e2-46d4-8a1a-5522e9af554e
+    type: regular
+    task:
+      id: 1c795cbe-e2e2-46d4-8a1a-5522e9af554e
+      version: -1
+      name: Illusive - get forensics triggering process info
+      description: Retrieve the triggering process information from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1440
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve the triggering process information from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 51b411d2-7f4e-45c3-87e1-4eeb8cf8aa9b
+    type: regular
+    task:
+      id: 51b411d2-7f4e-45c3-87e1-4eeb8cf8aa9b
+      version: -1
+      name: Illusive - get forensics triggering process info
+      description: Retrieve the triggering process information from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-triggering-process-info
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1015
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve the triggering process information from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: a70497cc-ca4a-479a-8615-323c9bca701f
+    type: regular
+    task:
+      id: a70497cc-ca4a-479a-8615-323c9bca701f
+      version: -1
+      name: Illusive - get forensics artifacts
+      description: Retrieve forensics artifacts from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-artifacts
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      artifact_type: {}
+      event_id:
+        complex:
+          root: Illusive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Illusive.Incident.Event.hasForensics
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Incident.Event.eventId
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1600
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics artifacts from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d731a875-9484-4e5e-84f4-f29adf4065a8
+    type: regular
+    task:
+      id: d731a875-9484-4e5e-84f4-f29adf4065a8
+      version: -1
+      name: Illusive - get forensics artifacts
+      description: Retrieve forensics artifacts from Illusive?s forensics
+      script: IllusiveNetworks|||illusive-get-forensics-artifacts
+      type: regular
+      iscommand: true
+      brand: IllusiveNetworks
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      artifact_type: {}
+      event_id:
+        simple: ${Illusive.Forensics.Evidence.eventId}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1190
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Retrieve forensics artifacts from Illusive's forensics
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 90caca65-46f5-4abd-8570-d9e1d57a2fd7
+    type: regular
+    task:
+      id: 90caca65-46f5-4abd-8570-d9e1d57a2fd7
+      version: -1
+      name: Set IllusiveNetworksEventsNumber type
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworksdeceptionfamilies:
+        simple: ${Illusive.Incident.deceptionFamilies}
+      illusivenetworkseventsnumber:
+        simple: ${Illusive.Incident.eventsNumber}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      manageremail: {}
+      measurestomitigate: {}
+      medicalinformationbreached: {}
+      name: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachsimulationid: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      statewherethebreachtookplace: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 7e688c93-6b25-4def-8fb2-4187ea531b67
+    type: condition
+    task:
+      id: 7e688c93-6b25-4def-8fb2-4187ea531b67
+      version: -1
+      name: Check Incident type
+      description: 'Check if incident type is "Illusive Networks Incident" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: Illusive Networks Incident
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 3f3ca51a-ff07-449d-881a-3bc54ee704b0
+    type: title
+    task:
+      id: 3f3ca51a-ff07-449d-881a-3bc54ee704b0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2185,
+        "width": 1750,
+        "x": -280,
+        "y": -270
+      }
+    }
+  }
+inputs:
+- key: illusive_incident_id
+  value:
+    simple: ${incident.illusivenetworksid}
+  required: false
+  description: |
+    Illusive incident ID
+  playbookInputQuery:
+- key: fqdn_or_ip
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: |
+    The endpoint's fqdn or IP address
+  playbookInputQuery:
+outputs:
+- contextPath: Illusive.Incident.incidentId
+  description: The Incident ID
+  type: number
+- contextPath: Illusive.Incident.sourceHostname
+  description: The compromised host's name
+  type: string
+- contextPath: Illusive.Incident.sourceIp
+  description: The compromised host's IP address
+  type: string
+- contextPath: Illusive.Incident.sourceOperatingSystem
+  description: The compromised host's operating system
+  type: string
+- contextPath: Illusive.Incident.lastSeenUser
+  description: The user who last reviewed the incident
+  type: string
+- contextPath: Illusive.Incident.deceptionFamilies
+  description: |-
+    The deception families of the
+    deceptions used to trigger
+    the incident
+  type: string
+- contextPath: Illusive.Incident.riskInsights.stepsToCrownJewel
+  description: The compromised host's lateral distance from Crown Jewels
+  type: number
+- contextPath: Illusive.Incident.riskInsights.stepsToDomainAdmin
+  description: The compromised host's lateral distance from domain admin accounts
+  type: number
+- contextPath: Illusive.Incident.eventsNumber
+  description: The number of associated events
+  type: number
+- contextPath: Illusive.Event.eventId
+  description: The corresponding event ID
+  type: number
+- contextPath: Illusive.Event.incidentId
+  description: The corresponding incident ID
+  type: number
+- contextPath: Illusive.Event.ForensicsAnalyzers
+  description: The forensics analyzer
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.commandLine
+  description: The triggering process command line
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.connectionsNum
+  description: The triggering process active connections
+  type: number
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.md5
+  description: The triggering process md5
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.sha256
+  description: The triggering process sha256
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.name
+  description: The triggering process name
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.parent
+  description: The parent process of the triggering process
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.path
+  description: The triggering process path
+  type: string
+- contextPath: Illusive.Event.ForensicsTriggeringProcess.startTime
+  description: The triggering process start time
+  type: date
+- contextPath: Illusive.Incident.incidentTimeUTC
+  description: Date and time of the incident
+  type: date
+- contextPath: Illusive.Incident.closed
+  description: Whether the incident has been closed
+  type: boolean
+- contextPath: Illusive.Incident.flagged
+  description: Whether the incident has been flagged
+  type: boolean
+- contextPath: Illusive.Incident.hasForensics
+  description: Whether incident has forensics
+  type: boolean
+- contextPath: Illusive.Incident.incidentTypes
+  description: Type of events detected
+  type: string
+- contextPath: Illusive.Incident.policyName
+  description: The compromised host's policy
+  type: string
+- contextPath: Illusive.Incident.unread
+  description: Whether the incident has been read
+  type: boolean
+- contextPath: Illusive.Incident.userNotes
+  description: The analyst's comments
+  type: string
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

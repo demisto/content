@@ -1,0 +1,20 @@
+{
+    "name": "Humio",
+    "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
+    "support": "partner",
+    "currentVersion": "1.0.3",
+    "author": "Humio",
+    "url": "",
+    "email": "integrations@humio.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "created": "2020-04-30T15:56:44Z",
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "KGausel"
+    ],
+    "certification": "certified"
+}

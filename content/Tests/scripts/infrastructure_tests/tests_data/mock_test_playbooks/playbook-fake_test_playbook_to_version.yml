@@ -1,0 +1,48 @@
+id: fake_test_playbook_to_version
+version: -1
+name: fake_test_playbook_to_version
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4d5802d1-1b08-4057-8638-336acb417cb6
+    type: start
+    task:
+      id: 4d5802d1-1b08-4057-8638-336acb417cb6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+toversion: 5.9.9
+tests:
+- No tests

@@ -1,0 +1,18 @@
+{
+    "AccessedResourceAccountIdToTimeMapping": {},
+    "DateToPrivilegeEscalationPathsMapping": {},
+    "DateToSourceComputerIdToProtocolToCertaintyMapping": {},
+    "GeolocationIdToTimeMapping": {},
+    "Id": "6b0e48f5-6c63-449c-8b6f-c749e18e28b3",
+    "IpAddressToTimeMapping": {},
+    "IsBehaviorChanged": false,
+    "LogonSourceAccountIdToTimeMapping": {},
+    "OpenSuspiciousActivityCount": 0,
+    "SuspiciousActivitySeverityToCountMapping": {
+        "High": 0,
+        "Low": 0,
+        "Medium": 0
+    },
+    "Type": "ComputerProfile",
+    "UpdateTime": "2020-07-22T13:20:03.4107506Z"
+}

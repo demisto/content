@@ -1,0 +1,68 @@
+commonfields:
+  id: SimpleRequestGetter
+  version: -1
+name: SimpleRequestGetter
+script: >-
+  from urllib3 import disable_warnings
+
+
+  # disable insecure warnings
+
+  disable_warnings()
+
+
+  entries = demisto.executeCommand("getEntries", {})
+
+  req_log_entries = []
+
+  for entry in entries:
+      file_name = entry.get('File')
+      if file_name and file_name == 'SimpleRequest.log':
+          req_log_entries.append(entry)
+  contents = req_log_entries[-1] if req_log_entries else None
+
+
+  # helpful for debugging
+
+  demisto.results(json.dumps(contents))
+
+
+  entry_id = contents.get('ID', '')
+
+  file_path = demisto.getFilePath(entry_id).get('path')
+
+  with open(file_path, 'r') as debug_file:
+      file_contents = debug_file.read()
+      debug = False
+      if 'Starting new HTTPS connection' in file_contents and 'www.demisto.com' in file_contents:
+          debug = True
+
+      entry_context = {'SimpleRequest': {'Debug': debug}}
+      if debug:
+          demisto.results({
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['markdown'],
+              'Contents': entry_context,
+              'HumanReadable': debug,
+              'EntryContext': entry_context
+          })
+      else:
+          demisto.results({
+              'Type': entryTypes['error'],
+              'ContentsFormat': formats['text'],
+              'Contents': 'Could not find requests debugging data inside the debugging file.'
+          })
+type: python
+tags: []
+comment: Read the contents of the debugging file and check that request debugging information is included in the file.
+enabled: true
+outputs:
+- contextPath: SimpleRequest.Debug
+  description: 'Whether request debugging information is included in the debugging file. '
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
+fromversion: 5.0.0

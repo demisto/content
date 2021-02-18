@@ -1,0 +1,119 @@
+[
+  {
+    "autoConfirmed": true,
+    "confidence": "ABSOLUTE",
+    "description": "dummydomain.com",
+    "enterprise": false,
+    "firstSeen": 1322692530000,
+    "hostExcluded": false,
+    "id": 219478790,
+    "keystone": false,
+    "label": "dummydomain.com",
+    "lastSeen": 1590446111849,
+    "name": "dummydomain.com",
+    "organization": [
+      {
+        "createdAt": 1591794205000,
+        "id": 51,
+        "name": "Dummy Org",
+        "status": "ACTIVE",
+        "updatedAt": 1591794205000,
+        "workspaceID": 2946,
+        "workspaceOrganizationID": 51
+      },
+      {
+        "createdAt": 1591794205000,
+        "id": 512,
+        "name": "Org Test",
+        "status": "ACTIVE",
+        "updatedAt": 1591794205000,
+        "workspaceID": 2946,
+        "workspaceOrganizationID": 512
+      }
+    ],
+    "priority": "NONE",
+    "state": "CONFIRMED",
+    "tags": [
+      {
+        "createdAt": 1591794205000,
+        "id": 511,
+        "name": "Dummy",
+        "status": "ACTIVE",
+        "updatedAt": 1591794205000,
+        "workspaceID": 2946,
+        "workspaceTagID": 511
+      }
+    ],
+    "type": "DOMAIN",
+    "updatedAt": 1588289026853,
+    "uuid": "snma3234s-ef3rdwkc"
+  },
+  {
+    "autoConfirmed": true,
+    "confidence": "ABSOLUTE",
+    "createdAt": 1589508027551,
+    "description": "0.0.0.0",
+    "enterprise": false,
+    "firstSeen": 1589759453711,
+    "hostExcluded": false,
+    "id": 222198299,
+    "keystone": false,
+    "label": "0.0.0.0",
+    "lastSeen": 1590446107730,
+    "name": "0.0.0.0",
+    "priority": "NONE",
+    "state": "CONFIRMED",
+    "type": "IP_ADDRESS",
+    "updatedAt": 1589508027551,
+    "uuid": "234jhbjww-2s34efdn"
+  },
+  {
+    "autoConfirmed": true,
+    "confidence": "ABSOLUTE",
+    "createdAt": 1589508027551,
+    "description": "https://dummy.com/",
+    "enterprise": false,
+    "firstSeen": 1589759453711,
+    "hostExcluded": false,
+    "id": 222198299,
+    "keystone": false,
+    "label": "https://dummy.com/",
+    "lastSeen": 1590446107730,
+    "name": "https://dummy.com/",
+    "priority": "NONE",
+    "state": "CONFIRMED",
+    "type": "PAGE",
+    "updatedAt": 1589508027551,
+    "uuid": "234jhbjww-23dn"
+  },
+  {
+    "autoConfirmed": true,
+    "brands": [
+      {
+        "createdAt": 1591794205000,
+        "id": 5117,
+        "name": "DummyBrand",
+        "status": "ACTIVE",
+        "updatedAt": 1591794205000,
+        "workspaceBrandID": 5117,
+        "workspaceID": 2946
+      }
+    ],
+    "confidence": "ABSOLUTE",
+    "createdAt": 1589507929368,
+    "description": "http://dummy.dummy.com/",
+    "enterprise": false,
+    "firstSeen": 1589658300552,
+    "hostExcluded": false,
+    "id": 222197543,
+    "keystone": false,
+    "label": "http://dummy.dummy.com/",
+    "lastSeen": 1590446151938,
+    "name": "http://dummy.dummy.com/",
+    "priority": "NONE",
+    "state": "CONFIRMED",
+    "type": "PAGE",
+    "updatedAt": 1589507929368,
+    "uuid": "sdds3345vs"
+  }
+]

@@ -1,0 +1,630 @@
+{
+	"TypeName": "Employee Offboarding",
+	"kind": "details",
+	"fromVersion": "5.0.0",
+	"layout": {
+		"TypeName": "",
+		"id": "Employee Offboarding",
+		"kind": "details",
+		"modified": "2020-01-23T15:37:54.835146515Z",
+		"name": "",
+		"system": false,
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"hidden": false,
+				"id": "qdjwqktnvs",
+				"name": "Offboarding Process",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideName": false,
+						"i": "qdjwqktnvs-0bb08ff0-21b1-11ea-aaad-594c31b0b40a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "companypropertystatus",
+								"height": 24,
+								"id": "35478350-271f-11ea-a5c1-8d0530e6b525",
+								"index": 1,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Company Property",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					},
+					{
+						"description": "Company property which is in the user's possession",
+						"h": 3,
+						"hideName": false,
+						"i": "qdjwqktnvs-91745530-21bc-11ea-95fc-6bfcf7f8d70f",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "User Assets",
+						"query": {
+							"categories": [],
+							"notCategories": [],
+							"notTags": [],
+							"tags": [
+								"user_assets"
+							],
+							"tagsAndOperator": false
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "offboardingdate",
+								"height": 55,
+								"id": "37a46030-3df6-11ea-a6e9-c9270dc69f9b",
+								"index": 0,
+								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "offboardingstage",
+								"height": 55,
+								"id": "25984360-21be-11ea-95fc-6bfcf7f8d70f",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "googledisplayname",
+								"height": 55,
+								"id": "358f3d80-309d-11ea-bf1f-41f04c42df82",
+								"index": 2,
+								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "activedirectorydisplayname",
+								"height": 55,
+								"id": "3104fa70-309d-11ea-bf1f-41f04c42df82",
+								"index": 3,
+								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "employeeemail",
+								"height": 55,
+								"id": "4c2ed330-309c-11ea-bf1f-41f04c42df82",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "employeedisplayname",
+								"height": 55,
+								"id": "4dede850-309c-11ea-bf1f-41f04c42df82",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "employeemanageremail",
+								"height": 55,
+								"id": "4eda4420-309c-11ea-bf1f-41f04c42df82",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Case Overview",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "qdjwqktnvs-61645690-21be-11ea-95fc-6bfcf7f8d70f",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "devicegsuiteaccountstatus",
+								"height": 24,
+								"id": "2a93f330-271f-11ea-a5c1-8d0530e6b525",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "duoaccountstatus",
+								"height": 24,
+								"id": "af72cb60-21b3-11ea-aaad-594c31b0b40a",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "oktaaccountstatus",
+								"height": 24,
+								"id": "ab4bde00-21b3-11ea-aaad-594c31b0b40a",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Mobile Devices",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"hideName": false,
+						"i": "qdjwqktnvs-9b645c50-21be-11ea-95fc-6bfcf7f8d70f",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "globaldirectoryvisibility",
+								"height": 24,
+								"id": "0d2aacd0-21b1-11ea-aaad-594c31b0b40a",
+								"index": 0,
+								"listId": "qdjwqktnvs-0bb08ff0-21b1-11ea-aaad-594c31b0b40a",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "googleaccountstatus",
+								"height": 24,
+								"id": "d4c60030-21b3-11ea-aaad-594c31b0b40a",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "googlepasswordstatus",
+								"height": 24,
+								"id": "17d4e880-271f-11ea-a5c1-8d0530e6b525",
+								"index": 2,
+								"listId": "qdjwqktnvs-9b645c50-21be-11ea-95fc-6bfcf7f8d70f",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "mailboxdelegation",
+								"height": 24,
+								"id": "c3543600-21b3-11ea-aaad-594c31b0b40a",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "emailautoreply",
+								"height": 24,
+								"id": "baa50160-21b3-11ea-aaad-594c31b0b40a",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "googleadminrolesstatus",
+								"height": 24,
+								"id": "3ee4c170-271f-11ea-a5c1-8d0530e6b525",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "googlemailstatus",
+								"height": 24,
+								"id": "484a74d0-271f-11ea-a5c1-8d0530e6b525",
+								"index": 6,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "googledrivestatus",
+								"height": 24,
+								"id": "4d0abc00-271f-11ea-a5c1-8d0530e6b525",
+								"index": 7,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Google Account",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 1,
+						"hideName": false,
+						"i": "qdjwqktnvs-b9895730-21be-11ea-95fc-6bfcf7f8d70f",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "activedirectoryaccountstatus",
+								"height": 55,
+								"id": "c8925fc0-21b3-11ea-aaad-594c31b0b40a",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "activedirectorypasswordstatus",
+								"height": 55,
+								"id": "1fc2f000-271f-11ea-a5c1-8d0530e6b525",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Active Directory Account",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "qdjwqktnvs-9c72c9a0-21bf-11ea-95fc-6bfcf7f8d70f",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 1,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 55,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 55,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 55,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 55,
+								"id": "incident-created-field",
+								"index": 0,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 55,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 24,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 24,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 110,
+								"id": "incident-details-field",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Incident Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		],
+		"typeId": "Employee Offboarding",
+		"version": -1
+	},
+	"typeId": "Employee Offboarding",
+	"version": -1,
+	"toVersion": "5.9.9"
+}

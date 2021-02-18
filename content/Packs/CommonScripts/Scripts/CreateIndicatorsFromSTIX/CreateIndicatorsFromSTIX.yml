@@ -1,0 +1,25 @@
+args:
+- default: false
+  description: The entry ID of the STIX file.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.0.
+commonfields:
+  id: CreateIndicatorsFromSTIX
+  version: -1
+enabled: false
+name: CreateIndicatorsFromSTIX
+script: '-'
+subtype: python3
+system: false
+tags:
+- stix
+- ioc
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.1.5734
+tests:
+- CreateIndicatorFromSTIXTest
+fromversion: 5.0.0

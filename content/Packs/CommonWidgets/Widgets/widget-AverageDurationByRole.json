@@ -1,0 +1,31 @@
+{
+ "id": "average-incident-duration-by-role",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Average Incident Duration by Role (Avg)",
+ "dataType": "incidents",
+ "widgetType": "column",
+ "size": 5,
+ "query": "status:closed",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "roles"
+  ],
+  "keys": [
+   "avg|openDuration / (3600*24)"
+  ]
+ },
+ "description": ""
+}

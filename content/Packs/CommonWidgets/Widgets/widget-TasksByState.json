@@ -1,0 +1,28 @@
+{
+ "id": "tasks-state",
+ "version": -1,
+ "modified": "2018-01-14T22:59:42.479686738Z",
+ "name": "Tasks By State",
+ "dataType": "tasks",
+ "widgetType": "column",
+ "query": "replaced:f",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "state"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,53 @@
+{
+    "data": {
+        "results": [
+            {
+                "file_url": "foo/bar",
+                "analgin_result": {
+                    "error": null,
+                    "commit": "f0eb1fe9df628438ba32b9be9624901a37918a35",
+                    "reports": [],
+                    "verdict": true,
+                    "context_desired": false
+                },
+                "src": "",
+                "dst": "",
+                "is_restorible": false,
+                "id": 2118597,
+                "search_id": "2118597",
+                "uploader": "Demisto Integration",
+                "sensor": "\u041e\u041e\u041e GROUP-IB TDS HUNTBOX",
+                "msp_id": null,
+                "sha256": "0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697",
+                "sha1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
+                "md5": "ba9fe2cb8ee2421ea24a55306ce9d923",
+                "file_size": 36375,
+                "original_filename": "link.pdf",
+                "ts_created": "2020-05-07T13:27:26.000165+03:00",
+                "ts_analized": null,
+                "ts_last_sync": null,
+                "verdict": null,
+                "is_whitelisted": false,
+                "is_deleted": false,
+                "is_blocked": false,
+                "src_ip": null,
+                "dst_ip": null,
+                "meta": {
+                    "analgin": {
+                        "error": null,
+                        "commit": "f0eb1fe9df628438ba32b9be9624901a37918a35",
+                        "reports": [],
+                        "verdict": true,
+                        "context_desired": false
+                    }
+                },
+                "source": "MANUAL",
+                "sandbox_url": null,
+                "sandbox_version": null,
+                "envelope": null,
+                "appliance": 1,
+                "department": null
+            }
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "Microsoft Graph Mail Single User",
+	"name": "Microsoft Graph Mail Single User - Classifier",
+    "description": "Classifies Microsoft phishing email messages.",
+    "type": "classification",
+	"keyTypeMap": {
+		"graph-mail-listener": "Phishing"
+	},
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

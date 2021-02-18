@@ -1,0 +1,19 @@
+{
+    "name": "Synapse",
+    "description": "Vertex Synapse intelligence analysis framework.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Jordan Berry",
+    "url": "",
+    "email": "",
+    "created": "2020-10-03T20:39:06Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "cmd-not-found"
+    ]
+}

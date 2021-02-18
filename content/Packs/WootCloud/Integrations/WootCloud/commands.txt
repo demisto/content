@@ -1,0 +1,6 @@
+!wootcloud-get-pkt-alerts date_range="30 days" severity="info" limit="10"
+!wootcloud-get-bt-alerts date_range="30 days" limit="1"
+!wootcloud-get-anomaly-alerts date_range="30 days" limit="5"
+!wootcloud-fetch-packet-alert alert_id="EXMP001"
+!wootcloud-fetch-bluetooth-alert alert_id="EXMP001"
+!wootcloud-fetch-anomaly-alert alert_id="EXMP001"

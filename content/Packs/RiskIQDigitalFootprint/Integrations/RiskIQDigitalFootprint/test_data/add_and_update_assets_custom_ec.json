@@ -1,0 +1,34 @@
+{
+  "success": {
+    "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "state": "COMPLETE",
+    "estimated": 1,
+    "totalUpdates": 1
+  },
+  "failed": {
+    "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "state": "FAILED",
+    "reason": "An unexpected error occurred.",
+    "estimated": 1,
+    "totalUpdates": 0
+  },
+  "running": {
+    "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "state": "RUNNING",
+    "estimated": 1,
+    "totalUpdates": 0
+  },
+  "incomplete": {
+    "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "state": "INCOMPLETE",
+    "reason": "An unexpected error occurred.",
+    "estimated": 1,
+    "totalUpdates": 0
+  },
+  "warning": {
+    "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "state": "WARNING",
+    "estimated": 1,
+    "totalUpdates": 0
+  }
+}

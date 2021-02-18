@@ -1,0 +1,198 @@
+id: SecBI - Test
+version: -1
+name: SecBI - Test
+description: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 02b0cf46-1242-420e-8a44-9eb49cd49a56
+    type: start
+    task:
+      id: 02b0cf46-1242-420e-8a44-9eb49cd49a56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: ee84b2ae-a1b2-491a-803d-568cb49785d6
+    type: regular
+    task:
+      id: ee84b2ae-a1b2-491a-803d-568cb49785d6
+      version: -1
+      name: Get Incidents by Query
+      script: '|||secbi-get-incidents-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: f51f7332-625c-4700-82d7-0117b5530c2c
+    type: regular
+    task:
+      id: f51f7332-625c-4700-82d7-0117b5530c2c
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: de3df3c5-4424-4bf8-8692-982507c0ddbb
+    type: regular
+    task:
+      id: de3df3c5-4424-4bf8-8692-982507c0ddbb
+      version: -1
+      name: Get SecBI Incident Data
+      script: '|||secbi-get-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      incident_id:
+        simple: ${SecBI.IncidentsList}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5892cd5d-eabd-44c1-86a9-4910e4fe165e
+    type: condition
+    task:
+      id: 5892cd5d-eabd-44c1-86a9-4910e4fe165e
+      version: -1
+      name: Check results have host
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SecBI.Incident.Host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: acc6c934-3b9e-4b30-8562-a7bf7463e5a3
+    type: regular
+    task:
+      id: acc6c934-3b9e-4b30-8562-a7bf7463e5a3
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Found Result!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

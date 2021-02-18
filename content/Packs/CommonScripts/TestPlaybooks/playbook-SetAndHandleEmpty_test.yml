@@ -1,0 +1,212 @@
+id: SetAndHandleEmpty test
+version: -1
+name: SetAndHandleEmpty test
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 20416e3e-274e-4216-8110-b8dab255b38a
+    type: start
+    task:
+      id: 20416e3e-274e-4216-8110-b8dab255b38a
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 6b50db0a-587e-4c5e-86c4-28584b0bc173
+    type: regular
+    task:
+      id: 6b50db0a-587e-4c5e-86c4-28584b0bc173
+      version: -1
+      name: Set test value
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+      - '3'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test
+      stringify: {}
+      value:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 37e2e3e1-d67d-4125-8658-790478197f7e
+    type: regular
+    task:
+      id: 37e2e3e1-d67d-4125-8658-790478197f7e
+      version: -1
+      name: Set existing test value
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test1
+      stringify: {}
+      value:
+        simple: ${Test}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 2c7757f3-8284-41e1-8c47-cf447933053a
+    type: regular
+    task:
+      id: 2c7757f3-8284-41e1-8c47-cf447933053a
+      version: -1
+      name: Set non existing test value
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Test2
+      stringify: {}
+      value:
+        simple: ${FakeTest}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 2f3302b4-4073-4b2d-8b43-9a31a26c1daa
+    type: condition
+    task:
+      id: 2f3302b4-4073-4b2d-8b43-9a31a26c1daa
+      version: -1
+      name: Test results
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Test1}
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${Test2}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: a31ee717-62c0-4d09-846d-88beeb3e22f0
+    type: title
+    task:
+      id: a31ee717-62c0-4d09-846d-88beeb3e22f0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 980,
+        "x": 180,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,2168 @@
+id: GmailTest
+version: -1
+name: GmailTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0b04420f-6816-4817-84c4-9159ae13bc46
+    type: start
+    task:
+      id: 0b04420f-6816-4817-84c4-9159ae13bc46
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a61e5afe-4333-4eda-8aae-ffa06d12ad16
+    type: regular
+    task:
+      id: a61e5afe-4333-4eda-8aae-ffa06d12ad16
+      version: -1
+      name: Start clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": -405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
+    type: regular
+    task:
+      id: f7f45c9f-34f9-4374-8af3-ab08b1eb84dd
+      version: -1
+      name: List all users
+      script: '|||gmail-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      custom-field-mask: {}
+      customer: {}
+      domain: {}
+      event: {}
+      max-results: {}
+      projection: {}
+      query: {}
+      show-deleted: {}
+      sort-order: {}
+      token: {}
+      view-type-public-domain: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
+    type: regular
+    task:
+      id: 2f0776e8-d086-480c-8384-0bbb6cfc2ee6
+      version: -1
+      name: Get specific user
+      script: '|||gmail-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      custom-field-mask: {}
+      projection: {}
+      user-id:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.UserName
+                iscontext: true
+              right:
+                value:
+                  simple: test
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Email
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Address
+      view-type-public-domain: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a1797e64-84f8-4548-8ab5-32c470b5cc0e
+    type: regular
+    task:
+      id: a1797e64-84f8-4548-8ab5-32c470b5cc0e
+      version: -1
+      name: Create new user
+      script: '|||gmail-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      email:
+        simple: JohnS@demistodev.com
+      family-name:
+        simple: Smith
+      first-name:
+        simple: John
+      password:
+        simple: ${NEW_PASSWORD}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 236a1321-aa02-4e55-82c6-f3b488b50dce
+    type: regular
+    task:
+      id: 236a1321-aa02-4e55-82c6-f3b488b50dce
+      version: -1
+      name: Delete User
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "26"
+      - "7"
+    scriptarguments:
+      user-id:
+        complex:
+          root: Account
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: JohnS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Email
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b20ed4be-0428-415c-8e9f-5b58f100dbda
+    type: title
+    task:
+      id: b20ed4be-0428-415c-8e9f-5b58f100dbda
+      version: -1
+      name: Gmail Commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "16"
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 3f56579e-b2ad-4a67-8418-e0592d1fc194
+    type: regular
+    task:
+      id: 3f56579e-b2ad-4a67-8418-e0592d1fc194
+      version: -1
+      name: Search emails with attachments
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "14"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments:
+        simple: "True"
+      in: {}
+      include-spam-trash: {}
+      label: {}
+      labels-ids: {}
+      max-results:
+        simple: "10"
+      page-token: {}
+      query: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
+    type: regular
+    task:
+      id: 1fc33028-bfeb-43e2-8c5e-86d19b5c40ee
+      version: -1
+      name: Get mail with attachment
+      script: '|||gmail-get-attachments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      message-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: admin@demistodev.com
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Gmail.Attachments
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: be0698f8-807d-4bcb-83c1-1e75e3825ca2
+    type: regular
+    task:
+      id: be0698f8-807d-4bcb-83c1-1e75e3825ca2
+      version: -1
+      name: Get Tokens
+      script: '|||gmail-get-tokens-for-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 80da6352-2191-484c-84dd-360c2cf67871
+    type: regular
+    task:
+      id: 80da6352-2191-484c-84dd-360c2cf67871
+      version: -1
+      name: Get Email data
+      script: '|||gmail-get-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      format: {}
+      message-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Gmail.Attachments
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: admin@demistodev.com
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 60efc593-9cee-48a3-8e98-887e1c400579
+    type: regular
+    task:
+      id: 60efc593-9cee-48a3-8e98-887e1c400579
+      version: -1
+      name: Search all mailboxes
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      after:
+        simple: 2018/1/20
+      before:
+        simple: 2018/1/30
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash: {}
+      label: {}
+      labels-ids: {}
+      max-results:
+        simple: "2"
+      page-token: {}
+      query: {}
+      subject: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 0a01ec85-5f2f-4741-8019-7292c151a55f
+    type: regular
+    task:
+      id: 0a01ec85-5f2f-4741-8019-7292c151a55f
+      version: -1
+      name: Get Thread
+      script: '|||gmail-get-thread'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      format: {}
+      thread-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: admin@demistodev.com
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ThreadId
+          - operator: uniq
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5ebd87ff-c761-4c7a-802f-8815b5892161
+    type: regular
+    task:
+      id: 5ebd87ff-c761-4c7a-802f-8815b5892161
+      version: -1
+      name: Search in mailbox
+      script: '|||gmail-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in:
+        simple: INBOX
+      include-spam-trash: {}
+      labels-ids: {}
+      max-results:
+        simple: "1"
+      page-token: {}
+      query: {}
+      subject: {}
+      to: {}
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: b359e6ec-f8e5-40fa-872d-11a9e94a2635
+    type: regular
+    task:
+      id: b359e6ec-f8e5-40fa-872d-11a9e94a2635
+      version: -1
+      name: Move mail to other folder
+      script: '|||gmail-move-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      add-labels:
+        simple: CATEGORY_SOCIAL
+      message-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: shai@demistodev.com
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      remove-labels:
+        simple: INBOX
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 063e9553-1a19-47bb-8147-cd22d99dd944
+    type: regular
+    task:
+      id: 063e9553-1a19-47bb-8147-cd22d99dd944
+      version: -1
+      name: Move back to inbox
+      script: '|||gmail-move-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      add-labels:
+        simple: INBOX
+      message-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: shai@demistodev.com
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      remove-labels:
+        simple: CATEGORY_SOCIAL
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: e44697ac-39b9-430d-8a27-0c0b1aed666d
+    type: regular
+    task:
+      id: e44697ac-39b9-430d-8a27-0c0b1aed666d
+      version: -1
+      name: block the admin
+      script: '|||gmail-add-delete-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      email-address:
+        complex:
+          root: Account
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: JohnS
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Email
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Address
+      user-id:
+        simple: me
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: acbb9924-48bb-49fc-8f1f-375ca71511d4
+    type: title
+    task:
+      id: acbb9924-48bb-49fc-8f1f-375ca71511d4
+      version: -1
+      name: Check all mailboxes
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5f3c76e8-31da-4f87-8e36-acb473f90758
+    type: regular
+    task:
+      id: 5f3c76e8-31da-4f87-8e36-acb473f90758
+      version: -1
+      name: Remove the block
+      script: '|||gmail-remove-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filter_ids:
+        complex:
+          root: GmailFilter
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: GmailFilter.Mailbox
+                iscontext: true
+              right:
+                value:
+                  simple: admin@demistodev.com
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      mailbox:
+        complex:
+          root: Gmail
+          accessor: Filter.Mailbox
+      user-id:
+        simple: me
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
+    type: regular
+    task:
+      id: a7bd0d11-1e61-4362-8b7c-e7fef3f16f15
+      version: -1
+      name: List mailbox filters
+      script: '|||gmail-list-filters'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      address: {}
+      limit:
+        simple: "5"
+      user-id:
+        simple: test@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 61376dc1-e53e-4577-8e88-f638ca7ca817
+    type: regular
+    task:
+      id: 61376dc1-e53e-4577-8e88-f638ca7ca817
+      version: -1
+      name: Delete filters from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GmailFilter
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 180d02ae-efe3-45fe-837c-d80ecaea50c9
+    type: condition
+    task:
+      id: 180d02ae-efe3-45fe-837c-d80ecaea50c9
+      version: -1
+      name: Verify Filters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GmailFilter
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Gmail.Filter
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: d8b841cd-9317-4a3a-82f1-79deb66714d7
+    type: regular
+    task:
+      id: d8b841cd-9317-4a3a-82f1-79deb66714d7
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No filters were found in test@demistodev.com mailbox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: ad910e8f-58ca-42c9-8a48-3497a6817796
+    type: title
+    task:
+      id: ad910e8f-58ca-42c9-8a48-3497a6817796
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 5720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: dfce2601-a3dd-4010-87a9-1f223a361af7
+    type: regular
+    task:
+      id: dfce2601-a3dd-4010-87a9-1f223a361af7
+      version: -1
+      name: gmail-create-user
+      description: Creates a user.
+      script: '|||gmail-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      email:
+        simple: user_to_delete@demistodev.com
+      family-name:
+        simple: Second
+      first-name:
+        simple: First
+      password:
+        simple: ${NEW_PASSWORD}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: b2ee22e8-6645-4e39-8e6e-29be288914aa
+    type: regular
+    task:
+      id: b2ee22e8-6645-4e39-8e6e-29be288914aa
+      version: -1
+      name: gmail-hide-user-in-directory
+      description: Hide a user in the Global Directory
+      script: '|||gmail-hide-user-in-directory'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      user-id:
+        simple: user_to_delete@demistodev.com
+      visible-globally:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 25a7d6a1-efaf-4882-8d93-2337ab004c09
+    type: condition
+    task:
+      id: 25a7d6a1-efaf-4882-8d93-2337ab004c09
+      version: -1
+      name: Verify User creation and visbility
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: user_to_delete@demistodev.com
+      - - operator: isFalse
+          left:
+            value:
+              simple: Account.VisibleInDirectory
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
+    type: regular
+    task:
+      id: 693e41af-9d10-4d2f-86fd-fb0d38e5abf8
+      version: -1
+      name: gmail-delete-user
+      description: Delete a User
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      user-id:
+        simple: user_to_delete@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
+    type: regular
+    task:
+      id: d2ec23e5-3cdd-471e-8ef4-c5c492c39e05
+      version: -1
+      name: gmail-get-autoreply
+      description: Get the auto-reply message set for the user-account
+      script: '|||gmail-get-autoreply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
+    type: regular
+    task:
+      id: 48ba4efe-9b0d-402c-8a84-1c8dd15b7ef8
+      version: -1
+      name: gmail-set-autoreply
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
+      script: '|||gmail-set-autoreply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      enable-autoReply:
+        simple: "true"
+      response-body:
+        simple: body_test
+      response-subject:
+        simple: subject_test
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 240b8779-372d-402e-837f-de0196781c20
+    type: regular
+    task:
+      id: 240b8779-372d-402e-837f-de0196781c20
+      version: -1
+      name: gmail-get-autoreply
+      description: Get the auto-reply message set for the user-account
+      script: '|||gmail-get-autoreply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
+    type: condition
+    task:
+      id: 2f2ae812-95ce-43e0-8eac-3af2cafe30ed
+      version: -1
+      name: Verify Autoreply
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.Gmail.AutoReply.ResponseSubject
+            iscontext: true
+          right:
+            value:
+              simple: subject_test
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.Gmail.AutoReply.ResponseBody
+            iscontext: true
+          right:
+            value:
+              simple: body_test
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
+    type: regular
+    task:
+      id: 9401bb65-24a2-4e4f-877b-b5b1ce1cc628
+      version: -1
+      name: gmail-set-autoreply - reset to original autoreply
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
+      script: '|||gmail-set-autoreply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      enable-autoReply:
+        simple: "false"
+      response-body:
+        simple: ${Account.Gmail.AutoReply.ResponseBody}
+      response-subject:
+        simple: ${Account.Gmail.AutoReply.ResponseSubject}
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 4300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
+    type: regular
+    task:
+      id: 13897d96-6f21-4a3f-8d05-1c7c4ce0da09
+      version: -1
+      name: gmail-get-mail
+      description: Gets the specified message.
+      script: '|||gmail-get-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      format: {}
+      message-id:
+        simple: ${Gmail.SentMail.ID}
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 4720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 432d241f-83ce-4cb5-8ceb-17d9213b686f
+    type: condition
+    task:
+      id: 432d241f-83ce-4cb5-8ceb-17d9213b686f
+      version: -1
+      name: Verify sent mail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Gmail.To
+            iscontext: true
+          right:
+            value:
+              simple: admin@demistodev.com
+      - - operator: containsString
+          left:
+            value:
+              simple: Gmail.From
+            iscontext: true
+          right:
+            value:
+              simple: shai@demistodev.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.Subject
+            iscontext: true
+          right:
+            value:
+              simple: this is a test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.Body
+            iscontext: true
+          right:
+            value:
+              simple: bla bla bla
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 56a41527-9bb8-4886-8e90-b7aaede2112f
+    type: regular
+    task:
+      id: 56a41527-9bb8-4886-8e90-b7aaede2112f
+      version: -1
+      name: gmail-delegate-user-mailbox
+      description: Adds a delegate to the mailbox, without sending any verification
+        email. The delegate user must be a member of the same G Suite organization
+        as the delegator user.  Note that a delegate user must be referred to by their
+        primary email address, and not an email alias.
+      script: '|||gmail-delegate-user-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      delegate-email:
+        simple: shai@demistodev.com
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 5340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 011ebc29-fabd-48af-8d9f-5a7391231037
+    type: regular
+    task:
+      id: 011ebc29-fabd-48af-8d9f-5a7391231037
+      version: -1
+      name: gmail-delete-mail
+      description: Delete a mail in the user's mailbox.
+      script: '|||gmail-delete-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      message-id:
+        complex:
+          root: Gmail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Gmail.Subject
+                iscontext: true
+              right:
+                value:
+                  simple: this is a test
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ID
+      permanent: {}
+      user-id:
+        simple: shai@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 5140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: edacaf8d-548a-457e-89af-626df7afafb6
+    type: regular
+    task:
+      id: edacaf8d-548a-457e-89af-626df7afafb6
+      version: -1
+      name: gmail-set-password
+      description: Set password for the user
+      script: '|||gmail-set-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      password:
+        simple: ${NEW_PASSWORD}
+      user-id:
+        simple: user_to_delete@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: fb38400f-a248-4132-8720-433f14c5a58a
+    type: regular
+    task:
+      id: fb38400f-a248-4132-8720-433f14c5a58a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 4d7696e6-c620-4f1f-8323-9224d95a8317
+    type: regular
+    task:
+      id: 4d7696e6-c620-4f1f-8323-9224d95a8317
+      version: -1
+      name: gmail-remove-delegated-mailbox
+      description: Removes a delegate from the mailbox, without sending any verification
+        email. The delegate user must be a member of the same G Suite organization
+        as the delegator user.  Note that a delegate user must be referred to by their
+        primary email address, and not an email alias.
+      script: '|||gmail-remove-delegated-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      removed-mail:
+        simple: shai@demistodev.com
+      user-id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 5520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
+    type: regular
+    task:
+      id: 0afbb516-acec-4dfd-8304-7eb18a5a8f9d
+      version: -1
+      name: send-mail
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: bla bla bla
+      cc: {}
+      from:
+        simple: shai@demistodev.com
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: this is a test
+      templateParams: {}
+      to:
+        simple: admin@demistodev.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 4500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
+    type: regular
+    task:
+      id: f2a8502a-a9f6-4558-8b8a-9bae7c2c7fb7
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      debug: {}
+      max_digits: {}
+      max_lcase: {}
+      max_symbols: {}
+      max_ucase: {}
+      min_digits:
+        simple: "2"
+      min_lcase:
+        simple: "2"
+      min_symbols:
+        simple: "2"
+      min_ucase:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: e2540794-ca89-47f4-8457-6a97790380fb
+    type: regular
+    task:
+      id: e2540794-ca89-47f4-8457-6a97790380fb
+      version: -1
+      name: check for user's existence
+      description: Gets information for a specified user.
+      script: '|||gmail-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      custom-field-mask: {}
+      projection: {}
+      user-id:
+        simple: user_to_delete@demistodev.com
+      view-type-public-domain: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
+    type: condition
+    task:
+      id: 46609a06-7d18-45ed-8c07-56d4a5f5e25a
+      version: -1
+      name: Check user's existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: user_to_delete@demistodev.com
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
+    type: regular
+    task:
+      id: 3c2b40c8-5f74-4252-8265-cc6173a36b0c
+      version: -1
+      name: gmail-delete-user
+      description: Deletes a Gmail user.
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      user-id:
+        simple: user_to_delete@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
+    type: regular
+    task:
+      id: 7e2fe2d7-0359-49d5-840c-b3bc0329076a
+      version: -1
+      name: Get User Role
+      description: Retrieves a list of all Google roles for a specified user.
+      script: Gmail|||gmail-get-user-roles
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      user-id:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: bbab2e77-7332-45f7-82ca-1fb82399ba60
+    type: condition
+    task:
+      id: bbab2e77-7332-45f7-82ca-1fb82399ba60
+      version: -1
+      name: Verify User Role Context Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.RoleAssignmentId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ScopeType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Kind
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.OrgUnitId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.AssignedTo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
+    type: regular
+    task:
+      id: 1864bb2d-9030-4fb2-8c81-3cdb37510f5c
+      version: -1
+      name: Get Role
+      description: gmail get role
+      script: '|||gmail-get-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      customer-id: {}
+      role-id:
+        complex:
+          root: Gmail
+          accessor: Role.[0].ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 5b6f4831-770f-432b-83a0-86ea439a9d4d
+    type: condition
+    task:
+      id: 5b6f4831-770f-432b-83a0-86ea439a9d4d
+      version: -1
+      name: Verify Get Role Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ETag
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.IsSuperAdminRole
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.IsSystemRole
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Kind
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Privilege.ServiceID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Privilege.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 15935b7b-cc78-448a-8e9c-31651838965d
+    type: regular
+    task:
+      id: 15935b7b-cc78-448a-8e9c-31651838965d
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters\
+        \ to customize the properties of the password depending on the use case (e.g.\
+        \ password complexity requirements).  The default behavior is to generate\
+        \ a password of  *random length* including all four character classes (upper,\
+        \ lower, digits, symbols) with at least five and at most ten characters per\
+        \ class. \n\nThe min_* values all default to 0. This means that if the command\
+        \ is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible\
+        \ that a password of length zero could be generated. It is therefore recommended\
+        \ to always include a min_* parameter that matches. \n\nThe debug parameter\
+        \ will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      debug: {}
+      max_digits:
+        simple: "1"
+      max_lcase:
+        simple: "8"
+      max_symbols:
+        simple: "1"
+      max_ucase:
+        simple: "0"
+      min_digits:
+        simple: "1"
+      min_lcase:
+        simple: "8"
+      min_symbols:
+        simple: "1"
+      min_ucase:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "56_30_#default#": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6355,
+        "width": 2110,
+        "x": 50,
+        "y": -570
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,487 @@
+id: FireEye Helix Archive Search
+version: -1
+name: FireEye Helix Archive Search
+fromversion: 5.0.0
+description: Create an archive search in FireEye Helix, and fetch the results as events.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 143400cc-bc76-4d6e-8a38-f46da34b74d5
+    type: start
+    task:
+      id: 143400cc-bc76-4d6e-8a38-f46da34b74d5
+      version: -1
+      name: ""
+      description: Start.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: edc7890e-7604-42cc-89c8-15e0b513c9ad
+    type: regular
+    task:
+      id: edc7890e-7604-42cc-89c8-15e0b513c9ad
+      version: -1
+      name: Archive Search
+      description: Initiates a new archive search.
+      script: '|||fireeye-helix-archive-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs.End
+      groupby:
+        complex:
+          root: inputs.Groupby
+      limit:
+        complex:
+          root: inputs.Limit
+      offset:
+        complex:
+          root: inputs.Offset
+      query:
+        complex:
+          root: inputs.Query
+      sort_by:
+        complex:
+          root: inputs.Sort_by
+      sort_order:
+        complex:
+          root: inputs.Sort_order
+      start:
+        complex:
+          root: inputs.Start
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 473a8564-2302-4afc-80cd-405e56e53991
+    type: condition
+    task:
+      id: 473a8564-2302-4afc-80cd-405e56e53991
+      version: -1
+      name: Check search status
+      description: Verify if there are searches that haven't yet completed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              complex:
+                root: FireEyeHelixSearch
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: FireEyeHelixSearch.State
+                      iscontext: true
+                    right:
+                      value:
+                        simple: cancelled
+                accessor: PercentComplete
+                transformers:
+                - operator: floor
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: "100"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 45a4c9df-a4f0-4dfd-8876-adcd2ac79463
+    type: regular
+    task:
+      id: 45a4c9df-a4f0-4dfd-8876-adcd2ac79463
+      version: -1
+      name: Get search results
+      description: Fetches search results only for searches that were completed.
+      script: '|||fireeye-helix-archive-search-get-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      search_id:
+        complex:
+          root: FireEyeHelixSearch
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: FireEyeHelixSearch.PercentComplete
+                iscontext: true
+              right:
+                value:
+                  simple: "100"
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ddf16391-704b-41e4-886e-a188df0096f8
+    type: playbook
+    task:
+      id: ddf16391-704b-41e4-886e-a188df0096f8
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: FireEyeHelixSearch
+          accessor: ID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: fireeye-helix-archive-search-get-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: FireEyeHelixSearch(val.PercentComplete < 100).ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 97da4134-2fbf-426e-86a8-d1dc791e56a9
+    type: condition
+    task:
+      id: 97da4134-2fbf-426e-86a8-d1dc791e56a9
+      version: -1
+      name: Completed searches?
+      description: Checks whether there are searches that weren't cancelled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: FireEyeHelixSearch
+                accessor: State
+            iscontext: true
+          right:
+            value:
+              simple: cancelled
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f5a31249-1556-4fc6-82cd-4c8c6ebc7bb9
+    type: title
+    task:
+      id: f5a31249-1556-4fc6-82cd-4c8c6ebc7bb9
+      version: -1
+      name: Search could not run
+      description: FireEye Helix couldn't run the search
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Query
+  value: {}
+  required: true
+  description: Query to execute. This is the search clause in an MQL.
+- key: Start
+  value: {}
+  required: false
+  description: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+- key: Offset
+  value: {}
+  required: false
+  description: Offset of the result.
+- key: Groupby
+  value: {}
+  required: false
+  description: Returns the unique values for the specified field and groups them together based on the specified frequency. For example, groupby="srcipv4 5 100" will group the top 5 srcipv4 that have at least 100 occurences. Multiple values can be provided using a comma separated list.
+- key: Sort_by
+  value: {}
+  required: false
+  description: 'Sorts results by this field. Default is descending order; to change this add the following to the command: argument sort_order="asc"'
+- key: Sort_order
+  value: {}
+  required: false
+  description: Controls the order of the results sorted by the sort_by argument, ascending or descending.
+- key: Limit
+  value: {}
+  required: false
+  description: Number of events for which to search.
+- key: Timeout
+  value:
+    simple: "10"
+  required: true
+  description: Amount of time for which to poll before declaring a timeout and resuming the playbook (in minutes).
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Frequency with which the polling command runs (minutes).
+- key: End
+  value: {}
+  required: false
+  description: End time of the event, in date format yyyy-mm-dd or yyyy-mm.
+outputs:
+- contextPath: FireEyeHelixSearch.Result.ID
+  description: Event ID.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Type
+  description: Event type.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Result
+  description: Event result.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MatchedAt
+  description: Time at which the the event was matched.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.Confidence
+  description: Confidence of the event. Can be either low, medium or high.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Status
+  description: Status of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.EventTime
+  description: Time at which the event took place.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.DetectedRuleID
+  description: ID of the detected rule.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.PID
+  description: Process ID.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Process
+  description: Process details.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.ProcessPath
+  description: Process path.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.FileName
+  description: Name of the file affected by the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.FilePath
+  description: Path of the file affected by the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DeviceName
+  description: Device name.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Size
+  description: Size of the file that created the event in bytes.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Virus
+  description: Virus that was detected in the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MalwareType
+  description: Malware type of the virus that was detected.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.CreatedTime
+  description: Time at which the event was created.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.Class
+  description: Event class.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MD5
+  description: MD5 hash of the affected file.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SHA1
+  description: SHA1 hash of the affected file.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Protocol
+  description: Protocol used in the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceIPv4
+  description: IPv4 address of the event source.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceIPv6
+  description: IPv6 address of the event source.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourcePort
+  description: Port of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceLongitude
+  description: Longitude of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceLatitude
+  description: Latitude of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationIPv4
+  description: IPv4 address of the event destination.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationIPv6
+  description: IPv6 address of the event destination.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationPort
+  description: Port of the event destination address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.ReportTime
+  description: Time at which the event was reported.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.FalsePositive
+  description: Boolean flag - is the event a false positive.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Domain
+  description: Domain of the recepient.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.From
+  description: Source email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceDomain
+  description: Domain of the host that created the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceISP
+  description: ISP of the source of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationISP
+  description: ISP of the destination of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.To
+  description: Destination email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Attachment
+  description: Email attachment.
+  type: unknown
+- contextPath: FireEyeHelixSearch.MQL
+  description: MQL query that created the result.
+  type: string
+- contextPath: FireEyeHelixSearch.GroupBy
+  description: Group by values.
+  type: unknown
+- contextPath: FireEyeHelixSearch.GroupBy.DocCount
+  description: Number of matches for the group.
+  type: number
+- contextPath: FireEyeHelixSearch.Result.RcpTo
+  description: \'Recipient of\' email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.InReplyTo
+  description: \'Reply to\' email address.
+  type: string
+tests:
+- No test - No instance

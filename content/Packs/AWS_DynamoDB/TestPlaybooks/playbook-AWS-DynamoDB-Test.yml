@@ -1,0 +1,176 @@
+id: AWS_DynamoDB-Test
+version: -1
+name: AWS_DynamoDB-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: df621aac-5610-4023-8a9e-7b04f7e3c1b6
+    type: start
+    task:
+      id: df621aac-5610-4023-8a9e-7b04f7e3c1b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 312d8b2f-625e-4412-8e58-c7ffe2ed0d30
+    type: regular
+    task:
+      id: 312d8b2f-625e-4412-8e58-c7ffe2ed0d30
+      version: -1
+      name: aws-dynamodb-list-tables
+      description: Returns an array of table names associated with the current account and endpoint. The output from ListTables is paginated, with each page returning a maximum of 100 table names.
+      script: Amazon DynamoDB|||aws-dynamodb-list-tables
+      type: regular
+      iscommand: true
+      brand: Amazon DynamoDB
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      exclusive_start_table_name: {}
+      raw_json: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: ec760111-8213-424d-8baa-a18b8ec36e39
+    type: regular
+    task:
+      id: ec760111-8213-424d-8baa-a18b8ec36e39
+      version: -1
+      name: aws-dynamodb-list-backups
+      description: List backups associated with an AWS account. To list backups for a given table, specify TableName. ListBackups returns a paginated list of results with at most 1 MB worth of items in a page. You can also specify a limit for the maximum number of entries to be returned in a page.  In the request, start time is inclusive, but end time is exclusive. Note that these limits are for the time at which the original backup was requested. You can call ListBackups a maximum of five times per second.
+      script: Amazon DynamoDB|||aws-dynamodb-list-backups
+      type: regular
+      iscommand: true
+      brand: Amazon DynamoDB
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      backup_type: {}
+      exclusive_start_backup_arn: {}
+      raw_json: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      table_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 4ca59cf9-71ef-4a05-8536-ce236c028fe4
+    type: regular
+    task:
+      id: 4ca59cf9-71ef-4a05-8536-ce236c028fe4
+      version: -1
+      name: aws-dynamodb-describe-table
+      description: 'Returns information about the table, including the current status of the table, when it was created, the primary key schema, and any indexes on the table.  If you issue a DescribeTable request immediately after a CreateTable request, DynamoDB might return a ResourceNotFoundException. This is because DescribeTable uses an eventually consistent query, and the metadata for your table might not be available at that moment. Wait for a few seconds, and then try the DescribeTable request again. '
+      script: Amazon DynamoDB|||aws-dynamodb-describe-table
+      type: regular
+      iscommand: true
+      brand: Amazon DynamoDB
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      raw_json: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      table_name:
+        simple: Demisto_Test_Table
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 53802168-8f40-48d2-8c98-22b9d599087a
+    type: regular
+    task:
+      id: 53802168-8f40-48d2-8c98-22b9d599087a
+      version: -1
+      name: aws-dynamodb-describe-backup
+      description: Describes an existing backup of a table. You can call DescribeBackup at a maximum rate of 10 times per second.
+      script: Amazon DynamoDB|||aws-dynamodb-describe-backup
+      type: regular
+      iscommand: true
+      brand: Amazon DynamoDB
+    scriptarguments:
+      backup_arn:
+        simple: arn:aws:dynamodb:eu-west-1:120785635586:table/Demisto_Test_Table/backup/01578237730981-ad83af36  # disable-secrets-detection
+      raw_json: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

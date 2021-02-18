@@ -1,0 +1,21 @@
+{
+ "autorun": false,
+ "color": "#A3C9FF",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "ServiceNow Create Ticket and Mirror",
+ "layout": "b9c9b5a4-fbcb-405d-8f99-c8ce0cb2ea90",
+ "locked": false,
+ "name": "ServiceNow Create Ticket and Mirror",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

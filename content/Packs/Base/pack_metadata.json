@@ -1,0 +1,20 @@
+{
+    "name": "Base",
+    "description": "The base pack for Cortex XSOAR.",
+    "support": "xsoar",
+    "currentVersion": "1.7.16",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-08T09:36:23Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "base",
+        "common"
+    ],
+    "dependencies": {}
+}

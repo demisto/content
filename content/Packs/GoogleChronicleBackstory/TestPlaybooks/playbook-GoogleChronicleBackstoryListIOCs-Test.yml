@@ -1,0 +1,524 @@
+id: Google Chronicle Backstory List IOCs - Test
+version: -1
+name: Google Chronicle Backstory List IOCs - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-list-iocs" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf64344e-5549-4f24-8981-7793bbb677a5
+    type: start
+    task:
+      id: cf64344e-5549-4f24-8981-7793bbb677a5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f05f9675-a01b-4a3e-848c-34aa72189259
+    type: regular
+    task:
+      id: f05f9675-a01b-4a3e-848c-34aa72189259
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9695f836-8241-4e10-82dc-2e77332ce8dc
+    type: regular
+    task:
+      id: 9695f836-8241-4e10-82dc-2e77332ce8dc
+      version: -1
+      name: Get list of IoCs
+      description: Lists the IOC Domain matches within your enterprise for the specified
+        time interval. The indicator of compromise (IOC) domain matches lists for
+        which the domains that your security infrastructure has flagged as both suspicious
+        and that have been seen recently within your enterprise.
+      script: '|||gcb-list-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      page_size:
+        simple: "3"
+      preset_time_range: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9ca0dfcd-b84f-43e3-8778-2cc187d6329c
+    type: condition
+    task:
+      id: 9ca0dfcd-b84f-43e3-8778-2cc187d6329c
+      version: -1
+      name: Verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Artifact
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.IocIngestTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.LastAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Sources.IntRawConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Sources.NormalizedConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Sources.RawSeverity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Iocs.Sources.Source
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 33160b30-28b4-49d0-8373-fa02729b8124
+    type: title
+    task:
+      id: 33160b30-28b4-49d0-8373-fa02729b8124
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6891ba2e-8ce2-4db0-8997-89c7e00727f2
+    type: regular
+    task:
+      id: 6891ba2e-8ce2-4db0-8997-89c7e00727f2
+      version: -1
+      name: Invalid page size argument
+      description: Lists the IOC Domain matches within your enterprise for the specified
+        time interval. The indicator of compromise (IOC) domain matches lists for
+        which the domains that your security infrastructure has flagged as both suspicious
+        and that have been seen recently within your enterprise.
+      script: '|||gcb-list-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      page_size:
+        simple: 1a
+      preset_time_range: {}
+      start_time: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 95462300-bbfd-41d6-80bc-ebf66fc9f62e
+    type: condition
+    task:
+      id: 95462300-bbfd-41d6-80bc-ebf66fc9f62e
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7a989978-713d-49e9-8fc8-660c9b1cd3a9
+    type: regular
+    task:
+      id: 7a989978-713d-49e9-8fc8-660c9b1cd3a9
+      version: -1
+      name: Invalid start time argument
+      description: Lists the IOC Domain matches within your enterprise for the specified
+        time interval. The indicator of compromise (IOC) domain matches lists for
+        which the domains that your security infrastructure has flagged as both suspicious
+        and that have been seen recently within your enterprise.
+      script: '|||gcb-list-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      page_size: {}
+      preset_time_range: {}
+      start_time:
+        simple: "2020"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 936b6481-5c69-48bf-8603-6c787a2deca1
+    type: condition
+    task:
+      id: 936b6481-5c69-48bf-8603-6c787a2deca1
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 418c6202-9192-4bf9-84f8-a83e3ab0827d
+    type: regular
+    task:
+      id: 418c6202-9192-4bf9-84f8-a83e3ab0827d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f202672c-52e5-4c44-87c1-cddced63a2a2
+    type: regular
+    task:
+      id: f202672c-52e5-4c44-87c1-cddced63a2a2
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: fc64f309-42bb-43fc-8ae0-88026a9bb7ff
+    type: condition
+    task:
+      id: fc64f309-42bb-43fc-8ae0-88026a9bb7ff
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Iocs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_9_yes": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1352.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

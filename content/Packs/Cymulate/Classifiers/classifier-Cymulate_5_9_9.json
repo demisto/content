@@ -1,0 +1,90 @@
+{
+ "brandName": "Cymulate",
+ "custom": true,
+ "defaultIncidentType": "Cymulate Immediate Threats",
+ "id": "906b4384-1d98-46e4-8af0-ecb52d5fdddc",
+ "keyTypeMap": {
+  "Immediate Threats Intelligence": "Cymulate Immediate Threats"
+ },
+ "mapping": {
+  "Cymulate Immediate Threats": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Cymulate Immediate Threats Attack ID": {
+     "complex": null,
+     "simple": "Attack_ID"
+    },
+    "Cymulate Immediate Threats File Type": {
+     "complex": null,
+     "simple": "Penetration_Vector"
+    },
+    "Cymulate Immediate Threats ID": {
+     "complex": null,
+     "simple": "ID"
+    },
+    "Cymulate Immediate Threats Mitigations": {
+     "complex": null,
+     "simple": "Mitigation"
+    },
+    "Cymulate Immediate Threats Module": {
+     "complex": null,
+     "simple": "Module"
+    },
+    "Cymulate Immediate Threats Payload Name": {
+     "complex": null,
+     "simple": "Attack_Payload"
+    },
+    "Cymulate Immediate Threats Status": {
+     "complex": null,
+     "simple": "Status"
+    },
+    "Cymulate Immediate Threats Vector": {
+     "complex": null,
+     "simple": "Attack_Vector"
+    },
+    "details": {
+     "complex": null,
+     "simple": "Description"
+    }
+   }
+  }
+ },
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+    [
+     {
+      "ignoreCase": false,
+      "left": {
+       "isContext": true,
+       "value": {
+        "complex": null,
+        "simple": "Module"
+       }
+      },
+      "operator": "isEqualString",
+      "right": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "Immediate Threats Intelligence"
+       }
+      }
+     }
+    ]
+   ],
+   "root": "Module",
+   "transformers": [
+
+   ]
+  },
+  "simple": ""
+ },
+ "unclassifiedCases": {
+
+ },
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}

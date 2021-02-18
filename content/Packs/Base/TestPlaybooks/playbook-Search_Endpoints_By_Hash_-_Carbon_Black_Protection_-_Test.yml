@@ -1,0 +1,152 @@
+id: search_endpoints_by_hash_-_carbon_black_protection_-_test
+version: -1
+name: Search Endpoints By Hash - Carbon Black Protection - Test
+description: A test playbook for Carbon Black Protection Rapid IOC Hunting
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+    type: start
+    task:
+      id: ad53972a-4d9e-43ff-8d5e-d1603c3ef891
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 92cb999f-47bc-45e0-8e81-a87f161555ad
+    type: playbook
+    task:
+      id: 92cb999f-47bc-45e0-8e81-a87f161555ad
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Protection
+      description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9).
+      playbookName: Search Endpoints By Hash - Carbon Black Protection
+      playbookId: search_endpoints_by_hash_-_carbon_black_protection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hash:
+        simple: df9d0ca7409a2967bb338014b043a062
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: b528d165-fae7-4db3-8b3f-55488c5c19e2
+    type: regular
+    task:
+      id: b528d165-fae7-4db3-8b3f-55488c5c19e2
+      version: -1
+      name: Verify hostname
+      description: Verify found hashes
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Endpoint.Hostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ade05085-d22e-470a-8a44-b2b2707c48d3
+    type: title
+    task:
+      id: ade05085-d22e-470a-8a44-b2b2707c48d3
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: d3473d01-4bae-46c7-89e7-65471ab321ac
+    type: regular
+    task:
+      id: d3473d01-4bae-46c7-89e7-65471ab321ac
+      version: -1
+      name: Clear Context
+      description: Clear all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

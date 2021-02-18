@@ -1,0 +1,5 @@
+[file:playbook-tenable.sc-scan.yml]
+ignore=BA101
+
+[file:Tenable_sc.yml]
+ignore=IN126

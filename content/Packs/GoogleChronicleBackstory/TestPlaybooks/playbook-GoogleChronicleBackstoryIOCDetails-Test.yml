@@ -1,0 +1,546 @@
+id: Google Chronicle Backstory IOC Details - Test
+version: -1
+name: Google Chronicle Backstory IOC Details - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-list-ioc-details" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d41ff0e7-c06a-43e3-80e5-0e4f4b9b81a2
+    type: start
+    task:
+      id: d41ff0e7-c06a-43e3-80e5-0e4f4b9b81a2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6484618c-b6b4-4cc3-82f3-e88cf79d42c2
+    type: regular
+    task:
+      id: 6484618c-b6b4-4cc3-82f3-e88cf79d42c2
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6c374099-ba1f-454f-8c8c-298893b26909
+    type: regular
+    task:
+      id: 6c374099-ba1f-454f-8c8c-298893b26909
+      version: -1
+      name: Get IoC details of Domain
+      description: Accepts an artifact indicator and returns any threat intelligence
+        associated with the artifact. The threat intelligence information is drawn
+        from your enterprise security systems and from Chronicle's IoC partners (for
+        example, the DHS threat feed).
+      script: '|||gcb-ioc-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      artifact_value:
+        simple: bing.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0ebcfc2a-3797-41df-8014-3e4be0ca57fa
+    type: condition
+    task:
+      id: 0ebcfc2a-3797-41df-8014-3e4be0ca57fa
+      version: -1
+      name: Verify result for Domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.IoCQueried
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: bing.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Address.Domain
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.ConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.LastAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1807fe53-6ed9-4d83-820e-5372f0c5046a
+    type: regular
+    task:
+      id: 1807fe53-6ed9-4d83-820e-5372f0c5046a
+      version: -1
+      name: Get IoC details of IP
+      description: Accepts an artifact indicator and returns any threat intelligence
+        associated with the artifact. The threat intelligence information is drawn
+        from your enterprise security systems and from Chronicle's IoC partners (for
+        example, the DHS threat feed).
+      script: '|||gcb-ioc-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      artifact_value:
+        simple: 23.20.239.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 55d22ca8-93db-4b49-8ed5-52fdc13aa478
+    type: condition
+    task:
+      id: 55d22ca8-93db-4b49-8ed5-52fdc13aa478
+      version: -1
+      name: Verify result of IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.IoCQueried
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 23.20.239.12
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Category
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.ConfidenceScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.FirstAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.LastAccessedTime
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: IocDetails.Sources.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c0299732-930f-4cf6-8600-0f9f9f5c7797
+    type: title
+    task:
+      id: c0299732-930f-4cf6-8600-0f9f9f5c7797
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6a660395-9de5-478d-8908-de14f10e7aee
+    type: regular
+    task:
+      id: 6a660395-9de5-478d-8908-de14f10e7aee
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 64b08feb-fcaf-490d-843a-92e3383dc3b7
+    type: regular
+    task:
+      id: 64b08feb-fcaf-490d-843a-92e3383dc3b7
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 45616ec6-7121-4b93-80ab-eb15537f308f
+    type: condition
+    task:
+      id: 45616ec6-7121-4b93-80ab-eb15537f308f
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.IocDetails
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 039ee783-9d55-43f3-817b-d57ab3f80789
+    type: condition
+    task:
+      id: 039ee783-9d55-43f3-817b-d57ab3f80789
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.IocDetails
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_9_yes": 0.39,
+      "5_9_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1070,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

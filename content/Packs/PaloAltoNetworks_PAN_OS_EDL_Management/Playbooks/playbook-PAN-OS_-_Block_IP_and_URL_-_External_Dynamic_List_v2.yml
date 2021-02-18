@@ -1,0 +1,813 @@
+id: PAN-OS - Block IP and URL - External Dynamic List v2
+version: -1
+fromversion: 5.0.0
+name: PAN-OS - Block IP and URL - External Dynamic List v2
+description: "This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.\nIt checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the inputted IPs and URLs to the relevant lists."
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d138b2b4-8691-4b35-82fe-80b0f7ccc890
+    type: start
+    task:
+      id: d138b2b4-8691-4b35-82fe-80b0f7ccc890
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": -50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 56457cee-bbdf-4ed1-8076-0ce1437da6c0
+    type: regular
+    task:
+      id: 56457cee-bbdf-4ed1-8076-0ce1437da6c0
+      version: -1
+      name: PAN OS - Update IP EDL
+      description: Updates the instance context with the specified list name and list items, and overrides the path of the remote file with the internal list.
+      script: '|||pan-os-edl-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      add_or_remove: {}
+      file_path:
+        complex:
+          root: inputs.IPListName
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+      list_items:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      list_name:
+        complex:
+          root: inputs.IPListName
+      verbose: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 397.5,\n    \"y\": 750\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 421590c9-47d1-4811-8ef4-16938f972e34
+    type: regular
+    task:
+      id: 421590c9-47d1-4811-8ef4-16938f972e34
+      version: -1
+      name: PAN-OS - Refresh IP EDL
+      description: Refreshes the specified external dynamic list
+      script: '|||panorama-refresh-edl'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      device-group: {}
+      name:
+        complex:
+          root: Panorama
+          accessor: EDL.Name
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 397.5,\n    \"y\": 1450\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: ca0312fb-da9e-4060-8913-e50b018777a7
+    type: title
+    task:
+      id: ca0312fb-da9e-4060-8913-e50b018777a7
+      version: -1
+      name: Malicious IPs
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 280\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 93822f60-0326-4636-8aa1-0c55f150f868
+    type: title
+    task:
+      id: 93822f60-0326-4636-8aa1-0c55f150f868
+      version: -1
+      name: Malicious URLs
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 1620\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: fe400e54-0cb3-42f7-8e96-40a1b7350073
+    type: regular
+    task:
+      id: fe400e54-0cb3-42f7-8e96-40a1b7350073
+      version: -1
+      name: PAN OS - Update URL EDL
+      description: Updates the instance context with the specified list name and list items, and overrides the path of the remote file with the internal list.
+      script: '|||pan-os-edl-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      file_path:
+        complex:
+          root: inputs.URLListName
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+      list_items:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      list_name:
+        complex:
+          root: inputs.URLListName
+      verbose: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 2110\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 80595924-da3e-4303-88d4-f25df166bfab
+    type: regular
+    task:
+      id: 80595924-da3e-4303-88d4-f25df166bfab
+      version: -1
+      name: PAN-OS - Refresh URL EDL
+      description: Refreshes the specified external dynamic list
+      script: '|||panorama-refresh-edl'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      device-group: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      name:
+        complex:
+          root: Panorama
+          accessor: EDL.Name
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 2780\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: b13f291e-2431-4aa6-8172-3a5ab7e8eca0
+    type: title
+    task:
+      id: b13f291e-2431-4aa6-8172-3a5ab7e8eca0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 3610\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 122f0ec7-b04d-4300-8cd2-1a684cc08417
+    type: condition
+    task:
+      id: 122f0ec7-b04d-4300-8cd2-1a684cc08417
+      version: -1
+      name: Are there IP addresses to update?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '25'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: a6300896-04bb-4973-8eff-bedbdaab0ab7
+    type: condition
+    task:
+      id: a6300896-04bb-4973-8eff-bedbdaab0ab7
+      version: -1
+      name: Are there URLs to update?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 1780\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 023b706a-1539-4d2b-8e03-0ea729b59d2e
+    type: condition
+    task:
+      id: 023b706a-1539-4d2b-8e03-0ea729b59d2e
+      version: -1
+      name: Is Palo Alto Networks PAN-OS EDL Management Enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '4'
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 105\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: e7cb758c-52b5-45aa-88b1-78e2d158b11a
+    type: regular
+    task:
+      id: e7cb758c-52b5-45aa-88b1-78e2d158b11a
+      version: -1
+      name: Fetch Instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 2265\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: e07a2538-40b0-4f91-8355-e52809f55765
+    type: regular
+    task:
+      id: e07a2538-40b0-4f91-8355-e52809f55765
+      version: -1
+      name: Fetch Instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 397.5,\n    \"y\": 930\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: e4eca5b0-d0fc-4d88-8c1f-4bb1cd3988d9
+    type: condition
+    task:
+      id: e4eca5b0-d0fc-4d88-8c1f-4bb1cd3988d9
+      version: -1
+      name: Is the instance type Panorama?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 2430\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 73b03f47-0d38-4314-8623-c492b178673b
+    type: condition
+    task:
+      id: 73b03f47-0d38-4314-8623-c492b178673b
+      version: -1
+      name: Is the instance type Panorama?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: "{\n  \"position\": {\n    \"x\": 397.5,\n    \"y\": 1115\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 8b14c436-85ac-4749-8a6f-a96181409509
+    type: playbook
+    task:
+      id: 8b14c436-85ac-4749-8a6f-a96181409509
+      version: -1
+      name: PAN-OS EDL Setup v3
+      description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
+      playbookName: PAN-OS EDL Setup v3
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      ioc-type:
+        simple: ip
+      list-items:
+        complex:
+          root: inputs.IP
+      list-name:
+        complex:
+          root: inputs.IPListName
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        complex:
+          root: inputs.ip-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name:
+        complex:
+          root: inputs.IPListName
+      rule-position:
+        complex:
+          root: inputs.ip-rule-position
+      web-server-url:
+        complex:
+          root: 'inputs.EDLManagementServerURL '
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 397.5,\n    \"y\": 600\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: 650138eb-60a7-44df-8e19-1c9e6f56e44d
+    type: playbook
+    task:
+      id: 650138eb-60a7-44df-8e19-1c9e6f56e44d
+      version: -1
+      name: PAN-OS EDL Setup v3
+      description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
+      playbookName: PAN-OS EDL Setup v3
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group:
+        complex:
+          root: inputs.device-group
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      ioc-type:
+        simple: url
+      list-items:
+        complex:
+          root: inputs.URL
+      list-name:
+        complex:
+          root: inputs.URLListName
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        complex:
+          root: inputs.url-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name:
+        complex:
+          root: inputs.URLListName
+      rule-position:
+        complex:
+          root: inputs.url-rule-position
+      web-server-url:
+        complex:
+          root: 'inputs.EDLManagementServerURL '
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 870,\n    \"y\": 1950\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: 727c95b9-de76-428f-8578-12341747b0f3
+    type: condition
+    task:
+      id: 727c95b9-de76-428f-8578-12341747b0f3
+      version: -1
+      name: Are there any EDL commit/push warnings?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Panorama.Commit.Warnings}
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.IPListName}
+        - operator: containsString
+          left:
+            value:
+              simple: ${Panorama.Commit.Warnings}
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.URLListName}
+        - operator: containsString
+          left:
+            value:
+              simple: ${Panorama.Push.Warnings}
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.IPListName}
+        - operator: containsString
+          left:
+            value:
+              simple: ${Panorama.Push.Warnings}
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.URLListName}
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 3100\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '28':
+    id: '28'
+    taskid: 0819fd6e-a228-4645-800f-53d7a957e1ee
+    type: regular
+    task:
+      id: 0819fd6e-a228-4645-800f-53d7a957e1ee
+      version: -1
+      name: Manually debug EDL warning
+      description: "An EDL commit warning can be caused by an environment issue or a bad playbook input. Check the following:\n\n1. Playbook inputs \n    1. IPListName - Cannot contain spaces\n    2. URLListName - Cannot contain spaces \n    3. EDLManagementServerURL - Valid format http://hostname/listfolder/, http://1.1.1.1/listfolder/. https://hostname/listfolder/, https://1.1.1.1/listfolder/ \n2. Possible environment issues \n    1. The EDL list\\EDL Management server is not accessible from PAN-OS \n    2. Network Permissions \n    3. The URL entered on the EDL object has a typo, spaces, etc.\n    4. List\\EDL object name contains spaces\n    5. EDL Objects can't handle the redirect from the EDL management server\n\n"
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 3440\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: 096c48af-e5a2-4e61-898c-d1d8521748cb
+    type: title
+    task:
+      id: 096c48af-e5a2-4e61-898c-d1d8521748cb
+      version: -1
+      name: 'Verifying URL & IP EDLs '
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 2955\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"10_5_#default#\": 0.11,\n    \"11_29_#default#\": 0.16,\n    \"14_4_yes\": 0.3,\n    \"14_5_yes\": 0.78,\n    \"14_9_#default#\": 0.1,\n    \"17_29_yes\": 0.36,\n    \"18_3_#default#\": 0.59,\n    \"18_5_yes\": 0.35,\n    \"27_9_#default#\": 0.43\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3725,\n      \"width\": 1110,\n      \"x\": 140,\n      \"y\": -50\n    }\n  }\n}"
+inputs:
+- key: IPListName
+  value:
+    simple: Demisto-Remediation-IP-EDL
+  required: false
+  description: IP address list from the instance context with which to override the remote file. Cannot contain spaces
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP address to block
+- key: URL
+  value:
+    complex:
+      root: URL
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL.Malicious
+            iscontext: true
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL to block.
+- key: URLListName
+  value:
+    simple: Demisto-Remediation-URL-EDL
+  required: false
+  description: URL list from the instance context with which to override the remote file. Cannot contain space
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Log Forwarding object name.
+- key: 'EDLManagementServerURL '
+  value: {}
+  required: false
+  description: "The EDL Management server full URL address.\n\n* http://hostname/pathtolist/\n* https://hostname/pathtolist/"
+- key: AutoCommit
+  value:
+    simple: No
+  required: false
+  description: "This input establishes whether to commit the configuration automatically.\nYes - Commit automatically.\nNo - Commit manually."
+- key: url-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: ip-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: url-rule-position
+  value:
+    simple: top
+  required: false
+  description: "The position of the rule in the ruleset. Valid values are:\n  * top\n  * bottom\n  * before\n  * after"
+- key: ip-rule-position
+  value:
+    simple: top
+  required: false
+  description: "The position of the rule in the ruleset. Valid values are:\n  * top\n  * bottom\n  * before\n  * after"
+- key: inbound-or-outbound-rule
+  value:
+    simple: outbound
+  required: false
+  description: Determines if the rule is inbound or outbound.
+- key: device-group
+  value: {}
+  required: false
+  description: The device group to work on. Exists only in panorama!
+outputs: []
+sourceplaybookid: PAN-OS - Block IP and URL - External Dynamic List
+tests:
+- No test

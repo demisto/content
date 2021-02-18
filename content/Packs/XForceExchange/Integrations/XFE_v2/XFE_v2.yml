@@ -1,0 +1,510 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: XFE_v2
+  version: -1
+configuration:
+- defaultvalue: https://api.xforce.ibmcloud.com
+  display: Server URL (e.g. https://api.xforce.ibmcloud.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '7'
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious (ranges from 1 to 10).
+  hidden: false
+  name: ip_threshold
+  required: false
+  type: 0
+- defaultvalue: '7'
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
+  hidden: false
+  name: url_threshold
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
+  hidden: false
+  name: cve_threshold
+  required: false
+  type: 0
+description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
+display: IBM X-Force Exchange v2
+name: XFE_v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP to check
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: IP to check
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+      type: Unknown
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: Unknown
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: Unknown
+    - contextPath: IP.Malicious.Score
+      description: For malicious IPs, the score from the vendor
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: XFE.IP.Reason
+      description: The reason for the given score from X-Force Exchange
+      type: String
+    - contextPath: XFE.IP.Reasondescription
+      description: Additional details of the score's reason
+      type: String
+    - contextPath: XFE.IP.Subnets
+      description: The subnets of the IP
+      type: Unknown
+  - arguments:
+    - default: false
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    - default: true
+      description: The URL to check
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Check the given URL reputation
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The given URL from the user
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - default: true
+      description: The file hash md5/sha1/sha256 to check
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Check file reputation
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: The file's MD5
+      type: String
+    - contextPath: File.SHA1
+      description: The file's SHA1
+      type: String
+    - contextPath: File.SHA256
+      description: The file's SHA256
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: XFE.File.CnCServers
+      description: C&C servers related to the given file
+      type: Unknown
+    - contextPath: XFE.File.emails
+      description: Emails related to the given file
+      type: Unknown
+    - contextPath: XFE.File.downloadServers
+      description: Download servers related to the given file
+      type: Unknown
+    - contextPath: XFE.File.subjects
+      description: Subjects related to the given file
+      type: Unknown
+    - contextPath: XFE.File.external
+      description: Additional information about the given file
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The domain to check
+      isArray: true
+      name: domain
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Check domain reputation
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - default: true
+      description: The cve to search for
+      isArray: true
+      name: cve_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for details about the given CVE
+    execution: false
+    name: cve-search
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE.Published
+      description: The date this was published
+      type: Date
+    - contextPath: CVE.Description
+      description: The CVE description
+      type: Unknown
+    - contextPath: XFE.CVE.Xfdbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE.RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE.Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE.Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE.Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE.Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE.PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Exploitability
+      description: The exploitability of the CVE.
+      type: String
+  - arguments:
+    - default: false
+      description: The number of results to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the latest vulnerabilities found
+    execution: false
+    name: cve-latest
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE.Published
+      description: The date this was published
+      type: Date
+    - contextPath: CVE.Description
+      description: The CVE description
+      type: Unknown
+    - contextPath: XFE.CVE.Xfdbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE.RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE.Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE.Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE.Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE.Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE.PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Exploitability
+      description: The exploitability of the CVE.
+      type: String
+  - arguments:
+    - default: true
+      description: The host or address to search inside X-Force Exchange (e.g. google.com)
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets information about the given host address
+    execution: false
+    name: xfe-whois
+    outputs:
+    - contextPath: XFE.Whois.Host
+      description: The given host from the user.
+      type: String
+    - contextPath: XFE.Whois.RegistrarName
+      description: The domain name registrar of the host.
+      type: String
+    - contextPath: XFE.Whois.Created
+      description: The date the host was created.
+      type: Date
+    - contextPath: XFE.Whois.Updated
+      description: The date the host's information has been updated.
+      type: Date
+    - contextPath: XFE.Whois.Expires
+      description: The date the host will be expired
+      type: Date
+    - contextPath: XFE.Whois.Email
+      description: The contact email of the host owners.
+      type: String
+    - contextPath: XFE.Whois.Contact
+      description: Contact information of the host's organization
+      type: Unknown
+    - contextPath: Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date the domain has been updated.
+      type: Date
+    - contextPath: Domain.Organization
+      description: The organizaton which owns the domain.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Email
+      description: The email of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date the domain has been updated.
+      type: String
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date the domain has been updated.
+      type: Unknown
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
+  - arguments:
+    - default: true
+      description: |-
+        The query for the search.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+      isArray: false
+      name: q
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Bookmark used to page through results.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+      isArray: false
+      name: bookmark
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets list of all vulnerabilities associated with the search term.
+    execution: false
+    name: xfe-search-cves
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE.Published
+      description: The date this was published
+      type: Date
+    - contextPath: CVE.Description
+      description: The CVE description
+      type: Unknown
+    - contextPath: XFE.CVE.Xfdbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE.RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE.Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE.Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE.Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE.Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE.PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE.Exploitability
+      description: The exploitability of the CVE.
+      type: String
+    - contextPath: XFE.CVESearch.TotalRows
+      description: The total rows received after search
+      type: String
+    - contextPath: XFE.CVESearch.Bookmark
+      description: Bookmark used to page through results.
+      type: String
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

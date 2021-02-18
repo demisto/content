@@ -1,0 +1,147 @@
+id: Continuously Process Survey Responses
+version: -1
+name: Continuously Process Survey Responses
+description: "Note: This is a beta playbook, which lets you implement and test pre-release
+               software. Since the playbook is beta, it might contain bugs. Updates to the playbook
+               during the beta phase might include non-backward compatible features. We appreciate
+               your feedback on the quality and usability of the playbook to help us identify issues,
+               fix them, and continually improve. Continuously processes new questionnaire responses as they are received."
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a210111a-231f-40cb-875c-93f089165042
+    type: start
+    task:
+      id: a210111a-231f-40cb-875c-93f089165042
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 7996bc47-84f1-4fd7-82f9-9c8011879feb
+    type: title
+    task:
+      id: 7996bc47-84f1-4fd7-82f9-9c8011879feb
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 30,\n    \"y\": 620\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: b4a33845-9093-459c-8636-25a05e49a194
+    type: condition
+    task:
+      id: b4a33845-9093-459c-8636-25a05e49a194
+      version: -1
+      name: Are there more survey responses to process?
+      description: Checks if more survey responses have been received and are waiting
+        to be processed. The way this is checked is by comparing the response tracker
+        created previously ("lastupdatedindex") with the number of answers received.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Employee Status Report.Answers
+            iscontext: true
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: lastupdatedindex
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 49d30e59-6a59-475b-8a3a-c7d3c3d12e55
+    type: playbook
+    task:
+      id: 49d30e59-6a59-475b-8a3a-c7d3c3d12e55
+      version: -1
+      name: Process Survey Response
+      playbookName: Process Survey Response
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: lastupdatedindex
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: count
+            iscontext: true
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 370,\n    \"y\": 380\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 635,\n      \"width\": 720,\n      \"x\": 30,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

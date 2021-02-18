@@ -1,0 +1,362 @@
+id: Google Safe Browsing Test
+version: -1
+name: Google Safe Browsing Test
+description: Checking Google Safe Browsing integration by running it on both malicious
+  and non-malicious URLs and checking the results
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7997981c-d609-4251-8308-de52c9118a81
+    type: start
+    task:
+      id: 7997981c-d609-4251-8308-de52c9118a81
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1b87c8d4-0eab-4cbc-8c5a-3c5d2bed0624
+    type: regular
+    task:
+      id: 1b87c8d4-0eab-4cbc-8c5a-3c5d2bed0624
+      version: -1
+      name: Check non-malicious URL
+      script: GoogleSafeBrowsing|||url
+      type: regular
+      iscommand: true
+      brand: GoogleSafeBrowsing
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${inputs.Non malicious URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 432848c0-2a54-4cdb-867e-832022b1397d
+    type: condition
+    task:
+      id: 432848c0-2a54-4cdb-867e-832022b1397d
+      version: -1
+      name: Check if found malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL.Malicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9d8990b7-bfde-435a-8a56-0afd5ddb4187
+    type: regular
+    task:
+      id: 9d8990b7-bfde-435a-8a56-0afd5ddb4187
+      version: -1
+      name: Check malicious URL
+      script: GoogleSafeBrowsing|||url
+      type: regular
+      iscommand: true
+      brand: GoogleSafeBrowsing
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        simple: ${inputs.Malicious URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5d0e629f-9f5d-4e84-8e50-90edab1463d0
+    type: condition
+    task:
+      id: 5d0e629f-9f5d-4e84-8e50-90edab1463d0
+      version: -1
+      name: Check if found malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL.Malicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 68b31715-56db-4d48-88ad-7a63308a5097
+    type: regular
+    task:
+      id: 68b31715-56db-4d48-88ad-7a63308a5097
+      version: -1
+      name: FAIL - False Positive
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: expected ${inputs.Non malicious URL} to not be malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 1de5bdba-8166-4d29-8c29-079aa2997220
+    type: regular
+    task:
+      id: 1de5bdba-8166-4d29-8c29-079aa2997220
+      version: -1
+      name: FAIL - False Positive
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      error:
+        simple: expected ${inputs.Non malicious URL} to not be malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 7d3d0531-aec5-48f2-89ae-5711ecd1b8c8
+    type: title
+    task:
+      id: 7d3d0531-aec5-48f2-89ae-5711ecd1b8c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e5c94e54-7f3c-4342-8523-a5cf8920a658
+    type: condition
+    task:
+      id: e5c94e54-7f3c-4342-8523-a5cf8920a658
+      version: -1
+      name: Check Dbot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "11"
+    separatecontext: false
+    defaultassigneecomplex:
+      complex:
+        root: DBotScore
+        filters:
+        - - operator: isEqualString
+            left:
+              value:
+                simple: DBotScore
+              iscontext: true
+            right:
+              value:
+                simple: "0"
+        accessor: Score
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 7bd14f36-0ae7-4042-84a8-907e33fb8f5b
+    type: regular
+    task:
+      id: 7bd14f36-0ae7-4042-84a8-907e33fb8f5b
+      version: -1
+      name: FAIL - Dbot score check
+      scriptName: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual: {}
+      details: {}
+      error:
+        simple: expected Dbot Score to be 0
+      expected: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 1205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1250,
+        "width": 1190,
+        "x": -115,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Malicious URL
+  value:
+    simple: http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Non malicious URL
+  value:
+    simple: http://google.com
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.0.0

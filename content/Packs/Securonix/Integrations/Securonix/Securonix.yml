@@ -1,0 +1,1027 @@
+category: Analytics & SIEM
+commonfields:
+  id: Securonix
+  version: -1
+configuration:
+- display: Host (Overrides the default hostname, https://{tenant}.net/Snypr)
+  name: host
+  required: false
+  type: 0
+- display: Tenant
+  name: tenant
+  required: true
+  type: 0
+- display: Username
+  name: username
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: opened
+  display: Incidents to fetch
+  name: incident_status
+  options:
+  - All
+  - opened
+  - closed
+  required: false
+  type: 15
+- display: Set default incident severity
+  name: default_severity
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 15
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: The maximum number of incidents to fetch each time. Maximum is 50.
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Securonix integration to manage incidents and watchlists.
+display: Securonix
+name: Securonix
+script:
+  commands:
+  - deprecated: false
+    description: Gets a list of all available workflows.
+    execution: false
+    name: securonix-list-workflows
+    outputs:
+    - contextPath: Securonix.Workflows.Workflow
+      description: Workflow name.
+      type: String
+    - contextPath: Securonix.Workflows.Type
+      description: Workflow type.
+      type: String
+    - contextPath: Securonix.Workflows.Value
+      description: Workflow value.
+      type: String
+  - arguments:
+    - default: false
+      description: Workflow name.
+      isArray: false
+      name: workflow
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the default assignee for the specified workflow.
+    execution: false
+    name: securonix-get-default-assignee-for-workflow
+    outputs:
+    - contextPath: Securonix.Workflows.Workflow
+      description: Workflow name.
+      type: String
+    - contextPath: Securonix.Workflows.Type
+      description: Workflow type.
+      type: String
+    - contextPath: Securonix.Workflows.Value
+      description: Workflow value.
+      type: String
+  - deprecated: false
+    description: Gets a list available threat actions.
+    execution: false
+    name: securonix-list-possible-threat-actions
+    outputs:
+    - contextPath: Securonix.ThreatActions
+      description: A list of threat actions.
+      type: String
+  - deprecated: false
+    description: Gets a list of all policies.
+    execution: false
+    name: securonix-list-policies
+    outputs:
+    - contextPath: Securonix.Policies.CreatedBy
+      description: Creator of the policy.
+      type: String
+    - contextPath: Securonix.Policies.CreatedOn
+      description: Policy created date.
+      type: Date
+    - contextPath: Securonix.Policies.Criticality
+      description: Policy criticality.
+      type: String
+    - contextPath: Securonix.Policies.Description
+      description: Policy description.
+      type: String
+    - contextPath: Securonix.Policies.Hql
+      description: Policy Hibernate Query Language.
+      type: String
+    - contextPath: Securonix.Policies.ID
+      description: Policy ID.
+      type: String
+    - contextPath: Securonix.Policies.Name
+      description: Policy name.
+      type: String
+  - deprecated: false
+    description: Gets a list of resource groups.
+    execution: false
+    name: securonix-list-resource-groups
+    outputs:
+    - contextPath: Securonix.ResourceGroups.Name
+      description: Resource group name.
+      type: String
+    - contextPath: Securonix.ResourceGroups.Type
+      description: Resource group type.
+      type: String
+  - deprecated: false
+    description: Gets a list of users.
+    execution: false
+    name: securonix-list-users
+    outputs:
+    - contextPath: Securonix.Users.LastName
+      description: User last name.
+      type: String
+    - contextPath: Securonix.Users.SkipEncryption
+      description: Whether user encryption was skipped.
+      type: String
+    - contextPath: Securonix.Users.Riskscore
+      description: User risk score.
+      type: String
+    - contextPath: Securonix.Users.EmployeeID
+      description: User Employee ID.
+      type: String
+    - contextPath: Securonix.Users.Masked
+      description: Whether the user is masked.
+      type: String
+    - contextPath: Securonix.Users.Division
+      description: User division.
+      type: String
+    - contextPath: Securonix.Users.Criticality
+      description: User criticality.
+      type: String
+    - contextPath: Securonix.Users.Status
+      description: User status.
+      type: String
+    - contextPath: Securonix.Users.Department
+      description: User department.
+      type: String
+    - contextPath: Securonix.Users.Title
+      description: User title.
+      type: String
+    - contextPath: Securonix.Users.FirstName
+      description: User first name.
+      type: String
+    - contextPath: Securonix.Users.Email
+      description: User email address.
+      type: String
+  - arguments:
+    - default: false
+      description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: Free-text query. For example, query=“resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation”.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of activity data for the specified resource group.
+    execution: false
+    name: securonix-list-activity-data
+    outputs:
+    - contextPath: Securonix.ActivityData.Accountname
+      description: Account name.
+      type: String
+    - contextPath: Securonix.ActivityData.Agentfilename
+      description: Agent file name.
+      type: String
+    - contextPath: Securonix.ActivityData.Categorybehavior
+      description: Category behavior.
+      type: String
+    - contextPath: Securonix.ActivityData.Categoryobject
+      description: Category object.
+      type: String
+    - contextPath: Securonix.ActivityData.Categoryseverity
+      description: Category severity.
+      type: String
+    - contextPath: Securonix.ActivityData.Collectionmethod
+      description: Collection method.
+      type: String
+    - contextPath: Securonix.ActivityData.Collectiontimestamp
+      description: Collection timestamp.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationprocessname
+      description: Destination process name.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationusername
+      description: Destination username.
+      type: String
+    - contextPath: Securonix.ActivityData.Deviceaddress
+      description: Device address.
+      type: String
+    - contextPath: Securonix.ActivityData.Deviceexternalid
+      description: Device external ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Devicehostname
+      description: Device hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.EventID
+      description: Event ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Eventoutcome
+      description: Event outcome.
+      type: String
+    - contextPath: Securonix.ActivityData.Eventtime
+      description: Time the event occurred.
+      type: String
+    - contextPath: Securonix.ActivityData.Filepath
+      description: File path.
+      type: String
+    - contextPath: Securonix.ActivityData.Ingestionnodeid
+      description: Ingestion node ID.
+      type: String
+    - contextPath: Securonix.ActivityData.JobID
+      description: Job ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Jobstarttime
+      description: Job start time.
+      type: String
+    - contextPath: Securonix.ActivityData.Message
+      description: Message.
+      type: String
+    - contextPath: Securonix.ActivityData.Publishedtime
+      description: Published time.
+      type: String
+    - contextPath: Securonix.ActivityData.Receivedtime
+      description: Received time.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcename
+      description: Resource name.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupCategory
+      description: Resource group category.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupFunctionality
+      description: Resource group functionality.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupID
+      description: Resource group ID.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupName
+      description: Resource group name.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupTypeID
+      description: Resource group resource type ID.
+      type: String
+    - contextPath: Securonix.ActivityData.ResourceGroupVendor
+      description: Resource group vendor.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourcehostname
+      description: Source hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceusername
+      description: Source username.
+      type: String
+    - contextPath: Securonix.ActivityData.TenantID
+      description: Tenant ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Tenantname
+      description: Tenant name.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline
+      description: Time when the activity occurred, in Epoch time.
+      type: String
+  - arguments:
+    - default: false
+      description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"."
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list activity data for an account name.
+    execution: false
+    name: securonix-list-violation-data
+    outputs:
+    - contextPath: Securonix.ViolationData.Accountname
+      description: Account name.
+      type: String
+    - contextPath: Securonix.ViolationData.Agentfilename
+      description: Agent file name.
+      type: String
+    - contextPath: Securonix.ViolationData.Baseeventid
+      description: Base event ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Categorybehavior
+      description: Category behavior.
+      type: String
+    - contextPath: Securonix.ViolationData.Category
+      description: Violation category.
+      type: String
+    - contextPath: Securonix.ViolationData.Categoryobject
+      description: Category object.
+      type: String
+    - contextPath: Securonix.ViolationData.Categoryseverity
+      description: Category severity.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationaddress
+      description: Destination address.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationntdomain
+      description: Destination nt domain.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationuserid
+      description: Destination user ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Gestinationusername
+      description: Destination username.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceaddress
+      description: Device address.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceeventcategory
+      description: Device event category.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceexternalid
+      description: Device external ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Devicehostname
+      description: Device hostname.
+      type: String
+    - contextPath: Securonix.ViolationData.EventID
+      description: Event ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Eventoutcome
+      description: Event outcome.
+      type: String
+    - contextPath: Securonix.ViolationData.Eventtime
+      description: Time the event occurred.
+      type: String
+    - contextPath: Securonix.ViolationData.Generationtime
+      description: Time that the violation was generated in Securonix.
+      type: String
+    - contextPath: Securonix.ViolationData.Invalid
+      description: Whether the violation is valid.
+      type: String
+    - contextPath: Securonix.ViolationData.JobID
+      description: Job ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Jobstarttime
+      description: Job start time.
+      type: String
+    - contextPath: Securonix.ViolationData.Policyname
+      description: Policy name.
+      type: String
+    - contextPath: Securonix.ViolationData.Resourcename
+      description: Resource name.
+      type: String
+    - contextPath: Securonix.ViolationData.ResourceGroupID
+      description: Resource group ID.
+      type: String
+    - contextPath: Securonix.ViolationData.ResourceGroupName
+      description: Resource group name.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskscore
+      description: Risk score.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskthreatname
+      description: Risk threat name.
+      type: String
+    - contextPath: Securonix.ViolationData.Sessionid
+      description: Session ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourcehostname
+      description: Source hostname.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourcentdomain
+      description: Source nt domain.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceuserid
+      description: Source user ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceusername
+      description: Source username.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceuserprivileges
+      description: Source user privileges.
+      type: String
+    - contextPath: Securonix.ViolationData.TenantID
+      description: Tenant ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Tenantname
+      description: Tenant name.
+      type: String
+    - contextPath: Securonix.ViolationData.Timeline
+      description: Time when the activity occurred, in Epoch time.
+      type: String
+    - contextPath: Securonix.ViolationData.Createdate
+      description: Create date.
+      type: String
+    - contextPath: Securonix.ViolationData.Criticality
+      description: Violation criticality.
+      type: String
+    - contextPath: Securonix.ViolationData.DataSourceID
+      description: Data source ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Department
+      description: Department affected by the violation.
+      type: String
+    - contextPath: Securonix.ViolationData.EmployeeID
+      description: Employee ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Encrypted
+      description: Whether the violation is encrypted.
+      type: String
+    - contextPath: Securonix.ViolationData.Firstname
+      description: First name of the user that violated the policy.
+      type: String
+    - contextPath: Securonix.ViolationData.Fullname
+      description: Full name of the user that violated the policy.
+      type: String
+    - contextPath: Securonix.ViolationData.ID
+      description: ID of the user that violated the policy.
+      type: String
+    - contextPath: Securonix.ViolationData.LanID
+      description: LAN ID associated with the policy violation.
+      type: String
+    - contextPath: Securonix.ViolationData.Lastname
+      description: Last name of the user that violated the policy.
+      type: String
+    - contextPath: Securonix.ViolationData.Lastsynctime
+      description: Last sync time, in Epoch time.
+      type: String
+    - contextPath: Securonix.ViolationData.Masked
+      description: Whether the violation is masked.
+      type: String
+    - contextPath: Securonix.ViolationData.Mergeuniquecode
+      description: Merge unique code.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskscore
+      description: Risk score.
+      type: String
+    - contextPath: Securonix.ViolationData.Skipencryption
+      description: Skip encryption.
+      type: String
+    - contextPath: Securonix.ViolationData.Status
+      description: Status of the policy violation.
+      type: String
+    - contextPath: Securonix.ViolationData.Timezoneoffset
+      description: Timezone offset.
+      type: String
+    - contextPath: Securonix.ViolationData.Title
+      description: Title.
+      type: String
+    - contextPath: Securonix.ViolationData.Uniquecode
+      description: Unique code.
+      type: String
+    - contextPath: Securonix.ViolationData.UserID
+      description: Last sync time, in Epoch time.
+      type: String
+    - contextPath: Securonix.ViolationData.Workemail
+      description: Work email address of the user that violated the policy.
+      type: String
+    - contextPath: Securonix.ViolationData.Violator
+      description: Violator.
+      type: String
+  - arguments:
+    - default: false
+      description: ' Start time range for which to return incidents (<number> <time unit>, e.g., 1 hour, 30 minutes)'
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy HH:mm:ss) Default is current time.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The incident type. Can be "updated", "opened", or "closed". Supports multiple selections.
+      isArray: false
+      name: incident_types
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of incidents to retrieve.
+      isArray: false
+      name: max
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of incidents.
+    execution: false
+    name: securonix-list-incidents
+    outputs:
+    - contextPath: Securonix.Incidents.ViolatorID
+      description: Incident Violator ID.
+      type: String
+    - contextPath: Securonix.Incidents.Entity
+      description: Incident entity.
+      type: String
+    - contextPath: Securonix.Incidents.Riskscore
+      description: Incident risk score.
+      type: Number
+    - contextPath: Securonix.Incidents.Priority
+      description: Incident priority.
+      type: String
+    - contextPath: Securonix.Incidents.Reason
+      description: Reason for the incident. Usually includes policy name and/or possible threat name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: Incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.Watchlisted
+      description: Whether the incident is in a watchlist.
+      type: Boolean
+    - contextPath: Securonix.Incidents.IncidentType
+      description: Incident type.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.LastUpdateDate
+      description: Last update date of the incident in Epoch time.
+      type: Number
+    - contextPath: Securonix.Incidents.Url
+      description: URL that links to the incident on Securonix.
+      type: String
+    - contextPath: Securonix.Incidents.ViolatorText
+      description: Incident violator text.
+      type: String
+    - contextPath: Securonix.Incidents.AssignedUser
+      description: User assigned to the incident.
+      type: String
+    - contextPath: Securonix.Incidents.IsWhitelisted
+      description: Whether the incident is whitelisted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets details of the specified incident.
+    execution: false
+    name: securonix-get-incident
+    outputs:
+    - contextPath: Securonix.Incidents.ViolatorID
+      description: Incident violator ID.
+      type: String
+    - contextPath: Securonix.Incidents.Entity
+      description: Incident entity.
+      type: String
+    - contextPath: Securonix.Incidents.Riskscore
+      description: Incident risk score.
+      type: Number
+    - contextPath: Securonix.Incidents.Priority
+      description: Incident priority.
+      type: String
+    - contextPath: Securonix.Incidents.Reason
+      description: Reason for the incident. Usually includes policy name and/or possible threat name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: Incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.Watchlisted
+      description: Whether the incident is in a watchlist.
+      type: Boolean
+    - contextPath: Securonix.Incidents.IncidentType
+      description: Incident type.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.LastUpdateDate
+      description: The time when the incident was last updated, in Epoch time.
+      type: Number
+    - contextPath: Securonix.Incidents.Url
+      description: URL that links to the incident on Securonix.
+      type: String
+    - contextPath: Securonix.Incidents.ViolatorText
+      description: Incident violator text.
+      type: String
+    - contextPath: Securonix.Incidents.AssignedUser
+      description: User assigned to the incident.
+      type: String
+    - contextPath: Securonix.Incidents.IsWhitelisted
+      description: Whether the incident is whitelisted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the status of the specified incident.
+    execution: false
+    name: securonix-get-incident-status
+    outputs:
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentID
+      description: Incident ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the workflow of the specified incident.
+    execution: false
+    name: securonix-get-incident-workflow
+    outputs:
+    - contextPath: Securonix.Incidents.Workflow
+      description: Incident workflow.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentID
+      description: Incident ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of available actions for the specified incident.
+    execution: false
+    name: securonix-get-incident-available-actions
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Action to perform on the incident. You can see them using securonix-get-incident-available-actions. e.g: "CLAIM", "ASSIGN TO SECOPS", "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".'
+      isArray: false
+      name: action
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: 'The parameters, if needed, to perform the action. For example, for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
+      isArray: false
+      name: action_parameters
+      required: false
+      secret: false
+    deprecated: false
+    description: Performs an action on the specified incident.
+    execution: false
+    name: securonix-perform-action-on-incident
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to add to the incident.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a comment to the specified incident.
+    execution: true
+    name: securonix-add-comment-to-incident
+  - deprecated: false
+    description: Gets a list of watchlists.
+    execution: false
+    name: securonix-list-watchlists
+    outputs:
+    - contextPath: Securonix.WatchlistsNames
+      description: Watchlist names.
+      type: String
+  - arguments:
+    - default: false
+      description: Watchlist name.
+      isArray: false
+      name: watchlist_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets information for the specified watchlist.
+    execution: false
+    name: securonix-get-watchlist
+    outputs:
+    - contextPath: Securonix.Watchlists.TenantID
+      description: Watchlist tenant ID.
+      type: String
+    - contextPath: Securonix.Watchlists.Tenantname
+      description: Watchlist tenant name.
+      type: String
+    - contextPath: Securonix.Watchlists.Type
+      description: Watchlist type.
+      type: String
+    - contextPath: Securonix.Watchlists.Watchlistname
+      description: Watchlist name.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.ExpiryDate
+      description: Expiration date of the entity in the watchlist, in Epoch time.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Workemail
+      description: Work email address of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Fullname
+      description: Full name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Reason
+      description: Reason that the entity is in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.LanID
+      description: Lan ID of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Lastname
+      description: Last name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.EntityName
+      description: Entity name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Title
+      description: Title of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Firstname
+      description: First name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.EmployeeID
+      description: Employee ID of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Masked
+      description: Whether the entity in the watchlist is masked.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Division
+      description: Division of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Departmant
+      description: Department of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Status
+      description: Status of the entity in the watchlist.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the watchlist.
+      isArray: false
+      name: watchlist_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a watchlist in Securonix.
+    execution: false
+    name: securonix-create-watchlist
+  - arguments:
+    - default: false
+      description: 'The name of the entity to check. For example: 1002.'
+      isArray: false
+      name: entity_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the watchlist in which to check the entity.
+      isArray: false
+      name: watchlist_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if the specified entity is in a watchlist.
+    execution: false
+    name: securonix-check-entity-in-watchlist
+    outputs:
+    - contextPath: Securonix.EntityInWatchlist.Watchlistnames
+      description: The names of the watchlists in which the entity appears.
+      type: String
+    - contextPath: Securonix.EntityInWatchlist.EntityID
+      description: The entity ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the watchlist to which to add the entity.
+      isArray: false
+      name: watchlist_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      isArray: false
+      name: entity_type
+      predefined:
+      - Users
+      - Activityaccount
+      - RGActivityaccount
+      - Resources
+      - Activityip
+      required: true
+      secret: false
+    - default: false
+      description: 'The name of the entity to add to the watchlist. For example: 1022.'
+      isArray: false
+      name: entity_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The number of days after which the entity will be removed from the watchlist. The default value is "30".
+      isArray: false
+      name: expiry_days
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an entity to a watchlist.
+    execution: false
+    name: securonix-add-entity-to-watchlist
+  - arguments:
+    - default: false
+      description: 'The violation name or policy name. For example: "Uploads to personal Websites".'
+      isArray: false
+      name: violation_name
+      required: true
+      secret: false
+    - default: false
+      description: 'The resource group name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount", "Resources", or "Activityip".
+      isArray: false
+      name: entity_type
+      predefined:
+      - Users
+      - Activityaccount
+      - RGActivityaccount
+      - Resources
+      - Activityip
+      required: true
+      secret: false
+    - default: false
+      description: The entity name associated with the violation. Can be "LanID" or "Workemail". For more information, see the Securonix documentation.
+      isArray: false
+      name: entity_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The action name. Can be "Mark as concern and create incident", "Non-Concern", or "Mark in progress (still investigating)".
+      isArray: false
+      name: action_name
+      predefined:
+      - Mark as concern and create incident
+      - Non-Concern
+      - Mark in progress (still investigating)
+      required: true
+      secret: false
+    - default: false
+      description: 'The resource name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      isArray: false
+      name: resource_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The incident severity (criticality) for the new incident. Can be "Low", "High", or "Critical".
+      isArray: false
+      name: criticality
+      predefined:
+      - Low
+      - High
+      - Critical
+      required: false
+      secret: false
+    - default: false
+      description: A comment for the new incident.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The workflow name. This argument is optional, but required when the action_name argument is set to "Mark as concern and create incident". Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".
+      isArray: false
+      name: workflow
+      predefined:
+      - SOCTeamReview
+      - ActivityOutlierWorkflow
+      - AccessCertificationWorkflow
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an incident. For more information about the required arguments, see the Securonix documentation.
+    execution: false
+    name: securonix-create-incident
+    outputs:
+    - contextPath: Securonix.Incidents.ViolatorID
+      description: The ID of the incident violator.
+      type: String
+    - contextPath: Securonix.Incidents.Entity
+      description: The incident entity.
+      type: String
+    - contextPath: Securonix.Incidents.Riskscore
+      description: The incident risk score.
+      type: Number
+    - contextPath: Securonix.Incidents.Priority
+      description: The incident priority.
+      type: String
+    - contextPath: Securonix.Incidents.Reason
+      description: The reason that the incident was created. Usually includes the policy name and/or possible threat name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: The incident status.
+      type: String
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: The incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.Watchlisted
+      description: Whether the incident is in a watchlist.
+      type: Boolean
+    - contextPath: Securonix.Incidents.IncidentType
+      description: The incident type.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentID
+      description: The incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.LastUpdateDate
+      description: The time when the incident was last updated, in Epoch time.
+      type: Number
+    - contextPath: Securonix.Incidents.Url
+      description: The URL that links to the incident on Securonix.
+      type: String
+    - contextPath: Securonix.Incidents.ViolatorText
+      description: Text of the incident violator.
+      type: String
+    - contextPath: Securonix.Incidents.AssignedUser
+      description: The user assigned to the incident.
+      type: String
+    - contextPath: Securonix.Incidents.IsWhitelisted
+      description: Whether the incident is whitelisted.
+      type: Boolean
+  dockerimage: demisto/python3:3.8.5.10845
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No test - no instance
+fromversion: 5.0.0

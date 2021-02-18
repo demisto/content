@@ -1,0 +1,132 @@
+commonfields:
+  id: TriagePhishing
+  version: -1
+name: TriagePhishing
+script: >-
+  var results = []; // Collect all the results
+
+  var malicious = false;
+
+  var body = incidents[0].details;
+
+  var fromRE = /<b>From:.*href="mailto:(.*?)"/ig;
+
+  var from = fromRE.exec(body);
+
+  var toRE = /<b>To:.*href="mailto:(.*?)"/ig;
+
+  var to = toRE.exec(body);
+
+  var sentRE = /<b>Sent:<\/b> (.*?)<br>/ig;
+
+  var sent = sentRE.exec(body);
+
+  var subjectRE = /<b>Subject:<\/b> (.*?)<o:p>/ig;
+
+  var subject = subjectRE.exec(body);
+
+  var fromStr = '';
+
+  var toStr = '';
+
+  var subjectStr = '';
+
+  var sentStr = '';
+
+  if (from && from.length > 1) {
+    fromStr = from[1];
+  }
+
+  if (to && to.length > 1) {
+    toStr = to[1];
+  }
+
+  if (sent && sent.length > 1) {
+    sentStr = sent[1];
+  }
+
+  if (subject && subject.length > 1) {
+    subjectStr = subject[1];
+  }
+
+  results.push({Contents: {From: fromStr, To: toStr, Sent: sentStr, Subject: subjectStr}, ContentsFormat: formats.table, Type: entryTypes.note}); // Add the raw email details
+
+  // Check the URLs via reputation services
+
+  var urlPattern = /href=".*"/ig;
+
+  var urls = body.match(urlPattern);
+
+  var cleanUrls = [];
+
+  if (urls) {
+    for (var i=0; i<urls.length; i++) {
+      var u = urls[i].substring(6, urls[i].length - 1);
+      if (u.indexOf('mail') >= 0) continue;
+      cleanUrls.push(u);
+      var rep = executeCommand('url', {url: u});
+      if (rep && Array.isArray(rep)) {
+        for (var r = 0; r < rep.length; r++) {
+          if (positiveUrl(rep[r])) {
+            results.push(shortUrl(rep[r]));
+            malicious = true;
+          }
+        }
+      }
+    }
+  }
+
+  if (!malicious) {
+    results.push({Contents: 'Only clean URLs found: ' + cleanUrls.join(', '), Type: entryTypes.note, ContentsFormat: formats.text});
+  }
+
+  // Check the attachments via reputation services
+
+  var entries = executeCommand('getEntries', {});
+
+  for (var i=0; i<entries.length; i++) {
+    if (entries[i].File) {
+      var rep = executeCommand('file', {file: entries[i].FileMetadata.MD5});
+      if (rep && Array.isArray(rep)) {
+        for (var r = 0; r < rep.length; r++) {
+          if (positiveFile(rep[r])) {
+            results.push(shortFile(rep[r]));
+            malicious = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Check the sender via PIPL search
+
+  if (fromStr) {
+    var rep = executeCommand('pipl-search', {email: fromStr})[0];
+    rep.ContentsFormat = formats.table;
+    results.push(rep);
+  }
+
+  if (malicious) {
+    results.push('Suspicious results found');
+    results.push('yes');
+  } else {
+    results.push('No suspicious results found');
+    results.push('no');
+  }
+
+  return results;
+type: javascript
+tags:
+- phishing
+comment: Deprecated. Process a suspected email and check URLs, attachments and sender via reputation services
+system: true
+deprecated: true
+scripttarget: 0
+dependson:
+  must: []
+  should:
+  - url
+  - pipl-search
+  - file
+timeout: 0s
+fromversion: 5.0.0

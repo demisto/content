@@ -1,0 +1,918 @@
+id: SafeBreach - Create Incidents per Insight and Associate Indicators
+version: -1
+name: SafeBreach - Create Incidents per Insight and Associate Indicators
+description: This is a sub-playbook that creates incidents per SafeBreach insight,
+  enriched with all the related indicators and additional SafeBreach insight contextual
+  information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral
+  Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03c0010c-5dea-4f32-881f-f659de6faecc
+    type: start
+    task:
+      id: 03c0010c-5dea-4f32-881f-f659de6faecc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d531fce6-97b9-453f-8186-b4fb03027a4d
+    type: title
+    task:
+      id: d531fce6-97b9-453f-8186-b4fb03027a4d
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ae6fc506-2860-4842-81fb-2d66ba22100e
+    type: regular
+    task:
+      id: ae6fc506-2860-4842-81fb-2d66ba22100e
+      version: -1
+      name: Create SafeBreach Insight incidents
+      description: Create a new incident of type SafeBreach Insight for each insight
+        related to the indicators.
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      axoniuslink: {}
+      ballmergrid: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotydepartment: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      clienthello: {}
+      cloudtype: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      cortexreceivetime: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      dest: {}
+      desthostname: {}
+      destinationip: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details:
+        complex:
+          root: JoinedIndicators
+          accessor: value
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicehostname: {}
+      devicename: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      domain: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      entryIDs: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltratedfiles: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      healthinsurancebreached: {}
+      helloworldalertid: {}
+      helloworldalertstatus: {}
+      helloworldalerttype: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      ja3: {}
+      ja3s: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      manageremail: {}
+      measurestomitigate: {}
+      medicalinformationbreached: {}
+      name:
+        complex:
+          root: JoinedIndicators
+          accessor: Name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'SafeBreach Insight - '
+              suffix: {}
+      ngfwaction: {}
+      ngfwcategoryofapp: {}
+      ngfwcategoryofthreatid: {}
+      ngfwdestinationport: {}
+      ngfwdestinationzone: {}
+      ngfwdomain: {}
+      ngfwhostname: {}
+      ngfwhttpmethod: {}
+      ngfwinboundinterface: {}
+      ngfwnameofthreatid: {}
+      ngfwoutboundinterface: {}
+      ngfwpcap: {}
+      ngfwprotocol: {}
+      ngfwriskofapp: {}
+      ngfwrule: {}
+      ngfwsessionid: {}
+      ngfwsourceport: {}
+      ngfwsourcezone: {}
+      ngfwsrcuser: {}
+      ngfwsubcategoryofapp: {}
+      ngfwsubtype: {}
+      ngfwtechnologyofapp: {}
+      ngfwthreatid: {}
+      ngfwtrafficdirection: {}
+      ngfwvsys: {}
+      niststage: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      o365endpoints: {}
+      o365instance: {}
+      o365servicesareas: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      otherpiidatabreached: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      penteraoperationdetails: {}
+      penteraoperationtype: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      piidatatype: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      quarantined: {}
+      rating: {}
+      rawparticipants: {}
+      redlockpolicy: {}
+      region: {}
+      regionid: {}
+      remediable: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      safebreachaffectedtargets: {}
+      safebreachaffectedtargetscount: {}
+      safebreachattackcount: {}
+      safebreachattackids: {}
+      safebreachattacks: {}
+      safebreachinsightcategory:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Category
+      safebreachinsightid:
+        complex:
+          root: JoinedIndicators
+          accessor: Id
+      safebreachinsightname: {}
+      safebreachinsightriskimpact: {}
+      safebreachlatestsimulation: {}
+      safebreachremediationaction: {}
+      safebreachremediationdata: {}
+      safebreachremediationdatacount: {}
+      safebreachremediationstatus:
+        simple: New
+      safebreachresultslink: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      safebreachsimulationid: {}
+      safebreachsimulationnumber: {}
+      safebreachthreatgroups: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      score: {}
+      sectorofaffectedparty: {}
+      severity:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Severity
+      signature: {}
+      signindatetime: {}
+      sixgillalertid: {}
+      sixgillcontent: {}
+      sixgillthreatlevel: {}
+      sixgillthreattype: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      sslversion: {}
+      statewherethebreachtookplace: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      threatvaultlink: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type:
+        simple: SafeBreach Insight
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      url: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdractivityfirstseen: {}
+      xdractivitylastseen: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrcategory: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrdevicehostname: {}
+      xdrdeviceip: {}
+      xdrexternaldestinations: {}
+      xdrfileartifacts: {}
+      xdrfirstdetected: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrid: {}
+      xdrincidentid: {}
+      xdripranges: {}
+      xdrips: {}
+      xdrirquerybydestinations: {}
+      xdrlastdetected: {}
+      xdrlink: {}
+      xdrlowseverityalertcount: {}
+      xdrmac: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdros: {}
+      xdrostype: {}
+      xdrresolvecomment: {}
+      xdrseverity: {}
+      xdrstatus: {}
+      xdrtype: {}
+      xdrurl: {}
+      xdrusercount: {}
+      xdruserdisplayname: {}
+      xdrusername: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: f7f44e73-f5dd-4ad8-834f-d57f1395e672
+    type: regular
+    task:
+      id: f7f44e73-f5dd-4ad8-834f-d57f1395e672
+      version: -1
+      name: Get created incident object
+      description: Get SafeBreach Insight incident by id.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query: {}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 8cefa09b-f706-4f27-8011-5b515010de71
+    type: regular
+    task:
+      id: 8cefa09b-f706-4f27-8011-5b515010de71
+      version: -1
+      name: Join indicators and insights by insight ids
+      description: Sets "JoinedIndicators" with combined data from insights and indicators.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: JoinedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: inputs.indicators
+          transformers:
+          - operator: JoinListsOfDicts
+            args:
+              key:
+                value:
+                  simple: CustomFields.safebreachinsightids
+              right:
+                value:
+                  simple: SafeBreach.Insight
+                iscontext: true
+              rightkey:
+                value:
+                  simple: Id
+          - operator: ListGroupBy
+            args:
+              keys:
+                value:
+                  simple: Id,Name,DataType
+              outputkey:
+                value:
+                  simple: value
+              separator: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 9ab9e486-a0d3-44e5-8344-06f0593b09e2
+    type: regular
+    task:
+      id: 9ab9e486-a0d3-44e5-8344-06f0593b09e2
+      version: -1
+      name: Merge indicators and insights data
+      description: Sets "IndicatorsWithIncidents" with combined data from indicator
+        and insights.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsWithIncidents
+      stringify: {}
+      value:
+        complex:
+          root: inputs.indicators
+          transformers:
+          - operator: JoinListsOfDicts
+            args:
+              key:
+                value:
+                  simple: CustomFields.safebreachinsightids
+              right:
+                value:
+                  simple: foundIncidents
+                iscontext: true
+              rightkey:
+                value:
+                  simple: CustomFields.safebreachinsightid
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 2d2ca0e1-ef0e-4157-8c63-f96bbb7cb6a2
+    type: regular
+    task:
+      id: 2d2ca0e1-ef0e-4157-8c63-f96bbb7cb6a2
+      version: -1
+      name: Associate indicators to incident
+      description: Associate an indicator to a given incident. All indicators joined
+        and assigned to the details field of incidents.
+      script: Builtin|||associateIndicatorToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id: {}
+      incidentId:
+        complex:
+          root: IndicatorsWithIncidents
+          accessor: id
+      value:
+        complex:
+          root: IndicatorsWithIncidents
+          accessor: value
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: f5cc0906-9817-429b-86d1-71a63acbc44e
+    type: regular
+    task:
+      id: f5cc0906-9817-429b-86d1-71a63acbc44e
+      version: -1
+      name: Get insight by ids
+      description: Gets SafeBreach Insights for specified insight ids.
+      script: '|||safebreach-get-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      insightIds:
+        complex:
+          root: inputs.insightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 3b5adb4d-02b9-4813-884c-e08bcdfad3ca
+    type: regular
+    task:
+      id: 3b5adb4d-02b9-4813-884c-e08bcdfad3ca
+      version: -1
+      name: Wait until the incidents are created
+      description: Sleep for 5 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1705,
+        "width": 380,
+        "x": 490,
+        "y": -440
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: safebreachisbehavioral:T
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: insightIds
+  value: {}
+  required: true
+  description: List of Insight ids to create incidents for.
+  playbookInputQuery:
+- key: indicators
+  value: {}
+  required: true
+  description: List of indicators that to be assigned to created incidents
+  playbookInputQuery:
+outputs:
+- contextPath: incident
+  description: Incidents created from SafeBreach Insights
+  type: Array
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

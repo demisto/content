@@ -1,0 +1,32 @@
+{
+ "id": "indicator_riskiqassetuuid",
+ "version": -1,
+ "modified": "2020-07-09T12:59:21.965583866+05:30",
+ "name": "RiskIQAsset UUID",
+ "ownerOnly": false,
+ "placeholder": "Unique identifier of the asset on RiskIQ Digital Footprint.",
+ "description": "Unique identifier of the asset on RiskIQ Digital Footprint.",
+ "cliName": "riskiqassetuuid",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "RiskIQAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

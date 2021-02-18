@@ -1,0 +1,268 @@
+id: Phishing test - attachment
+version: -1
+fromversion: 5.0.0
+name: Phishing test - attachment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 481af9ab-18cf-4136-8166-e5e8944ee635
+    type: start
+    task:
+      id: 481af9ab-18cf-4136-8166-e5e8944ee635
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4c8d0c27-dbda-4d46-8303-be6b77739b74
+    type: title
+    task:
+      id: 4c8d0c27-dbda-4d46-8303-be6b77739b74
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 38497387-45a4-48e2-816c-c7515cec13f0
+    type: regular
+    task:
+      id: 38497387-45a4-48e2-816c-c7515cec13f0
+      version: -1
+      name: PhishingIncident - Attachment
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      malicious_location:
+        simple: attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: a98152ae-e294-43c0-8c8d-0fcd5d8d061d
+    type: regular
+    task:
+      id: a98152ae-e294-43c0-8c8d-0fcd5d8d061d
+      version: -1
+      name: Close Manual review
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: a0d311dd-acf3-4bfb-856f-5474624593c8
+    type: regular
+    task:
+      id: a0d311dd-acf3-4bfb-856f-5474624593c8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 815c4ae8-af63-42cd-8dc7-caf0bd4bb8e9
+    type: regular
+    task:
+      id: 815c4ae8-af63-42cd-8dc7-caf0bd4bb8e9
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "20"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/attachment_malicious_url.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 85612cdb-60c2-450f-8be1-f48fa2abc94c
+    type: playbook
+    task:
+      id: 85612cdb-60c2-450f-8be1-f48fa2abc94c
+      version: -1
+      name: Phishing Investigation - Generic
+      playbookName: Phishing Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d7d26d34-f14a-4cde-863b-a616b309e06e
+    type: regular
+    task:
+      id: d7d26d34-f14a-4cde-863b-a616b309e06e
+      version: -1
+      name: minemeld-add-to-miner
+      description: Add indicator to a miner.
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      comment:
+        simple: Malicious website for test
+      indicator:
+        simple: http://www.desktop-style.de
+      miner:
+        simple: Malicious
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1100,
+        "width": 810,
+        "x": 50,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,454 @@
+category: Analytics & SIEM
+commonfields:
+  id: ArcSight ESM v2
+  version: -1
+configuration:
+- display: Server full URL (e.g., https://192.168.0.1:8443)
+  name: server
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch events as incidents via Query Viewer ID. Mandatory fields for query are "Start Time" and "Event ID".
+  name: viewerId
+  required: false
+  type: 0
+- display: Fetch cases as incidents via Query Viewer ID. Mandatory fields for query are "Create Time" and "ID".
+  name: casesQueryViewerId
+  required: false
+  type: 0
+- defaultvalue: '2000'
+  display: The maximum number of unique IDs expected to be fetched.
+  name: max_unique
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: The maximum number of incidents to fetch each time. Default is 50, maximum is 300.
+  name: fetch_chunk_size
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Use REST Endpoints
+  name: use_rest
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: ArcSight ESM SIEM by Micro Focus (Formerly HPE Software).
+display: ArcSight ESM v2
+name: ArcSight ESM v2
+script:
+  commands:
+  - deprecated: false
+    description: (Deprecated) Retrieves all case resource IDs.
+    execution: false
+    name: as-get-all-cases
+    outputs:
+    - contextPath: ArcSightESM.AllCaseIDs
+      description: All case resource IDs
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Resource ID of the case to get information for
+      isArray: false
+      name: resourceId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If "true", then will return case and base events of that case
+      isArray: false
+      name: withBaseEvents
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a single case.
+    execution: false
+    name: as-get-case
+    outputs:
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: Case ID
+      type: string
+    - contextPath: ArcSightESM.Cases.name
+      description: Case name
+      type: string
+    - contextPath: ArcSightESM.Cases.eventIDs
+      description: Related base event IDs
+      type: Unknown
+    - contextPath: ArcSightESM.Cases.createdTimestamp
+      description: Time the case was created (in milliseconds)
+      type: number
+    - contextPath: ArcSightESM.Cases.createdTime
+      description: Created time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: string
+    - contextPath: ArcSightESM.Cases.modifiedTimestamp
+      description: Modified timestamp (in milliseconds)
+      type: number
+    - contextPath: ArcSightESM.Cases.modifiedTime
+      description: Modified time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.action
+      description: Action (e.g., BLOCK_OR_SHUTDOWN)
+      type: string
+    - contextPath: ArcSightESM.Cases.associatedImpact
+      description: Associated impact (e.g., AVAILABILITY)
+      type: string
+    - contextPath: ArcSightESM.Cases.attackAgent
+      description: Attack agent (e.g., INSIDER)
+      type: string
+    - contextPath: ArcSightESM.Cases.attackMechanism
+      description: Attack mechanism (e.g., PHYSICAL)
+      type: string
+    - contextPath: ArcSightESM.Cases.consequenceSeverity
+      description: Consequence severity (e.g., NONE)
+      type: string
+    - contextPath: ArcSightESM.Cases.detectionTime
+      description: Detection time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.displayID
+      description: Display ID
+      type: number
+    - contextPath: ArcSightESM.Cases.estimatedStartTime
+      description: Estimated start time (dd-mm-yyyyTHH:MM:SS.SSS timezone)
+      type: date
+    - contextPath: ArcSightESM.Cases.eventIDs
+      description: Base event IDs
+      type: unknown
+    - contextPath: ArcSightESM.Cases.frequency
+      description: Frequency (e.g., NEVER_OR_ONCE)
+      type: string
+    - contextPath: ArcSightESM.Cases.history
+      description: History (e.g., KNOWN_OCCURENCE)
+      type: Unknown
+    - contextPath: ArcSightESM.Cases.numberOfOccurences
+      description: Number Of Occurences
+      type: number
+    - contextPath: ArcSightESM.Cases.resistance
+      description: Resistance (e.g., HIGH)
+      type: string
+    - contextPath: ArcSightESM.Cases.securityClassification
+      description: Security Classification (e.g., UNCLASSIFIED)
+      type: string
+    - contextPath: ArcSightESM.Cases.sensitivity
+      description: Sensitivity (e.g., UNCLASSIFIED)
+      type: string
+    - contextPath: ArcSightESM.Cases.stage
+      description: Stage (e.g., QUEUED,INITIAL,FOLLOW_UP,FINAL,CLOSED)
+      type: string
+    - contextPath: ArcSightESM.Cases.ticketType
+      description: Ticket type (e.g., INTERNAL,CLIENT,INCIDENT)
+      type: string
+    - contextPath: ArcSightESM.Cases.vulnerability
+      description: Vulnerability (e.g., DESIGN)
+      type: string
+  - arguments:
+    - default: true
+      description: Resource ID of a query viewer
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If "true", will return only the columns of the query. If "false", will return the column headers and all query results.
+      isArray: false
+      name: onlyColumns
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves query viewer results (query viewer must be configured to be refreshed every minute, see documentation)
+    execution: false
+    name: as-get-matrix-data
+  - arguments:
+    - default: false
+      description: Resource ID of the Active List
+      isArray: false
+      name: resourceId
+      required: true
+      secret: false
+    - default: false
+      description: 'Entries are in JSON format. JSON must be an array of entries. Each entry must contain the same columns as they appear in the Active List, e.g., [{ "UserName": "john", "IP":"19.12.13.11"},{ "UserName": "bob", "IP":"22.22.22.22"}]'
+      isArray: true
+      name: entries
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds new entries to the Active List.
+    execution: true
+    name: as-add-entries
+  - arguments:
+    - default: false
+      description: Resource ID of a specific Active List
+      isArray: false
+      name: resourceId
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes all entries in the Active List.
+    execution: true
+    name: as-clear-entries
+  - arguments:
+    - default: false
+      description: Resource ID of a specific Active List
+      isArray: false
+      name: resourceId
+      required: true
+      secret: false
+    - default: false
+      description: Filters the entries, e.g., entryFilter="moo:moo1"
+      isArray: false
+      name: entryFilter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all entries in the Active List
+    execution: false
+    name: as-get-entries
+    outputs:
+    - contextPath: ArcSightESM.ActiveList
+      description: Active List is a map of active list resource id => active list entries
+      type: Unknown
+    - contextPath: ArcSightESM.ActiveList.ListID
+      description: The ActiveList ID
+      type: list
+    - contextPath: ArcSightESM.ActiveList.Entries
+      description: Active List is a map of active list resource id => active list
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'ID or multiple ids separated by comma of security events. Event ID is ArcSight is always a number. Example: 13906590'
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    - default: false
+      description: Query last events. Format follows 'number date_range_unit', e.g., 2 hours, 4 minutes, 6 month, 1 day
+      isArray: false
+      name: lastDateRange
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the security event details
+    execution: false
+    name: as-get-security-events
+    outputs:
+    - contextPath: ArcSightESM.SecurityEvents
+      description: List of security events
+      type: Unknown
+    - contextPath: ArcSightESM.SecurityEvents.name
+      description: Event name
+      type: string
+    - contextPath: ArcSightESM.SecurityEvents.eventId
+      description: Event ID
+      type: string
+    - contextPath: ArcSightESM.SecurityEvents.type
+      description: Event type (e.g., CORRELATION)
+      type: string
+    - contextPath: ArcSightESM.SecurityEvents.baseEventIds
+      description: Base event IDs
+      type: string
+    - contextPath: ArcSightESM.SecurityEvents.source.address
+      description: Event source address
+      type: Unknown
+    - contextPath: ArcSightESM.SecurityEvents.destination.address
+      description: Event destination address
+      type: Unknown
+    - contextPath: ArcSightESM.SecurityEvents.startTime
+      description: Start time in milliseconds
+      type: date
+  - arguments:
+    - default: false
+      description: Case ID, e.g., 7e6LEbF8BABCfA-dlp1rl1A==
+      isArray: false
+      name: caseId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If "true", then will return case and correlated events
+      isArray: false
+      name: withCorrelatedEvents
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all case event IDs.
+    execution: false
+    name: as-get-case-event-ids
+    outputs:
+    - contextPath: ArcSightESM.CaseEvents
+      description: Map of caseId => related event ids
+      type: Unknown
+    - contextPath: ArcSightESM.CaseEvents.LatestResult
+      description: Event IDs of the last execution of this command
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Case resource ID to update. The case must be unlocked, and the user should have edit permissions.
+      isArray: false
+      name: caseId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Stage the case is in
+      isArray: false
+      name: stage
+      predefined:
+      - CLOSED
+      - QUEUED
+      - FINAL
+      - FOLLOW_UP
+      - INITIAL
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Ticket consequence Severity
+      isArray: false
+      name: severity
+      predefined:
+      - NONE
+      - INSIGNIFICANT
+      - MARGINAL
+      - CRITICAL
+      - CATASTROPHIC
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a specific case.
+    execution: true
+    name: as-update-case
+    outputs:
+    - contextPath: ArcSightESM.Cases
+      description: List of cases
+      type: unknown
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: Case resource ID
+      type: string
+    - contextPath: ArcSightESM.Cases.stage
+      description: 'Case stage '
+      type: string
+    - contextPath: ArcSightESM.Cases.consequenceSeverity
+      description: Case severity
+      type: string
+  - deprecated: false
+    description: Returns all the query viewer IDs.
+    execution: false
+    name: as-get-all-query-viewers
+    outputs:
+    - contextPath: ArcSightESM.AllQueryViewers
+      description: List of all query viewer IDs
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Resource ID of the case
+      isArray: false
+      name: caseId
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a case
+    execution: true
+    name: as-case-delete
+    outputs:
+    - contextPath: ArcSightESM.Cases.resourceid
+      description: Resource ID of case
+      type: string
+    - contextPath: ArcSightESM.Cases.Deleted
+      description: Boolean flag. "True" if deleted.
+      type: boolean
+  - arguments:
+    - default: false
+      description: Resource ID of the query viewer
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If "true", will return only the columns of the query. If "false", will return the column headers and all query results.
+      isArray: false
+      name: onlyColumns
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves query viewer results (query viewer must be configured to be refreshed every minute, see documentation)
+    execution: false
+    name: as-get-query-viewer-results
+    outputs:
+    - contextPath: ArcSight.QueryViewerResults
+      description: Query viewer results
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Last run to start fetching incidents from
+      isArray: false
+      name: last_run
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches incidents
+    execution: false
+    name: as-fetch-incidents
+  - arguments:
+    - default: false
+      description: Resource ID of the Active List
+      isArray: false
+      name: resourceId
+      required: true
+      secret: false
+    - default: false
+      description: 'Entries are in JSON format. JSON must be an array of entries. Each entry must contain the same columns as they appear in the Active List, e.g., [{ "UserName": "john", "IP":"19.12.13.11"},{ "UserName": "bob", "IP":"22.22.22.22"}]'
+      isArray: false
+      name: entries
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete entries from the Active List.
+    execution: false
+    name: as-delete-entries
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python2
+  type: python
+tests:
+- ArcSight ESM v2 Test
+fromversion: 5.0.0

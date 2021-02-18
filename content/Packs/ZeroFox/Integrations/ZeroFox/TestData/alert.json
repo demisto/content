@@ -1,0 +1,101 @@
+{
+  "alert_type": "search query",
+  "logs": [
+    {
+      "action": "close",
+      "timestamp": "2019-08-05T12:58:16+00:00",
+      "actor": "ZeroFox Platform Specialist",
+      "subject": ""
+    },
+    {
+      "action": "assign",
+      "timestamp": "2019-08-05T11:46:07+00:00",
+      "actor": "ZeroFox Platform Specialist",
+      "subject": ""
+    },
+    {
+      "action": "assign",
+      "timestamp": "2019-08-05T11:44:44+00:00",
+      "actor": "ZeroFox Platform Specialist",
+      "subject": "testname"
+    },
+    {
+      "action": "open",
+      "timestamp": "2019-06-14T12:26:48+00:00",
+      "actor": "",
+      "subject": ""
+    }
+  ],
+  "offending_content_url": "https://www.youtube.com/watch?v=enKR49CiaJs",
+  "asset_term": {
+    "id": 180210,
+    "name": "NFFC",
+    "deleted": false
+  },
+  "assignee": "",
+  "entity": {
+    "id": 33422,
+    "name": "Matthew Covington",
+    "image": "https://cdn.zerofox.com/media/entityimages/6d9hm7nzffd05wwqw4tir8bnlrbm7u2xzp5lmul50j30usv82bdpxqgimqvhanrh.jpg",
+    "labels": [
+      {
+        "id": 6812,
+        "name": "Executive"
+      }
+    ]
+  },
+  "entity_term": {
+    "id": 180210,
+    "name": "NFFC",
+    "deleted": false
+  },
+  "content_created_at": "2019-01-12T10:35:07+00:00",
+  "id": 54148284,
+  "protected_account": null,
+  "severity": 5,
+  "perpetrator": {
+    "username": "Lee G TV",
+    "parent_post_account_number": null,
+    "post_number": "enKR49CiaJs",
+    "timestamp": "2019-01-12T10:35:07+00:00",
+    "image": "https://yt3.ggpht.com/-YL8vhwjAfss/AAAAAAAAAAI/AAAAAAAAAAA/jvwuybtZZWg/s800-c-k-no-mo-rj-c0xffffff/photo.jpg",
+    "post_type": "post",
+    "id": 4362446624,
+    "display_name": "Lee G TV",
+    "network": "youtube",
+    "url": "https://www.youtube.com/watch?v=enKR49CiaJs",
+    "account_number": "UCXsoi0OsULGZorPOax4jqUQ",
+    "parent_post_number": null,
+    "type": "post",
+    "destination_account_number": "UCXsoi0OsULGZorPOax4jqUQ"
+  },
+  "rule_group_id": null,
+  "asset": {
+    "id": 33422,
+    "name": "Matthew Covington",
+    "image": "https://cdn.zerofox.com/media/entityimages/6d9hm7nzffd05wwqw4tir8bnlrbm7u2xzp5lmul50j30usv82bdpxqgimqvhanrh.jpg",
+    "labels": [
+      {
+        "id": 6812,
+        "name": "Executive"
+      }
+    ]
+  },
+  "metadata": "{\"occurrences\":[{\"origin\":null,\"term\":\"Karanka\"}],\"content_raw_data\":{\"etag\":\"\\\"Bdx4f4ps3xCOOo1WZ91nTLkRZ_c/ampF1nl9CmEJj7a5Df651shiWNA\\\"\",\"id\":{\"kind\":\"youtube#video\",\"videoId\":\"enKR49CiaJs\"},\"kind\":\"youtube#searchResult\",\"snippet\":{\"channelId\":\"UCXsoi0OsULGZorPOax4jqUQ\",\"channelTitle\":\"Lee G TV\",\"description\":\"Local news report on Karanka leaving Nottingham Forest.\",\"liveBroadcastContent\":\"none\",\"publishedAt\":\"2019-01-12T10:35:07.000Z\",\"thumbnails\":{\"default\":{\"height\":90,\"url\":\"https://i.ytimg.com/vi/enKR49CiaJs/default.jpg\",\"width\":120},\"high\":{\"height\":360,\"url\":\"https://i.ytimg.com/vi/enKR49CiaJs/hqdefault.jpg\",\"width\":480},\"medium\":{\"height\":180,\"url\":\"https://i.ytimg.com/vi/enKR49CiaJs/mqdefault.jpg\",\"width\":320}},\"title\":\"Fans On Aitor Karanka Leaving NFFC 11-01-2019\"},\"parent\":null},\"content_type\":\"post\",\"content_url\":\"https://www.youtube.com/watch?v=enKR49CiaJs\",\"offending_content\":[{\"origin\":null,\"term\":\"Karanka\",\"text\":\"Local news report on Karanka leaving Nottingham Forest.\"}]}",
+  "status": "Closed",
+  "timestamp": "2019-06-14T12:26:48+00:00",
+  "rule_name": "NFFC",
+  "last_modified": "2019-08-05T12:58:16Z",
+  "protected_locations": null,
+  "darkweb_term": null,
+  "reviewed": false,
+  "escalated": false,
+  "network": "youtube",
+  "protected_social_object": "NFFC",
+  "notes": "I am adding a note.",
+  "reviews": [],
+  "content_actions": [],
+  "rule_id": 32712,
+  "entity_account": null,
+  "tags": []
+}

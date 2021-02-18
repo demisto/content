@@ -1,0 +1,3548 @@
+id: Logz.io Indicator Hunting
+version: -1
+name: Logz.io Indicator Hunting
+description: |-
+  This playbook queries Logz.io in order to hunt indicators such as
+  File Hashes
+  IP Addresses
+  Domains \ URLS
+  And outputs the related users, IP addresses, host names for the indicators searched.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4dbd8b35-00b4-42eb-8b71-43c7b3ca437d
+    type: start
+    task:
+      id: 4dbd8b35-00b4-42eb-8b71-43c7b3ca437d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9dd2e0ca-2b1f-4f73-8bfb-019540e5b2f9
+    type: title
+    task:
+      id: 9dd2e0ca-2b1f-4f73-8bfb-019540e5b2f9
+      version: -1
+      name: Hash Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: cece138b-9b8e-4227-8f30-df121b32b2a5
+    type: title
+    task:
+      id: cece138b-9b8e-4227-8f30-df121b32b2a5
+      version: -1
+      name: IP Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 32b954e1-13a3-4ad0-850c-0da6d85df323
+    type: title
+    task:
+      id: 32b954e1-13a3-4ad0-850c-0da6d85df323
+      version: -1
+      name: Domain/Url Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3230,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 9627e4b8-a1aa-4fdb-83bb-1db4c9f44f53
+    type: condition
+    task:
+      id: 9627e4b8-a1aa-4fdb-83bb-1db4c9f44f53
+      version: -1
+      name: Is there an IP to search?
+      description: Is there an IP to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddress
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioIPField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 9f9af355-f3a0-4f8c-8d79-dd8a2f7b79f5
+    type: condition
+    task:
+      id: 9f9af355-f3a0-4f8c-8d79-dd8a2f7b79f5
+      version: -1
+      name: Is there a hash to search?
+      description: Is there a hash to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "26"
+      - "27"
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioMD5Field
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA1Field
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA256Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: bbad04da-063d-4a1d-8d09-676a20f37281
+    type: condition
+    task:
+      id: bbad04da-063d-4a1d-8d09-676a20f37281
+      version: -1
+      name: Is there a Domain/Url to search?
+      description: Is there a Domain/Url to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomain
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioURLDomainField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3230,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: fc1e2b09-676d-4f69-8f1a-9bdc733bf126
+    type: condition
+    task:
+      id: fc1e2b09-676d-4f69-8f1a-9bdc733bf126
+      version: -1
+      name: Was there a custom domain/url field?
+      description: Was there a custom domain/url field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "89"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.LogzioURLDomainField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3230,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 8f4bea61-e256-439a-81f8-67701aaeb7fb
+    type: regular
+    task:
+      id: 8f4bea61-e256-439a-81f8-67701aaeb7fb
+      version: -1
+      name: Set MD5 to array
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.MD5
+      stringify: {}
+      value:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2920,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 7fda3a80-637f-4b6c-8ca2-34a2eb638841
+    type: condition
+    task:
+      id: 7fda3a80-637f-4b6c-8ca2-34a2eb638841
+      version: -1
+      name: Was there a custom MD5 field?
+      description: Was there a custom MD5 field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioMD5Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2700,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 4eae29dd-d836-4dc7-8f81-422a8432c01b
+    type: condition
+    task:
+      id: 4eae29dd-d836-4dc7-8f81-422a8432c01b
+      version: -1
+      name: Is there an MD5 to search?
+      description: Is there an MD5 to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioMD5Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: c3559eab-0438-4e18-8fa9-779588ef1b2a
+    type: title
+    task:
+      id: c3559eab-0438-4e18-8fa9-779588ef1b2a
+      version: -1
+      name: MD5 Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: bb0c3fab-62b6-430e-8b43-28e8270d4274
+    type: title
+    task:
+      id: bb0c3fab-62b6-430e-8b43-28e8270d4274
+      version: -1
+      name: SHA1 Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1400,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: d20d0880-d8e8-4e29-8d43-35e4cd916015
+    type: condition
+    task:
+      id: d20d0880-d8e8-4e29-8d43-35e4cd916015
+      version: -1
+      name: Is there a SHA1 hash to search
+      description: Is there a SHA1 hash to search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA1Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: d5d18ad0-fb24-436d-86fc-c3249a4c20db
+    type: condition
+    task:
+      id: d5d18ad0-fb24-436d-86fc-c3249a4c20db
+      version: -1
+      name: Was there a custom SHA1 field?
+      description: Was there a custom SHA1 field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA1Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1400,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 1d9bf6ee-8637-4da9-8c31-8b368ff5b2f9
+    type: title
+    task:
+      id: 1d9bf6ee-8637-4da9-8c31-8b368ff5b2f9
+      version: -1
+      name: SHA256 Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: b258cbdd-18bf-4c85-8b2f-867615f386f5
+    type: condition
+    task:
+      id: b258cbdd-18bf-4c85-8b2f-867615f386f5
+      version: -1
+      name: Is there a SHA256 hash to search
+      description: Is there a SHA256 hash to search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA256Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: a9bc0bb6-e630-405d-85f7-027809082033
+    type: condition
+    task:
+      id: a9bc0bb6-e630-405d-85f7-027809082033
+      version: -1
+      name: Was there a custom SHA256 field?
+      description: Was there a custom SHA256 field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.LogzioSHA256Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 2b4d9f60-e913-47bf-816e-177b48d6d69e
+    type: title
+    task:
+      id: 2b4d9f60-e913-47bf-816e-177b48d6d69e
+      version: -1
+      name: Done Searching
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "107"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: e6829137-485e-4951-8814-46190c20214a
+    type: condition
+    task:
+      id: e6829137-485e-4951-8814-46190c20214a
+      version: -1
+      name: Was there a custom IP field?
+      description: Was there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.LogzioIPField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 7bd43df1-303c-4038-804c-30fb8745130c
+    type: condition
+    task:
+      id: 7bd43df1-303c-4038-804c-30fb8745130c
+      version: -1
+      name: Is Logzio enabled?
+      description: Is Logzio enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "2"
+      - "5"
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Logz.io
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: f0b396fd-a9c0-4290-82bf-bd1f524e564d
+    type: regular
+    task:
+      id: f0b396fd-a9c0-4290-82bf-bd1f524e564d
+      version: -1
+      name: Logz search with custom fields
+      description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
+        account.
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: OneURLQuery
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: e3503061-fab6-451e-8e41-80c653d3e2b5
+    type: regular
+    task:
+      id: e3503061-fab6-451e-8e41-80c653d3e2b5
+      version: -1
+      name: Logz search with custom fields
+      description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
+        account.
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: OneQuery
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: e2b67808-e044-4bc6-8133-84d451d94860
+    type: regular
+    task:
+      id: e2b67808-e044-4bc6-8133-84d451d94860
+      version: -1
+      name: Logzio search without custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: File
+          accessor: MD5
+      size: {}
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2920,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: b8ff1b3f-b9f7-4155-8c98-475ba1e65120
+    type: regular
+    task:
+      id: b8ff1b3f-b9f7-4155-8c98-475ba1e65120
+      version: -1
+      name: Logzio search without custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: inputs.SHA1
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: d1ce4a13-3488-44df-8bf4-8ed8e1b78979
+    type: regular
+    task:
+      id: d1ce4a13-3488-44df-8bf4-8ed8e1b78979
+      version: -1
+      name: Logzio search without custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: File
+          accessor: SHA256
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: e382f871-1abf-4fa3-828a-4da9202bb11b
+    type: regular
+    task:
+      id: e382f871-1abf-4fa3-828a-4da9202bb11b
+      version: -1
+      name: Logz search without custom fields
+      description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
+        account.
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: DomainURL
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 9256cde1-f471-4775-8ffd-c718094493b9
+    type: regular
+    task:
+      id: 9256cde1-f471-4775-8ffd-c718094493b9
+      version: -1
+      name: Logzio search with custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: OneSHA1Query
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: ebd42ab1-7247-4ef0-81dd-fe7c6c3e753c
+    type: regular
+    task:
+      id: ebd42ab1-7247-4ef0-81dd-fe7c6c3e753c
+      version: -1
+      name: Logzio search with custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: One256Query
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: 565003a5-51bb-41f2-82f8-4eb17df147bc
+    type: regular
+    task:
+      id: 565003a5-51bb-41f2-82f8-4eb17df147bc
+      version: -1
+      name: Logz search without custom fields
+      description: Runs an Apache Lucene query to fetch logs from your Logz.io Operations
+        account.
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: inputs.IPAddress
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "81":
+    id: "81"
+    taskid: 878c22a3-d488-41a9-8e6c-21dabbf71120
+    type: title
+    task:
+      id: 878c22a3-d488-41a9-8e6c-21dabbf71120
+      version: -1
+      name: Logzio query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "158"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "82":
+    id: "82"
+    taskid: 61cd2c45-6364-48ab-8e2b-da192f11368b
+    type: title
+    task:
+      id: 61cd2c45-6364-48ab-8e2b-da192f11368b
+      version: -1
+      name: Logzio-free text query
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2920,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: c37d16e4-6bc0-4734-8cb9-ca39a1ab0ee5
+    type: title
+    task:
+      id: c37d16e4-6bc0-4734-8cb9-ca39a1ab0ee5
+      version: -1
+      name: Logzio query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "155"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 6ce32430-50d3-4556-8708-c4963b06e9a2
+    type: title
+    task:
+      id: 6ce32430-50d3-4556-8708-c4963b06e9a2
+      version: -1
+      name: Logzio-free text query
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 5c6a20ad-ca0e-463d-8200-857e40a1011b
+    type: title
+    task:
+      id: 5c6a20ad-ca0e-463d-8200-857e40a1011b
+      version: -1
+      name: Logzio query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "152"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: f731e7d9-2415-4353-82ff-d44e6730cbab
+    type: title
+    task:
+      id: f731e7d9-2415-4353-82ff-d44e6730cbab
+      version: -1
+      name: Logzio-free text query
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: 1ba0773f-0554-4e7e-8023-8b08d2d69766
+    type: title
+    task:
+      id: 1ba0773f-0554-4e7e-8023-8b08d2d69766
+      version: -1
+      name: Logz query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "146"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: b2c8f075-d2cc-4eaa-8738-53ed4c66a398
+    type: title
+    task:
+      id: b2c8f075-d2cc-4eaa-8738-53ed4c66a398
+      version: -1
+      name: Logz-free text query
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "114"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: aa6e81ec-43ce-4033-8723-909729cb391e
+    type: title
+    task:
+      id: aa6e81ec-43ce-4033-8723-909729cb391e
+      version: -1
+      name: Logz-free text query
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "115"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: 47d2dcdc-b42c-42ec-8375-44a153580ef5
+    type: title
+    task:
+      id: 47d2dcdc-b42c-42ec-8375-44a153580ef5
+      version: -1
+      name: Logz-query with custom fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "149"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "107":
+    id: "107"
+    taskid: 74923177-77d6-4f90-88dc-de52653cbc40
+    type: condition
+    task:
+      id: 74923177-77d6-4f90-88dc-de52653cbc40
+      version: -1
+      name: Have results been detected?
+      description: Have results been detected?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "127"
+      "yes":
+      - "123"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "108":
+    id: "108"
+    taskid: 42c82ecf-f590-4e42-86ed-8bec3715c89a
+    type: regular
+    task:
+      id: 42c82ecf-f590-4e42-86ed-8bec3715c89a
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the IP addresses were returned in the search results.
+        If the IP addresses were returned, they are set in Context. Otherwise, no
+        value is set.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Logzio.Result
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.IPFieldsToReturn
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2820,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "109":
+    id: "109"
+    taskid: ddcb9725-58a6-4ab5-82be-6ae0ea5023a3
+    type: regular
+    task:
+      id: ddcb9725-58a6-4ab5-82be-6ae0ea5023a3
+      version: -1
+      name: Set detected user names
+      description: Checks if the user names were returned in the search results. If
+        the user names were returned, they are set in Context. Otherwise, no value
+        is set.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Logzio.Result
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.UserFieldsToReturn
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "110":
+    id: "110"
+    taskid: 7b8e1e6c-b247-474e-81de-d73bedc2c43d
+    type: regular
+    task:
+      id: 7b8e1e6c-b247-474e-81de-d73bedc2c43d
+      version: -1
+      name: Set detected host names
+      description: Checks if host names were returned in the search results. If host
+        names were returned, they are set in Context. Otherwise, no value is set.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "138"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: Logzio.Result
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.HostFieldsToReturn
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "112":
+    id: "112"
+    taskid: 9979fc68-4310-440d-8db0-bffe6895b4e4
+    type: regular
+    task:
+      id: 9979fc68-4310-440d-8db0-bffe6895b4e4
+      version: -1
+      name: Set a SHA1 hash to array
+      description: Sets a SHA1 hash value into the context with the given context
+        key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA1
+      stringify: {}
+      value:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "113":
+    id: "113"
+    taskid: 03f0fef4-4e3a-4df2-841d-7b87d0ce7575
+    type: regular
+    task:
+      id: 03f0fef4-4e3a-4df2-841d-7b87d0ce7575
+      version: -1
+      name: Set a SHA256 hash to array
+      description: Sets a SHA256 hash value into the context with the given context
+        key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA256
+      stringify: {}
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "114":
+    id: "114"
+    taskid: 5723e193-2eb8-4f82-849f-51ccc49d3ee1
+    type: regular
+    task:
+      id: 5723e193-2eb8-4f82-849f-51ccc49d3ee1
+      version: -1
+      name: Set an IP address to array
+      description: Sets a value for an IP address into the context with the given
+        context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IP
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "115":
+    id: "115"
+    taskid: d969dec2-158b-4b1b-87fd-619ba8c44286
+    type: regular
+    task:
+      id: d969dec2-158b-4b1b-87fd-619ba8c44286
+      version: -1
+      name: Set DomainUrl to array
+      description: Sets a Domain or URL value into the context with the given context
+        key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DomainURL
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "116":
+    id: "116"
+    taskid: 94701cbb-3c79-4bd6-8b8e-c4f476d08018
+    type: title
+    task:
+      id: 94701cbb-3c79-4bd6-8b8e-c4f476d08018
+      version: -1
+      name: Sort internal and external IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "117"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3020,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "117":
+    id: "117"
+    taskid: be98d47e-2128-4371-8208-b4517df84f9b
+    type: condition
+    task:
+      id: be98d47e-2128-4371-8208-b4517df84f9b
+      version: -1
+      name: Are there detected IP addresses?
+      description: Are there detected IP addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "121"
+      "yes":
+      - "118"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.DetectedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3020,
+          "y": 3930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "118":
+    id: "118"
+    taskid: d4bd5565-5f32-4387-824f-7d37855a761b
+    type: regular
+    task:
+      id: d4bd5565-5f32-4387-824f-7d37855a761b
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: If the IP address is in one of the ranges provided, a yes value
+        is returned. Otherwise, a no is returned.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      ip:
+        simple: ${Logzio.DetectedIPs}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 4165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "119":
+    id: "119"
+    taskid: d98f8783-1e78-491d-8a06-3f4b4e358124
+    type: regular
+    task:
+      id: d98f8783-1e78-491d-8a06-3f4b4e358124
+      version: -1
+      name: Set detected IP addresses as internal
+      description: IP addresses that were found to be internal, are written to the
+        Logzio.DetectedInternalIPs context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedInternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "120":
+    id: "120"
+    taskid: 921a6e8c-0f1d-4b81-861b-7ce0205ef2bf
+    type: regular
+    task:
+      id: 921a6e8c-0f1d-4b81-861b-7ce0205ef2bf
+      version: -1
+      name: Set detected IP addresses as external
+      description: IP addresses that were found to be external, are written to the
+        Logzio.DetectedExternalIPs context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedExternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3290,
+          "y": 4610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "121":
+    id: "121"
+    taskid: 81b349f7-49e5-4ace-8904-191a038cff4d
+    type: title
+    task:
+      id: 81b349f7-49e5-4ace-8904-191a038cff4d
+      version: -1
+      name: Done sorting IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "127"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3030,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "122":
+    id: "122"
+    taskid: 09b3a9ea-e5f1-4cdc-8afa-0bb4e1f3d3e6
+    type: regular
+    task:
+      id: 09b3a9ea-e5f1-4cdc-8afa-0bb4e1f3d3e6
+      version: -1
+      name: Logzio search with custom fields
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      from_time:
+        simple: ${inputs.earliest_time}
+      query:
+        complex:
+          root: OneMD5Query
+      size:
+        complex:
+          root: inputs.event_limit
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "123":
+    id: "123"
+    taskid: eae4ef10-2763-4d01-8a7e-f8dad5db561d
+    type: title
+    task:
+      id: eae4ef10-2763-4d01-8a7e-f8dad5db561d
+      version: -1
+      name: Setting results to outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "135"
+      - "136"
+      - "137"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "124":
+    id: "124"
+    taskid: 4a6b6b0b-6b72-4be8-84ce-e5dd210bc72e
+    type: condition
+    task:
+      id: 4a6b6b0b-6b72-4be8-84ce-e5dd210bc72e
+      version: -1
+      name: Are there investigation fields for IP's?
+      description: Are there investigation fields for IP's?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "129"
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPFieldsToReturn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "125":
+    id: "125"
+    taskid: 7f69be75-ff8a-4e9b-845d-de675c6c42c6
+    type: condition
+    task:
+      id: 7f69be75-ff8a-4e9b-845d-de675c6c42c6
+      version: -1
+      name: Are there investigation fields for host names?
+      description: Are there investigation fields for host names?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "133"
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.HostFieldsToReturn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "126":
+    id: "126"
+    taskid: 2ea765af-4e5b-4201-821b-5c4a279bf200
+    type: condition
+    task:
+      id: 2ea765af-4e5b-4201-821b-5c4a279bf200
+      version: -1
+      name: Are there investigation fields for user names?
+      description: Are there investigation fields for user names?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "131"
+      "yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.UserFieldsToReturn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "127":
+    id: "127"
+    taskid: 4173da23-64e4-40d5-8f82-41b40b6562fc
+    type: title
+    task:
+      id: 4173da23-64e4-40d5-8f82-41b40b6562fc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 5010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "129":
+    id: "129"
+    taskid: 9d168d0e-9ca5-4da6-88d2-645d8e99bf1b
+    type: regular
+    task:
+      id: 9d168d0e-9ca5-4da6-88d2-645d8e99bf1b
+      version: -1
+      name: Manually list detected IP addresses
+      description: Provide a list of comma separated IP addresses in the input screen.
+        This task is relevant if you have not entered any values in the IP investigation
+        fields.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3220,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "130":
+    id: "130"
+    taskid: 26ea8dad-9fe0-466b-8b6c-1b202c1ba235
+    type: regular
+    task:
+      id: 26ea8dad-9fe0-466b-8b6c-1b202c1ba235
+      version: -1
+      name: Set manual IP addresses
+      description: Sets to context the IP addresses provided by the previous task.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      contextKey:
+        simple: Logzio.DetectedIPs
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3230,
+          "y": 3630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "131":
+    id: "131"
+    taskid: 9d479d9b-8344-4503-8df2-2be1faa6be49
+    type: regular
+    task:
+      id: 9d479d9b-8344-4503-8df2-2be1faa6be49
+      version: -1
+      name: Manually list detected user names
+      description: Provide a list of comma separated user names in the input screen.
+        This task is relevant if you have not entered any values in the user name
+        investigation fields.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "132"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "132":
+    id: "132"
+    taskid: f8b91c1a-efdf-4f85-8e4a-8efeb9d3d71a
+    type: regular
+    task:
+      id: f8b91c1a-efdf-4f85-8e4a-8efeb9d3d71a
+      version: -1
+      name: Set manual user names
+      description: Sets to context the user names provided by the previous task.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      contextKey:
+        simple: Logzio.DetectedUsers
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "133":
+    id: "133"
+    taskid: cf2b7d98-132d-4903-84bb-3b16f48bdfc8
+    type: regular
+    task:
+      id: cf2b7d98-132d-4903-84bb-3b16f48bdfc8
+      version: -1
+      name: Manually list detected host names
+      description: Provide a list of comma separated host names in the input screen.
+        This task is relevant if you have not entered any values in the host names
+        investigation fields.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "134"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "134":
+    id: "134"
+    taskid: 7a62cb3d-b925-4ba4-830b-bd968f8f78fe
+    type: regular
+    task:
+      id: 7a62cb3d-b925-4ba4-830b-bd968f8f78fe
+      version: -1
+      name: Set manual host names
+      description: Sets to context the host names provided by the previous task.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "138"
+    scriptarguments:
+      contextKey:
+        simple: Logzio.DetectedHosts
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "135":
+    id: "135"
+    taskid: 617d2894-f629-4061-8b4c-ec31440f0c7d
+    type: title
+    task:
+      id: 617d2894-f629-4061-8b4c-ec31440f0c7d
+      version: -1
+      name: Setting user names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "126"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "136":
+    id: "136"
+    taskid: 64012f63-5c91-4b23-86f8-3cae9ffc9d17
+    type: title
+    task:
+      id: 64012f63-5c91-4b23-86f8-3cae9ffc9d17
+      version: -1
+      name: Setting host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "137":
+    id: "137"
+    taskid: c297e2f5-150f-42c6-8d07-16c920c7b4f7
+    type: title
+    task:
+      id: c297e2f5-150f-42c6-8d07-16c920c7b4f7
+      version: -1
+      name: Setting IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "138":
+    id: "138"
+    taskid: c02f7075-e5da-4829-89e9-487a957ef08c
+    type: title
+    task:
+      id: c02f7075-e5da-4829-89e9-487a957ef08c
+      version: -1
+      name: Sort internal and external host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "139"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "139":
+    id: "139"
+    taskid: 6e010302-a6c0-46fa-8d48-fc80a9bbc1b2
+    type: condition
+    task:
+      id: 6e010302-a6c0-46fa-8d48-fc80a9bbc1b2
+      version: -1
+      name: Are there detected host names?
+      description: Are there detected host names?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "141"
+      "yes":
+      - "144"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.DetectedHosts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 3930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "140":
+    id: "140"
+    taskid: 643059f5-73b3-4634-8087-40566e7d516a
+    type: regular
+    task:
+      id: 643059f5-73b3-4634-8087-40566e7d516a
+      version: -1
+      name: Determine whether the host names are internal or external
+      description: Returns yes if the host name provided matches the organizations
+        internal nameing convenstion.
+      scriptName: IsInternalHostName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "142"
+    scriptarguments:
+      domainName:
+        simple: ${inputs.InternalDomainName}
+      hostName:
+        complex:
+          root: Logzio
+          accessor: DetectedHosts
+      internalRegex:
+        simple: ${inputs.InternalHostRegex}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "141":
+    id: "141"
+    taskid: 1bdf7891-8309-491d-833f-08801905ef93
+    type: title
+    task:
+      id: 1bdf7891-8309-491d-833f-08801905ef93
+      version: -1
+      name: Done sorting host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "127"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "142":
+    id: "142"
+    taskid: 3fd20b2c-3c80-4cd1-8729-d0b8015184f3
+    type: regular
+    task:
+      id: 3fd20b2c-3c80-4cd1-8729-d0b8015184f3
+      version: -1
+      name: Set detected host names as internal
+      description: Host names that were found to be internal, are written to the Logzio.DetectedInternalHosts
+        context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedInternalHosts
+      stringify: {}
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 4515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "143":
+    id: "143"
+    taskid: d32b3a01-d5e4-4c23-8454-02f0360b1a9e
+    type: regular
+    task:
+      id: d32b3a01-d5e4-4c23-8454-02f0360b1a9e
+      version: -1
+      name: Set detected host names as external
+      description: Host names that were found to be external, are written to the Logzio.DetectedExternalHosts
+        context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "141"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedExternalHosts
+      stringify: {}
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 4660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "144":
+    id: "144"
+    taskid: 0206eabc-9c6e-416c-8a7a-c8ff85c46d0d
+    type: condition
+    task:
+      id: 0206eabc-9c6e-416c-8a7a-c8ff85c46d0d
+      version: -1
+      name: Has the domain name been provided?
+      description: Has the domain name been provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "145"
+      "yes":
+      - "140"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InternalDomainName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 4165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "145":
+    id: "145"
+    taskid: 328d7bc5-7cd5-4307-8a30-c7457a65d772
+    type: regular
+    task:
+      id: 328d7bc5-7cd5-4307-8a30-c7457a65d772
+      version: -1
+      name: Set detected host names as internal
+      description: Hostnames that were detected as internal according to the inputs
+        are set to the Logzio.DetectedInternalHosts key. In case the domain name was
+        not provided in the inputs all host names will be set as internal.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "141"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Logzio.DetectedInternalHosts
+      stringify: {}
+      value:
+        simple: ${Logzio.DetectedHosts}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 4455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "146":
+    id: "146"
+    taskid: c4e029fe-e249-4ffa-866d-751cfe53d5af
+    type: regular
+    task:
+      id: c4e029fe-e249-4ffa-866d-751cfe53d5af
+      version: -1
+      name: Build Quoted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QuotedIPs
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "147":
+    id: "147"
+    taskid: cdb73b47-8ac8-4785-8f3f-6ad2cdb8bf9d
+    type: regular
+    task:
+      id: cdb73b47-8ac8-4785-8f3f-6ad2cdb8bf9d
+      version: -1
+      name: Build SubQueries
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "148"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SubQueries
+      stringify: {}
+      value:
+        complex:
+          root: inputs.LogzioIPField
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ': '
+              list2:
+                value:
+                  simple: ${QuotedIPs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "148":
+    id: "148"
+    taskid: 3d510995-e9ea-490d-84f4-d7764c7535af
+    type: regular
+    task:
+      id: 3d510995-e9ea-490d-84f4-d7764c7535af
+      version: -1
+      name: Build query
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: OneQuery
+      stringify: {}
+      value:
+        complex:
+          root: SubQueries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "149":
+    id: "149"
+    taskid: 96b9e841-d9f3-4a57-8722-bb98648bf475
+    type: regular
+    task:
+      id: 96b9e841-d9f3-4a57-8722-bb98648bf475
+      version: -1
+      name: Build Quoted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "150"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QuotedURLs
+      stringify: {}
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "150":
+    id: "150"
+    taskid: a86a5055-4e04-4b26-87cc-841c7c000382
+    type: regular
+    task:
+      id: a86a5055-4e04-4b26-87cc-841c7c000382
+      version: -1
+      name: Build SubQueries
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "151"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SubURLQueries
+      stringify: {}
+      value:
+        complex:
+          root: inputs.LogzioURLDomainField
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ': '
+              list2:
+                value:
+                  simple: ${QuotedURLs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "151":
+    id: "151"
+    taskid: 21e4f9b1-14b5-464d-8dec-e8a9b7eb5f47
+    type: regular
+    task:
+      id: 21e4f9b1-14b5-464d-8dec-e8a9b7eb5f47
+      version: -1
+      name: Build query
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: OneURLQuery
+      stringify: {}
+      value:
+        complex:
+          root: SubURLQueries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "152":
+    id: "152"
+    taskid: 692403b4-d1cf-45f2-89ca-90a4bfd5ae9b
+    type: regular
+    task:
+      id: 692403b4-d1cf-45f2-89ca-90a4bfd5ae9b
+      version: -1
+      name: Build Quoted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "153"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Quoted256
+      stringify: {}
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "153":
+    id: "153"
+    taskid: 1c93d592-2ef1-4464-8167-d543113113dc
+    type: regular
+    task:
+      id: 1c93d592-2ef1-4464-8167-d543113113dc
+      version: -1
+      name: Build SubQueries
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Sub256Queries
+      stringify: {}
+      value:
+        complex:
+          root: inputs.LogzioSHA256Field
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ': '
+              list2:
+                value:
+                  simple: ${Quoted256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "154":
+    id: "154"
+    taskid: 20896fe3-fe02-4665-8eff-b9e78a817116
+    type: regular
+    task:
+      id: 20896fe3-fe02-4665-8eff-b9e78a817116
+      version: -1
+      name: Build query
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: One256Query
+      stringify: {}
+      value:
+        complex:
+          root: Sub256Queries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "155":
+    id: "155"
+    taskid: 300c1a1a-a20b-4742-897e-fdae81771283
+    type: regular
+    task:
+      id: 300c1a1a-a20b-4742-897e-fdae81771283
+      version: -1
+      name: Build Quoted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QuotedSHA1
+      stringify: {}
+      value:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "156":
+    id: "156"
+    taskid: 4730af2a-3980-4a9d-8a23-69a31aa73daa
+    type: regular
+    task:
+      id: 4730af2a-3980-4a9d-8a23-69a31aa73daa
+      version: -1
+      name: Build SubQueries
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "157"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SubSHA1Queries
+      stringify: {}
+      value:
+        complex:
+          root: inputs.LogzioSHA1Field
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ': '
+              list2:
+                value:
+                  simple: ${QuotedSHA1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "157":
+    id: "157"
+    taskid: dc2fc837-f335-41bd-82cc-bb001347c52b
+    type: regular
+    task:
+      id: dc2fc837-f335-41bd-82cc-bb001347c52b
+      version: -1
+      name: Build query
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: OneSHA1Query
+      stringify: {}
+      value:
+        complex:
+          root: SubSHA1Queries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1200,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "158":
+    id: "158"
+    taskid: 2509c71c-2c33-4cea-8643-8561c6030f56
+    type: regular
+    task:
+      id: 2509c71c-2c33-4cea-8643-8561c6030f56
+      version: -1
+      name: Build Quoted
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "159"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QuotedMD5
+      stringify: {}
+      value:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "159":
+    id: "159"
+    taskid: 502788e0-6cf6-4d3a-841e-1881fec24034
+    type: regular
+    task:
+      id: 502788e0-6cf6-4d3a-841e-1881fec24034
+      version: -1
+      name: Build SubQueries
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "160"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SubMD5Queries
+      stringify: {}
+      value:
+        complex:
+          root: inputs.LogzioMD5Field
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: ': '
+              list2:
+                value:
+                  simple: ${QuotedMD5}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "160":
+    id: "160"
+    taskid: 6461a52c-4dca-4c59-85f3-68b1c125b31d
+    type: regular
+    task:
+      id: 6461a52c-4dca-4c59-85f3-68b1c125b31d
+      version: -1
+      name: Build query
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: OneMD5Query
+      stringify: {}
+      value:
+        complex:
+          root: SubMD5Queries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5355,
+        "width": 6760,
+        "x": -2920,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: MD5 hash file or an array of hashes for which to search
+- key: LogzioMD5Field
+  value: {}
+  required: false
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the MD5 values\nMultiple fields is available by using comma-separated "
+- key: SHA1
+  value: {}
+  required: false
+  description: SHA1 hash file or an array of hashes for which to search
+- key: LogzioSHA1Field
+  value: {}
+  required: false
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the SHA1 values\nMultiple fields is available by using comma-separated "
+- key: SHA256
+  value: {}
+  required: false
+  description: SHA256 hash file or an array of hashes for which to search
+- key: LogzioSHA256Field
+  value: {}
+  required: false
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the SHA256 values\nMultiple fields is available by using comma-separated "
+- key: IPAddress
+  value: {}
+  required: false
+  description: |
+    IP Address or an array of IPs for which to search
+- key: LogzioIPField
+  value: {}
+  required: false
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the IP Address's values\nMultiple fields is available by using comma-separated "
+- key: URLDomain
+  value: {}
+  required: false
+  description: |
+    URL\Domain  or an array of URL's\Domain's for which to search
+- key: LogzioURLDomainField
+  value: {}
+  required: false
+  description: "The name of the fields in Logz.io for which you would like to search\
+    \ the URL\\Domain values\nMultiple fields is available by using comma-separated "
+- key: earliest_time
+  value: {}
+  required: false
+  description: |-
+    Earliest time to search.
+    Examples:
+    -7d
+    -24h
+- key: latest_time
+  value: {}
+  required: false
+  description: |-
+    Latest time to search.
+    Examples:
+    -6d
+    -23h
+- key: event_limit
+  value:
+    simple: "100"
+  required: true
+  description: Limit the number of events returned by query. This argument is not
+    mandatory for the command, but is mandatory for the playbook.
+- key: IPFieldsToReturn
+  value:
+    simple: sourceIpAddresses
+  required: false
+  description: The value of the IP fields to return from Logz.io when the specified
+    indicator is found. These values are used as inputs in the Setting IP addresses
+    section. For example, src_ip,dst_ip.
+- key: UserFieldsToReturn
+  value:
+    simple: sourceUserName
+  required: false
+  description: 'The value of the username fields to return from Logz.io when the specified
+    indicator is found. These values are used as inputs in the Setting user names
+    section. For example: username.'
+- key: HostFieldsToReturn
+  value:
+    simple: sourceHostName
+  required: false
+  description: 'The value of the hostname fields to return from Logz.io when the specified
+    indicator is found. These values are used as inputs in the Setting host names
+    section. For example: hostname,'
+- key: InternalIPRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR format, separated by commas. An example of a list of
+    ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
+    is not provided, the list provided in the IsIPInRanges script (the known IPv4
+    private address ranges) is used by default.'
+- key: SelectFields
+  value:
+    simple: source,timestamp
+  required: true
+  description: Use this field to include additional enrichment data for the Logz.io
+    query. If you have defined one or more investigation fields, the SelectField should
+    not include those fields. If there are no other investigation fields defined,
+    the SelectField must contain some value. Enter a comma-separated list of field
+    names as they appear in Logz.io. * is valid value, but not recommended since it
+    creates large output.
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the script
+    IsInternalHostName that checks if the detected host names are internal or external
+    if the hosts contain the internal domains suffix. For example demisto.com. If
+    there is more than one domain, use the | character to separate values such as
+    (demisto.com|test.com)
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the script IsInternalHostName that checks if the
+    detected host names are internal or external. if the hosts match the organizations
+    naming convention. For example the host testpc1 will have the following regex
+    \w{6}\d{1}
+outputs:
+- contextPath: Logzio.DetectedUsers
+  description: Users detected based on the username field in your search.
+  type: string
+- contextPath: Logzio.DetectedInternalIPs
+  description: Internal IP addresses detected by your search.
+  type: string
+- contextPath: Logzio.DetectedExternalIPs
+  description: External IP addresses detected by your search.
+  type: string
+- contextPath: Logzio.DetectedInternalHosts
+  description: Internal host names detected based on the fields in your search.
+  type: string
+- contextPath: Logzio.DetectedExternalHosts
+  description: External host names detected based on the fields in your search.
+  type: string
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

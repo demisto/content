@@ -1,0 +1,14 @@
+!as-add-entries resourceId="12LvlmWgBABCA5+HbRyHZoQ==" entries="[{\"name\": \"t3\", \"EventID\": \"9\"},{\"name\": \"t4\", \"EventID\": \"9\"}]"
+!as-case-delete caseId=12BWHEWcBABD6VdKLNcKE2Q==
+!as-clear-entries resourceId="12LvlmWgBABCA5+HbRyHZoQ=="
+!as-delete-entries resourceId="12LvlmWgBABCA5+HbRyHZoQ==" entries="[{\"name\": \"t3\", \"EventID\": \"9\"},{\"name\": \"t4\", \"EventID\": \"9\"}]"
+!as-fetch-incidents
+!as-get-all-cases
+!as-get-all-query-viewers
+!as-get-case resourceId="12ax-uGgBABCWb2puJdY8ZA=="
+!as-get-case-event-ids caseId="12ax-uGgBABCWb2puJdY8ZA==" withCorrelatedEvents="true"
+!as-get-entries resourceId=12LvlmWgBABCA5+HbRyHZoQ== entryFilter="name:test"
+!as-get-matrix-data id=12Lnu5XEBABCJHuGRQA-nwg==
+!as-get-query-viewer-results id="123457WYBABCw9lZRkCjVIQ=="
+!as-get-security-events ids=12352349,45652798
+!as-update-case caseId="12ax-uGgBABCWb2puJdY8ZA==" stage="QUEUED" severity="INSIGNIFICANT"

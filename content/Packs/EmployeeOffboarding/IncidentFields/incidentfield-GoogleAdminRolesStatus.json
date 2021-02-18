@@ -1,0 +1,43 @@
+{
+	"id": "incident_googleadminrolesstatus",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2020-01-05T15:54:52.596475456Z",
+	"name": "Google Admin Roles Status",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Whether Google admin roles were revoked for the user. Can be either \"Unchanged\" or \"Revoked\".",
+	"cliName": "googleadminrolesstatus",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Unchanged",
+		"Revoked"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

@@ -1,0 +1,23 @@
+{
+    "result_code": 1,
+    "result_description": "Operation successful",
+    "result_content": [
+        {
+            "entity_id": "b59e624c-2cf0-4180-83d7-e08abbf9ad54",
+            "product": "SLF_PRODUCT_OFFICESCAN_CE",
+            "managing_server_id": "B220EB61-6240-44B4-9B94-4AC3F22E6A62",
+            "ad_domain": "",
+            "folder_path": "Workgroup",
+            "ip_address_list": "8.8.8.8",
+            "mac_address_list": "42-01-0A-80-00-0B",
+            "host_name": "TRENDMICROAPEX-",
+            "isolation_status": "normal",
+            "capabilities": [
+                "cmd_restore_isolated_agent",
+                "cmd_isolate_agent",
+                "cmd_relocate_agent",
+                "cmd_uninstall_agent"
+            ]
+        }
+    ]
+}

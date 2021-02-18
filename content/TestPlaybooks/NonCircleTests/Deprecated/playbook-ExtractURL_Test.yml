@@ -1,0 +1,251 @@
+id: ExtractURL Test
+version: -1
+name: ExtractURL Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d2cb26b-7b81-481b-8ca1-57f48123a82d
+    type: start
+    task:
+      id: 5d2cb26b-7b81-481b-8ca1-57f48123a82d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 404b82b0-817d-43e4-8d10-e4a244edc254
+    type: regular
+    task:
+      id: 404b82b0-817d-43e4-8d10-e4a244edc254
+      version: -1
+      name: ExtractURL
+      description: Extract URLs from the given text and place them both as output
+        and in the context of a playbook. If given an object, will convert to JSON.
+      script: ExtractURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      text:
+        simple: https://google.com?bla=www.nba.com&kuku=lalahttp://www.cnn.com&nana=http://1.2.3.4
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cd28849b-41e2-4c1e-80d9-7dd696b0d492
+    type: condition
+    task:
+      id: cd28849b-41e2-4c1e-80d9-7dd696b0d492
+      version: -1
+      name: Verify URL 1
+      script: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${URL.[0].Data}
+      right:
+        simple: https://google.com?bla=www.nba.com
+      value:
+        simple: ${URL.Data(val.indexOf('https://google.com?bla=www.nba.com&kuku=lalahttp://www.cnn.com&nana=http://1.2.3.4')
+          === 0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 446
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0f08a07c-28ae-406f-88f3-24bf73c97736
+    type: condition
+    task:
+      id: 0f08a07c-28ae-406f-88f3-24bf73c97736
+      version: -1
+      name: Verify URL 2
+      script: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${URL.[1].Data}
+      right:
+        simple: www.nba.com
+      value:
+        simple: ${URL.Data(val.indexOf('www.nba.com') === 0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 687
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2a245d9f-b559-40a3-854f-5d432dda4d7b
+    type: condition
+    task:
+      id: 2a245d9f-b559-40a3-854f-5d432dda4d7b
+      version: -1
+      name: Verify URL 3
+      script: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${URL.[2].Data}
+      right:
+        simple: ${.=val.URL.Data.indexOf('www.nba.com') !== -1}
+      value:
+        simple: ${URL.Data(val.indexOf('http://www.cnn.com') === 0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 933
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c49b88ed-9a31-4a9b-882b-8d3f001afa69
+    type: condition
+    task:
+      id: c49b88ed-9a31-4a9b-882b-8d3f001afa69
+      version: -1
+      name: Verify URL 4
+      script: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    scriptarguments:
+      left:
+        simple: ${URL.[3].Data}
+      right:
+        simple: http://www.cnn.com
+      value:
+        simple: ${URL.Data(val.indexOf('http://1.2.3.4') === 0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1183
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b3170402-a244-4e74-86fb-788e912fb50a
+    type: regular
+    task:
+      id: b3170402-a244-4e74-86fb-788e912fb50a
+      version: -1
+      name: Done
+      script: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Done
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1427
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.72
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1472,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

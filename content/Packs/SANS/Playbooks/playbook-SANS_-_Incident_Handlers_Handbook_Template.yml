@@ -1,0 +1,666 @@
+id: SANS - Incident Handler's Handbook Template
+version: -1
+fromversion: 5.0.0
+name: SANS - Incident Handler's Handbook Template
+description: |-
+  This playbook contains the phases for handling an incident as they are described in the SANS Institute ‘Incident Handler's Handbook’ by Patrick Kral.
+
+  https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
+
+  ***Disclaimer: This playbook does not ensure compliance to SANS regulations.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b96d4039-2dd2-4036-89ac-2d9433c9d4ac
+    type: start
+    task:
+      id: b96d4039-2dd2-4036-89ac-2d9433c9d4ac
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 01649a7d-0936-4979-80a3-80853a2cc026
+    type: regular
+    task:
+      id: 01649a7d-0936-4979-80a3-80853a2cc026
+      version: -1
+      name: Preparation
+      description: |-
+        "This phase deals with preparing a team to be ready to handle an incident at a moment’s notice.
+        The incident preparation is the most crucial phase compared to all of the others, as
+        it will determine how well your team will be able to respond in the event of a crises."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 6bd0d519-7244-4c4f-8577-b2d4247c2dcb
+    type: regular
+    task:
+      id: 6bd0d519-7244-4c4f-8577-b2d4247c2dcb
+      version: -1
+      name: a. Policy
+      description: |-
+        "Provides a written set of principles, rules, or practices within an organization;
+        it is one of the keystone elements that provide guidance as to whether an incident has occurred in an organization.
+        Without clear policies, one could leave their organization legally vulnerable to law suits."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 141140d9-1b1c-4f7f-8fd8-d0472f955251
+    type: regular
+    task:
+      id: 141140d9-1b1c-4f7f-8fd8-d0472f955251
+      version: -1
+      name: b. Response Plan/Strategy
+      description: |-
+        "After establishing organizational policies, now it is time to create a plan/strategy to handle incidents. Prioritization of incidents should be based upon organizational impact.
+
+        The prioritization of the types of incidents based upon organizational impact can
+        help build the case to receive management buy-in, because without management support then it is likely that the CIRT may not be given the resources necessary to properly handle a crisis."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 864febe5-a0f8-40a8-8f9e-a5e89cce505f
+    type: regular
+    task:
+      id: 864febe5-a0f8-40a8-8f9e-a5e89cce505f
+      version: -1
+      name: c. Communication
+      description: |-
+        "Having a communication plan is necessary, due to the fact that it may be necessary to contact specific individuals during an incident. The entire CIRT should know whom to contact, when it is appropriate to contact them, and why.
+        By not having a communications plan, then it is likely that response time will be delayed and/or the wrong people would be contacted and one would not have the proper resources necessary to mitigate the problem.
+
+        It is also necessary to define when it is or is not appropriate to include law enforcement during an incident, due to the consequences that could either positively or negatively affect your organization."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 07d61400-ab92-4aa0-83a8-a50653cdcc12
+    type: regular
+    task:
+      id: 07d61400-ab92-4aa0-83a8-a50653cdcc12
+      version: -1
+      name: d. Documentation
+      description: "\"This element is particularly necessary and can be a substantial
+        life saver when it comes to incident response. \nThe most significant reason
+        to document an incident is that if the incident is considered a\ncriminal
+        act, then it could be used as evidence to bring the suspect(s) to justice.
+        The other\nreason for documentation that is just as important is for lessons
+        learned.\n\nIt is vital that everything that is done by the CIRT team is documented,
+        that means every action taken (e.g. commands typed, systems affected, etc).
+        Documentation should be able to answer the Who, What, When, Where, Why, and
+        How questions should they ever arise; \""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f3474c01-1ec2-480c-8633-a3555183c71d
+    type: regular
+    task:
+      id: f3474c01-1ec2-480c-8633-a3555183c71d
+      version: -1
+      name: e. Team
+      description: |-
+        "The CIRT should be made up of several people that consist of different disciplines
+        to handle the various problems that could arise during or from an incident."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ed34fe2e-e077-481c-80f4-77b4b69f25e8
+    type: regular
+    task:
+      id: ed34fe2e-e077-481c-80f4-77b4b69f25e8
+      version: -1
+      name: f. Access Control
+      description: '"Ensure that the CIRT can have the appropriate permissions necessary
+        to perform their job."'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d80874f7-ea94-4418-8ab7-4c60db11f2f9
+    type: regular
+    task:
+      id: d80874f7-ea94-4418-8ab7-4c60db11f2f9
+      version: -1
+      name: g. Tools
+      description: "\"It is highly recommended having any available software and hardware
+        that can be readily utilized during an incident; this can range from anti-malware
+        to laptops with packets sniffers, screw drivers and other tools, as well as
+        incident response checklists and other items that would be useful. \nAll of
+        the tools one would need during an incident should be contained within a “jump
+        bag” that can be quickly grabbed by CIRT members during an incident.\""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 6f3d679e-2435-418e-883c-f001a05b055a
+    type: regular
+    task:
+      id: 6f3d679e-2435-418e-883c-f001a05b055a
+      version: -1
+      name: h. Training
+      description: '"It is recommended to have drills at regular interval to insure
+        that each individual within the CIRT is able or knows how to perform their
+        duties during an incident."'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8679f3c7-9a65-4f37-88d2-c823f8ad506d
+    type: title
+    task:
+      id: 8679f3c7-9a65-4f37-88d2-c823f8ad506d
+      version: -1
+      name: Preparation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 34d3ba7c-8f9b-4695-8ec8-2d7fa0f5d996
+    type: title
+    task:
+      id: 34d3ba7c-8f9b-4695-8ec8-2d7fa0f5d996
+      version: -1
+      name: Identification
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: e9ed4238-421d-4163-8cfb-91a5925dc313
+    type: regular
+    task:
+      id: e9ed4238-421d-4163-8cfb-91a5925dc313
+      version: -1
+      name: Identification
+      description: "\"This phase deals with the detection and determination of whether
+        a deviation from normal operations within an organization is an incident,
+        and its scope assuming that the deviation is indeed an incident. \n\nThis
+        particular step requires one to gather events from various sources such\nas
+        log files, error messages, and other resources, such intrusion detection systems
+        and firewalls, that may produce evidence as to determine whether an event
+        is an incident. If a particular event is determine to be an incident, and
+        then it should be reported as soon as possible in order to allow the CIRT
+        enough time to collect evidence and prepare for the preceding steps.\n\nThis
+        is also the phase where incident responders should be documenting everything
+        that they are doing, as stated earlier these documents should be able to answer
+        the Who, What, Where, Why, and How questions.\""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 075356b5-6397-4496-809d-99c4f0aa8c27
+    type: title
+    task:
+      id: 075356b5-6397-4496-809d-99c4f0aa8c27
+      version: -1
+      name: Containment
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: df879e15-0d82-4733-8663-eb1029f5ed0f
+    type: regular
+    task:
+      id: df879e15-0d82-4733-8663-eb1029f5ed0f
+      version: -1
+      name: Containment
+      description: |+
+        "The primary purpose of this phase is to limit the damage and prevent any further damage from happening.  There are several steps to this phase;
+
+        The first step is Short-term Containment; basically the focus of this step is to limit the damage as soon as possible. Short-term containment is not intended to be a long term
+        solution to the problem; it is only intended to limit the incident before it gets worse.
+
+        The second step is System Back-Up; it is necessary before wiping and reimaging any system to take a forensic image of the affected system(s) with tools that are well known in the computer forensics community. The reason behind this is that the forensic software will capture the affected system(s) as they were during the incident and
+        thereby preserving evidence in the event that the incident resulted from a criminal act or to be used for observing how the system(s) were compromised during the lessons learned phase.
+
+        The last step before the next phase is Long-term containment, which is essentially the step where the affected systems can be temporarily fix in order to allow them to continue to be used in production, if necessary, while rebuilding clean systems in the next phase."
+
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3dd23024-7757-464b-82a6-3acdfeda4f5a
+    type: title
+    task:
+      id: 3dd23024-7757-464b-82a6-3acdfeda4f5a
+      version: -1
+      name: Eradication
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 3788bdf3-4387-4832-8e1e-ff562a6d42d1
+    type: regular
+    task:
+      id: 3788bdf3-4387-4832-8e1e-ff562a6d42d1
+      version: -1
+      name: Eradication
+      description: |
+        "This phase deals with the actual removal and restoration of affected systems. As with each of the prior phases of incident response, continued documentation of all actions taken will be necessary to determine the cost of man hours and other resources as a means of determining the overall impact to the organization.
+        It is also necessary to ensure that proper steps were taken to remove malicious and other illicit content off of the affected systems, and ensuring that they are thoroughly clean.
+
+        This phase is also the point where defenses should be improved after learning what caused the incident and ensure that the system cannot be compromised again."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 375681e5-d6d1-4f6a-8d7d-e9c7556de299
+    type: title
+    task:
+      id: 375681e5-d6d1-4f6a-8d7d-e9c7556de299
+      version: -1
+      name: Recovery
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: abf33f5d-086f-4642-85f5-a086f53e3fe9
+    type: regular
+    task:
+      id: abf33f5d-086f-4642-85f5-a086f53e3fe9
+      version: -1
+      name: Recovery
+      description: '"The purpose of this phase is to bring affected systems back into
+        the production environment carefully, as to insure that it will not lead another
+        incident. It is essential to test, monitor, and validate the systems that
+        are being put back into production to verify that they are not being reinfected
+        by malware or compromised by some other means."'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: e077c579-9ccb-4332-860f-032ea715eea8
+    type: title
+    task:
+      id: e077c579-9ccb-4332-860f-032ea715eea8
+      version: -1
+      name: Lessons Learned
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 352cfbaa-4291-4d6b-801b-dbc7812a292a
+    type: regular
+    task:
+      id: 352cfbaa-4291-4d6b-801b-dbc7812a292a
+      version: -1
+      name: Lessons Learned
+      description: "\"The purpose of this phase is to complete any documentation that
+        was not done during the incident, as well as any additional documentation
+        that may be beneficial in future incidents. \nThe document should also be
+        written in a form of a report to provide a play-by-play review of the entire
+        incident; this report should be able to answer the: Who, What, Where, Why,
+        and How questions that may come up during the lessons learned meeting. \nThe
+        overall goal is to learn from the incidents that occurred within an organization
+        to improve the team’s performance and provide reference materials in the event
+        of a\nsimilar incident. \nThe lessons learned meeting should be performed
+        as soon as possible\""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: b7682c17-e347-442f-8df2-0e31edc99874
+    type: title
+    task:
+      id: b7682c17-e347-442f-8df2-0e31edc99874
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3530,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No test

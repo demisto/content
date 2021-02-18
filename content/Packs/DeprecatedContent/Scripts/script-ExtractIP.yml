@@ -1,0 +1,64 @@
+commonfields:
+  id: ExtractIP
+  version: -1
+name: ExtractIP
+script: >-
+  var text = args.text;
+
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+  }
+
+  var matches = {}, found;
+
+  var ipStringRegex = ipRegex.toString().substring(1,(ipRegex.toString().length - 1));
+
+  var gm = 'gm';
+
+  var reg = new RegExp(ipStringRegex, gm);
+
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+
+  while (found = reg.exec(text)) {
+      matches[found[0]] = true;
+      for (var i = 0 ; i < whitelist.length; i++) {
+          if (isIPInSubnet(found[0],whitelist[i])) {
+              delete matches[found[0]];
+              break;
+          }
+      }
+  }
+
+  var ec = {};
+
+  ec[outputPaths.ip] = []
+
+  var uniqueMatches = Object.keys(matches);
+
+  var md = '### Extract IP\n';
+
+  for (var i=0; i < uniqueMatches.length; i++) {
+      if (isValidIP(uniqueMatches[i])) {
+          ec[outputPaths.ip].push({Address: uniqueMatches[i]});
+          md += '- ' + uniqueMatches[i] + '\n';
+      }
+  }
+
+  return {Type: entryTypes.note, Contents: ec[outputPaths.ip], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+type: javascript
+tags:
+- Utility
+comment: Deprecated. We recommend using extractIndicators command instead. Extract IPs from the given text and place them both as output and in the context of a playbook.
+system: true
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract ip from. If object will convert to JSON.
+outputs:
+- contextPath: IP.Address
+  description: Extracted IPs
+scripttarget: 0
+deprecated: true
+fromversion: 5.0.0

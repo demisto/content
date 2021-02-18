@@ -1,0 +1,3 @@
+!url using-brand=OpenPhish_v2 url="google.com, hxxp://hang3clip.ddns.net/"
+!openphish-status
+!openphish-reload

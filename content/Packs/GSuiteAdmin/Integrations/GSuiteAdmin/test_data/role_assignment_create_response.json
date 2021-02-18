@@ -1,0 +1,8 @@
+{
+  "kind": "admin#directory#roleAssignment",
+  "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/wD3eixORrMKjVBkAhgq-kthmaJs\"",
+  "roleAssignmentId": "13801188331880449",
+  "roleId": "13801188331880449",
+  "assignedTo": "102585217528814888330",
+  "scopeType": "CUSTOMER"
+}

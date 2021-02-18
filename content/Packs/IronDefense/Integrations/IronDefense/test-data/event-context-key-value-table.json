@@ -1,0 +1,53 @@
+{
+  "name": "summary",
+  "columns": [
+    {
+      "name": "session_size",
+      "values": [
+        {
+          "data": [
+            {
+              "long_value": "1069918"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "threshold_entity_time",
+      "values": [
+        {
+          "data": [
+            {
+              "timestamp_value": "2020-04-11T09:00:00.000Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "producer_to_consumer_ratio",
+      "values": [
+        {
+          "data": [
+            {
+              "double_value": 1.977250634801539
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "threshold_size",
+      "values": [
+        {
+          "data": [
+            {
+              "long_value": "1020401"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

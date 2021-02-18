@@ -1,0 +1,1321 @@
+id: SymantecEndpointProtection_Test
+version: -1
+name: SymantecEndpointProtection_Test
+description: This playbook tests the SEPM integration commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0bd3cb17-d64e-4640-833c-d6e72f86c461
+    type: start
+    task:
+      id: 0bd3cb17-d64e-4640-833c-d6e72f86c461
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: df857cb4-da28-46e9-8a7c-715485e9eb31
+    type: regular
+    task:
+      id: df857cb4-da28-46e9-8a7c-715485e9eb31
+      version: -1
+      name: sep-system-info
+      description: Get the system information (version, AV definition).
+      script: '|||sep-system-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: e77d1865-e9af-456f-89d0-21e042f7446f
+    type: regular
+    task:
+      id: e77d1865-e9af-456f-89d0-21e042f7446f
+      version: -1
+      name: sep-client-content
+      description: Retrieves the client content.
+      script: '|||sep-client-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c998c625-37f9-4baa-8fac-18447667f2e7
+    type: regular
+    task:
+      id: c998c625-37f9-4baa-8fac-18447667f2e7
+      version: -1
+      name: sep-groups-info
+      description: Get information about groups.
+      script: '|||sep-groups-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+      - "64"
+    scriptarguments:
+      columns: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: dde94774-6510-471b-8a16-a803a7888aaa
+    type: regular
+    task:
+      id: dde94774-6510-471b-8a16-a803a7888aaa
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 68db8e48-117a-4e14-885a-f8a722da35a0
+    type: regular
+    task:
+      id: 68db8e48-117a-4e14-885a-f8a722da35a0
+      version: -1
+      name: sep-endpoints-info
+      description: Get information about groups.
+      script: '|||sep-endpoints-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+      - "78"
+    scriptarguments:
+      columns: {}
+      computerName:
+        simple: demisto-PC
+      computerNamed: {}
+      lastUpdate: {}
+      os: {}
+      pageSize: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: b18e3a36-e0c9-433b-8f47-f77b3120dad0
+    type: title
+    task:
+      id: b18e3a36-e0c9-433b-8f47-f77b3120dad0
+      version: -1
+      name: Endpoint and Group Info
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "10"
+      - "79"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 0f634a09-1ce6-424b-837b-11219f97e310
+    type: title
+    task:
+      id: 0f634a09-1ce6-424b-837b-11219f97e310
+      version: -1
+      name: General Information
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: da9eb87a-148d-48bf-87e3-cc5b34226aa7
+    type: title
+    task:
+      id: da9eb87a-148d-48bf-87e3-cc5b34226aa7
+      version: -1
+      name: Update Content & Quarantine
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 785ef364-c5d9-41da-8f95-99a5c9ecd4cb
+    type: regular
+    task:
+      id: 785ef364-c5d9-41da-8f95-99a5c9ecd4cb
+      version: -1
+      name: sep-update-endpoint-content (by IP)
+      description: Updates the content of the given client.
+      script: '|||sep-update-endpoint-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+      - "67"
+    scriptarguments:
+      endpoint:
+        simple: ${SEPM.Endpoint.IPAddresses.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 8c717310-eee9-4ebe-8c53-3654ee7575da
+    type: regular
+    task:
+      id: 8c717310-eee9-4ebe-8c53-3654ee7575da
+      version: -1
+      name: sep-endpoint-quarantine (by hostname)
+      description: Updates the content of the given client.
+      script: '|||sep-endpoint-quarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+      - "69"
+      - "70"
+    scriptarguments:
+      actionType:
+        simple: Add
+      endpoint:
+        simple: ${SEPM.Endpoint.Hostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 34f9ded7-ac64-406b-8f3c-2281efbd2283
+    type: regular
+    task:
+      id: 34f9ded7-ac64-406b-8f3c-2281efbd2283
+      version: -1
+      name: sep-endpoint-quarantine (remove by ip)
+      description: Updates the content of the given client.
+      script: '|||sep-endpoint-quarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+      - "72"
+      - "73"
+    scriptarguments:
+      actionType:
+        simple: Remove
+      endpoint:
+        simple: ${SEPM.Endpoint.IPAddresses.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: e730b591-ebab-4cb0-8331-99f8085c0ae0
+    type: regular
+    task:
+      id: e730b591-ebab-4cb0-8331-99f8085c0ae0
+      version: -1
+      name: sep-scan-endpoint (by hostname)
+      script: '|||sep-scan-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+      - "75"
+      - "76"
+    scriptarguments:
+      endpoint:
+        simple: ${SEPM.Endpoint.Hostname}
+      scanType:
+        simple: ScanNow_Quick
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 3e86ee62-c9e7-4e85-88aa-4779029970f6
+    type: regular
+    task:
+      id: 3e86ee62-c9e7-4e85-88aa-4779029970f6
+      version: -1
+      name: sep-list-locations
+      script: '|||sep-list-locations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      groupID:
+        simple: ${SEPM.Groups.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: f4397926-975d-4e44-8e95-150ca45b13fc
+    type: regular
+    task:
+      id: f4397926-975d-4e44-8e95-150ca45b13fc
+      version: -1
+      name: sep-list-policies
+      script: '|||sep-list-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 72252050-d912-4d83-89bb-9f89a7829022
+    type: condition
+    task:
+      id: 72252050-d912-4d83-89bb-9f89a7829022
+      version: -1
+      name: Check policies
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: PoliciesList
+            iscontext: true
+          right:
+            value:
+              simple: "20"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: f38a8c3f-e760-4108-848f-f288a2cb64fa
+    type: regular
+    task:
+      id: f38a8c3f-e760-4108-848f-f288a2cb64fa
+      version: -1
+      name: Policies Fail
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Expected `SEPM.PoliciesList.AssignedLocations` to have length of 20 but got ${SEPM.PoliciesList.AssignedLocations}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: caff703c-90aa-46fd-872f-b2c445393418
+    type: title
+    task:
+      id: caff703c-90aa-46fd-872f-b2c445393418
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: f3a79e97-65c7-4eb7-8c75-63fa2d851fb6
+    type: condition
+    task:
+      id: f3a79e97-65c7-4eb7-8c75-63fa2d851fb6
+      version: -1
+      name: Verify SEPM.ServerAVDefVersion
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: ServerAVDefVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 985b3da2-f356-4266-8134-eed346381aa0
+    type: condition
+    task:
+      id: 985b3da2-f356-4266-8134-eed346381aa0
+      version: -1
+      name: Verify SEPM.LastUpdated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: LastUpdated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: cf03db69-9b0b-4c10-8aca-acc66c8ecb36
+    type: condition
+    task:
+      id: cf03db69-9b0b-4c10-8aca-acc66c8ecb36
+      version: -1
+      name: Verify SEPM.ClientContentVersions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: ClientContentVersions
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 5f2e3056-81af-41da-8457-f12516c49d24
+    type: condition
+    task:
+      id: 5f2e3056-81af-41da-8457-f12516c49d24
+      version: -1
+      name: Verify SEPM.Groups.fullPathName
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Groups.[0].fullPathName
+            iscontext: true
+          right:
+            value:
+              simple: My Company\Default Group
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 1bea8ffb-5f14-4f5b-84ac-87ad47195d22
+    type: condition
+    task:
+      id: 1bea8ffb-5f14-4f5b-84ac-87ad47195d22
+      version: -1
+      name: Verify SEPM.Groups.fullPathName
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Groups.[1].fullPathName
+            iscontext: true
+          right:
+            value:
+              simple: My Company
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: 33e48b3f-f7fa-4752-8e90-58500762c37a
+    type: condition
+    task:
+      id: 33e48b3f-f7fa-4752-8e90-58500762c37a
+      version: -1
+      name: Verify SEPM.Endpoint.IPAddresses
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: d8627643-7347-4398-8111-fa8a1f3d045c
+    type: condition
+    task:
+      id: d8627643-7347-4398-8111-fa8a1f3d045c
+      version: -1
+      name: Verify SEPM.Update.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Update.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: 075f207c-5771-4764-890d-322f879a7eb8
+    type: condition
+    task:
+      id: 075f207c-5771-4764-890d-322f879a7eb8
+      version: -1
+      name: Verify SEPM.Update.commandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Update.CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: c3c10b5e-f9e7-4b78-85c9-6026c0c5d966
+    type: condition
+    task:
+      id: c3c10b5e-f9e7-4b78-85c9-6026c0c5d966
+      version: -1
+      name: Verify SEPM.Quarantine.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.Hostname
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: 5da80a8c-5b55-4a87-8712-a2da9fa17c76
+    type: condition
+    task:
+      id: 5da80a8c-5b55-4a87-8712-a2da9fa17c76
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: 66051c44-befb-45cf-8563-9d2dba2d91fe
+    type: condition
+    task:
+      id: 66051c44-befb-45cf-8563-9d2dba2d91fe
+      version: -1
+      name: Verify SEPM.Quarantine.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.Action
+            iscontext: true
+          right:
+            value:
+              simple: Add
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: a04bba1c-3fe4-4b24-8a0e-5eab9d76938a
+    type: condition
+    task:
+      id: a04bba1c-3fe4-4b24-8a0e-5eab9d76938a
+      version: -1
+      name: Verify SEPM.Quarantine.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.IPAddresses.[0]
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: d03a4d28-6477-4183-85a2-377806fbc3e2
+    type: condition
+    task:
+      id: d03a4d28-6477-4183-85a2-377806fbc3e2
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "73":
+    id: "73"
+    taskid: 59df8f6b-9bce-4258-8ed2-89bce47b4341
+    type: condition
+    task:
+      id: 59df8f6b-9bce-4258-8ed2-89bce47b4341
+      version: -1
+      name: Verify SEPM.Quarantine.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Quarantine.[1].Action
+            iscontext: true
+          right:
+            value:
+              simple: Remove
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: cf2a3ca3-a0d9-4b8c-8f01-a04683eeb4ed
+    type: condition
+    task:
+      id: cf2a3ca3-a0d9-4b8c-8f01-a04683eeb4ed
+      version: -1
+      name: Verify SEPM.Scan.Endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.Endpoint
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.Hostname
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: 9a0091b8-5a4d-4b4e-8b59-c1328742785a
+    type: condition
+    task:
+      id: 9a0091b8-5a4d-4b4e-8b59-c1328742785a
+      version: -1
+      name: Verify SEPM.Quarantine.CommandID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.CommandID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: 925c2caa-80d7-4411-8f7a-e55f082a6e37
+    type: condition
+    task:
+      id: 925c2caa-80d7-4411-8f7a-e55f082a6e37
+      version: -1
+      name: Verify SEPM.Scan.Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Scan.Type
+            iscontext: true
+          right:
+            value:
+              simple: ScanNow_Quick
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: 48137835-ed4a-46bc-8b73-167c22e71fc6
+    type: condition
+    task:
+      id: 48137835-ed4a-46bc-8b73-167c22e71fc6
+      version: -1
+      name: Verify SEPM.Locations.ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Locations.[0].ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: f030cc93-a54c-4193-8666-6f27b0f16851
+    type: condition
+    task:
+      id: f030cc93-a54c-4193-8666-6f27b0f16851
+      version: -1
+      name: Verify SEPM.Endpoint.IPAddresses
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SEPM
+                accessor: Endpoint.LastScanTime
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: b867ca0b-173b-4378-802c-a65de64bca44
+    type: regular
+    task:
+      id: b867ca0b-173b-4378-802c-a65de64bca44
+      version: -1
+      name: sep-identify-old-clients
+      description: Get endpoints with a running version that isnt the same as the target version or isn't consistent with the desired version (if specified).
+      script: '|||sep-identify-old-clients'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      columns: {}
+      computerName: {}
+      desiredVersion:
+        simple: "10"
+      groupName:
+        simple: My*
+      lastUpdate: {}
+      os: {}
+      pageSize: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3875,
+        "width": 2050,
+        "x": -350,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

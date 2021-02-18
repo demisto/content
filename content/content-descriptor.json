@@ -1,0 +1,11 @@
+{
+  "installDate": "0001-01-01T00:00:00Z",
+  "assetId": "REPLACE_THIS_WITH_CI_BUILD_NUM",
+  "releaseNotes": "## Demisto Content Release Notes for version 2.5.0",
+  "modified": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "ignoreGit": false,
+  "releaseDate": "REPLACE_THIS_WITH_RELEASE_DATE",
+  "version": -1,
+  "release": "2.5.0",
+  "id": ""
+}

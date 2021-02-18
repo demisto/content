@@ -1,0 +1,603 @@
+category: Case Management
+beta: true
+commonfields:
+  id: QuestKace
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Quest KACE URL, in the format https://company.works.com/
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 1 day
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Shaping query parameter for tickets
+  name: fetch_shaping
+  required: false
+  type: 0
+  additionalinfo: The shaping parameter limits the number or returned results. To get extended data use the shaping parameter. If the parameter is not used, all the data will be returned.
+- display: Filter for the tickets
+  name: fetch_filter
+  required: false
+  type: 0
+  additionalinfo: Adding this argument will enable you to filter the results. For example, "id eq 2" , "machine.name eq Mac".
+- defaultvalue: '50'
+  display: Fetch limit per query
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: All
+  display: Queue number for fetch query
+  name: fetch_queue_id
+  required: false
+  type: 0
+  additionalinfo: If you want to fetch incidents of specific queues, provide a comma-separated list of queue IDs. By default, all tickets from all queues will be returned.
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Comprehensive Quest KACE solution to Provision, manage, secure, and service all network-connected devices.
+display: Quest KACE Systems Management Appliance (Beta)
+name: QuestKace
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of machines to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all machines in system.
+    execution: false
+    name: kace-machines-list
+    outputs:
+    - contextPath: QuestKace.Machine.ID
+      description: ID of machine
+      type: String
+    - contextPath: QuestKace.Machine.Modified
+      description: Last modified date of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.Created
+      description: Created date of the machine in KACE system.
+      type: String
+    - contextPath: QuestKace.Machine.User
+      description: User of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.Name
+      description: Name of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.IP
+      description: IP address of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.OSName
+      description: OS name of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.OSNumber
+      description: Number of operating systems of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.LastInventory
+      description: Last inventory date of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.LastSync
+      description: Last sync date of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.RamTotal
+      description: Total RAM of the machine in bytes.
+      type: String
+    - contextPath: QuestKace.Machine.RamUsed
+      description: Used RAM of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.RamMax
+      description: Maximum RAM of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.BiosIdentificationCode
+      description: BIOS identification code of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.SoundDevices
+      description: Connected sound devices of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.CdromDevices
+      description: Connected CD-ROM devices to the machine.
+      type: String
+    - contextPath: QuestKace.Machine.VideoControllers
+      description: Video controllers of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.Monitor
+      description: Monitor of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.RegistrySize
+      description: Registry size of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.RegistryMaxSize
+      description: Maximum size of the registry of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.PagefileSize
+      description: Size of the page file of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.PagefileMaxSize
+      description: Maximum size of the page file of the machine.
+      type: String
+    - contextPath: QuestKace.Machine.ManualEntry
+      description: Number of manual entries to the machine.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of assets to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all assets in Quest KACE.
+    execution: false
+    name: kace-assets-list
+    outputs:
+    - contextPath: QuestKace.Asset.ID
+      description: ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.AssetTypeID
+      description: Type ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.Name
+      description: Name of the asset.
+      type: String
+    - contextPath: QuestKace.Asset.AssetDataID
+      description: Data ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.OwnerID
+      description: Owner ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.Modified
+      description: Last modified date of the asset.
+      type: String
+    - contextPath: QuestKace.Asset.Created
+      description: Created date of the asset.
+      type: String
+    - contextPath: QuestKace.Asset.MappedID
+      description: Mapped ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.AssetClassID
+      description: Class ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.Archieve
+      description: Archive of the asset.
+      type: String
+    - contextPath: QuestKace.Asset.AssetStatusID
+      description: Status ID of the asset.
+      type: Number
+    - contextPath: QuestKace.Asset.AssetTypeName
+      description: Type name of the asset.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of tickets to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all queues in Quest KACE.
+    execution: false
+    name: kace-queues-list
+    outputs:
+    - contextPath: QuestKace.Queue.ID
+      description: ID of the queue.
+      type: Number
+    - contextPath: QuestKace.Queue.Name
+      description: Name of the queue.
+      type: String
+    - contextPath: QuestKace.Queue.Field.ID
+      description: ID of the field of the queue.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.HdQueueID
+      description: Queue ID of the field.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.Name
+      description: Name of the field.
+      type: String
+    - contextPath: QuestKace.Queue.Field.HdTicketFieldName
+      description: View field name.
+      type: String
+    - contextPath: QuestKace.Queue.Field.Ordinal
+      description: Ordinal of the field.
+      type: Number
+    - contextPath: QuestKace.Queue.Field.RequiredState
+      description: Required state of the field, if exists.
+      type: String
+    - contextPath: QuestKace.Queue.Field.FieldLabel
+      description: Field label.
+      type: String
+    - contextPath: QuestKace.Queue.Field.Visible
+      description: Visibility of the field.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '"hd_ticket all,submitter limited,owner limited, asset limited,machine
+        limited,priority limited,category limited, impact limited,status limited"'
+      description: |-
+        The shaping query parameter limits the amount of returned data is specified. The returned fields for each
+        associated entity is controlled by two query values. The first is the name of the entity, while the second half of the
+        pair is the associated level. e.g. "submitter all, asset limited".
+      isArray: false
+      name: custom_shaping
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of tickets to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter for the query. Each filter is specified by an optional entity name, a field name, an
+        operator, and a value. e.g. "title eq test" / "id gt 1 / hd_queue_id in 1;2;3" . Combination of filters is seperated by comma.
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all tickets in Quest KACE.
+    execution: false
+    name: kace-tickets-list
+    outputs:
+    - contextPath: QuestKace.Ticket.Submitter.ID
+      description: Submitter id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Submitter.UserName
+      description: Submitter user name of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Submitter.Email
+      description: Email address of user that submitted the email.
+      type: String
+    - contextPath: QuestKace.Ticket.Submitter.FullName
+      description: Full name of the user that submitted the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Asset.ID
+      description: ID of the asset of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Asset.AssetTypeId
+      description: Asset type ID of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Asset.Name
+      description: Name of the asset of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Asset.OwnerId
+      description: Owner ID of the asset of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Asset.AssetClassId
+      description: Asset class id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Machine.ID
+      description: ID of the machine of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Machine.Name
+      description: Name of the machine of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Priority.ID
+      description: Priority id of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Priority.Name
+      description: Priority name of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Priority.Ordinal
+      description: Priority ordinal of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Priority.Color
+      description: Priority color of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Priority.IsSlaEnable
+      description: Whether SLA is enabled on the priority of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Category.ID
+      description: Category ID of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Category.Name
+      description: Category name of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Impact.ID
+      description: ID of the impact of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Impact.Ordinal
+      description: Ordinal of the impact of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Impact.Name
+      description: Name of the impact of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Status.ID
+      description: ID of the status of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Status.Name
+      description: Name of the status of the tickets.
+      type: String
+    - contextPath: QuestKace.Ticket.Status.Ordinal
+      description: Ordinal of the status of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Status.State
+      description: State of the status of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.ID
+      description: ID of the ticket.
+      type: Number
+    - contextPath: QuestKace.Ticket.Title
+      description: Title of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Summary
+      description: Summary of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Modified
+      description: Last modified date of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.Created
+      description: Created date of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.HdQueueID
+      description: Queue number that the ticket is related to.
+      type: Number
+    - contextPath: QuestKace.Ticket.CcList
+      description: CC list of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.IsManualDueDate
+      description: 'Whether the due date is manual.'
+      type: Number
+    - contextPath: QuestKace.Ticket.Resolution
+      description: Resolution of the ticket.
+      type: String
+    - contextPath: QuestKace.Ticket.DueDate
+      description: Dua date of the ticket.
+      type: String
+  - arguments:
+    - default: false
+      description: Title of the new ticket.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: Summary of the new ticket.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Name of the impact of the new ticket.
+      isArray: false
+      name: impact
+      predefined:
+      - 1 person cannot work
+      - Many people cannot work
+      - 1 person inconvenienced
+      - Many people inconvenienced
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Category of the new ticket.
+      isArray: false
+      name: category
+      predefined:
+      - Network
+      - Other
+      - Software
+      - Hardware
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the new ticket.
+      isArray: false
+      name: status
+      predefined:
+      - Opened
+      - Closed
+      - Need More Info
+      - New
+      - Reopened
+      - Waiting Overdue
+      - Waiting on Customer
+      - Waiting on Third Party
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Priority of the new ticket.
+      isArray: false
+      name: priority
+      predefined:
+      - Medium
+      - High
+      - Low
+      required: false
+      secret: false
+    - default: false
+      description: Name of the machine of the new ticket.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - default: false
+      description: Name of the asset of the new ticket.
+      isArray: false
+      name: asset
+      required: false
+      secret: false
+    - default: false
+      description: Custom (user defined) fields in the format - fieldname1=value;fieldname2=value.
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    - default: false
+      description: Queue to which the new ticket should be related.
+      isArray: false
+      name: queue_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new ticket to the system.
+    execution: false
+    name: kace-ticket-create
+  - arguments:
+    - default: false
+      description: Updated title of the ticket.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: Updated summary for the ticket.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Updated impact of the ticket.
+      isArray: false
+      name: impact
+      predefined:
+      - 1 person cannot work
+      - Many people cannot work
+      - 1 person inconvenienced
+      - Many people inconvenienced
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Updated category of the ticket.
+      isArray: false
+      name: category
+      predefined:
+      - Network
+      - Other
+      - Software
+      - Hardware
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Updated status of the ticket.
+      isArray: false
+      name: status
+      predefined:
+      - Opened
+      - Closed
+      - Need More Info
+      - New
+      - Reopened
+      - Waiting Overdue
+      - Waiting on Customer
+      - Waiting on Third Party
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Updated priority of the ticket.
+      isArray: false
+      name: priority
+      predefined:
+      - Medium
+      - High
+      - Low
+      required: false
+      secret: false
+    - default: false
+      description: Updated machine of the ticket.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - default: false
+      description: Updated asset of the ticket.
+      isArray: false
+      name: asset
+      required: false
+      secret: false
+    - default: false
+      description: Custom (user defined) fields in the format - fieldname1=value;fieldname2=value.
+      isArray: false
+      name: custom_fields
+      required: false
+      secret: false
+    - default: false
+      description: ID of the ticket to update.
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates a ticket in the system.
+    execution: false
+    name: kace-ticket-update
+  - arguments:
+    - default: false
+      description: Ticket ID to delete.
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the specified ticket.
+    execution: false
+    name: kace-ticket-delete
+  dockerimage: demisto/python3:3.8.3.9324
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- QuestKace test
+fromversion: 5.0.0

@@ -1,0 +1,105 @@
+{
+  "id": "bundle--2e54125c-bfc2-4d9d-bc1f-5afda29c9886",
+  "type": "bundle",
+  "spec_version": "2.0",
+  "objects": [
+    {
+      "created": "2019-03-14T16:18:33.000Z",
+      "firstSeen": "2019-03-14T18:18:33+02:00",
+      "id": "indicator--8cd87f98-70ea-41ea-8b9c-bd9b59837de3",
+      "labels": [
+        "File MD5"
+      ],
+      "modified": "2019-03-17T15:19:35.000Z",
+      "pattern": "[file:hashes.md5 = 'd41d8cd98f00b204e9800998ecf8427e']",
+      "score": "",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:53.249031Z"
+    },
+    {
+      "created": "2019-03-14T14:09:31.000Z",
+      "firstSeen": "2019-03-14T16:09:31+02:00",
+      "id": "indicator--3f8b2649-96ef-438e-871b-be2f1d773d61",
+      "labels": [
+        "Domain"
+      ],
+      "modified": "2019-03-14T14:56:07.000Z",
+      "pattern": "[domain:value = 'example.com']",
+      "score": "",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:53.556675Z"
+    },
+    {
+      "created": "2019-03-13T09:47:45.000Z",
+      "firstSeen": "2019-03-13T11:47:42+02:00",
+      "id": "indicator--aa6cced4-027e-4bb4-82be-2a1fca7ee754",
+      "labels": [
+        "URL"
+      ],
+      "modified": "2019-03-14T14:56:07.000Z",
+      "pattern": "[url:value = 'http://www.example.com/2000/09/xmldsig#']",
+      "score": "High",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:53.856202Z"
+    },
+    {
+      "created": "2019-03-13T09:47:44.000Z",
+      "firstSeen": "2019-03-13T11:47:42+02:00",
+      "id": "indicator--d5b757fc-6b6c-48d1-af3b-d53571d660df",
+      "labels": [
+        "IP"
+      ],
+      "modified": "2019-03-13T20:30:33.000Z",
+      "pattern": "[ipv4-addr:value = '192.168.1.104']",
+      "score": "Medium",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:54.14174Z"
+    },
+    {
+      "created": "2019-03-05T13:12:24.000Z",
+      "firstSeen": "2019-03-05T15:12:23+02:00",
+      "id": "indicator--f291e2e8-7b12-403e-aa95-6f730626c4c9",
+      "labels": [
+        "IP"
+      ],
+      "modified": "2019-03-13T20:30:33.000Z",
+      "pattern": "[ipv4-addr:value = '10.54.12.6']",
+      "score": "",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:54.425673Z"
+    },
+    {
+      "created": "2019-03-13T20:30:34.000Z",
+      "firstSeen": "2019-03-13T22:30:33+02:00",
+      "id": "indicator--e487320c-183f-4a7c-9f04-aaca1d3c4a17",
+      "labels": [
+        "Domain"
+      ],
+      "modified": "2019-03-13T20:30:33.000Z",
+      "pattern": "[domain:value = '30CCD2D7744B2545A0B6B8F81416BF4D02517525@example.com']",
+      "score": "",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:54.724138Z"
+    },
+    {
+      "created": "2019-03-05T13:12:33.000Z",
+      "firstSeen": "2019-03-05T15:12:33+02:00",
+      "id": "indicator--8f5ef91f-7196-44f7-af89-fe4e4e9b1b77",
+      "labels": [
+        "Email"
+      ],
+      "modified": "2019-03-13T20:30:33.000Z",
+      "pattern": "[email:value = '20070126151203.186470@example.com']",
+      "score": "",
+      "source": "DBot",
+      "type": "indicator",
+      "valid_from": "2019-03-18T10:37:55.003971Z"
+    }
+  ]
+}

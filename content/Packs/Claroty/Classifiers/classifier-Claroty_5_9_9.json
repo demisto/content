@@ -1,0 +1,176 @@
+{
+	"brandName": "Claroty",
+	"custom": true,
+	"defaultIncidentType": "",
+	"id": "babb69e2-059c-4ac2-896a-76e9e42844e5",
+	"incidentSamples": [],
+	"isDefault": false,
+	"keyTypeMap": {
+		"Integrity": "Claroty Integrity Incident",
+		"Security": "Claroty Security Incident"
+	},
+	"mapping": {
+		"Claroty IT Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Claroty Alert Resolved": {
+					"complex": null,
+					"simple": "Resolved"
+				},
+				"Claroty Alert Type": {
+					"complex": null,
+					"simple": "AlertType"
+				},
+				"Claroty Category": {
+					"complex": null,
+					"simple": "Category"
+				},
+				"Claroty Network ID": {
+					"complex": null,
+					"simple": "NetworkID"
+				},
+				"Claroty Related Assets": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "RelatedAssets",
+						"transformers": [
+							{
+								"args": {
+									"dt": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+										}
+									}
+								},
+								"operator": "DT"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Claroty Resource ID": {
+					"complex": null,
+					"simple": "ResourceID"
+				},
+				"details": {
+					"complex": null,
+					"simple": "Description"
+				}
+			}
+		},
+		"Claroty Integrity Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Claroty Alert Resolved": {
+					"complex": null,
+					"simple": "Resolved"
+				},
+				"Claroty Alert Type": {
+					"complex": null,
+					"simple": "AlertType"
+				},
+				"Claroty Category": {
+					"complex": null,
+					"simple": "Category"
+				},
+				"Claroty Network ID": {
+					"complex": null,
+					"simple": "NetworkID"
+				},
+				"Claroty Related Assets": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "RelatedAssets",
+						"transformers": [
+							{
+								"args": {
+									"dt": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+										}
+									}
+								},
+								"operator": "DT"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Claroty Resource ID": {
+					"complex": null,
+					"simple": "ResourceID"
+				},
+				"details": {
+					"complex": null,
+					"simple": "Description"
+				}
+			}
+		},
+		"Claroty Security Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Claroty Alert Resolved": {
+					"complex": null,
+					"simple": "Resolved"
+				},
+				"Claroty Alert Type": {
+					"complex": null,
+					"simple": "AlertType"
+				},
+				"Claroty Category": {
+					"complex": null,
+					"simple": "Category"
+				},
+				"Claroty Network ID": {
+					"complex": null,
+					"simple": "NetworkID"
+				},
+				"Claroty Related Assets": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "RelatedAssets",
+						"transformers": [
+							{
+								"args": {
+									"dt": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+										}
+									}
+								},
+								"operator": "DT"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Claroty Resource ID": {
+					"complex": null,
+					"simple": "ResourceID"
+				},
+				"details": {
+					"complex": null,
+					"simple": "Description"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "Category"
+	},
+	"unclassifiedCases": {},
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9"
+}

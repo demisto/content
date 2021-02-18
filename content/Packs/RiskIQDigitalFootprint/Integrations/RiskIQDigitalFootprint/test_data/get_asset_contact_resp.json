@@ -1,0 +1,139 @@
+{
+  "name": "dummy@contact.com",
+  "type": "CONTACT",
+  "firstSeen": 1474994431102,
+  "lastSeen": 1591634267273,
+  "uuid": "3ae11a55-2925-c271-7806-f0839ce24350",
+  "label": "dummy@contact.com",
+  "description": "dummy@contact.com",
+  "_meta": {
+    "labels": {
+      "Bucket1": "Top 100k",
+      "Bucket0": "Top 10k",
+      "DOMAIN": "Domain",
+      "CONTACT": "Contact",
+      "SSL_CERT": "SSL Cert",
+      "NAME_SERVER": "Name Server",
+      "HOST": "Host",
+      "PAGE": "Page",
+      "Expired": "Expired",
+      "Expires30": "Expires in 30 days",
+      "Expires90": "Expires in 90 days",
+      "AS": "ASN",
+      "Expires60": "Expires in 60 days",
+      "ExpiresAfter90": "Expires in > 90 days",
+      "NotRanked": "Not in Alexa",
+      "MAIL_SERVER": "Mail Server",
+      "IP_ADDRESS": "IP Address",
+      "RESOURCE": "Resource",
+      "IP_BLOCK": "IP Block"
+    }
+  },
+  "asset": {
+    "email": "dummy@contact.com",
+    "names": [
+      {
+        "value": "Dummy Person",
+        "firstSeen": 1515223308119,
+        "lastSeen": 1569768302096
+      },
+      {
+        "value": "Risk IQ",
+        "firstSeen": 1474994431102,
+        "lastSeen": 1474994431180
+      }
+    ],
+    "organizations": [
+      {
+        "value": "RiskIQ, Inc.",
+        "firstSeen": 1474994431102,
+        "lastSeen": 1569768302096
+      }
+    ],
+    "firstSeen": 1474994431102,
+    "lastSeen": 1569768302096,
+    "count": 18,
+    "nameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+    ]
+  },
+  "data": {
+    "hostPairs": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

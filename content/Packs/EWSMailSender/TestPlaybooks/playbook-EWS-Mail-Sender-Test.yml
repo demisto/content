@@ -1,0 +1,356 @@
+id: EWS Mail Sender Test
+version: -1
+name: EWS Mail Sender Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 933c4e74-143d-4429-8f5d-f155d03b0f70
+    type: start
+    task:
+      id: 933c4e74-143d-4429-8f5d-f155d03b0f70
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3b667ede-6c4c-495e-8f01-73f72c38bbc8
+    type: regular
+    task:
+      id: 3b667ede-6c4c-495e-8f01-73f72c38bbc8
+      version: -1
+      name: Test send mail
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: test_rešňa
+      to:
+        simple: buildtests@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f73780f8-4a12-432e-8209-5a9ce075abba
+    type: regular
+    task:
+      id: f73780f8-4a12-432e-8209-5a9ce075abba
+      version: -1
+      name: Get file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file_пожалуйста
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2238320b-e705-482d-85d8-7ca29249defb
+    type: title
+    task:
+      id: 2238320b-e705-482d-85d8-7ca29249defb
+      version: -1
+      name: Test success after failure
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 85d61b58-765f-4c33-8bbc-ed2f53eca13c
+    type: regular
+    task:
+      id: 85d61b58-765f-4c33-8bbc-ed2f53eca13c
+      version: -1
+      name: Send Bad Email (Should fail)
+      description: Sends an email using EWS.
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: bad
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Bad Email That Fails
+      to:
+        simple: buildtests@demisto.int
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f9661f43-49e4-400e-89b3-cb9319f822bb
+    type: regular
+    task:
+      id: f9661f43-49e4-400e-89b3-cb9319f822bb
+      version: -1
+      name: Send Good Email
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: test
+      to:
+        simple: buildtests@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 662a6966-085d-47ae-87a8-0c503e64d73b
+    type: title
+    task:
+      id: 662a6966-085d-47ae-87a8-0c503e64d73b
+      version: -1
+      name: Reply mail
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 465b32b6-5e6f-453d-8011-780ecd5657d2
+    type: regular
+    task:
+      id: 465b32b6-5e6f-453d-8011-780ecd5657d2
+      version: -1
+      name: reply-mail
+      description: Reply to an email using EWS.
+      script: EWS Mail Sender|||reply-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      from: {}
+      htmlBody: {}
+      inReplyTo:
+        simple: AQMkADk2MWU3YmU5LTYzOGYtNDZiZC1hN2U2LTRkNTM1OGViNTY0YwBGAAADZqnLvsOUq0+eym8EhcwzDgcAyD929J75cU2Xt1Cyvm6zhwAAAgEMAAAAyD929J75cU2Xt1Cyvm6zhwAAAhMJAAAA
+      references: {}
+      replyTo: {}
+      subject:
+        simple: DO NOT DELETE - Test for reply mail
+      templateParams: {}
+      to:
+        simple: ews-2016-test@lab-demisto.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8b6b4948-a7cc-4b96-823c-eb6e67d97e02
+    type: regular
+    task:
+      id: 8b6b4948-a7cc-4b96-823c-eb6e67d97e02
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

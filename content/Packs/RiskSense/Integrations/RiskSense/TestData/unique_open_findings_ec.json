@@ -1,0 +1,12 @@
+{
+  "RiskSense.UniqueHostFinding": [
+    {
+      "Title": "Title 1",
+      "Severity": 2.3,
+      "HostCount": 690,
+      "Source": "Source Name",
+      "SourceID": "Source Id",
+      "Href": "href"
+    }
+  ]
+}

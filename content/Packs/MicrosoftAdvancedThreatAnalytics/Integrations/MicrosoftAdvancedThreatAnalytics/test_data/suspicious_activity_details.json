@@ -1,0 +1,31 @@
+{
+    "DetailsRecords": [
+        {
+            "DestinationComputerIds": [
+                "6b0e48f5-6c63-449c-8b6f-c749e18e28b3"
+            ],
+            "EndTime": "2020-07-22T13:36:36.2203957Z",
+            "IsLogin": false,
+            "IsSuccess": true,
+            "IsTraffic": false,
+            "ProtocolName": "Ntlm",
+            "ResourceIdentifier": null,
+            "SourceComputerId": "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com",
+            "StartTime": "2020-07-22T13:36:36.2203957Z"
+        },
+        {
+            "DestinationComputerIds": [
+                "6b0e48f5-6c63-449c-8b6f-c749e18e28b3"
+            ],
+            "EndTime": "2020-07-22T13:17:05.9092818Z",
+            "IsLogin": false,
+            "IsSuccess": true,
+            "IsTraffic": false,
+            "ProtocolName": "Ntlm",
+            "ResourceIdentifier": null,
+            "SourceComputerId": "6b0e48f5-6c63-449c-8b6f-c749e18e28b3",
+            "StartTime": "2020-07-22T13:17:05.9092818Z"
+        }
+    ],
+    "TotalCount": 2
+}

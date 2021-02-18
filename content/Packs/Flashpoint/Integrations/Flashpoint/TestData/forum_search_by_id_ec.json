@@ -1,0 +1,28 @@
+{
+  "Flashpoint.Forum(val.ForumId == obj.ForumId)": {
+    "ForumId": "test_scan_forum_id",
+    "Hostname": "fake hostname",
+    "Description": "fake description",
+    "Name": "fake name",
+    "Stats": {
+      "users": 71614,
+      "rooms": 1,
+      "threads": 13916,
+      "posts": 163710
+    },
+    "Tags": [
+      {
+        "name": "fake tag name",
+        "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4",
+        "id": 55,
+        "parent_tag": 17
+      },
+      {
+        "name": "fake tag1 name",
+        "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b",
+        "id": 28,
+        "parent_tag": null
+      }
+    ]
+  }
+}

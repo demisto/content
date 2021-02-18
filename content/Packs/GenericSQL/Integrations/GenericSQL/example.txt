@@ -1,0 +1,6 @@
+query query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"
+query query="select * from TestTable" limit=10 skip=0
+query query="delete from TestTable where ID=11211"
+sql-command query="INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x , :y)" bind_variables_names=x,y bind_variables_values="test,playbook"
+sql-command query="select * from TestTable" limit=10 skip=0
+sql-command query="delete from TestTable where ID=11211"

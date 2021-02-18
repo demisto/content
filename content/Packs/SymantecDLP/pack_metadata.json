@@ -1,0 +1,16 @@
+{
+    "name": "Symantec Data Loss Prevention (Beta)",
+    "description": "Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.",
+    "support": "xsoar",
+    "currentVersion": "1.1.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

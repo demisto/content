@@ -1,0 +1,72 @@
+id: blockip_test_playbook
+version: -1
+name: blockip_test_playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 43365063-60a1-4234-8fc9-0d206e581395
+    type: start
+    task:
+      id: 43365063-60a1-4234-8fc9-0d206e581395
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: d4ee0e67-f6ad-4fdb-8254-c813b8c38f0c
+    type: regular
+    task:
+      id: d4ee0e67-f6ad-4fdb-8254-c813b8c38f0c
+      version: -1
+      name: BlockIP
+      description: Blocks IP in configured firewall
+      scriptName: BlockIP
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        simple: 10.10.10.10
+      ipname:
+        simple: nameip
+      rulename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

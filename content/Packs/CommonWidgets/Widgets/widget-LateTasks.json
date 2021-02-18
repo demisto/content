@@ -1,0 +1,28 @@
+{
+ "id": "late-tasks",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Late Tasks by User",
+ "dataType": "tasks",
+ "widgetType": "bar",
+ "query": "replaced:f and dueDate:\u003cnow",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "groupBy": [
+   "assignee"
+  ]
+ },
+ "description": ""
+}

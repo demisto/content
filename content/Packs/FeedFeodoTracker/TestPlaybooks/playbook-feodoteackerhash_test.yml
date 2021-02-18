@@ -1,0 +1,184 @@
+elasticcommonfields: {}
+id: playbook-feodoteackerhash_test
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: playbook-feodoteackerhash_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f30c653b-686a-458c-809c-f74e67c13e70
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: f30c653b-686a-458c-809c-f74e67c13e70
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3584552a-952c-4c09-81e3-f67f033b183d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 3584552a-952c-4c09-81e3-f67f033b183d
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a32eb52e-09c8-4a84-8aaa-1e9ca8842ae7
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a32eb52e-09c8-4a84-8aaa-1e9ca8842ae7
+      version: -1
+      name: feodotracker-hashes-get-indicators
+      script: '|||feodotracker-hashes-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b4b55e7e-7c36-4b52-8e12-7630601a3ba9
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: b4b55e7e-7c36-4b52-8e12-7630601a3ba9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5fb5d74a-be49-42a8-8a66-c13f22da3eef
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 5fb5d74a-be49-42a8-8a66-c13f22da3eef
+      version: -1
+      name: Test Indicator creation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

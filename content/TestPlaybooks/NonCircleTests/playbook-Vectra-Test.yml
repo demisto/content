@@ -1,0 +1,298 @@
+id: Vectra-test
+version: -1
+fromversion: 5.0.0
+name: Vectra-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 96467ba5-e908-4350-80ea-c9aa244a2566
+    type: start
+    task:
+      id: 96467ba5-e908-4350-80ea-c9aa244a2566
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+      - "3"
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": -348,
+          "y": -93
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 6d8fde45-790f-4ae5-8847-87136b36747f
+    type: regular
+    task:
+      id: 6d8fde45-790f-4ae5-8847-87136b36747f
+      version: -1
+      name: vectra-detections
+      description: Detection objects contain all the information related to security
+        events detected on the network
+      script: Vectra|||vectra-detections
+      type: regular
+      iscommand: true
+      brand: Vectra
+    scriptarguments:
+      c_score: "33"
+      c_score_gte: ""
+      category: ""
+      destination: ""
+      detection_id: ""
+      dns_ip: ""
+      dns_request: ""
+      dst_port: ""
+      fields: ""
+      host_id: ""
+      inbound_dns: ""
+      inbound_ip: ""
+      inbound_port: ""
+      inbound_proto: ""
+      last_timestamp: ""
+      max_id: ""
+      min_id: ""
+      ordering: ""
+      outbound_dns: ""
+      outbound_ip: ""
+      outbound_port: ""
+      outbound_proto: ""
+      page: ""
+      page_size: ""
+      proto: ""
+      resp: ""
+      resp_code: ""
+      src_ip: ""
+      state: ""
+      t_score: ""
+      t_score_gte: ""
+      tags: ""
+      type_vname: ""
+    view: |-
+      {
+        "position": {
+          "x": -984,
+          "y": 65
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 092f93b0-a64f-4576-87b1-9ac7a697972c
+    type: regular
+    task:
+      id: 092f93b0-a64f-4576-87b1-9ac7a697972c
+      version: -1
+      name: vectra-hosts
+      description: Host information includes data that correlates the host data to
+        detected security events
+      script: Vectra|||vectra-hosts
+      type: regular
+      iscommand: true
+      brand: Vectra
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      c_score: ""
+      c_score_gte: ""
+      fields: ""
+      host_id: ${VectraRule.Host.ID}
+      key_assest: ""
+      last_detection_timestamp: ""
+      last_source: ""
+      mac_address: ""
+      name: ""
+      ordering: ""
+      page: ""
+      page_size: ""
+      state: ""
+      t_score: ""
+      t_score_gte: ""
+      tags: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 230
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 9949a700-5fe6-448d-82e0-4c625a4b47b7
+    type: regular
+    task:
+      id: 9949a700-5fe6-448d-82e0-4c625a4b47b7
+      version: -1
+      name: vectra-settings
+      description: he settings information includes S-series sensor and X-series configurations
+        input by the administrator
+      script: Vectra|||vectra-settings
+      type: regular
+      iscommand: true
+      brand: Vectra
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 65
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 8352d36e-cde4-44ab-8267-2a1f0b914154
+    type: regular
+    task:
+      id: 8352d36e-cde4-44ab-8267-2a1f0b914154
+      version: -1
+      name: vectra-triage
+      description: The rules branch can be used to retrieve a listing of configured
+        Triage rules
+      script: Vectra|||vectra-triage
+      type: regular
+      iscommand: true
+      brand: Vectra
+    nexttasks:
+      '#none#':
+      - "2"
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 65
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 2ab51de3-07f5-4ef5-8344-d9d759dcdaed
+    type: regular
+    task:
+      id: 2ab51de3-07f5-4ef5-8344-d9d759dcdaed
+      version: -1
+      name: vectra-sensors
+      description: The sensors branch can retrieve a listing of sensors that collect
+        and feed data to the X-series
+      script: Vectra|||vectra-sensors
+      type: regular
+      iscommand: true
+      brand: Vectra
+    nexttasks:
+      '#none#':
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 65
+        }
+      }
+  "8":
+    id: "8"
+    taskid: e7573f1a-eb08-4a93-8252-81162bf16624
+    type: regular
+    task:
+      id: e7573f1a-eb08-4a93-8252-81162bf16624
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: VectraRule.Category
+    view: |-
+      {
+        "position": {
+          "x": -984,
+          "y": 230
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 4aff0110-7c45-4412-859d-5c699673fc3c
+    type: regular
+    task:
+      id: 4aff0110-7c45-4412-859d-5c699673fc3c
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: Endpoint.Hostname
+    view: |-
+      {
+        "position": {
+          "x": -984,
+          "y": 415
+        }
+      }
+  "12":
+    id: "12"
+    taskid: ee6c9c3f-3a3d-4afb-880b-f35d6d950240
+    type: regular
+    task:
+      id: ee6c9c3f-3a3d-4afb-880b-f35d6d950240
+      version: -1
+      name: VerifyContext
+      description: |+
+        Verify path in context
+        - Verify path existence
+        - If matching object is array - verify fields exists in each object in array
+        - If matching object is not array - verify fields exists in matching object
+        - if 'expectedValue' supplied - ensure that given value equal to context path
+
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: ""
+      fields: ""
+      path: VectraSensor.ID
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 230
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 603,
+        "width": 1704,
+        "x": -984,
+        "y": -93
+      }
+    }
+  }
+inputs: []

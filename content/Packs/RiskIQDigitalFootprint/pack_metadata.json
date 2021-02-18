@@ -1,0 +1,52 @@
+{
+    "name": "RiskIQ Digital Footprint",
+    "description": "RiskIQ Digital Footprint integration enables your security team to manage assets outside your firewall and provides you with the ability to add or update assets and analyze your digital footprint from the view of the global adversary.",
+    "support": "partner",
+    "currentVersion": "1.0.4",
+    "author": "RiskIQ",
+    "url": "https://www.riskiq.com/resources/support/",
+    "email": "paloaltonetworks@riskiq.net",
+    "githubUser": "crestdatasystems",
+    "created": "2020-05-19T11:24:24Z",
+    "certification": "certified",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "SANS": {
+            "mandatory": true,
+            "display_name": "SANS"
+        },
+        "GetServerURL": {
+            "mandatory": true,
+            "display_name": "GetServerURL"
+        },
+        "NIST": {
+            "mandatory": true,
+            "display_name": "NIST"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "Phishing",
+        "CommonScripts",
+        "SANS",
+        "GetServerURL",
+        "NIST",
+        "CommonTypes"
+    ]
+}

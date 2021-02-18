@@ -1,0 +1,90 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "participating-incidents",
+	"isPredefined": true,
+	"name": "Participating Incidents",
+	"params": {
+		"tableColumns": [
+			{
+				"isDefault": true,
+				"key": "id",
+				"position": 0,
+				"width": 110
+			},
+			{
+				"isDefault": true,
+				"key": "name",
+				"position": 2,
+				"width": 300
+			},
+			{
+				"isDefault": true,
+				"key": "type",
+				"position": 3,
+				"width": 200
+			},
+			{
+				"isDefault": true,
+				"key": "severity",
+				"position": 4,
+				"width": 80
+			},
+			{
+				"isDefault": true,
+				"key": "status",
+				"position": 5,
+				"width": 80
+			},
+			{
+				"isDefault": true,
+				"key": "owner",
+				"position": 6,
+				"width": 160
+			},
+			{
+				"isDefault": true,
+				"key": "roles",
+				"position": 7,
+				"width": 160
+			},
+			{
+				"isDefault": true,
+				"key": "playbookId",
+				"position": 8,
+				"width": 150
+			},
+			{
+				"isDefault": true,
+				"key": "occurred",
+				"position": 9,
+				"width": 200
+			},
+			{
+				"isDefault": true,
+				"key": "dueDate",
+				"position": 10,
+				"width": 200
+			}
+		]
+	},
+	"query": "-status:closed -category:job investigation.users:{me} and -owner:{me}",
+	"size": 0,
+	"version": -1,
+	"widgetType": "table",
+	"description": "Displays a table of the Active Incidents where the current user is not the owner, but is an investigation Team Member",
+	"fromVersion": "5.0.0"
+}

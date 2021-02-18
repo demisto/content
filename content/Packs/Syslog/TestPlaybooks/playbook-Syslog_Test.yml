@@ -1,0 +1,288 @@
+id: Test Syslog
+version: -1
+name: Test Syslog
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
+    type: start
+    task:
+      id: 45ee5f16-24fb-46f2-8c70-c2e9c55a8380
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7897b5ec-c981-4fdf-8134-50a915c9991b
+    type: regular
+    task:
+      id: 7897b5ec-c981-4fdf-8134-50a915c9991b
+      version: -1
+      name: Get the server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL_syslog
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: de26d64e-1220-485d-8c5a-d6ed2b66c757
+    type: regular
+    task:
+      id: de26d64e-1220-485d-8c5a-d6ed2b66c757
+      version: -1
+      name: syslog-send
+      description: Send a message to syslog
+      script: Syslog Sender|||syslog-send
+      type: regular
+      iscommand: true
+      brand: Syslog Sender
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      address:
+        simple: ${ServerURL.Host}
+      facility: {}
+      level: {}
+      message:
+        simple: This is a test from syslog
+      port:
+        simple: "5140"
+      protocol:
+        simple: TCP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
+    type: regular
+    task:
+      id: 8c7b75d8-f763-4790-862c-9a91a13b6b1f
+      version: -1
+      name: Wait for the incident
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "70"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 507be312-76f3-4d7b-8569-8c94acc0ca40
+    type: regular
+    task:
+      id: 507be312-76f3-4d7b-8569-8c94acc0ca40
+      version: -1
+      name: SearchIncidentsV2
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      details:
+        simple: syslog
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query: {}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
+    type: condition
+    task:
+      id: 2a6e2761-3cbd-43fd-8803-2319f7f973e2
+      version: -1
+      name: Found incidents?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
+    type: title
+    task:
+      id: cf3d7672-e9cb-4bf6-8126-41574aaeb1f3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 755092c0-a08c-465b-8e7f-e180b597bfcf
+    type: regular
+    task:
+      id: 755092c0-a08c-465b-8e7f-e180b597bfcf
+      version: -1
+      name: Wait for syslog
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

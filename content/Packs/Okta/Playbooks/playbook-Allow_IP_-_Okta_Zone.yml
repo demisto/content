@@ -1,0 +1,731 @@
+id: Allow IP - Okta Zone
+version: -1
+name: Allow IP - Okta Zone
+description: "Sync a list of IP addresses to the Okta Network Zone with the given\
+  \ ID. \nExisting IPs in the Okta Zone which are not in the input list will be removed\
+  \ and the indicator will be untagged in Cortex XSOAR.\nIDs can be retrieved  using !okta-list-zones.\
+  \ This playbook supports CIDR notation only (1.1.1.1/32) and not range notation\
+  \ (1.1.1.1-1.1.1.1)"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b98b1ad-9cba-44cf-8113-be7beece394a
+    type: start
+    task:
+      id: 6b98b1ad-9cba-44cf-8113-be7beece394a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1067.5,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d1f0c0ea-52c7-4205-8d23-c981908fefef
+    type: title
+    task:
+      id: d1f0c0ea-52c7-4205-8d23-c981908fefef
+      version: -1
+      name: Allow IPs on Okta (Zone Gateways)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1067.5,
+          "y": 155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1ff33616-3cb5-40c3-8136-0a54d99070f7
+    type: regular
+    task:
+      id: 1ff33616-3cb5-40c3-8136-0a54d99070f7
+      version: -1
+      name: Add indicator Tag
+      description: Adds the tag defined in inputs.IndicatorTagName.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      a: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      alexcustom: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      companysize: {}
+      creationdate: {}
+      custom: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedthreattype: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      indicatorcategory: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags:
+        simple: ${inputs.IndicatorTagName}
+      threattypes: {}
+      trafficlightprotocol: {}
+      trafficlightprotocoltlp: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: ${ListCompare
+          accessor: LeftOnly}
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 697.5,
+          "y": 1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 36612cd2-feea-4fce-888e-8c2aa268d63d
+    type: title
+    task:
+      id: 36612cd2-feea-4fce-888e-8c2aa268d63d
+      version: -1
+      name: Done
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 830f0b19-576d-4aaf-81df-c4bc0b1a0253
+    type: regular
+    task:
+      id: 830f0b19-576d-4aaf-81df-c4bc0b1a0253
+      version: -1
+      name: Map IPs as CIDR ranges
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append: {}
+      key:
+        simple: AllowedCIDRs
+      stringify: {}
+      value:
+        complex:
+          root: ${inputs
+          accessor: IP}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /32
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 943f5208-bda4-44a3-8441-cbd4e4866b7d
+    type: regular
+    task:
+      id: 943f5208-bda4-44a3-8441-cbd4e4866b7d
+      version: -1
+      name: Remove indicator Tag
+      description: Removes the tag defined in inputs.IndicatorTagName.
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${inputs.IndicatorTagName}
+      indicatorsValues:
+        complex:
+          root: ${ListCompare
+          accessor: RightOnly}
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
+    type: regular
+    task:
+      id: fc3ba922-5683-4dad-83ea-bf1a6d015c1d
+      version: -1
+      name: Compare IP list with current Okta allow list
+      description: Compare two lists and put the differences in context.
+      scriptName: CompareLists
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+      - "32"
+    scriptarguments:
+      left:
+        simple: ${AllowedCIDRs}
+      right:
+        complex:
+          root: Okta
+          accessor: Zone.gateways.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f30ec674-ae48-4bd8-895f-d3d065321b48
+    type: condition
+    task:
+      id: f30ec674-ae48-4bd8-895f-d3d065321b48
+      version: -1
+      name: Is Okta V2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Okta v2
+    view: |-
+      {
+        "position": {
+          "x": 1067.5,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: f9a8dbfd-8968-4795-8d34-4126abb93cba
+    type: condition
+    task:
+      id: f9a8dbfd-8968-4795-8d34-4126abb93cba
+      version: -1
+      name: List Sync - Any IPs to be added?
+      description: Check whether any IPs in the playbook input are not already in
+        the Okta Zone and need to be added during the list sync.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.LeftOnly
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: dd8d57c1-87b0-4ca2-826f-550a067a3792
+    type: condition
+    task:
+      id: dd8d57c1-87b0-4ca2-826f-550a067a3792
+      version: -1
+      name: List Sync - Any IPs to be removed?
+      description: Check whether any IPs are in the Okta Zone that are not included
+        in the current playbook input and need to be removed during the
+        list sync.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ListCompare.RightOnly
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 6e0c309f-574a-499b-850d-d4f1dfbf5d8e
+    type: condition
+    task:
+      id: 6e0c309f-574a-499b-850d-d4f1dfbf5d8e
+      version: -1
+      name: Found a zone with the requested ID?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Okta
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Okta.Zone.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.ZoneID
+                      iscontext: true
+                accessor: Zone.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 345,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 5dc772c4-26a7-4dad-8057-f7a802e36e4a
+    type: title
+    task:
+      id: 5dc772c4-26a7-4dad-8057-f7a802e36e4a
+      version: -1
+      name: Zone not found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 4a5cf339-b643-45c3-856b-c7cfdc4ffa83
+    type: regular
+    task:
+      id: 4a5cf339-b643-45c3-856b-c7cfdc4ffa83
+      version: -1
+      name: Engineer - Fix Zone ID and rerun
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 996b88e9-f916-4438-817b-80bf81219a39
+    type: regular
+    task:
+      id: 996b88e9-f916-4438-817b-80bf81219a39
+      version: -1
+      name: Get Okta Zone
+      description: Get a Zone by its ID
+      script: '|||okta-get-zone'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      ZoneID:
+        simple: ${inputs.ZoneID}
+      zoneID:
+        simple: ${inputs.ZoneID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 345,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 48694f8c-1a12-4a80-8847-7ea84f81b15a
+    type: regular
+    task:
+      id: 48694f8c-1a12-4a80-8847-7ea84f81b15a
+      version: -1
+      name: Update Okta Zone with CIDR values
+      description: Update an Okta Zone.
+      script: '|||okta-update-zone'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      gatewayIPs:
+        simple: ${AllowedCIDRs}
+      proxyIPs: {}
+      zoneID:
+        complex:
+          root: Okta
+          accessor: Zone.id
+      zoneName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 697.5,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "33_13_#default#": 0.1,
+      "35_20_yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1965,
+        "width": 1490,
+        "x": 60,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: IP
+  value: {}
+  required: true
+  description: IP addresses to set in the allow list
+  playbookInputQuery:
+- key: ZoneID
+  value: {}
+  required: true
+  description: ID of the Okta Zone to update. Use !okta-list-zones to obtain the available zones.
+  playbookInputQuery:
+- key: IndicatorTagName
+  value:
+    simple: Okta_Zone
+  required: true
+  description: Name of the Indicator Tag to apply to any IPs allowed by this playbook.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

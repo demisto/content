@@ -1,0 +1,34 @@
+<stix:STIX_Package xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2" xmlns:cybox="http://cybox.mitre.org/cybox-2" xmlns:cyboxCommon="http://cybox.mitre.org/common-2" xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2" xmlns:example="http://example.com" xmlns:indicator="http://stix.mitre.org/Indicator-2" xmlns:stix="http://stix.mitre.org/stix-1" xmlns:stixCommon="http://stix.mitre.org/common-1" xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1" xmlns:ttp="http://stix.mitre.org/TTP-1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="example:Package-bc2955f8-f1bb-4f02-b2ed-339d7daf6d75" version="1.2">
+    <stix:STIX_Header>
+        <stix:Title>File Hash Reputation Service Results</stix:Title>
+        <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Malware Artifacts</stix:Package_Intent>
+    </stix:STIX_Header>
+    <stix:Indicators>
+        <stix:Indicator id="example:indicator-14975dea-86cd-4211-a5f8-9c2e4daab69a" timestamp="2015-07-20T19:52:13.853585+00:00" xsi:type="indicator:IndicatorType">
+            <indicator:Title>
+                File Reputation for SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+            </indicator:Title>
+            <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">File Hash Watchlist</indicator:Type>
+            <indicator:Observable id="example:Observable-7b97c8a2-2d0b-4af7-bcf0-cad28f2fea5a">
+                <cybox:Object id="example:File-b04bfc7c-04ae-4dfe-ba8e-a297f0717552">
+                    <cybox:Properties xsi:type="FileObj:FileObjectType">
+                        <FileObj:Hashes>
+                            <cyboxCommon:Hash>
+                                <cyboxCommon:Type condition="Equals" xsi:type="cyboxVocabs:HashNameVocab-1.0">SHA256</cyboxCommon:Type>
+                                <cyboxCommon:Simple_Hash_Value condition="Equals">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</cyboxCommon:Simple_Hash_Value>
+                            </cyboxCommon:Hash>
+                        </FileObj:Hashes>
+                    </cybox:Properties>
+                </cybox:Object>
+            </indicator:Observable>
+            <indicator:Indicated_TTP>
+                <stixCommon:TTP id="example:ttp-23e715a9-24c8-4b21-ba5b-f564d2edc660" timestamp="2015-07-20T19:52:13.854415+00:00" xsi:type="ttp:TTPType">
+                    <ttp:Title>Malicious file</ttp:Title>
+                </stixCommon:TTP>
+            </indicator:Indicated_TTP>
+            <indicator:Confidence timestamp="2015-07-20T19:52:13.854506+00:00">
+                <stixCommon:Value vocab_reference="https://en.wikipedia.org/wiki/Percentage" vocab_name="Percentage">75</stixCommon:Value>
+            </indicator:Confidence>
+        </stix:Indicator>
+    </stix:Indicators>
+</stix:STIX_Package>

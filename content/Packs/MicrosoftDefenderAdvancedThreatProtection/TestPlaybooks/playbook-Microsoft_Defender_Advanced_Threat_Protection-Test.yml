@@ -1,0 +1,970 @@
+id: Microsoft Defender Advanced Threat Protection - Test
+version: -1
+name: Microsoft Defender Advanced Threat Protection - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bbe558a5-322d-409a-8481-fd453f50ad17
+    type: start
+    task:
+      id: bbe558a5-322d-409a-8481-fd453f50ad17
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 14082da1-924e-4b6d-8ddb-89b2be9e4a75
+    type: regular
+    task:
+      id: 14082da1-924e-4b6d-8ddb-89b2be9e4a75
+      version: -1
+      name: Get ATP list alerts
+      script: '|||microsoft-atp-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      category: {}
+      retry-count:
+        simple: "3"
+      severity:
+        simple: Informational
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e54988c1-9fbc-416c-81a9-a2cd471e1396
+    type: condition
+    task:
+      id: e54988c1-9fbc-416c-81a9-a2cd471e1396
+      version: -1
+      name: Assert an alert was fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Alert.ID
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9b4dfca0-dfb9-4747-8bfc-feb744538894
+    type: condition
+    task:
+      id: 9b4dfca0-dfb9-4747-8bfc-feb744538894
+      version: -1
+      name: Assert right machine was fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: FileMachine.Machines.ID
+            iscontext: true
+          right:
+            value:
+              simple: f70f9fe6b29cd9511652434919c6530618f06606
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7c20ceeb-fc28-481b-8334-ec2953a81d59
+    type: title
+    task:
+      id: 7c20ceeb-fc28-481b-8334-ec2953a81d59
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 233e1eda-117f-4372-8b57-17be17e2803a
+    type: regular
+    task:
+      id: 233e1eda-117f-4372-8b57-17be17e2803a
+      version: -1
+      name: Get machines by health status
+      description: Retrieves a collection of machines that have communicated with
+        WDATP cloud on the last 30 days
+      script: '|||microsoft-atp-get-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      health_status:
+        simple: Active
+      hostname: {}
+      ip: {}
+      os_platform: {}
+      retry-count:
+        simple: "3"
+      risk_score: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: cfb963ed-ae69-4ec0-8592-45ea7eb09df8
+    type: regular
+    task:
+      id: cfb963ed-ae69-4ec0-8592-45ea7eb09df8
+      version: -1
+      name: Create alert with time as name
+      script: '|||microsoft-atp-create-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      category:
+        simple: None
+      description:
+        simple: Created for test
+      event_time:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Timestamp
+      machine_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result.DeviceId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      recommended_action:
+        simple: test alert
+      report_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ReportId
+      retry-count:
+        simple: "3"
+      severity:
+        simple: Medium
+      title:
+        simple: test alert
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: eef84a06-1462-43a5-8c6e-b363a2f29215
+    type: condition
+    task:
+      id: eef84a06-1462-43a5-8c6e-b363a2f29215
+      version: -1
+      name: Assert alert created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
+    type: regular
+    task:
+      id: 6cd4667e-c4b0-40a0-8311-31ce26fb7e1b
+      version: -1
+      name: Advance query
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      query:
+        simple: DeviceLogonEvents | take 1 | project DeviceId, ReportId, tostring(Timestamp)
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 97a04323-a1e2-4096-81eb-3a8aae0c3367
+    type: condition
+    task:
+      id: 97a04323-a1e2-4096-81eb-3a8aae0c3367
+      version: -1
+      name: Assert query results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Hunt.Result.ReportId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5d40cf49-a043-4cc8-861c-077dc3515c9d
+    type: regular
+    task:
+      id: 5d40cf49-a043-4cc8-861c-077dc3515c9d
+      version: -1
+      name: Get machine related to file
+      description: Get a collection of machines related to a given file hash.
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "29"
+      - "26"
+      - "28"
+    scriptarguments:
+      file:
+        simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
+      file_hash:
+        simple: 36c5d12033b2eaf251bae61c00690ffb17fddc87
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: bd37e98b-5207-4545-832b-d60faf350a79
+    type: regular
+    task:
+      id: bd37e98b-5207-4545-832b-d60faf350a79
+      version: -1
+      name: Get alert related files
+      description: Retrieves the files associated to a specific alert.
+      script: '|||microsoft-atp-get-alert-related-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        complex:
+          root: MicrosoftATP.Alert
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      limit:
+        simple: "10"
+      offset: {}
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
+    type: regular
+    task:
+      id: 9fe4eaa2-d2c9-4f35-8417-f3118481efcd
+      version: -1
+      name: Get file related alerts
+      description: Retrieves a collection of alerts related to a given file hash.
+      script: '|||microsoft-atp-get-file-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      file_hash:
+        complex:
+          root: MicrosoftATP.FileMachine
+          accessor: File
+      retry-count:
+        simple: "3"
+      sha1:
+        complex:
+          root: MicrosoftATP
+          accessor: AlertFile.Files.Sha1
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 4f7c5e22-d48d-43be-8cc4-d8ed4634f39f
+    type: regular
+    task:
+      id: 4f7c5e22-d48d-43be-8cc4-d8ed4634f39f
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: db30a4fc-cc43-47b7-82e8-6740fcd6f964
+    type: regular
+    task:
+      id: db30a4fc-cc43-47b7-82e8-6740fcd6f964
+      version: -1
+      name: Get file statistics
+      description: Retrieves the statistics for the given file.
+      script: '|||microsoft-atp-get-file-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      file_hash:
+        complex:
+          root: MicrosoftATP.FileMachine
+          accessor: File
+      retry-count:
+        simple: "3"
+      sha1:
+        complex:
+          root: MicrosoftATP
+          accessor: AlertFile.Files.Sha1
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 5de1b894-9f4c-409e-8acc-2e949c42462e
+    type: regular
+    task:
+      id: 5de1b894-9f4c-409e-8acc-2e949c42462e
+      version: -1
+      name: Get machine action data
+      description: Return the machine's actions. If you set an action id it will return
+        the info on the specific action
+      script: '|||microsoft-atp-list-machine-actions-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      id: {}
+      machine_id:
+        complex:
+          root: MicrosoftATP.FileMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      requestor: {}
+      retry-count:
+        simple: "3"
+      status: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 5fcfe8ee-2a24-440d-837f-7345f3b056b0
+    type: regular
+    task:
+      id: 5fcfe8ee-2a24-440d-837f-7345f3b056b0
+      version: -1
+      name: Get domain statistics
+      description: Retrieves the statistics on the given domain.
+      script: '|||microsoft-atp-get-domain-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      domain:
+        simple: google.com
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: a4600ea9-fcba-4012-88c7-3cb6d4e7af98
+    type: regular
+    task:
+      id: a4600ea9-fcba-4012-88c7-3cb6d4e7af98
+      version: -1
+      name: Get ip statistics
+      description: Retrieves the statistics for the given IP.
+      script: '|||microsoft-atp-get-ip-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 0ff1d5db-dd25-4686-8be5-602e0955d0ca
+    type: regular
+    task:
+      id: 0ff1d5db-dd25-4686-8be5-602e0955d0ca
+      version: -1
+      name: Get user alerts
+      description: Retrieves a collection of alerts related to a given user ID.
+      script: '|||microsoft-atp-get-user-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      username:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 1dd80bb4-b4c6-433f-8498-3ed861a5b86a
+    type: regular
+    task:
+      id: 1dd80bb4-b4c6-433f-8498-3ed861a5b86a
+      version: -1
+      name: Get user machines
+      description: Retrieves a collection of machines related to a given user ID.
+      script: '|||microsoft-atp-get-user-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      username:
+        simple: demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 02e4f822-68e9-4775-8cfb-a71f994e95ec
+    type: regular
+    task:
+      id: 02e4f822-68e9-4775-8cfb-a71f994e95ec
+      version: -1
+      name: Add machine tag
+      description: Adds or remove tag to a specific Machine.
+      script: '|||microsoft-atp-add-remove-machine-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      action:
+        simple: Add
+      machine_id:
+        complex:
+          root: MicrosoftATP.FileMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      retry-count:
+        simple: "3"
+      tag:
+        simple: testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 1d7b0a8f-484f-4365-8cc6-27ce3d8c186b
+    type: regular
+    task:
+      id: 1d7b0a8f-484f-4365-8cc6-27ce3d8c186b
+      version: -1
+      name: Remove machine tag
+      description: Adds or remove tag to a specific Machine.
+      script: '|||microsoft-atp-add-remove-machine-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action:
+        simple: Remove
+      machine_id:
+        simple: f70f9fe6b29cd9511652434919c6530618f06606
+      retry-count:
+        simple: "3"
+      tag:
+        simple: testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 37a07936-c5d0-4c41-83f8-88538aa1d22d
+    type: regular
+    task:
+      id: 37a07936-c5d0-4c41-83f8-88538aa1d22d
+      version: -1
+      name: Get file related machines
+      description: Get a collection of machines related to a given file hash.
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      file:
+        simple: ${MicrosoftATP.FileStatistics.Sha1}
+      file_hash:
+        simple: ${MicrosoftATP.FileStatistics.Sha1}
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 62ff61c7-b92a-4693-8480-220d3105dee7
+    type: regular
+    task:
+      id: 62ff61c7-b92a-4693-8480-220d3105dee7
+      version: -1
+      name: update alert
+      description: Update the properties of an alert entity
+      script: '|||microsoft-atp-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Alert.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      assigned_to: {}
+      classification:
+        simple: Unknown
+      comment:
+        simple: testing
+      determination: {}
+      retry-count:
+        simple: "3"
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,75 @@
+id: ExpanseParseRawIncident
+version: -1
+name: Expanse Incident Playbook
+description: Parses incident from Expanse in raw json to readable output
+starttaskid: "0"
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: ba6bf399-1fb9-4f3c-89a0-d282a792edcd
+    type: start
+    task:
+      id: ba6bf399-1fb9-4f3c-89a0-d282a792edcd
+      version: -1
+      name: ""
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 06f18e94-8923-4e60-85bc-0a3b6b818f3e
+    type: regular
+    task:
+      id: 06f18e94-8923-4e60-85bc-0a3b6b818f3e
+      version: -1
+      name: Get Expanse Event
+      description: Parses incident from Expanse in raw json to readable output
+      scriptName: ExpanseParseRawIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expanse_raw_json_event:
+        simple: ${incident.expanserawjsonevent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 315,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

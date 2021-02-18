@@ -1,0 +1,31 @@
+{
+ "id": "memory-current-usage",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Memory Current Usage",
+ "dataType": "system",
+ "widgetType": "number",
+ "query": "memory.usedPercent",
+ "isPredefined": true,
+ "params": {
+  "currencySign": "%",
+  "signAlignment": "right",
+  "colors": {
+   "isEnabled": true,
+   "items": {
+    "#FF1B15": {
+     "value": 90
+    },
+    "#FAC100": {
+     "value": 70
+    },
+    "#00CD33": {
+     "value": -1
+    }
+   },
+   "type": "above"
+  }
+ },
+ "size": 0,
+ "description": ""
+}

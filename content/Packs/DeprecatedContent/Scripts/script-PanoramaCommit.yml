@@ -1,0 +1,26 @@
+commonfields:
+  id: PanoramaCommit
+  version: -1
+name: PanoramaCommit
+script: >-
+  var reqArgs = {
+          type: 'commit',
+          cmd: '<commit></commit>'
+      };
+  return executeCommand('panorama', reqArgs)[0].Contents.response['-status'];
+type: javascript
+tags:
+- panorama
+- firewall
+comment: Deprecated. Commit configuration to panorama
+system: true
+deprecated: true
+scripttarget: 0
+args: []
+dependson:
+  must:
+  - panorama
+timeout: 0s
+tests:
+- palo_alto_firewall_test_pb
+fromversion: 5.0.0

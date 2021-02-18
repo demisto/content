@@ -1,0 +1,77 @@
+args:
+- default: true
+  description: sane report json file contents base64
+  isArray: false
+  name: sane_pdf_report_base64
+  required: true
+  secret: false
+- default: false
+  defaultValue: portrait
+  description: orientation of the report
+  isArray: false
+  name: orientation
+  required: false
+  secret: false
+- default: false
+  defaultValue: A4
+  description: the paper size of the report
+  isArray: false
+  name: paperSize
+  required: false
+  secret: false
+- default: false
+  defaultValue: '4000'
+  description: timeout for the report generation execution time
+  isArray: false
+  name: resourceTimeout
+  required: false
+  secret: false
+- default: false
+  defaultValue: pdf
+  description: type of report generated
+  isArray: false
+  name: reportType
+  required: false
+  secret: false
+- default: false
+  description: customer's logo
+  isArray: false
+  name: customerLogo
+  required: false
+  secret: false
+- default: false
+  description: demito's logo
+  isArray: false
+  name: demistoLogo
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'false'
+  description: flag to use headers in the report or not
+  isArray: false
+  name: disableHeaders
+  required: false
+  secret: false
+comment: Deprecated. Parse Sane-json-reports and export them as pdf files (used internally, thus
+  deprecated).
+commonfields:
+  id: SanePdfReports
+  version: -1
+enabled: true
+name: SanePdfReports
+script: '-'
+subtype: python3
+system: false
+tags:
+- sane-pdf-reports
+- sane-reports
+- pdf
+timeout: '0'
+type: python
+dockerimage: demisto/sane-pdf-reports:1.0.0.15795
+runas: DBotWeakRole
+runonce: false
+tests:
+- No Test
+deprecated: true
+fromversion: 5.5.0

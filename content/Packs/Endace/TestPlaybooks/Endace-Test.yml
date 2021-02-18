@@ -1,0 +1,782 @@
+id: Endace-Test
+version: -1
+name: Endace-Test
+description: Endace Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f3e2eea4-7de4-423b-8887-9bf515a1aaff
+    type: start
+    task:
+      id: f3e2eea4-7de4-423b-8887-9bf515a1aaff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 35a49124-af31-4b5a-8596-2b495af0a6a6
+    type: regular
+    task:
+      id: 35a49124-af31-4b5a-8596-2b495af0a6a6
+      version: -1
+      name: endace-create-search
+      description: Create a search task on EndaceProbe. Search is issued against all
+        Rotation Files on EndaceProbe.
+      script: Endace|||endace-create-search
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      dest_host_list:
+        simple: ${inputs.dest_host_list}
+      dest_port_list:
+        simple: ${inputs.dest_port_list}
+      end:
+        simple: ${inputs.end}
+      ip:
+        simple: ${inputs.ip}
+      port:
+        simple: ${inputs.port}
+      protocol:
+        simple: ${inputs.protocol}
+      src_host_list:
+        simple: ${inputs.src_host_list}
+      src_port_list:
+        simple: ${inputs.src_port_list}
+      start:
+        simple: ${inputs.start}
+      timeframe:
+        simple: ${inputs.timeframe}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: e636823a-212a-4b2c-8041-8c3a0b2c4714
+    type: condition
+    task:
+      id: e636823a-212a-4b2c-8041-8c3a0b2c4714
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Search.Task.JobID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0e0d40ad-cd24-471d-8aa4-9fcd31642529
+    type: regular
+    task:
+      id: 0e0d40ad-cd24-471d-8aa4-9fcd31642529
+      version: -1
+      name: endace-get-search-status
+      description: Get search status from EndaceProbe. This command can be polled
+        in a loop until response is received or polling timer is over.
+      script: Endace|||endace-get-search-status
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      jobid:
+        simple: ${Endace.Search.Task.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 0a5c0064-2951-4601-84b0-d803d0c6f21a
+    type: condition
+    task:
+      id: 0a5c0064-2951-4601-84b0-d803d0c6f21a
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Search.Response.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 30f844b4-4afd-449a-8119-7a8bd43bb6e1
+    type: regular
+    task:
+      id: 30f844b4-4afd-449a-8119-7a8bd43bb6e1
+      version: -1
+      name: endace-delete-search-task
+      description: Delete search task
+      script: Endace|||endace-delete-search-task
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      jobid:
+        simple: ${Endace.Search.Task.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 3ae61033-e277-4f58-861f-af54727959a2
+    type: condition
+    task:
+      id: 3ae61033-e277-4f58-861f-af54727959a2
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Search.Delete.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 94806394-c111-43fe-8d6c-d4e01f60955c
+    type: regular
+    task:
+      id: 94806394-c111-43fe-8d6c-d4e01f60955c
+      version: -1
+      name: endace-create-archive
+      description: Create an archive task to archive packets of interest on EndaceProbe.
+        Archived packets can later be downloaded from EndaceProbe as a PCAP file.
+        Archived Files never expire. Allowed chars are text, numbers, dash and underscore.
+      script: Endace|||endace-create-archive
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      archive_filename:
+        simple: ${inputs.archive_filename}
+      dest_host_list:
+        simple: ${inputs.dest_host_list}
+      dest_port_list:
+        simple: ${inputs.dest_port_list}
+      end:
+        simple: ${inputs.end}
+      ip:
+        simple: ${inputs.ip}
+      port:
+        simple: ${inputs.port}
+      protocol:
+        simple: ${inputs.protocol}
+      src_host_list:
+        simple: ${inputs.src_host_list}
+      src_port_list:
+        simple: ${inputs.src_port_list}
+      start:
+        simple: ${inputs.start}
+      timeframe:
+        simple: ${inputs.timeframe}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b26e889c-21e9-48b7-8b2e-60fd4e9e7a1e
+    type: condition
+    task:
+      id: b26e889c-21e9-48b7-8b2e-60fd4e9e7a1e
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Archive.Task.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c3855662-b1f2-4148-883e-e499c214d937
+    type: regular
+    task:
+      id: c3855662-b1f2-4148-883e-e499c214d937
+      version: -1
+      name: endace-get-archive-status
+      description: get status of archived task
+      script: Endace|||endace-get-archive-status
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      archive_filename:
+        simple: ${Endace.Archive.Task.FileName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: ca25e4d6-375b-4f52-87ec-f0b21260864c
+    type: condition
+    task:
+      id: ca25e4d6-375b-4f52-87ec-f0b21260864c
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Archive.Response.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c094b797-b94e-4320-814e-9db9dbbb3afd
+    type: regular
+    task:
+      id: c094b797-b94e-4320-814e-9db9dbbb3afd
+      version: -1
+      name: endace-delete-archive-task
+      description: delete archive task
+      script: Endace|||endace-delete-archive-task
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      jobid:
+        simple: ${Endace.Archive.Task.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3b55d580-bd38-4828-85e0-cea2b8c4288e
+    type: condition
+    task:
+      id: 3b55d580-bd38-4828-85e0-cea2b8c4288e
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Archive.Delete.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 59b63245-3dfa-49e1-89da-d90f63e9ea2c
+    type: regular
+    task:
+      id: 59b63245-3dfa-49e1-89da-d90f63e9ea2c
+      version: -1
+      name: endace-download-pcap
+      description: Download a copy of the PCAP file from EndaceProbe if PCAP file
+        size is within the threshold value defined by filesizelimit.
+      script: Endace|||endace-download-pcap
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      filename:
+        simple: ${Endace.Archive.Task.FileName}
+      filesizelimit:
+        simple: ${inputs.download_threshold}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 26e1e12f-0f19-4e27-8f03-6b1c08763893
+    type: condition
+    task:
+      id: 26e1e12f-0f19-4e27-8f03-6b1c08763893
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.Download.PCAP.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ea529920-59f6-4fe9-84b6-09ff9797292f
+    type: regular
+    task:
+      id: ea529920-59f6-4fe9-84b6-09ff9797292f
+      version: -1
+      name: endace-delete-archived-file
+      description: Delete an archived file from EndaceProbe.
+      script: Endace|||endace-delete-archived-file
+      type: regular
+      iscommand: true
+      brand: Endace
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      archived_filename:
+        simple: ${Endace.Archive.Task.FileName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 70ee008a-db87-4ce7-868d-29de93c4756d
+    type: condition
+    task:
+      id: 70ee008a-db87-4ce7-868d-29de93c4756d
+      version: -1
+      name: verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "YES":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endace.ArchivedFile.Delete.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: f7dbc550-8dc3-4ee6-8d73-d3c06596ebfd
+    type: title
+    task:
+      id: f7dbc550-8dc3-4ee6-8d73-d3c06596ebfd
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ba73833d-ec64-4131-88a5-7a1982cda91f
+    type: regular
+    task:
+      id: ba73833d-ec64-4131-88a5-7a1982cda91f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all: {}
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: start
+  value: {}
+  required: false
+  description: Event Start Time in ISO 8601 format as in 2020-04-08T15:46:30
+  playbookInputQuery:
+- key: end
+  value: {}
+  required: false
+  description: Event End Time in ISO 8601 format  as in 2020-04-08T15:46:30
+  playbookInputQuery:
+- key: src_host_list
+  value: {}
+  required: false
+  description: List of comma delimited Source IP addresses to search with a maximum
+    of 10 IP addresses per search. For valid search either a Src Host or a Dest Host
+    value is required.
+  playbookInputQuery:
+- key: dest_host_list
+  value: {}
+  required: false
+  description: List of comma delimited Destination IP addresses to search with a maximum
+    of 10 IP addresses per search. For valid search either a Src Host or a Dest Host
+    value is required.
+  playbookInputQuery:
+- key: src_port_list
+  value: {}
+  required: false
+  description: List of comma delimited Source Port addresses to search with a maximum
+    of 10 Port addresses per search.
+  playbookInputQuery:
+- key: dest_port_list
+  value: {}
+  required: false
+  description: List of comma delimited Destination Port addresses to search with a
+    maximum of 10 Port addresses per search.
+  playbookInputQuery:
+- key: protocol
+  value: {}
+  required: false
+  description: IANA defined IP Protocol Name or Number. For example - either use TCP
+    or tcp or 6 for tcp protocol
+  playbookInputQuery:
+- key: timeframe
+  value: {}
+  required: false
+  description: Event timeframe to search. Select one of the values from  30seconds,
+    1minute, 5minutes, 10minutes, 30minutes, 1hour, 2hours, 5hours, 10hours, 12hours,
+    1day, 3days, 5days, 1week. Timeframe works as search for last n seconds if start
+    and end time is not provided. For example, by specifying 1h as the timeframe,
+    analyst can schedule a search for last 3600s. If both start and end time is provided,
+    timeframe value is ignored. If either start or end time is provided along with
+    timeframe, the respective start or end time is calculated accordingly. Initial
+    value of timeframe is 1hour.
+  playbookInputQuery:
+- key: archive_filename
+  value: {}
+  required: true
+  description: Name of the archive file. For example, archive_filename could be an
+    event ID. To keep archive filename unique, value of epoch seconds at the time
+    of execution of the command is appended to this filename argument. For example
+    - if the event id is 123456789, then archive_filename is 123456789-<epochtime>.
+  playbookInputQuery:
+- key: ip
+  value: {}
+  required: false
+  description: directionless ip address. For valid search either a IP or Src Host
+    or a Dest Host value is required
+  playbookInputQuery:
+- key: port
+  value: {}
+  required: false
+  description: 'directionless port. '
+  playbookInputQuery:
+- key: delete_archive
+  value: {}
+  required: false
+  description: 'Delete archived file 0: Don''t delete archived file. 1: Delete archived
+    file. By default archived files on EndaceProbe won''t be deleted'
+  playbookInputQuery:
+- key: download_threshold
+  value: {}
+  required: false
+  description: PCAP file download size limit in MegaBytes. For example for 10MB, value
+    is 10. Minimum value is 1(MB).
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0

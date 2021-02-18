@@ -1,0 +1,141 @@
+id: HTTPListRedirects Basic Test
+version: -1
+name: HTTPListRedirects Basic Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c9a1c1c7-85c2-4270-8fc9-48e9235d1be1
+    type: start
+    task:
+      id: c9a1c1c7-85c2-4270-8fc9-48e9235d1be1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8423b0b5-829e-4ac1-88cc-c247fc291887
+    type: regular
+    task:
+      id: 8423b0b5-829e-4ac1-88cc-c247fc291887
+      version: -1
+      name: HTTPListRedirects
+      description: List the redirects for a given URL
+      scriptName: HTTPListRedirects
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context: {}
+      url:
+        simple: http://google.com
+      useHead:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0e0a70e6-71f5-49b6-885f-b1e992a35a7b
+    type: condition
+    task:
+      id: 0e0a70e6-71f5-49b6-885f-b1e992a35a7b
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      left:
+        simple: ${.=val.URL.length}
+      right:
+        simple: "2"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6539bd08-2588-4d1f-8c02-52afe1e4b7c3
+    type: title
+    task:
+      id: 6539bd08-2588-4d1f-8c02-52afe1e4b7c3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

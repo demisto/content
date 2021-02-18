@@ -1,0 +1,33 @@
+{
+    "name": "Farsight DNSDB",
+    "description": "Query Farsight DNSDB service",
+    "support": "partner",
+    "currentVersion": "2.1.1",
+    "author": "Farsight Security, Inc.",
+    "url": "https://www.farsightsecurity.com",
+    "email": "support@farsightsecurity.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "githubUser": [
+        "farsightsec",
+        "dnsdb"
+    ],
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-07-20T00:00:00Z",
+    "beta": false,
+    "deprecated": false,
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
+    ],
+    "certification": "certified"
+}

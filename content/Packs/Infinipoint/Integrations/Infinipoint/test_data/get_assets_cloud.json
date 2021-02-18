@@ -1,0 +1,26 @@
+[
+  {
+    "$device": "a523014f-1612-4b65-90a8-7974b116cb44",
+    "$host": "ubu-et",
+    "$time": "2020-07-13T16:19:37.000Z",
+    "$type": "csv",
+    "cloud_scan_timestamp": 1594644075,
+    "cpu_brand": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+    "cpu_logical_cores": "1",
+    "cpu_physical_cores": "1",
+    "hardware_model": "Google Compute Engine",
+    "hardware_serial": "GoogleCloud-46BCBFA9C0E1789A71BA4A36CAD5E7A0",
+    "hardware_vendor": "Google",
+    "instance_id": "7730283300603950466",
+    "kernel_version": "5.4.0-1019-gcp",
+    "os_build": "",
+    "os_name": "Ubuntu",
+    "os_patch_version": "",
+    "os_type": "2",
+    "os_version": "20.04 LTS (Focal Fossa)",
+    "physical_memory": "4.0",
+    "platform": "ubuntu",
+    "source": "GCP API",
+    "user": "eturjeman_riscale_com"
+  }
+]

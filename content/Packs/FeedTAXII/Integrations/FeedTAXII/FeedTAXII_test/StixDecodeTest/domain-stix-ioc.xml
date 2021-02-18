@@ -1,0 +1,34 @@
+<stix:STIX_Package xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:DomainNameObj="http://cybox.mitre.org/objects#DomainNameObject-1" xmlns:ctix="https://cyware.com" xmlns:cybox="http://cybox.mitre.org/cybox-2" xmlns:tlpMarking="http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1" xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1" xmlns:stixCommon="http://stix.mitre.org/common-1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:cyboxCommon="http://cybox.mitre.org/common-2" xmlns:marking="http://data-marking.mitre.org/Marking-1" xmlns:stix="http://stix.mitre.org/stix-1" xmlns:indicator="http://stix.mitre.org/Indicator-2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1" xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1" id="ctix:Package-3882ea02-70a9-4f3b-b6e4-9b3e2f60943f" version="1.2">
+    <stix:STIX_Header>
+        <stix:Title>Indicatore_Mrch5</stix:Title>
+        <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Watchlist</stix:Package_Intent>
+        <stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Malware Artifacts</stix:Package_Intent>
+        <stix:Handling>
+            <marking:Marking id="ctix:Marking-70bbc0eb-cd0d-431f-9d10-035d2cb80350">
+                <marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" color="RED"/>
+            </marking:Marking>
+        </stix:Handling>
+    </stix:STIX_Header>
+    <stix:Indicators>
+        <stix:Indicator id="ctix:indicator-1b3927bc-0602-4bf8-9e6a-8f466b500eb9" timestamp="2018-03-05T10:44:13.381315+00:00" xsi:type="indicator:IndicatorType" version="2.2">
+            <indicator:Title>Info Indicators_01</indicator:Title>
+            <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">Domain Watchlist</indicator:Type>
+            <indicator:Description>New STIX info</indicator:Description>
+            <indicator:Observable id="ctix:Observable-c263575b-015f-4fa7-a22e-43e3989044a9">
+                <cybox:Title>testing obs1</cybox:Title>
+                <cybox:Description>testing</cybox:Description>
+                <cybox:Object id="ctix:DomainName-e57d4398-d295-4f35-95c4-9b63dbe7273b">
+                    <cybox:Properties xsi:type="DomainNameObj:DomainNameObjectType" type="FQDN">
+                        <DomainNameObj:Value>https://demisto.com</DomainNameObj:Value>
+                    </cybox:Properties>
+                </cybox:Object>
+            </indicator:Observable>
+            <indicator:Likely_Impact timestamp="2018-03-05T10:44:13.538649+00:00">
+                <stixCommon:Value xsi:type="stixVocabs:HighMediumLowVocab-1.0">Unknown</stixCommon:Value>
+            </indicator:Likely_Impact>
+            <indicator:Confidence timestamp="2018-03-05T10:44:13.526898+00:00">
+                <stixCommon:Value xsi:type="stixVocabs:HighMediumLowVocab-1.0">Unknown</stixCommon:Value>
+            </indicator:Confidence>
+        </stix:Indicator>
+    </stix:Indicators>
+</stix:STIX_Package>

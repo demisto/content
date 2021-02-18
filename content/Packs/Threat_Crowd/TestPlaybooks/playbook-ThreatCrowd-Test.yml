@@ -1,0 +1,483 @@
+id: ThreatCrowd - Test
+version: -1
+name: ThreatCrowd - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 146ccd6d-3a9f-4f7a-82d9-78a04fcd25c7
+    type: start
+    task:
+      id: 146ccd6d-3a9f-4f7a-82d9-78a04fcd25c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 86ebb7e8-8a8a-44d7-894f-34393cc3c972
+    type: regular
+    task:
+      id: 86ebb7e8-8a8a-44d7-894f-34393cc3c972
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1f3e401e-d452-46d0-88a8-44302d57c802
+    type: regular
+    task:
+      id: 1f3e401e-d452-46d0-88a8-44302d57c802
+      version: -1
+      name: threat-crowd-email
+      description: Get email report
+      script: '|||threat-crowd-email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      email:
+        simple: william19770319@yahoo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1a1daf71-e646-4f0b-89b0-0a22a7bf8e4e
+    type: condition
+    task:
+      id: 1a1daf71-e646-4f0b-89b0-0a22a7bf8e4e
+      version: -1
+      name: validate-email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: william19770319@yahoo.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email.Type
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2969e269-beb3-4cdc-81a9-0474caf6e4c5
+    type: regular
+    task:
+      id: 2969e269-beb3-4cdc-81a9-0474caf6e4c5
+      version: -1
+      name: threat-crowd-ip
+      description: Get ip report
+      script: '|||threat-crowd-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 15fab929-620f-40a9-82cd-63a070cbaeb2
+    type: condition
+    task:
+      id: 15fab929-620f-40a9-82cd-63a070cbaeb2
+      version: -1
+      name: validate-domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.ThreatCrowd.Votes
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6549ec98-67ef-4033-8dcd-5d442da58ebc
+    type: regular
+    task:
+      id: 6549ec98-67ef-4033-8dcd-5d442da58ebc
+      version: -1
+      name: threat-crowd-domain
+      description: Get domain report
+      script: '|||threat-crowd-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: ynet.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7e8e728f-959b-4135-83b4-04cd0790c877
+    type: condition
+    task:
+      id: 7e8e728f-959b-4135-83b4-04cd0790c877
+      version: -1
+      name: validate-domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: ynet.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.ThreatCrowd.Votes
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: e26a619b-610e-4945-8f24-2660bd736d14
+    type: regular
+    task:
+      id: e26a619b-610e-4945-8f24-2660bd736d14
+      version: -1
+      name: threat-crowd-antivirus
+      description: Get antivirus report
+      script: '|||threat-crowd-antivirus'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      antivirus:
+        simple: plugx
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: d27b9d02-61ec-454d-8be2-835e61d8618a
+    type: condition
+    task:
+      id: d27b9d02-61ec-454d-8be2-835e61d8618a
+      version: -1
+      name: validate-antivirus
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatCrowd.AntiVirus.Name
+            iscontext: true
+          right:
+            value:
+              simple: plugx
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 90692525-531c-42d5-8688-f544d4c468ed
+    type: regular
+    task:
+      id: 90692525-531c-42d5-8688-f544d4c468ed
+      version: -1
+      name: threat-crowd-file
+      description: Get file report
+      script: '|||threat-crowd-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      file:
+        simple: ec8c89aa5e521572c74e2dd02a4daf78
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: b622b75e-a241-43d6-8110-511184b25ca7
+    type: condition
+    task:
+      id: b622b75e-a241-43d6-8110-511184b25ca7
+      version: -1
+      name: validate-file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.ThreatCrowd.Domains
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: ec8c89aa5e521572c74e2dd02a4daf78
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 6beca9de-474f-42d8-8487-526ac2000286
+    type: title
+    task:
+      id: 6beca9de-474f-42d8-8487-526ac2000286
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

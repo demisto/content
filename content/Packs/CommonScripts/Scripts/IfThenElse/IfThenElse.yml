@@ -1,0 +1,30 @@
+commonfields:
+  id: If-Then-Else
+  version: -1
+name: If-Then-Else
+script: ''
+type: javascript
+tags:
+- transformer
+- general
+comment: A transformer for simple if-then-else logic.
+enabled: true
+args:
+- name: value
+  required: true
+  description: The value to evaluate
+- name: equals
+  required: true
+  description: If value equals this
+- name: then
+  required: true
+  description: Return this value if 'equals' is true
+- name: else
+  required: true
+  description: Return this value if 'equals' is false
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- IfThenElse-Test

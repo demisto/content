@@ -1,0 +1,544 @@
+id: access_investigation_-_qradar
+version: -1
+name: Access Investigation - QRadar
+fromversion: 5.0.0
+description: |-
+  This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
+
+  The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9191bc70-1a40-4150-83d9-66731d89243f
+    type: start
+    task:
+      id: 9191bc70-1a40-4150-83d9-66731d89243f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -640
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 0397e09e-ea98-47a4-8148-7df722f74fe4
+    type: title
+    task:
+      id: 0397e09e-ea98-47a4-8148-7df722f74fe4
+      version: -1
+      name: QRadar alert
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -510
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 6f12a822-db6c-40b7-813d-714a77e77f1f
+    type: playbook
+    task:
+      id: 6f12a822-db6c-40b7-813d-714a77e77f1f
+      version: -1
+      name: QRadar - Get offense correlations v2
+      description: |-
+        Run on a QRadar offense to get more information:
+
+        * Get all correlations relevant to the offense
+        * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
+
+        Inputs:
+        * GetCorrelationLogs (default: False)
+        * MaxLogsCount (default: 20)
+      playbookName: QRadar - Get offense correlations v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      GetCorrelationLogs:
+        simple: "True"
+      ID:
+        complex:
+          root: incident
+          accessor: labels.id
+      MaxLogsCount:
+        simple: "20"
+      StartTime:
+        complex:
+          root: Time
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 552536df-def5-4b43-862d-27dfd4fc368b
+    type: playbook
+    task:
+      id: 552536df-def5-4b43-862d-27dfd4fc368b
+      version: -1
+      name: Access Investigation - Generic
+      description: ""
+      playbookName: Access Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      DstIP:
+        complex:
+          root: QRadar
+          accessor: Correlation.DestinationIP
+          transformers:
+          - operator: uniq
+      SrcIP:
+        complex:
+          root: QRadar
+          accessor: Correlation.SourceIP
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: QRadar
+          accessor: Correlation.Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f5971b5b-220a-4d33-814f-5a1b428cc6b5
+    type: title
+    task:
+      id: f5971b5b-220a-4d33-814f-5a1b428cc6b5
+      version: -1
+      name: Investigate access incident
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 12caaa45-7f58-4a12-8c36-319eaa965335
+    type: title
+    task:
+      id: 12caaa45-7f58-4a12-8c36-319eaa965335
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 062be244-4158-4ac7-8f2b-ce9e6693ccca
+    type: regular
+    task:
+      id: 062be244-4158-4ac7-8f2b-ce9e6693ccca
+      version: -1
+      name: Set QRadar information into access custom fields
+      description: |-
+        Set the information retrieved from QRadar into the access incident custom fields:
+        * Dest
+        * Src
+        * Src User
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest:
+        complex:
+          root: QRadar
+          accessor: Correlation.DestinationIP
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src:
+        complex:
+          root: QRadar
+          accessor: Correlation.SourceIP
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      srcntdomain: {}
+      srcuser:
+        complex:
+          root: QRadar
+          accessor: Correlation.Username
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 975ea04b-4f88-4d4b-87f2-e84069981424
+    type: condition
+    task:
+      id: 975ea04b-4f88-4d4b-87f2-e84069981424
+      version: -1
+      name: Is QRadar v1 enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aac3592e-525f-41ad-8ca7-97b3ac752554
+    type: condition
+    task:
+      id: aac3592e-525f-41ad-8ca7-97b3ac752554
+      version: -1
+      name: Is QRadar v2 enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 58b12c72-eff4-40eb-850d-f2950246e20c
+    type: regular
+    task:
+      id: 58b12c72-eff4-40eb-850d-f2950246e20c
+      version: -1
+      name: Set timestamp to epoch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: incident.labels
+          accessor: start_time
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1fd3c2d2-c84b-485b-8a79-8dbb71e767c7
+    type: regular
+    task:
+      id: 1fd3c2d2-c84b-485b-8a79-8dbb71e767c7
+      version: -1
+      name: Set timestamp
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: inputs.StartTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1415,
+        "width": 1200,
+        "x": -360,
+        "y": -640
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No test

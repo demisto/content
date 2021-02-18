@@ -1,0 +1,496 @@
+category: Network Security
+fromversion: 5.0.0
+commonfields:
+  id: Claroty
+  version: -1
+configuration:
+- display: CTD Server URL (e.g. https://<IP>:5000)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: The initial time to fetch from
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- display: Minimal severity to fetch by
+  hidden: false
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
+- additionalinfo: All sites if none selected
+  display: Site ID to fetch by
+  hidden: false
+  name: site_id
+  required: false
+  type: 0
+- display: Fetch by alert type
+  hidden: false
+  name: alert_type
+  required: false
+  type: 0
+description: Use the Claroty CTD integration to manage assets and alerts.
+display: Claroty
+name: Claroty
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: Asset fields to return. The default value is "all".
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - id
+      - name
+      - insight_names
+      - vendor
+      - criticality
+      - asset_type
+      - last_seen
+      - ipv4
+      - mac
+      - virtual_zone_name
+      - class_type
+      - site_name
+      - project_parsed
+      - risk_level
+      - firmware_version
+      - site_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Returns assets with this criticality. Can be "Low", "Medium", or
+        "High".
+      isArray: false
+      name: criticality
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - default: false
+      description: Get assets with that include the given insight name
+      isArray: false
+      name: insight_name
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Add aditional value for the asset CVEs.
+      isArray: false
+      name: should_enrich_assets
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximal value of assets to query at once.
+      isArray: false
+      name: asset_limit
+      required: false
+      secret: false
+    - default: false
+      description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ.
+        Example - 2020-02-02T01:02:03Z
+      isArray: false
+      name: assets_last_seen
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all assets from CTD. You can apply one or more filters.
+    execution: false
+    name: claroty-get-assets
+    outputs:
+    - contextPath: Claroty.Asset.AssetID
+      description: The ID of the asset.
+      type: Number
+    - contextPath: Claroty.Asset.AssetType
+      description: The asset type.
+      type: String
+    - contextPath: Claroty.Asset.CVE.CVSS
+      description: CVE Score.
+      type: String
+    - contextPath: Claroty.Asset.CVE.Description
+      description: CVE Description.
+      type: String
+    - contextPath: Claroty.Asset.CVE.ID
+      description: CVE ID.
+      type: String
+    - contextPath: Claroty.Asset.CVE.Modified
+      description: CVE modification date.
+      type: Date
+    - contextPath: Claroty.Asset.CVE.Published
+      description: CVE publish date.
+      type: Date
+    - contextPath: CVE.CVSS
+      description: CVE Score.
+      type: String
+    - contextPath: CVE.Description
+      description: CVE Description.
+      type: String
+    - contextPath: CVE.ID
+      description: CVE ID.
+      type: String
+    - contextPath: CVE.Modified
+      description: CVE modification date.
+      type: Date
+    - contextPath: CVE.Published
+      description: CVE publish date.
+      type: Date
+    - contextPath: Claroty.Asset.ClassType
+      description: The OT/IT class type.
+      type: String
+    - contextPath: Claroty.Asset.Criticality
+      description: The criticality of the asset, according to the Purdue model.
+      type: String
+    - contextPath: Claroty.Asset.FirmwareVersion
+      description: The FM version of the asset.
+      type: String
+    - contextPath: Claroty.Asset.HighestCVEScore
+      description: Highest CVE Score for the Asset.
+      type: Number
+    - contextPath: Claroty.Asset.IP
+      description: The IPv4 address of the asset.
+      type: String
+    - contextPath: Claroty.Asset.InsightName
+      description: The asset insight names generated by CTD.
+      type: String
+    - contextPath: Claroty.Asset.LastSeen
+      description: The date the asset was last seen.
+      type: Date
+    - contextPath: Claroty.Asset.MAC
+      description: The MAC address of the asset.
+      type: String
+    - contextPath: Claroty.Asset.Name
+      description: The asset name.
+      type: String
+    - contextPath: Claroty.Asset.ResourceID
+      description: The asset RID (AssetID-SiteID).
+      type: String
+    - contextPath: Claroty.Asset.RiskLevel
+      description: The risk indicator.
+      type: Number
+    - contextPath: Claroty.Asset.SiteID
+      description: The site ID of the asset.
+      type: Number
+    - contextPath: Claroty.Asset.SiteName
+      description: The site name of the asset.
+      type: String
+    - contextPath: Claroty.Asset.Vendor
+      description: The vendor of the asset.
+      type: String
+    - contextPath: Claroty.Asset.VirtualZone
+      description: The virtual zone of the asset.
+      type: String
+    - contextPath: Claroty.Asset.WasParsed
+      description: Whether the project was parsed.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: Alert fields to return.
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - resource_id
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
+      - category
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: timestamp
+      description: |-
+        The field by which to sort the results. The default value is "timestamp".
+        Default sort order is ascending
+      isArray: false
+      name: sort_by
+      predefined:
+      - resource_id
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
+      - id
+      - timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Returns alerts that match this alert type.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ.
+        Example - 2020-02-02T01:02:03Z
+      isArray: false
+      name: date_from
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The sorting order of the alerts - descending or ascending
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of alerts to query.
+      isArray: false
+      name: alert_limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set minimal severity to query by.
+      isArray: false
+      name: minimal_severity
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets alerts from CTD.
+    execution: false
+    name: claroty-query-alerts
+    outputs:
+    - contextPath: Claroty.Alert.AlertType
+      description: The alert type.
+      type: String
+    - contextPath: Claroty.Alert.AlertTypeID
+      description: The alert type int value
+      type: Number
+    - contextPath: Claroty.Alert.Description
+      description: The alert description.
+      type: String
+    - contextPath: Claroty.Alert.Indicator
+      description: The alert indicators.
+      type: String
+    - contextPath: Claroty.Alert.NetworkID
+      description: The network ID.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets
+      description: Assets related to the alert.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.AssetID
+      description: The ID of the asset.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets.AssetType
+      description: The asset type.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.ClassType
+      description: The OT/IT class type.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.Criticality
+      description: The criticality of the asset, according to the Purdue model.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.FirmwareVersion
+      description: The FM version of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.IP
+      description: The IPv4 address of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.InsightName
+      description: The asset insight names generated by CTD.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.LastSeen
+      description: The date the asset was last seen.
+      type: Date
+    - contextPath: Claroty.Alert.RelatedAssets.MAC
+      description: The MAC address of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.Name
+      description: The asset name.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.ResourceID
+      description: The asset RID (AssetID-SiteID).
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.RiskLevel
+      description: The risk indicator.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets.SiteID
+      description: The site ID of the asset.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets.SiteName
+      description: The site name of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.Vendor
+      description: The vendor of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.VirtualZone
+      description: The virtual zone of the asset.
+      type: String
+    - contextPath: Claroty.Alert.RelatedAssets.WasParsed
+      description: Whether the project was parsed.
+      type: String
+    - contextPath: Claroty.Alert.Resolved
+      description: The resolve status of the alert.
+      type: Number
+    - contextPath: Claroty.Alert.ResourceID
+      description: The alert resource ID (AlertID-SiteID).
+      type: String
+    - contextPath: Claroty.Alert.Severity
+      description: The alert severity.
+      type: String
+    - contextPath: Claroty.Alert.Category
+      description: The alert category.
+      type: String
+  - arguments:
+    - default: false
+      description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id>
+        format)
+      isArray: false
+      name: selected_alerts
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: resolve
+      description: How to resolve the alert. Can be "archive" or "resolve". The default
+        value is "resolve".
+      isArray: false
+      name: resolve_as
+      predefined:
+      - archive
+      - resolve
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Resolved by Demisto
+      description: A comment to add when resolving an alert.
+      isArray: false
+      name: resolve_comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolves alerts.
+    execution: true
+    name: claroty-resolve-alert
+    outputs:
+    - contextPath: Claroty.Resolve_out.success
+      description: Success output of alert resolving.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: Asset fields to return. The default value is "all".
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - resource_id
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
+      required: false
+      secret: false
+    - default: false
+      description: Resource ID of the desired alert. Expected value - <alert_id>-<site_id>
+      isArray: false
+      name: alert_rid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single alert from CTD.
+    execution: false
+    name: claroty-get-single-alert
+    outputs:
+    - contextPath: Claroty.Alert.AlertType
+      description: The alert type.
+      type: String
+    - contextPath: Claroty.Alert.AlertTypeID
+      description: The alert type int value
+      type: Number
+    - contextPath: Claroty.Alert.Description
+      description: The alert description.
+      type: String
+    - contextPath: Claroty.Alert.Indicator
+      description: The alert indicators.
+      type: String
+    - contextPath: Claroty.Alert.NetworkID
+      description: The network ID.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets
+      description: Assets related to the alert.
+      type: String
+    - contextPath: Claroty.Alert.Resolved
+      description: The resolve status of the alert.
+      type: Number
+    - contextPath: Claroty.Alert.ResourceID
+      description: The alert resource ID (AlertID-SiteID).
+      type: String
+    - contextPath: Claroty.Alert.Severity
+      description: The alert severity.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultclassifier: Claroty
+defaultmapperin: Claroty-mapper
+

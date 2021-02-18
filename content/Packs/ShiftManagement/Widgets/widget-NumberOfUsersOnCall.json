@@ -1,0 +1,30 @@
+{
+  "id": "NumberOfUsersOnCall",
+  "version": -1,
+  "name": "Number Of Users On-Call",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "GetNumberOfUsersOnCall",
+  "isPredefined": true,
+  "params": {
+      "colors": {
+          "isEnabled": true,
+          "items": {
+              "#00CD33": {
+                  "value": 4
+              },
+              "#FAC100": {
+                  "value": 2
+              },
+              "#FF1B15": {
+                  "value": 1
+              }
+          },
+          "type": "above"
+      }
+  },
+  "size": 0,
+  "category": "",
+  "fromVersion": "5.5.0",
+  "description": "Displays the number of users that are currently on-call."
+}

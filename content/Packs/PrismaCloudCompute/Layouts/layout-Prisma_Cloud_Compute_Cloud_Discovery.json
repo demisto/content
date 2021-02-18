@@ -1,0 +1,351 @@
+{
+	"TypeName": "Prisma Cloud Compute Cloud Discovery",
+	"kind": "details",
+	"layout": {
+		"TypeName": "",
+		"id": "Prisma Cloud Compute Cloud Discovery",
+		"kind": "details",
+		"modified": "2020-01-19T16:04:54.548365158+02:00",
+		"name": "",
+		"system": false,
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 24,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 24,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 24,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 24,
+								"id": "incident-created-field",
+								"index": 0,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeprovider",
+								"height": 55,
+								"id": "93ca02d0-3535-11ea-82bb-d3789631c89f",
+								"index": 0,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "prismacloudcomputeappid",
+								"height": 55,
+								"id": "f46843a0-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeregion",
+								"height": 55,
+								"id": "7d0cd820-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 1,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeproject",
+								"height": 55,
+								"id": "8a7ffd70-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 2,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeregistry",
+								"height": 55,
+								"id": "a0d50020-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 3,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeservicetype",
+								"height": 55,
+								"id": "a45e6550-3535-11ea-82bb-d3789631c89f",
+								"index": 4,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputecredentialid",
+								"height": 55,
+								"id": "8f8469e0-3535-11ea-82bb-d3789631c89f",
+								"index": 5,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeprotected",
+								"height": 55,
+								"id": "b166e1f0-3535-11ea-82bb-d3789631c89f",
+								"index": 6,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputetotal",
+								"height": 55,
+								"id": "079e6a70-3536-11ea-82bb-d3789631c89f",
+								"index": 7,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputecollections",
+								"height": 110,
+								"id": "ded1fd10-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 8,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeerror",
+								"height": 55,
+								"id": "ba552b10-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 10,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Details",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"hidden": true,
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "mvmuqvevyt",
+				"name": "Discovered Entities",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "mvmuqvevyt-e4aff1e0-353b-11ea-82bb-d3789631c89f",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "prismacloudcomputemarkdown",
+								"height": 110,
+								"id": "ecf679a0-353b-11ea-82bb-d3789631c89f",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		],
+		"typeId": "Prisma Cloud Compute Cloud Discovery",
+		"version": -1
+	},
+	"typeId": "Prisma Cloud Compute Cloud Discovery",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"toVersion": "5.9.9"
+}

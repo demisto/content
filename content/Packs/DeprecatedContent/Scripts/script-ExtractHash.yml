@@ -1,0 +1,71 @@
+commonfields:
+  id: ExtractHash
+  version: -1
+name: ExtractHash
+script: >-
+  var text = args.text;
+
+  if (typeof text !== 'string') {
+      text = JSON.stringify(args.text).replace(/\\n/g,' '); // need to replace \n
+  }
+
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+
+  var matches = {}, found;
+
+  while (found = md5Regex.exec(text)) {
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches[found[0]] = true;
+      }
+  }
+
+  while (found = sha1Regex.exec(text)) {
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches[found[0]] = true;
+      }
+  }
+
+  while (found = sha256Regex.exec(text)) {
+      if (whitelist.indexOf(found[0]) < 0) {
+          matches[found[0]] = true;
+      }
+  }
+
+  var uniqueMatches = Object.keys(matches);
+
+  var ec = {};
+
+  ec[outputPaths.file] = [];
+
+  var md = '### Extract hash\n';
+
+  for (var i=0; i < uniqueMatches.length; i++) {
+      var f = {};
+      var hashType = uniqueMatches[i].length === 32 ? 'MD5' : uniqueMatches[i].length === 40 ? 'SHA1' : 'SHA256';
+      f[hashType] = uniqueMatches[i];
+      ec[outputPaths.file].push(f);
+      md += '- ' + uniqueMatches[i] + '\n';
+  }
+
+  return {Type: entryTypes.note, Contents: ec[outputPaths.file], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+type: javascript
+tags:
+- Utility
+comment: Deprecated. We recommend using extractIndicators command instead. Extract md5, sha1, sha256 from the given text and place them both as output and in the context of a playbook
+system: true
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract hashes from. If object will convert to JSON.
+outputs:
+- contextPath: File.MD5
+  description: Extracted MD5
+- contextPath: File.SHA1
+  description: Extracted SHA1
+- contextPath: File.SHA256
+  description: Extracted SHA256
+scripttarget: 0
+deprecated: true
+fromversion: 5.0.0

@@ -1,0 +1,22 @@
+{
+    "name": "TruSTAR",
+    "description": "TruSTAR's threat intelligence platform enriches every stage of the security operations workflow from the trusted and relevant data sources.",
+    "support": "partner",
+    "currentVersion": "2.1.2",
+    "author": "TruSTAR",
+    "url": "https://www.trustar.co",
+    "email": "support@trustar.co",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "TruSTAR"
+    ],
+    "githubUser": [
+        "hernantain"
+    ],
+    "certification": "certified"
+}

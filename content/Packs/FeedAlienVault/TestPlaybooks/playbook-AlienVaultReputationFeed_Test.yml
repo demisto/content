@@ -1,0 +1,180 @@
+id: AlienVaultReputationFeed_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: AlienVaultReputationFeed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def8b814-3f4f-4dd3-88bd-7f212513388b
+    type: start
+    task:
+      id: def8b814-3f4f-4dd3-88bd-7f212513388b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4eddbd7e-e8d6-4c13-8e22-014eb2c05698
+    type: regular
+    task:
+      id: 4eddbd7e-e8d6-4c13-8e22-014eb2c05698
+      version: -1
+      name: Get Indicators
+      description: Gets the feed indicators.
+      script: AlienVault Reputation Feed|||alienvault-get-indicators
+      type: regular
+      iscommand: true
+      brand: AlienVault Reputation Feed
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      indicator_type:
+        simple: IP
+      limit:
+        simple: "1"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9a8c841c-b3b4-4fd7-844d-4feb2a9cbbd6
+    type: title
+    task:
+      id: 9a8c841c-b3b4-4fd7-844d-4feb2a9cbbd6
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f350f97f-d796-4813-85d7-ef642242d124
+    type: regular
+    task:
+      id: f350f97f-d796-4813-85d7-ef642242d124
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4e6003ba-28b9-4ea8-8208-9fb2c9694133
+    type: condition
+    task:
+      id: 4e6003ba-28b9-4ea8-8208-9fb2c9694133
+      version: -1
+      name: Assert Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${IP}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: AlienVaultReputationFeed_Test
+fromversion: 5.0.0

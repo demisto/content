@@ -1,0 +1,215 @@
+id: email_test
+name: Email Address Enrichment - Generic - Test
+fromversion: 3.6.0
+toversion: 4.0.9
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e02c9e53-3ff3-4f94-8e37-ddb86996cdfb
+    type: start
+    task:
+      id: e02c9e53-3ff3-4f94-8e37-ddb86996cdfb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: af7e9da6-6e11-46e1-8286-8aa4f5657b85
+    type: playbook
+    task:
+      id: af7e9da6-6e11-46e1-8286-8aa4f5657b85
+      version: -1
+      name: Email Address Enrichment - Generic
+      description: Get email address reputation using one or more integrations
+      playbookName: Email Address Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Domain:
+        simple: demisto.int
+      Email:
+        simple: ${Account.Email.Address}w
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 2fc4b9ec-568f-46b1-8dc4-a294f833699b
+    type: regular
+    task:
+      id: 2fc4b9ec-568f-46b1-8dc4-a294f833699b
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b5a0b0d7-58b7-4a0a-80f3-923cebffa31e
+    type: regular
+    task:
+      id: b5a0b0d7-58b7-4a0a-80f3-923cebffa31e
+      version: -1
+      name: Verify email
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue: {}
+      extend-context: {}
+      fields: {}
+      path:
+        simple: Account.Email.Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 0453ac84-36a7-4f83-82b0-db3353dd05c7
+    type: regular
+    task:
+      id: 0453ac84-36a7-4f83-82b0-db3353dd05c7
+      version: -1
+      name: Verify DBotScore
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Indicator, Score, Vendor, Type
+      path:
+        simple: DBotScore
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1072
+        }
+      }
+  "5":
+    id: "5"
+    taskid: c00a0486-2ebd-43ad-8cb4-363361e18318
+    type: regular
+    task:
+      id: c00a0486-2ebd-43ad-8cb4-363361e18318
+      version: -1
+      name: Set email address - Internal
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Account.Email.Address
+      value:
+        simple: demistoadmin@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    taskid: cb4dbb36-fc75-44cc-8163-b9044aabe8b0
+    type: regular
+    task:
+      id: cb4dbb36-fc75-44cc-8163-b9044aabe8b0
+      version: -1
+      name: Set email address - External
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Email.Address
+      value:
+        simple: demistoadmin@demist0.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

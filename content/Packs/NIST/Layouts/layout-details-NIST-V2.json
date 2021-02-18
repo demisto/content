@@ -1,0 +1,613 @@
+{
+	"TypeName": "NIST",
+	"kind": "details",
+	"fromVersion": "5.0.0",
+	"layout": {
+		"TypeName": "",
+		"id": "NIST",
+		"kind": "details",
+		"modified": "2020-05-03T12:54:03.245530695Z",
+		"name": "",
+		"system": false,
+		"tabs": [
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 55,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 55,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 55,
+								"id": "incident-occurred-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 55,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 55,
+								"id": "incident-created-field",
+								"index": 3,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 24,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 24,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-f1804150-8d3c-11ea-994a-7f32eb6f2af9",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "niststage",
+								"height": 24,
+								"id": "fd1753a0-8d3c-11ea-994a-7f32eb6f2af9",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "NIST Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-332c3b40-8de7-11ea-802e-11ae2f7e52ac",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Bad or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 3,
+						"x": 0,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "qlnplifnfp",
+				"name": "Lessons Learned - Current Incident",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "qlnplifnfp-9a309ea0-0951-11ea-ba5c-a391b3e4066d",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "exactlywhathappenedandatwhattimes",
+								"height": 55,
+								"id": "9fb08c50-0951-11ea-ba5c-a391b3e4066d",
+								"index": 0,
+								"listId": "qlnplifnfp-9a309ea0-0951-11ea-ba5c-a391b3e4066d",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Description",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "qlnplifnfp-ad493b00-0951-11ea-ba5c-a391b3e4066d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate",
+								"height": 24,
+								"id": "d22a2600-0951-11ea-ba5c-a391b3e4066d",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs",
+								"height": 24,
+								"id": "133c0410-0952-11ea-ba5c-a391b3e4066d",
+								"index": 0,
+								"listId": "qlnplifnfp-ad493b00-0951-11ea-ba5c-a391b3e4066d",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Staff Performance Examination",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "qlnplifnfp-e6370d70-0951-11ea-ba5c-a391b3e4066d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "wereanystepsoractionstakenthatmighthaveinhibitedtherecovery",
+								"height": 24,
+								"id": "0554e740-0952-11ea-ba5c-a391b3e4066d",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "howcouldinformationsharingwithotherorganizationshavebeenimproved",
+								"height": 24,
+								"id": "25240fb0-0952-11ea-ba5c-a391b3e4066d",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "whatinformationwasneededsooner",
+								"height": 24,
+								"id": "e97373c0-0951-11ea-ba5c-a391b3e4066d",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Handling Examination",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "qlnplifnfp-2c5e0970-0952-11ea-ba5c-a391b3e4066d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "whatcorrectiveactionscanpreventsimilarincidentsinthefuture",
+								"height": 24,
+								"id": "3f676390-0952-11ea-ba5c-a391b3e4066d",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents",
+								"height": 24,
+								"id": "4bc2fe60-0952-11ea-ba5c-a391b3e4066d",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents",
+								"height": 24,
+								"id": "52491170-0952-11ea-ba5c-a391b3e4066d",
+								"index": 2,
+								"listId": "qlnplifnfp-2c5e0970-0952-11ea-ba5c-a391b3e4066d",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Future Recommendations",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "mcfuriqhvw",
+				"name": "Lessons Learned - Linked Incidents",
+				"sections": [
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "id",
+								"width": 100
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 107
+							},
+							{
+								"displayed": true,
+								"key": "Exactly what happened, and at what times?",
+								"width": 174
+							},
+							{
+								"displayed": true,
+								"key": "How well did staff and management perform in dealing with the incident? Were the documented procedures followed? Were they adequate?",
+								"width": 160
+							},
+							{
+								"displayed": true,
+								"key": "What would the staff and management do differently the next time a similar incident occurs?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "How could information sharing with other organizations have been improved?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "Were any steps or actions taken that might have inhibited the recovery?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "What information was needed sooner?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "What additional tools or resources are needed to detect, analyze, and mitigate future incidents?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "What corrective actions can prevent similar incidents in the future?",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "What precursors or indicators should be watched for in the future to detect similar incidents?",
+								"width": 200
+							}
+						],
+						"h": 3,
+						"hideName": false,
+						"i": "mcfuriqhvw-bbf2b580-151a-11ea-8ac2-5724d1c87a83",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Linked Incidents - Lessons Learned",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 3,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "closeReason",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "closeNotes",
+								"width": 300
+							}
+						],
+						"h": 2,
+						"hideName": false,
+						"i": "mcfuriqhvw-b971c5d0-15b0-11ea-b772-9993470a5997",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Linked Incidents - Closing Information",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 3,
+						"x": 0,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		],
+		"typeId": "NIST",
+		"version": -1
+	},
+	"typeId": "NIST",
+	"version": -1,
+	"toVersion": "5.9.9"
+}

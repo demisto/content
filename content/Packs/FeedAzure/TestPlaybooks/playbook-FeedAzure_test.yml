@@ -1,0 +1,174 @@
+id: AzureFeed - Test
+version: -1
+name: AzureFeed - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: b58846b4-e65f-4987-8707-4fff9506efba
+    type: start
+    task:
+      id: b58846b4-e65f-4987-8707-4fff9506efba
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 2d39d354-6502-42c0-80c1-c6af7f2c3099
+    type: regular
+    task:
+      id: 2d39d354-6502-42c0-80c1-c6af7f2c3099
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 02414e71-a4d4-44e5-8f97-f372ee398b84
+    type: regular
+    task:
+      id: 02414e71-a4d4-44e5-8f97-f372ee398b84
+      version: -1
+      name: azure-get-indicators
+      description: ''
+      script: '|||azure-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      extend-context:
+        simple: first_object=.
+      limit:
+        simple: '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 2b4f3651-6954-40ca-8b06-fae67c14894f
+    type: title
+    task:
+      id: 2b4f3651-6954-40ca-8b06-fae67c14894f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 271e4e6c-6c8f-48e9-81a9-1acc31bd1017
+    type: condition
+    task:
+      id: 271e4e6c-6c8f-48e9-81a9-1acc31bd1017
+      version: -1
+      name: verify get indicators
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.raw_response.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.raw_response.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.5.0

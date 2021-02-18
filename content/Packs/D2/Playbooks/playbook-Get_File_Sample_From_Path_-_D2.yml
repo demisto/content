@@ -1,0 +1,197 @@
+id: get_file_sample_from_path_-_d2
+version: -1
+name: Get File Sample From Path - D2
+fromversion: "5.0.0"
+description: |-
+  Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+
+  Input:
+  * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+  * ${Endpoint.Hostname} - deploy agent on target endpoint
+  * ${File.Path} - file's path to collect
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
+    type: start
+    task:
+      id: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
+    type: regular
+    task:
+      id: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
+      version: -1
+      name: Add the endpoint as a System to this incident
+      description: Add the relevant endpoint to the System
+      scriptName: IncidentAddSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Hostname}
+      name:
+        simple: ${inputs.Hostname}
+      os:
+        simple: windows
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    taskid: ba4872a3-3460-470f-81cd-14afaacd29d8
+    type: condition
+    task:
+      id: ba4872a3-3460-470f-81cd-14afaacd29d8
+      version: -1
+      name: Does Hostname and filepath exists?
+      description: Check if there is hostname and file path to get.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Path
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 9f3aab69-b584-4929-815c-0579eb307807
+    type: regular
+    task:
+      id: 9f3aab69-b584-4929-815c-0579eb307807
+      version: -1
+      description: ""
+      name: d2 agent - Collect file from endpoint
+      scriptName: FetchFileD2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      filepath:
+        simple: ${inputs.Path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 642cf7ac-e922-4379-8656-55c1eb4de929
+    type: title
+    task:
+      id: 642cf7ac-e922-4379-8656-55c1eb4de929
+      version: -1
+      description: ""
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Credentials
+  value:
+    simple: Admin
+  required: false
+  description: Name of the credential set from Demisto Settings -> Integrations -> Credentials
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: Endpoint hostname
+- key: Path
+  value:
+    simple: ${File.Path}
+  required: false
+  description: The file path
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+tests:
+- get_file_sample_from_path_-_d2_-_test

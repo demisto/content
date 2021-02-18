@@ -1,0 +1,53 @@
+commonfields:
+  id: ExecuteCommandGeneric
+  version: -1
+name: ExecuteCommandGeneric
+script: >
+  command = demisto.args()['commandName']
+
+
+  cmd_args = {}
+
+
+  for i in range(1, 6):
+      name = demisto.args().get('argName' + str(i))
+      if name:
+          cmd_args[name] = demisto.args().get('argVal' + str(i))
+
+  res = demisto.executeCommand(command, cmd_args)
+
+  demisto.results(res)
+type: python
+tags:
+- Utilities
+comment: Run executeCommand in a generic manner. Can be used to dynamically execute a command and also for cases when there is need to pass arguments not defined in the command's configuration.
+enabled: true
+args:
+- name: commandName
+  description: Command to execute
+- name: argName1
+  description: Name of argument 1
+- name: argVal1
+  description: Value of argument 1
+- name: argName2
+  description: Name of argument 1
+- name: argVal2
+  description: Value of argument 1
+- name: argName3
+  description: Name of argument 1
+- name: argVal3
+  description: Value of argument 1
+- name: argName4
+  description: Name of argument 1
+- name: argVal4
+  description: Value of argument 1
+- name: argName5
+  description: Name of argument 1
+- name: argVal5
+  description: Value of argument 1
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.4.2245
+runas: DBotWeakRole
+fromversion: 5.0.0

@@ -1,0 +1,89 @@
+args:
+- default: false
+  description: The compliance alert raw JSON
+  isArray: false
+  name: alert_raw_json
+  required: true
+  secret: false
+tags:
+- Prisma Cloud Compute
+comment: Parse Audit alert raw JSON data
+commonfields:
+  id: PrismaCloudComputeParseAuditAlert
+  version: -1
+enabled: false
+name: PrismaCloudComputeParseAuditAlert
+outputs:
+- contextPath: PrismaCloudCompute.AuditAlert.activityType
+  description: 'ActivityType is the type of the activity'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.appID
+  description: 'AppID is the RASP application ID'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.category
+  description: 'Category is the audit category'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.command
+  description: 'Command is the original (with arguments) command the user invoked'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.container
+  description: 'Container is the container name in which the alert occurred'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.forensicLink
+  description: 'ForensicLink is the link for downloading the forensic data for the related incident'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.fqdn
+  description: 'FQDN is the FQDN of the host in which the alert occurred'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.function
+  description: 'Function is the name of the serverless function which triggered the alert'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.host
+  description: 'Host is the host name in which the alert occurred'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.image
+  description: 'Image is the image name in which the alert occurred'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.interactive
+  description: 'Interactive indicates whether the alert belongs to an interactive session'
+  type: Boolean
+- contextPath: PrismaCloudCompute.AuditAlert.kubernetesResource
+  description: 'KubernetesResource is the resource name in which the alert occurred'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.line
+  description: 'Line is the matching log line'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.logfile
+  description: 'Logfile is the log file which was inspected'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.message
+  description: 'Message is the audit message'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.region
+  description: 'Region is the region of the serverless function'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.rule
+  description: 'Rule is the rule which triggered the alert'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.runtime
+  description: 'Runtime is the language runtime of the serverless function'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.service
+  description: 'Service is the owning systemd service'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.time
+  description: 'Time is the time when the alert occurred'
+  type: Date
+- contextPath: PrismaCloudCompute.AuditAlert.type
+  description: 'Type is the type of the audit alert'
+  type: String
+- contextPath: PrismaCloudCompute.AuditAlert.user
+  description: 'User is the user initiated the alert'
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.2245
+fromversion: 5.0.0

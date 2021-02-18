@@ -1,0 +1,57 @@
+{
+    "paging":{
+       "page":1,
+       "pageSize":2,
+       "total":2,
+       "totalPages":1,
+       "nextLink":"/api/systemReport/affectedEntitiesByEntity?page=2&pageSize=2&sort=name&entityId=awsUser-AIDA5HCBCYKFMAQHGI56Z&timeId=monthly_2020_10"
+    },
+    "data":[
+       {
+          "entityId":"awsKmsKey-792168ed-fcf9-4d5c-ae31-f3de29f7e354",
+          "name":"792168ed-fcf9-4d5c-ae31-f3de29f7e354",
+          "entityData":{
+             "entitySubType":{
+                "name":"entitySubType",
+                "displayName":"Entity Subtype",
+                "value":"awsKmsKey",
+                "displayValue":"AWS KMS Key"
+             },
+             "entityType":"awsKmsKey",
+             "entityTypeDisplayName":"AWS KMS Key",
+             "id":"awsKmsKey-792168ed-fcf9-4d5c-ae31-f3de29f7e354"
+          },
+          "methodsArray":[
+             {
+                "method":"awsKmsKeyExploit",
+                "methodName":"AWS KMS Key Compromise",
+                "count":13
+             }
+          ],
+          "methodsArrayLength":1
+       },
+       {
+          "entityId":"awsKmsKey-81f97e46-e80f-4a4d-a54e-1c7885c1c71d",
+          "name":"81f97e46-e80f-4a4d-a54e-1c7885c1c71d",
+          "entityData":{
+             "entitySubType":{
+                "name":"entitySubType",
+                "displayName":"Entity Subtype",
+                "value":"awsKmsKey",
+                "displayValue":"AWS KMS Key"
+             },
+             "entityType":"awsKmsKey",
+             "entityTypeDisplayName":"AWS KMS Key",
+             "id":"awsKmsKey-81f97e46-e80f-4a4d-a54e-1c7885c1c71d"
+          },
+          "methodsArray":[
+             {
+                "method":"awsKmsKeyExploit",
+                "methodName":"AWS KMS Key Compromise",
+                "count":13
+             }
+          ],
+          "methodsArrayLength":1
+       }
+    ]
+ }

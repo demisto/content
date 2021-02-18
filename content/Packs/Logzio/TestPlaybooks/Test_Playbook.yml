@@ -1,0 +1,345 @@
+id: Logzio - Test
+description: Logz.io Test Playbook
+version: -1
+name: Logzio - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd61f365-e817-4e44-8527-d2d143731ea2
+    type: start
+    task:
+      id: fd61f365-e817-4e44-8527-d2d143731ea2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 764e8321-a7e4-4dde-8bd0-1146fbca1394
+    type: regular
+    task:
+      id: 764e8321-a7e4-4dde-8bd0-1146fbca1394
+      version: -1
+      name: logzio-search-logs
+      description: Runs an Apache Lucene query on your Logz.io Operations account
+      script: '|||logzio-search-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      from_time: {}
+      query:
+        simple: '"sentinel_one" OR "sentinel"'
+      size: {}
+      timeout: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 685
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: 'Query result:'
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c35831f9-e39d-4114-8ea0-7cd77e2bb918
+    type: regular
+    task:
+      id: c35831f9-e39d-4114-8ea0-7cd77e2bb918
+      version: -1
+      name: logzio-get-logs-by-rule-id
+      description: Fetches the logs that triggered a security event in Logz.io Cloud
+        SIEM
+      script: '|||logzio-get-logs-by-event-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        complex:
+          root: LogzioFetchedIn
+          accessor: Contents.rawJSON
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: alertEventId
+      size: {}
+      timeout:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 455f6bb5-5ee5-4d05-8134-ccb9911db59f
+    type: regular
+    task:
+      id: 455f6bb5-5ee5-4d05-8134-ccb9911db59f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4e47cd5e-39ba-43b2-8f33-96f392401594
+    type: condition
+    task:
+      id: 4e47cd5e-39ba-43b2-8f33-96f392401594
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 81bfb624-a704-4f3c-87db-7d780580c509
+    type: condition
+    task:
+      id: 81bfb624-a704-4f3c-87db-7d780580c509
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Logzio.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c4f29965-f884-4b31-881a-fb25baaa68d2
+    type: title
+    task:
+      id: c4f29965-f884-4b31-881a-fb25baaa68d2
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a5f97564-baa3-477b-8bd9-8024c5f84682
+    type: regular
+    task:
+      id: a5f97564-baa3-477b-8bd9-8024c5f84682
+      version: -1
+      name: FetchFromInstance
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Logz.io
+      error_msg_in_incident: {}
+      expect_data: {}
+      extend-context:
+        simple: LogzioFetchedIn=
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 80cd2b1e-5fd9-4e00-8435-4bcce8061f0d
+    type: condition
+    task:
+      id: 80cd2b1e-5fd9-4e00-8435-4bcce8061f0d
+      version: -1
+      name: Verify Outputs
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogzioFetchedIn
+                accessor: Contents.rawJSON
+                transformers:
+                - operator: ParseJSON
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: alertEventId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1400,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,25 @@
+{
+  "RiskSense.UniqueVulnerabilities(val.Cve == obj.Cve && val.HostFindingID == obj.HostFindingID)": [
+    {
+      "Cve": "cve",
+      "BaseScore": 5  ,
+      "ThreatCount": 8,
+      "HostFindingID": "",
+      "AttackVector": "attack vector type",
+      "AccessComplexity": "access complexity",
+      "Authentication": "authentication",
+      "ConfidentialityImpact": "confidentiality impact",
+      "Integrity": "integrity",
+      "AvailabilityImpact": "availability impact",
+      "Trending": false,
+      "VulnLastTrendingOn": null
+    }
+  ],
+  "CVE(val.ID && val.ID == obj.ID)": [
+    {
+      "ID": "cve",
+      "CVSS": 5,
+      "Description": "cve summary"
+    }
+  ]
+}

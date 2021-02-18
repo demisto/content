@@ -1,0 +1,408 @@
+{
+  "assetAdminContacts": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": "Dummy Admin"
+    }
+  ],
+  "assetAlexaRank": "Not in Alexa",
+  "assetCount": 29162,
+  "assetDetailedFromWhoisAt": 1591402147858,
+  "assetDomain": "dummydomain.com",
+  "assetDomainStatuses": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147854,
+      "recent": true,
+      "value": "clientDeleteProhibited"
+    }
+  ],
+  "assetFirstSeen": 1322692530000,
+  "assetLastSeen": 1591600288590,
+  "assetMailServers": [
+    {
+      "current": true,
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "value": "dummy.mailserver.com"
+    },
+    {
+      "current": true,
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "value": "dummy1.mailserver.com"
+    },
+    {
+      "current": true,
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "value": "dummy2.mailserver.com"
+    },
+    {
+      "current": true,
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "value": "dummy3.mailserver.com"
+    },
+    {
+      "current": true,
+      "firstSeen": 1322692530000,
+      "lastSeen": 1591530037000,
+      "recent": true,
+      "value": "dummy4.mailserver.com"
+    }
+  ],
+  "assetNameServers": [
+    {
+      "value": "dummy.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy1.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy2.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    },
+    {
+      "value": "dummy3.nameserver.com",
+      "firstSeen": 1475863092000,
+      "lastSeen": 1591568678000,
+      "recent": true,
+      "current": true
+    }
+  ],
+  "assetParkedDomain": [
+    {
+      "current": true,
+      "firstSeen": 1543936216196,
+      "lastSeen": 1591598768649,
+      "recent": true,
+      "value": false
+    }
+  ],
+  "assetRegistrantContacts": [
+    {
+      "current": true,
+      "firstSeen": 1541251425162,
+      "lastSeen": 1591402147854,
+      "recent": true,
+      "value": "abuse@dummydomain.com"
+    }
+  ],
+  "assetRegistrantOrgs": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": "Dummy Organization"
+    }
+  ],
+  "assetRegistrarCreatedAt": [
+    {
+      "current": true,
+      "firstSeen": 1591402147858,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": 1137076406000
+    }
+  ],
+  "assetRegistrarExpiresAt": [
+    {
+      "current": true,
+      "firstSeen": 1591402147858,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": 1768228406000
+    }
+  ],
+  "assetRegistrarIanaIds": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": 146
+    }
+  ],
+  "assetRegistrarNames": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": "Dummy, LLC"
+    }
+  ],
+  "assetRegistrarUpdatedAt": [
+    {
+      "current": true,
+      "firstSeen": 1591402147858,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": 1483618972000
+    }
+  ],
+  "assetSoaRecords": [
+    {
+      "current": true,
+      "email": "awsdns-hostmaster@amazon.com",
+      "firstSeen": 1475940329000,
+      "lastSeen": 1591481866000,
+      "nameServer": "ns-1502.awsdns-59.org",
+      "recent": true,
+      "serialNumber": 1
+    }
+  ],
+  "assetTechnicalContacts": [
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": "Dummy Technical"
+    }
+  ],
+  "assetWhoisId": 6674824394369493291,
+  "assetWhoisServers": [
+    {
+      "current": true,
+      "firstSeen": 1591402147858,
+      "lastSeen": 1591402147858,
+      "recent": true,
+      "value": "dummy.com"
+    },
+    {
+      "current": true,
+      "firstSeen": 1538755727118,
+      "lastSeen": 1591402147854,
+      "recent": true,
+      "value": "whois.dummy.com"
+    }
+  ],
+  "confidence": "ABSOLUTE",
+  "createdAt": 1322692530000,
+  "data": {
+    "attributes": [
+      {
+        "attributeType": "FacebookPixelId",
+        "attributeValue": "1558019831190971",
+        "count": 2350025,
+        "domain": "dummydomain.com",
+        "firstSeen": 1513075987356,
+        "hostname": "www.dummydomain.com",
+        "id": "com.dummy.www$FacebookPixelId$1558019831190971",
+        "lastSeen": 1591599597150
+      },
+      {
+        "attributeType": "LinkedInId",
+        "attributeValue": "dummy_2",
+        "count": 3503095,
+        "domain": "dummydomain.com",
+        "firstSeen": 1419279039648,
+        "hostname": "www.dummydomain.com",
+        "id": "com.dummy.www$LinkedInId$dummy_2",
+        "lastSeen": 1591599597150
+      }
+    ],
+    "webComponents": [
+      {
+        "count": 11045986,
+        "domain": "dummydomain.com",
+        "firstSeen": 1588827292602,
+        "hostname": "cdn.dummydomain.com",
+        "id": "com.dummy.cdn$NetDNA CDN httpd$Server$2.2",
+        "lastSeen": 1591686077053,
+        "ports": [
+          {
+            "count": 11045924,
+            "firstSeen": 1588827292602,
+            "lastSeen": 1591686077053,
+            "portNumber": 443
+          },
+          {
+            "count": 62,
+            "firstSeen": 1588881961599,
+            "lastSeen": 1591676835298,
+            "portNumber": 80
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "NetDNA CDN httpd",
+        "webComponentVersion": "2.2"
+      },
+      {
+        "count": 245625564,
+        "cves": [
+          {
+            "cvssScore": 5.0,
+            "cweID": "CWE-74",
+            "name": "CVE-2011-3624"
+          },
+          {
+            "cvssScore": 4.300000190734863,
+            "cweID": "CWE-310",
+            "name": "CVE-2013-4287"
+          },
+          {
+            "cvssScore": 5.0,
+            "cweID": "CWE-20",
+            "name": "CVE-2013-1821"
+          }
+        ],
+        "domain": "dummydomain.com",
+        "firstSeen": 1500459828688,
+        "hostname": "cdn.dummydomain.com",
+        "id": "com.dummy.cdn$NetDNA-cache$Server$2.2",
+        "lastSeen": 1591686077053,
+        "ports": [
+          {
+            "count": 169724921,
+            "firstSeen": 1530428445134,
+            "lastSeen": 1591686077053,
+            "portNumber": 443
+          },
+          {
+            "count": 985,
+            "firstSeen": 1530435644291,
+            "lastSeen": 1591676835298,
+            "portNumber": 80
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "NetDNA-cache",
+        "webComponentVersion": "2.2"
+      }
+    ]
+  },
+  "description": "dummydomain.com",
+  "enterprise": false,
+  "firstSeen": 1322692530000,
+  "label": "dummydomain.com",
+  "lastSeen": 1591634266660,
+  "name": "dummydomain.com",
+  "primaryContact": {
+    "contactID": 5783389,
+    "email": "john.doe@riskiq.com",
+    "id": "contact-5783389",
+    "name": "john.doe@riskiq.com"
+  },
+  "priority": "HIGH",
+  "secondaryContact": {
+    "contactID": 5783390,
+    "email": "jane.smith@riskiq.com",
+    "id": "contact-5783390",
+    "name": "jane.smith@riskiq.com"
+  },
+  "state": "CANDIDATE",
+  "type": "DOMAIN",
+  "updatedAt": 1591634266660,
+  "uuid": "42696470-7b2a-617b-2f5e-ab674438e4f5",
+    "whoisCreatedAt": 1591402147858,
+  "whoisUpdatedAt": 1591402147858,
+  "whoisStatus": "ACTIVE",
+  "whoisID": 6674824394369493291,
+  "whoisDomain": "dummydomain.com",
+  "whoisDomainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+  "whoisDomainUnicode": "dummydomain.com",
+  "whoisTld": "com",
+  "whoisNameservers": "dummy.nameserver.com, dummy1.nameserver.com, dummy2.nameserver.com, dummy3.nameserver.com",
+  "whoisServer": "dummy.com",
+  "whoisRegistrarIanaID": 146,
+  "whoisRegistrarName": "Dummy, LLC",
+  "whoisRegistrarEmail": "abuse@dummydomain.com",
+  "whoisRegistrarCreatedAt": 1137076406000,
+  "whoisRegistrarUpdatedAt": 1483618972000,
+  "whoisRegistrarExpiresAt": 1768228406000,
+  "whoisRegistrantWhoisContactID": 0,
+  "whoisRegistrantEmail": "dummy@whoisdummydomain.com",
+  "whoisRegistrantName": "DUMMY, LLC",
+  "whoisRegistrantOrganization": "DUMMY, LLC.",
+  "whoisRegistrantStreet": "157, Dummy street, office 1",
+  "whoisRegistrantCity": "limassol",
+  "whoisRegistrantZip": "3026",
+  "whoisRegistrantCountry": "cyprus",
+  "whoisRegistrantPhone": "12345678901",
+  "whoisRegistrantFax": "12345678901",
+  "whoisRegistrantState": "cyprus",
+  "whoisRegistrantAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisRegistrantId": 0,
+  "whoisAdminWhoisContactID": 0,
+  "whoisAdminEmail": "dummy@whoisdummydomain.com",
+  "whoisAdminName": "DUMMY, LLC",
+  "whoisAdminOrganization": "DUMMY, LLC.",
+  "whoisAdminStreet": "157, Dummy street, office 1",
+  "whoisAdminCity": "limassol",
+  "whoisAdminZip": "3026",
+  "whoisAdminCountry": "cyprus",
+  "whoisAdminPhone": "12345678901",
+  "whoisAdminFax": "12345678901",
+  "whoisAdminAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisAdminId": 0,
+  "whoisTechnicalWhoisContactID": 0,
+  "whoisTechnicalEmail": "dummy@whoisdummydomain.com",
+  "whoisTechnicalName": "DUMMY, LLC",
+  "whoisTechnicalOrganization": "DUMMY, LLC.",
+  "whoisTechnicalStreet": "157, Dummy street, office 1",
+  "whoisTechnicalCity": "limassol",
+  "whoisTechnicalZip": "3026",
+  "whoisTechnicalCountry": "cyprus",
+  "whoisTechnicalPhone": "12345678901",
+  "whoisTechnicalFax": "12345678901",
+  "whoisTechnicalAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisTechnicalId": 0,
+  "whoisBillingWhoisContactID": 0,
+  "whoisBillingEmail": "dummy@whoisdummydomain.com",
+  "whoisBillingName": "DUMMY, LLC",
+  "whoisBillingOrganization": "DUMMY, LLC.",
+  "whoisBillingStreet": "157, Dummy street, office 1",
+  "whoisBillingCity": "limassol",
+  "whoisBillingZip": "3026",
+  "whoisBillingCountry": "cyprus",
+  "whoisBillingPhone": "12345678901",
+  "whoisBillingFax": "12345678901",
+  "whoisBillingAddress": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+  "whoisBillingId": 0,
+  "whoisDomainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+  "whoisAuditCreatedAt": 1591402147834,
+  "whoisAuditUpdatedAt": 1591402147834,
+  "whoisRegistrarParseCode": 36643,
+  "whoisNoRecord": false,
+  "whoisDomainAvailable": false,
+  "whoisContactEmails": "dummy@dummy.com",
+  "whoisExpired": false,
+  "whoisContacts": [
+    {
+      "whoisContactID": 0,
+      "organization": "Dummy Organization",
+      "state": "california",
+      "country": "united states",
+      "address": "california\nunited states\n",
+      "id": 0
+    }
+  ],
+  "whoisContactNames": "Dummy",
+  "whoisContactOrganizations": "Dummy Organization",
+  "whoisContactCountries": "united states",
+  "whoisCompositeParseCode": 36643,
+  "whoisId": 6674824394369493291
+}

@@ -1,0 +1,16 @@
+{
+	"id": "crowdstrike-streaming-api",
+    "name": "CrowdStrike Falcon Streaming - Classifier",
+    "type": "classification",
+    "description": "Classifies CrowdStrike Falcon events.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"transformer": {
+		"simple": "metadata.eventType",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"DetectionSummaryEvent": "Malware"
+	},
+	"fromVersion": "6.0.0"
+}

@@ -1,0 +1,1328 @@
+id: Calculate Severity - Critical Assets v2
+version: -1
+fromversion: 5.0.0
+name: Calculate Severity - Critical Assets v2
+description: |-
+  Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
+  Critical assets refer to: users, user groups, endpoints and endpoint groups.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    type: start
+    task:
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '21'
+      - '19'
+      - '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 424aaa79-feb8-4351-8818-b15b2999b7a6
+    type: condition
+    task:
+      id: 424aaa79-feb8-4351-8818-b15b2999b7a6
+      version: -1
+      name: Do required user inputs exist?
+      description: Checks whether there is at least one user involved in the incident and at least one user defined as a critical asset.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '43'
+      'yes':
+      - '34'
+      - '50'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Account.Username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CriticalUsers
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
+    type: condition
+    task:
+      id: ae8f3642-3d2e-46e9-80e7-806b6cfbeca3
+      version: -1
+      name: Is a critical user involved in the incident?
+      description: Checks if at least one of the usernames involved in the incident is listed in the "CriticalUsers" list.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '43'
+      'yes':
+      - '54'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: criticalusers
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: criticalusers
+                      iscontext: true
+                    right:
+                      value:
+                        simple: usernames
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 3e771227-3718-4714-89ac-51e80b242f8b
+    type: title
+    task:
+      id: 3e771227-3718-4714-89ac-51e80b242f8b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1631
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: e94c9609-239f-4032-827a-8dc4b44b987a
+    type: condition
+    task:
+      id: e94c9609-239f-4032-827a-8dc4b44b987a
+      version: -1
+      name: Is a critical endpoint involved in the incident?
+      description: Checks if at least one of the endpoints involved in the incident is listed in the "CriticalEndpoints" list.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '42'
+      'yes':
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: criticalendpoints
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: criticalendpoints
+                      iscontext: true
+                    right:
+                      value:
+                        simple: hostnames
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -445,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: f62d3761-4856-44ee-80f1-668a0d53ce9d
+    type: title
+    task:
+      id: f62d3761-4856-44ee-80f1-668a0d53ce9d
+      version: -1
+      name: Critical Users
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: fd271425-66a0-48f9-8c71-fe1032820013
+    type: title
+    task:
+      id: fd271425-66a0-48f9-8c71-fe1032820013
+      version: -1
+      name: Critical Endpoints
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -445,
+          "y": -215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: c59f6491-e15c-43aa-86ed-dad7d70cdf22
+    type: title
+    task:
+      id: c59f6491-e15c-43aa-86ed-dad7d70cdf22
+      version: -1
+      name: Critical Groups
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: d199396a-b6cd-49e6-8eed-f8c40dbf6022
+    type: regular
+    task:
+      id: d199396a-b6cd-49e6-8eed-f8c40dbf6022
+      version: -1
+      name: Get all endpoint groups
+      description: Sets all endpoint groups to the context, as a list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      append: {}
+      key:
+        simple: endpointgroups
+      value:
+        complex:
+          root: inputs.Endpoint
+          accessor: Groups
+          transformers:
+          - operator: Stringify
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '='
+              toReplace:
+                value:
+                  simple: CN=
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '='
+              toReplace:
+                value:
+                  simple: DC=
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '='
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 232.5,
+          "y": 577
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '23':
+    id: '23'
+    taskid: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
+    type: condition
+    task:
+      id: 3f7ea2b9-d2c9-400c-8972-e64ec0ec7863
+      version: -1
+      name: Is a critical endpoint group involved in the incident?
+      description: Checks if at least one critical endpoint group is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '52'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: criticalgroups
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: criticalgroups
+                      iscontext: true
+                    right:
+                      value:
+                        simple: endpointgroups
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 232.5,
+          "y": 742
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '24':
+    id: '24'
+    taskid: 7160e3e9-7200-4ba5-808f-ac28e7ef86f6
+    type: condition
+    task:
+      id: 7160e3e9-7200-4ba5-808f-ac28e7ef86f6
+      version: -1
+      name: Is there a user group?
+      description: Checks if there is at least one user group involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Account
+                accessor: Groups
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 992.5,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: babf3f91-5d9c-47e8-870d-c236b9c68346
+    type: condition
+    task:
+      id: babf3f91-5d9c-47e8-870d-c236b9c68346
+      version: -1
+      name: Is there an endpoint group?
+      description: Checks whether there is at least one group for an involved endpoint.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Endpoint
+                accessor: Groups
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 232.5,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: a0e5a630-df39-4346-846b-d67653fee2ec
+    type: regular
+    task:
+      id: a0e5a630-df39-4346-846b-d67653fee2ec
+      version: -1
+      name: Get all user-defined critical groups
+      description: Sets user-defined critical groups to context, as a list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+      - '35'
+    scriptarguments:
+      append: {}
+      key:
+        simple: criticalgroups
+      value:
+        complex:
+          root: inputs.CriticalGroups
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
+    type: condition
+    task:
+      id: f43d598e-ba8f-4dc0-8405-46fbbd12ec79
+      version: -1
+      name: Are there user-defined critical groups?
+      description: Checks if there are any user-defined critical groups in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CriticalGroups
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: 80d01617-682f-4dbb-8e9a-5bb7660d03b7
+    type: regular
+    task:
+      id: 80d01617-682f-4dbb-8e9a-5bb7660d03b7
+      version: -1
+      name: Get all user groups
+      description: Sets all user groups to the context, as a list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      append: {}
+      key:
+        simple: accountgroups
+      value:
+        complex:
+          root: inputs.Account
+          accessor: Groups
+          transformers:
+          - operator: Stringify
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '='
+              toReplace:
+                value:
+                  simple: CN=
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '='
+              toReplace:
+                value:
+                  simple: DC=
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '='
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 992.5,
+          "y": 577
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
+    type: condition
+    task:
+      id: 09afd6ef-f9b2-4be1-80a6-f294243dc89a
+      version: -1
+      name: Is a critical user group involved in the incident?
+      description: Checks whether at least one user group is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '44'
+      'yes':
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: criticalgroups
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: criticalgroups
+                      iscontext: true
+                    right:
+                      value:
+                        simple: accountgroups
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 992.5,
+          "y": 742
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '34':
+    id: '34'
+    taskid: b93fb183-5e45-442b-8083-6706d301202c
+    type: regular
+    task:
+      id: b93fb183-5e45-442b-8083-6706d301202c
+      version: -1
+      name: Get all usernames
+      description: Sets all usernames involved in the incident to context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: usernames
+      value:
+        complex:
+          root: inputs.Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '35':
+    id: '35'
+    taskid: 53feba0a-5f2f-410c-882f-b95cbd9c5fbb
+    type: title
+    task:
+      id: 53feba0a-5f2f-410c-882f-b95cbd9c5fbb
+      version: -1
+      name: Critical Endpoint Groups
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 232.5,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '36':
+    id: '36'
+    taskid: 37f291a8-8336-412f-8f0f-26bfa0fa7e7d
+    type: title
+    task:
+      id: 37f291a8-8336-412f-8f0f-26bfa0fa7e7d
+      version: -1
+      name: Critical User Groups
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 992.5,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '37':
+    id: '37'
+    taskid: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
+    type: condition
+    task:
+      id: d0e85e0c-9d5f-46a2-8f7d-37c5cccfb2af
+      version: -1
+      name: Do required endpoint inputs exist?
+      description: Checks whether there is at least one endpoint involved in the incident and at least one hostname defined as a critical asset.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '42'
+      'yes':
+      - '39'
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Endpoint
+                accessor: Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CriticalEndpoints
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -445,
+          "y": -5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: 86e2054c-c8b2-4c83-8d2b-40afd339203a
+    type: regular
+    task:
+      id: 86e2054c-c8b2-4c83-8d2b-40afd339203a
+      version: -1
+      name: Get all hostnames
+      description: Sets all hostnames to context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      append: {}
+      key:
+        simple: hostnames
+      value:
+        complex:
+          root: inputs.Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '42':
+    id: '42'
+    taskid: fab539ae-ff25-486e-82b4-9c94f0426de4
+    type: title
+    task:
+      id: fab539ae-ff25-486e-82b4-9c94f0426de4
+      version: -1
+      name: No Critical Endpoints
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -875,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '43':
+    id: '43'
+    taskid: 33b118b1-2ecc-47bc-8eed-ce8e53b5a160
+    type: title
+    task:
+      id: 33b118b1-2ecc-47bc-8eed-ce8e53b5a160
+      version: -1
+      name: No Critical Users
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '44':
+    id: '44'
+    taskid: 008bea76-3889-4e55-894b-058dbb6dda36
+    type: title
+    task:
+      id: 008bea76-3889-4e55-894b-058dbb6dda36
+      version: -1
+      name: No Critical Groups
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '46':
+    id: '46'
+    taskid: 7f151914-046a-4f0a-8594-90ac5447ddca
+    type: regular
+    task:
+      id: 7f151914-046a-4f0a-8594-90ac5447ddca
+      version: -1
+      name: Set severity to critical
+      description: Sets the severity output of this playbook to "Critical".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '55'
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.CriticalAssetsSeverity
+      value:
+        simple: Critical
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: 5a9cf941-59dd-4d46-8153-8b76a30c4168
+    type: regular
+    task:
+      id: 5a9cf941-59dd-4d46-8153-8b76a30c4168
+      version: -1
+      name: Get all critical endpoints
+      description: Sets all critical endpoints to context, as a list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      append: {}
+      key:
+        simple: criticalendpoints
+      value:
+        complex:
+          root: inputs.CriticalEndpoints
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '50':
+    id: '50'
+    taskid: 0db98f70-66d9-4ba3-8616-5af419630189
+    type: regular
+    task:
+      id: 0db98f70-66d9-4ba3-8616-5af419630189
+      version: -1
+      name: Get all critical usernames
+      description: Sets all critical usernames in context, as a list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: criticalusers
+      value:
+        complex:
+          root: inputs.CriticalUsers
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '51':
+    id: '51'
+    taskid: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
+    type: regular
+    task:
+      id: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
+      version: -1
+      name: Set critical endpoints to output
+      description: Sets the critical endpoints to the CriticalAssets.CriticalEndpoints context key, which is an output of this playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: CriticalAssets.CriticalEndpoints
+      value:
+        complex:
+          root: criticalendpoints
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: criticalendpoints
+                iscontext: true
+              right:
+                value:
+                  simple: hostnames
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -445,
+          "y": 742
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '52':
+    id: '52'
+    taskid: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
+    type: regular
+    task:
+      id: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
+      version: -1
+      name: Set critical endpoint groups to output
+      description: Sets the critical endpoint groups to the CriticalAssets.CriticalEndpointGroups context key, which is an output of this playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: CriticalAssets.CriticalEndpointGroups
+      value:
+        complex:
+          root: criticalgroups
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: criticalgroups
+                iscontext: true
+              right:
+                value:
+                  simple: endpointgroups
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 232.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '53':
+    id: '53'
+    taskid: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
+    type: regular
+    task:
+      id: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
+      version: -1
+      name: Set critical user groups to output
+      description: Sets the critical user groups to the CriticalAssets.CriticalUserGroups context key, which is an output of this playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: CriticalAssets.UserGroups
+      value:
+        complex:
+          root: criticalgroups
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: criticalgroups
+                iscontext: true
+              right:
+                value:
+                  simple: accountgroups
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 992.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '54':
+    id: '54'
+    taskid: 40a52d56-8468-4161-8832-9f3a8edbdc20
+    type: regular
+    task:
+      id: 40a52d56-8468-4161-8832-9f3a8edbdc20
+      version: -1
+      name: Set critical users to output
+      description: Sets the critical users to the CriticalAssets.CriticalUsers context key, which is an output of this playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: CriticalAssets.Users
+      value:
+        complex:
+          root: criticalusers
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: criticalusers
+                iscontext: true
+              right:
+                value:
+                  simple: usernames
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 742
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '55':
+    id: '55'
+    taskid: 9337a013-1493-4943-8d8f-42fe0feb437e
+    type: regular
+    task:
+      id: 9337a013-1493-4943-8d8f-42fe0feb437e
+      version: -1
+      name: Set critical assets to incident field
+      description: Sets the critical assets to an incident field which can be displayed in the incident layout.
+      scriptName: PopulateCriticalAssets
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      critical_assets:
+        complex:
+          root: CriticalAssets
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_42_#default#": 0.34,
+      "13_51_yes": 0.53,
+      "23_44_#default#": 0.52,
+      "23_52_yes": 0.58,
+      "24_29_yes": 0.55,
+      "24_44_#default#": 0.32,
+      "25_22_yes": 0.61,
+      "25_44_#default#": 0.33,
+      "27_26_yes": 0.56,
+      "27_44_#default#": 0.58,
+      "30_44_#default#": 0.58,
+      "37_39_yes": 0.55,
+      "37_42_#default#": 0.45,
+      "8_34_yes": 0.34,
+      "8_43_#default#": 0.45,
+      "8_50_yes": 0.33,
+      "9_43_#default#": 0.36,
+      "9_54_yes": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2096,
+        "width": 3395,
+        "x": -875,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: CriticalUsers
+  value:
+    simple: admin,administrator
+  required: false
+  description: CSV of critical users.
+- key: CriticalEndpoints
+  value:
+    simple: AdminPC
+  required: false
+  description: CSV of critical endpoints.
+- key: CriticalGroups
+  value:
+    simple: Administrators, Domain Admins, Enterprise Admins, Schema Admins
+  required: false
+  description: CSV of DN names of critical AD groups.
+- key: Account
+  value:
+    complex:
+      root: Account
+      transformers:
+      - operator: uniq
+  required: false
+  description: User accounts to check against the critical lists.
+- key: Endpoint
+  value:
+    complex:
+      root: Endpoint
+      transformers:
+      - operator: uniq
+  required: false
+  description: Endpoints to check against the CriticalEndpoints list.
+outputs:
+- contextPath: Severities.CriticalAssetsSeverity
+  description: The score returned by the Calculate Severity - Critical Assets v2 playbook.
+  type: number
+- contextPath: CriticalAssets
+  description: All critical assets involved in the incident.
+  type: unknown
+- contextPath: CriticalAssets.CriticalEndpoints
+  description: Critical endpoints involved in the incident.
+  type: unknown
+- contextPath: CriticalAssets.CriticalEndpointGroups
+  description: Critical endpoint-groups involved in the incident.
+  type: unknown
+- contextPath: CriticalAssets.CriticalUsers
+  description: Critical users involved in the incident.
+  type: unknown
+- contextPath: CriticalAssets.CriticalUserGroups
+  description: Critical user-groups involved in the incident.
+  type: unknown
+tests:
+- Calculate Severity - Generic v2 - Test

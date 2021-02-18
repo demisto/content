@@ -1,0 +1,734 @@
+{
+    "id": "8fae303defd52a7745044ce2ba54a391",
+    "methodId": 28261,
+    "accountId": 3478376022,
+    "status": "SUCCESS",
+    "siemDetectionSummary": "detected",
+    "srcNodeId": "c0d4705d-e7f2-42fe-b087-feb520a2ea97",
+    "srcNodeName": "Cloud(WWW)",
+    "srcNodeOSType": "LINUX",
+    "destNodeId": "2de23257-c1e2-4eb1-b73a-50f896ab23d6",
+    "destNodeName": "Win10-MDATP",
+    "destNodeOSType": "WINDOWS",
+    "assetId": -1,
+    "moveId": 2877,
+    "moveName": "Transfer of poisonivy malware over HTTP/S",
+    "moveDesc": "**Goal**\n\n1. Verify whether poisonivy malware can be transferred to the target simulator.\n\n**Actions**\n\n1. **Malware Transfer**  \n    **Action:** The target simulator initiates the transfer of [poisonivy](https://attack.mitre.org/software/S0012) malware over HTTP/S from the attack simulator.  \n    **Expected behavior:** Transfer to the target simulator is prevented.  \n\n\n**More Info**  \n",
+    "remediationData": [
+        {
+            "content": "It is important to validate that the specified host IPs (or network segments) have network access to the target node. Be as restrictive as possible.",
+            "title": "Restrict access to trusted IPs or network segments"
+        },
+        {
+            "content": "Only keep open ports which are required for regular operation. Block all unused ports.",
+            "title": "Block target port in the Firewall"
+        },
+        {
+            "content": "Enable the Sandbox Evaluation option in your security controller.",
+            "title": "Use Secure Web Gateway or Sandbox"
+        },
+        {
+            "content": "Make sure your Anti Virus/Endpoint security software is up-to-date and running.",
+            "title": "Anti-Virus/Endpoint Security"
+        }
+    ],
+    "moveRevision": 0,
+    "moveTags": {
+        "approach": "N/A",
+        "protocol": "HTTPS",
+        "impact": "N/A",
+        "opponent": "N/A",
+        "noiseLevel": "N/A"
+    },
+    "moveTagIds": {
+        "approachId": -1,
+        "protocolId": 0,
+        "impactId": -1,
+        "opponentId": -1,
+        "noiseLevelId": -1
+    },
+    "attackProtocol": "HTTPS",
+    "packageId": 2,
+    "packageName": "Infiltration",
+    "executionTime": "2020-02-24T05:36:38.200Z",
+    "params": [
+        {
+            "paramId": 1,
+            "valueId": 1
+        },
+        {
+            "paramId": 2,
+            "valueId": 2
+        },
+        {
+            "paramId": 3,
+            "valueId": 2
+        },
+        {
+            "paramId": 4,
+            "valueId": 0
+        }
+    ],
+    "paramsStr": [
+        "Sample binaries:08709f35581e0958d1ca4e50b7d86dba",
+        "Transfer protocol:HTTPS",
+        "Transfer ports:8080",
+        "Proxy:undefined"
+    ],
+    "paramsObj": {
+        "Sample binaries": "08709f35581e0958d1ca4e50b7d86dba",
+        "Transfer protocol": "HTTPS",
+        "Transfer ports": "8080"
+    },
+    "parameters": {
+        "BINARY": [
+            {
+                "name": "buffer",
+                "displayName": "Sample binaries",
+                "displayType": "Hash",
+                "value": "ddf26f97fb3b8caf13aedc2518ec27530c7d2efe9b2d8c356c202d21bb642d28",
+                "displayValue": "sha256"
+            }
+        ],
+        "PROTOCOL": [
+            {
+                "name": "http_or_https",
+                "displayName": "Transfer protocol",
+                "displayType": "Protocol",
+                "value": "HTTPS",
+                "displayValue": "HTTPS"
+            }
+        ],
+        "PORT": [
+            {
+                "name": "transfer_port",
+                "displayName": "Transfer ports",
+                "displayType": "Port",
+                "value": 8080,
+                "displayValue": "8080"
+            }
+        ],
+        "PROXY": [
+            {
+                "name": "PROXY",
+                "displayName": "Proxy",
+                "displayType": "Proxy"
+            }
+        ]
+    },
+    "baseProtocol": "TCP",
+    "serverPort": 8080,
+    "serverNode": "SRC",
+    "sourcePort": 0,
+    "connectivityInfo": [
+        {
+            "ERRNO": null,
+            "IP": "52.56.158.85",
+            "NUMBER": 8080,
+            "PROTOCOL": "TCP",
+            "SRC_IP": "172.31.26.23",
+            "SRC_PORT": 57548,
+            "STATUS": "OPEN",
+            "TIME": "2020-02-24 07:36:35.788000"
+        }
+    ],
+    "latestExec": null,
+    "companyId": 1,
+    "labels": [],
+    "indicators": [
+        "Infiltration Risk"
+    ],
+    "jobId": 603789665,
+    "runId": "1582398000069.44",
+    "dataObj": {
+        "data": [
+            [
+                {
+                    "id": "c0d4705d-e7f2-42fe-b087-feb520a2ea97",
+                    "details": {
+                        "DETAILS": "The task action finished running successfully",
+                        "ERROR": "52.56.253.231 - - [24/Feb/2020 05:36:36] \"GET /DcxfHpLkq HTTP/1.1\" 200 -\n",
+                        "METADATA": {
+                            "executable": "/home/safebreach/simulator/app/simvenv/bin/python",
+                            "hostname": "ip-10-240-1-228",
+                            "pid": 9307,
+                            "ret_code": 0
+                        },
+                        "OUTPUT": ""
+                    }
+                },
+                {
+                    "id": "2de23257-c1e2-4eb1-b73a-50f896ab23d6",
+                    "details": {
+                        "DETAILS": "The task action finished running successfully",
+                        "ERROR": "",
+                        "METADATA": {
+                            "executable": [
+                                "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\python_sb_603789665_bs_1632855.exe",
+                                "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py"
+                            ],
+                            "hostname": "WindowsATP-Win10",
+                            "pid": 5220,
+                            "ret_code": 0
+                        },
+                        "OUTPUT": "DEBUG: 2020-02-24 07:36:35,762 (5220~~2168): framework line 209: Enter set_data\nDEBUG: 2020-02-24 07:36:35,769 (5220~~2168): framework line 290: BPD['DATA'] MD5: c512cee3aefc33e080405915d730b0fc\nDEBUG: 2020-02-24 07:36:35,769 (5220~~2168): framework line 261: Leave set_data\nDEBUG: 2020-02-24 07:36:35,780 (5220~~2168): framework line 182: Enter http_get\nDEBUG: 2020-02-24 07:36:35,780 (5220~~2168): framework line 420: Waiting for EVENT_Default\nDEBUG: 2020-02-24 07:36:35,782 (5220~~2168): framework line 422: Done waiting for EVENT_Default\nDEBUG: 2020-02-24 07:36:35,782 (5220~~2168): framework.red.http line 85: Sending get request\nDEBUG: 2020-02-24 07:36:35,826 (5220~~2168): framework line 193: Leave http_get\n"
+                    }
+                }
+            ]
+        ]
+    },
+    "reason": "",
+    "lastStatusChangeDate": "2020-02-21T11:33:54.813Z",
+    "previousStatus": null,
+    "srcNodeLabels": null,
+    "destNodeLabels": null,
+    "attackerNodeId": "c0d4705d-e7f2-42fe-b087-feb520a2ea97",
+    "attackerNodeName": "Cloud(WWW)",
+    "attackerExternalIp": "52.56.158.85",
+    "attackerInternalIp": "10.240.1.228",
+    "attackerOSType": "LINUX",
+    "attackerSimulatorType": "Network",
+    "targetNodeId": "2de23257-c1e2-4eb1-b73a-50f896ab23d6",
+    "targetNodeName": "Win10-MDATP",
+    "targetExternalIp": "52.56.253.231",
+    "targetInternalIp": "172.31.26.23",
+    "targetOSType": "WINDOWS",
+    "targetSimulatorType": "Host",
+    "MITRE_Tactic": [
+        {
+            "value": "Command And Control",
+            "sort": 9,
+            "id": 9,
+            "url": "https://attack.mitre.org/tactics/TA0011",
+            "tacticId": "TA0011"
+        }
+    ],
+    "opponent": [
+        {
+            "id": -1,
+            "value": "N/A"
+        }
+    ],
+    "protocol": [
+        {
+            "id": 0,
+            "value": "HTTP",
+            "sort": 0
+        }
+    ],
+    "MITRE_Technique": [
+        {
+            "sort": 39,
+            "id": 39,
+            "value": "(T1094) Custom Command and Control Protocol",
+            "url": "https://attack.mitre.org/techniques/T1094"
+        }
+    ],
+    "MITRE_Relations": [
+        {
+            "technique": "(T1094) Custom Command and Control Protocol",
+            "tactics": [
+                "TA0011"
+            ]
+        }
+    ],
+    "noiseLevel": [
+        {
+            "id": -1,
+            "value": "N/A"
+        }
+    ],
+    "impact": [
+        {
+            "id": -1,
+            "value": "N/A"
+        }
+    ],
+    "approach": [
+        {
+            "id": -1,
+            "value": "N/A"
+        }
+    ],
+    "Attack_Type": [
+        {
+            "value": "Malware Transfer",
+            "sort": 8,
+            "id": 8
+        }
+    ],
+    "Threat_Actor": [
+        {
+            "id": 27,
+            "sort": 27,
+            "value": "admin@338"
+        },
+        {
+            "id": 57,
+            "sort": 57,
+            "value": "Moafee"
+        },
+        {
+            "id": 63,
+            "sort": 63,
+            "value": "Tropic Trooper"
+        },
+        {
+            "id": 7,
+            "sort": 7,
+            "value": "APT17"
+        },
+        {
+            "id": 16,
+            "sort": 16,
+            "value": "APT18"
+        },
+        {
+            "id": 53,
+            "sort": 53,
+            "value": "APT12"
+        },
+        {
+            "id": 69,
+            "sort": 69,
+            "value": "APT16"
+        },
+        {
+            "id": 72,
+            "sort": 72,
+            "value": "APT1"
+        },
+        {
+            "id": 84,
+            "sort": 84,
+            "value": "APT19"
+        },
+        {
+            "id": 55,
+            "sort": 55,
+            "value": "PittyTiger"
+        },
+        {
+            "id": 89,
+            "sort": 89,
+            "value": "Soft Cell"
+        },
+        {
+            "id": 46,
+            "sort": 46,
+            "value": "menuPass"
+        },
+        {
+            "id": 5,
+            "sort": 5,
+            "value": "Molerats"
+        },
+        {
+            "id": 8,
+            "sort": 8,
+            "value": "Elderwood"
+        },
+        {
+            "id": 79,
+            "sort": 79,
+            "value": "DragonOK"
+        }
+    ],
+    "sector": [
+        {
+            "id": 5,
+            "sort": 5,
+            "value": "Education"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        },
+        {
+            "id": 13,
+            "sort": 13,
+            "value": "NGO"
+        },
+        {
+            "id": 7,
+            "sort": 7,
+            "value": "Finance"
+        },
+        {
+            "id": 10,
+            "sort": 10,
+            "value": "Hospitality"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        },
+        {
+            "id": 6,
+            "sort": 6,
+            "value": "Energy"
+        },
+        {
+            "id": 8,
+            "sort": 8,
+            "value": "Government"
+        },
+        {
+            "id": 17,
+            "sort": 17,
+            "value": "Telecommunications"
+        },
+        {
+            "id": 6,
+            "sort": 6,
+            "value": "Energy"
+        },
+        {
+            "id": 8,
+            "sort": 8,
+            "value": "Government"
+        },
+        {
+            "id": 17,
+            "sort": 17,
+            "value": "Telecommunications"
+        },
+        {
+            "id": 4,
+            "sort": 4,
+            "value": "Defense"
+        },
+        {
+            "id": 11,
+            "sort": 11,
+            "value": "Manufacturing"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        },
+        {
+            "id": 0,
+            "sort": 0,
+            "value": "Aerospace"
+        },
+        {
+            "id": 7,
+            "sort": 7,
+            "value": "Finance"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        },
+        {
+            "id": 14,
+            "sort": 14,
+            "value": "Retail"
+        },
+        {
+            "id": 17,
+            "sort": 17,
+            "value": "Telecommunications"
+        },
+        {
+            "id": 4,
+            "sort": 4,
+            "value": "Defense"
+        },
+        {
+            "id": 11,
+            "sort": 11,
+            "value": "Manufacturing"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        },
+        {
+            "id": 4,
+            "sort": 4,
+            "value": "Defense"
+        },
+        {
+            "id": 11,
+            "sort": 11,
+            "value": "Manufacturing"
+        },
+        {
+            "id": 12,
+            "sort": 12,
+            "value": "Media"
+        }
+    ],
+    "behavioral": [
+        {
+            "id": 0,
+            "sort": 0,
+            "value": "0"
+        }
+    ],
+    "Security_Controls": [
+        {
+            "id": 1,
+            "sort": 1,
+            "value": "Network Inspection"
+        }
+    ],
+    "MITRE_Software": [
+        {
+            "id": 197,
+            "sort": 197,
+            "value": "(S0012) poisonivy"
+        }
+    ],
+    "IoC_Based": [
+        {
+            "id": 1,
+            "sort": 1,
+            "value": "1"
+        }
+    ],
+    "matrixId": 1110,
+    "assetName": "N/A",
+    "assetType": "N/A",
+    "destinationIp": "52.56.158.85",
+    "sourceIp": "172.31.26.23",
+    "sourceId": "2de23257-c1e2-4eb1-b73a-50f896ab23d6",
+    "sourceName": "Win10-MDATP",
+    "destinstionId": "c0d4705d-e7f2-42fe-b087-feb520a2ea97",
+    "destinationName": "Cloud(WWW)",
+    "direction": "outbound",
+    "rerun": {
+        "force": true,
+        "matrix": {
+            "name": "Rerun simulation #8fae303defd52a7745044ce2ba54a391",
+            "nodeIds": [
+                "c0d4705d-e7f2-42fe-b087-feb520a2ea97",
+                "2de23257-c1e2-4eb1-b73a-50f896ab23d6"
+            ],
+            "moveIds": [
+                2877
+            ],
+            "paramsIds": [
+                {
+                    "paramId": 1,
+                    "valueId": 1
+                },
+                {
+                    "paramId": 2,
+                    "valueId": 2
+                },
+                {
+                    "paramId": 3,
+                    "valueId": 2
+                },
+                {
+                    "paramId": 4,
+                    "valueId": 0
+                }
+            ]
+        }
+    },
+    "siemLogs": [
+        {
+            "fields": {
+                "timestamp": "2020-02-24T05:36:34.343Z",
+                "vendor": "Microsoft",
+                "product": "Microsoft Defender ATP",
+                "status": "unmapped",
+                "sourceHosts": [
+                    "windowsatp-win10"
+                ],
+                "sourcePorts": [],
+                "destHosts": [],
+                "destPorts": [],
+                "action": "ProcessCreated",
+                "filePath": [
+                    "\"pythonw.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\venv\\Scripts\\safebreach_simulator.py\"",
+                    "\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs"
+                ],
+                "processIds": [
+                    5220
+                ],
+                "fileHashes": [
+                    "3de58e6c504a9da9c7357bd20a5c9576d280065d",
+                    "0db56ac7ba5f232f5f813109185a3bc885d8d428feb20997d497f586652477f2",
+                    "21f73cd55626f0ec9fbce53eafbef128"
+                ],
+                "parsers": [
+                    ""
+                ],
+                "connector": "MsATP [COLLECTOR]"
+            },
+            "rawLog": "EventTime=2020-02-24T05:36:34.3435431Z MachineId=5a32edc6d35ef4c7d2f3df95bd4de752e8a54f5d ComputerName=windowsatp-win10 ActionType=ProcessCreated FileName=python_sb_603789665_bs_1632855.exe FolderPath=C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\python_sb_603789665_bs_1632855.exe SHA1=3de58e6c504a9da9c7357bd20a5c9576d280065d SHA256=0db56ac7ba5f232f5f813109185a3bc885d8d428feb20997d497f586652477f2 MD5=21f73cd55626f0ec9fbce53eafbef128 ProcessId=5220 ProcessCommandLine=\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs ProcessIntegrityLevel=System ProcessTokenElevation=TokenElevationTypeDefault ProcessCreationTime=2020-02-24T05:36:34.3403399Z AccountDomain=nt authority AccountName=system AccountSid=S-1-5-18 LogonId=999 InitiatingProcessAccountDomain=nt authority InitiatingProcessAccountName=system InitiatingProcessAccountSid=S-1-5-18 InitiatingProcessLogonId=999 InitiatingProcessIntegrityLevel=System InitiatingProcessTokenElevation=TokenElevationTypeDefault InitiatingProcessSHA1=0de3553016cf5da64fad85dc15dfe29c71f85498 InitiatingProcessSHA256= InitiatingProcessMD5=88c5748be337921f41126735d225e52c InitiatingProcessFileName=pythonw.exe InitiatingProcessId=3792 InitiatingProcessCommandLine=\"pythonw.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\venv\\Scripts\\safebreach_simulator.py\" InitiatingProcessCreationTime=2020-02-21T10:08:46.5948433Z InitiatingProcessFolderPath=c:\\program files\\safebreach\\safebreach endpoint simulator\\app\\19.4.6\\venv\\scripts\\pythonw.exe InitiatingProcessParentId=3280 InitiatingProcessParentFileName=pythonservice.exe InitiatingProcessParentCreationTime=2020-02-21T10:08:45.9314457Z ReportId=98263 AppGuardContainerId=",
+            "debug": {},
+            "rawFields": {
+                "EventTime": "2020-02-24T05:36:34.3435431Z",
+                "MachineId": "5a32edc6d35ef4c7d2f3df95bd4de752e8a54f5d",
+                "ComputerName": "windowsatp-win10",
+                "ActionType": "ProcessCreated",
+                "FileName": "python_sb_603789665_bs_1632855.exe",
+                "FolderPath": "C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\python_sb_603789665_bs_1632855.exe",
+                "SHA1": "3de58e6c504a9da9c7357bd20a5c9576d280065d",
+                "SHA256": "0db56ac7ba5f232f5f813109185a3bc885d8d428feb20997d497f586652477f2",
+                "MD5": "21f73cd55626f0ec9fbce53eafbef128",
+                "ProcessId": 5220,
+                "ProcessCommandLine": "\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs",
+                "ProcessIntegrityLevel": "System",
+                "ProcessTokenElevation": "TokenElevationTypeDefault",
+                "ProcessCreationTime": "2020-02-24T05:36:34.3403399Z",
+                "AccountDomain": "nt authority",
+                "AccountName": "system",
+                "AccountSid": "S-1-5-18",
+                "LogonId": 999,
+                "InitiatingProcessAccountDomain": "nt authority",
+                "InitiatingProcessAccountName": "system",
+                "InitiatingProcessAccountSid": "S-1-5-18",
+                "InitiatingProcessLogonId": 999,
+                "InitiatingProcessIntegrityLevel": "System",
+                "InitiatingProcessTokenElevation": "TokenElevationTypeDefault",
+                "InitiatingProcessSHA1": "0de3553016cf5da64fad85dc15dfe29c71f85498",
+                "InitiatingProcessSHA256": "",
+                "InitiatingProcessMD5": "88c5748be337921f41126735d225e52c",
+                "InitiatingProcessFileName": "pythonw.exe",
+                "InitiatingProcessId": 3792,
+                "InitiatingProcessCommandLine": "\"pythonw.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\venv\\Scripts\\safebreach_simulator.py\"",
+                "InitiatingProcessCreationTime": "2020-02-21T10:08:46.5948433Z",
+                "InitiatingProcessFolderPath": "c:\\program files\\safebreach\\safebreach endpoint simulator\\app\\19.4.6\\venv\\scripts\\pythonw.exe",
+                "InitiatingProcessParentId": 3280,
+                "InitiatingProcessParentFileName": "pythonservice.exe",
+                "InitiatingProcessParentCreationTime": "2020-02-21T10:08:45.9314457Z",
+                "ReportId": 98263,
+                "AppGuardContainerId": ""
+            }
+        },
+        {
+            "fields": {
+                "timestamp": "2020-02-24T05:36:34.356Z",
+                "vendor": "Microsoft",
+                "product": "Microsoft Defender ATP",
+                "status": "unmapped",
+                "sourceHosts": [
+                    "windowsatp-win10"
+                ],
+                "sourcePorts": [],
+                "destHosts": [],
+                "destPorts": [],
+                "action": "ProcessCreated",
+                "filePath": [
+                    "\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs",
+                    "conhost.exe 0xffffffff -ForceV1"
+                ],
+                "processIds": [
+                    2152
+                ],
+                "fileHashes": [
+                    "11996f32dd85863a8c3bff6d520f788a9211c8f7",
+                    "baf97b2a629723947539cff84e896cd29565ab4bb68b0cec515eb5c5d6637b69",
+                    "c5e9b1d1103edcea2e408e9497a5a88f"
+                ],
+                "parsers": [
+                    ""
+                ],
+                "connector": "MsATP [COLLECTOR]"
+            },
+            "rawLog": "EventTime=2020-02-24T05:36:34.3568898Z MachineId=5a32edc6d35ef4c7d2f3df95bd4de752e8a54f5d ComputerName=windowsatp-win10 ActionType=ProcessCreated FileName=conhost.exe FolderPath=C:\\Windows\\System32\\conhost.exe SHA1=11996f32dd85863a8c3bff6d520f788a9211c8f7 SHA256=baf97b2a629723947539cff84e896cd29565ab4bb68b0cec515eb5c5d6637b69 MD5=c5e9b1d1103edcea2e408e9497a5a88f ProcessId=2152 ProcessCommandLine=conhost.exe 0xffffffff -ForceV1 ProcessIntegrityLevel=System ProcessTokenElevation=TokenElevationTypeDefault ProcessCreationTime=2020-02-24T05:36:34.3549374Z AccountDomain=nt authority AccountName=system AccountSid=S-1-5-18 LogonId=999 InitiatingProcessAccountDomain=nt authority InitiatingProcessAccountName=system InitiatingProcessAccountSid=S-1-5-18 InitiatingProcessLogonId=999 InitiatingProcessIntegrityLevel=System InitiatingProcessTokenElevation=TokenElevationTypeDefault InitiatingProcessSHA1=3de58e6c504a9da9c7357bd20a5c9576d280065d InitiatingProcessSHA256= InitiatingProcessMD5=21f73cd55626f0ec9fbce53eafbef128 InitiatingProcessFileName=python_sb_603789665_bs_1632855.exe InitiatingProcessId=5220 InitiatingProcessCommandLine=\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs InitiatingProcessCreationTime=2020-02-24T05:36:34.3403399Z InitiatingProcessFolderPath=c:\\program files\\safebreach\\safebreach endpoint simulator\\app\\19.4.6\\simvenv\\scripts\\python_sb_603789665_bs_1632855.exe InitiatingProcessParentId=3792 InitiatingProcessParentFileName=pythonw.exe InitiatingProcessParentCreationTime=2020-02-21T10:08:46.5948433Z ReportId=98264 AppGuardContainerId=",
+            "debug": {},
+            "rawFields": {
+                "EventTime": "2020-02-24T05:36:34.3568898Z",
+                "MachineId": "5a32edc6d35ef4c7d2f3df95bd4de752e8a54f5d",
+                "ComputerName": "windowsatp-win10",
+                "ActionType": "ProcessCreated",
+                "FileName": "conhost.exe",
+                "FolderPath": "C:\\Windows\\System32\\conhost.exe",
+                "SHA1": "11996f32dd85863a8c3bff6d520f788a9211c8f7",
+                "SHA256": "baf97b2a629723947539cff84e896cd29565ab4bb68b0cec515eb5c5d6637b69",
+                "MD5": "c5e9b1d1103edcea2e408e9497a5a88f",
+                "ProcessId": 2152,
+                "ProcessCommandLine": "conhost.exe 0xffffffff -ForceV1",
+                "ProcessIntegrityLevel": "System",
+                "ProcessTokenElevation": "TokenElevationTypeDefault",
+                "ProcessCreationTime": "2020-02-24T05:36:34.3549374Z",
+                "AccountDomain": "nt authority",
+                "AccountName": "system",
+                "AccountSid": "S-1-5-18",
+                "LogonId": 999,
+                "InitiatingProcessAccountDomain": "nt authority",
+                "InitiatingProcessAccountName": "system",
+                "InitiatingProcessAccountSid": "S-1-5-18",
+                "InitiatingProcessLogonId": 999,
+                "InitiatingProcessIntegrityLevel": "System",
+                "InitiatingProcessTokenElevation": "TokenElevationTypeDefault",
+                "InitiatingProcessSHA1": "3de58e6c504a9da9c7357bd20a5c9576d280065d",
+                "InitiatingProcessSHA256": "",
+                "InitiatingProcessMD5": "21f73cd55626f0ec9fbce53eafbef128",
+                "InitiatingProcessFileName": "python_sb_603789665_bs_1632855.exe",
+                "InitiatingProcessId": 5220,
+                "InitiatingProcessCommandLine": "\"python_sb_603789665_bs_1632855.exe\" \"C:\\Program Files\\SafeBreach\\SafeBreach Endpoint Simulator\\app\\19.4.6\\simvenv\\Scripts\\safebreach_simulation.py\" sb_603789665_bs",
+                "InitiatingProcessCreationTime": "2020-02-24T05:36:34.3403399Z",
+                "InitiatingProcessFolderPath": "c:\\program files\\safebreach\\safebreach endpoint simulator\\app\\19.4.6\\simvenv\\scripts\\python_sb_603789665_bs_1632855.exe",
+                "InitiatingProcessParentId": 3792,
+                "InitiatingProcessParentFileName": "pythonw.exe",
+                "InitiatingProcessParentCreationTime": "2020-02-21T10:08:46.5948433Z",
+                "ReportId": 98264,
+                "AppGuardContainerId": ""
+            }
+        }
+    ],
+    "siemLogsHeader": [
+        {
+            "name": "status",
+            "displayName": "",
+            "type": "status"
+        },
+        {
+            "name": "timestamp",
+            "displayName": "Event Time",
+            "type": "moment"
+        },
+        {
+            "name": "action",
+            "displayName": "Action"
+        },
+        {
+            "name": "vendor",
+            "displayName": "Vendor"
+        },
+        {
+            "name": "product",
+            "displayName": "Product"
+        },
+        {
+            "name": "sourceHosts",
+            "displayName": "Source"
+        },
+        {
+            "name": "destHosts",
+            "displayName": "Destination"
+        },
+        {
+            "name": "destPorts",
+            "displayName": "Port"
+        },
+        {
+            "name": "connector",
+            "displayName": "Integration"
+        }
+    ],
+    "siemCorrelationEndTime": "2020-02-24T05:56:38.250Z",
+    "siemDetectionStatus": "unmapped",
+    "siemProductDetectionSummary": [
+        {
+            "product": "Microsoft Defender ATP",
+            "vendor": "Microsoft",
+            "status": "unmapped"
+        }
+    ],
+    "siemLogsLastUpdate": "2020-02-24T05:51:20.421Z"
+}
