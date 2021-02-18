@@ -315,7 +315,7 @@ def list_incident_events_command(client: Client, args: dict):
                                     'pageNumber': args.get('page_number'),
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes')})
-    raw_response = client.get_incident_events(args.get('incident_id'), params)
+    raw_response = client.get_incident_events(str(args.get('incident_id')), params)
     table_headers = ['id', 'name', 'severity', 'action', 'type', 'dateTime']
     outputs = []
     raw_outputs = []
@@ -507,7 +507,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                                   saving the last fetch time(in millisecond timestamp).
         max_fetch (str): Max number of alerts to fetch.
         fetch_filter (str): filter incidents with Qualys syntax.
-        first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
+        first_fetch_time (str): Dict with first fetch time in str (ex: 3 days ago).
 
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
