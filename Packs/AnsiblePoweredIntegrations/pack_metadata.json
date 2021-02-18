@@ -1,0 +1,16 @@
+{
+    "name": "Ansible Powered Integrations",
+    "description": "Run Ansible modules as native XSOAR commands with these agent-less integrations:\nMicrosoft Windows Host\nLinux Host\nCisco IOS\nCisco NX-OS\nOpenSSL\nACME\nDNS\nKubernetes\nVMware vSphere\nAzure Compute\nAzure Networking\nHetzner Cloud\nAlibaba Cloud\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Serge Bakharev",
+    "url": "https://github.com/SergeBakharev/Ansible-for-XSOAR",
+    "email": "serge.bakharev@gmail.com",
+    "created": "2020-09-29T20:28:33Z",
+    "categories": [
+        "IT Services"
+      ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
