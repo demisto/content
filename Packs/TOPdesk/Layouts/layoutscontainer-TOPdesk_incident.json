@@ -687,6 +687,167 @@
         "description": "",
         "fields": [
           {
+            "fieldId": "incident_labels",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Labels",
+        "query": null,
+        "queryType": "",
+        "readOnly": true,
+        "type": "labels"
+      }
+    ]
+  },
+  "edit": {
+    "sections": [
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_topdeskcallername",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskcalltype",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskcallerbranchname",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskcategory",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskcreationdate",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskcreator",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskduration",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskimpact",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskincidentnumber",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskline",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskentrytype",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskmainincident",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskmodificationdate",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskmodifier",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskpriority",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskurgency",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdeskprocessingstatus",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_topdesksubcategory",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "TOPdesk Incident",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      },
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_name",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_occurred",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_reminder",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_owner",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_roles",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_type",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_severity",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_playbookid",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_labels",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_phase",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_details",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_attachment",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Basic Information",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      },
+      {
+        "description": "",
+        "fields": [
+          {
             "fieldId": "incident_agentid",
             "isVisible": true
           },
@@ -744,10 +905,6 @@
           },
           {
             "fieldId": "incident_destinationport",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_detectionsla",
             "isVisible": true
           },
           {
@@ -843,10 +1000,6 @@
             "isVisible": true
           },
           {
-            "fieldId": "incident_niststage",
-            "isVisible": true
-          },
-          {
             "fieldId": "incident_os",
             "isVisible": true
           },
@@ -868,94 +1021,6 @@
           },
           {
             "fieldId": "incident_protocol",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_remediationsla",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowassignedto",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowassignmentgroup",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowcaller",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowcallerid",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowcategory",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowclosedby",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowcloseddate",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowdescription",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowduedate",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowescalation",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowimpact",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenownotify",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowopeneddate",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowpriority",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowresolutioncode",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowresolutionnotes",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowresolvedtime",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowseverity",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowstate",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowticketnumber",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_servicenowurgency",
             "isVisible": true
           },
           {
@@ -1015,10 +1080,6 @@
             "isVisible": true
           },
           {
-            "fieldId": "incident_timetoassignment",
-            "isVisible": true
-          },
-          {
             "fieldId": "incident_urlsslverification",
             "isVisible": true
           },
@@ -1029,6 +1090,130 @@
         ],
         "isVisible": true,
         "name": "Custom Fields",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      }
+    ]
+  },
+  "close": {
+    "sections": [
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_closereason",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_closenotes",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Basic Information",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      },
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_incomingmirrorerror",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_outgoingmirrorerror",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Custom Fields",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      }
+    ]
+  },
+  "quickView": {
+    "sections": [
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_type",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_severity",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_owner",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_dbotstatus",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_sourcebrand",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_sourceinstance",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_playbookid",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_phase",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_roles",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Basic Information",
+        "query": null,
+        "queryType": "",
+        "readOnly": false,
+        "type": ""
+      },
+      {
+        "description": "",
+        "fields": [
+          {
+            "fieldId": "incident_occurred",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_dbotcreated",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_dbotduedate",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_dbotmodified",
+            "isVisible": true
+          },
+          {
+            "fieldId": "incident_dbottotaltime",
+            "isVisible": true
+          }
+        ],
+        "isVisible": true,
+        "name": "Timeline Information",
         "query": null,
         "queryType": "",
         "readOnly": false,
