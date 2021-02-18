@@ -570,8 +570,43 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
+def is_there_private_packs_to_upload(public_index_json, private_storage_bucket, extract_destination_path):
+    all_private_packs_from_public_index = public_index_json.get("packs")
+    num_of_private_packs = len(all_private_packs_from_public_index)
+    # open private index here
+    private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
+                                                          os.path.join(extract_destination_path,
+                                                                       'private'))
+    with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
+        private_index_json = json.load(private_index_file)
+        logging.debug("private index from private bucket:")
+        logging.debug(private_index_json)
+
+    all_private_packs_from_private_index = private_index_json.get("packs")
+    if len(all_private_packs_from_private_index) != num_of_private_packs:
+        logging.debug("The number of private packs has changed, upload won't be skipped")
+        return True
+
+    private_pack_to_content_commit_hash = {}
+    for private_pack in all_private_packs_from_public_index:
+        id = private_pack.get("id")
+        content_commit_hash = private_pack.get("contentCommitHash", "")
+        private_pack_to_content_commit_hash[id] = content_commit_hash
+
+    logging.debug(f"private_pack_to_content_commit_hash is {private_pack_to_content_commit_hash}")
+    for private_pack in all_private_packs_from_private_index:
+        id = private_pack.get("id")
+        content_commit_hash = private_pack.get("contentCommitHash", "")
+        if private_pack_to_content_commit_hash[id] != content_commit_hash:
+            logging.debug(f"The private pack {id} has changed and should be uploaded")
+            return True
+    logging.debug("No private packs should be upload")
+    return False
+
+
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
-                              previous_commit_hash: str, storage_bucket: Any):
+                              previous_commit_hash: str, storage_bucket: Any,
+                              private_storage_bucket: str = "", extract_destination_path: str = ""):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
@@ -581,6 +616,8 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         current_commit_hash (str): last commit hash of head.
         previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
+        private_storage_bucket
+        extract_destination_path
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
@@ -597,9 +634,12 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
             index_json = json.load(index_file)
-            logging.debug("print public index")
-            logging.debug(index_json)
 
+        if private_storage_bucket and extract_destination_path:
+            logging.debug("in check_if_index_is_updated , condition is true")
+            if is_there_private_packs_to_upload(index_json, private_storage_bucket, extract_destination_path):
+                logging.debug("there are private packs to be updated")
+                return
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
         try:
@@ -832,8 +872,11 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
+        private_storage_bucket = ""
+        if private_bucket_name:
+            private_storage_bucket = storage_client.bucket(private_bucket_name)
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
-                                  storage_bucket)
+                                  storage_bucket, private_storage_bucket, extract_destination_path)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
