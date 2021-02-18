@@ -51,8 +51,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Rahardjo",
             "Cost_Center_Code": "120100",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -101,8 +102,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Arnold",
             "Cost_Center_Code": "101100",
             "Location": "Office - USA - CA - San Francisco",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -149,8 +151,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Fairy_Updated",
             "Cost_Center_Code": "613116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -198,34 +201,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Buxaplenty",
             "Cost_Center_Code": "310100",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
-        },
-        {
-            "Emp_ID": "115098",
-            "Leadership": "No",
-            "Work_Country_Code": "0",
-            "Employment_Status": "Active",
-            "User_Name": "cocarmichael",
-            "Preferred_Name_-_First_Name": "Connie",
-            "Prehire_Flag": "False",
-            "VP_Flag": "N",
-            "Email_Address": "cocarmichael@test.com",
-            "Title": "Systems Engineer Specialist",
-            "GDPR_Country_Flag": "0",
-            "Director_Flag": "N",
-            "Email_-_Primary_Home": "test30@testing.com",
-            "First_Name": "Connie",
-            "People_Manager_Flag": "N",
-            "Last_Name": "Carmichael",
-            "Exec_Admin_Flag": "N",
-            "Workday_ID": "9aa7e309929e01a58ac35f1508030820",
-            "Preferred_Name": "Connie Carmichael",
-            "Rehired_Employee": "No",
-            "Regular_Employee_Flag": "N",
-            "Preferred_Name_-_Last_Name": "Carmichael",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -273,8 +251,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Genie",
             "Cost_Center_Code": "651116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -321,8 +300,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Claus",
             "Cost_Center_Code": "651116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -369,8 +349,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Crocker",
             "Cost_Center_Code": "651116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -417,8 +398,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Nebula",
             "Cost_Center_Code": "613116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         },
         {
             "Employee_Type": "Regular",
@@ -465,8 +447,9 @@ FIRST_RUN_REPORT = {
             "Preferred_Name_-_Last_Name": "Tang",
             "Cost_Center_Code": "613116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         }
     ]
 }
@@ -518,8 +501,9 @@ NEW_HIRE_REPORT = {
             "Preferred_Name_-_Last_Name": 'last_name',
             "Cost_Center_Code": "651116",
             "Location": "Office - USA - CA - Headquarters",
-            "Last_Day_of_Work": "02/15/21",
-            "Termination_Date": "02/15/21"
+            "Last_Day_of_Work": "02/15/2021",
+            "Termination_Date": "02/15/2021",
+            "Hire_Date": "01/01/2010"
         }
     ]
 }
@@ -553,8 +537,9 @@ def get_employee_id():
     for report in integration_context['Report_Entry']:
         employee_id = int(report.get('Emp_ID'))
         employee_ids.append(employee_id)
+    max_employee_id = int(max(employee_ids)) + 1
 
-    return int(max(employee_ids)) + 1
+    return str(max_employee_id)
 
 
 def get_new_hire_reports():
@@ -581,7 +566,7 @@ def get_new_hire_reports():
     integration_context['Report_Entry'].append(new_report)
     set_integration_context(integration_context)
 
-    return_results('Successfully generated the a new hire event.')
+    return_results('Successfully generated the new hire event.')
 
 
 def get_terminate_report():

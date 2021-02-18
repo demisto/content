@@ -106,7 +106,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The user termination date.
+      description: 'The user termination date. For example: "06/15/2020"'
       isArray: false
       name: termination_date
       required: true
