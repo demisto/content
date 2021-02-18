@@ -149,9 +149,10 @@ class Client:
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
 
-    def pipeline_query(self, collection, pipeline):
+    def pipeline_query(self, collection: str, pipeline: list, limit: int) -> List[dict]:
         collection_obj = self.get_collection(collection)
-        entries = collection_obj.aggregate(pipeline)
+        entries = collection_obj.aggregate(pipeline=pipeline)
+        entries = self.datetime_to_str(entries)
         entries = [self.normalize_id(entry) for entry in entries]
         return entries
 
@@ -441,17 +442,36 @@ def drop_collection_command(
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None
 
 
-def pipeline_query_command(client: Client, collection: str, pipeline: str, **kwargs):
+def pipeline_query_command(client: Client, collection: str, pipeline: str, limit: str = '50', offset: str = '0',
+                           **kwargs) -> Tuple[str, dict, list]:
+    limit = int(limit)
+    offset = int(offset)
     try:
-        json_pipeline = json.loads(pipeline)
+        json_pipeline = validate_json_objects(json.loads(pipeline))
+        raw_response = client.pipeline_query(
+            collection=collection,
+            pipeline=json_pipeline,
+            limit=limit
+        )
     except JSONDecodeError:
         raise DemistoException('The `pipeline` argument is not a valid json.')
-    raw_result = client.pipeline_query(collection=collection, pipeline=pipeline)
-    # if not results:
 
-    for movie in raw_result:
-        pprint(movie)
-    return None, None
+    if raw_response:
+        raw_response = raw_response if len(raw_response) <= limit else raw_response[offset:(offset + limit)]
+        readable_outputs = tableToMarkdown(
+            f'Total of {len(raw_response)} entries were found in MongoDB collection `{collection}` '
+            f'with pipeline: {pipeline}:',
+            t=[entry.get('_id') for entry in raw_response],
+            headers=['_id'],
+        )
+        outputs_objects = list()
+        for item in raw_response:
+            item.update({'collection': collection})
+            outputs_objects.append(item)
+        outputs = {CONTEXT_KEY: outputs_objects}
+        return readable_outputs, outputs, raw_response
+    else:
+        return 'MongoDB: No results found', {}, raw_response
 
 
 def main():
