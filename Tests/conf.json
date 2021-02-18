@@ -8,6 +8,11 @@
             "is_mockable": false
         },
         {
+            "integrations": "HostIo",
+            "playbookID": "HostIo_Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
         },
         {

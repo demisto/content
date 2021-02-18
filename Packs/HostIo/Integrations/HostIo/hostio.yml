@@ -1,0 +1,103 @@
+commonfields:
+  id: HostIo
+  version: -1
+name: HostIo
+display: HostIo
+category: Utilities
+description: This integration is used for Domains enrichment purposes, the data is received from host.io api.
+configuration:
+- display: API Key
+  name: token
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: hostio-domain-search
+    arguments:
+    - name: field
+      required: true
+      description: field name to search a domain according to it
+    - name: value
+      required: true
+      description: the value of the field
+    - name: limit
+      required: false
+      description: maximum amount of domains to display, default value is 25
+    outputs:
+      - contextPath: HostIo.Search.Field
+        description: The field to look up.
+        type: String
+      - contextPath: HostIo.Search.Value
+        description: The value of the given field.
+        type: String
+      - contextPath: HostIo.Search.Domains
+        description: some of the domains.
+        type: List
+      - contextPath: HostIo.Search.Total
+        description: The total amount of domins associated with the given field.
+        type: Number
+    description: Returns a list of domain associated with a specific field, and the
+      total amount of these domains
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: List of Domains.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: HostIo.Domain.web.rank
+      description: a rank that's based on popularity.
+      type: Number
+    - contextPath: HostIo.Domain.web.server
+      description: name of the server where the domain exist.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    description: Returns Domain information and reputation.
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0

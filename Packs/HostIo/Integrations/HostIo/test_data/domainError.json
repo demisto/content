@@ -1,0 +1,20 @@
+{
+    "domain": "example.example",
+    "web": {},
+    "dns": {},
+    "ipinfo": {},
+    "related": {
+        "backlinks": [
+            {
+                "value": "example.example",
+                "count": 0
+            }
+        ],
+        "redirects": [
+            {
+                "value": "example.example",
+                "count": 0
+            }
+        ]
+    }
+}
