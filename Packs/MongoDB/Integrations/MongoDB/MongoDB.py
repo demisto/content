@@ -148,7 +148,7 @@ class Client:
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
 
-    def pipeline_query(self, collection: str, pipeline: Union[Dict[Any, Any], List[Any]], limit: int) -> List[dict]:
+    def pipeline_query(self, collection: str, pipeline: Union[Dict[Any, Any], List[Any]]) -> List[dict]:
         collection_obj = self.get_collection(collection)
         entries = collection_obj.aggregate(pipeline=pipeline)
         entries = self.datetime_to_str(entries)
@@ -450,7 +450,6 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
         raw_response = client.pipeline_query(
             collection=collection,
             pipeline=json_pipeline,
-            limit=limit
         )
     except JSONDecodeError:
         raise DemistoException('The `pipeline` argument is not a valid json.')
