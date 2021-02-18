@@ -594,7 +594,6 @@ def is_there_private_packs_to_upload(public_index_json, private_storage_bucket, 
         private_pack_to_content_commit_hash[id] = content_commit_hash
 
     logging.debug(f"private_pack_to_content_commit_hash is {private_pack_to_content_commit_hash}")
-    private_pack_to_content_commit_hash["HelloWorldPremium"] = "testCommitHash"
     for private_pack in all_private_packs_from_private_index:
         id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
