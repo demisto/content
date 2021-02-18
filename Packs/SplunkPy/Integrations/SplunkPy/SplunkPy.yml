@@ -94,9 +94,12 @@ configuration:
   name: hec_url
   required: false
   type: 0
-- defaultvalue: 10 minutes
+- additionalinfo: How far back in time to go when performing the first fetch, or when
+      creating a mapping using the Select Schema option.
+  defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
+  hidden: false
   name: fetch_time
   required: false
   type: 0
@@ -655,7 +658,11 @@ script:
     execution: false
     name: get-mapping-fields
   dockerimage: demisto/splunksdk:1.0.0.11989
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
+  ismappable: true
   runonce: false
   script: '-'
   subtype: python2
