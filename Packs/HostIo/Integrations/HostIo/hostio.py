@@ -114,7 +114,6 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
 
     :rtype: ``CommandResults``
     """
-
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
