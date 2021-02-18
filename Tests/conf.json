@@ -3224,7 +3224,7 @@
         {
             "integrations": "qualys_fim",
             "playbookID": "QualysFIM-Playbook",
-            "fromversion": "5.0.0"
+            "fromversion": "6.0.0"
         }
 
     ],

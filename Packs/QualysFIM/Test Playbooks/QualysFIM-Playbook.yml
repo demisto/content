@@ -1,6 +1,6 @@
 id: QualysFIM-Playbook
 version: -1
-fromversion: 5.0.0
+fromversion: 6.0.0
 name: QualysFIM-Playbook
 description: TEST PLAYBOOK FOR QUALYS FIM
 starttaskid: "0"
