@@ -1,0 +1,17 @@
+{
+    "name": "MailListener - POP3 Beta_Fix",
+    "description": "Adding a fix for UTF8 error on line 15 for existing Pop3 Beta Marketplace Integration",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "justadarsh",
+    "url": "",
+    "email": "",
+    "created": "2021-02-18T10:02:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "justadarsh"
+    ]
+}
