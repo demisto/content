@@ -1762,6 +1762,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
     scriptarguments:
       entry_id:
         complex:
@@ -2930,21 +2933,34 @@ tasks:
     quietmode: 0
   "103":
     id: "103"
-    taskid: d051ea66-3865-4fa8-8219-ccdc398c7061
+    taskid: 730fc061-b36a-4810-8e3b-c3755849cc79
     type: playbook
     task:
-      id: d051ea66-3865-4fa8-8219-ccdc398c7061
+      id: 730fc061-b36a-4810-8e3b-c3755849cc79
       version: -1
       name: Azure Configuration Analysis
+      description: This playbook helps you collect, review and find misconfigurations
+        with the Azure environment.
       playbookName: Azure Configuration Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "113"
+    scriptarguments:
+      Limit:
+        complex:
+          root: inputs.Mialboxes_Retrieve_Limit
+      O365_AdminRolesList:
+        complex:
+          root: inputs.O365_AdminRolesList
     separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -3383,6 +3399,17 @@ inputs:
   value: {}
   required: false
   description: 'Target Device Group (Panorama only) '
+  playbookInputQuery:
+- key: O365_AdminRolesList
+  value: {}
+  required: false
+  description: Comma separated Service O365 admin roles
+  playbookInputQuery:
+- key: Mialboxes_Retrieve_Limit
+  value:
+    simple: "10"
+  required: false
+  description: The maximum number of results to retrieve. Default is 10.
   playbookInputQuery:
 outputs: []
 tests:
