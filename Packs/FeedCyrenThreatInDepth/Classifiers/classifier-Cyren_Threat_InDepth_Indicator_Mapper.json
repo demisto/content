@@ -19,6 +19,37 @@
                     },
                     "simple": ""
                 },
+                "Cyren Country Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "payload.meta.country_code"
+                                        }
+                                    },
+                                    "operator": "isExists",
+                                    "right": null
+                                }
+                            ]
+                        ],
+                        "root": "payload.meta.country_code",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "CyrenCountryLookup"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
                 "Cyren Detection Categories": {
                     "complex": {
                         "accessor": "category",
@@ -393,6 +424,19 @@
                 "Cyren IP Risk": {
                     "complex": {
                         "accessor": "risk",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Malware Family": {
+                    "complex": {
+                        "accessor": "family_name",
                         "filters": [
 
                         ],
