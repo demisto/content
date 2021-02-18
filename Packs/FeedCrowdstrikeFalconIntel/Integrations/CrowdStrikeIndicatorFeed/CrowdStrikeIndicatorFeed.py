@@ -239,6 +239,14 @@ def test_module(client: Client, args: dict) -> str:
     return 'ok'
 
 
+def reset_last_run():
+    """
+    Reset the last run from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Fetch history deleted successfully')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -291,6 +299,9 @@ def main() -> None:
 
         elif command == 'crowdstrike-indicators-list':
             return_results(crowdstrike_indicators_list_command(client, args))
+
+        elif command == "crowdstrike-reset-fetch-indicators":
+            return_results(reset_last_run())
 
     # Log exceptions and return errors
     except Exception as e:
