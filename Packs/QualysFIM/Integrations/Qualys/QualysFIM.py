@@ -171,7 +171,7 @@ def create_event_or_incident_output(item: Dict,
         table_headers (list(str)): The table headers to be used when creating initial data.
 
     Returns:
-        object_data (dict(str)): The output dictionary.
+        object_data (dict[str,str]): The output dictionary.
     """
     alert_data = {field: item.get(field) for field in table_headers}
     if 'agentId' in table_headers:
@@ -202,10 +202,10 @@ def list_events_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
-    params = remove_empty_elements({'filter': args.get('filter', None),
-                                    'pageNumber': args.get('page_number', None),
-                                    'pageSize': args.get('limit', None),
-                                    'incidentIds': argToList(args.get('incident_ids', None)),
+    params = remove_empty_elements({'filter': args.get('filter'),
+                                    'pageNumber': args.get('page_number'),
+                                    'pageSize': args.get('limit'),
+                                    'incidentIds': argToList(args.get('incident_ids')),
                                     'sort': sort})
     raw_response = client.events_list(params)
     table_headers = ['id', 'severity', 'dateTime', 'agentId', 'fullPath']
@@ -213,7 +213,7 @@ def list_events_command(client: Client, args: dict):
     raw_outputs = []
     if raw_response:
         for item in raw_response:
-            data = item.get('data', None)
+            data = item.get('data')
             raw_outputs.append(data)
             item_dictionary = create_event_or_incident_output(data, table_headers)
             item_dictionary['dateTime'] = datetime.strptime(
@@ -270,10 +270,10 @@ def list_incidents_command(client: Client, args: dict):
     """
 
     sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
-    params = remove_empty_elements({'filter': args.get('filter', None),
-                                    'pageNumber': args.get('page_number', None),
-                                    'pageSize': args.get('limit', None),
-                                    'attributes': args.get('attributes', None),
+    params = remove_empty_elements({'filter': args.get('filter'),
+                                    'pageNumber': args.get('page_number'),
+                                    'pageSize': args.get('limit'),
+                                    'attributes': args.get('attributes'),
                                     'sort': sort})
     raw_response = client.incidents_list(params)
     table_headers = ['id', 'name', 'type', 'username', 'status', 'occurred', 'approvalStatus',
@@ -286,7 +286,7 @@ def list_incidents_command(client: Client, args: dict):
             data = item.get('data')
             raw_outputs.append(data)
             item_dictionary = create_event_or_incident_output(data, table_headers)
-            occurred = item_dictionary.get('occurred', None)
+            occurred = item_dictionary.get('occurred')
             if occurred:
                 item_dictionary['occurred'] = epochToTimestamp(occurred)
             outputs.append(item_dictionary)
@@ -311,21 +311,21 @@ def list_incident_events_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    params = remove_empty_elements({'filter': args.get('filter', None),
-                                    'pageNumber': args.get('page_number', None),
-                                    'pageSize': args.get('limit', None),
-                                    'attributes': args.get('attributes', None)})
-    raw_response = client.get_incident_events(args.get('incident_id', None), params)
+    params = remove_empty_elements({'filter': args.get('filter'),
+                                    'pageNumber': args.get('page_number'),
+                                    'pageSize': args.get('limit'),
+                                    'attributes': args.get('attributes')})
+    raw_response = client.get_incident_events(args.get('incident_id'), params)
     table_headers = ['id', 'name', 'severity', 'action', 'type', 'dateTime']
     outputs = []
     raw_outputs = []
     if raw_response:
         for item in raw_response:
-            data = item.get('data', None)
+            data = item.get('data')
             if data:
                 raw_outputs.append(data)
                 item_dictionary = create_event_or_incident_output(data, table_headers)
-                date_time = item_dictionary.get('dateTime', None)
+                date_time = item_dictionary.get('dateTime')
                 if date_time:
                     date_time = datetime.strptime(date_time,
                                                   DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
@@ -351,7 +351,7 @@ def create_incident_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    if len(str(args.get('name', None))) > 128:
+    if len(str(args.get('name'))) > 128:
         raise ValueError('Name is limited to 128 characters, please shorten name.')
     if args.get('filters'):
         filters = (args.get('filters'))
@@ -362,9 +362,10 @@ def create_incident_command(client: Client, args: dict):
             yesterday = (datetime.today() - timedelta(days=1)).strftime(DATETIME_FORMAT)
             today = datetime.today().strftime(DATETIME_FORMAT)
             filters = f"dateTime: ['{yesterday}'..'{today}']"
-    data = remove_empty_elements({'name': args.get('name', None), 'type': 'DEFAULT',
+    data = remove_empty_elements({'name': args.get('name'), 'type': 'DEFAULT',
                                   'filters': [f"{filters}"],
-                                  'reviewers': argToList(args.get('reviewers', None))})
+                                  'comment': args.get('comment'),
+                                  'reviewers': argToList(args.get('reviewers'))})
     raw_response = client.create_incident(data)
     table_headers = ['id', 'name', 'reviewers', 'username', 'occurred', 'filters', 'approvalType']
 
@@ -391,10 +392,10 @@ def approve_incident_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    data = {'approvalStatus': args.get('approval_status', None),
-            'changeType': args.get('change_type', None),
-            'comment': args.get('comment', None),
-            'dispositionCategory': args.get('disposition_category', None)}
+    data = {'approvalStatus': args.get('approval_status'),
+            'changeType': args.get('change_type'),
+            'comment': args.get('comment'),
+            'dispositionCategory': args.get('disposition_category')}
 
     raw_response = client.approve_incident(str(args.get('incident_id')),
                                            remove_empty_elements(data))
@@ -437,10 +438,10 @@ def list_assets_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    params = remove_empty_elements({'filter': args.get('filter', None),
-                                    'pageNumber': args.get('page_number', None),
-                                    'pageSize': args.get('limit', None),
-                                    'attributes': args.get('attributes', None)})
+    params = remove_empty_elements({'filter': args.get('filter'),
+                                    'pageNumber': args.get('page_number'),
+                                    'pageSize': args.get('limit'),
+                                    'attributes': args.get('attributes')})
     raw_response = client.assets_list(params)
     table_headers = ['Hostname', 'Last Activity', 'Creation Time', 'Agent Version',
                      'Driver Version', 'Last Agent Update', 'Asset ID']
@@ -452,21 +453,21 @@ def list_assets_command(client: Client, args: dict):
             asset_data = item.get('data')
             raw_outputs.append(asset_data)
 
-            last_checked_in = asset_data.get('lastCheckedIn', None)
+            last_checked_in = asset_data.get('lastCheckedIn')
             if last_checked_in:
                 last_checked_in = epochToTimestamp(last_checked_in)
             else:
                 last_checked_in = None
 
-            created = asset_data.get('created', None)
+            created = asset_data.get('created')
             if created:
                 created = epochToTimestamp(created)
             else:
                 created = None
 
-            agent_version = asset_data.get('agentVersion', None)
+            agent_version = asset_data.get('agentVersion')
             driver_version = dict_safe_get(asset_data, ['agentService', 'driverVersion'])
-            asset_id = asset_data.get('id', None)
+            asset_id = asset_data.get('id')
 
             agent_last_updated = (dict_safe_get(asset_data, ['agentService', 'updatedDate']))
             if agent_last_updated:
@@ -499,9 +500,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
                     first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
     """
-    Fetch incidents (alerts) each minute (by default).
+    Fetch incidents (alerts) from QualysFIM.
     Args:
-        client (Client): Sophos Central Client.
+        client (Client): Qualys FIM Client.
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
         max_fetch (str): Max number of alerts to fetch.
@@ -511,7 +512,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
-    last_fetch_timestamp = last_run.get('last_fetch', None)
+    last_fetch_timestamp = last_run.get('last_fetch')
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp)
         last_fetch = last_fetch_date
@@ -537,9 +538,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     raw_response = client.incidents_list(params)
     incidents = []
     for incident in raw_response:
-        incident = incident.get('data', None)
-        incident_id = incident.get('id', None)
-        incident_name = incident.get('name', None)
+        incident = incident.get('data')
+        incident_id = incident.get('id')
+        incident_name = incident.get('name')
         created_date = dict_safe_get(incident, ['createdBy', 'date'])
         incident_created_time = datetime.fromtimestamp(created_date / 1000)
 

@@ -37,7 +37,9 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: '50'
+- additionalinfo: Max Fetch is limited to 200 incidents per fetch, please choose lower
+    number than 200.
+  defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   required: false
@@ -118,19 +120,19 @@ script:
     outputs:
     - contextPath: QualysFIM.Events.id
       description: Event ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.Events.fullPath
       description: Event full path.
-      type: str
+      type: String
     - contextPath: QualysFIM.Events.dateTime
       description: Date time the event occurred.
-      type: str
+      type: String
     - contextPath: QualysFIM.Events.severity
       description: Event severity.
-      type: int
+      type: Number
     - contextPath: QualysFIM.Events.agentId
       description: Agent ID.
-      type: str
+      type: String
   - arguments:
     - default: false
       description: ID of the event to retrieve information about.
@@ -145,28 +147,28 @@ script:
     outputs:
     - contextPath: QualysFIM.Event.id
       description: Event ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.Event.fullPath
       description: Event full path.
-      type: str
+      type: String
     - contextPath: QualysFIM.Event.dateTime
-      description: 'Date time the event occurred. '
-      type: str
+      description: Date time the event occurred.
+      type: String
     - contextPath: QualysFIM.Event.name
       description: Event name.
-      type: str
+      type: String
     - contextPath: QualysFIM.Event.severity
       description: Event severity.
-      type: int
+      type: Number
     - contextPath: QualysFIM.Event.action
       description: Event action.
-      type: str
+      type: String
     - contextPath: QualysFIM.Event.incidentId
       description: Event ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.Event.profiles
       description: List of all monitoring profiles name.
-      type: str
+      type: unknown
   - arguments:
     - default: false
       description: |-
@@ -221,22 +223,22 @@ script:
     outputs:
     - contextPath: QualysFIM.Incidents.id
       description: Incident ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.Incidents.name
       description: Incident name.
-      type: str
+      type: String
     - contextPath: QualysFIM.Incidents.type
       description: Incident type.
-      type: str
+      type: String
     - contextPath: QualysFIM.Incidents.occurred
       description: Indicates when the incident was created.
-      type: str
+      type: String
     - contextPath: QualysFIM.Incidents.username
       description: Name of the user who created this incident.
-      type: str
+      type: String
     - contextPath: QualysFIM.Incidents.status
       description: Incident status.
-      type: str
+      type: String
   - arguments:
     - default: false
       description: ID of the incident to retrieve the events for.
@@ -286,28 +288,28 @@ script:
     outputs:
     - contextPath: QualysFIM.IncidentEvents.id
       description: Event ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.name
       description: Event name.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.severity
       description: Event severity.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.type
       description: Event type.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.occurred
       description: Indicates when the event was created.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.username
       description: Name of the user who created this incident.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.status
       description: Incident status.
-      type: str
+      type: String
     - contextPath: QualysFIM.IncidentEvents.action
       description: Action that was taken that triggered the event creation.
-      type: str
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -365,22 +367,22 @@ script:
     outputs:
     - contextPath: QualysFIM.CreatedIncident.id
       description: incident ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.CreatedIncident.name
       description: Incident name.
-      type: str
+      type: String
     - contextPath: QualysFIM.CreatedIncident.occurred
       description: Indicates when the incident was created.
-      type: str
+      type: String
     - contextPath: QualysFIM.CreatedIncident.username
       description: Name of the user who created this incident.
-      type: str
+      type: String
     - contextPath: QualysFIM.CreatedIncident.status
       description: Incident status.
-      type: str
+      type: String
     - contextPath: QualysFIM.CreatedIncident.reviewers
       description: List of reviewers who will approve the incident.
-      type: str
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -441,43 +443,43 @@ script:
     outputs:
     - contextPath: QualysFIM.ApprovedIncident.id
       description: incident ID.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.name
       description: Incident name.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.type
       description: Incident type.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.filterFromDate
       description: From date filtration.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.filterToDate
       description: From date filtration.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.approvalDate
       description: Approval date.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.approvalStatus
       description: Approval status.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.comment
       description: Comments for Incidents created by the rule.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.username
       description: Name of the user who created this incident.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.status
       description: Incident status.
-      type: str
+      type: String
     - contextPath: QualysFIM.ApprovedIncident.reviewers
       description: List of reviewers who will approve the incident.
-      type: str
+      type: String
   - arguments:
     - default: false
       description: |-
         The list of comma-separated attributes that you want to include in the response.
         By default, all attributes will be returned in the result.
-        i.e: attributes="attributes=interfaces.hostname"
+        i.e: attributes="attributes=Numbererfaces.hostname"
       isArray: false
       name: attributes
       required: false
@@ -515,13 +517,13 @@ script:
     outputs:
     - contextPath: QualysFIM.Assets.hostname
       description: Asset hostname.
-      type: str
+      type: String
     - contextPath: QualysFIM.Assets.lastCheckedIn
       description: Asset last checked in date.
-      type: str
+      type: String
     - contextPath: QualysFIM.Assets.created
       description: 'Asset creation date. '
-      type: str
+      type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
