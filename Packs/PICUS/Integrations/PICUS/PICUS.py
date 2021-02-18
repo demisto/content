@@ -126,6 +126,7 @@ def vectorCompare(requestContent):
         'HumanReadable': hr
     }
 
+
 '''Response:
 {
   "data": {
