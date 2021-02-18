@@ -1,4 +1,3 @@
-from pprint import pprint
 
 from CommonServerPython import *
 
@@ -149,7 +148,7 @@ class Client:
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
 
-    def pipeline_query(self, collection: str, pipeline: list, limit: int) -> List[dict]:
+    def pipeline_query(self, collection: str, pipeline: Union[Dict[Any, Any], List[Any]], limit: int) -> List[dict]:
         collection_obj = self.get_collection(collection)
         entries = collection_obj.aggregate(pipeline=pipeline)
         entries = self.datetime_to_str(entries)
