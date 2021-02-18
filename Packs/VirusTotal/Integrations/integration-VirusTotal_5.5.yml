@@ -84,6 +84,7 @@ configuration:
   required: false
 script:
   script: |-
+    var DBOTSCORE_KEY = "DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"
     var serverUrl = params.Server;
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
@@ -245,8 +246,8 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0};
+            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
+            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
@@ -256,11 +257,12 @@ script:
         } else {
             r = [res.obj];
         }
-        var md = '';
-        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = [];
-        ec[outputPaths.file] = [];
+        var entryList = [];
         for (var i=0; i<r.length; i++) {
-            md += '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
+            ec = {};
+            ec[DBOTSCORE_KEY] = [];
+            ec[outputPaths.file] = [];
+            var md = '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
             md += 'Scan date: **' + r[i].scan_date + '**\n';
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
@@ -282,8 +284,15 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"].push({Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"].push({Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].md5, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha1, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
+
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
+            ec[DBOTSCORE_KEY].push({Indicator: r[i].sha256, Type: 'file', Vendor: 'VirusTotal', Score: dbotScore});
 
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             longFormat = FULL_RESPONSE? 'true': longFormat;
@@ -357,14 +366,17 @@ script:
                 }
             }
             md += '\n';
+            entryList.push(
+                {
+                    Type: entryTypes.note,
+                    Contents: res.body,
+                    ContentsFormat: formats.json,
+                    HumanReadable: md,
+                    EntryContext: ec
+                }
+            );
         }
-        return {
-            Type: entryTypes.note,
-            Contents: res.body,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: ec
-        };
+        return entryList
     }
     function calcRecentDownloads(checks) {
         var badDownloads = 0;
@@ -405,7 +417,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
                 entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg});
                 continue;
@@ -432,7 +444,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
+            ec[DBOTSCORE_KEY] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
             var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
             md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
             md += 'Country: **' + o.country + '**\n';
@@ -508,33 +520,25 @@ script:
     }
     function getURLs(url) {
         var urls = [];
+        var nonUrls = []
         var urlList = argToList(url);
         for (z = urlList.length - 1; z >= 0; z--) {
             var isURL = urlList[z].match(/(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?/);
             if (isURL == null){
-                var i = z;
-                var url;
-                var optionalURL;
-                while(i>=0 && z > 0 && optionalURL == null) {
-                    i--;
-                    optionalURL = urlList.slice(i, z).join("").match(/(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?/);
-                }
-                if (optionalURL !== null) {
-                    urls.push(urlList.slice(i, z+1).join(","));
-                }
-                z = i;
-            } else {
+                nonUrls.push(urlList[z])
+            }
+            else {
                 urls.push(urlList[z]);
             }
         }
+        return {'validURLs': urls, 'invalidURLs': nonUrls};
 
-        return urls;
     }
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
-
-        var urlList = getURLs(url);
+        var urls = getURLs(url);
+        var urlList = urls.validURLs;
         var entryList = [];
         for (z = 0; z < urlList.length; z++) {
             url = urlList[z];
@@ -558,7 +562,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
                 entryList({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg});
                 continue;
@@ -598,7 +602,7 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
+                ec[DBOTSCORE_KEY] = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
                 longFormat = FULL_RESPONSE? 'true': longFormat;
                 if (longFormat === 'true') { // add scans table
                     scansTable = createScansTable(o.scans);
@@ -642,12 +646,25 @@ script:
                     }
                 }
             }
+
             entryList.push({
                 Type: entryTypes.note,
                 Contents: res.body,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
                 EntryContext: ec
+            });
+        }
+
+        invalidURLsList = urls.invalidURLs
+        if (invalidURLsList.length !== 0) {
+            var invalidURLsMd = "### The following indicators were not scanned since they are not valid URLs: \n" + invalidURLsList
+            entryList.push({
+                Type: entryTypes.note,
+                Contents: {},
+                ContentsFormat: formats.json,
+                HumanReadable: invalidURLsMd,
+                EntryContext: {}
             });
         }
         return entryList;
@@ -668,7 +685,7 @@ script:
             var o = res.obj;
             var ec = {};
             if (o.response_code === 0) {
-                ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+                ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
                 entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg});
                 continue;
@@ -691,7 +708,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
+            ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
             var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
             md += '#### Domain categories: *' + o.categories + "*\n";
             md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
@@ -1166,7 +1183,7 @@ script:
     - name: url
       required: true
       default: true
-      description: The URL to check.
+      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
       isArray: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,

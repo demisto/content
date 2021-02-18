@@ -1,6 +1,65 @@
 import demistomock as demisto
-from GetFailedTasks import main
-from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT
+import pytest
+from GetFailedTasks import main, get_rest_api_instance_to_use
+from test_data.constants import INCIDENTS_RESULT, TASKS_RESULT, SERVER_URL
+
+
+@pytest.mark.parametrize('modules,expected_output,num_of_instances', [({}, None, 0),
+                                                                      ({"Demisto REST API_instance_1": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "active"
+                                                                      }, }, "Demisto REST API_instance_1", 1),
+                                                                      ({"Demisto REST API_instance_1": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "active"
+                                                                      }, "Demisto REST API_instance_2": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "active"
+                                                                      }, }, "GetFailedTasks: This script can only run "
+                                                                            "with a single instance of the "
+                                                                            "Demisto REST API. "
+                                                                            "Specify the instance name in "
+                                                                            "the 'rest_api_"
+                                                                            "instance' argument.", 2),
+                                                                      ({"Demisto REST API_instance_1": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "active"
+                                                                      }, "Demisto REST API_instance_2": {
+                                                                          "brand": "Demisto REST API",
+                                                                          "category": "Utilities",
+                                                                          "defaultIgnored": "false",
+                                                                          "state": "disabled"
+                                                                      }, }, "Demisto REST API_instance_1", 1)
+                                                                      ])
+def test_get_rest_api_instance_to_use(mocker, modules, expected_output, num_of_instances):
+    """
+    Given:
+        all modules that are configured
+
+    When:
+        Execute this script
+
+    Then:
+        return error if there are more than one demisto rest api instance.
+        Otherwise, return name of instance to use.
+    """
+    mocker.patch.object(demisto, 'getModules', return_value=modules)
+    mocker.patch.object(demisto, 'results')
+    if num_of_instances <= 1:
+        assert get_rest_api_instance_to_use() == expected_output
+    else:
+        with pytest.raises(SystemExit):
+            get_rest_api_instance_to_use()
+        contents = demisto.results.call_args[0][0]
+        assert contents['Contents'] == expected_output
 
 
 def mock_execute_command(command_name, args):
@@ -8,6 +67,8 @@ def mock_execute_command(command_name, args):
         return INCIDENTS_RESULT
     elif command_name == 'demisto-api-post':
         return TASKS_RESULT
+    elif command_name == 'GetServerURL':
+        return SERVER_URL
 
 
 def test_get_failed_tasks(mocker):

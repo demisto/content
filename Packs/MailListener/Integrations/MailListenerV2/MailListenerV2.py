@@ -164,6 +164,15 @@ def fetch_incidents(client: IMAPClient,
                     ) -> Tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
+    The search is based on the criteria of the SINCE time and the UID.
+    We will always store the latest email message UID that came up in the search, even if it will not be ingested as
+    incident (can happen in the first fetch where the email messages that were returned from the search are before the
+    value that was set in the first fetch parameter).
+    This is required because the SINCE criterion disregards the time and timezone (i.e. considers only the date),
+    so it might be that in the first fetch we will fetch only email messages that are occurred before the first fetch
+    time (could also happen that the limit parameter, which is implemented in the code and cannot be passed as a
+    criterion to the search, causes us to keep retrieving the same email messages in the search result)
+    The SINCE criterion will be sent only for the first fetch, and then the fetch will be by UID
 
     Args:
         client: IMAP client
@@ -180,44 +189,47 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-
-    # Handle first time fetch
-    if last_fetch is None:
-        latest_created_time = parse(f'{first_fetch_time} UTC')
-    else:
-        latest_created_time = datetime.fromisoformat(last_fetch)
-    mails_fetched, messages = fetch_mails(client=client,
-                                          include_raw_body=include_raw_body,
-                                          first_fetch_time=latest_created_time,
-                                          limit=limit,
-                                          permitted_from_addresses=permitted_from_addresses,
-                                          permitted_from_domains=permitted_from_domains,
-                                          save_file=save_file)
-    if mails_fetched:
-        latest_created_time = max(mails_fetched, key=lambda x: x.date).date
-    incidents = [mail.convert_to_incident() for mail in mails_fetched]
-    next_run = {'last_fetch': latest_created_time.isoformat()}
+    uid_to_fetch_from = last_run.get('last_uid', 1)
+    # time_to_fetch_from is required only for the first fetch, as after that we will use UID to fetch from
+    time_to_fetch_from = parse(f'{first_fetch_time} UTC') if not last_run else None
+    if uid_to_fetch_from == 1 and last_run.get('last_fetch'):
+        # for back compatibility, if an instance was using the timestamp and was upgraded to use UID
+        time_to_fetch_from = datetime.fromisoformat(last_run.get('last_fetch', ''))
+    mails_fetched, messages, uid_to_fetch_from = fetch_mails(
+        client=client,
+        include_raw_body=include_raw_body,
+        time_to_fetch_from=time_to_fetch_from,
+        limit=limit,
+        permitted_from_addresses=permitted_from_addresses,
+        permitted_from_domains=permitted_from_domains,
+        save_file=save_file,
+        uid_to_fetch_from=uid_to_fetch_from
+    )
+    incidents = []
+    for mail in mails_fetched:
+        incidents.append(mail.convert_to_incident())
+        uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
+    next_run = {'last_uid': uid_to_fetch_from}
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
 
 
 def fetch_mails(client: IMAPClient,
-                first_fetch_time: datetime = None,
+                time_to_fetch_from: datetime = None,
                 permitted_from_addresses: str = '',
                 permitted_from_domains: str = '',
                 include_raw_body: bool = False,
-                limit: int = -1,
+                limit: int = 200,
                 save_file: bool = False,
-                message_id: int = None) -> Tuple[list, list]:
+                message_id: int = None,
+                uid_to_fetch_from: int = 1) -> Tuple[list, list, int]:
     """
     This function will fetch the mails from the IMAP server.
 
     Args:
         client: IMAP client
-        first_fetch_time: Fetch all incidents since first_fetch_time
+        time_to_fetch_from: Fetch all incidents since first_fetch_time
         include_raw_body: Whether to include the raw body of the mail in the incident's body
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
@@ -225,40 +237,53 @@ def fetch_mails(client: IMAPClient,
                mails will be fetched (used with list-messages command)
         save_file: Whether to save the .eml file of the incident's mail
         message_id: A unique message ID with which a specific mail can be fetched
+        uid_to_fetch_from: The email message UID to start the fetch from as offset
 
     Returns:
         mails_fetched: A list of Email objects
-        messages: A list of the ids of the messages fetched
+        messages_fetched: A list of the ids of the messages fetched
+        last_message_in_current_batch: The UID of the last message fetchedd
     """
     if message_id:
-        messages = [message_id]
+        messages_uids = [message_id]
     else:
-        messages_query = generate_search_query(first_fetch_time,
+        messages_query = generate_search_query(time_to_fetch_from,
                                                permitted_from_addresses,
-                                               permitted_from_domains)
-        messages = client.search(messages_query)
-        limit = len(messages) if limit == -1 else limit
-        messages = messages[:limit]
+                                               permitted_from_domains,
+                                               uid_to_fetch_from)
+        demisto.debug(f'Searching for email messages with criteria: {messages_query}')
+        messages_uids = client.search(messages_query)[:limit]
     mails_fetched = []
-    for mail_id, message_data in client.fetch(messages, 'RFC822').items():
+    messages_fetched = []
+    demisto.debug(f'Messages to fetch: {messages_uids}')
+    for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
         if not message_bytes:
             continue
-        # The search query filters emails by day, not by exact date
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if not first_fetch_time or email_message_object.date > first_fetch_time:
+        if (time_to_fetch_from and time_to_fetch_from < email_message_object.date) or \
+                int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
-    return mails_fetched, messages
+            messages_fetched.append(email_message_object.id)
+        else:
+            demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
+                          f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {time_to_fetch_from}')
+    last_message_in_current_batch = uid_to_fetch_from
+    if messages_uids:
+        last_message_in_current_batch = messages_uids[-1]
+
+    return mails_fetched, messages_fetched, last_message_in_current_batch
 
 
-def generate_search_query(latest_created_time: Optional[datetime],
+def generate_search_query(time_to_fetch_from: Optional[datetime],
                           permitted_from_addresses: str,
-                          permitted_from_domains: str) -> list:
+                          permitted_from_domains: str,
+                          uid_to_fetch_from: int) -> list:
     """
     Generates a search query for the IMAP client 'search' method. with the permitted domains, email addresses and the
     starting date from which mail should be fetched.
     Input example:
-    latest_created_time: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
+    time_to_fetch_from: datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)
     permitted_from_addresses: ['test1@mail.com', 'test2@mail.com']
     permitted_from_domains: ['test1.com', 'domain2.com']
     output example:
@@ -276,9 +301,10 @@ def generate_search_query(latest_created_time: Optional[datetime],
      'SINCE',
      datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:
-        latest_created_time: The greatest incident created_time we fetched from last fetch
+        time_to_fetch_from: The greatest incident created_time we fetched from last fetch
         permitted_from_addresses: A string representation of list of mail addresses to fetch from
         permitted_from_domains: A string representation list of domains to fetch from
+        uid_to_fetch_from: The email message UID to start the fetch from as offset
 
     Returns:
         A list with arguments for the email search query
@@ -291,7 +317,11 @@ def generate_search_query(latest_created_time: Optional[datetime],
         # Removing Parenthesis and quotes
         messages_query = messages_query.strip('()').replace('"', '')
     # Creating a list of the OR query words
-    messages_query_list = messages_query.split() + ['SINCE', latest_created_time]  # type: ignore[list-item]
+    messages_query_list = messages_query.split()
+    if time_to_fetch_from:
+        messages_query_list += ['SINCE', time_to_fetch_from]  # type: ignore[list-item]
+    if uid_to_fetch_from:
+        messages_query_list += ['UID', f'{uid_to_fetch_from}:*']
     return messages_query_list
 
 
@@ -305,7 +335,6 @@ def list_emails(client: IMAPClient,
                 first_fetch_time: str,
                 permitted_from_addresses: str,
                 permitted_from_domains: str) -> CommandResults:
-
     """
     Lists all emails that can be fetched with the given configuration and return a preview version of them.
     Args:
@@ -319,10 +348,10 @@ def list_emails(client: IMAPClient,
     """
     fetch_time = parse(f'{first_fetch_time} UTC')
 
-    mails_fetched, _ = fetch_mails(client=client,
-                                   first_fetch_time=fetch_time,
-                                   permitted_from_addresses=permitted_from_addresses,
-                                   permitted_from_domains=permitted_from_domains)
+    mails_fetched, _, _ = fetch_mails(client=client,
+                                      time_to_fetch_from=fetch_time,
+                                      permitted_from_addresses=permitted_from_addresses,
+                                      permitted_from_domains=permitted_from_domains)
     results = [{'Subject': email.subject,
                 'Date': email.date.isoformat(),
                 'To': email.to,
@@ -335,7 +364,7 @@ def list_emails(client: IMAPClient,
 
 
 def get_email(client: IMAPClient, message_id: int) -> CommandResults:
-    mails_fetched, _ = fetch_mails(client, message_id=message_id)
+    mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mails_json = [mail.generate_raw_json(parse_attachments=True) for mail in mails_fetched]
     return CommandResults(outputs_prefix='MailListener.Email',
                           outputs_key_field='ID',
@@ -343,7 +372,7 @@ def get_email(client: IMAPClient, message_id: int) -> CommandResults:
 
 
 def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
-    mails_fetched, _ = fetch_mails(client, message_id=message_id)
+    mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
 
@@ -361,7 +390,7 @@ def main():
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
     permitted_from_domains = demisto.params().get('permittedFromDomain', '')
     delete_processed = demisto.params().get("delete_processed", False)
-    limit = int(demisto.params().get('limit', '50'))
+    limit = min(int(demisto.params().get('limit', '50')), 200)
     save_file = params.get('save_file', False)
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     ssl_context = ssl.create_default_context()

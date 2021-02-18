@@ -2,7 +2,7 @@
     "name": "ExtraHop Reveal(x)",
     "description": "Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "ExtraHop",
     "url": "",
     "email": "support@extrahop.com",
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "Dan-at-Extrahop"
-    ]
+    ],
+    "certification": "certified"
 }

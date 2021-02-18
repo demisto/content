@@ -1,5 +1,5 @@
 Use the CyberArk Privileged Access Security (PAS) solution to manage users, safes, vaults, and accounts from Cortex XSOAR.
-This integration was integrated and tested with version xx of CyberArkPAS
+
 ## Configure CyberArkPAS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

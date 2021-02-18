@@ -1,0 +1,62 @@
+{
+ "id": "incident_affectedentitieslist",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-20T22:11:59.674831946Z",
+ "name": "Affected Entities List",
+ "ownerOnly": false,
+ "cliName": "affectedentitieslist",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": true,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Critical Asset",
+  "XM Cyber Choke Point"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "name",
+   "displayName": "Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 237,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "technique",
+   "displayName": "Technique",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72
+}

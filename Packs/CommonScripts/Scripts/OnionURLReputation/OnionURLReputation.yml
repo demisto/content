@@ -1,0 +1,22 @@
+args:
+- default: false
+  description: The indicators to which to add the reputation.
+  isArray: true
+  name: input
+  required: true
+  secret: false
+comment: This script adds the reputation to Onion URL indicators. The script is automatically triggered when a Onion URL indicator is auto-extracted. For instance, if you run a Cortex XSOAR CLI on a valid Onion URL, the indicators are extracted automatically and this script is triggered for the extracted indicators. 
+commonfields:
+  id: OnionURLReputation
+  version: -1
+enabled: true
+name: OnionURLReputation
+script: '-'
+subtype: python3
+system: false
+tags:
+- reputation
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.12176
+fromversion: 5.0.0

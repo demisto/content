@@ -8,10 +8,10 @@ fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
-    taskid: da1a2ceb-52e1-44d9-833a-5e2038d55cae
+    taskid: ffd99e60-4747-4119-84cf-7c794c36c67a
     type: start
     task:
-      id: da1a2ceb-52e1-44d9-833a-5e2038d55cae
+      id: ffd99e60-4747-4119-84cf-7c794c36c67a
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5b6e3552-e48d-427e-8bd7-341d9eccb9d0
+    taskid: 7554f016-0aa1-4189-87e9-3629259fd2d1
     type: regular
     task:
-      id: 5b6e3552-e48d-427e-8bd7-341d9eccb9d0
+      id: 7554f016-0aa1-4189-87e9-3629259fd2d1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c0c52b20-d291-42ed-81bd-667c66146b13
+    taskid: a5cf6fa4-00e8-4a18-8932-6d1975ed3943
     type: regular
     task:
-      id: c0c52b20-d291-42ed-81bd-667c66146b13
+      id: a5cf6fa4-00e8-4a18-8932-6d1975ed3943
       version: -1
       name: jira-create-issue
       description: Create a new issue on Jira
@@ -117,10 +117,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 865196c4-4173-4f49-8dcd-9eadc8eaf8a9
+    taskid: 81b6ee91-3d90-468f-8304-252570315e20
     type: regular
     task:
-      id: 865196c4-4173-4f49-8dcd-9eadc8eaf8a9
+      id: 81b6ee91-3d90-468f-8304-252570315e20
       version: -1
       name: jira-get-issue
       description: Fetch issue from Jira
@@ -155,10 +155,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 8ce4c4b4-c342-4b07-86dd-79c57d43f534
+    taskid: 5ec970ff-fc25-4ab0-8e09-2569bc5fd441
     type: condition
     task:
-      id: 8ce4c4b4-c342-4b07-86dd-79c57d43f534
+      id: 5ec970ff-fc25-4ab0-8e09-2569bc5fd441
       version: -1
       name: VerifyContextFields
       type: condition
@@ -199,10 +199,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: aaadc36c-33f7-4d64-8939-8cda2e489413
+    taskid: f6c747be-ec7f-413d-8569-dee82038bb49
     type: regular
     task:
-      id: aaadc36c-33f7-4d64-8939-8cda2e489413
+      id: f6c747be-ec7f-413d-8569-dee82038bb49
       version: -1
       name: jira-issue-add-comment
       description: Add new comment to existing Jira issue
@@ -236,10 +236,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d483c4fe-0129-45d5-8b6d-f3013419d1a1
+    taskid: 4fd36f55-fc07-4465-8672-5be3951d36ed
     type: regular
     task:
-      id: d483c4fe-0129-45d5-8b6d-f3013419d1a1
+      id: 4fd36f55-fc07-4465-8672-5be3951d36ed
       version: -1
       name: jira-issue-add-link
       description: Creates (or updates) issue link
@@ -279,10 +279,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 330abbed-2bd8-4368-8fd3-38bfe677b03e
+    taskid: 989b1724-8dbd-4b40-88ff-e8829ecff486
     type: regular
     task:
-      id: 330abbed-2bd8-4368-8fd3-38bfe677b03e
+      id: 989b1724-8dbd-4b40-88ff-e8829ecff486
       version: -1
       name: jira-issue-upload-file
       description: Upload a file attachments to an issue
@@ -317,10 +317,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 307160b3-75d3-4b85-8f25-e21b0e004f6c
+    taskid: bbd99b5c-182c-4bdb-8e78-a89683fa29e7
     type: condition
     task:
-      id: 307160b3-75d3-4b85-8f25-e21b0e004f6c
+      id: bbd99b5c-182c-4bdb-8e78-a89683fa29e7
       version: -1
       name: VerifyContextFields
       type: condition
@@ -361,10 +361,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 3051d348-e213-42dd-8ce8-7aca1d4edfff
+    taskid: 37073779-3b4f-4854-8812-d0ffad5363cd
     type: regular
     task:
-      id: 3051d348-e213-42dd-8ce8-7aca1d4edfff
+      id: 37073779-3b4f-4854-8812-d0ffad5363cd
       version: -1
       name: jira-issue-query
       description: Query Jira issues
@@ -396,10 +396,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 742357c8-5c59-46b5-8fd8-5a95f8fa208e
+    taskid: c2a81e16-2657-4b68-8a78-90ae74abca8d
     type: regular
     task:
-      id: 742357c8-5c59-46b5-8fd8-5a95f8fa208e
+      id: c2a81e16-2657-4b68-8a78-90ae74abca8d
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -431,10 +431,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: ea3f3cc3-cf5e-4ab2-863c-c8450cabd3ab
+    taskid: 47628d3b-07b8-410f-80f9-5f2358bfb948
     type: regular
     task:
-      id: ea3f3cc3-cf5e-4ab2-863c-c8450cabd3ab
+      id: 47628d3b-07b8-410f-80f9-5f2358bfb948
       version: -1
       name: jira-edit-issue
       script: '|||jira-edit-issue'
@@ -474,10 +474,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: fa8643fd-09b9-4b7c-83b0-9d1241fead68
+    taskid: 954b383b-3b26-4e36-8daf-25ef91f53f0f
     type: condition
     task:
-      id: fa8643fd-09b9-4b7c-83b0-9d1241fead68
+      id: 954b383b-3b26-4e36-8daf-25ef91f53f0f
       version: -1
       name: VerifyContext - Summary and Status
       type: condition
@@ -524,10 +524,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 03a467e4-d5cc-4e93-86cd-40d3ccc02d40
+    taskid: 060fdada-88bc-426b-8e36-7d8c22253460
     type: regular
     task:
-      id: 03a467e4-d5cc-4e93-86cd-40d3ccc02d40
+      id: 060fdada-88bc-426b-8e36-7d8c22253460
       version: -1
       name: jira-get-comments
       script: '|||jira-get-comments'
@@ -557,10 +557,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 9b8ace65-90e9-4de0-83d7-823c2e86a87f
+    taskid: 5ae7bed2-f309-4ff3-87d0-efcf7dbdd15d
     type: condition
     task:
-      id: 9b8ace65-90e9-4de0-83d7-823c2e86a87f
+      id: 5ae7bed2-f309-4ff3-87d0-efcf7dbdd15d
       version: -1
       name: VerifyContext - comment
       type: condition
@@ -594,10 +594,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 487c1367-a1fa-4f86-8e14-36360ae3670c
+    taskid: eaa7ab7f-a08c-4d98-8dda-3c9bdf7d7016
     type: regular
     task:
-      id: 487c1367-a1fa-4f86-8e14-36360ae3670c
+      id: eaa7ab7f-a08c-4d98-8dda-3c9bdf7d7016
       version: -1
       name: delete-issue
       script: '|||jira-delete-issue'
@@ -606,7 +606,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "30"
     scriptarguments:
       issueIdOrKey:
         simple: ${Ticket.Id}
@@ -625,10 +625,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 90ea5428-8d5c-431a-8514-33324410d44f
+    taskid: f4d4068f-c931-4a15-8ffb-94c47df2e917
     type: regular
     task:
-      id: 90ea5428-8d5c-431a-8514-33324410d44f
+      id: f4d4068f-c931-4a15-8ffb-94c47df2e917
       version: -1
       name: jira-get-issue with getAttachments
       script: '|||jira-get-issue'
@@ -662,10 +662,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 77c41fa0-0572-4c72-8c35-1d196950bda1
+    taskid: e9ac72a0-d375-4c34-8929-d93ad3227ff0
     type: condition
     task:
-      id: 77c41fa0-0572-4c72-8c35-1d196950bda1
+      id: e9ac72a0-d375-4c34-8929-d93ad3227ff0
       version: -1
       name: check attachment name and issue attachment
       type: condition
@@ -710,10 +710,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 13d4712a-0417-4618-83b3-4d2d44d0bf9c
+    taskid: 581d62aa-e809-49c5-87be-cf3feae139a1
     type: title
     task:
-      id: 13d4712a-0417-4618-83b3-4d2d44d0bf9c
+      id: 581d62aa-e809-49c5-87be-cf3feae139a1
       version: -1
       name: Done
       type: title
@@ -724,7 +724,192 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3180
+          "y": 3995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: a08f5631-7a51-43dc-85fb-2f46b1831ce3
+    type: regular
+    task:
+      id: a08f5631-7a51-43dc-85fb-2f46b1831ce3
+      version: -1
+      name: jira-create-issue with reporter
+      description: Create a new issue on Jira
+      script: '|||jira-create-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      assignee: {}
+      description:
+        simple: '"delete - this is test"'
+      dueDate: {}
+      issueJson: {}
+      issueTypeId:
+        simple: "10008"
+      issueTypeName: {}
+      labels: {}
+      parentIssueId: {}
+      parentIssueKey: {}
+      priority: {}
+      projectKey:
+        simple: DEM
+      projectName:
+        simple: demistodev
+      reporter:
+        simple: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+      summary:
+        simple: '"jira playbook test - delete"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c0516fc3-60e7-41fe-86af-67a53b968d5b
+    type: regular
+    task:
+      id: c0516fc3-60e7-41fe-86af-67a53b968d5b
+      version: -1
+      name: delete-issue
+      script: '|||jira-delete-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      issueIdOrKey:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 5356921c-37e4-4c13-8b89-313592ec3229
+    type: regular
+    task:
+      id: 5356921c-37e4-4c13-8b89-313592ec3229
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: b7450bb6-8cfd-4a93-8e70-d4803a86d5ad
+    type: regular
+    task:
+      id: b7450bb6-8cfd-4a93-8e70-d4803a86d5ad
+      version: -1
+      name: Get Account ID
+      description: Gets the Account ID for a given user's attribute.
+      script: '|||jira-get-id-by-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      attribute:
+        simple: admin@demistodev.com
+      maxResults: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: a4c1c425-f6e3-49c3-8df9-238fcdea8364
+    type: condition
+    task:
+      id: a4c1c425-f6e3-49c3-8df9-238fcdea8364
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Jira.User.AccountID
+            iscontext: true
+          right:
+            value:
+              simple: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3850
         }
       }
     note: false
@@ -737,7 +922,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3195,
+        "height": 4010,
         "width": 380,
         "x": 50,
         "y": 50

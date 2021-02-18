@@ -33,3 +33,6 @@ ignore=BA101
 
 [file:playbook-Search_And_Delete_Emails_-_Generic.yml]
 ignore=BA101
+
+[file:playbook-Send_Investigation_Summary_Reports_Job.yml]
+ignore=PB105

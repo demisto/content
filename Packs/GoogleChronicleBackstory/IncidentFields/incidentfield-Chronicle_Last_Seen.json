@@ -1,0 +1,33 @@
+{
+    "id": "incident_chroniclelastseen",
+    "version": -1,
+    "modified": "2021-01-18T14:04:51.541232738+05:30",
+    "name": "Chronicle Last Seen",
+    "ownerOnly": false,
+    "placeholder": "The Alert/IOC Domain was most recently seen within your enterprise.",
+    "description": "The Alert/IOC Domain was most recently seen within your enterprise.",
+    "cliName": "chroniclelastseen",
+    "type": "date",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Chronicle User Alert",
+        "Chronicle IOC Domain Matches"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

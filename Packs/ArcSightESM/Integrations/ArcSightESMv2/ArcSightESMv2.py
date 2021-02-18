@@ -239,7 +239,7 @@ def test():
     if events_query_viewer_id:
         fields, results = get_query_viewer_results(events_query_viewer_id)
         if 'Event ID' not in fields or 'Start Time' not in fields:
-            return_error('Query "{}" must contain "Start Time" and "Event ID" fields'.format(cases_query_viewer_id))
+            return_error('Query "{}" must contain "Start Time" and "Event ID" fields'.format(events_query_viewer_id))
 
     if cases_query_viewer_id:
         fields, results = get_query_viewer_results(cases_query_viewer_id)

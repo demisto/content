@@ -130,8 +130,8 @@
     {
       "fake_integration": {
         "name": "fake_integration",
-        "fromversion": "4.1.0",
-        "toversion": "5.4.9",
+        "fromversion": "5.5.0",
+        "toversion": "6.0.0",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml",
         "commands": [
           "fake-command"
@@ -259,7 +259,7 @@
       "fake_test_playbook": {
         "name": "fake_test_playbook",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
-        "fromversion": "4.1.0",
+        "fromversion": "5.5.0",
         "implementing_scripts": [
           "fake-script"
         ],
@@ -384,7 +384,8 @@
     {
       "Calculate Severity - Standard - Test": {
         "name": "Calculate Severity - Standard - Test",
-        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml"
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "CommonPlaybooks"
       }
     },
     {
@@ -406,6 +407,12 @@
         "implementing_playbooks": [
           "Extract Indicators From File - Generic"
         ]
+      }
+    },
+    {
+      "Test XDR Playbook": {
+        "name": "Test XDR Playbook",
+        "pack": "CortexXDR"
       }
     }
   ]

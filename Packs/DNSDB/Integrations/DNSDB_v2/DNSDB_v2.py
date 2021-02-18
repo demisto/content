@@ -14,7 +14,7 @@
 
 import inspect
 import locale
-from typing import Iterator, Dict, List, Tuple, Union, Any, Callable
+from typing import Iterator, Dict, List, Tuple, Union, Any, Callable, Iterable
 import urllib
 import urllib.parse
 
@@ -38,10 +38,18 @@ RATE_SUBCONTEXT_NAME = 'Rate'
 
 # CONSTANTS
 DEFAULT_DNSDB_SERVER = 'https://api.dnsdb.info'
+TIMEOUT = 60
 SWCLIENT = "demisto-integration"
 VERSION = "v2.0"
+PATH_PREFIX = 'dnsdb/v2'
 IDN_REGEX = re.compile(r'(?:^|(?<=[\s=.:@]))xn--[a-z0-9\-]+\.')
 FALSE_REGEX = re.compile(r'^(?i:f(alse)?)$')
+COND_BEGIN = 'begin'
+COND_ONGOING = 'ongoing'
+COND_SUCCEEDED = 'succeeded'
+COND_LIMITED = 'limited'
+COND_FAILED = 'failed'
+
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -63,12 +71,13 @@ class Client(BaseClient):
             base_url,
             verify=verify,
             headers={
-                'Accept': 'application/json',
+                'Accept': 'application/x-ndjson',
                 'X-Api-Key': apikey,
             },
             proxy=proxy,
-            ok_codes=(200, 404),
+            ok_codes=(200, ),
         )
+        self.apikey = apikey
 
     @staticmethod
     def base_params() -> dict:
@@ -79,7 +88,7 @@ class Client(BaseClient):
 
     def rate_limit(self) -> Dict:
         params = self.base_params()
-        url_suffix = 'lookup/rate_limit'
+        url_suffix = 'dnsdb/v2/rate_limit'
         return self._http_request('GET', url_suffix=url_suffix, params=params)
 
     def lookup_rrset(self, owner_name: str, rrtype: str = None, bailiwick: str = None, limit: int = None,
@@ -126,11 +135,11 @@ class Client(BaseClient):
             if not rrtype:
                 rrtype = 'ANY'
             bailiwick = quote(to_ascii(bailiwick))
-            path = f'{mode}/rrset/name/{owner_name}/{rrtype}/{bailiwick}'
+            path = f'{PATH_PREFIX}/{mode}/rrset/name/{owner_name}/{rrtype}/{bailiwick}'
         elif rrtype:
-            path = f'{mode}/rrset/name/{owner_name}/{rrtype}'
+            path = f'{PATH_PREFIX}/{mode}/rrset/name/{owner_name}/{rrtype}'
         else:
-            path = f'{mode}/rrset/name/{owner_name}'
+            path = f'{PATH_PREFIX}/{mode}/rrset/name/{owner_name}'
         return self._query(path, limit=limit, time_first_before=time_first_before, time_first_after=time_first_after,
                            time_last_before=time_last_before, time_last_after=time_last_after,
                            aggr=aggr, offset=offset, max_count=max_count)
@@ -174,9 +183,9 @@ class Client(BaseClient):
                           aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         rdata_name = quote(to_ascii(name))
         if rrtype:
-            path = f'{mode}/rdata/name/{rdata_name}/{rrtype}'
+            path = f'{PATH_PREFIX}/{mode}/rdata/name/{rdata_name}/{rrtype}'
         else:
-            path = f'{mode}/rdata/name/{rdata_name}'
+            path = f'{PATH_PREFIX}/{mode}/rdata/name/{rdata_name}'
         return self._query(path, limit=limit, time_first_before=time_first_before, time_first_after=time_first_after,
                            time_last_before=time_last_before, time_last_after=time_last_after,
                            aggr=aggr, offset=offset, max_count=max_count)
@@ -217,10 +226,64 @@ class Client(BaseClient):
                         time_last_before: timeval = None, time_last_after: timeval = None,
                         aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
         ip = ip.replace('/', ',')
-        path = f'{mode}/rdata/ip/{ip}'
+        path = f'{PATH_PREFIX}/{mode}/rdata/ip/{ip}'
         return self._query(path, limit=limit, time_first_before=time_first_before, time_first_after=time_first_after,
                            time_last_before=time_last_before, time_last_after=time_last_after,
                            aggr=aggr, offset=offset, max_count=max_count)
+
+    def lookup_rdata_raw(self, value: str, rrtype: str = None,
+                         limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                         time_last_before: timeval = None, time_last_after: timeval = None,
+                         aggr: bool = None, offset: int = None) -> Iterator[Dict]:
+        return self._query_rdata_raw("lookup",
+                                     raw=value,
+                                     rrtype=rrtype,
+                                     limit=limit,
+                                     time_first_before=time_first_before,
+                                     time_first_after=time_first_after,
+                                     time_last_before=time_last_before,
+                                     time_last_after=time_last_after,
+                                     aggr=aggr,
+                                     offset=offset)
+
+    def summarize_rdata_raw(self, value: str, rrtype: str = None,
+                            limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                            time_last_before: timeval = None, time_last_after: timeval = None,
+                            aggr: bool = None, max_count: int = None) -> dict:
+        try:
+            return next(self._query_rdata_raw("summarize",
+                                              raw=value,
+                                              rrtype=rrtype,
+                                              limit=limit,
+                                              time_first_before=time_first_before,
+                                              time_first_after=time_first_after,
+                                              time_last_before=time_last_before,
+                                              time_last_after=time_last_after,
+                                              aggr=aggr,
+                                              max_count=max_count))
+        except StopIteration:
+            raise QueryError("no data")
+
+    def _query_rdata_raw(self, mode: str, raw: str, rrtype: str = None,
+                         limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+                         time_last_before: timeval = None, time_last_after: timeval = None,
+                         aggr: bool = None, offset: int = None, max_count: int = None) -> Iterator[Dict]:
+        if rrtype:
+            path = f'{PATH_PREFIX}/{mode}/rdata/raw/{quote(raw)}/{rrtype}'
+        else:
+            path = f'{PATH_PREFIX}/{mode}/rdata/raw/{quote(raw)}'
+        return self._query(path, limit=limit, time_first_before=time_first_before, time_first_after=time_first_after,
+                           time_last_before=time_last_before, time_last_after=time_last_after,
+                           aggr=aggr, offset=offset, max_count=max_count)
+
+    def flex(self, method: str, key: str, value: str, rrtype: str = None,
+             limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
+             time_last_before: timeval = None, time_last_after: timeval = None):
+        path = f'{PATH_PREFIX}/{method}/{key}/{quote(value)}'
+        if rrtype:
+            path += f'/{rrtype}'
+        return self._query(path, limit=limit, time_first_before=time_first_before, time_first_after=time_first_after,
+                           time_last_before=time_last_before, time_last_after=time_last_after)
 
     def _query(self, path: str, limit: int = None, time_first_before: timeval = None, time_first_after: timeval = None,
                time_last_before: timeval = None, time_last_after: timeval = None,
@@ -239,13 +302,47 @@ class Client(BaseClient):
             )
         )
 
-        res = self._http_request('GET', path, params=params, stream=True, resp_type='response')
+        res = self._http_request('GET', path,
+                                 params=params,
+                                 stream=True,
+                                 resp_type='response',
+                                 timeout=TIMEOUT)
 
-        if res.status_code == 404:
+        return _handle_saf(res.iter_lines(decode_unicode=True))
+
+
+def _handle_saf(i: Iterable[str]):
+    for line in i:
+        if not line:
+            continue
+
+        try:
+            saf_msg = json.loads(line)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f'saf protocol error: could not decode json: {line}') from e
+
+        cond = saf_msg.get('cond')
+        obj = saf_msg.get('obj')
+        msg = saf_msg.get('msg')
+
+        if cond == COND_BEGIN:
+            continue
+        elif cond == COND_SUCCEEDED:
             return
 
-        for line in res.iter_lines():
-            yield json.loads(line)
+        if obj:
+            yield obj
+
+        if cond == COND_ONGOING or not cond:
+            continue
+        elif cond == COND_LIMITED:
+            return
+        elif cond == COND_FAILED:
+            raise QueryError(f'saf query failed: {msg}')
+        else:
+            raise QueryError(f'saf protocol error: invalid cond: {cond}')
+
+    raise QueryError('saf query truncated')
 
 
 def quote(path: str) -> str:
@@ -347,6 +444,7 @@ def build_result_context(results: Dict) -> Dict:
             ('RRType', 'rrtype', str),
             ('Bailiwick', 'bailiwick', format_name_for_context),
             ('RData', 'rdata', nop),
+            ('RawRData', 'raw_rdata', nop),
             ('Count', 'count', int),
             ('NumResults', 'num_results', int),
             ('TimeFirst', 'time_first', parse_unix_time),
@@ -357,7 +455,8 @@ def build_result_context(results: Dict) -> Dict:
         if rkey in results:
             ctx[ckey] = f(results[rkey])  # type: ignore[operator]
 
-    ctx['FromZoneFile'] = 'zone_time_first' in results
+    if 'zone_time_first' in results or 'time_first' in results:
+        ctx['FromZoneFile'] = 'zone_time_first' in results
 
     return ctx
 
@@ -402,7 +501,7 @@ def build_rate_limits_context(results: Dict) -> Dict:
 
 
 @logger
-def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
+def lookup_to_markdown(results: List[Dict], title: str = 'Farsight DNSDB Lookup', want_bailiwick=True, header_filter=None) -> str:
     # TODO this should be more specific, include arguments?
     out = []
 
@@ -418,6 +517,8 @@ def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
         keys = list(filter(lambda r: r[1] != 'bailiwick', keys))
 
     headers = [k[0] for k in keys] + ['TimeFirst', 'TimeLast', 'FromZoneFile']
+    if header_filter:
+        headers = list(filter(header_filter, headers))
 
     for result in results:
         row = dict()  # type: Dict[str, Any]
@@ -438,7 +539,7 @@ def lookup_to_markdown(results: List[Dict], want_bailiwick=True) -> str:
         row['FromZoneFile'] = str("zone_time_first" in result)
         out.append(row)
 
-    return tableToMarkdown('Farsight DNSDB Lookup', out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers)
 
 
 @logger
@@ -523,12 +624,37 @@ def test_module(client, _):
 
 
 @logger
+def dnsdb_flex(client, args):
+    res = list(_run_query(client.flex, args))
+
+    def skip_rrname(header) -> bool:
+        return header.lower() not in ('rrname', 'fromzonefile')
+
+    def skip_rdata(header) -> bool:
+        return header.lower() not in ('rdata', 'fromzonefile')
+    if args.get('key') == 'rdata':
+        skip = skip_rrname
+    else:
+        skip = skip_rdata
+
+    return CommandResults(
+        readable_output=lookup_to_markdown(res, title='Farsight DNSDB Flex Search', want_bailiwick=False,
+                                           header_filter=skip),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{RECORD_SUBCONTEXT_NAME}',
+        outputs_key_field='',
+        outputs=[build_result_context(r) for r in res],
+    )
+
+
+@logger
 def dnsdb_rdata(client, args):
     type = args.get('type')
     if type == 'name':
         res = list(_run_query(client.lookup_rdata_name, args))
     elif type == 'ip':
         res = list(_run_query(client.lookup_rdata_ip, args))
+    elif type == 'raw':
+        res = list(_run_query(client.lookup_rdata_raw, args))
     else:
         raise Exception(f'Invalid rdata query type: {type}')
 
@@ -547,6 +673,8 @@ def dnsdb_summarize_rdata(client, args):
         res = _run_query(client.summarize_rdata_name, args)
     elif type == 'ip':
         res = _run_query(client.summarize_rdata_ip, args)
+    elif type == 'raw':
+        res = _run_query(client.summarize_rdata_raw, args)
     else:
         raise Exception(f'Invalid rdata query type: {type}')
 
@@ -616,6 +744,9 @@ def main():
     try:
         if command == 'test-module':
             return_results(test_module(client, demisto.args()))
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}-flex':
+            return_results(dnsdb_flex(client, demisto.args()))
 
         elif command == f'{INTEGRATION_COMMAND_NAME}-rdata':
             return_results(dnsdb_rdata(client, demisto.args()))

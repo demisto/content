@@ -711,6 +711,8 @@ def create_sample_hr_from_analysis_json(sample_ec, analysis_json, sample_process
     Creates a human readable dictionary corresponding to required field from the analysis_json
     """
     res = dict(sample_ec)
+    children = get_with_limit(sample_process, 'children', limit)
+    memory = demisto.get(sample_process, 'memory')
     res.update(
         {
             'Mutants Created': get_with_limit(sample_process, 'mutants_created', limit),
@@ -718,8 +720,8 @@ def create_sample_hr_from_analysis_json(sample_ec, analysis_json, sample_process
             'Regisrty Keys Modified': get_with_limit(sample_process, 'registry_keys_modified', limit),
             'Regitry Keys Created': get_with_limit(sample_process, 'registry_keys_created', limit),
             'Threads': get_with_limit(sample_process, 'threads', limit),
-            'Children': len(get_with_limit(sample_process, 'children', limit)),
-            'Memory': len(demisto.get(sample_process, 'memory')) if demisto.get(sample_process, 'new') == 'true' else 0,
+            'Children': len(children) if children else 0,
+            'Memory': len(memory) if memory and demisto.get(sample_process, 'new') == 'true' else 0,
             'Network': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
                                                               full_extraction=True),
             'Enviornment Details': {

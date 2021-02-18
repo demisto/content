@@ -1,16 +1,17 @@
 {
-  "name": "ARIA Packet Intelligence",
-  "description": "The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "ARIAPacketIntelligence",
+    "description": "Manage Packet Intelligence rules in response to incidents. Instantly block conversations, redirect packets, generate alerts, or perform other actions.",
+    "support": "partner",
+    "currentVersion": "2.0.0",
+    "author": "ARIA Cybersecurity Solutions",
+    "url": "https://www.ariacybersecurity.com/cybersecurity-products/aria-packet-intelligence",
+    "email": "ARIA_support@ariacybersecurity.com",
+    "created": "2020-09-17T22:12:55Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": ["Alerts", "Incident Response", "Network", "Security", "Threat Intelligence"],
+    "useCases": ["Incident Response", "Threat Intelligence Management"],
+    "certification": "certified",
+    "keywords": ["Block", "Redirect", "Alert", "PI", "SDS", "ARIA"]
 }

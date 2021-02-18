@@ -27,8 +27,6 @@ configuration:
   type: 0
 description: Cisco Email Security is an email security gateway . It detects and blocks
   a wide variety of email-borne threats, such as malware, spam and phishing.
-detaileddescription: |-
-  Note: This is a beta integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 display: Cisco Email Security (beta)
 name: CiscoEmailSecurity
 script:
@@ -36,20 +34,23 @@ script:
   - arguments:
     - default: false
       description: 'Start datetime for the search, in the following format: YYYY-MM-DD
-        hh:mm:ss. The seconds must be 00, due to an API limitation.'
+        hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
       isArray: false
       name: start_date
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The minutes and the seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Fetch data from a specific counter. Possible values are "reporting_system", "mail_incoming_traffic_summary", "mail_vof_threat_summary", "mail_vof_specific_threat_summary", and "mail_amp_threat_summary".
+      description: Fetch data from a specific counter. Possible values are "reporting_system",
+        "mail_incoming_traffic_summary", "mail_vof_threat_summary", "mail_vof_specific_threat_summary",
+        and "mail_amp_threat_summary".
       isArray: false
       name: counter
       predefined:
@@ -59,6 +60,13 @@ script:
       - mail_vof_specific_threat_summary
       - mail_amp_threat_summary
       required: true
+      secret: false
+    - default: false
+      defaultValue: Hosted_Cluster
+      description: Cisco device group name
+      isArray: false
+      name: device_group_name
+      required: false
       secret: false
     deprecated: false
     description: Retrieves details of an email security report by counter type.
@@ -176,7 +184,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -307,7 +316,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Message direction to filter by. Possible values are "incoming" and "outgoing".
+      description: Message direction to filter by. Possible values are "incoming"
+        and "outgoing".
       isArray: false
       name: message_direction
       predefined:
@@ -317,7 +327,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to filter by positive spam positive. Possible values are: "True" and "False".'
+      description: 'Whether to filter by positive spam positive. Possible values are:
+        "True" and "False".'
       isArray: false
       name: spam_positive
       predefined:
@@ -327,7 +338,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to filter by in spam quarantine. Possible values: are "True" and "False".'
+      description: 'Whether to filter by in spam quarantine. Possible values: are
+        "True" and "False".'
       isArray: false
       name: quarantined_as_spam
       predefined:
@@ -337,7 +349,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Quarantine status to filter. Possible values are: "POLICY", "AMP", "AV", "UNCLASSIFIED", "DLP", and "OUTBREAK".'
+      description: 'Quarantine status to filter. Possible values are: "POLICY", "AMP",
+        "AV", "UNCLASSIFIED", "DLP", and "OUTBREAK".'
       isArray: false
       name: quarantine_status
       predefined:
@@ -351,7 +364,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'URL reputation to filter by. Possible values are: "Malicious" and "Suspicious".'
+      description: 'URL reputation to filter by. Possible values are: "Malicious"
+        and "Suspicious".'
       isArray: false
       name: url_reputation
       predefined:
@@ -392,7 +406,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to filter by contained malicious URLs. Possible values are: "True" and "False".'
+      description: 'Whether to filter by contained malicious URLs. Possible values
+        are: "True" and "False".'
       isArray: false
       name: contained_malicious_urls
       predefined:
@@ -402,7 +417,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to filter by is contained natural URLs. Possible values are: "True" and "False".'
+      description: 'Whether to filter by is contained natural URLs. Possible values
+        are: "True" and "False".'
       isArray: false
       name: contained_neutral_urls
       predefined:
@@ -486,7 +502,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -598,7 +615,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -639,7 +657,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'From address order to filter by. Possible values are: "asc" and "desc".'
+      description: 'From address order to filter by. Possible values are: "asc" and
+        "desc".'
       isArray: false
       name: order_dir_from_address
       predefined:
@@ -649,7 +668,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'To address order to filter by. Possible values are: "asc" and "desc".'
+      description: 'To address order to filter by. Possible values are: "asc" and
+        "desc".'
       isArray: false
       name: order_dir_to_address
       predefined:
@@ -675,7 +695,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Recipient operator to filter by. Possible values are: "is", "begins_with", and "contains".'
+      description: 'Recipient operator to filter by. Possible values are: "is", "begins_with",
+        and "contains".'
       isArray: false
       name: recipient_operator
       predefined:
@@ -692,7 +713,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter operator to filter by. Possible values are: "is", "begins_with", and "contains".'
+      description: 'Filter operator to filter by. Possible values are: "is", "begins_with",
+        and "contains".'
       isArray: false
       name: filter_operator
       predefined:
@@ -725,7 +747,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -831,7 +854,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -925,7 +949,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'End datetime for the search, in the following format: YYYY-MM-DD hh:mm:ss. The seconds must be 00, due to an API limitation.'
+      description: 'End datetime for the search, in the following format: YYYY-MM-DD
+        hh:mm:ss. The seconds must be 00, due to an API limitation.'
       isArray: false
       name: end_date
       required: true
@@ -1114,7 +1139,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'List type. Possible values are: "safelist" and "blocklist".' 
+      description: 'List type. Possible values are: "safelist" and "blocklist".'
       isArray: false
       name: list_type
       predefined:
@@ -1124,7 +1149,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Select the action to perform on the list. Possible values are: "add", "edit", and "append".'
+      description: 'Select the action to perform on the list. Possible values are:
+        "add", "edit", and "append".'
       isArray: false
       name: action
       predefined:
@@ -1134,26 +1160,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of recipient addresses on which to perform the action.
-        separated)
+      description: A comma-separated list of recipient addresses on which to perform
+        the action. separated)
       isArray: true
       name: recipient_addresses
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of recipient lists on which to perform the action.
+      description: A comma-separated list of recipient lists on which to perform the
+        action.
       isArray: true
       name: recipient_list
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of sender addresses on which to perform the action.
+      description: A comma-separated list of sender addresses on which to perform
+        the action.
       isArray: true
       name: sender_addresses
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of sender lists on which to perform the action.
+      description: A comma-separated list of sender lists on which to perform the
+        action.
       isArray: true
       name: sender_list
       required: false
@@ -1218,7 +1247,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
-beta: true
 tests:
 - No tests
+fromversion: 5.0.0
+beta: true

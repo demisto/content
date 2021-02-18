@@ -1,0 +1,177 @@
+{
+    "description": "Maps incoming Concentric alert fields.",
+    "feed": false,
+    "id": "ConcentricAi-mapper",
+    "mapping": {
+        "ConcentricAI Security Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agent ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "owner",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Device Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "service",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "cid",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "rule_name",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "File Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "name",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "File Path": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "file-path",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agent ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "owner",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Device Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "service",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "cid",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "rule_name",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "File Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "name",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "File Path": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "file-path",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "ConcentricAi-mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
