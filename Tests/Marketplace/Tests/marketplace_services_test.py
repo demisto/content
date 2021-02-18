@@ -95,6 +95,7 @@ class TestMetadataParsing:
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
+        assert parsed_metadata['searchRank'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self, dummy_pack):
@@ -119,6 +120,7 @@ class TestMetadataParsing:
         assert parsed_metadata['certification'] == Metadata.CERTIFIED
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == "dummy_server_version"
+        assert parsed_metadata['searchRank'] == 10
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
@@ -139,8 +141,8 @@ class TestMetadataParsing:
 
     def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a new pack (created less than 30 days ago)
-        Then: add "New" tag
+        Given a certified new pack (created less than 30 days ago)
+        Then: add "New" tag and raise the searchRank
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
         parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
@@ -151,11 +153,12 @@ class TestMetadataParsing:
                                                           is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+        assert parsed_metadata['searchRank'] == 20
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a pack that was created more than 30 days ago
-        Then: remove "New" tag
+        Given a certified pack that was created more than 30 days ago
+        Then: remove "New" tag and make sure the searchRank is reduced
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         if 'New' not in dummy_pack_metadata['tags']:
@@ -168,6 +171,93 @@ class TestMetadataParsing:
                                                           is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert parsed_metadata['searchRank'] == 10
+
+    def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: All the integrations in it are deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                }
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == -40
+
+    def test_partdeprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: Only one of the two integrations is deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+                {
+                    "name": "packname2",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == 10
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
