@@ -7,6 +7,7 @@ import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import urllib2
+import hashlib
 import ssl
 from StringIO import StringIO
 import requests
@@ -503,6 +504,9 @@ def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
     incident_custom_id = incident_occurred + incident_raw_data
+    incident_custom_id_hash = hashlib.sha256()
+    incident_custom_id_hash.update(incident_custom_id)
+    incident_custom_id_hash.digest()
     demisto.debug('length of incident new custom ID is: {}'.format(len(incident_custom_id)))
     return incident_custom_id
 
