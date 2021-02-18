@@ -131,7 +131,7 @@ script:
     - default: false
       defaultValue: '50'
       description: The maximum number of indicators to return per fetch. The default
-        value is "50". Maximum value is "200".
+        value is "50". Maximum value is "500".
       isArray: false
       name: limit
       required: false

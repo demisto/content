@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple
 from io import StringIO
+from datetime import datetime
 import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
@@ -118,13 +119,27 @@ def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_c
     Returns:
         list of indicators(list)
     """
-    last_run_id = demisto.getLastRun().get('last_run_id')
+    last_run_id = demisto.getIntegrationContext().get('last_run_id')
+    last_run_id2 = demisto.getLastRun().get('last_run_id')
+    last_timestamp = demisto.getLastRun().get('last_timestamp')
+    last_a = demisto.getLastRun().get('last_a')
+    demisto.info(f'last_id 1: {last_run_id}, last_id2: {last_run_id2}, last_timestamp: {last_timestamp}, last_a: {last_a}')
 
     new_last_run, indicators_list = get_indicators(client, indicator_type, limit=max_fetch, last_run_id=last_run_id,
                                                    tlp_color=tlp_color)
 
+    demisto.info(f'new last id: {new_last_run}')
+
+    current_time = datetime.now()
+    current_timestamp = datetime.timestamp(current_time)
+    timestamp = int(current_timestamp)
+    demisto.setLastRun({'last_a': 'a',
+                        'last_timestamp': timestamp})
+
     if new_last_run and not is_test:
-        demisto.setLastRun({'last_run_id': new_last_run})
+        demisto.setIntegrationContext({'last_run_id': new_last_run})
+        # demisto.setLastRun({'last_run_id': new_last_run})
+        demisto.info(f'new last id here: {new_last_run}')
 
     return indicators_list
 
@@ -141,7 +156,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     """
     indicator_type = argToList(args.get("indicator_types"))
     limit = int(args.get('limit', 50))
-    limit = 200 if limit > 200 else limit
+    limit = 500 if limit > 500 else limit
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit)
     if indicators_list:
         indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
@@ -431,7 +446,7 @@ def main():
     base_url = params.get('base_url')
     if base_url.endswith('/'):
         base_url = base_url[:-1]
-    indicator_types = params.get('indicator_types')
+    indicator_types = params.get('indicator_types', ['ALL'])
     max_fetch = params.get('max_indicator_to_fetch')
     tlp_color = params.get('tlp_color')
     if max_fetch:
