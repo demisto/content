@@ -204,8 +204,8 @@ def list_events_command(client: Client, args: dict):
     """
     sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
     params = remove_empty_elements({'filter': args.get('filter'),
-                                    'pageNumber': args.get('page_number'),
-                                    'pageSize': args.get('limit'),
+                                    'pageNumber': args.get('page_number', '0'),
+                                    'pageSize': args.get('limit', '10'),
                                     'incidentIds': argToList(args.get('incident_ids')),
                                     'sort': sort})
 
@@ -284,8 +284,8 @@ def list_incidents_command(client: Client, args: dict):
 
     sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
     params = remove_empty_elements({'filter': args.get('filter'),
-                                    'pageNumber': args.get('page_number'),
-                                    'pageSize': args.get('limit'),
+                                    'pageNumber': args.get('page_number', '0'),
+                                    'pageSize': args.get('limit', '10'),
                                     'attributes': args.get('attributes'),
                                     'sort': sort})
 
@@ -332,7 +332,7 @@ def list_incident_events_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     params = remove_empty_elements({'filter': args.get('filter'),
-                                    'pageNumber': args.get('page_number'),
+                                    'pageNumber': args.get('page_number', '0'),
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes')})
 
@@ -480,7 +480,7 @@ def list_assets_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     params = remove_empty_elements({'filter': args.get('filter'),
-                                    'pageNumber': args.get('page_number'),
+                                    'pageNumber': args.get('page_number', '0'),
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes')})
     raw_response = client.assets_list(params)

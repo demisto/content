@@ -80,7 +80,7 @@ script:
       name: filter
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Page number(index) to list items from. "Limit" argument defines
         page size (how many items in a page). Default is zero
@@ -88,7 +88,7 @@ script:
       name: page_number
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '10'
       description: The number of records to include. Default is 10.
       isArray: false
@@ -181,7 +181,7 @@ script:
       name: filter
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Page number(index) to list items from. "Limit" argument defines
         page size (how many items in a page). Default is zero
@@ -189,7 +189,7 @@ script:
       name: page_number
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '10'
       description: The number of records to include. Default is 10.
       isArray: false
@@ -257,7 +257,7 @@ script:
       name: filter
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Page number(index) to list items from. "Limit" argument defines
         page size (how many items in a page). Default is zero
@@ -495,7 +495,7 @@ script:
       name: filter
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Page number(index) to list items from. "Limit" argument defines
         page size (how many items in a page). Default is zero
