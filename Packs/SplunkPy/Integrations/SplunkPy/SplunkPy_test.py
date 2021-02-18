@@ -474,11 +474,11 @@ def test_create_mapping_dict():
 
 
 @pytest.mark.parametrize('cache_object, output', [
-    ({splunk.NOT_YET_ENRICHED_NOTABLES: ['n1', 'n2']}, False),
-    ({splunk.NOT_YET_ENRICHED_NOTABLES: []}, True),
-    ({}, True)
+    (splunk.Cache(not_yet_enriched_notables=[splunk.Notable({'event_id': '1'})]), False),
+    (splunk.Cache(), True)
 ])
 def test_is_done_enriching(cache_object, output):
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT]
     assert splunk.is_done_enriching(cache_object) is output
 
 
@@ -511,26 +511,25 @@ def test_reset_enriching_fetch_mechanism(mocker):
     ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
 ])
 def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
-    enrichment = splunk.Enrichment(
-        splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
-    )
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    enrichment = splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'}))
     enrichment.drilldown_job.creation_time = drilldown_creation_time
     enrichment.asset_job.creation_time = asset_creation_time
     assert splunk.is_enrichment_exceeding_timeout(enrichment, enrichment_timeout) is output
 
 
 @pytest.mark.parametrize('cache_object, last_run, output', [
-    ({}, {}, {}),
-    ({
-         splunk.LAST_RUN_REGULAR_FETCH: {'time': 1, 'offset': 0},
-         splunk.LAST_RUN_OVER_FETCH: {'time': 2, 'offset': 50},
-         splunk.NUM_FETCHED_NOTABLES: 50
-     }, {}, {'time': 2, 'offset': 50}),
-    ({
-         splunk.LAST_RUN_REGULAR_FETCH: {'time': 1, 'offset': 0},
-         splunk.LAST_RUN_OVER_FETCH: {'time': 2, 'offset': 50},
-         splunk.NUM_FETCHED_NOTABLES: 20
-     }, {}, {'time': 1, 'offset': 0})
+    (splunk.Cache(), {}, {}),
+    (splunk.Cache(
+        last_run_regular_fetch={'time': 1, 'offset': 0},
+        last_run_over_fetch={'time': 2, 'offset': 50},
+        num_fetched_notables=50
+    ), {}, {'time': 2, 'offset': 50}),
+    (splunk.Cache(
+        last_run_regular_fetch={'time': 1, 'offset': 0},
+        last_run_over_fetch={'time': 2, 'offset': 50},
+        num_fetched_notables=20
+    ), {}, {'time': 1, 'offset': 0})
 ])
 def test_handle_last_run(cache_object, last_run, output, mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
@@ -554,14 +553,10 @@ def test_store_incident_in_ic(integration_context, incidents, output):
 
 @pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
     ({}, {}, False, "", ""),
-    ({
-         "drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
-         "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME),
-     }, {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
-    ({
-         "drilldown_earliest": '1',
-         "drilldown_latest": '2',
-     }, {}, True, '1', '2')
+    ({"drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+      "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME), },
+     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
+    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
 ])
 def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
     mocker.patch.object(demisto, 'info')
@@ -639,10 +634,11 @@ def test_differentiate_enrichments():
 
 
 @pytest.mark.parametrize('enrichment, splunk_job', [
-    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT]), {}),
-    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'}), [splunk.DRILLDOWN_ENRICHMENT]), {'sid': 'sid'}),
+    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'})), {}),
+    (splunk.Enrichment(splunk.Notable({splunk.EVENT_ID: 'id'})), {'sid': 'sid'}),
 ])
 def test_maintain_enrichment_metadata(enrichment, splunk_job):
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT]
     splunk.maintain_enrichment_metadata(enrichment, splunk_job, splunk.DRILLDOWN_ENRICHMENT)
     if splunk_job:
         assert enrichment.drilldown_job.creation_time
