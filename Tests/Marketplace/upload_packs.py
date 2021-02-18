@@ -571,6 +571,16 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 
 def is_there_private_packs_to_upload(public_index_json, private_storage_bucket, extract_destination_path):
+    """ Checks if there are private packs that should be uploaded.
+    The checking idea is to compare the private index with the public one and to verify if:
+    1. Number of private packs
+
+
+    Args:
+        index_folder_path: The index folder path.
+        private_index_path: The path for the index of the private packs.
+
+    """
     all_private_packs_from_public_index = public_index_json.get("packs")
     num_of_private_packs = len(all_private_packs_from_public_index)
     # open private index here
