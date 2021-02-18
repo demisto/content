@@ -1,6 +1,8 @@
 ## Authentication
 
 Before you start, make sure that you have Qualys login credentials.
+The username and password you need to provide are the Qualys FIM username and password you are using in the Qualys FIM UI. 
+This should be provided when you first register to Qualys FIM services.
 
 The Qualys API server URL that you should use for API requests depends on the platform where your account is located.
 
