@@ -11,23 +11,23 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 XSOHR_TYPES_TO_CROWDSTRIKE = {
-    'user-account': "username",
+    'account': "username",
     'domain': "domain",
-    'email-address': "email_address",
-    'file-md5': "hash_md5",
-    'file-sha256': "hash_sha256",
-    'ipv4-addr': "ip_address",
-    'ipv6-addr': "ip_address",
-    'registry-key-value': "registry",
+    'email': "email_address",
+    'file md5': "hash_md5",
+    'file sha256': "hash_sha256",
+    'ip': "ip_address",
+    'ipv6': "ip_address",
+    'registry key': "registry",
     'url': "url"
 }
 CROWDSTRIKE_TO_XSOHR_TYPES = {
-    'username': 'User-Account',
+    'username': 'Account',
     'domain': 'Domain',
-    'email_address': 'Email-Address',
-    'hash_md5': 'File-MD5',
-    'hash_sha256': 'File-SHA256',
-    'registry': 'Registry-Key-Value',
+    'email_address': 'Email',
+    'hash_md5': 'File MD5',
+    'hash_sha256': 'File SHA-256',
+    'registry': 'Registry Key',
     'url': 'URL'
 }
 
@@ -155,7 +155,7 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
         malicious_confidence=malicious_confidence,
         filter=filter, q=q,
         include_deleted=include_deleted,
-        get_indicators_command=True,
+        get_indicators_command=False,
         limit=limit
     )
     parsed_indicators = []  # type: List
@@ -261,6 +261,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
+    demisto.info(f'Command being called is {demisto.command()}')
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -284,7 +285,7 @@ def main() -> None:
                 type=type,
                 malicious_confidence=malicious_confidence,
                 filter=filter, q=q,
-                limit=max_fetch
+                limit=max_fetch,
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
