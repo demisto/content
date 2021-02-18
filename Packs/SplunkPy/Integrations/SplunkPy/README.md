@@ -39,7 +39,7 @@ This integration was integrated and tested with Splunk v7.2.
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
 | incoming_mirror | When selected, any notable data changed in remote Splunk server will reflected on existing fetched incidents. | False |
-| close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
+| close_incident | When selected, notable events closed in Splunk will also be closed in Cortex XSOAR. | False |
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 

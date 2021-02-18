@@ -186,10 +186,13 @@ def severity_to_level(severity):
 
 def parse_notable(notable, to_dict=False):
     """ Parses the notable
+
     Args:
-        notable: The notable
-        to_dict: Whether to cast the notable to dict or not.
-    Returns: The parsed notable
+        notable (OrderedDict): The notable
+        to_dict (bool): Whether to cast the notable to dict or not.
+
+    Returns (OrderedDict or dict): The parsed notable
+
     """
     notable = replace_keys(notable) if REPLACE_FLAG else notable
     for key, val in notable.items():
@@ -197,7 +200,7 @@ def parse_notable(notable, to_dict=False):
         # in the event, then splunk returns the field with the key as value (e.g. ("DNS Destination", "DNS Destination")
         # so we go over the fields, and check if the key equals the value and set the value to be empty string
         if key == val:
-            demisto.info('Found notable event raw field [{}] with key that equals the value - replacing the value '
+            demisto.debug('Found notable event raw field [{}] with key that equals the value - replacing the value '
                          'with empty string'.format(key))
             notable[key] = ''
     return dict(notable) if to_dict else notable
@@ -712,13 +715,13 @@ def test_module(service):
         kwargs = {'count': 1, 'earliest_time': time}
         query = params['fetchQuery']
         try:
+            if argToBoolean(params.get('incoming_mirror', False)) and not params.get('timezone'):
+                return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
+                             'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
                 if argToBoolean(params.get('incoming_mirror', False)):
                     if 'event_id' not in item:
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
-                    if not params.get('timezone'):
-                        return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
-                                     'timezone of the Splunk server being used in the integration configuration.')
         except HTTPError as error:
             return_error(str(error))
     if params.get('hec_url'):
@@ -992,9 +995,9 @@ def get_last_update_in_splunk_time(last_update):
     """ Transforms the time to the corresponding time on the Splunk server
 
     Args:
-        last_update: The time to be transformed
+        last_update (str): The time to be transformed, E.g 2021-02-09T16:41:30.589575+02:00
 
-    Returns: The corresponding time on the Splunk server
+    Returns (int): The corresponding timestamp on the Splunk server
 
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
@@ -1006,11 +1009,22 @@ def get_last_update_in_splunk_time(last_update):
     return date_to_timestamp(last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))) / 1000
 
 
-def get_remote_data_command(service):
-    notable_updated_data = []
+def get_remote_data_command(service, args, close_incident):
+    """ get-remote-data command: Returns an updated notable and error entry (if needed)
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable has been
+        closed on Splunk end
+
+    Returns:
+        GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
+
+    """
     entries = []
     updated_notable = {}
-    remote_args = GetRemoteDataArgs(demisto.args())
+    remote_args = GetRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
     notable_id = remote_args.remote_incident_id
     search = '|`incident_review` ' \
@@ -1022,12 +1036,9 @@ def get_remote_data_command(service):
     demisto.debug('Performing get-remote-data command with query: {}'.format(search))
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
-        notable_updated_data.append(parse_notable(item, to_dict=True))
+        updated_notable = parse_notable(item, to_dict=True)
 
-    if notable_updated_data:
-        updated_notable = notable_updated_data[-1]  # a notable can change several times, so taking the latest
-
-    if updated_notable.get('status') == '5' and demisto.params().get('close_incident'):
+    if updated_notable.get('status') == '5' and close_incident:
         demisto.debug('Closing incident related to notable {}'.format(notable_id))
         entries.append({
             'Type': EntryType.NOTE,
@@ -1045,9 +1056,19 @@ def get_remote_data_command(service):
     )
 
 
-def get_modified_remote_data_command(service):
+def get_modified_remote_data_command(service, args):
+    """ Gets the list of all notables ids that have change since a given time
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        args (dict): The command argumens
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
+
+    """
     modified_notable_ids = []
-    remote_args = GetModifiedRemoteDataArgs(demisto.args())
+    remote_args = GetModifiedRemoteDataArgs(args)
     last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
 
     search = '|`incident_review` ' \
@@ -1145,9 +1166,9 @@ def main():
     elif command == 'get-mapping-fields':
         get_mapping_fields_command(service)
     elif command == 'get-remote-data':
-        return_results(get_remote_data_command(service))
+        return_results(get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident')))
     elif command == 'get-modified-remote-data':
-        return_results(get_modified_remote_data_command(service))
+        return_results(get_modified_remote_data_command(service, demisto.args()))
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 

@@ -477,6 +477,18 @@ def test_create_mapping_dict():
     ('2021-02-09T16:41:30.589575+02:00', {}, '')
 ])
 def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
+    """ Tests the conversion of the Demisto server time into timestamp in Splunk Server time
+
+    Given:
+        - The last update time in the Demisto server
+        - The timezone in the Splunk Server
+    When:
+        Converting the time in the Demisto server into timestamp in Splunk Server time
+    Then:
+        - Conversion is correct
+        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
+
+    """
     mocker.patch.object(demisto, 'params', return_value=demisto_params)
     if demisto_params:
         assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp

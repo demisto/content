@@ -643,22 +643,21 @@ script:
         required: false
         secret: false
     deprecated: false
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Get data from a notable event. This method does not update
+      the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
   - arguments:
       - default: false
         description: Date string representing the local time. The incident is only returned
-          if it was modified after the last update time.
+          if it was modified after the last update time. E.g. 2021-02-09T16:41:30.589575+02:00
         isArray: false
         name: lastUpdate
         required: false
         secret: false
     deprecated: false
-    description: Get the list of incidents that were modified since the last update.
-      Note that this method is here for debugging purposes. get-modified-remote-data
-      is used as part of a Mirroring feature, which is available from version 6.1.
+    description: Get the list of notable events that were modified since the last update.
+      This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   dockerimage: demisto/splunksdk:1.0.0.11989
