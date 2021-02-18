@@ -508,7 +508,7 @@ def create_incident_custom_id(incident):
     incident_custom_id_hash.update(incident_custom_id)
     incident_custom_id_hash.digest()
     demisto.debug('length of incident new custom ID is: {}'.format(len(incident_custom_id)))
-    return incident_custom_id
+    return incident_custom_id_hash
 
 
 def extensive_log(message):
