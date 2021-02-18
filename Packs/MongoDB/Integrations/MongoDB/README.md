@@ -333,3 +333,72 @@ There is no context output for this command.
 ## Known Limitations
 ---
 The `test` button is trying to list collections. If the user has no `find` permission it will fail.
+### mongodb-pipeline-query
+***
+Searches for items by the specified JSON pipleline query.
+
+
+#### Base Command
+
+`mongodb-pipeline-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| collection | Name of the collection to query. | Required | 
+| pipeline | A JSON pipeline query to search by for in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]. | Required | 
+| limit | Limits the result returned from MongoDB. Default value - 50. Default is 50. | Optional | 
+| offset | Offset of the result returned from MongoDB. Default value - 0. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MongoDB.Entry._id | String | The ID of entry from the query. | 
+| MongoDB.Entry.collection | String | The collection of which the entry belongs to. | 
+
+
+#### Command Example
+```!mongodb-pipeline-query collection=test_collection pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"```
+
+#### Context Example
+```json
+{
+    "MongoDB": {
+        "Entry": [
+            {
+                "_id": "602e624e8be6cb93eb795695",
+                "collection": "test_collection",
+                "color": "red",
+                "title": "test_title",
+                "year": "2019"
+            },
+            {
+                "_id": "602e62598be6cb93eb795697",
+                "collection": "test_collection",
+                "color": "green",
+                "title": "test_title",
+                "year": "2020"
+            },
+            {
+                "_id": "602e62698be6cb93eb795699",
+                "collection": "test_collection",
+                "color": "yellow",
+                "title": "test_title",
+                "year": "2018"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total of 3 entries were found in MongoDB collection `test_collection` with pipeline: [{"$match": {"title": "test_title"}}]:
+>|_id|
+>|---|
+>| 602e624e8be6cb93eb795695 |
+>| 602e62598be6cb93eb795697 |
+>| 602e62698be6cb93eb795699 |
+

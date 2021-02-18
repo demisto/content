@@ -232,7 +232,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limits the result returned from MongoDB. Defualt value - 50.
+      description: Limits the result returned from MongoDB. Default value - 50.
       isArray: false
       name: limit
       required: false

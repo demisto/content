@@ -1,0 +1,1 @@
+!mongodb-pipeline-query collection=test_collection pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"
