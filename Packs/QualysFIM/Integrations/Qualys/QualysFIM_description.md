@@ -14,7 +14,7 @@ The Qualys API server URL that you should use for API requests depends on the pl
     Qualys Private Cloud Platform(Custom Platform): https://gateway.<customer_base_url>
 
 
-This integration was integrated and tested with version xx of qualys_fim
+This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
 ## Configure qualys_fim on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

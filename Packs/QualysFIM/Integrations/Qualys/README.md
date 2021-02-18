@@ -1,7 +1,7 @@
 #Qualys FIM: File Integrity Monitoring
 
 Log and track file changes across global IT systems.
-This integration was integrated and tested with version 1 of qualys_fim
+This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
 ## Configure qualys_fim on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

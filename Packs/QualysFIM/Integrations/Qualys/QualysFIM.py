@@ -496,7 +496,7 @@ def list_assets_command(client: Client, args: dict):
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    max_fetch: str,
+                    max_fetch: str, fetch_filter: str,
                     first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
@@ -504,8 +504,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         client (Client): Sophos Central Client.
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
-        first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
         max_fetch (str): Max number of alerts to fetch.
+        fetch_filter (str): filter incidents with Qualys syntax.
+        first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
+
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
@@ -514,7 +516,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp)
         last_fetch = last_fetch_date
     else:
-        first_fetch_date = dateparser.parse(first_fetch_time).replace(tzinfo=None)
+        first_fetch_date = dateparser.parse(first_fetch_time)
         last_fetch = first_fetch_date
 
     next_run = last_fetch
@@ -525,8 +527,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         raise ValueError('Max Fetch is limited to 200 incidents per fetch, '
                          'please choose lower number than 200')
 
+    if fetch_filter != '':
+        fetch_filter = f"and {fetch_filter}"
+
     params = {'pageSize': max_fetch,
-              'filter': f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}']",
+              'filter': f"createdBy.date: ['{last_fetch_timestamp_new}'..'{time_now}']"
+                        f" {fetch_filter}",
               'sort': '[{"createdBy.date":"asc"}]'}
     raw_response = client.incidents_list(params)
     incidents = []
@@ -589,7 +595,7 @@ def main():
 
     verify_certificate = not params.get('insecure', False)
 
-    first_fetch_time = params.get('first_fetch', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '7 days').strip()
 
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -601,6 +607,16 @@ def main():
             auth=(username, password),
             proxy=proxy)
 
+        commands = {
+            'qualys-fim-events-list': list_events_command,
+            'qualys-fim-event-get': get_event_command,
+            'qualys-fim-incidents-list': list_incidents_command,
+            'qualys-fim-incidents-get-events': list_incident_events_command,
+            'qualys-fim-incident-create': create_incident_command,
+            'qualys-fim-incident-approve': approve_incident_command,
+            'qualys-fim-assets-list': list_assets_command,
+        }
+
         if command == 'test-module':
             return_results(test_module(client))
 
@@ -609,31 +625,14 @@ def main():
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
+                fetch_filter=params.get('fetch_filter'),
                 max_fetch=params.get('max_fetch', 50))
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif command == 'qualys-fim-events-list':
-            return_results(list_events_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-event-get':
-            return_results(get_event_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-incidents-list':
-            return_results(list_incidents_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-incidents-get-events':
-            return_results(list_incident_events_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-incident-create':
-            return_results(create_incident_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-incident-approve':
-            return_results(approve_incident_command(client, demisto.args()))
-
-        elif command == 'qualys-fim-assets-list':
-            return_results(list_assets_command(client, demisto.args()))
+        elif command in commands:
+            return_results(commands[command](client, demisto.args()))
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')

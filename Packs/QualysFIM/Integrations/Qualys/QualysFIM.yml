@@ -20,14 +20,6 @@ configuration:
     Qualys Private Cloud Platform(Custom Platform): https://gateway.<customer_base_url>
   display: Qualys API Platform URL
   name: platform
-  options:
-  - QualysUSPlatform1
-  - QualysUSPlatform2
-  - QualysUSPlatform3
-  - QualysEUPlatform1
-  - QualysEUPlatform2
-  - QualysIndiaPlatform1
-  - QualysPrivateCloudPlatform
   required: true
   type: 0
 - display: Fetch incidents
@@ -131,7 +123,7 @@ script:
       description: Event full path.
       type: str
     - contextPath: QualysFIM.Events.dateTime
-      description: 'Date time the event occurred. '
+      description: Date time the event occurred.
       type: str
     - contextPath: QualysFIM.Events.severity
       description: Event severity.
