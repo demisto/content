@@ -7,24 +7,19 @@ fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 description: Analyze suspicious hashes, URLs, domains and IP addresses
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
-  name: Server
-  defaultvalue: https://www.virustotal.com/vtapi/v2/
-  type: 0
-  required: true
 - display: API Key
   name: APIKey
   defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
-  name: useproxy
-  defaultvalue: "true"
+  name: proxy
+  defaultvalue: ''
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ''
   type: 8
   required: false
 - display: File Threshold. Minimum number of positive results from VT scanners to
@@ -59,16 +54,28 @@ configuration:
 - display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors
     required to consider a domain, IP address, URL, or file as malicious. '
   name: preferredVendorsThreshold
-  defaultvalue: ""
+  defaultvalue: "5"
   type: 0
   required: false
-- display: Determines whether to return all results, which can number in the thousands.
-    If “true”, returns all results and overrides the _fullResponse_, _long_ arguments
-    (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments
-    in the command determines how results are returned.
-  name: fullResponseGlobal
-  defaultvalue: "false"
+- display: Whetever to enable score analyzing by Crowdsourced Yara Rules
+  name: crowdsourced_yara_rules_enabled
+  defaultvalue: 'true'
   type: 8
+  required: false
+- display: Crowdsourced Yara Rules Threshold
+  name: yaraRulesThreshold
+  defaultvalue: '1'
+  type: 0
+  required: false
+- display: Sigma and Intrusion Detection Rules Threshold.
+  name: SigmaIDSThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+- display: Domain Popularity Ranking Threshold
+  name: domain_popularity_ranking
+  defaultvalue: '10000'
+  type: 0
   required: false
 script:
   script: ''
@@ -80,8 +87,9 @@ script:
     - name: file
       required: true
       default: true
-      description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
+      description: Hash of the file to query. Supports MD5, SHA1,
         and SHA256.
+      isArray: false
     - name: long
       auto: PREDEFINED
       predefined:
@@ -228,32 +236,6 @@ script:
       description: A comma-seperated list of URLs to check. This command will not
         work properly on URLs containing commas.
       isArray: true
-    - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format.
-      defaultValue: "10"
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return the full response for the detected URLs.
-      defaultValue: "false"
-    - name: threshold
-      description: If the number of positives is higher than the threshold, the URL
-        will be considered malicious. If the threshold is not specified, the default
-        URL threshold, as configured in the instance settings, will be used.
-    - name: submitWait
-      description: Time (in seconds) to wait if the URL does not exist and is submitted
-        for scanning. Default is "0".
-      defaultValue: "0"
-    - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
-      defaultValue: "60"
-    - name: retries
-      description: Number of retries for API rate limit. Default is "0".
-      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found.
@@ -370,6 +352,17 @@ script:
         domain.
     description: Checks the reputation of a domain.
   - name: file-scan
+    deprecated: true
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit.
+    - name: uploadURL
+      description: Private API extension. Special upload URL for files larger than
+        32 MB.
+    description: Submits a file for scanning.
+  - name: vt-file-scan
     arguments:
     - name: entryID
       required: true
@@ -386,6 +379,15 @@ script:
       type: string
     description: Submits a file for scanning.
   - name: file-rescan
+    deprecated: true
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to re-scan. Supports MD5, SHA1, and SHA256.
+    description: Re-scans an already submitted file. This avoids having to upload
+      the file again.
+  - name: vt-file-rescan
     arguments:
     - name: file
       required: true
@@ -399,7 +401,7 @@ script:
       type: string
     description: Re-scans an already submitted file. This avoids having to upload
       the file again.
-  - name: url-scan
+  - name: vt-url-scan
     arguments:
     - name: url
       required: true
@@ -409,12 +411,33 @@ script:
     - contextPath: vtScanID
       description: Scan IDs of the submitted URLs.
     description: Scans a specified URL.
+  - name: url-scan
+    deprecated: true
+    arguments:
+      - name: url
+        required: true
+        default: true
+        description: The URL to scan.
+    outputs:
+      - contextPath: vtScanID
+        description: Scan IDs of the submitted URLs.
+    description: Scans a specified URL.
   - name: vt-comments-add
     arguments:
     - name: resource
       required: true
       default: true
-      description: The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting.
+      description: The file hash, url, ip or domain you're commenting on.
+    - name: resource_type
+      required: true
+      default: true
+      description: The type of the resource you're commenting one.
+      auto: PREDEFINED
+      predefined:
+        - ip
+        - url
+        - domain
+        - hash
     - name: comment
       required: true
       description: 'The actual review, which you can tag by using the "#" twitter-like
@@ -434,10 +457,55 @@ script:
       default: true
       description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving
         comments.
+    - name: resource_type
+      required: true
+      default: true
+      description: The type of the resource you're commenting one.
+      auto: PREDEFINED
+      predefined:
+        - ip
+        - url
+        - domain
+        - hash
     - name: limit
       description: Maximum comments to fetch
       defaultValue: 10
-    description: Private API. Retrieves comments for a given resource.
+    description: Retrieves comments for a given resource.
+  - name: vt-comments-get-by-id
+    arguments:
+      - name: id
+        required: true
+        default: true
+        description: The comment's id. Can be retrieved from vt-comments-get.
+    description: Retrieves a comment by comment ID.
+  - name: vt-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: 'This endpoint searches any of the following: A file hash, A URL,
+        A domain, A IP address, Tag comments.'
+  - name: vt-file-sandbox-report
+    arguments:
+      - name: file
+        required: true
+        default: true
+        description: Hash of the file to query. Supports MD5, SHA1,
+          and SHA256.
+      - name: limit
+        description: Maximum results to fetch.
+        defaultValue: 10
+    description: Retrives a behavioural relationship of the given file hash.
+  - name: vt-ip-passive-dns-data
+    arguments:
+      - name: ip
+        required: true
+        default: true
+        description: IP to get its DNS data.
+      - name: limit
+        description: Maximum results to fetch.
+        defaultValue: 10
+    description: Retrives resolutions of the given ip.
   runonce: false
   dockerimage: demisto/python3:3.9.1.15759
 tests:
