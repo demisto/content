@@ -34,7 +34,6 @@ def test_module() -> str:
     try:
         SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') \
             else demisto.params().get('server')
-        SERVER = demisto.params().get('server')
         CREDENTIALS = demisto.params().get('apikey')
         # AUTH_HEADERS = {'Content-Type': 'application/json'}
 
