@@ -279,7 +279,7 @@ def test_module(client):
     Tries to run list_alerts, returning OK if integration is working.
     """
 
-    result = client.list_alerts()
+    result = client.list_alerts(5, "createdAt")
     if result:
         return 'ok'
     else:
