@@ -275,7 +275,7 @@ script:
   - deprecated: false
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
-    name: ocrowdstrike-reset-fetch-indicators
+    name: crowdstrike-reset-fetch-indicators
   dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
