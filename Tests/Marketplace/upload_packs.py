@@ -597,6 +597,8 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
             index_json = json.load(index_file)
+            logging.debug("print public index")
+            logging.debug(index_json)
 
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
