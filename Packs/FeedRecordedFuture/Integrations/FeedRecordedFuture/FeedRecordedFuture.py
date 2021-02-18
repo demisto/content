@@ -155,10 +155,20 @@ class Client(BaseClient):
             with open("response.txt", "w") as f:
                 f.write(response.text)
 
-        file_stream = open("response.txt", 'rt')
+        file_stream = open("response.txt", 'r')
 
         while True:
-            # Creating feeds batch
+            feed_batch = []
+            for line in file_stream:
+                feed_batch.append(line.strip())
+
+                if len(feed_batch) == 20:
+                    yield csv.DictReader(feed_batch)
+                    break
+
+            if not feed_batch:
+                return
+
             feed_batch = [feed for _, feed in zip(range(BATCH_SIZE), file_stream) if feed]
 
             if not feed_batch:
