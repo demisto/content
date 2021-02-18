@@ -20,7 +20,7 @@ XSOHR_TYPES_TO_OPENCTI = {
     'file-md5': "StixFile",
     'file-sha1': "StixFile",
     'file-sha256': "StixFile",
-    'file': 'File',
+    'file': 'StixFile',
     'host': "X-OpenCTI-Hostname",
     'ip': "IPv4-Addr",
     'ipv6': "IPv6-Addr",
