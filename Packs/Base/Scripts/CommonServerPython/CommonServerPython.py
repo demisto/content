@@ -1116,6 +1116,9 @@ class IntegrationLogger(object):
         for (k, v) in dict_obj.items():
             if isinstance(v, dict):  # credentials object case. recurse into the object
                 self._iter_sensistive_dict_obj(v, sensitive_params)
+                if v.get('identifier') and v.get('password'):  # also add basic auth case
+                    basic_auth = '{}:{}'.format(v.get('identifier'), v.get('password'))
+                    self.add_replace_strs(b64_encode(basic_auth))
             elif isinstance(v, STRING_OBJ_TYPES):
                 k_lower = k.lower()
                 for p in sensitive_params:
@@ -5492,6 +5495,9 @@ if 'requests' in sys.modules:
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                # in case the "Trust any certificate" is already checked
+                if not self._verify:
+                    raise
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
@@ -5888,7 +5894,6 @@ class GetRemoteDataResponse:
         :rtype: ``list``
         """
         if self.mirrored_object:
-            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
 
 

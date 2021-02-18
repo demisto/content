@@ -120,6 +120,7 @@ LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phi
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
 LABEL_FIELD_KEYWORDS = ['classifi', 'type', 'resolution', 'reason', 'categor', 'disposition', 'severity', 'malicious',
                         'tag', 'close', 'phish', 'phishing']
+LABEL_FIELD_BLACKLIST_KEYWORDS = ['attach', 'recipient']
 
 '''
 Define html tags to count
@@ -167,7 +168,7 @@ def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
                   sum(isinstance(x, str) or isinstance(x, bool) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
     candidates = [col for col in candidates if col not in LABEL_FIELDS_BLACKLIST]
-
+    candidates = [col for col in candidates if not any(w in col.lower() for w in LABEL_FIELD_BLACKLIST_KEYWORDS)]
     candidate_to_values = {col: incidents_df[col].unique() for col in candidates}
     candidate_to_values = {col: values for col, values in candidate_to_values.items() if
                            sum(not (isinstance(v, str) or isinstance(v, bool)) for v in values) <= 1}
@@ -335,9 +336,10 @@ def get_header_value(email_headers, header_name, index=0, ignore_case=False):
     if ignore_case:
         header_name = header_name.lower()
         headers_with_name = [header_dict for header_dict in email_headers if
-                             header_dict['headername'].lower() == header_name]
+                             'headername' in header_dict and header_dict['headername'].lower() == header_name]
     else:
-        headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'] == header_name]
+        headers_with_name = [header_dict for header_dict in email_headers if
+                             'headername' in header_dict and header_dict['headername'] == header_name]
     if len(headers_with_name) == 0:
         return None
     else:
@@ -542,13 +544,13 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
 def get_closing_fields_from_incident(row):
     if 'owner' in row:
         owner = row['owner']
-        if owner not in ['admin', '']:
+        if owner not in ['admin', ''] and isinstance(owner, str):
             owner = hash_value(owner)
     else:
         owner = float('nan')
     if 'closingUserId' in row:
         closing_user = row['closingUserId']
-        if closing_user not in ['admin', '', 'DBot']:
+        if closing_user not in ['admin', '', 'DBot'] and isinstance(closing_user, str):
             closing_user = hash_value(closing_user)
     else:
         closing_user = float('nan')
@@ -593,7 +595,8 @@ def extract_features_from_incident(row, label_fields):
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
     email_subject = row[EMAIL_SUBJECT_FIELD] if EMAIL_SUBJECT_FIELD in row else ''
     email_html = row[EMAIL_HTML_FIELD] if EMAIL_HTML_FIELD in row and isinstance(row[EMAIL_HTML_FIELD], str) else ''
-    email_headers = row[EMAIL_HEADERS_FIELD] if EMAIL_HEADERS_FIELD in row else {}
+    email_headers = row[EMAIL_HEADERS_FIELD] if \
+        EMAIL_HEADERS_FIELD in row and isinstance(row[EMAIL_HEADERS_FIELD], list) else []
     email_attachments = row[EMAIL_ATTACHMENT_FIELD] if EMAIL_ATTACHMENT_FIELD in row else []
     email_attachments = email_attachments if email_attachments is not None else []
     if isinstance(email_html, float):
@@ -644,8 +647,14 @@ def extract_features_from_incident(row, label_fields):
             res[label] = row[label]
         else:
             res[label] = float('nan')
-    res.update(get_closing_fields_from_incident(row))
-    res.update(find_forwarded_features(email_subject, email_body))
+    try:
+        res.update(get_closing_fields_from_incident(row))
+    except Exception:
+        pass
+    try:
+        res.update(find_forwarded_features(email_subject, email_body))
+    except Exception:
+        pass
 
     return res
 
@@ -704,7 +713,12 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         y.append({'field_name': label,
                   'rank': '#{}'.format(i + 1)})
     custom_fields = [col for col in incidents_df.columns if col not in LABEL_FIELDS_BLACKLIST]
-    custom_fields_dict = {col: float(incidents_df[col].nunique() / n_incidents) for col in custom_fields}
+    custom_fields_dict = {}
+    for col in custom_fields:
+        try:
+            custom_fields_dict[col] = float(incidents_df[col].nunique() / n_incidents)
+        except Exception:
+            pass
     subject_field_exists = EMAIL_SUBJECT_FIELD in incidents_df.columns
     body_field_exists = EMAIL_BODY_FIELD in incidents_df.columns
     html_field_exists = EMAIL_HTML_FIELD in incidents_df.columns
@@ -784,7 +798,7 @@ def determine_incidents_args(input_args, default_args):
         get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
         get_incidents_by_query_args['query'] = 'status:Closed'
-    for arg in ['limit', 'fromDate', 'incidentTypes']:
+    for arg in ['limit', 'fromDate', 'incidentTypes', 'toDate']:
         if arg in input_args:
             get_incidents_by_query_args[arg] = input_args[arg]
         elif arg in default_args:

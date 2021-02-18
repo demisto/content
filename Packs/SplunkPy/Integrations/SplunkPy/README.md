@@ -38,6 +38,7 @@ This integration was integrated and tested with Splunk v7.2.
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
+| use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset & Identity | False |
 | num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
 | enrichment_timeout | The maximal time for an enrichment to be processed. Default to 5min. When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False
@@ -124,6 +125,13 @@ To use this feature, you must set several integration instance parameters:
  - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
  - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
+
+### Mapping Splunk CIM fields using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based on Splunk CIM.
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

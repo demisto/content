@@ -20,13 +20,14 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
+
+from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
-IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 
@@ -554,6 +555,50 @@ class Pack(object):
         else:
             return ""
 
+    @staticmethod
+    def _get_search_rank(tags, certification, content_items):
+        """ Returns pack search rank.
+
+        The initial value is 0
+        In case the pack has the tag Featured, its search rank will increase by 10
+        In case the pack was released in the last 30 days, its search rank will increase by 10
+        In case the pack is certified, its search rank will increase by 10
+        In case all the pack's integration are deprecated and there is at least 1 integration in the pack,
+        the pack's search rank will decrease by 50
+
+        Args:
+            tags (str): the pack's tags.
+            certification (str): certification value from pack_metadata, if exists.
+            content_items (dict): all the pack's content items, including integrations info
+
+        Returns:
+            str: certification value
+        """
+        search_rank = 0
+        all_deprecated = False
+
+        if 'Featured' in tags:
+            search_rank += 10
+        if 'New' in tags:
+            search_rank += 10
+        if certification == Metadata.CERTIFIED:
+            search_rank += 10
+
+        if content_items:
+            integrations = content_items.get("integration")
+            if isinstance(integrations, list):
+                for integration in integrations:
+                    if 'deprecated' in integration.get('name').lower():
+                        all_deprecated = True
+                    else:
+                        all_deprecated = False
+                        break
+
+        if all_deprecated:
+            search_rank -= 50
+
+        return search_rank
+
     def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
                              is_feed_pack=False):
@@ -609,8 +654,18 @@ class Pack(object):
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         if is_feed_pack and 'TIM' not in pack_metadata['tags']:
             pack_metadata['tags'].append('TIM')
+        if self._create_date:
+            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
+            if days_since_creation < 30 and 'New' not in pack_metadata['tags']:
+                pack_metadata['tags'].append('New')
+            if days_since_creation > 30 and 'New' in pack_metadata['tags']:
+                pack_metadata['tags'].remove('New')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
+        pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
+                                                            certification=pack_metadata['certification'],
+                                                            content_items=pack_content_items)
+
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
@@ -770,7 +825,7 @@ class Pack(object):
 
     @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
-                     private_artifacts_dir):
+                     private_artifacts_dir, secondary_encryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
 
         Args:
@@ -779,24 +834,32 @@ class Pack(object):
             encryption_key (str): The key which we can decrypt the pack with.
             extract_destination_path (str): The path in which the pack resides.
             private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+            secondary_encryption_key (str) : A second key which we can decrypt the pack with.
         """
         try:
             current_working_dir = os.getcwd()
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
-            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
-            subprocess.call('chmod +x ./encryptor', shell=True)
-            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
-                           f'{encryption_key}"'
 
+            subprocess.call('chmod +x ./encryptor', shell=True)
+
+            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
             subprocess.call(full_command, shell=True)
+
+            secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
+            full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
+                f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+            subprocess.call(full_command_with_secondary_encryption, shell=True)
+
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
             if os.path.exists(new_artefacts):
                 shutil.rmtree(new_artefacts)
             os.mkdir(path=new_artefacts)
             shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
             shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
+            shutil.copy(secondary_encryption_key_output_file, os.path.join(new_artefacts, f'{pack_name}.enc2.zip'))
             os.chdir(current_working_dir)
         except (subprocess.CalledProcessError, shutil.Error) as error:
             print(f"Error while trying to encrypt pack. {error}")
@@ -817,14 +880,14 @@ class Pack(object):
             os.mkdir(extract_destination_path)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
-            new_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
-            shutil.copy(encrypted_zip_pack_path, new_encrypted_pack_path)
+            secondary_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
+            shutil.copy(encrypted_zip_pack_path, secondary_encrypted_pack_path)
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
 
             subprocess.call('chmod +x ./decryptor', shell=True)
-            full_command = f'./decryptor {new_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
+            full_command = f'./decryptor {secondary_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = process.communicate()
             shutil.rmtree(extract_destination_path)
@@ -853,7 +916,7 @@ class Pack(object):
         return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
-                 private_artifacts_dir='private_artifacts'):
+                 private_artifacts_dir='private_artifacts', secondary_encryption_key=""):
         """ Zips pack folder.
 
         Returns:
@@ -873,7 +936,7 @@ class Pack(object):
 
             if encryption_key:
                 self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
-                                  private_artifacts_dir)
+                                  private_artifacts_dir, secondary_encryption_key)
             task_status = True
             logging.success(f"Finished zipping {self._pack_name} pack.")
         except Exception:
@@ -972,13 +1035,25 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
+                secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
+                secondary_encryption_key_bucket_path = os.path.join(version_pack_path,
+                                                                    secondary_encryption_key_pack_name)
+
                 #  In some cases the path given is actually a zip.
                 if pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
-                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
-                shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}.enc2')
+
+                blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
+                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
+                    blob.upload_from_file(pack_zip)
+
+                print(f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(secondary_encryption_key_artifacts_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
@@ -1229,6 +1304,11 @@ class Pack(object):
                 changelog = {
                     Pack.PACK_INITIAL_VERSION: version_changelog
                 }
+            elif self._hidden:
+                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
+                task_status = True
+                not_updated_build = True
+                return task_status, not_updated_build
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
@@ -1536,20 +1616,6 @@ class Pack(object):
         finally:
             return task_status
 
-    def _get_changelog(self, index_folder_path):
-        """ Gets the pack changelog data.
-        Args:
-            index_folder_path (str): downloaded index folder directory path.
-        Returns:
-            dict: Get the changelog from downloaded index
-        """
-        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
-        changelog = {}
-        if os.path.exists(changelog_index_path):
-            with open(changelog_index_path, "r") as changelog_file:
-                changelog = json.load(changelog_file)
-        return changelog
-
     def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
         Args:
@@ -1557,15 +1623,16 @@ class Pack(object):
         Returns:
             datetime: Pack created date.
         """
-        earliest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        changelog = self._get_changelog(index_folder_path)
+        created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        metadata = load_json(os.path.join(index_folder_path, self._pack_name, Pack.METADATA))
 
-        if changelog:
-            packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
-            initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
-            earliest_changelog_released_date = initial_changelog_version.get('released')
+        if metadata:
+            if metadata.get('created'):
+                created_time = metadata.get('created')
+            else:
+                raise Exception(f'The metadata file of the {self._pack_name} pack does not contain "created" time')
 
-        return earliest_changelog_released_date
+        return created_time
 
     def _get_pack_update_date(self, index_folder_path, pack_was_modified):
         """ Gets the pack update date.
@@ -1576,7 +1643,7 @@ class Pack(object):
             datetime: Pack update date.
         """
         latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        changelog = self._get_changelog(index_folder_path)
+        changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
         if changelog and not pack_was_modified:
             packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
