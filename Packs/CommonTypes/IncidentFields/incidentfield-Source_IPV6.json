@@ -1,0 +1,49 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Qradar Generic"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "sourceipv6",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "The source IPV6 address.",
+    "editForm": true,
+    "extractIndicatorTypesIDs": [],
+    "fieldCalcScript": "",
+    "fromServerVersion": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourceipv6",
+    "isExtractingSpecificIndicatorTypes": false,
+    "isReadOnly": false,
+    "itemVersion": "",
+    "locked": false,
+    "name": "Source IPV6",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "toServerVersion": "",
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

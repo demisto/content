@@ -1,0 +1,66 @@
+category: Network Security
+commonfields:
+  id: Palo Alto Networks Enterprise DLP
+  version: -1
+configuration:
+- additionalinfo: Access token generated in the Enterprise DLP UI
+  display: Access Token
+  name: access_token
+  required: true
+  type: 4
+- additionalinfo: Refresh token generated in the Enterprise DLP UI
+  display: Refresh Token
+  name: refresh_token
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Palo Alto Networks Enterprise DLP discovers and protects company data
+  across every data channel and repository. Integrated Enterprise DLP enables data
+  protection and compliance everywhere without complexity.
+display: Palo Alto Networks Enterprise DLP
+name: Palo Alto Networks Enterprise DLP
+script:
+  commands:
+  - name: pan-dlp-get-report
+    arguments:
+    - name: report_id
+      required: true
+      description: DLP report ID.
+    - name: fetch_snippets
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", will include snippets with the reports. Default is "false". 
+      defaultValue: "false"
+    outputs:
+    - contextPath: DLP.Report.DataProfile
+      description: Data profile name.
+    - contextPath: DLP.Report.DataPatternMatches.DataPatternName
+      description: DLP data pattern name.
+    - contextPath: DLP.Report.DataPatternMatches.Detections
+      description: Snippets of DLP detections.
+    - contextPath: DLP.Report.DataPatternMatches.HighConfidenceFrequency
+      description: Number of occurrences at High confidence.
+    - contextPath: DLP.Report.DataPatternMatches.MediumConfidenceFrequency
+      description: Number of occurrences at Low confidence.
+    - contextPath: DLP.Report.DataPatternMatches.LowConfidenceFrequency
+      description: Number of occurrences at Medium confidence.
+    description: Fetches DLP reports associated with a report ID.
+  dockerimage: demisto/python3:3.8.6.13358
+  isFetchSamples: true
+  longRunning: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- Palo_Alto_Networks_Enterprise_DLP - Test

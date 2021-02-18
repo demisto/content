@@ -2,7 +2,7 @@
     "name": "Cortex Data Lake",
     "description": "Palo Alto Networks Cortex Data Lake provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR",
     "support": "xsoar",
-    "currentVersion": "1.2.7",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

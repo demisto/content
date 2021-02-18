@@ -56,7 +56,7 @@ def get_timestamp_first_fetch(last_fetch):
     Returns:
         (num).The formatted timestamp
     """
-    # this theorticly shouldn't happen but just in case
+    # this theoretically shouldn't happen but just in case
     if str(last_fetch).isdigit():
         return int(last_fetch)
 
@@ -268,7 +268,7 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es):
+def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
@@ -286,6 +286,23 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+
+
+def test_general_query(es):
+    """Test executing query to all available indexes.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
+    try:
+        query = QueryString(query='*')
+        search = Search(using=es, index='*').query(query)[0:1]
+        response = search.execute().to_dict()
+        get_total_results(response)
+
+    except NotFoundError as e:
+        return_error("Failed executing general search command - please check the Server URL and port number "
+                     "and the supplied credentials.\nError message: {}.".format(str(e)))
 
 
 def test_time_field_query(es):
@@ -395,16 +412,17 @@ def test_func(proxies):
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+    # build general Elasticsearch class
+    es = elasticsearch_builder(proxies)
+
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
 
         try:
-            # build general Elasticsearch class
-            es = elasticsearch_builder(proxies)
 
             # test if FETCH_INDEX exists
-            test_general_query(es)
+            test_query_to_fetch_incident_index(es)
 
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
@@ -429,6 +447,10 @@ def test_func(proxies):
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
 
+    else:
+        # check that we can reach any indexes in the supplied server URL
+        test_general_query(es)
+
     demisto.results('ok')
 
 
@@ -442,8 +464,9 @@ def incident_label_maker(source):
         (list).The labels.
     """
     labels = []
-    for field in source.keys():
-        labels.append({'type': str(field), 'value': str(source.get(field))})
+    for field, value in source.items():
+        encoded_value = value if isinstance(value, str) else json.dumps(value)
+        labels.append({'type': str(field), 'value': encoded_value})
 
     return labels
 

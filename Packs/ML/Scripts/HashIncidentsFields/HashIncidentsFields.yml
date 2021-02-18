@@ -123,7 +123,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.8.6.12176
 tests:
 - hashIncidentFields-test
 fromversion: 5.0.0

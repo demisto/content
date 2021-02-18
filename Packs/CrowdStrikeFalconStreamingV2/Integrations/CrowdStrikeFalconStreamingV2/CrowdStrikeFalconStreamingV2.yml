@@ -3,8 +3,8 @@ commonfields:
   id: CrowdStrike Falcon Streaming v2
   version: -1
 configuration:
-- display: Cloud Base URL (e.g., https://api.crowdstrike.com)
-  defaultvalue: https://api.crowdstrike.com
+- defaultvalue: https://api.crowdstrike.com
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
   hidden: false
   name: base_url
   required: true
@@ -20,22 +20,23 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
-    as each integration instance needs a unique application ID.
+    as each integration instance needs a unique application ID. Must be a max. of
+    32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   hidden: false
   name: app_id
   required: false
   type: 0
-- defaultvalue: true
+- defaultvalue: 'true'
   display: Long running instance
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  hidden: true
-- display: Event type to fetch
+- defaultvalue: DetectionSummaryEvent
+  display: Event type to fetch
   name: event_type
-  defaultvalue: DetectionSummaryEvent
   options:
   - DetectionSummaryEvent
   - AuthActivityAuditEvent
@@ -45,7 +46,7 @@ configuration:
   - RemoteResponseSessionEndEvent
   required: false
   type: 16
-- defaultvalue: 0
+- defaultvalue: '0'
   display: Offset to fetch events from
   hidden: false
   name: offset
@@ -60,9 +61,19 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in
-    the mapping wizard. In order to view sample events, you need to enable events storage and
-    run the crowdstrike-falcon-streaming-get-sample-events command.
+- additionalinfo: The maximal number of seconds to wait between reads from the stream.
+    To disable the timeout, set to 0.
+  defaultvalue: '120'
+  display: Stream client read timeout
+  hidden: false
+  name: sock_read_timeout
+  required: false
+  type: 0
+- additionalinfo: Because this is a push-based streaming integration, it cannot fetch
+    sample events in the mapping wizard. In order to view sample events, you need
+    to enable events storage and run the crowdstrike-falcon-streaming-get-sample-events
+    command. After you finish mapping, it is recommended to turn off the sample events
+    storage to reduce performance overhead.
   display: Store sample events for mapping
   hidden: false
   name: store_samples
@@ -85,18 +96,17 @@ script:
     description: Returns a list of sample events fetched from the stream.
     execution: false
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/aiohttp:1.0.0.12423
+  dockerimage: demisto/aiohttp:1.0.0.13810
   feed: false
   isfetch: false
   longRunning: true
   longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-  isFetchSamples: true
-fromversion: 5.0.0
 tests:
-  - No test
-defaultclassifier: crowdstrike-streaming-api
+- No test
 defaultmapperin: crowdstrike-streaming-api-mapper
+defaultclassifier: crowdstrike-streaming-api
+fromversion: 5.0.0

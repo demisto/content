@@ -7,11 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: be1d27e9-f41e-4832-896a-843a3dd70d83
+    taskid: 40d9dc3f-6965-4daf-896a-e29adcd6192e
     type: start
     task:
-      elasticcommonfields: {}
-      id: be1d27e9-f41e-4832-896a-843a3dd70d83
+      id: 40d9dc3f-6965-4daf-896a-e29adcd6192e
       version: -1
       name: ""
       iscommand: false
@@ -34,11 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5a4a79eb-4ac5-427f-8545-0c73bab1ebe0
+    taskid: e3844421-bfe3-4e07-84d9-ad5a3e6415d4
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 5a4a79eb-4ac5-427f-8545-0c73bab1ebe0
+      id: e3844421-bfe3-4e07-84d9-ad5a3e6415d4
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -66,11 +64,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: f90be944-42c3-4d24-8050-0b3fe16dc635
+    taskid: c7b7ffc3-ecde-4153-8ad9-c9abf4e91db9
     type: regular
     task:
-      elasticcommonfields: {}
-      id: f90be944-42c3-4d24-8050-0b3fe16dc635
+      id: c7b7ffc3-ecde-4153-8ad9-c9abf4e91db9
       version: -1
       name: alienvaultotx-get-indicators
       script: '|||alienvaultotx-get-indicators'
@@ -81,6 +78,8 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      begin_date:
+        simple: 5 years
       extend-context:
         simple: Indicator=.[0]
       limit:
@@ -100,11 +99,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 3328897c-8f6f-4481-883e-ae94186c788c
+    taskid: 99699b53-f2cf-4a83-8edd-2a4e8fa7c792
     type: title
     task:
-      elasticcommonfields: {}
-      id: 3328897c-8f6f-4481-883e-ae94186c788c
+      id: 99699b53-f2cf-4a83-8edd-2a4e8fa7c792
       version: -1
       name: Test Done
       type: title
@@ -125,11 +123,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 52a6912a-9e56-4bb7-8a72-e1d16aa30727
+    taskid: 84a97e80-81af-4b49-8cf7-31997243633b
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 52a6912a-9e56-4bb7-8a72-e1d16aa30727
+      id: 84a97e80-81af-4b49-8cf7-31997243633b
       version: -1
       name: Test indicators
       type: condition

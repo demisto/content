@@ -1,0 +1,28 @@
+{
+  "common.wifi_mac_address": "",
+  "common.noncompliance_reasons": [
+    "DEVICE_ADMIN_DEACTIVE"
+  ],
+  "ios.iPhone UDID": "",
+  "common.device_is_compromised": false,
+  "common.SerialNumber": "",
+  "common.mdm_managed": false,
+  "common.model": "Pixel",
+  "common.os_version": "10.0",
+  "common.status": "ACTIVE",
+  "common.imei": "",
+  "common.platform": "Android",
+  "common.security_state": "Ok",
+  "user.display_name": "*****",
+  "common.last_connected_at": "2020-11-09T07:38:22.000Z",
+  "common.uuid": "",
+  "common.quarantined": false,
+  "common.id": 3,
+  "common.imsi": "*****",
+  "common.owner": "COMPANY",
+  "user.email_address": "*****",
+  "common.manufacturer": "Google",
+  "common.compliant": false,
+  "user.user_id": "*****",
+  "common.registration_date": "2020-10-29T14:11:39.000Z"
+}

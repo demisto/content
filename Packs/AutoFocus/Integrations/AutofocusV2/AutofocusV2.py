@@ -10,6 +10,7 @@ import re
 import json
 import requests
 import socket
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -506,7 +507,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
 def parse_coverage_sub_categories(coverage_data):
     new_coverage = {}
     for sub_category_name, sub_category_data in coverage_data.items():
-        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
+        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS and isinstance(sub_category_data, dict):
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
                 'display_name')  # type: ignore
@@ -1120,12 +1121,21 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('time_after')
+    to_time = args.get('time_before')
+    time_range = args.get('time_range')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+
+    if time_range:
+        if from_time or to_time:
+            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
+                         "arguments.")
+        else:
+            from_time, to_time = time_range.split(',')
+
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
@@ -1307,10 +1317,7 @@ def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
-    ip_indicators = []
-    outputs = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
@@ -1346,21 +1353,14 @@ def search_ip_command(ip):
         else:
             md = tableToMarkdown(table_name, autofocus_ip_output)
 
-        human_readable += md
-
-        ip_indicators.append(ip)
-        outputs.append(autofocus_ip_output)
-        raw_response.append(raw_res)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.IP',
-        outputs_key_field='IndicatorValue',
-        outputs=outputs,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=ip_indicators
-    )
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.IP',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_ip_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=ip
+        ))
 
     return command_results
 
@@ -1369,72 +1369,65 @@ def search_domain_command(args):
     indicator_type = 'Domain'
     domain_name_list = argToList(args.get('domain'))
 
-    domain_indicator_list = []
-    autofocus_domain_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
         indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = Common.DBotScore(
-            indicator=domain_name,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        domain = Common.Domain(
-            domain=domain_name,
-            dbot_score=dbot_score,
-            creation_date=indicator.get('whoisDomainCreationDate'),
-            expiration_date=indicator.get('whoisDomainExpireDate'),
-            updated_date=indicator.get('whoisDomainUpdateDate'),
-
-            admin_email=indicator.get('whoisAdminEmail'),
-            admin_name=indicator.get('whoisAdminName'),
-
-            registrar_name=indicator.get('whoisRegistrar'),
-
-            registrant_name=indicator.get('whoisRegistrant')
-        )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        # create human readable markdown for ip
-        tags = autofocus_domain_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
-        if tags:
-            indicators_data = autofocus_domain_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+        if indicator:
+            raw_tags = raw_res.get('tags')
+            score = calculate_dbot_score(indicator, indicator_type)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=score
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score,
+                creation_date=indicator.get('whoisDomainCreationDate'),
+                expiration_date=indicator.get('whoisDomainExpireDate'),
+                updated_date=indicator.get('whoisDomainUpdateDate'),
+                admin_email=indicator.get('whoisAdminEmail'),
+                admin_name=indicator.get('whoisAdminName'),
+                registrar_name=indicator.get('whoisRegistrar'),
+                registrant_name=indicator.get('whoisRegistrant')
+            )
+            autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            # create human readable markdown for ip
+            tags = autofocus_domain_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
+            if tags:
+                indicators_data = autofocus_domain_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_domain_output)
         else:
-            md = tableToMarkdown(table_name, autofocus_domain_output)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=0
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score
+            )
+            md = f'### The Domain indicator: {domain_name} was not found in AutoFocus'
+            autofocus_domain_output = {'IndicatorValue': domain_name}
 
-        human_readable += md
-
-        domain_indicator_list.append(domain)
-        raw_response.append(raw_res)
-        autofocus_domain_list.append(autofocus_domain_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.Domain',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_domain_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=domain_indicator_list
-    )
-
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.Domain',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_domain_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=domain
+        ))
     return command_results
 
 
@@ -1442,10 +1435,7 @@ def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
 
-    url_indicator_list = []
-    autofocus_url_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for url_name in url_list:
 
@@ -1482,21 +1472,15 @@ def search_url_command(url):
         else:
             md = tableToMarkdown(table_name, autofocus_url_output)
 
-        human_readable += md
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.URL',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_url_output,
 
-        url_indicator_list.append(url)
-        raw_response.append(raw_res)
-        autofocus_url_list.append(autofocus_url_output)
-
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.URL',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_url_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=url_indicator_list
-    )
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=url
+        ))
 
     return command_results
 
@@ -1505,13 +1489,10 @@ def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
 
-    file_indicator_list = []
-    autofocus_file_list = []
-    raw_response = []
-    human_readable = ''
+    command_results = []
 
     for sha256 in file_list:
-        raw_res = search_indicator('sha256', sha256.lower())
+        raw_res = search_indicator('filehash', sha256.lower())
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1526,11 +1507,6 @@ def search_file_command(file):
             score=score
         )
 
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1543,23 +1519,36 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
-        human_readable += md
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            tags=get_tags_for_generic_context(tags),
+        )
 
-        file_indicator_list.append(file)
-        raw_response.append(raw_res)
-        autofocus_file_list.append(autofocus_file_output)
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.File',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_file_output,
 
-    command_results = CommandResults(
-        outputs_prefix='AutoFocus.File',
-        outputs_key_field='IndicatorValue',
-        outputs=autofocus_file_list,
-
-        readable_output=human_readable,
-        raw_response=raw_response,
-        indicators=file_indicator_list
-    )
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=file
+        ))
 
     return command_results
+
+
+def get_tags_for_generic_context(tags: Optional[list]):
+    if not tags:
+        return None
+    results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    for item in tags:
+        generic_context_tags = {key: item.get(key) for key in keys}
+        generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
 
 
 def get_export_list_command(args):
@@ -1691,7 +1680,7 @@ def main():
             return_results(search_file_command(**args))
 
     except Exception as e:
-        return_error(f'Unexpected error: {e}')
+        return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

@@ -1,0 +1,84 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps an Okta user data to a User Profile data.",
+	"id": "User Profile - Okta (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"City": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Cost Center": {
+					"complex": null,
+					"simple": "costCenter"
+				},
+				"Department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"Display Name": {
+					"complex": null,
+					"simple": "displayName"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"Employee ID": {
+					"complex": null,
+					"simple": "employeeNumber"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "firstName"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "lastName"
+				},
+				"Manager Name": {
+					"complex": null,
+					"simple": "manager"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "mobilePhone"
+				},
+				"Organization": {
+					"complex": null,
+					"simple": "organization"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Street Address": {
+					"complex": null,
+					"simple": "streetAddress"
+				},
+				"Title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Employee Type": {
+					"complex": null,
+					"simple": "userType"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "userName"
+				},
+				"Zip Code": {
+					"complex": null,
+					"simple": "zipCode"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Okta (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -1,0 +1,31 @@
+!fortimanager-devices-list offset=1 limit=2
+!fortimanager-device-groups-list offset=1 limit=2
+!fortimanager-service-categories-list offset=1 limit=2
+!fortimanager-dynamic-interface-list offset=1 limit=2
+!fortimanager-address-list offset=1 limit=2
+!fortimanager-address-create name=new_address type=iprange start_ip=1.2.3.4 end_ip=2.3.4.5
+!fortimanager-address-update name=new_address end_ip=3.3.3.3
+!fortimanager-address-group-create name=new_address_group member=new_address,my_address2
+!fortimanager-address-group-update name=new_address_group member=new_address
+!fortimanager-address-group-delete address_group=new_address_group
+!fortimanager-address-delete address=new_address
+!fortimanager-address-group-list offset=1 limit=2
+!fortimanager-custom-service-list offset=1 limit=2
+!fortimanager-custom-service-create name=new_service fqdn=demisto.com
+!fortimanager-custom-service-update name=new_service proxy=enable
+!fortimanager-service-group-list offset=1 limit=2
+!fortimanager-service-group-create member=new_service name=new_service_group
+!fortimanager-service-group-update name=new_service_group proxy=disable
+!fortimanager-service-group-delete service_group=new_service_group
+!fortimanager-custom-service-delete custom=new_service
+!fortimanager-firewall-policy-package-list offset=1 limit=2
+!fortimanager-firewall-policy-package-create name=new_package type=pkg
+!fortimanager-firewall-policy-package-update name=new_package central_nat=enable
+!fortimanager-firewall-policy-create action=accept logtraffic=utm name=new_policy package=new_package dstaddr=all srcaddr=all policyid=9
+!fortimanager-firewall-policy-list package=new_package
+!fortimanager-firewall-policy-update package=new_package policyid=9 status=disable
+!fortimanager-firewall-policy-delete package=new_package policy=9
+!fortimanager-firewall-policy-package-delete pkg_path=new_package
+!fortimanager-firewall-policy-move option=after package=package_name policy=1 target=2
+!fortimanager-policy-package-install package=package_name name=device vdom=root adom_rev_name=testing_installation
+!fortimanager-policy-package-install-status task_id=175

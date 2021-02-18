@@ -22,5 +22,5 @@ def main():
     return_results(check_date(value, relative_date))
 
 
-if __name__ == '__main__':
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

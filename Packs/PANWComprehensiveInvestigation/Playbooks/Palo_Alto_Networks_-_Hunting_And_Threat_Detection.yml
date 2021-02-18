@@ -266,24 +266,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: AutoFocus V2
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -733,24 +735,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1093,24 +1097,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1147,24 +1153,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Panorama
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1201,24 +1209,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: AutoFocus V2
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1255,24 +1265,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: AutoFocus V2
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1310,24 +1322,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Data Lake
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Cortex Data Lake
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1364,24 +1378,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Data Lake
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Cortex Data Lake
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -1818,24 +1834,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Data Lake
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Cortex Data Lake
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {

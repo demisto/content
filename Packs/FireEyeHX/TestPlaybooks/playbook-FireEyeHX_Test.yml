@@ -1,5 +1,7 @@
 id: FireEye HX Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: FireEye HX Test
 starttaskid: "0"
 tasks:
@@ -13,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -20,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 50
         }
       }
@@ -67,8 +70,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 265,
+          "y": 1565
         }
       }
     note: false
@@ -98,8 +101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1040
+          "x": 480,
+          "y": 2060
         }
       }
     note: false
@@ -127,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1215
+          "x": 480,
+          "y": 2235
         }
       }
     note: false
@@ -167,8 +170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 1215
         }
       }
     note: false
@@ -188,6 +191,9 @@ tasks:
       type: regular
       iscommand: true
       brand: FireEye HX
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
       category:
         simple: ${FireEyeHX.Indicators.[0].category.uri_name}
@@ -197,8 +203,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 1390
         }
       }
     note: false
@@ -232,7 +238,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 195
         }
       }
@@ -274,8 +280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 265,
+          "y": 1740
         }
       }
     note: false
@@ -294,12 +300,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
@@ -318,6 +325,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -325,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 895
+          "x": 480,
+          "y": 1915
         }
       }
     note: false
@@ -360,8 +368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 545
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -405,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 720
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -426,18 +434,21 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     scriptarguments:
       category:
-        simple: ${FireEyeHX.Indicators.[0].category.name}
+        simple: ${FireEyeHX.Indicators.[0].category.uri_name}
       condition:
         simple: example.abc,example.lol
       name:
-        simple: ${FireEyeHX.Indicators.[0].name}
+        simple: ${FireEyeHX.Indicators.[0].uri_name}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 265,
           "y": 545
         }
       }
@@ -457,12 +468,16 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 895
+          "x": 265,
+          "y": 1070
         }
       }
     note: false
@@ -485,13 +500,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
-      - "13"
       - "15"
     scriptarguments:
       alerted: {}
-      category: {}
+      category:
+        simple: Custom
       createdBy: {}
       limit: {}
       searchTerm: {}
@@ -501,7 +514,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 370
         }
       }
@@ -510,6 +523,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -517,8 +531,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1885,
+        "height": 2280,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -527,3 +541,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: FireEye HX Test

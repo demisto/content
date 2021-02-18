@@ -1,3 +1,4 @@
+import pytest
 import demistomock as demisto
 
 FILE_INDICATOR = {'CustomFields': {
@@ -6,7 +7,9 @@ FILE_INDICATOR = {'CustomFields': {
         {'description': 'https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
          'type': 'MITRE ATT&CK', 'value': None},
         {'description': 'https://securelist.com/lazarus-under-the-hood/77908/', 'type': 'MITRE ATT&CK', 'value': None},
-        {'description': 'https://attack.mitre.org/techniques/T1496', 'type': 'MITRE ATT&CK', 'value': 'T1496'}]}}
+        {'description': 'https://attack.mitre.org/techniques/T1496', 'type': 'MITRE ATT&CK', 'value': 'T1496'},
+        {'description': 'Some Description', 'type': 'MITRE ATT&CK', 'value': None},
+    ]}}
 
 SEARCH_INDICATORS_RESPONSE = {'total': 1, 'iocs': [
     {'id': '4467', 'version': 4, 'modified': '2020-08-09T16:38:12.862662+03:00', 'sortValues':
@@ -69,6 +72,59 @@ def test_feed_related_indicator(mocker):
                                      '<br><br> |\n| MITRE ATT&CK |  | ' \
                                      '[https://securelist.com/lazarus-under-the-hood/77908/]' \
                                      '(https://securelist.com/lazarus-under-the-hood/77908/)<br><br> |\n| ' \
-                                     'MITRE ATT&CK | [T1496](https://test-address:8443/#/indicator/4467) | ' \
+                                     'MITRE ATT&CK | [T1496](#/indicator/4467) | ' \
                                      '[https://attack.mitre.org/techniques/T1496]' \
-                                     '(https://attack.mitre.org/techniques/T1496)<br><br> |\n'
+                                     '(https://attack.mitre.org/techniques/T1496)<br><br> |\n| MITRE ATT&CK |  | ' \
+                                     'Some Description<br><br> |\n'
+
+
+RELATED_INDICATOR_OBJECTS_PACK = [
+    ('value1', 'type1', 'https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': '[https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc]'
+                        '(https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc)\n\n'
+     }
+     ),
+    ('value1', 'type1', None,
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': '\n\n'
+     }
+     ),
+    ('value1', 'type1', 'desc1, desc2',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': 'desc1, desc2\n\n'
+     }
+     ),
+    ('value1', 'type1', 'desc1, https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc',
+     {
+         'Value': 'value1',
+         'Type': 'type1',
+         'Description': 'desc1, [https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc]'
+                        '(https://blog.cloudsploit.com/the-danger-of-unused-aws-regions-af0bf1b878fc)\n\n'
+     }
+     )
+
+]
+
+
+@pytest.mark.parametrize('value, type_, description, expected_output', RELATED_INDICATOR_OBJECTS_PACK)
+def test_create_related_indicator_object(value, type_, description, expected_output):
+    """
+        Given:
+            - value (str): Value of feed related indicator.
+            - type_ (str): Type of feed related indicator.
+            - description (str): Description(s) of feed related indicator.
+        When:
+            - Processing data to show in widget.
+        Then:
+            - Verify that description is being processed at it should.
+        """
+    from FeedRelatedIndicatorsWidget import create_related_indicator_object
+
+    assert create_related_indicator_object(value, type_, description) == expected_output

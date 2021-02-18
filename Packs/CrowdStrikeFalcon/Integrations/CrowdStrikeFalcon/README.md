@@ -11,7 +11,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 | url | Server URL \(e.g., https://api.crowdstrike.com\) | True |
 | client_id | Client ID | True |
 | secret | Secret | True |
-| fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | incidents_per_fetch | Max incidents per fetch | False |
 | fetch_query | Fetch query | False |
 | isFetch | Fetch incidents | False |
@@ -796,6 +796,7 @@ Runs a script on the agent host.
 | script_name | The name of the script to run. | Optional | 
 | host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | raw | The PowerShell script code to run. | Optional | 
+| timeout | The amount of time to wait before the request times out (in seconds). Maximum is 600 (10 minutes). Default value is 30. | Optional | 
 
 
 #### Context Output

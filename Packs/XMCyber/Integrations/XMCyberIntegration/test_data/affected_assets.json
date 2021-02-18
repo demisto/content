@@ -1,0 +1,45 @@
+{
+    "paging":{
+       "page":1,
+       "pageSize":50,
+       "total":2,
+       "totalPages":1,
+       "nextLink":"/api/systemReport/assetsAtRiskByEntity?page=2&pageSize=2&sort=-attackComplexity&entityId=15553084234424912589&timeId=timeAgo_days_7"
+    },
+    "data":[
+       {
+          "entityId":"3072112459274923893",
+          "name":"USERBB03",
+          "entityData":{
+             "entitySubType":{
+                "name":"osType",
+                "displayName":"OS Type",
+                "value":"windows",
+                "displayValue":"Windows"
+             },
+             "entityType":"node",
+             "entityTypeDisplayName":"Sensor",
+             "id":"3072112459274923893"
+          },
+          "attackComplexity":25.33,
+          "minAttackComplexity":24
+       },
+       {
+          "entityId":"awsS3-model-bucket-from-struts",
+          "name":"model-bucket-from-struts",
+          "entityData":{
+             "entitySubType":{
+                "name":"entitySubType",
+                "displayName":"Entity Subtype",
+                "value":"awsS3",
+                "displayValue":"AWS S3 Bucket"
+             },
+             "entityType":"awsS3",
+             "entityTypeDisplayName":"AWS S3 Bucket",
+             "id":"awsS3-model-bucket-from-struts"
+          },
+          "attackComplexity":24.67,
+          "minAttackComplexity":22
+       }
+    ]
+ }

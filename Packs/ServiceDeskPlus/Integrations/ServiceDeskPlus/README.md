@@ -1,5 +1,5 @@
 IT Service Management
-This integration was integrated and tested with version xx of ServiceDeskPlus
+
 ## Configure ServiceDeskPlus on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
