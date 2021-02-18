@@ -109,13 +109,14 @@ class MsGraphClient:
         no_folder = f'/users/{user_id}/messages'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
+        user_timeout = int(demisto.args().get('timeout', 300))
 
         if search:
             odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
-        response = self.ms_client.http_request('GET', suffix, timeout=60)
+        response = self.ms_client.http_request('GET', suffix, timeout=user_timeout)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
     def delete_mail(self, user_id: str, message_id: str, folder_id: str = None) -> bool:

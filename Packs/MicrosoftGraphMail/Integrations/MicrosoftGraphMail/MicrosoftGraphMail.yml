@@ -92,6 +92,12 @@ script:
       name: search
       required: false
       secret: false
+    - default: false
+      description: 'Request timeout in seconds'
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per
