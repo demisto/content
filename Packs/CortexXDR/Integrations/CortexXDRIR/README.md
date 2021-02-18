@@ -2285,6 +2285,18 @@ Gets the files retrieved from a specific endpoint during a script execution.
 | action_id | Action ID retrieved from the xdr-run-script command. | Required | 
 | endpoint_id | Endpoint ID. Can be retrieved by running the xdr-get-endpoints command. | Required |
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | File size. |
+| File.Type | String | File type, for example: "PE", "txt" |
+| File.EntryID | String | The file entry ID. |
+| File.Name | String | File name. |
+| File.SHA1 | String | File SHA1 hash. |
+| File.SHA256 | String | File SHA256 hash. |
+| File.MD5 | String | File MD5 hash. |
+
 #### Command Example
 ```!xdr-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3```
 
