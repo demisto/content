@@ -16,7 +16,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Generates mock reports and events from Workday. Use these for testing
+description: Generates mock reports and events for Workday IAM. Use these for testing
   and development.
 display: Workday IAM Event Generator (Beta)
 name: Workday_IAM_Event_Generator
