@@ -1468,7 +1468,7 @@ Create a new manual FIM incident of type "DEFAULT".
             "id": "5f9f5504-46eb-4a30-b022-fd0dba7758eb",
             "name": "testtest7",
             "reviewers": [
-                "qmast5gn1"
+                "useruser"
             ],
             "type": "DEFAULT",
             "userInfo": {
@@ -1488,7 +1488,7 @@ Create a new manual FIM incident of type "DEFAULT".
 >### Created New Incident: testtest7
 >|id|name|reviewers|username|occurred|filters|approvalType|
 >|---|---|---|---|---|---|---|
->| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | qmast5gn1 | Qmasters | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
+>| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | useruser | Qmasters | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
 
 
 ### qualys-fim-incident-approve
@@ -1562,7 +1562,7 @@ Mark an existing FIM incident as approved.
             "moved": null,
             "name": "testtest",
             "reviewers": [
-                "qmast5gn1"
+                "useruser"
             ],
             "ruleId": null,
             "ruleName": null,
@@ -1578,7 +1578,7 @@ Mark an existing FIM incident as approved.
 >### Approved Incident: testtest
 >|id|name|type|filterFromDate|filterToDate|filters|approvalDate|approvalStatus|approvalType|comment|createdByName|status|reviewers|dispositionCategory|changeType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Qmasters | CLOSED | qmast5gn1 | MALWARE | AUTOMATED |
+>| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Qmasters | CLOSED | useruser | MALWARE | AUTOMATED |
 
 
 ### qualys-fim-assets-list
