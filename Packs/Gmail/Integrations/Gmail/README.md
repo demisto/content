@@ -188,7 +188,7 @@ Lists all tokens associated with a specified user. applications.
             "openid",
             "https://www.googleapis.com/auth/calendar"
         ],
-        "UserKey": "115824619743385532879"
+        "UserKey": "123456789"
     }
 }
 ```
@@ -198,11 +198,11 @@ Lists all tokens associated with a specified user. applications.
 >### Tokens:
 >|DisplayText|ClientId|Kind|Scopes|UserKey|
 >|---|---|---|---|---|
->| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>https://www.googleapis.com/auth/calendar | 115824619743385532879 |
->|Go Phish!|422358954086-4fvv287aojmge1qaqe9m5mmgmbuhg1hj.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/gmail.addons.current.message.readonly, <br/> https://www.googleapis.com/auth/script.send_mail, <br/> https://www.googleapis.com/auth/userinfo.email, <br/> openid, <br/> https://www.googleapis.com/auth/script.storage, <br/> https://www.googleapis.com/auth/gmail.addons.execute, <br/> https://www.googleapis.com/auth/admin.directory.user.readonly|103020731686044834269|
->|Demisto KMS DEV|950822307886-oiv25bpm32dtp21eabn2k5lf1ba7koum.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/cloud-platform|103020731686044834269|
->|Google Data Studio|371237729773-oj8m98u7esgqep8snt9aold136opo3fi.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/bigquery.readonly|103020731686044834269|
->|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|https://www.googleapis.com/auth/userinfo.profile, <br/> https://www.googleapis.com/auth/userinfo.email|103020731686044834269|
+>| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>`https://www.googleapis.com/auth/calendar` | 123456789 |
+>|Go Phish!|422358954086-4fvv287aojmge1qaqe9m5mmgmbuhg1hj.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/gmail.addons.current.message.readonly`, <br/> `https://www.googleapis.com/auth/script.send_mail`, <br/> `https://www.googleapis.com/auth/userinfo.email`, <br/> openid, <br/> `https://www.googleapis.com/auth/script.storage`, <br/> `https://www.googleapis.com/auth/gmail.addons.execute`, <br/> `https://www.googleapis.com/auth/admin.directory.user.readonly`|123456789|
+>|Demisto KMS DEV|950822307886-oiv25bpm32dtp21eabn2k5lf1ba7koum.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/cloud-platform`|123456789|
+>|Google Data Studio|371237729773-oj8m98u7esgqep8snt9aold136opo3fi.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/bigquery.readonly`|123456789|
+>|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/userinfo.profile`, <br/> `https://www.googleapis.com/auth/userinfo.email`|123456789|
 
 ### gmail-get-user
 ***
@@ -3397,7 +3397,7 @@ Lists all Google users in a domain.
 | customer | The unique ID for the customers Google account. Default is the value specified in the integration configuration. For a multi-domain account, to fetch all groups for a customer, use this field instead of domain. | Optional | 
 | max-results | Maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. | Optional | 
 | custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. Must be set when projection=custom. | Optional | 
-| query | Query string search. Should be of the form "". Complete documentation is at https://developers.google.com/admin-suser/directory/v1/guides/search-users | Optional | 
+| query | Query string search. Should be of the form "name:value". Complete documentation is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users | Optional | 
 | show-deleted | If true, retrieves the list of deleted users. Default is false. | Optional | 
 | sort-order | How to sort out results. Can be ASCENDING/DESCENDING | Optional | 
 | token | Token to authorize and authenticate the action. | Optional | 
