@@ -3,7 +3,7 @@ commonfields:
   id: TOPdesk
   version: -1
 configuration:
-- display: Server URL (e.g., https://topdesk.mydomain/api/)
+- display: Server URL (e.g., https://topdesk.mydomain/tas/)
   name: url
   required: true
   type: 0
