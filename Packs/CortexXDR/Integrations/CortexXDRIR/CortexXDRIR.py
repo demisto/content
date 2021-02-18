@@ -2791,7 +2791,7 @@ def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     try:
-        timeout = int(args.get('timeout', 600))
+        timeout = arg_to_number(args.get('timeout', 600))
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     try:
@@ -2869,7 +2869,7 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
 def run_script_execute_commands_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     try:
-        timeout = int(args.get('timeout', 600))
+        timeout = arg_to_number(args.get('timeout', 600))
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     parameters = {'commands_list': argToList(args.get('commands'))}
@@ -2887,7 +2887,7 @@ def run_script_execute_commands_command(client: Client, args: Dict) -> Tuple[str
 def run_script_delete_file_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     try:
-        timeout = int(args.get('timeout', 600))
+        timeout = arg_to_number(args.get('timeout', 600))
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     parameters = {'file_path': args.get('file_path')}
@@ -2905,7 +2905,7 @@ def run_script_delete_file_command(client: Client, args: Dict) -> Tuple[str, Any
 def run_script_file_exists_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     try:
-        timeout = int(args.get('timeout', 600))
+        timeout = arg_to_number(args.get('timeout', 600))
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     parameters = {'path': args.get('file_path')}
@@ -2923,7 +2923,7 @@ def run_script_file_exists_command(client: Client, args: Dict) -> Tuple[str, Any
 def run_script_kill_process_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     try:
-        timeout = int(args.get('timeout', 600))
+        timeout = arg_to_number(args.get('timeout', 600))
     except ValueError:
         raise ValueError('The timeout argument need to be an integer.')
     parameters = {'process_name': args.get('process_name')}
