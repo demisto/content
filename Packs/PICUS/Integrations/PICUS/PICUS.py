@@ -27,7 +27,6 @@ def test_module() -> str:
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-    
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
@@ -107,7 +106,6 @@ def vectorCompare(requestContent):
     # cookies = {'X-Api-Token': accessToken}
     req = requests.post(url, headers=headers, data=json.dumps(data), verify=VERIFY_SSL)
     parsed = json.loads(req.content)
-    
     result = parsed['data']['variants'][0]
 
     results_insecures = parsed['data']['variants'][0]['insecures'] if 'data' in parsed else ''
@@ -126,8 +124,7 @@ def vectorCompare(requestContent):
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr
-            }
-
+    }
 
 '''Response:
 {
@@ -805,54 +802,54 @@ def main() -> None:
         LOG('Command being called is {command}'.format(command=demisto.command()))
         if demisto.command() == 'picus-get-access-token':
             getAccessToken()
-        # Makes a comparison of the given vector's results    
-        elif demisto.command() == 'picus-vector-compare':  
+        # Makes a comparison of the given vector's results
+        elif demisto.command() == 'picus-vector-compare':
             token = getAccessToken()
             demisto.results(vectorCompare(token))
         # Returns the list of the attack results\nhave optional parameters for pagination and filtration
-        elif demisto.command() == 'picus-attack-result-list':  
+        elif demisto.command() == 'picus-attack-result-list':
             token = getAccessToken()
             demisto.results(attackResultList(token))
         # Returns the list of the attack results of a single threat\nhave optional
-        elif demisto.command() == 'picus-specific-threats-results':  
+        elif demisto.command() == 'picus-specific-threats-results':
             token = getAccessToken()
             demisto.results(specificThreatsResults(token))
         # Returns the peer list with current statuses
-        elif demisto.command() == 'picus-peer-list':  
+        elif demisto.command() == 'picus-peer-list':
             token = getAccessToken()
             demisto.results(peerList(token))
         # Schedules given attack on all possible vectors
-        elif demisto.command() == 'picus-attack-all-vectors':  
+        elif demisto.command() == 'picus-attack-all-vectors':
             token = getAccessToken()
             demisto.results(attackAllVectors(token))
         # Schedules a single attack on requested vector
-        elif demisto.command() == 'picus-attack-single':  
+        elif demisto.command() == 'picus-attack-single':
             token = getAccessToken()
             demisto.results(attackSingle(token))
         # Triggers the update mechanism manually, returns if the update-command is taken successfully
-        elif demisto.command() == 'picus-trigger-update':  
+        elif demisto.command() == 'picus-trigger-update':
             token = getAccessToken()
             demisto.results(triggerUpdate(token))
         # Returns the current version and the update time config
-        elif demisto.command() == 'picus-version':  
+        elif demisto.command() == 'picus-version':
             token = getAccessToken()
             demisto.results(version(token))
-        # Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration, 
+        # Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration,
         # this route may not be used associated with your license
-        elif demisto.command() == 'picus-mitigation-list':  
+        elif demisto.command() == 'picus-mitigation-list':
             token = getAccessToken()
             demisto.results(mitigationList(token))
         # Returns the mitre matrix metadata\ntakes no parameters
-        elif demisto.command() == 'picus-mitre-matrix':  
+        elif demisto.command() == 'picus-mitre-matrix':
             token = getAccessToken()
             demisto.results(mitreMatrix(token))
-        # Returns the list of the sigma rules of scenario actions\nhave optional parameters for pagination and filtration, 
-        # this route may not be used associated with your license    
-        elif demisto.command() == 'picus-sigma-rules-list':  
+        # Returns the list of the sigma rules of scenario actions\nhave optional parameters for pagination and filtration,
+        # this route may not be used associated with your license
+        elif demisto.command() == 'picus-sigma-rules-list':
             token = getAccessToken()
             demisto.results(sigmaRulesList(token))
         # Returns the list of the vectors all disabled and enabled ones\nhave optional parameters for pagination
-        elif demisto.command() == 'picus-vector-list':  
+        elif demisto.command() == 'picus-vector-list':
             token = getAccessToken()
             demisto.results(vectorList(token))
         elif demisto.command() == 'test-module':
