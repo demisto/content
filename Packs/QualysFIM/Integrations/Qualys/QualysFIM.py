@@ -187,6 +187,7 @@ def create_event_or_incident_output(item: Dict,
         for profile in profiles:
             profiles_list.append(profile.get('name'))
         alert_data['profiles'] = profiles_list
+
     return remove_empty_elements(alert_data)
 
 
@@ -207,22 +208,30 @@ def list_events_command(client: Client, args: dict):
                                     'pageSize': args.get('limit'),
                                     'incidentIds': argToList(args.get('incident_ids')),
                                     'sort': sort})
+
     raw_response = client.events_list(params)
     table_headers = ['id', 'severity', 'dateTime', 'agentId', 'fullPath']
+
     outputs = []
     raw_outputs = []
+
     if raw_response:
         for item in raw_response:
             data = item.get('data')
             raw_outputs.append(data)
+
             item_dictionary = create_event_or_incident_output(data, table_headers)
             item_dictionary['dateTime'] = datetime.strptime(
                 str(item_dictionary.get('dateTime')),
                 DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
+
             outputs.append(item_dictionary)
 
-    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Events:', t=outputs,
-                                      headers=table_headers, removeNull=True)
+    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Events:',
+                                      t=outputs,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.Event',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -244,12 +253,16 @@ def get_event_command(client: Client, args: dict):
     raw_response = client.get_event(str(args.get('event_id')))
     table_headers = ['name', 'action', 'id', 'severity', 'action', 'incidentId',
                      'profiles', 'type', 'dateTime', 'fullPath']
+
     object_data = create_event_or_incident_output(raw_response, table_headers)
     object_data['dateTime'] = datetime.strptime(str(object_data.get('dateTime')),
                                                 DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
 
-    readable_output = tableToMarkdown(name='Found Event:', t=object_data,
-                                      headers=table_headers, removeNull=True)
+    readable_output = tableToMarkdown(name='Found Event:',
+                                      t=object_data,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.Event',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -275,24 +288,31 @@ def list_incidents_command(client: Client, args: dict):
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes'),
                                     'sort': sort})
+
     raw_response = client.incidents_list(params)
     table_headers = ['id', 'name', 'type', 'username', 'status', 'occurred', 'approvalStatus',
                      'approvalType', 'comment', 'dispositionCategory']
 
     outputs = []
     raw_outputs = []
+
     if raw_response:
         for item in raw_response:
             data = item.get('data')
             raw_outputs.append(data)
+
             item_dictionary = create_event_or_incident_output(data, table_headers)
             occurred = item_dictionary.get('occurred')
+
             if occurred:
                 item_dictionary['occurred'] = epochToTimestamp(occurred)
             outputs.append(item_dictionary)
 
-    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Incidents:', t=outputs,
-                                      headers=table_headers, removeNull=True)
+    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Incidents:',
+                                      t=outputs,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.Incident',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -315,24 +335,33 @@ def list_incident_events_command(client: Client, args: dict):
                                     'pageNumber': args.get('page_number'),
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes')})
+
     raw_response = client.get_incident_events(str(args.get('incident_id')), params)
     table_headers = ['id', 'name', 'severity', 'action', 'type', 'dateTime']
+
     outputs = []
     raw_outputs = []
+
     if raw_response:
         for item in raw_response:
             data = item.get('data')
             if data:
                 raw_outputs.append(data)
                 item_dictionary = create_event_or_incident_output(data, table_headers)
+
                 date_time = item_dictionary.get('dateTime')
                 if date_time:
                     date_time = datetime.strptime(date_time,
                                                   DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
                     item_dictionary['dateTime'] = date_time
+
                 outputs.append(item_dictionary)
+
     readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Events From Incident:',
-                                      t=outputs, headers=table_headers, removeNull=True)
+                                      t=outputs,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.Event',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -353,8 +382,9 @@ def create_incident_command(client: Client, args: dict):
     """
     if len(str(args.get('name'))) > 128:
         raise ValueError('Name is limited to 128 characters, please shorten name.')
+
     if args.get('filters'):
-        filters = (args.get('filters'))
+        filters = args.get('filters')
     else:
         if args.get('from_date') and args.get('to_date'):
             filters = f"dateTime: ['{args.get('from_date')}'..'{args.get('to_date')}']"
@@ -362,18 +392,25 @@ def create_incident_command(client: Client, args: dict):
             yesterday = (datetime.today() - timedelta(days=1)).strftime(DATETIME_FORMAT)
             today = datetime.today().strftime(DATETIME_FORMAT)
             filters = f"dateTime: ['{yesterday}'..'{today}']"
+
     data = remove_empty_elements({'name': args.get('name'), 'type': 'DEFAULT',
-                                  'filters': [f"{filters}"],
+                                  'filters': [filters],
                                   'comment': args.get('comment'),
                                   'reviewers': argToList(args.get('reviewers'))})
+
     raw_response = client.create_incident(data)
     table_headers = ['id', 'name', 'reviewers', 'username', 'occurred', 'filters', 'approvalType']
 
     output = create_event_or_incident_output(raw_response, table_headers)
+
     output.update({'username': dict_safe_get(raw_response, ['userInfo', 'user', 'name'])})
     output.update({'occurred': epochToTimestamp(dict_safe_get(raw_response, ['userInfo', 'date']))})
+
     readable_output = tableToMarkdown(name=f'Created New Incident: {raw_response.get("name")}',
-                                      t=output, headers=table_headers, removeNull=True)
+                                      t=output,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.CreatedIncident',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -408,17 +445,21 @@ def approve_incident_command(client: Client, args: dict):
         output = create_event_or_incident_output(raw_response, table_headers)
         output['approvalDate'] = datetime.strptime(str(output.get('approvalDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
+
         output['filterFromDate'] = datetime.strptime(str(output.get('filterFromDate')),
                                                      DATETIME_FORMAT).\
             strftime(TABLE_DATETIME_FORMAT)
+
         output['filterToDate'] = datetime.strptime(str(output.get('filterToDate')),
                                                    DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
     else:
         raise ValueError(f"Incident {args.get('incident_id')} wasn't found")
 
     readable_output = tableToMarkdown(name=f'Approved Incident: '
-                                           f'{raw_response.get("name", "unknown")}', t=output,
-                                      headers=table_headers, removeNull=True)
+                                           f'{raw_response.get("name", "unknown")}',
+                                      t=output,
+                                      headers=table_headers,
+                                      removeNull=True)
 
     return CommandResults(outputs_prefix='QualysFIM.Incident',
                           outputs_key_field='id',
@@ -479,6 +520,7 @@ def list_assets_command(client: Client, args: dict):
                 if interface.get('hostname') != 'None':
                     hostname = interface.get('hostname')
                     break
+
             item_dictionary = remove_empty_elements({'Hostname': hostname,
                                                      'Last Activity': last_checked_in,
                                                      'Creation Time': created,
@@ -486,9 +528,14 @@ def list_assets_command(client: Client, args: dict):
                                                      'Driver Version': driver_version,
                                                      'Last Agent Update': agent_last_updated,
                                                      'Asset ID': asset_id})
+
             outputs.append(item_dictionary)
-    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Assets:', t=outputs,
-                                      headers=table_headers, removeNull=True)
+
+    readable_output = tableToMarkdown(name=f'Listed {len(outputs)} Assets:',
+                                      t=outputs,
+                                      headers=table_headers,
+                                      removeNull=True)
+
     return CommandResults(outputs_prefix='QualysFIM.Asset',
                           outputs_key_field='id',
                           raw_response=raw_response,
@@ -500,9 +547,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
                     first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
     """
-    Fetch incidents (alerts) from QualysFIM.
+    Fetch incidents (alerts) each minute (by default).
     Args:
-        client (Client): Qualys FIM Client.
+        client (Client): Sophos Central Client.
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
         max_fetch (str): Max number of alerts to fetch.
@@ -512,15 +559,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
-    last_fetch_timestamp = last_run.get('last_fetch')
-    if last_fetch_timestamp:
-        last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp)
-        last_fetch = last_fetch_date
-    else:
-        first_fetch_date = dateparser.parse(first_fetch_time)
-        last_fetch = first_fetch_date
 
-    next_run = last_fetch
+    last_fetch_timestamp = last_run.get('last_fetch', None)
+    if last_fetch_timestamp:
+        next_run = datetime.fromtimestamp(last_fetch_timestamp)
+    else:
+        next_run = dateparser.parse(first_fetch_time)
+
     last_fetch_timestamp_new = int(datetime.timestamp(next_run) * 1000)
     time_now = int(datetime.timestamp(datetime.now()) * 1000)
 
@@ -538,9 +583,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     raw_response = client.incidents_list(params)
     incidents = []
     for incident in raw_response:
-        incident = incident.get('data')
-        incident_id = incident.get('id')
-        incident_name = incident.get('name')
+        incident = incident.get('data', None)
+        incident_id = incident.get('id', None)
+        incident_name = incident.get('name', None)
         created_date = dict_safe_get(incident, ['createdBy', 'date'])
         incident_created_time = datetime.fromtimestamp(created_date / 1000)
 
