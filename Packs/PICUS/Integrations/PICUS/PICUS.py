@@ -1,13 +1,11 @@
 import json
 import os
-import re
 import traceback
-import urllib
 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-from requests.exceptions import ConnectionError, HTTPError
+# from requests.exceptions import ConnectionError, HTTPError
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -39,7 +37,7 @@ def test_module() -> str:
             else demisto.params().get('server')
         SERVER = demisto.params().get('server')
         CREDENTIALS = demisto.params().get('apikey')
-        AUTH_HEADERS = {'Content-Type': 'application/json'}
+        # AUTH_HEADERS = {'Content-Type': 'application/json'}
 
         params = "Bearer " + CREDENTIALS
         headers = {"X-Refresh-Token": params}
@@ -63,7 +61,7 @@ def getAccessToken():
         else demisto.params().get('server')
     ''' GLOBAL VARS '''
     CREDENTIALS = demisto.params().get('apikey')
-    AUTH_HEADERS = {'Content-Type': 'application/json'}
+    # AUTH_HEADERS = {'Content-Type': 'application/json'}
 
     params = "Bearer " + CREDENTIALS
     headers = {"X-Refresh-Token": params}
@@ -79,11 +77,12 @@ def getAccessToken():
     parsed = json.loads(req.content)
     data = parsed['data']
     accessToken = data['access_token']
-    expirydate = data['expire_at']
-    #print("Access Token Expiry Date : ", expirydate)
-    results = parsed['data']
+    # expirydate = data['expire_at']
+    # print("Access Token Expiry Date : ", expirydate)
+    # results = parsed['data']
 
     return accessToken
+
 
 def vectorCompare(requestContent):
 
@@ -105,7 +104,7 @@ def vectorCompare(requestContent):
             'untrusted': untrusted,
             }
 
-    cookies = {'X-Api-Token': accessToken}
+    # cookies = {'X-Api-Token': accessToken}
     req = requests.post(url, headers=headers, data=json.dumps(data), verify=VERIFY_SSL)
     parsed = json.loads(req.content)
     
@@ -117,9 +116,9 @@ def vectorCompare(requestContent):
     results_secures = parsed['data']['variants'][0]['secures'] if 'data' in parsed else ''
 
     hr = tableToMarkdown('Insecures', results_insecures, removeNull=True)
-    hr += tableToMarkdown('Insecure to Secures', results_insecure_to_secures,removeNull=True)
-    hr += tableToMarkdown('Secures to Insecure', results_secure_to_insecures,removeNull=True)
-    hr += tableToMarkdown('Secures', results_secures,removeNull=True)
+    hr += tableToMarkdown('Insecure to Secures', results_insecure_to_secures, removeNull=True)
+    hr += tableToMarkdown('Secures to Insecure', results_secure_to_insecures, removeNull=True)
+    hr += tableToMarkdown('Secures', results_secures, removeNull=True)
 
     return {
         'Type': entryTypes['note'],
@@ -127,7 +126,7 @@ def vectorCompare(requestContent):
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': hr
-        }
+            }
 
 
 '''Response:
@@ -800,46 +799,60 @@ def main() -> None:
     """
 
     ''' EXECUTION '''
-    #LOG('command is %s' % (demisto.command(), ))
+    # LOG('command is %s' % (demisto.command(), ))
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         LOG('Command being called is {command}'.format(command=demisto.command()))
         if demisto.command() == 'picus-get-access-token':
             getAccessToken()
-        elif demisto.command() == 'picus-vector-compare':  # Makes a comparison of the given vector's results
+        # Makes a comparison of the given vector's results    
+        elif demisto.command() == 'picus-vector-compare':  
             token = getAccessToken()
             demisto.results(vectorCompare(token))
-        elif demisto.command() == 'picus-attack-result-list':  # Returns the list of the attack results\nhave optional parameters for pagination and filtration
+        # Returns the list of the attack results\nhave optional parameters for pagination and filtration
+        elif demisto.command() == 'picus-attack-result-list':  
             token = getAccessToken()
             demisto.results(attackResultList(token))
-        elif demisto.command() == 'picus-specific-threats-results':  # Returns the list of the attack results of a single threat\nhave optional
+        # Returns the list of the attack results of a single threat\nhave optional
+        elif demisto.command() == 'picus-specific-threats-results':  
             token = getAccessToken()
             demisto.results(specificThreatsResults(token))
-        elif demisto.command() == 'picus-peer-list':  # Returns the peer list with current statuses
+        # Returns the peer list with current statuses
+        elif demisto.command() == 'picus-peer-list':  
             token = getAccessToken()
             demisto.results(peerList(token))
-        elif demisto.command() == 'picus-attack-all-vectors':  # Schedules given attack on all possible vectors
+        # Schedules given attack on all possible vectors
+        elif demisto.command() == 'picus-attack-all-vectors':  
             token = getAccessToken()
             demisto.results(attackAllVectors(token))
-        elif demisto.command() == 'picus-attack-single':  # Schedules a single attack on requested vector
+        # Schedules a single attack on requested vector
+        elif demisto.command() == 'picus-attack-single':  
             token = getAccessToken()
             demisto.results(attackSingle(token))
-        elif demisto.command() == 'picus-trigger-update':  # Triggers the update mechanism manually, returns if the update-command is taken successfully
+        # Triggers the update mechanism manually, returns if the update-command is taken successfully
+        elif demisto.command() == 'picus-trigger-update':  
             token = getAccessToken()
             demisto.results(triggerUpdate(token))
-        elif demisto.command() == 'picus-version':  # Returns the current version and the update time config
+        # Returns the current version and the update time config
+        elif demisto.command() == 'picus-version':  
             token = getAccessToken()
             demisto.results(version(token))
-        elif demisto.command() == 'picus-mitigation-list':  # Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration, this route may not be used associated with your license
+        # Returns the list of the mitigations of threats\nhave optional parameters for pagination and filtration, 
+        # this route may not be used associated with your license
+        elif demisto.command() == 'picus-mitigation-list':  
             token = getAccessToken()
             demisto.results(mitigationList(token))
-        elif demisto.command() == 'picus-mitre-matrix':  # Returns the mitre matrix metadata\ntakes no parameters
+        # Returns the mitre matrix metadata\ntakes no parameters
+        elif demisto.command() == 'picus-mitre-matrix':  
             token = getAccessToken()
             demisto.results(mitreMatrix(token))
-        elif demisto.command() == 'picus-sigma-rules-list':  # Returns the list of the sigma rules of scenario actions\nhave optional parameters for pagination and filtration, this route may not be used associated with your license
+        # Returns the list of the sigma rules of scenario actions\nhave optional parameters for pagination and filtration, 
+        # this route may not be used associated with your license    
+        elif demisto.command() == 'picus-sigma-rules-list':  
             token = getAccessToken()
             demisto.results(sigmaRulesList(token))
-        elif demisto.command() == 'picus-vector-list':  # Returns the list of the vectors all disabled and enabled ones\nhave optional parameters for pagination
+        # Returns the list of the vectors all disabled and enabled ones\nhave optional parameters for pagination
+        elif demisto.command() == 'picus-vector-list':  
             token = getAccessToken()
             demisto.results(vectorList(token))
         elif demisto.command() == 'test-module':
