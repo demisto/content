@@ -1,6 +1,9 @@
 Proofpoint email security appliance.
 
-This integration was integrated and tested with version 8.16.2 of Proofpoint Protection Server.
+This integration was integrated and tested with the following versions of Proofpoint Protection Server:
+- Cloud 8.16.2
+- On-promise 8.14.2
+
 ## Authentication
 An administrator must have a role that includes access to a specific REST API. 
 
