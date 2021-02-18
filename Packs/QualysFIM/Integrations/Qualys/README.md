@@ -13,14 +13,14 @@ This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
     | Username | Username for authentication | True |
     | Password | Password for authentication | True |
     | Qualys API Platform URL | The Qualys API server URL that you should use for API requests depends on the platform where your account is located.  Platforms and URLS: Qualys US Platform 1: https://gateway.qg1.apps.qualys.com Qualys US Platform 2: https://gateway.qg2.apps.qualys.com Qualys US Platform 3: https://gateway.qg3.apps.qualys.com Qualys EU Platform 1: https://gateway.qg1.apps.qualys.eu Qualys EU Platform 2: https://gateway.qg2.apps.qualys.eu Qualys India Platform 1: https://gateway.qg1.apps.qualys.in Qualys Private Cloud Platform\(Custom Platform\): https://gateway.&amp;lt;customer_base_url&amp;gt; | True |
-    | Fetch incidents |  | False |
+    | Fetch incidents | Fetch incidents| False |
     | Fetch time | First fetch timestamp e.g 12 hours, 7 days etc. | False |
-    | Incident Type |  | False |
-    | Max Fetch |  | False |
+    | Incident Type | Incident type | False |
+    | Max Fetch | Maximum number of incidents per fetch| False |
     | Fetch Filter | Filter the incidents fetching by providing a query using Qualys syntax.
    i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | Insecure | Trust any certificate (not secure) | False |
+    | Proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -70,11 +70,11 @@ Retrieve a list of all FIM events from the current user account.
                     "imagePath": "\\Device\\HarddiskVolume2\\Windows\\System32\\svchost.exe",
                     "process": "svchost.exe",
                     "processID": 320,
-                    "userID": "S-1-5-18",
+                    "userID": "1-2-3-4",
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -82,21 +82,21 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
-                    "name": "DC.qmasters.local",
+                    "lastLoggedOnUser": "User",
+                    "name": "DC.user.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
                     "system": {
@@ -109,7 +109,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:16:57.843+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\LogFiles\\Sum\\Svc.log",
                 "id": "de361739-a082-3240-8459-786b8ed5fa3b",
@@ -150,11 +150,11 @@ Retrieve a list of all FIM events from the current user account.
                     "imagePath": "",
                     "process": "",
                     "processID": 4,
-                    "userID": "S-1-5-18",
+                    "userID": "1-2-3-4",
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -162,20 +162,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -189,10 +189,10 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:17:02.606+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\SOFTWARE.LOG2",
-                "id": "c35d4c46-a04a-376b-ab38-e7c61d7e965b",
+                "id": "a123456",
                 "incidentId": "4710aa44-8d69-4c00-8013-737768cb54be",
                 "name": "SOFTWARE.LOG2",
                 "newContent": null,
@@ -234,7 +234,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\local service"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -242,20 +242,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -269,7 +269,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:17:52.405+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\winevt\\Logs\\Microsoft-Windows-Known Folders API Service.evtx",
                 "id": "366b1576-57f2-335f-9929-3026f5111767",
@@ -314,7 +314,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -322,20 +322,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -351,7 +351,7 @@ Retrieve a list of all FIM events from the current user account.
                     2
                 ],
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.743+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf",
                 "id": "ea119f31-162a-3d0c-b2f7-01b32b6bc015",
@@ -396,7 +396,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -404,20 +404,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -431,7 +431,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.752+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms",
                 "id": "16aff3b1-6198-3996-bfb7-ee99cd3bbe2d",
@@ -476,7 +476,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -484,20 +484,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -511,7 +511,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.752+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf",
                 "id": "8c96931f-db80-3e47-a79a-a0585ec77037",
@@ -556,7 +556,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -564,20 +564,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -593,7 +593,7 @@ Retrieve a list of all FIM events from the current user account.
                     2
                 ],
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.752+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms",
                 "id": "421c080f-ebae-35ca-8ad4-19ac62554a0c",
@@ -638,7 +638,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -646,20 +646,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -675,7 +675,7 @@ Retrieve a list of all FIM events from the current user account.
                     2
                 ],
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.752+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms",
                 "id": "0cf60a82-b006-385a-ba14-f666733a063b",
@@ -720,7 +720,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -728,20 +728,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -755,7 +755,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.752+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms",
                 "id": "0e5d5385-8dac-31a8-846c-29755c73cf88",
@@ -800,7 +800,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -808,20 +808,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -835,7 +835,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.768+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms",
                 "id": "68047fa3-8f25-3063-bce8-0b988b87190c",
@@ -880,7 +880,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -888,20 +888,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -917,7 +917,7 @@ Retrieve a list of all FIM events from the current user account.
                     2
                 ],
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:20.768+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms",
                 "id": "5d6084f2-3a47-3c71-8131-ebd2f1d7c684",
@@ -962,7 +962,7 @@ Retrieve a list of all FIM events from the current user account.
                     "userName": "nt authority\\system"
                 },
                 "asset": {
-                    "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                    "agentId": "12345678",
                     "agentVersion": "4.0.0.411",
                     "assetType": "HOST",
                     "created": "2021-01-17T16:01:41.086+0000",
@@ -970,20 +970,20 @@ Retrieve a list of all FIM events from the current user account.
                     "hostId": "15994867",
                     "interfaces": [
                         {
-                            "address": "192.168.159.142",
+                            "address": "8.8.8.8",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         },
                         {
-                            "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                            "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                             "hostname": "DC",
                             "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                            "macAddress": "00:0C:29:9B:A9:5E"
+                            "macAddress": "00:0C:00:0B:A0:0E"
                         }
                     ],
                     "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                    "lastLoggedOnUser": "QMASTERS\\support",
+                    "lastLoggedOnUser": "QMASTERS",
                     "name": "DC.qmasters.local",
                     "netbiosName": "DC",
                     "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -997,7 +997,7 @@ Retrieve a list of all FIM events from the current user account.
                 },
                 "changedAttributes": null,
                 "class": "Disk",
-                "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerId": "12345678999",
                 "dateTime": "2021-01-17T16:18:46.955+0000",
                 "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\config\\SOFTWARE.LOG2",
                 "id": "2e84bdd4-5395-3549-a29f-548e3aca0e83",
@@ -1042,18 +1042,18 @@ Retrieve a list of all FIM events from the current user account.
 >### Listed 12 Events:
 >|id|severity|dateTime|agentId|fullPath|
 >|---|---|---|---|---|
->| de361739-a082-3240-8459-786b8ed5fa3b | 4 | 2021-01-17 16:16:57 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
->| c35d4c46-a04a-376b-ab38-e7c61d7e965b | 4 | 2021-01-17 16:17:02 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\SOFTWARE.LOG2 |
->| 366b1576-57f2-335f-9929-3026f5111767 | 4 | 2021-01-17 16:17:52 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\winevt\Logs\Microsoft-Windows-Known Folders API Service.evtx |
->| ea119f31-162a-3d0c-b2f7-01b32b6bc015 | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf |
->| 16aff3b1-6198-3996-bfb7-ee99cd3bbe2d | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms |
->| 8c96931f-db80-3e47-a79a-a0585ec77037 | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf |
->| 421c080f-ebae-35ca-8ad4-19ac62554a0c | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms |
->| 0cf60a82-b006-385a-ba14-f666733a063b | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms |
->| 0e5d5385-8dac-31a8-846c-29755c73cf88 | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms |
->| 68047fa3-8f25-3063-bce8-0b988b87190c | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms |
->| 5d6084f2-3a47-3c71-8131-ebd2f1d7c684 | 4 | 2021-01-17 16:18:20 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms |
->| 2e84bdd4-5395-3549-a29f-548e3aca0e83 | 4 | 2021-01-17 16:18:46 | f2d2341f-7398-410f-ae36-a28ad4e30a6d | \Device\HarddiskVolume2\Windows\System32\config\SOFTWARE.LOG2 |
+>| de361739-a082-3240-8459-786b8ed5fa3b | 4 | 2021-01-17 16:16:57 | 12345678 | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
+>| a123456 | 4 | 2021-01-17 16:17:02 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\SOFTWARE.LOG2 |
+>| 366b1576-57f2-335f-9929-3026f5111767 | 4 | 2021-01-17 16:17:52 | 12345678 | \Device\HarddiskVolume2\Windows\System32\winevt\Logs\Microsoft-Windows-Known Folders API Service.evtx |
+>| ea119f31-162a-3d0c-b2f7-01b32b6bc015 | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf |
+>| 16aff3b1-6198-3996-bfb7-ee99cd3bbe2d | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms |
+>| 8c96931f-db80-3e47-a79a-a0585ec77037 | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.blf |
+>| 421c080f-ebae-35ca-8ad4-19ac62554a0c | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.0.regtrans-ms |
+>| 0cf60a82-b006-385a-ba14-f666733a063b | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms |
+>| 0e5d5385-8dac-31a8-846c-29755c73cf88 | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.1.regtrans-ms |
+>| 68047fa3-8f25-3063-bce8-0b988b87190c | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms |
+>| 5d6084f2-3a47-3c71-8131-ebd2f1d7c684 | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms |
+>| 2e84bdd4-5395-3549-a29f-548e3aca0e83 | 4 | 2021-01-17 16:18:46 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\SOFTWARE.LOG2 |
 
 
 ### qualys-fim-event-get
@@ -1102,7 +1102,7 @@ Retrieve information on a given event, by event ID.
                 "userName": "nt authority\\system"
             },
             "asset": {
-                "agentId": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                "agentId": "12345678",
                 "agentVersion": "4.0.0.411",
                 "assetType": "HOST",
                 "created": "2021-01-17T16:01:41.086+0000",
@@ -1110,20 +1110,20 @@ Retrieve information on a given event, by event ID.
                 "hostId": "15994867",
                 "interfaces": [
                     {
-                        "address": "192.168.159.142",
+                        "address": "8.8.8.8",
                         "hostname": "DC",
                         "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                        "macAddress": "00:0C:29:9B:A9:5E"
+                        "macAddress": "00:0C:00:0B:A0:0E"
                     },
                     {
-                        "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                        "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                         "hostname": "DC",
                         "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                        "macAddress": "00:0C:29:9B:A9:5E"
+                        "macAddress": "00:0C:00:0B:A0:0E"
                     }
                 ],
                 "lastCheckedIn": "2021-01-17T16:16:57.057Z",
-                "lastLoggedOnUser": "QMASTERS\\support",
+                "lastLoggedOnUser": "QMASTERS",
                 "name": "DC.qmasters.local",
                 "netbiosName": "DC",
                 "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
@@ -1137,7 +1137,7 @@ Retrieve information on a given event, by event ID.
             },
             "changedAttributes": null,
             "class": "Disk",
-            "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+            "customerId": "12345678999",
             "dateTime": "2021-01-17T16:16:57.843+0000",
             "fullPath": "\\Device\\HarddiskVolume2\\Windows\\System32\\LogFiles\\Sum\\Svc.log",
             "id": "de361739-a082-3240-8459-786b8ed5fa3b",
@@ -1461,7 +1461,7 @@ Create a new manual FIM incident of type "DEFAULT".
     "QualysFIM": {
         "CreatedIncident": {
             "approvalType": "MANUAL",
-            "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+            "customerId": "12345678999",
             "filters": [
                 "dateTime: ['2021-01-01'..'2021-02-15']"
             ],
@@ -1475,7 +1475,7 @@ Create a new manual FIM incident of type "DEFAULT".
                 "date": 1613469168294,
                 "user": {
                     "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                    "name": "Gregori Nazarovsky"
+                    "name": "Qmasters"
                 }
             }
         }
@@ -1488,7 +1488,7 @@ Create a new manual FIM incident of type "DEFAULT".
 >### Created New Incident: testtest7
 >|id|name|reviewers|username|occurred|filters|approvalType|
 >|---|---|---|---|---|---|---|
->| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | qmast5gn1 | Gregori Nazarovsky | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
+>| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | qmast5gn1 | Qmasters | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
 
 
 ### qualys-fim-incident-approve
@@ -1542,9 +1542,9 @@ Mark an existing FIM incident as approved.
             "changeType": "AUTOMATED",
             "comment": "approved",
             "createdById": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-            "createdByName": "Gregori Nazarovsky",
+            "createdByName": "Qmasters",
             "createdDate": "2021-02-16T09:46:44.768+0000",
-            "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+            "customerId": "12345678999",
             "deleted": false,
             "dispositionCategory": "MALWARE",
             "filterFromDate": "2021-01-01T00:00:00.000+0000",
@@ -1555,7 +1555,7 @@ Mark an existing FIM incident as approved.
             ],
             "id": "8af30349-bd07-4c0d-8469-58d9d7218ffa",
             "lastUpdatedById": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-            "lastUpdatedByName": "Gregori Nazarovsky",
+            "lastUpdatedByName": "Qmasters",
             "lastUpdatedDate": "2021-02-16T09:46:44.768+0000",
             "marked": false,
             "markupStatus": null,
@@ -1578,7 +1578,7 @@ Mark an existing FIM incident as approved.
 >### Approved Incident: testtest
 >|id|name|type|filterFromDate|filterToDate|filters|approvalDate|approvalStatus|approvalType|comment|createdByName|status|reviewers|dispositionCategory|changeType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Gregori Nazarovsky | CLOSED | qmast5gn1 | MALWARE | AUTOMATED |
+>| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Qmasters | CLOSED | qmast5gn1 | MALWARE | AUTOMATED |
 
 
 ### qualys-fim-assets-list
@@ -1631,14 +1631,14 @@ Retrieve a list of all FIM assets.
                 "assetId": 20032549,
                 "created": 1610279920980,
                 "customerId": 524090,
-                "customerUuid": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerUuid": "12345678999",
                 "ec2": null,
                 "hostId": 15855913,
                 "id": "b1caea93-0d21-4343-801c-92009f036c79",
                 "interfaces": [
                     {
                         "address": "10.0.0.12",
-                        "hostname": "DESKTOP-F16FQS2",
+                        "hostname": "Qmasters_desktop",
                         "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
                         "macAddress": "04:33:C2:64:45:B5"
                     },
@@ -1668,20 +1668,20 @@ Retrieve a list of all FIM assets.
                     },
                     {
                         "address": "fe80:0:0:0:fdbf:83bf:42bc:3426",
-                        "hostname": "DESKTOP-F16FQS2",
+                        "hostname": "Qmasters_desktop",
                         "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
                         "macAddress": "04:33:C2:64:45:B5"
                     }
                 ],
                 "lastCheckedIn": 1613463519000,
-                "lastLoggedOnUser": ".\\Gill",
+                "lastLoggedOnUser": ".\\Qmasters",
                 "manifest": {
                     "id": "4bca8be5-4b84-473c-998d-16fbcbd08761",
                     "status": "FIM_MANIFEST_ASSIGNED",
                     "updatedDate": 1610978060927
                 },
-                "name": "DESKTOP-F16FQS2",
-                "netbiosName": "DESKTOP-F16FQS2",
+                "name": "Qmasters_desktop",
+                "netbiosName": "Qmasters_desktop",
                 "operatingSystem": "Microsoft Windows 10 Pro 10.0.18363 64-bit N/A Build 18363",
                 "profiles": [
                     {
@@ -1693,12 +1693,12 @@ Retrieve a list of all FIM assets.
                             "date": 1610279901826,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "810dbed0-7314-4531-b7a0-7f2733f1be10",
-                        "name": "Gill_02",
+                        "name": "qmasters_02",
                         "osVersions": [],
                         "status": "ACTIVATED",
                         "type": "WINDOWS",
@@ -1713,10 +1713,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610895239253,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "ca93db3b-6e8a-4b22-b394-c436caf5f7cd",
                         "name": "Monitoring Profile for Windows",
                         "osVersions": [],
@@ -1733,10 +1733,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610895240533,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "53f22775-6ea6-4bde-a2e4-ade0b8754a6c",
                         "name": "Monitoring Profile for Oracle Database on Windows",
                         "osVersions": [],
@@ -1753,10 +1753,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610895241659,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "142a5071-183d-4359-a7dd-e6b3a766c1ad",
                         "name": "Lightweight Monitoring Profile for Windows",
                         "osVersions": [],
@@ -1773,12 +1773,12 @@ Retrieve a list of all FIM assets.
                             "date": 1610226039643,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "b5ff2d41-1c38-4c5f-bdf9-d94dee15b027",
-                        "name": "Gill",
+                        "name": "Qmasters",
                         "osVersions": [],
                         "status": "ACTIVATED",
                         "type": "WINDOWS",
@@ -1793,10 +1793,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610894881272,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
                         "name": "test_01",
                         "osVersions": [],
@@ -1823,31 +1823,31 @@ Retrieve a list of all FIM assets.
                     "statusCode": 2007,
                     "updatedDate": 1610900638754
                 },
-                "agentUuid": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                "agentUuid": "12345678",
                 "agentVersion": "4.0.0.411",
                 "assetId": 20234688,
                 "created": 1610899301086,
                 "customerId": 524090,
-                "customerUuid": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                "customerUuid": "12345678999",
                 "ec2": null,
                 "hostId": 15994867,
-                "id": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+                "id": "12345678",
                 "interfaces": [
                     {
-                        "address": "192.168.159.142",
+                        "address": "8.8.8.8",
                         "hostname": "DC",
                         "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                        "macAddress": "00:0C:29:9B:A9:5E"
+                        "macAddress": "00:0C:00:0B:A0:0E"
                     },
                     {
-                        "address": "fe80:0:0:0:58a4:a167:57dc:176b",
+                        "address": "fe00:0:0:0:00a0:a000:00dc:000b",
                         "hostname": "DC",
                         "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
-                        "macAddress": "00:0C:29:9B:A9:5E"
+                        "macAddress": "00:0C:00:0B:A0:0E"
                     }
                 ],
                 "lastCheckedIn": 1610900217057,
-                "lastLoggedOnUser": "QMASTERS\\support",
+                "lastLoggedOnUser": "QMASTERS",
                 "manifest": {
                     "id": "3aff4a9e-d8f0-4df2-b345-74d05b9a3200",
                     "status": "FIM_MANIFEST_ASSIGNED",
@@ -1866,10 +1866,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610895239253,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "ca93db3b-6e8a-4b22-b394-c436caf5f7cd",
                         "name": "Monitoring Profile for Windows",
                         "osVersions": [],
@@ -1886,10 +1886,10 @@ Retrieve a list of all FIM assets.
                             "date": 1610894881272,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
                         "name": "test_01",
                         "osVersions": [],
@@ -1906,12 +1906,12 @@ Retrieve a list of all FIM assets.
                             "date": 1610279901826,
                             "user": {
                                 "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
-                                "name": "Gregori Nazarovsky"
+                                "name": "Qmasters"
                             }
                         },
-                        "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                        "customerId": "12345678999",
                         "id": "810dbed0-7314-4531-b7a0-7f2733f1be10",
-                        "name": "Gill_02",
+                        "name": "qmasters_02",
                         "osVersions": [],
                         "status": "ACTIVATED",
                         "type": "WINDOWS",
@@ -1935,6 +1935,6 @@ Retrieve a list of all FIM assets.
 >### Listed 2 Assets:
 >|Hostname|Last Activity|Creation Time|Agent Version|Driver Version|Last Agent Update|Asset ID|
 >|---|---|---|---|---|---|---|
->| DESKTOP-F16FQS2 | 2021-02-16 08:18:39 | 2021-01-10 11:58:40 | 4.2.0.8 | 4.1.0.744 | 2021-02-16 09:31:25 | b1caea93-0d21-4343-801c-92009f036c79 |
->| DC | 2021-01-17 16:16:57 | 2021-01-17 16:01:41 | 4.0.0.411 | 2.2.0.104 | 2021-01-17 16:23:58 | f2d2341f-7398-410f-ae36-a28ad4e30a6d |
+>| Qmasters_desktop | 2021-02-16 08:18:39 | 2021-01-10 11:58:40 | 4.2.0.8 | 4.1.0.744 | 2021-02-16 09:31:25 | b1caea93-0d21-4343-801c-92009f036c79 |
+>| DC | 2021-01-17 16:16:57 | 2021-01-17 16:01:41 | 4.0.0.411 | 2.2.0.104 | 2021-01-17 16:23:58 | 12345678 |
 

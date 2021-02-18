@@ -210,8 +210,8 @@ def test_fetch_incidents_command(requests_mock) -> None:
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
-    next_run, incidents = fetch_incidents(client=client, last_run={},
-                                          first_fetch_time='3 days', max_fetch=2)
+    next_run, incidents = fetch_incidents(client=client, last_run={}, fetch_filter='',
+                                          first_fetch_time='3 days', max_fetch='2')
     raw_json = json.loads(incidents[0].get('rawJSON'))
     assert raw_json.get('id') == '75539bfc-c0e7-4bcb-b55a-48065ef89ebe'
     assert raw_json.get('createdBy').get('date') == 1613378492427
