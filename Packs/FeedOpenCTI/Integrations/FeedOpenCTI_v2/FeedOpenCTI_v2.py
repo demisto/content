@@ -132,7 +132,7 @@ def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_c
 
     current_time = datetime.now()
     current_timestamp = datetime.timestamp(current_time)
-    timestamp = int(current_timestamp)
+    timestamp = str(int(current_timestamp))
     demisto.setLastRun({'last_a': 'a',
                         'last_timestamp': timestamp})
 
