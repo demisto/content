@@ -25,6 +25,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | Private Key (Required for HTTPS) | Configure a private key. The private key is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
 | Credintials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
+| XSOAR Indicator Page Size | Internal page size used when querying XSOAR for the EDL. By default, this value shouldn't be changed | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
