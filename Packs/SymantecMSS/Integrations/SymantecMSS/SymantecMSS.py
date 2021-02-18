@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import xml
 import tempfile
 import contextlib
-import OpenSSL.crypto  # type: ignore[syntax]
+import OpenSSL.crypto
 from xml.sax.saxutils import escape
 import re
 
