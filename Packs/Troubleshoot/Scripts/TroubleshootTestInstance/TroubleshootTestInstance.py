@@ -1,7 +1,6 @@
 """
 Gets an instance configuration and a parameter to modify, to check if is works.
 """
-from distutils.version import LooseVersion
 from typing import Iterable
 
 from CommonServerPython import *
