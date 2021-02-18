@@ -119,7 +119,7 @@ configuration:
   - Drilldown
   - Asset
   - Identity
-  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration documentation.
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
 - display: Enrichment Timeout (Minutes)
   name: enrichment_timeout
   defaultvalue: "5"

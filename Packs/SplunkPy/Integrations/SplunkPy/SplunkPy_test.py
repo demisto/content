@@ -490,7 +490,7 @@ def test_is_done_enriching(integration_context, output, mocker):
 ])
 def test_get_incidents_for_mapping(integration_context, output, mocker):
     mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
-    assert splunk.get_incidents_for_mapping() == output
+    assert splunk.fetch_incidents_for_mapping() == output
 
 
 def test_reset_enriching_fetch_mechanism(mocker):
@@ -573,7 +573,7 @@ INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
 def test_store_incident_in_ic(integration_context, incidents, output, mocker):
     mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
     mocker.patch('SplunkPy.set_integration_context')
-    splunk.store_incidents_in_ic(incidents)
+    splunk.store_incidents_for_mapping(incidents)
     assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
