@@ -220,153 +220,153 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'nxos_aaa_server':
+        elif demisto.command() == 'nxos-aaa-server':
             return_results(generic_ansible('cisconx-os', 'nxos_aaa_server', demisto.args()))
-        elif demisto.command() == 'nxos_aaa_server_host':
+        elif demisto.command() == 'nxos-aaa-server-host':
             return_results(generic_ansible('cisconx-os', 'nxos_aaa_server_host', demisto.args()))
-        elif demisto.command() == 'nxos_acl':
+        elif demisto.command() == 'nxos-acl':
             return_results(generic_ansible('cisconx-os', 'nxos_acl', demisto.args()))
-        elif demisto.command() == 'nxos_acl_interface':
+        elif demisto.command() == 'nxos-acl-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_acl_interface', demisto.args()))
-        elif demisto.command() == 'nxos_banner':
+        elif demisto.command() == 'nxos-banner':
             return_results(generic_ansible('cisconx-os', 'nxos_banner', demisto.args()))
-        elif demisto.command() == 'nxos_bfd_global':
+        elif demisto.command() == 'nxos-bfd-global':
             return_results(generic_ansible('cisconx-os', 'nxos_bfd_global', demisto.args()))
-        elif demisto.command() == 'nxos_bfd_interfaces':
+        elif demisto.command() == 'nxos-bfd-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_bfd_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_bgp':
+        elif demisto.command() == 'nxos-bgp':
             return_results(generic_ansible('cisconx-os', 'nxos_bgp', demisto.args()))
-        elif demisto.command() == 'nxos_bgp_af':
+        elif demisto.command() == 'nxos-bgp-af':
             return_results(generic_ansible('cisconx-os', 'nxos_bgp_af', demisto.args()))
-        elif demisto.command() == 'nxos_bgp_neighbor':
+        elif demisto.command() == 'nxos-bgp-neighbor':
             return_results(generic_ansible('cisconx-os', 'nxos_bgp_neighbor', demisto.args()))
-        elif demisto.command() == 'nxos_bgp_neighbor_af':
+        elif demisto.command() == 'nxos-bgp-neighbor-af':
             return_results(generic_ansible('cisconx-os', 'nxos_bgp_neighbor_af', demisto.args()))
-        elif demisto.command() == 'nxos_command':
+        elif demisto.command() == 'nxos-command':
             return_results(generic_ansible('cisconx-os', 'nxos_command', demisto.args()))
-        elif demisto.command() == 'nxos_config':
+        elif demisto.command() == 'nxos-config':
             return_results(generic_ansible('cisconx-os', 'nxos_config', demisto.args()))
-        elif demisto.command() == 'nxos_evpn_global':
+        elif demisto.command() == 'nxos-evpn-global':
             return_results(generic_ansible('cisconx-os', 'nxos_evpn_global', demisto.args()))
-        elif demisto.command() == 'nxos_evpn_vni':
+        elif demisto.command() == 'nxos-evpn-vni':
             return_results(generic_ansible('cisconx-os', 'nxos_evpn_vni', demisto.args()))
-        elif demisto.command() == 'nxos_facts':
+        elif demisto.command() == 'nxos-facts':
             return_results(generic_ansible('cisconx-os', 'nxos_facts', demisto.args()))
-        elif demisto.command() == 'nxos_feature':
+        elif demisto.command() == 'nxos-feature':
             return_results(generic_ansible('cisconx-os', 'nxos_feature', demisto.args()))
-        elif demisto.command() == 'nxos_gir':
+        elif demisto.command() == 'nxos-gir':
             return_results(generic_ansible('cisconx-os', 'nxos_gir', demisto.args()))
-        elif demisto.command() == 'nxos_gir_profile_management':
+        elif demisto.command() == 'nxos-gir-profile-management':
             return_results(generic_ansible('cisconx-os', 'nxos_gir_profile_management', demisto.args()))
-        elif demisto.command() == 'nxos_hsrp':
+        elif demisto.command() == 'nxos-hsrp':
             return_results(generic_ansible('cisconx-os', 'nxos_hsrp', demisto.args()))
-        elif demisto.command() == 'nxos_igmp':
+        elif demisto.command() == 'nxos-igmp':
             return_results(generic_ansible('cisconx-os', 'nxos_igmp', demisto.args()))
-        elif demisto.command() == 'nxos_igmp_interface':
+        elif demisto.command() == 'nxos-igmp-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_igmp_interface', demisto.args()))
-        elif demisto.command() == 'nxos_igmp_snooping':
+        elif demisto.command() == 'nxos-igmp-snooping':
             return_results(generic_ansible('cisconx-os', 'nxos_igmp_snooping', demisto.args()))
-        elif demisto.command() == 'nxos_install_os':
+        elif demisto.command() == 'nxos-install-os':
             return_results(generic_ansible('cisconx-os', 'nxos_install_os', demisto.args()))
-        elif demisto.command() == 'nxos_interface_ospf':
+        elif demisto.command() == 'nxos-interface-ospf':
             return_results(generic_ansible('cisconx-os', 'nxos_interface_ospf', demisto.args()))
-        elif demisto.command() == 'nxos_interfaces':
+        elif demisto.command() == 'nxos-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_l2_interfaces':
+        elif demisto.command() == 'nxos-l2-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_l2_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_l3_interfaces':
+        elif demisto.command() == 'nxos-l3-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_l3_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_lacp':
+        elif demisto.command() == 'nxos-lacp':
             return_results(generic_ansible('cisconx-os', 'nxos_lacp', demisto.args()))
-        elif demisto.command() == 'nxos_lacp_interfaces':
+        elif demisto.command() == 'nxos-lacp-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_lacp_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_lag_interfaces':
+        elif demisto.command() == 'nxos-lag-interfaces':
             return_results(generic_ansible('cisconx-os', 'nxos_lag_interfaces', demisto.args()))
-        elif demisto.command() == 'nxos_lldp':
+        elif demisto.command() == 'nxos-lldp':
             return_results(generic_ansible('cisconx-os', 'nxos_lldp', demisto.args()))
-        elif demisto.command() == 'nxos_lldp_global':
+        elif demisto.command() == 'nxos-lldp-global':
             return_results(generic_ansible('cisconx-os', 'nxos_lldp_global', demisto.args()))
-        elif demisto.command() == 'nxos_logging':
+        elif demisto.command() == 'nxos-logging':
             return_results(generic_ansible('cisconx-os', 'nxos_logging', demisto.args()))
-        elif demisto.command() == 'nxos_ntp':
+        elif demisto.command() == 'nxos-ntp':
             return_results(generic_ansible('cisconx-os', 'nxos_ntp', demisto.args()))
-        elif demisto.command() == 'nxos_ntp_auth':
+        elif demisto.command() == 'nxos-ntp-auth':
             return_results(generic_ansible('cisconx-os', 'nxos_ntp_auth', demisto.args()))
-        elif demisto.command() == 'nxos_ntp_options':
+        elif demisto.command() == 'nxos-ntp-options':
             return_results(generic_ansible('cisconx-os', 'nxos_ntp_options', demisto.args()))
-        elif demisto.command() == 'nxos_nxapi':
+        elif demisto.command() == 'nxos-nxapi':
             return_results(generic_ansible('cisconx-os', 'nxos_nxapi', demisto.args()))
-        elif demisto.command() == 'nxos_ospf':
+        elif demisto.command() == 'nxos-ospf':
             return_results(generic_ansible('cisconx-os', 'nxos_ospf', demisto.args()))
-        elif demisto.command() == 'nxos_ospf_vrf':
+        elif demisto.command() == 'nxos-ospf-vrf':
             return_results(generic_ansible('cisconx-os', 'nxos_ospf_vrf', demisto.args()))
-        elif demisto.command() == 'nxos_overlay_global':
+        elif demisto.command() == 'nxos-overlay-global':
             return_results(generic_ansible('cisconx-os', 'nxos_overlay_global', demisto.args()))
-        elif demisto.command() == 'nxos_pim':
+        elif demisto.command() == 'nxos-pim':
             return_results(generic_ansible('cisconx-os', 'nxos_pim', demisto.args()))
-        elif demisto.command() == 'nxos_pim_interface':
+        elif demisto.command() == 'nxos-pim-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_pim_interface', demisto.args()))
-        elif demisto.command() == 'nxos_pim_rp_address':
+        elif demisto.command() == 'nxos-pim-rp-address':
             return_results(generic_ansible('cisconx-os', 'nxos_pim_rp_address', demisto.args()))
-        elif demisto.command() == 'nxos_ping':
+        elif demisto.command() == 'nxos-ping':
             return_results(generic_ansible('cisconx-os', 'nxos_ping', demisto.args()))
-        elif demisto.command() == 'nxos_reboot':
+        elif demisto.command() == 'nxos-reboot':
             return_results(generic_ansible('cisconx-os', 'nxos_reboot', demisto.args()))
-        elif demisto.command() == 'nxos_rollback':
+        elif demisto.command() == 'nxos-rollback':
             return_results(generic_ansible('cisconx-os', 'nxos_rollback', demisto.args()))
-        elif demisto.command() == 'nxos_rpm':
+        elif demisto.command() == 'nxos-rpm':
             return_results(generic_ansible('cisconx-os', 'nxos_rpm', demisto.args()))
-        elif demisto.command() == 'nxos_smu':
+        elif demisto.command() == 'nxos-smu':
             return_results(generic_ansible('cisconx-os', 'nxos_smu', demisto.args()))
-        elif demisto.command() == 'nxos_snapshot':
+        elif demisto.command() == 'nxos-snapshot':
             return_results(generic_ansible('cisconx-os', 'nxos_snapshot', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_community':
+        elif demisto.command() == 'nxos-snmp-community':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_community', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_contact':
+        elif demisto.command() == 'nxos-snmp-contact':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_contact', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_host':
+        elif demisto.command() == 'nxos-snmp-host':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_host', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_location':
+        elif demisto.command() == 'nxos-snmp-location':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_location', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_traps':
+        elif demisto.command() == 'nxos-snmp-traps':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_traps', demisto.args()))
-        elif demisto.command() == 'nxos_snmp_user':
+        elif demisto.command() == 'nxos-snmp-user':
             return_results(generic_ansible('cisconx-os', 'nxos_snmp_user', demisto.args()))
-        elif demisto.command() == 'nxos_static_route':
+        elif demisto.command() == 'nxos-static-route':
             return_results(generic_ansible('cisconx-os', 'nxos_static_route', demisto.args()))
-        elif demisto.command() == 'nxos_system':
+        elif demisto.command() == 'nxos-system':
             return_results(generic_ansible('cisconx-os', 'nxos_system', demisto.args()))
-        elif demisto.command() == 'nxos_telemetry':
+        elif demisto.command() == 'nxos-telemetry':
             return_results(generic_ansible('cisconx-os', 'nxos_telemetry', demisto.args()))
-        elif demisto.command() == 'nxos_udld':
+        elif demisto.command() == 'nxos-udld':
             return_results(generic_ansible('cisconx-os', 'nxos_udld', demisto.args()))
-        elif demisto.command() == 'nxos_udld_interface':
+        elif demisto.command() == 'nxos-udld-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_udld_interface', demisto.args()))
-        elif demisto.command() == 'nxos_user':
+        elif demisto.command() == 'nxos-user':
             return_results(generic_ansible('cisconx-os', 'nxos_user', demisto.args()))
-        elif demisto.command() == 'nxos_vlans':
+        elif demisto.command() == 'nxos-vlans':
             return_results(generic_ansible('cisconx-os', 'nxos_vlans', demisto.args()))
-        elif demisto.command() == 'nxos_vpc':
+        elif demisto.command() == 'nxos-vpc':
             return_results(generic_ansible('cisconx-os', 'nxos_vpc', demisto.args()))
-        elif demisto.command() == 'nxos_vpc_interface':
+        elif demisto.command() == 'nxos-vpc-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_vpc_interface', demisto.args()))
-        elif demisto.command() == 'nxos_vrf':
+        elif demisto.command() == 'nxos-vrf':
             return_results(generic_ansible('cisconx-os', 'nxos_vrf', demisto.args()))
-        elif demisto.command() == 'nxos_vrf_af':
+        elif demisto.command() == 'nxos-vrf-af':
             return_results(generic_ansible('cisconx-os', 'nxos_vrf_af', demisto.args()))
-        elif demisto.command() == 'nxos_vrf_interface':
+        elif demisto.command() == 'nxos-vrf-interface':
             return_results(generic_ansible('cisconx-os', 'nxos_vrf_interface', demisto.args()))
-        elif demisto.command() == 'nxos_vrrp':
+        elif demisto.command() == 'nxos-vrrp':
             return_results(generic_ansible('cisconx-os', 'nxos_vrrp', demisto.args()))
-        elif demisto.command() == 'nxos_vtp_domain':
+        elif demisto.command() == 'nxos-vtp-domain':
             return_results(generic_ansible('cisconx-os', 'nxos_vtp_domain', demisto.args()))
-        elif demisto.command() == 'nxos_vtp_password':
+        elif demisto.command() == 'nxos-vtp-password':
             return_results(generic_ansible('cisconx-os', 'nxos_vtp_password', demisto.args()))
-        elif demisto.command() == 'nxos_vtp_version':
+        elif demisto.command() == 'nxos-vtp-version':
             return_results(generic_ansible('cisconx-os', 'nxos_vtp_version', demisto.args()))
-        elif demisto.command() == 'nxos_vxlan_vtep':
+        elif demisto.command() == 'nxos-vxlan-vtep':
             return_results(generic_ansible('cisconx-os', 'nxos_vxlan_vtep', demisto.args()))
-        elif demisto.command() == 'nxos_vxlan_vtep_vni':
+        elif demisto.command() == 'nxos-vxlan-vtep-vni':
             return_results(generic_ansible('cisconx-os', 'nxos_vxlan_vtep_vni', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

@@ -215,219 +215,219 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'linux_alternatives':
+        elif demisto.command() == 'linux-alternatives':
             return_results(generic_ansible('linux', 'alternatives', demisto.args()))
-        elif demisto.command() == 'linux_at':
+        elif demisto.command() == 'linux-at':
             return_results(generic_ansible('linux', 'at', demisto.args()))
-        elif demisto.command() == 'linux_authorized_key':
+        elif demisto.command() == 'linux-authorized-key':
             return_results(generic_ansible('linux', 'authorized_key', demisto.args()))
-        elif demisto.command() == 'linux_capabilities':
+        elif demisto.command() == 'linux-capabilities':
             return_results(generic_ansible('linux', 'capabilities', demisto.args()))
-        elif demisto.command() == 'linux_cron':
+        elif demisto.command() == 'linux-cron':
             return_results(generic_ansible('linux', 'cron', demisto.args()))
-        elif demisto.command() == 'linux_cronvar':
+        elif demisto.command() == 'linux-cronvar':
             return_results(generic_ansible('linux', 'cronvar', demisto.args()))
-        elif demisto.command() == 'linux_dconf':
+        elif demisto.command() == 'linux-dconf':
             return_results(generic_ansible('linux', 'dconf', demisto.args()))
-        elif demisto.command() == 'linux_debconf':
+        elif demisto.command() == 'linux-debconf':
             return_results(generic_ansible('linux', 'debconf', demisto.args()))
-        elif demisto.command() == 'linux_filesystem':
+        elif demisto.command() == 'linux-filesystem':
             return_results(generic_ansible('linux', 'filesystem', demisto.args()))
-        elif demisto.command() == 'linux_firewalld':
+        elif demisto.command() == 'linux-firewalld':
             return_results(generic_ansible('linux', 'firewalld', demisto.args()))
-        elif demisto.command() == 'linux_gather_facts':
+        elif demisto.command() == 'linux-gather-facts':
             return_results(generic_ansible('linux', 'gather_facts', demisto.args()))
-        elif demisto.command() == 'linux_gconftool2':
+        elif demisto.command() == 'linux-gconftool2':
             return_results(generic_ansible('linux', 'gconftool2', demisto.args()))
-        elif demisto.command() == 'linux_getent':
+        elif demisto.command() == 'linux-getent':
             return_results(generic_ansible('linux', 'getent', demisto.args()))
-        elif demisto.command() == 'linux_group':
+        elif demisto.command() == 'linux-group':
             return_results(generic_ansible('linux', 'group', demisto.args()))
-        elif demisto.command() == 'linux_hostname':
+        elif demisto.command() == 'linux-hostname':
             return_results(generic_ansible('linux', 'hostname', demisto.args()))
-        elif demisto.command() == 'linux_interfaces_file':
+        elif demisto.command() == 'linux-interfaces-file':
             return_results(generic_ansible('linux', 'interfaces_file', demisto.args()))
-        elif demisto.command() == 'linux_iptables':
+        elif demisto.command() == 'linux-iptables':
             return_results(generic_ansible('linux', 'iptables', demisto.args()))
-        elif demisto.command() == 'linux_java_cert':
+        elif demisto.command() == 'linux-java-cert':
             return_results(generic_ansible('linux', 'java_cert', demisto.args()))
-        elif demisto.command() == 'linux_java_keystore':
+        elif demisto.command() == 'linux-java-keystore':
             return_results(generic_ansible('linux', 'java_keystore', demisto.args()))
-        elif demisto.command() == 'linux_kernel_blacklist':
+        elif demisto.command() == 'linux-kernel-blacklist':
             return_results(generic_ansible('linux', 'kernel_blacklist', demisto.args()))
-        elif demisto.command() == 'linux_known_hosts':
+        elif demisto.command() == 'linux-known-hosts':
             return_results(generic_ansible('linux', 'known_hosts', demisto.args()))
-        elif demisto.command() == 'linux_listen_ports_facts':
+        elif demisto.command() == 'linux-listen-ports-facts':
             return_results(generic_ansible('linux', 'listen_ports_facts', demisto.args()))
-        elif demisto.command() == 'linux_locale_gen':
+        elif demisto.command() == 'linux-locale-gen':
             return_results(generic_ansible('linux', 'locale_gen', demisto.args()))
-        elif demisto.command() == 'linux_modprobe':
+        elif demisto.command() == 'linux-modprobe':
             return_results(generic_ansible('linux', 'modprobe', demisto.args()))
-        elif demisto.command() == 'linux_mount':
+        elif demisto.command() == 'linux-mount':
             return_results(generic_ansible('linux', 'mount', demisto.args()))
-        elif demisto.command() == 'linux_open_iscsi':
+        elif demisto.command() == 'linux-open-iscsi':
             return_results(generic_ansible('linux', 'open_iscsi', demisto.args()))
-        elif demisto.command() == 'linux_pam_limits':
+        elif demisto.command() == 'linux-pam-limits':
             return_results(generic_ansible('linux', 'pam_limits', demisto.args()))
-        elif demisto.command() == 'linux_pamd':
+        elif demisto.command() == 'linux-pamd':
             return_results(generic_ansible('linux', 'pamd', demisto.args()))
-        elif demisto.command() == 'linux_parted':
+        elif demisto.command() == 'linux-parted':
             return_results(generic_ansible('linux', 'parted', demisto.args()))
-        elif demisto.command() == 'linux_pids':
+        elif demisto.command() == 'linux-pids':
             return_results(generic_ansible('linux', 'pids', demisto.args()))
-        elif demisto.command() == 'linux_ping':
+        elif demisto.command() == 'linux-ping':
             return_results(generic_ansible('linux', 'ping', demisto.args()))
-        elif demisto.command() == 'linux_python_requirements_info':
+        elif demisto.command() == 'linux-python-requirements-info':
             return_results(generic_ansible('linux', 'python_requirements_info', demisto.args()))
-        elif demisto.command() == 'linux_reboot':
+        elif demisto.command() == 'linux-reboot':
             return_results(generic_ansible('linux', 'reboot', demisto.args()))
-        elif demisto.command() == 'linux_seboolean':
+        elif demisto.command() == 'linux-seboolean':
             return_results(generic_ansible('linux', 'seboolean', demisto.args()))
-        elif demisto.command() == 'linux_sefcontext':
+        elif demisto.command() == 'linux-sefcontext':
             return_results(generic_ansible('linux', 'sefcontext', demisto.args()))
-        elif demisto.command() == 'linux_selinux':
+        elif demisto.command() == 'linux-selinux':
             return_results(generic_ansible('linux', 'selinux', demisto.args()))
-        elif demisto.command() == 'linux_selinux_permissive':
+        elif demisto.command() == 'linux-selinux-permissive':
             return_results(generic_ansible('linux', 'selinux_permissive', demisto.args()))
-        elif demisto.command() == 'linux_selogin':
+        elif demisto.command() == 'linux-selogin':
             return_results(generic_ansible('linux', 'selogin', demisto.args()))
-        elif demisto.command() == 'linux_seport':
+        elif demisto.command() == 'linux-seport':
             return_results(generic_ansible('linux', 'seport', demisto.args()))
-        elif demisto.command() == 'linux_service':
+        elif demisto.command() == 'linux-service':
             return_results(generic_ansible('linux', 'service', demisto.args()))
-        elif demisto.command() == 'linux_service_facts':
+        elif demisto.command() == 'linux-service-facts':
             return_results(generic_ansible('linux', 'service_facts', demisto.args()))
-        elif demisto.command() == 'linux_setup':
+        elif demisto.command() == 'linux-setup':
             return_results(generic_ansible('linux', 'setup', demisto.args()))
-        elif demisto.command() == 'linux_sysctl':
+        elif demisto.command() == 'linux-sysctl':
             return_results(generic_ansible('linux', 'sysctl', demisto.args()))
-        elif demisto.command() == 'linux_systemd':
+        elif demisto.command() == 'linux-systemd':
             return_results(generic_ansible('linux', 'systemd', demisto.args()))
-        elif demisto.command() == 'linux_sysvinit':
+        elif demisto.command() == 'linux-sysvinit':
             return_results(generic_ansible('linux', 'sysvinit', demisto.args()))
-        elif demisto.command() == 'linux_timezone':
+        elif demisto.command() == 'linux-timezone':
             return_results(generic_ansible('linux', 'timezone', demisto.args()))
-        elif demisto.command() == 'linux_ufw':
+        elif demisto.command() == 'linux-ufw':
             return_results(generic_ansible('linux', 'ufw', demisto.args()))
-        elif demisto.command() == 'linux_user':
+        elif demisto.command() == 'linux-user':
             return_results(generic_ansible('linux', 'user', demisto.args()))
-        elif demisto.command() == 'linux_xfs_quota':
+        elif demisto.command() == 'linux-xfs-quota':
             return_results(generic_ansible('linux', 'xfs_quota', demisto.args()))
-        elif demisto.command() == 'linux_htpasswd':
+        elif demisto.command() == 'linux-htpasswd':
             return_results(generic_ansible('linux', 'htpasswd', demisto.args()))
-        elif demisto.command() == 'linux_supervisorctl':
+        elif demisto.command() == 'linux-supervisorctl':
             return_results(generic_ansible('linux', 'supervisorctl', demisto.args()))
-        elif demisto.command() == 'linux_openssh_cert':
+        elif demisto.command() == 'linux-openssh-cert':
             return_results(generic_ansible('linux', 'openssh_cert', demisto.args()))
-        elif demisto.command() == 'linux_openssh_keypair':
+        elif demisto.command() == 'linux-openssh-keypair':
             return_results(generic_ansible('linux', 'openssh_keypair', demisto.args()))
-        elif demisto.command() == 'linux_acl':
+        elif demisto.command() == 'linux-acl':
             return_results(generic_ansible('linux', 'acl', demisto.args()))
-        elif demisto.command() == 'linux_archive':
+        elif demisto.command() == 'linux-archive':
             return_results(generic_ansible('linux', 'archive', demisto.args()))
-        elif demisto.command() == 'linux_assemble':
+        elif demisto.command() == 'linux-assemble':
             return_results(generic_ansible('linux', 'assemble', demisto.args()))
-        elif demisto.command() == 'linux_blockinfile':
+        elif demisto.command() == 'linux-blockinfile':
             return_results(generic_ansible('linux', 'blockinfile', demisto.args()))
-        elif demisto.command() == 'linux_file':
+        elif demisto.command() == 'linux-file':
             return_results(generic_ansible('linux', 'file', demisto.args()))
-        elif demisto.command() == 'linux_find':
+        elif demisto.command() == 'linux-find':
             return_results(generic_ansible('linux', 'find', demisto.args()))
-        elif demisto.command() == 'linux_ini_file':
+        elif demisto.command() == 'linux-ini-file':
             return_results(generic_ansible('linux', 'ini_file', demisto.args()))
-        elif demisto.command() == 'linux_iso_extract':
+        elif demisto.command() == 'linux-iso-extract':
             return_results(generic_ansible('linux', 'iso_extract', demisto.args()))
-        elif demisto.command() == 'linux_lineinfile':
+        elif demisto.command() == 'linux-lineinfile':
             return_results(generic_ansible('linux', 'lineinfile', demisto.args()))
-        elif demisto.command() == 'linux_replace':
+        elif demisto.command() == 'linux-replace':
             return_results(generic_ansible('linux', 'replace', demisto.args()))
-        elif demisto.command() == 'linux_stat':
+        elif demisto.command() == 'linux-stat':
             return_results(generic_ansible('linux', 'stat', demisto.args()))
-        elif demisto.command() == 'linux_synchronize':
+        elif demisto.command() == 'linux-synchronize':
             return_results(generic_ansible('linux', 'synchronize', demisto.args()))
-        elif demisto.command() == 'linux_tempfile':
+        elif demisto.command() == 'linux-tempfile':
             return_results(generic_ansible('linux', 'tempfile', demisto.args()))
-        elif demisto.command() == 'linux_unarchive':
+        elif demisto.command() == 'linux-unarchive':
             return_results(generic_ansible('linux', 'unarchive', demisto.args()))
-        elif demisto.command() == 'linux_xml':
+        elif demisto.command() == 'linux-xml':
             return_results(generic_ansible('linux', 'xml', demisto.args()))
-        elif demisto.command() == 'linux_expect':
+        elif demisto.command() == 'linux-expect':
             return_results(generic_ansible('linux', 'expect', demisto.args()))
-        elif demisto.command() == 'linux_bower':
+        elif demisto.command() == 'linux-bower':
             return_results(generic_ansible('linux', 'bower', demisto.args()))
-        elif demisto.command() == 'linux_bundler':
+        elif demisto.command() == 'linux-bundler':
             return_results(generic_ansible('linux', 'bundler', demisto.args()))
-        elif demisto.command() == 'linux_composer':
+        elif demisto.command() == 'linux-composer':
             return_results(generic_ansible('linux', 'composer', demisto.args()))
-        elif demisto.command() == 'linux_cpanm':
+        elif demisto.command() == 'linux-cpanm':
             return_results(generic_ansible('linux', 'cpanm', demisto.args()))
-        elif demisto.command() == 'linux_gem':
+        elif demisto.command() == 'linux-gem':
             return_results(generic_ansible('linux', 'gem', demisto.args()))
-        elif demisto.command() == 'linux_maven_artifact':
+        elif demisto.command() == 'linux-maven-artifact':
             return_results(generic_ansible('linux', 'maven_artifact', demisto.args()))
-        elif demisto.command() == 'linux_npm':
+        elif demisto.command() == 'linux-npm':
             return_results(generic_ansible('linux', 'npm', demisto.args()))
-        elif demisto.command() == 'linux_pear':
+        elif demisto.command() == 'linux-pear':
             return_results(generic_ansible('linux', 'pear', demisto.args()))
-        elif demisto.command() == 'linux_pip':
+        elif demisto.command() == 'linux-pip':
             return_results(generic_ansible('linux', 'pip', demisto.args()))
-        elif demisto.command() == 'linux_pip_package_info':
+        elif demisto.command() == 'linux-pip-package-info':
             return_results(generic_ansible('linux', 'pip_package_info', demisto.args()))
-        elif demisto.command() == 'linux_yarn':
+        elif demisto.command() == 'linux-yarn':
             return_results(generic_ansible('linux', 'yarn', demisto.args()))
-        elif demisto.command() == 'linux_apk':
+        elif demisto.command() == 'linux-apk':
             return_results(generic_ansible('linux', 'apk', demisto.args()))
-        elif demisto.command() == 'linux_apt':
+        elif demisto.command() == 'linux-apt':
             return_results(generic_ansible('linux', 'apt', demisto.args()))
-        elif demisto.command() == 'linux_apt_key':
+        elif demisto.command() == 'linux-apt-key':
             return_results(generic_ansible('linux', 'apt_key', demisto.args()))
-        elif demisto.command() == 'linux_apt_repo':
+        elif demisto.command() == 'linux-apt-repo':
             return_results(generic_ansible('linux', 'apt_repo', demisto.args()))
-        elif demisto.command() == 'linux_apt_repository':
+        elif demisto.command() == 'linux-apt-repository':
             return_results(generic_ansible('linux', 'apt_repository', demisto.args()))
-        elif demisto.command() == 'linux_apt_rpm':
+        elif demisto.command() == 'linux-apt-rpm':
             return_results(generic_ansible('linux', 'apt_rpm', demisto.args()))
-        elif demisto.command() == 'linux_dpkg_selections':
+        elif demisto.command() == 'linux-dpkg-selections':
             return_results(generic_ansible('linux', 'dpkg_selections', demisto.args()))
-        elif demisto.command() == 'linux_flatpak':
+        elif demisto.command() == 'linux-flatpak':
             return_results(generic_ansible('linux', 'flatpak', demisto.args()))
-        elif demisto.command() == 'linux_flatpak_remote':
+        elif demisto.command() == 'linux-flatpak-remote':
             return_results(generic_ansible('linux', 'flatpak_remote', demisto.args()))
-        elif demisto.command() == 'linux_homebrew':
+        elif demisto.command() == 'linux-homebrew':
             return_results(generic_ansible('linux', 'homebrew', demisto.args()))
-        elif demisto.command() == 'linux_homebrew_cask':
+        elif demisto.command() == 'linux-homebrew-cask':
             return_results(generic_ansible('linux', 'homebrew_cask', demisto.args()))
-        elif demisto.command() == 'linux_homebrew_tap':
+        elif demisto.command() == 'linux-homebrew-tap':
             return_results(generic_ansible('linux', 'homebrew_tap', demisto.args()))
-        elif demisto.command() == 'linux_layman':
+        elif demisto.command() == 'linux-layman':
             return_results(generic_ansible('linux', 'layman', demisto.args()))
-        elif demisto.command() == 'linux_package':
+        elif demisto.command() == 'linux-package':
             return_results(generic_ansible('linux', 'package', demisto.args()))
-        elif demisto.command() == 'linux_package_facts':
+        elif demisto.command() == 'linux-package-facts':
             return_results(generic_ansible('linux', 'package_facts', demisto.args()))
-        elif demisto.command() == 'linux_yum':
+        elif demisto.command() == 'linux-yum':
             return_results(generic_ansible('linux', 'yum', demisto.args()))
-        elif demisto.command() == 'linux_yum_repository':
+        elif demisto.command() == 'linux-yum-repository':
             return_results(generic_ansible('linux', 'yum_repository', demisto.args()))
-        elif demisto.command() == 'linux_zypper':
+        elif demisto.command() == 'linux-zypper':
             return_results(generic_ansible('linux', 'zypper', demisto.args()))
-        elif demisto.command() == 'linux_zypper_repository':
+        elif demisto.command() == 'linux-zypper-repository':
             return_results(generic_ansible('linux', 'zypper_repository', demisto.args()))
-        elif demisto.command() == 'linux_snap':
+        elif demisto.command() == 'linux-snap':
             return_results(generic_ansible('linux', 'snap', demisto.args()))
-        elif demisto.command() == 'linux_redhat_subscription':
+        elif demisto.command() == 'linux-redhat-subscription':
             return_results(generic_ansible('linux', 'redhat_subscription', demisto.args()))
-        elif demisto.command() == 'linux_rhn_channel':
+        elif demisto.command() == 'linux-rhn-channel':
             return_results(generic_ansible('linux', 'rhn_channel', demisto.args()))
-        elif demisto.command() == 'linux_rhn_register':
+        elif demisto.command() == 'linux-rhn-register':
             return_results(generic_ansible('linux', 'rhn_register', demisto.args()))
-        elif demisto.command() == 'linux_rhsm_release':
+        elif demisto.command() == 'linux-rhsm-release':
             return_results(generic_ansible('linux', 'rhsm_release', demisto.args()))
-        elif demisto.command() == 'linux_rhsm_repository':
+        elif demisto.command() == 'linux-rhsm-repository':
             return_results(generic_ansible('linux', 'rhsm_repository', demisto.args()))
-        elif demisto.command() == 'linux_rpm_key':
+        elif demisto.command() == 'linux-rpm-key':
             return_results(generic_ansible('linux', 'rpm_key', demisto.args()))
-        elif demisto.command() == 'linux_get_url':
+        elif demisto.command() == 'linux-get-url':
             return_results(generic_ansible('linux', 'get_url', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

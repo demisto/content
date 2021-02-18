@@ -61,7 +61,7 @@ tasks:
       id: 4a7aab89-887f-4b95-8126-9b15e44f82ca
       iscommand: true
       name: Try to connect to host
-      script: MicrosoftWindows|||win_ping
+      script: MicrosoftWindows|||win-ping
       type: regular
       version: -1
     taskid: 4a7aab89-887f-4b95-8126-9b15e44f82ca

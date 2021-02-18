@@ -212,213 +212,213 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'win_gather_facts':
+        elif demisto.command() == 'win-gather-facts':
             return_results(generic_ansible('microsoftwindows', 'gather_facts', demisto.args()))
-        elif demisto.command() == 'win_acl':
+        elif demisto.command() == 'win-acl':
             return_results(generic_ansible('microsoftwindows', 'win_acl', demisto.args()))
-        elif demisto.command() == 'win_acl_inheritance':
+        elif demisto.command() == 'win-acl-inheritance':
             return_results(generic_ansible('microsoftwindows', 'win_acl_inheritance', demisto.args()))
-        elif demisto.command() == 'win_audit_policy_system':
+        elif demisto.command() == 'win-audit-policy-system':
             return_results(generic_ansible('microsoftwindows', 'win_audit_policy_system', demisto.args()))
-        elif demisto.command() == 'win_audit_rule':
+        elif demisto.command() == 'win-audit-rule':
             return_results(generic_ansible('microsoftwindows', 'win_audit_rule', demisto.args()))
-        elif demisto.command() == 'win_certificate_store':
+        elif demisto.command() == 'win-certificate-store':
             return_results(generic_ansible('microsoftwindows', 'win_certificate_store', demisto.args()))
-        elif demisto.command() == 'win_chocolatey':
+        elif demisto.command() == 'win-chocolatey':
             return_results(generic_ansible('microsoftwindows', 'win_chocolatey', demisto.args()))
-        elif demisto.command() == 'win_chocolatey_config':
+        elif demisto.command() == 'win-chocolatey-config':
             return_results(generic_ansible('microsoftwindows', 'win_chocolatey_config', demisto.args()))
-        elif demisto.command() == 'win_chocolatey_facts':
+        elif demisto.command() == 'win-chocolatey-facts':
             return_results(generic_ansible('microsoftwindows', 'win_chocolatey_facts', demisto.args()))
-        elif demisto.command() == 'win_chocolatey_feature':
+        elif demisto.command() == 'win-chocolatey-feature':
             return_results(generic_ansible('microsoftwindows', 'win_chocolatey_feature', demisto.args()))
-        elif demisto.command() == 'win_chocolatey_source':
+        elif demisto.command() == 'win-chocolatey-source':
             return_results(generic_ansible('microsoftwindows', 'win_chocolatey_source', demisto.args()))
-        elif demisto.command() == 'win_copy':
+        elif demisto.command() == 'win-copy':
             return_results(generic_ansible('microsoftwindows', 'win_copy', demisto.args()))
-        elif demisto.command() == 'win_credential':
+        elif demisto.command() == 'win-credential':
             return_results(generic_ansible('microsoftwindows', 'win_credential', demisto.args()))
-        elif demisto.command() == 'win_defrag':
+        elif demisto.command() == 'win-defrag':
             return_results(generic_ansible('microsoftwindows', 'win_defrag', demisto.args()))
-        elif demisto.command() == 'win_disk_facts':
+        elif demisto.command() == 'win-disk-facts':
             return_results(generic_ansible('microsoftwindows', 'win_disk_facts', demisto.args()))
-        elif demisto.command() == 'win_disk_image':
+        elif demisto.command() == 'win-disk-image':
             return_results(generic_ansible('microsoftwindows', 'win_disk_image', demisto.args()))
-        elif demisto.command() == 'win_dns_client':
+        elif demisto.command() == 'win-dns-client':
             return_results(generic_ansible('microsoftwindows', 'win_dns_client', demisto.args()))
-        elif demisto.command() == 'win_dns_record':
+        elif demisto.command() == 'win-dns-record':
             return_results(generic_ansible('microsoftwindows', 'win_dns_record', demisto.args()))
-        elif demisto.command() == 'win_domain':
+        elif demisto.command() == 'win-domain':
             return_results(generic_ansible('microsoftwindows', 'win_domain', demisto.args()))
-        elif demisto.command() == 'win_domain_computer':
+        elif demisto.command() == 'win-domain-computer':
             return_results(generic_ansible('microsoftwindows', 'win_domain_computer', demisto.args()))
-        elif demisto.command() == 'win_domain_controller':
+        elif demisto.command() == 'win-domain-controller':
             return_results(generic_ansible('microsoftwindows', 'win_domain_controller', demisto.args()))
-        elif demisto.command() == 'win_domain_group':
+        elif demisto.command() == 'win-domain-group':
             return_results(generic_ansible('microsoftwindows', 'win_domain_group', demisto.args()))
-        elif demisto.command() == 'win_domain_group_membership':
+        elif demisto.command() == 'win-domain-group-membership':
             return_results(generic_ansible('microsoftwindows', 'win_domain_group_membership', demisto.args()))
-        elif demisto.command() == 'win_domain_membership':
+        elif demisto.command() == 'win-domain-membership':
             return_results(generic_ansible('microsoftwindows', 'win_domain_membership', demisto.args()))
-        elif demisto.command() == 'win_domain_user':
+        elif demisto.command() == 'win-domain-user':
             return_results(generic_ansible('microsoftwindows', 'win_domain_user', demisto.args()))
-        elif demisto.command() == 'win_dotnet_ngen':
+        elif demisto.command() == 'win-dotnet-ngen':
             return_results(generic_ansible('microsoftwindows', 'win_dotnet_ngen', demisto.args()))
-        elif demisto.command() == 'win_dsc':
+        elif demisto.command() == 'win-dsc':
             return_results(generic_ansible('microsoftwindows', 'win_dsc', demisto.args()))
-        elif demisto.command() == 'win_environment':
+        elif demisto.command() == 'win-environment':
             return_results(generic_ansible('microsoftwindows', 'win_environment', demisto.args()))
-        elif demisto.command() == 'win_eventlog':
+        elif demisto.command() == 'win-eventlog':
             return_results(generic_ansible('microsoftwindows', 'win_eventlog', demisto.args()))
-        elif demisto.command() == 'win_eventlog_entry':
+        elif demisto.command() == 'win-eventlog-entry':
             return_results(generic_ansible('microsoftwindows', 'win_eventlog_entry', demisto.args()))
-        elif demisto.command() == 'win_feature':
+        elif demisto.command() == 'win-feature':
             return_results(generic_ansible('microsoftwindows', 'win_feature', demisto.args()))
-        elif demisto.command() == 'win_file':
+        elif demisto.command() == 'win-file':
             return_results(generic_ansible('microsoftwindows', 'win_file', demisto.args()))
-        elif demisto.command() == 'win_file_version':
+        elif demisto.command() == 'win-file-version':
             return_results(generic_ansible('microsoftwindows', 'win_file_version', demisto.args()))
-        elif demisto.command() == 'win_find':
+        elif demisto.command() == 'win-find':
             return_results(generic_ansible('microsoftwindows', 'win_find', demisto.args()))
-        elif demisto.command() == 'win_firewall':
+        elif demisto.command() == 'win-firewall':
             return_results(generic_ansible('microsoftwindows', 'win_firewall', demisto.args()))
-        elif demisto.command() == 'win_firewall_rule':
+        elif demisto.command() == 'win-firewall-rule':
             return_results(generic_ansible('microsoftwindows', 'win_firewall_rule', demisto.args()))
-        elif demisto.command() == 'win_format':
+        elif demisto.command() == 'win-format':
             return_results(generic_ansible('microsoftwindows', 'win_format', demisto.args()))
-        elif demisto.command() == 'win_get_url':
+        elif demisto.command() == 'win-get-url':
             return_results(generic_ansible('microsoftwindows', 'win_get_url', demisto.args()))
-        elif demisto.command() == 'win_group':
+        elif demisto.command() == 'win-group':
             return_results(generic_ansible('microsoftwindows', 'win_group', demisto.args()))
-        elif demisto.command() == 'win_group_membership':
+        elif demisto.command() == 'win-group-membership':
             return_results(generic_ansible('microsoftwindows', 'win_group_membership', demisto.args()))
-        elif demisto.command() == 'win_hostname':
+        elif demisto.command() == 'win-hostname':
             return_results(generic_ansible('microsoftwindows', 'win_hostname', demisto.args()))
-        elif demisto.command() == 'win_hosts':
+        elif demisto.command() == 'win-hosts':
             return_results(generic_ansible('microsoftwindows', 'win_hosts', demisto.args()))
-        elif demisto.command() == 'win_hotfix':
+        elif demisto.command() == 'win-hotfix':
             return_results(generic_ansible('microsoftwindows', 'win_hotfix', demisto.args()))
-        elif demisto.command() == 'win_http_proxy':
+        elif demisto.command() == 'win-http-proxy':
             return_results(generic_ansible('microsoftwindows', 'win_http_proxy', demisto.args()))
-        elif demisto.command() == 'win_iis_virtualdirectory':
+        elif demisto.command() == 'win-iis-virtualdirectory':
             return_results(generic_ansible('microsoftwindows', 'win_iis_virtualdirectory', demisto.args()))
-        elif demisto.command() == 'win_iis_webapplication':
+        elif demisto.command() == 'win-iis-webapplication':
             return_results(generic_ansible('microsoftwindows', 'win_iis_webapplication', demisto.args()))
-        elif demisto.command() == 'win_iis_webapppool':
+        elif demisto.command() == 'win-iis-webapppool':
             return_results(generic_ansible('microsoftwindows', 'win_iis_webapppool', demisto.args()))
-        elif demisto.command() == 'win_iis_webbinding':
+        elif demisto.command() == 'win-iis-webbinding':
             return_results(generic_ansible('microsoftwindows', 'win_iis_webbinding', demisto.args()))
-        elif demisto.command() == 'win_iis_website':
+        elif demisto.command() == 'win-iis-website':
             return_results(generic_ansible('microsoftwindows', 'win_iis_website', demisto.args()))
-        elif demisto.command() == 'win_inet_proxy':
+        elif demisto.command() == 'win-inet-proxy':
             return_results(generic_ansible('microsoftwindows', 'win_inet_proxy', demisto.args()))
-        elif demisto.command() == 'win_lineinfile':
+        elif demisto.command() == 'win-lineinfile':
             return_results(generic_ansible('microsoftwindows', 'win_lineinfile', demisto.args()))
-        elif demisto.command() == 'win_mapped_drive':
+        elif demisto.command() == 'win-mapped-drive':
             return_results(generic_ansible('microsoftwindows', 'win_mapped_drive', demisto.args()))
-        elif demisto.command() == 'win_msg':
+        elif demisto.command() == 'win-msg':
             return_results(generic_ansible('microsoftwindows', 'win_msg', demisto.args()))
-        elif demisto.command() == 'win_netbios':
+        elif demisto.command() == 'win-netbios':
             return_results(generic_ansible('microsoftwindows', 'win_netbios', demisto.args()))
-        elif demisto.command() == 'win_nssm':
+        elif demisto.command() == 'win-nssm':
             return_results(generic_ansible('microsoftwindows', 'win_nssm', demisto.args()))
-        elif demisto.command() == 'win_optional_feature':
+        elif demisto.command() == 'win-optional-feature':
             return_results(generic_ansible('microsoftwindows', 'win_optional_feature', demisto.args()))
-        elif demisto.command() == 'win_owner':
+        elif demisto.command() == 'win-owner':
             return_results(generic_ansible('microsoftwindows', 'win_owner', demisto.args()))
-        elif demisto.command() == 'win_package':
+        elif demisto.command() == 'win-package':
             return_results(generic_ansible('microsoftwindows', 'win_package', demisto.args()))
-        elif demisto.command() == 'win_pagefile':
+        elif demisto.command() == 'win-pagefile':
             return_results(generic_ansible('microsoftwindows', 'win_pagefile', demisto.args()))
-        elif demisto.command() == 'win_partition':
+        elif demisto.command() == 'win-partition':
             return_results(generic_ansible('microsoftwindows', 'win_partition', demisto.args()))
-        elif demisto.command() == 'win_path':
+        elif demisto.command() == 'win-path':
             return_results(generic_ansible('microsoftwindows', 'win_path', demisto.args()))
-        elif demisto.command() == 'win_pester':
+        elif demisto.command() == 'win-pester':
             return_results(generic_ansible('microsoftwindows', 'win_pester', demisto.args()))
-        elif demisto.command() == 'win_ping':
+        elif demisto.command() == 'win-ping':
             return_results(generic_ansible('microsoftwindows', 'win_ping', demisto.args()))
-        elif demisto.command() == 'win_power_plan':
+        elif demisto.command() == 'win-power-plan':
             return_results(generic_ansible('microsoftwindows', 'win_power_plan', demisto.args()))
-        elif demisto.command() == 'win_product_facts':
+        elif demisto.command() == 'win-product-facts':
             return_results(generic_ansible('microsoftwindows', 'win_product_facts', demisto.args()))
-        elif demisto.command() == 'win_psexec':
+        elif demisto.command() == 'win-psexec':
             return_results(generic_ansible('microsoftwindows', 'win_psexec', demisto.args()))
-        elif demisto.command() == 'win_psmodule':
+        elif demisto.command() == 'win-psmodule':
             return_results(generic_ansible('microsoftwindows', 'win_psmodule', demisto.args()))
-        elif demisto.command() == 'win_psrepository':
+        elif demisto.command() == 'win-psrepository':
             return_results(generic_ansible('microsoftwindows', 'win_psrepository', demisto.args()))
-        elif demisto.command() == 'win_rabbitmq_plugin':
+        elif demisto.command() == 'win-rabbitmq-plugin':
             return_results(generic_ansible('microsoftwindows', 'win_rabbitmq_plugin', demisto.args()))
-        elif demisto.command() == 'win_rds_cap':
+        elif demisto.command() == 'win-rds-cap':
             return_results(generic_ansible('microsoftwindows', 'win_rds_cap', demisto.args()))
-        elif demisto.command() == 'win_rds_rap':
+        elif demisto.command() == 'win-rds-rap':
             return_results(generic_ansible('microsoftwindows', 'win_rds_rap', demisto.args()))
-        elif demisto.command() == 'win_rds_settings':
+        elif demisto.command() == 'win-rds-settings':
             return_results(generic_ansible('microsoftwindows', 'win_rds_settings', demisto.args()))
-        elif demisto.command() == 'win_reboot':
+        elif demisto.command() == 'win-reboot':
             return_results(generic_ansible('microsoftwindows', 'win_reboot', demisto.args()))
-        elif demisto.command() == 'win_reg_stat':
+        elif demisto.command() == 'win-reg-stat':
             return_results(generic_ansible('microsoftwindows', 'win_reg_stat', demisto.args()))
-        elif demisto.command() == 'win_regedit':
+        elif demisto.command() == 'win-regedit':
             return_results(generic_ansible('microsoftwindows', 'win_regedit', demisto.args()))
-        elif demisto.command() == 'win_region':
+        elif demisto.command() == 'win-region':
             return_results(generic_ansible('microsoftwindows', 'win_region', demisto.args()))
-        elif demisto.command() == 'win_regmerge':
+        elif demisto.command() == 'win-regmerge':
             return_results(generic_ansible('microsoftwindows', 'win_regmerge', demisto.args()))
-        elif demisto.command() == 'win_robocopy':
+        elif demisto.command() == 'win-robocopy':
             return_results(generic_ansible('microsoftwindows', 'win_robocopy', demisto.args()))
-        elif demisto.command() == 'win_route':
+        elif demisto.command() == 'win-route':
             return_results(generic_ansible('microsoftwindows', 'win_route', demisto.args()))
-        elif demisto.command() == 'win_say':
+        elif demisto.command() == 'win-say':
             return_results(generic_ansible('microsoftwindows', 'win_say', demisto.args()))
-        elif demisto.command() == 'win_scheduled_task':
+        elif demisto.command() == 'win-scheduled-task':
             return_results(generic_ansible('microsoftwindows', 'win_scheduled_task', demisto.args()))
-        elif demisto.command() == 'win_scheduled_task_stat':
+        elif demisto.command() == 'win-scheduled-task-stat':
             return_results(generic_ansible('microsoftwindows', 'win_scheduled_task_stat', demisto.args()))
-        elif demisto.command() == 'win_security_policy':
+        elif demisto.command() == 'win-security-policy':
             return_results(generic_ansible('microsoftwindows', 'win_security_policy', demisto.args()))
-        elif demisto.command() == 'win_service':
+        elif demisto.command() == 'win-service':
             return_results(generic_ansible('microsoftwindows', 'win_service', demisto.args()))
-        elif demisto.command() == 'win_share':
+        elif demisto.command() == 'win-share':
             return_results(generic_ansible('microsoftwindows', 'win_share', demisto.args()))
-        elif demisto.command() == 'win_shortcut':
+        elif demisto.command() == 'win-shortcut':
             return_results(generic_ansible('microsoftwindows', 'win_shortcut', demisto.args()))
-        elif demisto.command() == 'win_snmp':
+        elif demisto.command() == 'win-snmp':
             return_results(generic_ansible('microsoftwindows', 'win_snmp', demisto.args()))
-        elif demisto.command() == 'win_stat':
+        elif demisto.command() == 'win-stat':
             return_results(generic_ansible('microsoftwindows', 'win_stat', demisto.args()))
-        elif demisto.command() == 'win_tempfile':
+        elif demisto.command() == 'win-tempfile':
             return_results(generic_ansible('microsoftwindows', 'win_tempfile', demisto.args()))
-        elif demisto.command() == 'win_template':
+        elif demisto.command() == 'win-template':
             return_results(generic_ansible('microsoftwindows', 'win_template', demisto.args()))
-        elif demisto.command() == 'win_timezone':
+        elif demisto.command() == 'win-timezone':
             return_results(generic_ansible('microsoftwindows', 'win_timezone', demisto.args()))
-        elif demisto.command() == 'win_toast':
+        elif demisto.command() == 'win-toast':
             return_results(generic_ansible('microsoftwindows', 'win_toast', demisto.args()))
-        elif demisto.command() == 'win_unzip':
+        elif demisto.command() == 'win-unzip':
             return_results(generic_ansible('microsoftwindows', 'win_unzip', demisto.args()))
-        elif demisto.command() == 'win_updates':
+        elif demisto.command() == 'win-updates':
             return_results(generic_ansible('microsoftwindows', 'win_updates', demisto.args()))
-        elif demisto.command() == 'win_uri':
+        elif demisto.command() == 'win-uri':
             return_results(generic_ansible('microsoftwindows', 'win_uri', demisto.args()))
-        elif demisto.command() == 'win_user':
+        elif demisto.command() == 'win-user':
             return_results(generic_ansible('microsoftwindows', 'win_user', demisto.args()))
-        elif demisto.command() == 'win_user_profile':
+        elif demisto.command() == 'win-user-profile':
             return_results(generic_ansible('microsoftwindows', 'win_user_profile', demisto.args()))
-        elif demisto.command() == 'win_user_right':
+        elif demisto.command() == 'win-user-right':
             return_results(generic_ansible('microsoftwindows', 'win_user_right', demisto.args()))
-        elif demisto.command() == 'win_wait_for':
+        elif demisto.command() == 'win-wait-for':
             return_results(generic_ansible('microsoftwindows', 'win_wait_for', demisto.args()))
-        elif demisto.command() == 'win_wait_for_process':
+        elif demisto.command() == 'win-wait-for-process':
             return_results(generic_ansible('microsoftwindows', 'win_wait_for_process', demisto.args()))
-        elif demisto.command() == 'win_wakeonlan':
+        elif demisto.command() == 'win-wakeonlan':
             return_results(generic_ansible('microsoftwindows', 'win_wakeonlan', demisto.args()))
-        elif demisto.command() == 'win_webpicmd':
+        elif demisto.command() == 'win-webpicmd':
             return_results(generic_ansible('microsoftwindows', 'win_webpicmd', demisto.args()))
-        elif demisto.command() == 'win_whoami':
+        elif demisto.command() == 'win-whoami':
             return_results(generic_ansible('microsoftwindows', 'win_whoami', demisto.args()))
-        elif demisto.command() == 'win_xml':
+        elif demisto.command() == 'win-xml':
             return_results(generic_ansible('microsoftwindows', 'win_xml', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

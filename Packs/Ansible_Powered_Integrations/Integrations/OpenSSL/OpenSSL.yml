@@ -36,7 +36,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the certificate should exist or not, taking action if the
         state is different from what is stated.
@@ -62,7 +62,7 @@ script:
       - entrust
       - ownca
       - selfsigned
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Generate the certificate, even if it already exists.
       name: force
@@ -76,20 +76,20 @@ script:
         The passphrase for the `privatekey_path`.
         This is required if the private key is password protected.
       name: privatekey_passphrase
-    - default: true
+    - default: false
       defaultValue: "3"
       description: |-
         Version of the `selfsigned` certificate.
         Nowadays it should almost always be `3`.
         This is only used by the `selfsigned` provider.
       name: selfsigned_version
-    - default: true
+    - default: false
       defaultValue: sha256
       description: |-
         Digest algorithm to be used when self-signing the certificate.
         This is only used by the `selfsigned` provider.
       name: selfsigned_digest
-    - default: true
+    - default: false
       defaultValue: +0s
       description: |-
         The point in time the certificate is valid from.
@@ -100,7 +100,7 @@ script:
         If this value is not specified, the certificate will start being valid from now.
         This is only used by the `selfsigned` provider.
       name: selfsigned_not_before
-    - default: true
+    - default: false
       defaultValue: +3650d
       description: |-
         The point in time at which the certificate stops being valid.
@@ -112,7 +112,7 @@ script:
         This is only used by the `selfsigned` provider.
       name: selfsigned_not_after
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: create_if_not_provided
       description: |-
         Whether to create the Subject Key Identifier (SKI) from the public key.
@@ -138,20 +138,20 @@ script:
         The passphrase for the `ownca_privatekey_path`.
         This is only used by the `ownca` provider.
       name: ownca_privatekey_passphrase
-    - default: true
+    - default: false
       defaultValue: sha256
       description: |-
         The digest algorithm to be used for the `ownca` certificate.
         This is only used by the `ownca` provider.
       name: ownca_digest
-    - default: true
+    - default: false
       defaultValue: "3"
       description: |-
         The version of the `ownca` certificate.
         Nowadays it should almost always be `3`.
         This is only used by the `ownca` provider.
       name: ownca_version
-    - default: true
+    - default: false
       defaultValue: +0s
       description: |-
         The point in time the certificate is valid from.
@@ -162,7 +162,7 @@ script:
         If this value is not specified, the certificate will start being valid from now.
         This is only used by the `ownca` provider.
       name: ownca_not_before
-    - default: true
+    - default: false
       defaultValue: +3650d
       description: |-
         The point in time at which the certificate stops being valid.
@@ -174,7 +174,7 @@ script:
         This is only used by the `ownca` provider.
       name: ownca_not_after
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: create_if_not_provided
       description: |-
         Whether to create the Subject Key Identifier (SKI) from the public key.
@@ -188,7 +188,7 @@ script:
       - create_if_not_provided
       - always_create
       - never_create
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Create a Authority Key Identifier from the CA's certificate. If the CSR provided a authority key identifier, it is ignored.
@@ -204,7 +204,7 @@ script:
         The path to the ACME challenge directory that is served on `http://<HOST>:80/.well-known/acme-challenge/`
         This is only used by the `acme` provider.
       name: acme_challenge_path
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Include the intermediate certificate to the generated certificate
@@ -224,7 +224,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       isArray: true
       name: issuer
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         If set to `yes`, the `issuer` field must contain only these values.
@@ -238,14 +238,14 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       isArray: true
       name: subject
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         If set to `yes`, the `subject` field must contain only these values.
         This is only used by the `assertonly` provider.
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       name: subject_strict
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Checks if the certificate is expired/not expired at the time the module is executed.
@@ -295,7 +295,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       isArray: true
       name: key_usage
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         If set to `yes`, the `key_usage` extension field must contain only these values.
@@ -308,7 +308,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       isArray: true
       name: extended_key_usage
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         If set to `yes`, the `extended_key_usage` extension field must contain only these values.
@@ -321,7 +321,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       isArray: true
       name: subject_alt_name
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         If set to `yes`, the `subject_alt_name` extension field must contain only these values.
@@ -329,7 +329,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       name: subject_alt_name_strict
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -342,7 +342,7 @@ script:
       - auto
       - cryptography
       - pyopenssl
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Create a backup file including a timestamp so you can get the original certificate back if you overwrote it with a new one by accident.
@@ -350,7 +350,7 @@ script:
         This option is deprecated since Ansible 2.9 and will be removed with the `assertonly` provider in Ansible 2.13. For alternatives, see the example on replacing `assertonly`.
       name: backup
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: STANDARD_SSL
       description: |-
         Specify the type of certificate requested.
@@ -402,7 +402,7 @@ script:
         This is only used by the `entrust` provider.
         This is required if the provider is `entrust`.
       name: entrust_api_client_cert_key_path
-    - default: true
+    - default: false
       defaultValue: +365d
       description: |-
         The point in time at which the certificate stops being valid.
@@ -416,7 +416,7 @@ script:
         If this value is not specified, the certificate will stop being valid 365 days the date of issue.
         This is only used by the `entrust` provider.
       name: entrust_not_after
-    - default: true
+    - default: false
       defaultValue: https://cloud.entrust.net/EntrustCloud/documentation/cms-api-2.1.0.yaml
       description: |-
         The path to the specification file defining the Entrust Certificate Services (ECS) API configuration.
@@ -450,14 +450,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -472,7 +472,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate and/or check OpenSSL certificates
-    name: openssl_certificate
+    name: openssl-certificate
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -491,7 +491,7 @@ script:
       isArray: true
       name: valid_at
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -505,7 +505,7 @@ script:
       - cryptography
       - pyopenssl
     description: Provide information of OpenSSL X.509 certificates
-    name: openssl_certificate_info
+    name: openssl-certificate-info
     outputs:
     - contextPath: OpenSSL.extensions_by_oid.critical
       description: Whether the extension is critical.
@@ -521,7 +521,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the certificate signing request should exist or not, taking
         action if the state is different from what is stated.
@@ -529,7 +529,7 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: sha256
       description: The digest used when signing the certificate signing request with
         the private key.
@@ -542,13 +542,13 @@ script:
         The passphrase for the private key.
         This is required if the private key is password protected.
       name: privatekey_passphrase
-    - default: true
+    - default: false
       defaultValue: "1"
       description: |-
         The version of the certificate signing request.
         The only allowed value according to `RFC 2986,https://tools.ietf.org/html/rfc2986#section-4.1` is 1.
       name: version
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Should the certificate signing request be forced regenerated by
         this ansible module.
@@ -588,7 +588,7 @@ script:
       name: subject_alt_name
     - description: Should the subjectAltName extension be considered as critical.
       name: subject_alt_name_critical
-    - default: true
+    - default: false
       defaultValue: "True"
       description: If set to `yes`, the module will fill the common name in for `subject_alt_name`
         with `DNS:` prefix if no SAN is specified.
@@ -618,7 +618,7 @@ script:
         Note that according to the RFC, this extension should not be marked as critical, as old clients not knowing about OCSP Must Staple are required to reject such certificates (see `https://tools.ietf.org/html/rfc7633#section-4`).
       name: ocsp_must_staple_critical
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -631,12 +631,12 @@ script:
       - auto
       - cryptography
       - pyopenssl
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Create a backup file including a timestamp so you can get the original
         CSR back if you overwrote it with a new one by accident.
       name: backup
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Create the Subject Key Identifier from the public key.
@@ -701,14 +701,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -723,7 +723,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate OpenSSL Certificate Signing Request (CSR)
-    name: openssl_csr
+    name: openssl-csr
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -735,7 +735,7 @@ script:
       name: path
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -749,7 +749,7 @@ script:
       - cryptography
       - pyopenssl
     description: Provide information of OpenSSL Certificate Signing Requests (CSR)
-    name: openssl_csr_info
+    name: openssl-csr-info
     outputs:
     - contextPath: OpenSSL.extensions_by_oid.critical
       description: Whether the extension is critical.
@@ -765,7 +765,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the parameters should exist or not, taking action if the
         state is different from what is stated.
@@ -773,18 +773,18 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "4096"
       description: Size (in bits) of the generated DH-params.
       name: size
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Should the parameters be regenerated even it it already exists.
       name: force
     - description: Name of the file in which the generated parameters will be saved.
       name: path
       required: true
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Create a backup file including a timestamp so you can get the original
         DH params back if you overwrote them with new ones by accident.
@@ -816,14 +816,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -838,7 +838,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate OpenSSL Diffie-Hellman Parameters
-    name: openssl_dhparam
+    name: openssl-dhparam
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -847,7 +847,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: export
       description: '`export` or `parse` a PKCS#12.'
       name: action
@@ -862,17 +862,17 @@ script:
         The path to read certificates and private keys from.
         Must be in PEM format.
       name: certificate_path
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Should the file be regenerated even if it already exists.
       name: force
     - description: Specifies the friendly name for the certificate and private key.
       name: friendly_name
-    - default: true
+    - default: false
       defaultValue: "2048"
       description: Number of times to repeat the encryption step.
       name: iter_size
-    - default: true
+    - default: false
       defaultValue: "1"
       description: Number of times to repeat the MAC step.
       name: maciter_size
@@ -886,7 +886,7 @@ script:
     - description: File to read private key from.
       name: privatekey_path
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the file should exist or not. All parameters except `path`
         are ignored when state is `absent`.
@@ -896,7 +896,7 @@ script:
       - present
     - description: PKCS#12 file path to parse.
       name: src
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Create a backup file including a timestamp so you can get the original
         output file back if you overwrote it with a new one by accident.
@@ -928,14 +928,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -950,7 +950,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate OpenSSL PKCS#12 archive
-    name: openssl_pkcs12
+    name: openssl-pkcs12
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -959,7 +959,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the private key should exist or not, taking action if the
         state is different from what is stated.
@@ -967,12 +967,12 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "4096"
       description: Size (in bits) of the TLS/SSL key to generate.
       name: size
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: RSA
       description: |-
         The algorithm used to generate the TLS/SSL private key.
@@ -1012,7 +1012,7 @@ script:
       - sect283r1
       - sect233r1
       - sect163r2
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Should the key be regenerated even if it already exists.
       name: force
@@ -1027,7 +1027,7 @@ script:
         When using the `cryptography` backend, use `auto`.
       name: cipher
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -1040,7 +1040,7 @@ script:
       - auto
       - cryptography
       - pyopenssl
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Create a backup file including a timestamp so you can get the original
         private key back if you overwrote it with a new one by accident.
@@ -1072,14 +1072,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -1094,7 +1094,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate OpenSSL private keys
-    name: openssl_privatekey
+    name: openssl-privatekey
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1107,7 +1107,7 @@ script:
       required: true
     - description: The passphrase for the private key.
       name: passphrase
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Whether to return private key data.
@@ -1115,7 +1115,7 @@ script:
         WARNING: you have to make sure that private key data isn't accidentally logged!
       name: return_private_key_data
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -1129,7 +1129,7 @@ script:
       - cryptography
       - pyopenssl
     description: Provide information for OpenSSL private keys
-    name: openssl_privatekey_info
+    name: openssl-privatekey-info
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1138,7 +1138,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Whether the public key should exist or not, taking action if the
         state is different from what is stated.
@@ -1146,12 +1146,12 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Should the key be regenerated even it it already exists.
       name: force
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: PEM
       description: The format of the public key.
       name: format
@@ -1168,13 +1168,13 @@ script:
       name: privatekey_path
     - description: The passphrase for the private key.
       name: privatekey_passphrase
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Create a backup file including a timestamp so you can get the original
         public key back if you overwrote it with a different one by accident.
       name: backup
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -1213,14 +1213,14 @@ script:
         The type part of the SELinux file context.
         When set to `_default`, it will use the `type` portion of the policy if available.
       name: setype
-    - default: true
+    - default: false
       defaultValue: s0
       description: |-
         The level part of the SELinux file context.
         This is the MLS/MCS attribute, sometimes known as the `range`.
         When set to `_default`, it will use the `level` portion of the policy if available.
       name: selevel
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Influence when to use atomic operation to prevent data corruption or inconsistent reads from the target file.
@@ -1235,7 +1235,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need to be included in the string.
       name: attributes
     description: Generate an OpenSSL public key from its private key.
-    name: openssl_publickey
+    name: openssl-publickey
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1256,7 +1256,7 @@ script:
       isArray: true
       name: root_certificates
       required: true
-    - default: true
+    - default: false
       defaultValue: '[]'
       description: |-
         A list of filenames or directories.
@@ -1266,7 +1266,7 @@ script:
       isArray: true
       name: intermediate_certificates
     description: Complete certificate chain given a set of untrusted and root certificates
-    name: openssl_certificate_complete_chain
+    name: openssl-certificate-complete-chain
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1286,16 +1286,16 @@ script:
       required: true
     - description: Proxy host used when get a certificate.
       name: proxy_host
-    - default: true
+    - default: false
       defaultValue: "8080"
       description: Proxy port used when get a certificate.
       name: proxy_port
-    - default: true
+    - default: false
       defaultValue: "10"
       description: The timeout in seconds
       name: timeout
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -1308,7 +1308,7 @@ script:
       - cryptography
       - pyopenssl
     description: Get a certificate from a host:port
-    name: openssl_get_certificate
+    name: openssl-get-certificate
     outputs:
     - contextPath: OpenSSL.extensions.critical
       description: Whether the extension is critical.

@@ -178,57 +178,57 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'azure_rm_azurefirewall':
+        elif demisto.command() == 'azure-rm-azurefirewall':
             return_results(generic_ansible('azurenetworking', 'azure_rm_azurefirewall', demisto.args()))
-        elif demisto.command() == 'azure_rm_azurefirewall_info':
+        elif demisto.command() == 'azure-rm-azurefirewall-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_azurefirewall_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_virtualnetwork':
+        elif demisto.command() == 'azure-rm-virtualnetwork':
             return_results(generic_ansible('azurenetworking', 'azure_rm_virtualnetwork', demisto.args()))
-        elif demisto.command() == 'azure_rm_virtualnetwork_info':
+        elif demisto.command() == 'azure-rm-virtualnetwork-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_virtualnetwork_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_virtualnetworkgateway':
+        elif demisto.command() == 'azure-rm-virtualnetworkgateway':
             return_results(generic_ansible('azurenetworking', 'azure_rm_virtualnetworkgateway', demisto.args()))
-        elif demisto.command() == 'azure_rm_virtualnetworkpeering':
+        elif demisto.command() == 'azure-rm-virtualnetworkpeering':
             return_results(generic_ansible('azurenetworking', 'azure_rm_virtualnetworkpeering', demisto.args()))
-        elif demisto.command() == 'azure_rm_virtualnetworkpeering_info':
+        elif demisto.command() == 'azure-rm-virtualnetworkpeering-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_virtualnetworkpeering_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_subnet':
+        elif demisto.command() == 'azure-rm-subnet':
             return_results(generic_ansible('azurenetworking', 'azure_rm_subnet', demisto.args()))
-        elif demisto.command() == 'azure_rm_subnet_info':
+        elif demisto.command() == 'azure-rm-subnet-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_subnet_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_trafficmanagerendpoint':
+        elif demisto.command() == 'azure-rm-trafficmanagerendpoint':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerendpoint', demisto.args()))
-        elif demisto.command() == 'azure_rm_trafficmanagerendpoint_info':
+        elif demisto.command() == 'azure-rm-trafficmanagerendpoint-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerendpoint_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_trafficmanagerprofile':
+        elif demisto.command() == 'azure-rm-trafficmanagerprofile':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerprofile', demisto.args()))
-        elif demisto.command() == 'azure_rm_trafficmanagerprofile_info':
+        elif demisto.command() == 'azure-rm-trafficmanagerprofile-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_trafficmanagerprofile_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_networkinterface':
+        elif demisto.command() == 'azure-rm-networkinterface':
             return_results(generic_ansible('azurenetworking', 'azure_rm_networkinterface', demisto.args()))
-        elif demisto.command() == 'azure_rm_networkinterface_info':
+        elif demisto.command() == 'azure-rm-networkinterface-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_networkinterface_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_publicipaddress':
+        elif demisto.command() == 'azure-rm-publicipaddress':
             return_results(generic_ansible('azurenetworking', 'azure_rm_publicipaddress', demisto.args()))
-        elif demisto.command() == 'azure_rm_publicipaddress_info':
+        elif demisto.command() == 'azure-rm-publicipaddress-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_publicipaddress_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_route':
+        elif demisto.command() == 'azure-rm-route':
             return_results(generic_ansible('azurenetworking', 'azure_rm_route', demisto.args()))
-        elif demisto.command() == 'azure_rm_routetable':
+        elif demisto.command() == 'azure-rm-routetable':
             return_results(generic_ansible('azurenetworking', 'azure_rm_routetable', demisto.args()))
-        elif demisto.command() == 'azure_rm_routetable_info':
+        elif demisto.command() == 'azure-rm-routetable-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_routetable_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_securitygroup':
+        elif demisto.command() == 'azure-rm-securitygroup':
             return_results(generic_ansible('azurenetworking', 'azure_rm_securitygroup', demisto.args()))
-        elif demisto.command() == 'azure_rm_securitygroup_info':
+        elif demisto.command() == 'azure-rm-securitygroup-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_securitygroup_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_dnsrecordset':
+        elif demisto.command() == 'azure-rm-dnsrecordset':
             return_results(generic_ansible('azurenetworking', 'azure_rm_dnsrecordset', demisto.args()))
-        elif demisto.command() == 'azure_rm_dnsrecordset_info':
+        elif demisto.command() == 'azure-rm-dnsrecordset-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_dnsrecordset_info', demisto.args()))
-        elif demisto.command() == 'azure_rm_dnszone':
+        elif demisto.command() == 'azure-rm-dnszone':
             return_results(generic_ansible('azurenetworking', 'azure_rm_dnszone', demisto.args()))
-        elif demisto.command() == 'azure_rm_dnszone_info':
+        elif demisto.command() == 'azure-rm-dnszone-info':
             return_results(generic_ansible('azurenetworking', 'azure_rm_dnszone_info', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

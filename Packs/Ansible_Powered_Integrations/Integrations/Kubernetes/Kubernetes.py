@@ -178,13 +178,13 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'k8s_k8s':
+        elif demisto.command() == 'k8s-k8s':
             return_results(generic_ansible('kubernetes', 'k8s', demisto.args()))
-        elif demisto.command() == 'k8s_info':
+        elif demisto.command() == 'k8s-info':
             return_results(generic_ansible('kubernetes', 'k8s_info', demisto.args()))
-        elif demisto.command() == 'k8s_scale':
+        elif demisto.command() == 'k8s-scale':
             return_results(generic_ansible('kubernetes', 'k8s_scale', demisto.args()))
-        elif demisto.command() == 'k8s_service':
+        elif demisto.command() == 'k8s-service':
             return_results(generic_ansible('kubernetes', 'k8s_service', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

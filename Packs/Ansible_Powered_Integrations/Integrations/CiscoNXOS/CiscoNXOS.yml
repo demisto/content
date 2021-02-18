@@ -65,7 +65,7 @@ script:
       - enabled
       - disabled
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -73,7 +73,7 @@ script:
       - present
       - default
     description: Manages AAA server global configuration.
-    name: nxos_aaa_server
+    name: nxos-aaa-server
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -110,7 +110,7 @@ script:
     - description: Alternate TCP port TACACS Server or keyword 'default'.
       name: tacacs_port
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -118,7 +118,7 @@ script:
       - present
       - absent
     description: Manages AAA server host-specific configuration.
-    name: nxos_aaa_server_host
+    name: nxos-aaa-server-host
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -261,7 +261,7 @@ script:
       - default
       - ef
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -270,7 +270,7 @@ script:
       - absent
       - delete_acl
     description: Manages access list entries for ACLs.
-    name: nxos_acl
+    name: nxos-acl
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -292,7 +292,7 @@ script:
       - egress
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -300,7 +300,7 @@ script:
       - present
       - absent
     description: Manages applying ACLs to interfaces.
-    name: nxos_acl_interface
+    name: nxos-acl-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -321,7 +321,7 @@ script:
         Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current
         devices active running configuration.
@@ -330,7 +330,7 @@ script:
       - present
       - absent
     description: Manage multiline banners on Cisco NXOS devices
-    name: nxos_banner
+    name: nxos-banner
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -384,7 +384,7 @@ script:
     - description: BFD fabricpath control vlan.
       name: fabricpath_vlan
     description: Bidirectional Forwarding Detection (BFD) global-level configuration
-    name: nxos_bfd_global
+    name: nxos-bfd-global
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -396,7 +396,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -406,7 +406,7 @@ script:
       - overridden
       - deleted
     description: Manages BFD attributes of nxos interfaces.
-    name: nxos_bfd_interfaces
+    name: nxos-bfd-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -541,7 +541,7 @@ script:
     - description: Set BGP keepalive timer.
       name: timer_bgp_keepalive
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -549,7 +549,7 @@ script:
       - present
       - absent
     description: Manages BGP configuration.
-    name: nxos_bgp
+    name: nxos-bgp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -673,7 +673,7 @@ script:
         them to the RIB.
       name: table_map_filter
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -681,7 +681,7 @@ script:
       - present
       - absent
     description: Manages BGP Address-family configuration.
-    name: nxos_bgp_af
+    name: nxos-bgp-af
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -693,7 +693,7 @@ script:
         in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: true
+    - default: false
       defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing
         the global bgp.
@@ -783,7 +783,7 @@ script:
     - description: Specify source interface of BGP session and updates.
       name: update_source
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -791,7 +791,7 @@ script:
       - present
       - absent
     description: Manages BGP neighbors configurations.
-    name: nxos_bgp_neighbor
+    name: nxos-bgp-neighbor
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -803,7 +803,7 @@ script:
         in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: true
+    - default: false
       defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing
         the global bgp.
@@ -936,7 +936,7 @@ script:
     - description: Weight value. Valid values are an integer value or 'default'.
       name: weight
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -944,7 +944,7 @@ script:
       - present
       - absent
     description: Manages BGP address-family's neighbors configuration.
-    name: nxos_bgp_neighbor_af
+    name: nxos-bgp-neighbor-af
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -962,7 +962,7 @@ script:
         conditional to be true before moving forward.   If the conditional is not
         true by the configured retries, the task fails.  See examples.
       name: wait_for
-    - default: true
+    - default: false
       defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for`
         argument to specify the match policy.  Valid values are `all` or `any`.  If
@@ -970,20 +970,20 @@ script:
         satisfied.  If the value is set to `any` then only one of the values must
         be satisfied.
       name: match
-    - default: true
+    - default: false
       defaultValue: "10"
       description: Specifies the number of retries a command should by tried before
         it is considered failed.  The command is run on the target device every retry
         and evaluated against the `wait_for` conditionals.
       name: retries
-    - default: true
+    - default: false
       defaultValue: "1"
       description: Configures the interval in seconds to wait between retries of the
         command.  If the command does not pass the specified conditional, the interval
         indicates how to long to wait before trying the command again.
       name: interval
     description: Run arbitrary command on Cisco NXOS devices
-    name: nxos_command
+    name: nxos-command
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1025,7 +1025,7 @@ script:
         set.
       name: after
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the
         set of commands against the current device config.  If match is set to `line`,
@@ -1041,7 +1041,7 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on
         the device.  If the replace argument is set to `line` then the modified lines
@@ -1054,7 +1054,7 @@ script:
       - line
       - block
       - config
-    - default: true
+    - default: false
       defaultValue: "no"
       description: This argument will cause the module to create a full backup of
         the current `running-config` from the remote device before any changes are
@@ -1070,7 +1070,7 @@ script:
         argument allows the implementer to pass in the configuration to use as the
         base config for comparison.
       name: running_config
-    - default: true
+    - default: false
       defaultValue: "no"
       description: The `defaults` argument will influence how the running-config is
         collected from the device.  When the value is set to true, the command used
@@ -1078,7 +1078,7 @@ script:
         is set to false, the command is issued without the all keyword
       name: defaults
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the
         changes are not copied to non-volatile storage by default.  Using this argument
@@ -1097,7 +1097,7 @@ script:
       - modified
       - changed
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: startup
       description: |-
         When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources.
@@ -1127,7 +1127,7 @@ script:
       isArray: true
       name: backup_options
     description: Manage Cisco NXOS configuration sections
-    name: nxos_config
+    name: nxos-config
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1139,7 +1139,7 @@ script:
       name: nv_overlay_evpn
       required: true
     description: Handles the EVPN control plane for VXLAN.
-    name: nxos_evpn_global
+    name: nxos-evpn-global
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1162,7 +1162,7 @@ script:
     - description: Sets the route-target 'export' extended communities.
       name: route_target_export
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -1170,7 +1170,7 @@ script:
       - present
       - absent
     description: Manages Cisco EVPN VXLAN Network Identifier (VNI).
-    name: nxos_evpn_vni
+    name: nxos-evpn-vni
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1178,7 +1178,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: '!config'
       description: When supplied, this argument will restrict the facts collected
         to a given subset.  Possible values for this argument include all, hardware,
@@ -1195,7 +1195,7 @@ script:
         'l3_interfaces', 'l2_interfaces', 'lldp_global'.
       name: gather_network_resources
     description: Gets facts about NX-OS switches
-    name: nxos_facts
+    name: nxos-facts
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1207,7 +1207,7 @@ script:
       name: feature
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: enabled
       description: Desired state of the feature.
       name: state
@@ -1215,7 +1215,7 @@ script:
       - enabled
       - disabled
     description: Manage features in NX-OS switches.
-    name: nxos_feature
+    name: nxos-feature
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1261,7 +1261,7 @@ script:
       - any_other
       - maintenance
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1270,7 +1270,7 @@ script:
       - absent
       required: true
     description: Trigger a graceful removal or insertion (GIR) of the switch.
-    name: nxos_gir
+    name: nxos-gir
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1288,7 +1288,7 @@ script:
       - normal
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1296,7 +1296,7 @@ script:
       - present
       - absent
     description: Create a maintenance-mode or normal-mode profile for GIR.
-    name: nxos_gir_profile_management
+    name: nxos-gir-profile-management
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1311,7 +1311,7 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: "1"
       description: HSRP version.
       name: version
@@ -1341,7 +1341,7 @@ script:
       - text
       - md5
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1349,7 +1349,7 @@ script:
       - present
       - absent
     description: Manages HSRP configuration on NX-OS switches.
-    name: nxos_hsrp
+    name: nxos-hsrp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1366,7 +1366,7 @@ script:
     - description: Restarts the igmp process (using an exec config command).
       name: restart
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1374,7 +1374,7 @@ script:
       - present
       - default
     description: Manages IGMP global configuration.
-    name: nxos_igmp
+    name: nxos-igmp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1448,12 +1448,12 @@ script:
         the device and if any previous prefix/sources exist, they will be removed.
         Keyword 'default' is also accepted which removes all existing prefix/sources.
       name: oif_ps
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Restart IGMP. This is NOT idempotent as this is action only.
       name: restart
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1462,7 +1462,7 @@ script:
       - absent
       - default
     description: Manages IGMP interface configuration.
-    name: nxos_igmp_interface
+    name: nxos-igmp-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1482,7 +1482,7 @@ script:
     - description: Global IGMPv3 Report Suppression and Proxy Reporting.
       name: v3_report_supp
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1490,7 +1490,7 @@ script:
       - present
       - default
     description: Manages IGMP snooping global configuration.
-    name: nxos_igmp_snooping
+    name: nxos-igmp-snooping
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1505,7 +1505,7 @@ script:
         Nexus platforms)
       name: kickstart_image_file
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: "no"
       description: |-
         Upgrade using In Service Software Upgrade (ISSU). (Supported on N5k, N7k, N9k platforms)
@@ -1519,7 +1519,7 @@ script:
       - "yes"
       - "no"
     description: Set boot options like boot, kickstart image and issu.
-    name: nxos_install_os
+    name: nxos-install-os
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1592,7 +1592,7 @@ script:
     - description: Specifies the message_digest password. Valid value is a string.
       name: message_digest_password
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -1600,7 +1600,7 @@ script:
       - present
       - absent
     description: Manages configuration of an OSPF interface instance.
-    name: nxos_interface_ospf
+    name: nxos-interface-ospf
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1612,7 +1612,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1622,7 +1622,7 @@ script:
       - overridden
       - deleted
     description: Manages interface attributes of NX-OS Interfaces
-    name: nxos_interfaces
+    name: nxos-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1634,7 +1634,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1644,7 +1644,7 @@ script:
       - overridden
       - deleted
     description: Manages Layer-2 Interfaces attributes of NX-OS Interfaces
-    name: nxos_l2_interfaces
+    name: nxos-l2-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1656,7 +1656,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1666,7 +1666,7 @@ script:
       - overridden
       - deleted
     description: Manages Layer-3 Interfaces attributes of NX-OS Interfaces
-    name: nxos_l3_interfaces
+    name: nxos-l3-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1678,7 +1678,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1688,7 +1688,7 @@ script:
       - deleted
     description: Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS
       devices.
-    name: nxos_lacp
+    name: nxos-lacp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1700,7 +1700,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1711,7 +1711,7 @@ script:
       - deleted
     description: Manage Link Aggregation Control Protocol (LACP) attributes of interfaces
       on Cisco NX-OS devices.
-    name: nxos_lacp_interfaces
+    name: nxos-lacp-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1723,7 +1723,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1733,7 +1733,7 @@ script:
       - overridden
       - deleted
     description: Manages link aggregation groups of NX-OS Interfaces
-    name: nxos_lag_interfaces
+    name: nxos-lag-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1742,7 +1742,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will
         be enabled else if it is `absent` it will be disabled.
@@ -1751,7 +1751,7 @@ script:
       - present
       - absent
     description: Manage LLDP configuration on Cisco NXOS network devices.
-    name: nxos_lldp
+    name: nxos-lldp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1763,7 +1763,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1773,7 +1773,7 @@ script:
       - deleted
     description: Configure and manage Link Layer Discovery Protocol(LLDP) attributes
       on NX-OS platforms.
-    name: nxos_lldp_global
+    name: nxos-lldp-global
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1808,7 +1808,7 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
@@ -1847,14 +1847,14 @@ script:
       - microseconds
       - milliseconds
       - seconds
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Remove any switch logging configuration that does not match what
-        has been configured Not supported for ansible_connection local. All nxos_logging
+        has been configured Not supported for ansible_connection local. All nxos-logging
         tasks must use the same ansible_connection type.
       name: purge
     description: Manage logging on network devices
-    name: nxos_logging
+    name: nxos-logging
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1886,7 +1886,7 @@ script:
         fully qualified interface name or keyword 'default'
       name: source_int
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1894,7 +1894,7 @@ script:
       - present
       - absent
     description: Manages core NTP configuration.
-    name: nxos_ntp
+    name: nxos-ntp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1907,7 +1907,7 @@ script:
     - description: MD5 String.
       name: md5string
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: text
       description: Whether the given md5string is in cleartext or has been encrypted.
         If in cleartext, the device will encrypt it before storing it.
@@ -1916,7 +1916,7 @@ script:
       - text
       - encrypt
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: "false"
       description: Whether the given key is required to be supplied by a time source
         for the device to synchronize to the time source.
@@ -1931,7 +1931,7 @@ script:
       - "on"
       - "off"
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1939,7 +1939,7 @@ script:
       - present
       - absent
     description: Manages NTP authentication.
-    name: nxos_ntp_auth
+    name: nxos-ntp-auth
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1955,7 +1955,7 @@ script:
     - description: Sets whether NTP logging is enabled on the device.
       name: logging
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1963,7 +1963,7 @@ script:
       - present
       - absent
     description: Manages NTP options.
-    name: nxos_ntp_options
+    name: nxos-ntp-options
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1971,33 +1971,33 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: "80"
       description: Configure the port with which the HTTP server will listen on for
         requests.  By default, NXAPI will bind the HTTP service to the standard HTTP
         port 80.  This argument accepts valid port values in the range of 1 to 65535.
       name: http_port
-    - default: true
+    - default: false
       defaultValue: "True"
       description: Controls the operating state of the HTTP protocol as one of the
         underlying transports for NXAPI.  By default, NXAPI will enable the HTTP transport
         when the feature is first configured.  To disable the use of the HTTP transport,
         set the value of this argument to False.
       name: http
-    - default: true
+    - default: false
       defaultValue: "443"
       description: Configure the port with which the HTTPS server will listen on for
         requests.  By default, NXAPI will bind the HTTPS service to the standard HTTPS
         port 443.  This argument accepts valid port values in the range of 1 to 65535.
       name: https_port
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Controls the operating state of the HTTPS protocol as one of the
         underlying transports for NXAPI.  By default, NXAPI will disable the HTTPS
         transport when the feature is first configured.  To enable the use of the
         HTTPS transport, set the value of this argument to True.
       name: https
-    - default: true
+    - default: false
       defaultValue: "False"
       description: The NXAPI feature provides a web base UI for developers for entering
         commands.  This feature is initially disabled when the NXAPI feature is configured
@@ -2006,7 +2006,7 @@ script:
         URL is unavailable. This is supported on NX-OS 7K series.
       name: sandbox
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: The `state` argument controls whether or not the NXAPI feature
         is configured on the remote device.  When the value is `present` the NXAPI
@@ -2016,32 +2016,32 @@ script:
       predefined:
       - present
       - absent
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Controls the use of whether strong or weak ciphers are configured.
         By default, this feature is disabled and weak ciphers are configured.  To
         enable the use of strong ciphers, set the value of this argument to True.
       name: ssl_strong_ciphers
-    - default: true
+    - default: false
       defaultValue: "True"
       description: Controls the use of the Transport Layer Security version 1.0 is
         configured.  By default, this feature is enabled.  To disable the use of TLSV1.0,
         set the value of this argument to True.
       name: tlsv1_0
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Controls the use of the Transport Layer Security version 1.1 is
         configured.  By default, this feature is disabled.  To enable the use of TLSV1.1,
         set the value of this argument to True.
       name: tlsv1_1
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Controls the use of the Transport Layer Security version 1.2 is
         configured.  By default, this feature is disabled.  To enable the use of TLSV1.2,
         set the value of this argument to True.
       name: tlsv1_2
     description: Manage NXAPI configuration on an NXOS device.
-    name: nxos_nxapi
+    name: nxos-nxapi
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2053,7 +2053,7 @@ script:
       name: ospf
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -2061,7 +2061,7 @@ script:
       - present
       - absent
     description: Manages configuration of an ospf instance.
-    name: nxos_ospf
+    name: nxos-ospf
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2069,7 +2069,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: default
       description: Name of the resource instance. Valid value is a string. The name
         'default' is a valid VRF representing the global OSPF.
@@ -2126,7 +2126,7 @@ script:
     - description: Setting to `yes` will suppress routing update on interface.
       name: passive_interface
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of ospf vrf configuration.
       name: state
@@ -2134,7 +2134,7 @@ script:
       - present
       - absent
     description: Manages a VRF for an OSPF router.
-    name: nxos_ospf_vrf
+    name: nxos-ospf-vrf
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2146,7 +2146,7 @@ script:
       name: anycast_gateway_mac
       required: true
     description: Configures anycast gateway MAC of the switch.
-    name: nxos_overlay_global
+    name: nxos-overlay-global
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2170,7 +2170,7 @@ script:
       name: ssm_range
       required: true
     description: Manages configuration of a PIM instance.
-    name: nxos_pim
+    name: nxos-pim
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2181,7 +2181,7 @@ script:
     - description: Full name of the interface such as Ethernet1/33.
       name: interface
       required: true
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Enable/disable sparse-mode on the interface.
       name: sparse
@@ -2217,7 +2217,7 @@ script:
       predefined:
       - prefix
       - routemap
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Configures interface to be a boundary of a PIM domain.
       name: border
@@ -2230,7 +2230,7 @@ script:
       - prefix
       - routemap
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2238,7 +2238,7 @@ script:
       - present
       - default
     description: Manages PIM interface configuration.
-    name: nxos_pim_interface
+    name: nxos-pim-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2261,7 +2261,7 @@ script:
     - description: Group range is treated in PIM bidirectional mode.
       name: bidir
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -2271,7 +2271,7 @@ script:
       - default
       required: true
     description: Manages configuration of an PIM static RP address instance.
-    name: nxos_pim_rp_address
+    name: nxos-pim-rp-address
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2282,7 +2282,7 @@ script:
     - description: IP address or hostname (resolvable by switch) of remote node.
       name: dest
       required: true
-    - default: true
+    - default: false
       defaultValue: "5"
       description: Number of packets to send.
       name: count
@@ -2291,7 +2291,7 @@ script:
     - description: Outgoing VRF.
       name: vrf
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
@@ -2299,7 +2299,7 @@ script:
       - absent
       - present
     description: Tests reachability using ping from Nexus switch.
-    name: nxos_ping
+    name: nxos-ping
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2307,12 +2307,12 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Safeguard boolean. Set to true if you're sure you want to reboot.
       name: confirm
     description: Reboot a network device.
-    name: nxos_reboot
+    name: nxos-reboot
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2326,7 +2326,7 @@ script:
         checkpoint_file.
       name: rollback_to
     description: Set a checkpoint or rollback to a checkpoint.
-    name: nxos_rollback
+    name: nxos-rollback
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2337,7 +2337,7 @@ script:
     - description: Name of the RPM package.
       name: pkg
       required: true
-    - default: true
+    - default: false
       defaultValue: bootflash
       description: The remote file system of the device. If omitted, devices that
         support a file_system parameter will use their default values.
@@ -2345,7 +2345,7 @@ script:
     - description: List of RPM/patch definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: If the state is present, the rpm will be installed, If the state
         is absent, it will be removed.
@@ -2354,7 +2354,7 @@ script:
       - present
       - absent
     description: Install patch or feature rpms on Cisco NX-OS devices.
-    name: nxos_rpm
+    name: nxos-rpm
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2369,7 +2369,7 @@ script:
         support a file_system parameter will use their default values.
       name: file_system
     description: Perform SMUs on Cisco NX-OS devices.
-    name: nxos_smu
+    name: nxos-smu
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2418,19 +2418,19 @@ script:
     - description: Specify the tags used to distinguish among row entries, to be used
         when `action=add`.
       name: element_key2
-    - default: true
+    - default: false
       defaultValue: "no"
       description: Specify to locally store a new created snapshot, to be used when
         `action=create`.
       name: save_snapshot_locally
-    - default: true
+    - default: false
       defaultValue: ./
       description: Specify the path of the file where new created snapshot or snapshots
         comparison will be stored, to be used when `action=create` and `save_snapshot_locally=true`
         or `action=compare`.
       name: path
     description: Manage snapshots of the running states of selected features.
-    name: nxos_snapshot
+    name: nxos-snapshot
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2452,7 +2452,7 @@ script:
     - description: ACL name to filter snmp requests or keyword 'default'.
       name: acl
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2460,7 +2460,7 @@ script:
       - present
       - absent
     description: Manages SNMP community configs.
-    name: nxos_snmp_community
+    name: nxos-snmp-community
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2472,7 +2472,7 @@ script:
       name: contact
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2481,7 +2481,7 @@ script:
       - absent
       required: true
     description: Manages SNMP contact info.
-    name: nxos_snmp_contact
+    name: nxos-snmp-contact
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2508,7 +2508,7 @@ script:
       - priv
     - description: Community string or v3 username.
       name: community
-    - default: true
+    - default: false
       defaultValue: "162"
       description: UDP port number (0-65535).
       name: udp
@@ -2529,7 +2529,7 @@ script:
         = absent, the interface is removed.
       name: src_intf
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource. If state = present, the host
         is added to the configuration. If only vrf and/or vrf_filter and/or src_intf
@@ -2542,7 +2542,7 @@ script:
       - present
       - absent
     description: Manages SNMP host configuration.
-    name: nxos_snmp_host
+    name: nxos-snmp-host
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2554,7 +2554,7 @@ script:
       name: location
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2562,7 +2562,7 @@ script:
       - present
       - absent
     description: Manages SNMP location information.
-    name: nxos_snmp_location
+    name: nxos-snmp-location
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2606,7 +2606,7 @@ script:
       - all
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: enabled
       description: Manage the state of the resource.
       name: state
@@ -2614,7 +2614,7 @@ script:
       - enabled
       - disabled
     description: Manages SNMP traps.
-    name: nxos_snmp_traps
+    name: nxos-snmp-traps
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2645,7 +2645,7 @@ script:
     - description: Enables AES-128 bit encryption when using privacy password.
       name: encrypt
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2653,7 +2653,7 @@ script:
       - present
       - absent
     description: Manages SNMP users for monitoring.
-    name: nxos_snmp_user
+    name: nxos-snmp-user
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2668,7 +2668,7 @@ script:
         must be the fully-qualified interface name.
       name: next_hop
       required: true
-    - default: true
+    - default: false
       defaultValue: default
       description: VRF for static route.
       name: vrf
@@ -2686,7 +2686,7 @@ script:
         the device before adding the route.
       name: track
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2694,7 +2694,7 @@ script:
       - present
       - absent
     description: Manages static route configuration
-    name: nxos_static_route
+    name: nxos-static-route
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2727,7 +2727,7 @@ script:
     - description: Specifies the mtu, must be an integer or keyword 'default'.
       name: system_mtu
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active
         configuration.  When set to `present`, the values should be configured in
@@ -2738,7 +2738,7 @@ script:
       - present
       - absent
     description: Manage the system attributes on Cisco NXOS devices
-    name: nxos_system
+    name: nxos-system
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2750,7 +2750,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: Final configuration state
       name: state
@@ -2759,7 +2759,7 @@ script:
       - replaced
       - deleted
     description: Telemetry Monitoring Service (TMS) configuration
-    name: nxos_telemetry
+    name: nxos-telemetry
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2775,13 +2775,13 @@ script:
       - disabled
     - description: Message time in seconds for UDLD packets or keyword 'default'.
       name: msg_time
-    - default: true
+    - default: false
       defaultValue: "no"
       description: Ability to reset all ports shut down by UDLD. 'state' parameter
         cannot be 'absent' when this is present.
       name: reset
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource. When set to 'absent', aggressive
         and msg_time are set to their default values.
@@ -2790,7 +2790,7 @@ script:
       - present
       - absent
     description: Manages UDLD global configuration params.
-    name: nxos_udld
+    name: nxos-udld
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2810,7 +2810,7 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2818,7 +2818,7 @@ script:
       - present
       - absent
     description: Manages UDLD interface configuration params.
-    name: nxos_udld_interface
+    name: nxos-udld-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2839,7 +2839,7 @@ script:
         Please note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this
         argument will instruct the module when to change the password.  When set to
@@ -2857,7 +2857,7 @@ script:
     - description: The `sshkey` argument defines the SSH public key to configure for
         the username.  This argument accepts a valid SSH key value.
       name: sshkey
-    - default: true
+    - default: false
       defaultValue: "no"
       description: The `purge` argument instructs the module to consider the resource
         definition absolute.  It will remove any previously configured usernames on
@@ -2865,7 +2865,7 @@ script:
         per nxos constraints.
       name: purge
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: The `state` argument configures the state of the username definition
         as it relates to the device operational configuration.  When set to `present`,
@@ -2876,7 +2876,7 @@ script:
       - present
       - absent
     description: Manage the collection of local users on Nexus devices
-    name: nxos_user
+    name: nxos-user
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2888,7 +2888,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -2898,7 +2898,7 @@ script:
       - overridden
       - deleted
     description: Create VLAN and manage VLAN configurations on NX-OS Interfaces
-    name: nxos_vlans
+    name: nxos-vlans
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2919,7 +2919,7 @@ script:
         Destination (remote) IP address used for peer keepalive link
         pkl_dest is required whenever pkl options are used.
       name: pkl_dest
-    - default: true
+    - default: false
       defaultValue: management
       description: |-
         VRF used for peer keepalive link
@@ -2955,7 +2955,7 @@ script:
       - absent
       required: true
     description: Manages global VPC configuration
-    name: nxos_vpc
+    name: nxos-vpc
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2971,7 +2971,7 @@ script:
     - description: Set to true/false for peer link config on associated portchannel.
       name: peer_link
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2980,7 +2980,7 @@ script:
       - absent
       required: true
     description: Manages interface VPC configuration
-    name: nxos_vpc_interface
+    name: nxos-vpc-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2992,7 +2992,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: up
       description: Administrative state of the VRF.
       name: admin_state
@@ -3016,12 +3016,12 @@ script:
       name: associated_interfaces
     - description: List of VRFs definitions.
       name: aggregate
-    - default: true
+    - default: false
       defaultValue: "no"
       description: Purge VRFs not defined in the `aggregate` parameter.
       name: purge
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -3030,13 +3030,13 @@ script:
       - absent
     - description: Description of the VRF or keyword 'default'.
       name: description
-    - default: true
+    - default: false
       defaultValue: "10"
       description: Time in seconds to wait before checking for the operational state
         on remote device. This wait is applicable for operational state arguments.
       name: delay
     description: Manages global VRF configuration.
-    name: nxos_vrf
+    name: nxos-vrf
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3058,7 +3058,7 @@ script:
         and export target communities.
       name: route_target_both_auto_evpn
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -3066,7 +3066,7 @@ script:
       - present
       - absent
     description: Manages VRF AF.
-    name: nxos_vrf_af
+    name: nxos-vrf-af
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3081,7 +3081,7 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -3089,7 +3089,7 @@ script:
       - present
       - absent
     description: Manages interface specific VRF configuration.
-    name: nxos_vrf_interface
+    name: nxos-vrf-interface
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3103,15 +3103,15 @@ script:
     - description: Full name of interface that is being managed for VRRP.
       name: interface
       required: true
-    - default: true
+    - default: false
       defaultValue: "1"
       description: Time interval between advertisement or 'default' keyword
       name: interval
-    - default: true
+    - default: false
       defaultValue: "100"
       description: VRRP priority or 'default' keyword
       name: priority
-    - default: true
+    - default: false
       defaultValue: "yes"
       description: Enable/Disable preempt.
       name: preempt
@@ -3120,7 +3120,7 @@ script:
     - description: Clear text authentication string or 'default' keyword
       name: authentication
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: shutdown
       description: Used to enable or disable the VRRP process.
       name: admin_state
@@ -3129,7 +3129,7 @@ script:
       - no shutdown
       - default
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -3137,7 +3137,7 @@ script:
       - present
       - absent
     description: Manages VRRP configuration on NX-OS switches.
-    name: nxos_vrrp
+    name: nxos-vrrp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3149,7 +3149,7 @@ script:
       name: domain
       required: true
     description: Manages VTP domain configuration.
-    name: nxos_vtp_domain
+    name: nxos-vtp-domain
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3160,7 +3160,7 @@ script:
     - description: VTP password
       name: vtp_password
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource
       name: state
@@ -3168,7 +3168,7 @@ script:
       - present
       - absent
     description: Manages VTP password configuration.
-    name: nxos_vtp_password
+    name: nxos-vtp-password
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3184,7 +3184,7 @@ script:
       - "2"
       required: true
     description: Manages VTP version configuration.
-    name: nxos_vtp_version
+    name: nxos-vtp-version
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3220,7 +3220,7 @@ script:
         is available on NX-OS 9K series running 9.2.x or higher.
       name: global_ingress_replication_bgp
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -3228,7 +3228,7 @@ script:
       - present
       - absent
     description: Manages VXLAN Network Virtualization Endpoint (NVE).
-    name: nxos_vxlan_vtep
+    name: nxos-vxlan-vtep
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3265,7 +3265,7 @@ script:
         on NX-OS 9K series running 9.2.x or higher.
       name: suppress_arp_disable
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -3273,7 +3273,7 @@ script:
       - present
       - absent
     description: Creates a Virtual Network Identifier member (VNI)
-    name: nxos_vxlan_vtep_vni
+    name: nxos-vxlan-vtep-vni
   dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''

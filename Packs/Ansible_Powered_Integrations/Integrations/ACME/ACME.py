@@ -215,17 +215,17 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'acme_account':
+        elif demisto.command() == 'acme-account':
             return_results(generic_ansible('acme', 'acme_account', demisto.args()))
-        elif demisto.command() == 'acme_account_info':
+        elif demisto.command() == 'acme-account-info':
             return_results(generic_ansible('acme', 'acme_account_info', demisto.args()))
-        elif demisto.command() == 'acme_certificate':
+        elif demisto.command() == 'acme-certificate':
             return_results(generic_ansible('acme', 'acme_certificate', demisto.args()))
-        elif demisto.command() == 'acme_certificate_revoke':
+        elif demisto.command() == 'acme-certificate-revoke':
             return_results(generic_ansible('acme', 'acme_certificate_revoke', demisto.args()))
-        elif demisto.command() == 'acme_challenge_cert_helper':
+        elif demisto.command() == 'acme-challenge-cert-helper':
             return_results(generic_ansible('acme', 'acme_challenge_cert_helper', demisto.args()))
-        elif demisto.command() == 'acme_inspect':
+        elif demisto.command() == 'acme-inspect':
             return_results(generic_ansible('acme', 'acme_inspect', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

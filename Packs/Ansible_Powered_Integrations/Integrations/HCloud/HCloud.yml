@@ -25,7 +25,7 @@ script:
     - description: The name of the datacenter you want to get.
       name: name
     description: Gather info about the Hetzner Cloud datacenters.
-    name: hcloud_datacenter_info
+    name: hcloud-datacenter-info
     outputs:
     - contextPath: HCloud.hcloud_datacenter_info.id
       description: Numeric identifier of the datacenter
@@ -48,7 +48,7 @@ script:
     - description: The label selector for the Floating IP you want to get.
       name: label_selector
     description: Gather infos about the Hetzner Cloud Floating IPs.
-    name: hcloud_floating_ip_info
+    name: hcloud-floating-ip-info
     outputs:
     - contextPath: HCloud.hcloud_floating_ip_info.id
       description: Numeric identifier of the Floating IP
@@ -78,7 +78,7 @@ script:
     - description: The label selector for the images you want to get.
       name: label_selector
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: system
       description: The label selector for the images you want to get.
       name: type
@@ -87,7 +87,7 @@ script:
       - snapshot
       - backup
     description: Gather infos about your Hetzner Cloud images.
-    name: hcloud_image_info
+    name: hcloud-image-info
     outputs:
     - contextPath: HCloud.hcloud_image_info.id
       description: Numeric identifier of the image
@@ -118,7 +118,7 @@ script:
     - description: The name of the location you want to get.
       name: name
     description: Gather infos about your Hetzner Cloud locations.
-    name: hcloud_location_info
+    name: hcloud-location-info
     outputs:
     - contextPath: HCloud.hcloud_location_info.id
       description: Numeric identifier of the location
@@ -152,7 +152,7 @@ script:
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the Network.
       name: state
@@ -160,7 +160,7 @@ script:
       - absent
       - present
     description: Create and manage cloud Networks on the Hetzner Cloud.
-    name: hcloud_network
+    name: hcloud-network
     outputs:
     - contextPath: HCloud.hcloud_network.id
       description: ID of the Network
@@ -181,7 +181,7 @@ script:
     - description: The label selector for the network you want to get.
       name: label_selector
     description: Gather info about your Hetzner Cloud networks.
-    name: hcloud_network_info
+    name: hcloud-network-info
     outputs:
     - contextPath: HCloud.hcloud_network_info.id
       description: Numeric identifier of the network
@@ -213,7 +213,7 @@ script:
         Omit the param to reset the reverse DNS entry to the default value.
       name: dns_ptr
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the reverse DNS entry.
       name: state
@@ -221,7 +221,7 @@ script:
       - absent
       - present
     description: Create and manage reverse DNS entries on the Hetzner Cloud.
-    name: hcloud_rdns
+    name: hcloud-rdns
     outputs:
     - contextPath: HCloud.hcloud_rdns.server
       description: Name of the server
@@ -243,7 +243,7 @@ script:
       name: gateway
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the route.
       name: state
@@ -251,7 +251,7 @@ script:
       - absent
       - present
     description: Create and delete cloud routes on the Hetzner Cloud.
-    name: hcloud_route
+    name: hcloud-route
     outputs:
     - contextPath: HCloud.hcloud_route.network
       description: Name of the Network
@@ -296,17 +296,17 @@ script:
         Datacenter of Server.
         Required of no `location` is given and server does not exists.
       name: datacenter
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Enable or disable Backups for the given Server.
       name: backups
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Resize the disk size, when resizing a server.
         If you want to downgrade the server later, this value should be False.
       name: upgrade_disk
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Force the upgrade of the server.
@@ -323,7 +323,7 @@ script:
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the server.
       name: state
@@ -335,7 +335,7 @@ script:
       - stopped
       - rebuild
     description: Create and manage cloud servers on the Hetzner Cloud.
-    name: hcloud_server
+    name: hcloud-server
     outputs:
     - contextPath: HCloud.hcloud_server.id
       description: Numeric identifier of the server
@@ -379,7 +379,7 @@ script:
     - description: The label selector for the server you want to get.
       name: label_selector
     description: Gather infos about your Hetzner Cloud servers.
-    name: hcloud_server_info
+    name: hcloud-server-info
     outputs:
     - contextPath: HCloud.hcloud_server_info.id
       description: Numeric identifier of the server
@@ -428,7 +428,7 @@ script:
       isArray: true
       name: alias_ips
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the server_network.
       name: state
@@ -436,7 +436,7 @@ script:
       - absent
       - present
     description: Manage the relationship between Hetzner Cloud Networks and servers
-    name: hcloud_server_network
+    name: hcloud-server-network
     outputs:
     - contextPath: HCloud.hcloud_server_network.network
       description: Name of the Network
@@ -456,7 +456,7 @@ script:
     - description: The name of the server type you want to get.
       name: name
     description: Gather infos about the Hetzner Cloud server types.
-    name: hcloud_server_type_info
+    name: hcloud-server-type-info
     outputs:
     - contextPath: HCloud.hcloud_server_type_info.id
       description: Numeric identifier of the server type
@@ -503,7 +503,7 @@ script:
         Required if ssh_key does not exists.
       name: public_key
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the ssh_key.
       name: state
@@ -511,7 +511,7 @@ script:
       - absent
       - present
     description: Create and manage ssh keys on the Hetzner Cloud.
-    name: hcloud_ssh_key
+    name: hcloud-ssh-key
     outputs:
     - contextPath: HCloud.hcloud_ssh_key.id
       description: ID of the ssh_key
@@ -537,7 +537,7 @@ script:
     - description: The label selector for the ssh key you want to get.
       name: label_selector
     description: Gather infos about your Hetzner Cloud ssh_keys.
-    name: hcloud_ssh_key_info
+    name: hcloud-ssh-key-info
     outputs:
     - contextPath: HCloud.hcloud_ssh_key_info.id
       description: Numeric identifier of the ssh_key
@@ -567,7 +567,7 @@ script:
       name: network_zone
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the subnetwork.
       name: state
@@ -575,7 +575,7 @@ script:
       - absent
       - present
     description: Manage cloud subnetworks on the Hetzner Cloud.
-    name: hcloud_subnetwork
+    name: hcloud-subnetwork
     outputs:
     - contextPath: HCloud.hcloud_subnetwork.network
       description: Name of the Network
@@ -627,7 +627,7 @@ script:
       isArray: true
       name: labels
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the volume.
       name: state
@@ -635,7 +635,7 @@ script:
       - absent
       - present
     description: Create and manage block volumes on the Hetzner Cloud.
-    name: hcloud_volume
+    name: hcloud-volume
     outputs:
     - contextPath: HCloud.hcloud_volume.id
       description: ID of the volume
@@ -662,7 +662,7 @@ script:
     - description: The label selector for the volume you want to get.
       name: label_selector
     description: Gather infos about your Hetzner Cloud volumes.
-    name: hcloud_volume_info
+    name: hcloud-volume-info
     outputs:
     - contextPath: HCloud.hcloud_volume_info.id
       description: Numeric identifier of the volume

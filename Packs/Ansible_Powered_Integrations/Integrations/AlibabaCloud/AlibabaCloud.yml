@@ -25,7 +25,6 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: true
       defaultValue: present
       description: The state of the instance after operating.
       name: state
@@ -57,20 +56,17 @@ script:
         characters. It cannot begin with http:// or https://.
       name: description
     - auto: PREDEFINED
-      default: true
       defaultValue: PayByBandwidth
       description: Internet charge type of ECS instance.
       name: internet_charge_type
       predefined:
       - PayByBandwidth
       - PayByTraffic
-    - default: true
-      defaultValue: "200"
+    - defaultValue: "200"
       description: Maximum incoming bandwidth from the public network, measured in
         Mbps (Megabits per second).
       name: max_bandwidth_in
-    - default: true
-      defaultValue: "0"
+    - defaultValue: "0"
       description: Maximum outgoing bandwidth to the public network, measured in Mbps
         (Megabits per second).
       name: max_bandwidth_out
@@ -80,23 +76,20 @@ script:
         password will take effect.
       name: password
     - auto: PREDEFINED
-      default: true
       defaultValue: cloud_efficiency
       description: Category of the system disk.
       name: system_disk_category
       predefined:
       - cloud_efficiency
       - cloud_ssd
-    - default: true
-      defaultValue: "40"
+    - defaultValue: "40"
       description: Size of the system disk, in GB. The valid values are 40~500.
       name: system_disk_size
     - description: Name of the system disk.
       name: system_disk_name
     - description: Description of the system disk.
       name: system_disk_description
-    - default: true
-      defaultValue: "1"
+    - defaultValue: "1"
       description: The number of the new instance. An integer value which indicates
         how many instances that match `count_tag` should be running. Instances are
         either created or terminated based on this value.
@@ -107,26 +100,22 @@ script:
         or be passed in as the `instance_tags` option. If it is not specified, it
         will be replaced by `instance_name`.'
       name: count_tag
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Whether allocate a public ip for the new instance.
       name: allocate_public_ip
     - auto: PREDEFINED
-      default: true
       defaultValue: PostPaid
       description: The charge type of the instance.
       name: instance_charge_type
       predefined:
       - PrePaid
       - PostPaid
-    - default: true
-      defaultValue: "1"
+    - defaultValue: "1"
       description: |-
         The charge duration of the instance, in month. Required when `instance_charge_type=PrePaid`.
         The valid value are [1-9, 12, 24, 36].
       name: period
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Whether automate renew the charge of the instance.
       name: auto_renew
     - auto: PREDEFINED
@@ -142,8 +131,7 @@ script:
     - description: A list of instance ids. It is required when need to operate existing
         instances. If it is specified, `count` will lose efficacy.
       name: instance_ids
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Whether the current operation needs to be execute forcibly.
       name: force
     - description: A hash/dictionaries of instance tags, to add to the new instance
@@ -157,10 +145,10 @@ script:
       name: user_data
     description: Create, Start, Stop, Restart or Terminate an Instance in ECS. Add
       or Remove Instance to/from a Security Group.
-    name: ali_instance
+    name: ali-instance
     outputs:
     - contextPath: AlibabaCloud.instances.availability_zone
-      description: The availability zone of the instance is in.
+      description: The availability zone of the instance is iali_instance_infon.
       type: string
     - contextPath: AlibabaCloud.instances.block_device_mappings
       description: Any block device mapping entries for the instance.
@@ -258,7 +246,7 @@ script:
     - description: A hash/dictionaries of instance tags. `{"key":"value"}`
       name: instance_tags
     description: Gather information on instances of Alibaba Cloud ECS.
-    name: ali_instance_info
+    name: ali-instance-info
     outputs:
     - contextPath: AlibabaCloud.instances.availability_zone
       description: The availability zone of the instance is in.

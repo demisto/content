@@ -51,18 +51,18 @@ script:
       - json
       - merge
       - strategic-merge
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Whether to wait for certain resource kinds to end up in the desired state. By default the module exits once Kubernetes has received the request
         Implemented for `state=present` for `Deployment`, `DaemonSet` and `Pod`, and for `state=absent` for all resource kinds.
         For resource kinds without an implementation, `wait` returns immediately unless `wait_condition` is set.
       name: wait
-    - default: true
+    - default: false
       defaultValue: "5"
       description: Number of seconds to sleep between checks.
       name: wait_sleep
-    - default: true
+    - default: false
       defaultValue: "120"
       description: How long in seconds to wait for the resource to end up in the desired
         state. Ignored if `wait` is not set.
@@ -88,7 +88,7 @@ script:
         mutually exclusive with `merge_type`
       name: apply
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines if an object should be created, patched, or deleted.
         When set to `present`, an object will be created, if it does not already exist.
@@ -99,12 +99,12 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "False"
       description: If set to `yes`, and `state` is `present`, an existing object will
         be replaced.
       name: force
-    - default: true
+    - default: false
       defaultValue: v1
       description: Use to specify the API version. Use to create, delete, or discover
         an object without providing a full resource definition. Use in conjunction
@@ -147,7 +147,7 @@ script:
         via K8S_AUTH_CONTEXT environment variable.
       name: context
     description: Manage Kubernetes (K8s) objects
-    name: k8s_k8s
+    name: k8s-k8s
     outputs:
     - contextPath: Kubernetes.result.api_version
       description: The versioned schema of this representation of an object.
@@ -170,7 +170,7 @@ script:
       description: elapsed time of task in seconds
       type: number
   - arguments:
-    - default: true
+    - default: false
       defaultValue: v1
       description: Use to specify the API version. in conjunction with `kind`, `name`,
         and `namespace` to identify a specific object.
@@ -201,7 +201,7 @@ script:
         via K8S_AUTH_CONTEXT environment variable.
       name: context
     description: Describe Kubernetes (K8s) objects
-    name: k8s_info
+    name: k8s-info
     outputs:
     - contextPath: Kubernetes.resources.api_version
       description: The versioned schema of this representation of an object.
@@ -218,7 +218,7 @@ script:
     - contextPath: Kubernetes.resources.status
       description: Current status details for the object.
   - arguments:
-    - default: true
+    - default: false
       defaultValue: v1
       description: Use to specify the API version. Use to create, delete, or discover
         an object without providing a full resource definition. Use in conjunction
@@ -268,13 +268,13 @@ script:
       name: current_replicas
     - description: Only attempt to scale, if the current object version matches.
       name: resource_version
-    - default: true
+    - default: false
       defaultValue: "True"
       description: For Deployment, ReplicaSet, Replication Controller, wait for the
         status value of `ready_replicas` to change to the number of `replicas`. In
         the case of a Job, this option is ignored.
       name: wait
-    - default: true
+    - default: false
       defaultValue: "20"
       description: When `wait` is `True`, the number of seconds to wait for the `ready_replicas`
         status to equal  `replicas`. If the status is not reached within the allotted
@@ -282,7 +282,7 @@ script:
       name: wait_timeout
     description: Set a new size for a Deployment, ReplicaSet, Replication Controller,
       or Job.
-    name: k8s_scale
+    name: k8s-scale
     outputs:
     - contextPath: Kubernetes.result.api_version
       description: The versioned schema of this representation of an object.
@@ -305,7 +305,7 @@ script:
       isArray: true
       name: resource_definition
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines if an object should be created, patched, or deleted.
         When set to `present`, an object will be created, if it does not already exist.
@@ -316,7 +316,7 @@ script:
       predefined:
       - present
       - absent
-    - default: true
+    - default: false
       defaultValue: "False"
       description: If set to `True`, and `state` is `present`, an existing object
         will be replaced.
@@ -373,7 +373,7 @@ script:
         via K8S_AUTH_CONTEXT environment variable.
       name: context
     description: Manage Services on Kubernetes
-    name: k8s_service
+    name: k8s-service
     outputs:
     - contextPath: Kubernetes.result.api_version
       description: The versioned schema of this representation of an object.

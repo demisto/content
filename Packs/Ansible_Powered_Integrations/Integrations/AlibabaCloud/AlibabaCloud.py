@@ -178,9 +178,9 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'ali_instance':
+        elif demisto.command() == 'ali-instance':
             return_results(generic_ansible('alibabacloud', 'ali_instance', demisto.args()))
-        elif demisto.command() == 'ali_instance_info':
+        elif demisto.command() == 'ali-instance-info':
             return_results(generic_ansible('alibabacloud', 'ali_instance_info', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

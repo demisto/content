@@ -26,19 +26,16 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: true
       defaultValue: present
       description: Manage DNS record.
       name: state
       predefined:
       - present
       - absent
-    - default: true
-      defaultValue: "53"
+    - defaultValue: "53"
       description: Use this TCP port when connecting to `server`.
       name: port
     - auto: PREDEFINED
-      default: true
       defaultValue: hmac-md5
       description: Specify key algorithm used by `key_secret`.
       name: key_algorithm
@@ -59,18 +56,15 @@ script:
         be absolute (ending with a dot).
       name: record
       required: true
-    - default: true
-      defaultValue: A
+    - defaultValue: A
       description: Sets the record type.
       name: type
-    - default: true
-      defaultValue: "3600"
+    - defaultValue: "3600"
       description: Sets the record TTL.
       name: ttl
     - description: Sets the record value.
       name: value
     - auto: PREDEFINED
-      default: true
       defaultValue: tcp
       description: Sets the transport protocol (TCP or UDP). TCP is the recommended
         and a more robust option.
@@ -79,7 +73,7 @@ script:
       - tcp
       - udp
     description: Manage DNS records.
-    name: dns_nsupdate
+    name: dns-nsupdate
   dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''

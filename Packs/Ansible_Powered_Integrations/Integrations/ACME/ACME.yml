@@ -46,12 +46,10 @@ script:
       - absent
       - changed_key
       required: true
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Whether account creation is allowed (when state is `present`).
       name: allow_creation
-    - default: true
-      defaultValue: '[]'
+    - defaultValue: '[]'
       description: |-
         A list of contact URLs.
         Email addresses must be prefixed with `mailto:`.
@@ -59,8 +57,7 @@ script:
         Must be specified when state is `present`. Will be ignored if state is `absent` or `changed_key`.
       isArray: true
       name: contact
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Boolean indicating whether you agree to the terms of service document.
         ACME servers can require this to be true.
@@ -95,7 +92,6 @@ script:
         not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
-      default: true
       defaultValue: "1"
       description: |-
         The ACME version of the endpoint.
@@ -104,8 +100,7 @@ script:
       predefined:
       - "1"
       - "2"
-    - default: true
-      defaultValue: https://acme-staging.api.letsencrypt.org/directory
+    - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: |-
         The ACME directory to use. This is the entry point URL to access CA server API.
         For safety reasons the default is set to the Let's Encrypt staging server (for the ACME v1 protocol). This will create technically correct, but untrusted certificates.
@@ -114,14 +109,12 @@ script:
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
         `Warning`: So far, the module has only been tested against Let's Encrypt (staging and production), Buypass (staging and production), and `Pebble testing server,https://github.com/letsencrypt/Pebble`.
       name: acme_directory
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether calls to the ACME directory will validate TLS certificates.
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example when testing against a local Pebble server.
       name: validate_certs
     - auto: PREDEFINED
-      default: true
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -134,7 +127,7 @@ script:
       - cryptography
       - openssl
     description: Create, modify or delete ACME accounts
-    name: acme_account
+    name: acme-account
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -143,7 +136,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
       defaultValue: ignore
       description: |-
         Whether to retrieve the list of order URLs or order objects, if provided by the ACME server.
@@ -172,7 +164,6 @@ script:
         not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
-      default: true
       defaultValue: "1"
       description: |-
         The ACME version of the endpoint.
@@ -181,8 +172,7 @@ script:
       predefined:
       - "1"
       - "2"
-    - default: true
-      defaultValue: https://acme-staging.api.letsencrypt.org/directory
+    - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: |-
         The ACME directory to use. This is the entry point URL to access CA server API.
         For safety reasons the default is set to the Let's Encrypt staging server (for the ACME v1 protocol). This will create technically correct, but untrusted certificates.
@@ -191,14 +181,12 @@ script:
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
         `Warning`: So far, the module has only been tested against Let's Encrypt (staging and production), Buypass (staging and production), and `Pebble testing server,https://github.com/letsencrypt/Pebble`.
       name: acme_directory
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether calls to the ACME directory will validate TLS certificates.
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example when testing against a local Pebble server.
       name: validate_certs
     - auto: PREDEFINED
-      default: true
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -211,7 +199,7 @@ script:
       - cryptography
       - openssl
     description: Retrieves information on ACME accounts
-    name: acme_account_info
+    name: acme-account-info
     outputs:
     - contextPath: ACME.account.contact
       description: the challenge resource that must be created for validation
@@ -275,22 +263,19 @@ script:
         Default is latest gathered from `acme_directory` URL.
         This option will only be used when `acme_version` is 1.
       name: agreement
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Boolean indicating whether you agree to the terms of service document.
         ACME servers can require this to be true.
         This option will only be used when `acme_version` is not 1.
       name: terms_agreed
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Boolean indicating whether the module should create the account if necessary, and update its contact data.
         Set to `no` if you want to use the `acme_account` module to manage your account instead, and to avoid accidental creation of a new account using an old key if you changed the account key with `acme_account`.
         If set to `no`, `terms_agreed` and `account_email` are ignored.
       name: modify_account
     - auto: PREDEFINED
-      default: true
       defaultValue: http-01
       description: The challenge to be performed.
       name: challenge
@@ -323,26 +308,22 @@ script:
     - description: If specified, the intermediate certificate will be written to this
         file.
       name: chain_dest
-    - default: true
-      defaultValue: "10"
+    - defaultValue: "10"
       description: |-
         The number of days the certificate must have left being valid. If `cert_days < remaining_days`, then it will be renewed. If the certificate is not renewed, module return values will not include `challenge_data`.
         To make sure that the certificate is renewed in any case, you can use the `force` option.
       name: remaining_days
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Deactivate authentication objects (authz) after issuing a certificate, or when issuing the certificate failed.
         Authentication objects are bound to an account key and remain valid for a certain amount of time, and can be used to issue certificates without having to re-authenticate the domain. This can be a security concern.
       name: deactivate_authzs
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: |-
         Enforces the execution of the challenge and validation, even if an existing certificate is still valid for more than `remaining_days`.
         This is especially helpful when having an updated CSR e.g. with additional domains for which a new certificate is desired.
       name: force
-    - default: true
-      defaultValue: "False"
+    - defaultValue: "False"
       description: When set to `yes`, will retrieve all alternate chains offered by
         the ACME CA. These will not be written to disk, but will be returned together
         with the main chain as `all_chains`. See the documentation for the `all_chains`
@@ -366,7 +347,6 @@ script:
         not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
-      default: true
       defaultValue: "1"
       description: |-
         The ACME version of the endpoint.
@@ -375,8 +355,7 @@ script:
       predefined:
       - "1"
       - "2"
-    - default: true
-      defaultValue: https://acme-staging.api.letsencrypt.org/directory
+    - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: |-
         The ACME directory to use. This is the entry point URL to access CA server API.
         For safety reasons the default is set to the Let's Encrypt staging server (for the ACME v1 protocol). This will create technically correct, but untrusted certificates.
@@ -385,14 +364,12 @@ script:
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
         `Warning`: So far, the module has only been tested against Let's Encrypt (staging and production), Buypass (staging and production), and `Pebble testing server,https://github.com/letsencrypt/Pebble`.
       name: acme_directory
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether calls to the ACME directory will validate TLS certificates.
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example when testing against a local Pebble server.
       name: validate_certs
     - auto: PREDEFINED
-      default: true
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -405,7 +382,7 @@ script:
       - cryptography
       - openssl
     description: Create SSL/TLS certificates with the ACME protocol
-    name: acme_certificate
+    name: acme-certificate
     outputs:
     - contextPath: ACME.challenge_data.resource
       description: The challenge resource that must be created for validation.
@@ -478,7 +455,6 @@ script:
         not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
-      default: true
       defaultValue: "1"
       description: |-
         The ACME version of the endpoint.
@@ -487,8 +463,7 @@ script:
       predefined:
       - "1"
       - "2"
-    - default: true
-      defaultValue: https://acme-staging.api.letsencrypt.org/directory
+    - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: |-
         The ACME directory to use. This is the entry point URL to access CA server API.
         For safety reasons the default is set to the Let's Encrypt staging server (for the ACME v1 protocol). This will create technically correct, but untrusted certificates.
@@ -497,14 +472,12 @@ script:
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
         `Warning`: So far, the module has only been tested against Let's Encrypt (staging and production), Buypass (staging and production), and `Pebble testing server,https://github.com/letsencrypt/Pebble`.
       name: acme_directory
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether calls to the ACME directory will validate TLS certificates.
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example when testing against a local Pebble server.
       name: validate_certs
     - auto: PREDEFINED
-      default: true
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -517,7 +490,7 @@ script:
       - cryptography
       - openssl
     description: Revoke certificates with the ACME protocol
-    name: acme_certificate_revoke
+    name: acme-certificate-revoke
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -545,7 +518,7 @@ script:
         Mutually exclusive with `private_key_src`.
       name: private_key_content
     description: Prepare certificates required for ACME challenges such as C(tls-alpn-01)
-    name: acme_challenge_cert_helper
+    name: acme-challenge-cert-helper
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -558,7 +531,6 @@ script:
         Must be specified if `method` is not `directory-only`.
       name: url
     - auto: PREDEFINED
-      default: true
       defaultValue: get
       description: |-
         The method to use to access the given URL on the ACME server.
@@ -574,8 +546,7 @@ script:
         An encoded JSON object which will be sent as the content if `method` is `post`.
         Required when `method` is `post`, and not allowed otherwise.
       name: content
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: If `method` is `post` or `get`, make the module fail in case an
         ACME error is returned.
       name: fail_on_acme_error
@@ -597,7 +568,6 @@ script:
         not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
-      default: true
       defaultValue: "1"
       description: |-
         The ACME version of the endpoint.
@@ -606,8 +576,7 @@ script:
       predefined:
       - "1"
       - "2"
-    - default: true
-      defaultValue: https://acme-staging.api.letsencrypt.org/directory
+    - defaultValue: https://acme-staging.api.letsencrypt.org/directory
       description: |-
         The ACME directory to use. This is the entry point URL to access CA server API.
         For safety reasons the default is set to the Let's Encrypt staging server (for the ACME v1 protocol). This will create technically correct, but untrusted certificates.
@@ -616,14 +585,12 @@ script:
         For Buypass, the production directory URL for ACME v2 and v1 is `https://api.buypass.com/acme/directory`.
         `Warning`: So far, the module has only been tested against Let's Encrypt (staging and production), Buypass (staging and production), and `Pebble testing server,https://github.com/letsencrypt/Pebble`.
       name: acme_directory
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Whether calls to the ACME directory will validate TLS certificates.
         `Warning`: Should `only ever` be set to `no` for testing purposes, for example when testing against a local Pebble server.
       name: validate_certs
     - auto: PREDEFINED
-      default: true
       defaultValue: auto
       description: |-
         Determines which crypto backend to use.
@@ -636,7 +603,7 @@ script:
       - cryptography
       - openssl
     description: Send direct requests to an ACME server
-    name: acme_inspect
+    name: acme-inspect
   dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''

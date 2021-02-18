@@ -51,7 +51,7 @@ script:
         Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current
         devices active running configuration.
@@ -60,7 +60,7 @@ script:
       - present
       - absent
     description: Manage multiline banners on Cisco IOS devices
-    name: ios_banner
+    name: ios-banner
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -71,7 +71,7 @@ script:
     - description: Specifies the BGP related configuration.
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merge
       description: |-
         Specifies the operation to be performed on the BGP process configured on the device.
@@ -86,7 +86,7 @@ script:
       - override
       - delete
     description: Configure global BGP protocol settings on Cisco IOS.
-    name: ios_bgp
+    name: ios-bgp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -109,7 +109,7 @@ script:
         fails. See examples.
       name: wait_for
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for`
         argument to specify the match policy.  Valid values are `all` or `any`.  If
@@ -119,20 +119,20 @@ script:
       predefined:
       - any
       - all
-    - default: true
+    - default: false
       defaultValue: "10"
       description: Specifies the number of retries a command should by tried before
         it is considered failed. The command is run on the target device every retry
         and evaluated against the `wait_for` conditions.
       name: retries
-    - default: true
+    - default: false
       defaultValue: "1"
       description: Configures the interval in seconds to wait between retries of the
         command. If the command does not pass the specified conditions, the interval
         indicates how long to wait before trying the command again.
       name: interval
     description: Run commands on remote devices running Cisco IOS
-    name: ios_command
+    name: ios-command
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -167,7 +167,7 @@ script:
         set.
       name: after
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the
         set of commands against the current device config.  If match is set to `line`,
@@ -183,7 +183,7 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on
         the device. If the replace argument is set to `line` then the modified lines
@@ -194,13 +194,13 @@ script:
       predefined:
       - line
       - block
-    - default: true
+    - default: false
       defaultValue: '@'
       description: This argument is used when pushing a multiline configuration element
         to the IOS device.  It specifies the character to use as the delimiting character.  This
         only applies to the configuration action.
       name: multiline_delimiter
-    - default: true
+    - default: false
       defaultValue: "no"
       description: This argument will cause the module to create a full backup of
         the current `running-config` from the remote device before any changes are
@@ -216,14 +216,14 @@ script:
         argument allows the implementer to pass in the configuration to use as the
         base config for comparison.
       name: running_config
-    - default: true
+    - default: false
       defaultValue: "no"
       description: This argument specifies whether or not to collect all defaults
         when getting the remote device running config.  When enabled, the module will
         get the current config by issuing the command `show running-config all`.
       name: defaults
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the
         changes are not copied to non-volatile storage by default.  Using this argument
@@ -270,7 +270,7 @@ script:
       isArray: true
       name: backup_options
     description: Manage Cisco IOS configuration sections
-    name: ios_config
+    name: ios-config
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -278,7 +278,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: '!config'
       description: |-
         When supplied, this argument restricts the facts collected to a given subset.
@@ -295,7 +295,7 @@ script:
         'l3_interfaces'.
       name: gather_network_resources
     description: Collect facts from remote devices running Cisco IOS
-    name: ios_facts
+    name: ios-facts
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -307,7 +307,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -317,7 +317,7 @@ script:
       - overridden
       - deleted
     description: Manages interface attributes of Cisco IOS network devices
-    name: ios_interfaces
+    name: ios-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -329,7 +329,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -339,7 +339,7 @@ script:
       - overridden
       - deleted
     description: Manage Layer-2 interface on Cisco IOS devices.
-    name: ios_l2_interfaces
+    name: ios-l2-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -351,7 +351,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -361,7 +361,7 @@ script:
       - overridden
       - deleted
     description: Manage Layer-3 interface on Cisco IOS devices.
-    name: ios_l3_interfaces
+    name: ios-l3-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -373,7 +373,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -383,7 +383,7 @@ script:
       - deleted
     description: Manage Global Link Aggregation Control Protocol (LACP) on Cisco IOS
       devices.
-    name: ios_lacp
+    name: ios-lacp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -395,7 +395,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -406,7 +406,7 @@ script:
       - deleted
     description: Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices
       interface.
-    name: ios_lacp_interfaces
+    name: ios-lacp-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -418,7 +418,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -428,7 +428,7 @@ script:
       - overridden
       - deleted
     description: Manage Link Aggregation on Cisco IOS devices.
-    name: ios_lag_interfaces
+    name: ios-lag-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -453,19 +453,19 @@ script:
     - description: List of link aggregation definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the link aggregation group.
       name: state
       predefined:
       - present
       - absent
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Purge links not defined in the `aggregate` parameter.
       name: purge
     description: Manage link aggregation groups on Cisco IOS network devices
-    name: ios_linkagg
+    name: ios-linkagg
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -474,7 +474,7 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will
         be enabled else if it is `absent` it will be disabled.
@@ -483,7 +483,7 @@ script:
       - present
       - absent
     description: Manage LLDP configuration on Cisco IOS network devices.
-    name: ios_lldp
+    name: ios-lldp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -495,7 +495,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -505,7 +505,7 @@ script:
       - deleted
     description: Configure and manage Link Layer Discovery Protocol(LLDP) attributes
       on IOS platforms.
-    name: ios_lldp_global
+    name: ios-lldp-global
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -517,7 +517,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -528,7 +528,7 @@ script:
       - deleted
     description: Manage link layer discovery protocol (LLDP) attributes of interfaces
       on Cisco IOS devices.
-    name: ios_lldp_interfaces
+    name: ios-lldp-interfaces
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -550,7 +550,7 @@ script:
         The hostname or IP address of the destination.
         Required when `dest=host`.
       name: name
-    - default: true
+    - default: false
       defaultValue: "4096"
       description: Size of buffer. The acceptable value is in range from 4096 to 4294967295
         bytes.
@@ -558,7 +558,7 @@ script:
     - description: Set logging facility.
       name: facility
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: debugging
       description: Set logging severity levels.
       name: level
@@ -574,7 +574,7 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
@@ -582,7 +582,7 @@ script:
       - present
       - absent
     description: Manage logging on network devices
-    name: ios_logging
+    name: ios-logging
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -596,11 +596,11 @@ script:
       name: source_int
     - description: ACL for peer/server access restricition.
       name: acl
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Enable NTP logs. Data type boolean.
       name: logging
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Enable NTP authentication. Data type boolean.
       name: auth
@@ -609,7 +609,7 @@ script:
     - description: auth_key id. Data type string
       name: key_id
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -617,7 +617,7 @@ script:
       - present
       - absent
     description: Manages core NTP configuration.
-    name: ios_ntp
+    name: ios-ntp
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -625,7 +625,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: true
+    - default: false
       defaultValue: "5"
       description: Number of packets to send.
       name: count
@@ -636,19 +636,19 @@ script:
     - description: The source IP Address.
       name: source
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: default
       description: The VRF to use for forwarding.
       name: vrf
     description: Tests reachability using ping from Cisco IOS network devices
-    name: ios_ping
+    name: ios-ping
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -677,7 +677,7 @@ script:
     - description: List of static route definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the static route configuration.
       name: state
@@ -685,7 +685,7 @@ script:
       - present
       - absent
     description: Manage static IP routes on Cisco IOS network devices
-    name: ios_static_route
+    name: ios-static-route
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -717,7 +717,7 @@ script:
         lookups.  This argument accepts either a list of DNS servers See examples.
       name: name_servers
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active
         configuration.  When set to `present`, the values should be configured in
@@ -728,7 +728,7 @@ script:
       - present
       - absent
     description: Manage the system attributes on Cisco IOS devices
-    name: ios_system
+    name: ios-system
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -749,7 +749,7 @@ script:
         note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this
         argument will instruct the module when to change the password.  When set to
@@ -760,7 +760,7 @@ script:
       - on_create
       - always
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: secret
       description: This argument determines whether a 'password' or 'secret' will
         be configured.
@@ -785,14 +785,14 @@ script:
     - description: Defines the username without assigning a password. This will allow
         the user to login to the system without being authenticated by a password.
       name: nopassword
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Instructs the module to consider the resource definition absolute.
         It will remove any previously configured usernames on the device with the
         exception of the `admin` user (the current defined set of users).
       name: purge
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Configures the state of the username definition as it relates to
         the device operational configuration. When set to `present`, the username(s)
@@ -803,7 +803,7 @@ script:
       - present
       - absent
     description: Manage the aggregate of local users on Cisco IOS device
-    name: ios_user
+    name: ios-user
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -815,7 +815,7 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -825,7 +825,7 @@ script:
       - overridden
       - deleted
     description: Manage VLANs on Cisco IOS devices.
-    name: ios_vlans
+    name: ios-vlans
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -858,18 +858,18 @@ script:
         does not match with the operational state of vrf interfaces on device it will
         result in failure.
       name: associated_interfaces
-    - default: true
+    - default: false
       defaultValue: "10"
       description: Time in seconds to wait before checking for the operational state
         on remote device.
       name: delay
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Instructs the module to consider the VRF definition absolute.  It
         will remove any previously configured VRFs on the device.
       name: purge
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Configures the state of the VRF definition as it relates to the
         device operational configuration.  When set to `present`, the VRF should be
@@ -907,7 +907,7 @@ script:
         configuration submode to the VRF.
       name: route_import_ipv6
     description: Manage the collection of VRF definitions on Cisco IOS devices
-    name: ios_vrf
+    name: ios-vrf
   dockerimage: demisto/ansible-runner:1.0.0.13885
   runonce: false
   script: ''

@@ -178,7 +178,7 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'dns_nsupdate':
+        elif demisto.command() == 'dns-nsupdate':
             return_results(generic_ansible('dns', 'nsupdate', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:

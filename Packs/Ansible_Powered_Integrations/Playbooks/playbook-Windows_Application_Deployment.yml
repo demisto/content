@@ -183,7 +183,7 @@ tasks:
       id: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
       iscommand: true
       name: Test connectivity to endpoint
-      script: MicrosoftWindows|||win_ping
+      script: MicrosoftWindows|||win-ping
       type: regular
       version: -1
     taskid: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
@@ -246,7 +246,7 @@ tasks:
       id: 54a33cbd-932b-4398-8716-85931b4b2cce
       iscommand: true
       name: Choco Install
-      script: '|||win_chocolatey'
+      script: '|||win-chocolatey'
       type: regular
       version: -1
     taskid: 54a33cbd-932b-4398-8716-85931b4b2cce
@@ -301,7 +301,7 @@ tasks:
       id: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
       iscommand: true
       name: Notify end user of Success via popup
-      script: MicrosoftWindows|||win_msg
+      script: MicrosoftWindows|||win-msg
       type: regular
       version: -1
     taskid: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
@@ -331,7 +331,7 @@ tasks:
       id: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3
       iscommand: true
       name: Gather System Facts for troubleshooting
-      script: MicrosoftWindows|||win_gather_facts
+      script: MicrosoftWindows|||win-gather-facts
       type: regular
       version: -1
     taskid: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3

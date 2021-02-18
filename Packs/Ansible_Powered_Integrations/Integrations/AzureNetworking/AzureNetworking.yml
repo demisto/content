@@ -78,7 +78,6 @@ script:
       isArray: true
       name: ip_configurations
     - auto: PREDEFINED
-      default: true
       defaultValue: present
       description: |-
         Assert the state of the AzureFirewall.
@@ -95,14 +94,13 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure Firewall instance.
-    name: azure_rm_azurefirewall
+    name: azure-rm-azurefirewall
   - arguments:
     - description: The name of the resource group.
       name: resource_group
@@ -111,7 +109,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get AzureFirewall info.
-    name: azure_rm_azurefirewall_info
+    name: azure-rm-azurefirewall-info
     outputs:
     - contextPath: AzureNetworking.firewalls.id
       description: '[''Resource ID.'']'
@@ -156,17 +154,14 @@ script:
     - description: Name of the virtual network.
       name: name
       required: true
-    - default: true
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Use with `state=present` to remove any existing `address_prefixes`.
       name: purge_address_prefixes
-    - default: true
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Use with `state=present` to remove existing DNS servers, reverting
         to default Azure servers. Mutually exclusive with DNS servers.
       name: purge_dns_servers
     - auto: PREDEFINED
-      default: true
       defaultValue: present
       description: State of the virtual network. Use `present` to create or update
         and `absent` to delete.
@@ -182,14 +177,13 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
-      defaultValue: "True"
+    - defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure virtual networks
-    name: azure_rm_virtualnetwork
+    name: azure-rm-virtualnetwork
     outputs:
     - contextPath: AzureNetworking.state.address_prefixes
       description: '[''The virtual network IPv4 address ranges.'']'
@@ -227,7 +221,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get virtual network facts
-    name: azure_rm_virtualnetwork_info
+    name: azure-rm-virtualnetwork-info
     outputs:
     - contextPath: AzureNetworking.virtualnetworks.id
       description: '[''Resource ID of the virtual network.'']'
@@ -259,7 +253,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the VPN Gateway. Use `present` to create or update VPN
         gateway and `absent` to delete VPN gateway.
@@ -281,7 +275,7 @@ script:
     - description: List of IP configurations.
       name: ip_configurations
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: vpn
       description: The type of this virtual network gateway.
       name: gateway_type
@@ -289,19 +283,19 @@ script:
       - vpn
       - express_route
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: route_based
       description: The type of this virtual private network.
       name: vpn_type
       predefined:
       - route_based
       - policy_based
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Whether BGP is enabled for this virtual network gateway or not.
       name: enable_bgp
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: VpnGw1
       description: The reference of the VirtualNetworkGatewaySku resource which represents
         the SKU selected for Virtual network gateway.
@@ -320,14 +314,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure virtual network gateways
-    name: azure_rm_virtualnetworkgateway
+    name: azure-rm-virtualnetworkgateway
   - arguments:
     - description: Name of a resource group where the vnet exists.
       name: resource_group
@@ -345,26 +339,26 @@ script:
         It can be a dict which contains `name` and `resource_group` of remote virtual network.
         Required when creating.
       name: remote_virtual_network
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Allows VMs in the remote VNet to access all VMs in the local VNet.
       name: allow_virtual_network_access
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Allows forwarded traffic from the VMs in the remote VNet.
       name: allow_forwarded_traffic
-    - default: true
+    - default: false
       defaultValue: "False"
       description: If remote gateways can be used on this virtual network.
       name: use_remote_gateways
-    - default: true
+    - default: false
       defaultValue: "False"
       description: |-
         Allows VNet to use the remote VNet's gateway. Remote VNet gateway must have --allow-gateway-transit enabled for remote peering.
         Only 1 peering can have this flag enabled. Cannot be set if the VNet already has a gateway.
       name: allow_gateway_transit
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: State of the virtual network peering. Use `present` to create or
         update a peering and `absent` to delete it.
@@ -375,7 +369,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Manage Azure Virtual Network Peering
-    name: azure_rm_virtualnetworkpeering
+    name: azure-rm-virtualnetworkpeering
   - arguments:
     - description: Name of a resource group where the vnet exists.
       name: resource_group
@@ -388,7 +382,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get facts of Azure Virtual Network Peering
-    name: azure_rm_virtualnetworkpeering_info
+    name: azure-rm-virtualnetworkpeering-info
     outputs:
     - contextPath: AzureNetworking.vnetpeerings.id
       description: ID of current Virtual Network peering.
@@ -439,7 +433,7 @@ script:
         Can be a dict containing the `name` and `resource_group` of the security group.
       name: security_group
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the subnet. Use `present` to create or update
         a subnet and use `absent` to delete a subnet.
@@ -462,7 +456,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Manage Azure subnets
-    name: azure_rm_subnet
+    name: azure-rm-subnet
     outputs:
     - contextPath: AzureNetworking.state.address_prefix
       description: '[''IP address CIDR.'']'
@@ -490,7 +484,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get Azure Subnet facts
-    name: azure_rm_subnet_info
+    name: azure-rm-subnet-info
     outputs:
     - contextPath: AzureNetworking.subnets.id
       description: '[''Subnet resource ID.'']'
@@ -543,7 +537,7 @@ script:
       name: target_resource_id
     - description: The fully-qualified DNS name of the endpoint.
       name: target
-    - default: true
+    - default: false
       defaultValue: "True"
       description: The status of the endpoint.
       name: enabled
@@ -569,7 +563,7 @@ script:
       isArray: true
       name: geo_mapping
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the Traffic Manager endpoint. Use `present`
         to create or update a Traffic Manager endpoint and `absent` to delete it.
@@ -580,7 +574,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Manage Azure Traffic Manager endpoint
-    name: azure_rm_trafficmanagerendpoint
+    name: azure-rm-trafficmanagerendpoint
   - arguments:
     - description: Limit results to a specific Traffic Manager endpoint.
       name: name
@@ -600,7 +594,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get Azure Traffic Manager endpoint facts
-    name: azure_rm_trafficmanagerendpoint_info
+    name: azure-rm-trafficmanagerendpoint-info
     outputs:
     - contextPath: AzureNetworking.endpoints.resource_group
       description: '[''Name of a resource group.'']'
@@ -648,7 +642,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the Traffic Manager profile. Use `present`
         to create or update a Traffic Manager profile and `absent` to delete it.
@@ -656,14 +650,14 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: global
       description: |-
         Valid Azure location. Defaults to `global` because in default public Azure cloud, Traffic Manager profile can only be deployed globally.
         Reference `https://docs.microsoft.com/en-us/azure/traffic-manager/quickstart-create-traffic-manager-profile#create-a-traffic-manager-profile`.
       name: location
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: enabled
       description: The status of the Traffic Manager profile.
       name: profile_status
@@ -671,7 +665,7 @@ script:
       - enabled
       - disabled
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: performance
       description: The traffic routing method of the Traffic Manager profile.
       name: routing_method
@@ -682,7 +676,7 @@ script:
       - geographic
     - description: The DNS settings of the Traffic Manager profile.
       name: dns_config
-    - default: true
+    - default: false
       defaultValue: '{''protocol'': ''HTTP'', ''port'': 80, ''path'': ''/''}'
       description: The endpoint monitoring settings of the Traffic Manager profile.
       name: monitor_config
@@ -694,14 +688,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure Traffic Manager profile
-    name: azure_rm_trafficmanagerprofile
+    name: azure-rm-trafficmanagerprofile
   - arguments:
     - description: Limit results to a specific Traffic Manager profile.
       name: name
@@ -713,7 +707,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get Azure Traffic Manager profile facts
-    name: azure_rm_trafficmanagerprofile_info
+    name: azure-rm-trafficmanagerprofile-info
     outputs:
     - contextPath: AzureNetworking.tms.resource_group
       description: '[''Name of a resource group where the Traffic Manager profile
@@ -749,7 +743,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the network interface. Use `present` to create
         or update an interface and `absent` to delete an interface.
@@ -773,7 +767,7 @@ script:
       name: subnet_name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Linux
       description: |-
         Determines any rules to be added to a default security group.
@@ -789,7 +783,7 @@ script:
         This option will be deprecated in 2.9, use `ip_configurations` instead.
       name: private_ip_address
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Dynamic
       description: |-
         (Deprecate) Whether or not the assigned IP address is permanent.
@@ -800,7 +794,7 @@ script:
       predefined:
       - Dynamic
       - Static
-    - default: true
+    - default: false
       defaultValue: "yes"
       description: |-
         (Deprecate) When creating a network interface, if no public IP address name is provided a default public IP address will be created.
@@ -812,7 +806,7 @@ script:
         This option will be deprecated in 2.9, use `ip_configurations` instead.
       name: public_ip_address_name
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Dynamic
       description: |-
         (Deprecate) If a `public_ip_address_name` is not provided, a default public IP address will be created.
@@ -826,12 +820,12 @@ script:
         field `private_ip_address`, `private_ip_allocation_method`, `public_ip_address_name`,
         `public_ip`, `public_ip_allocation_method`, `name`.
       name: ip_configurations
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Whether the network interface should be created with the accelerated
         networking feature or not.
       name: enable_accelerated_networking
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Whether a security group should be be created with the NIC.
@@ -851,7 +845,7 @@ script:
         ports `3389` and `5986`. Override the default ports by providing a list of
         open ports.
       name: open_ports
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Whether to enable IP forwarding.
       name: enable_ip_forwarding
@@ -868,14 +862,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure network interfaces
-    name: azure_rm_networkinterface
+    name: azure-rm-networkinterface
     outputs:
     - contextPath: AzureNetworking.state.dns_server
       description: '[''Which DNS servers should the NIC lookup.'', ''List of IP addresses.'']'
@@ -932,7 +926,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get network interface facts
-    name: azure_rm_networkinterface_info
+    name: azure-rm-networkinterface-info
     outputs:
     - contextPath: AzureNetworking.networkinterfaces.id
       description: '[''Id of the network interface.'']'
@@ -977,7 +971,7 @@ script:
       name: resource_group
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: dynamic
       description: |-
         Control whether the assigned Public IP remains permanently assigned to the object.
@@ -996,7 +990,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the Public IP. Use `present` to create or update
         a and `absent` to delete.
@@ -1021,7 +1015,7 @@ script:
     - description: Idle timeout in minutes.
       name: idle_timeout
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: ipv4
       description: The public IP address version.
       name: version
@@ -1036,14 +1030,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure Public IP Addresses
-    name: azure_rm_publicipaddress
+    name: azure-rm-publicipaddress
     outputs:
     - contextPath: AzureNetworking.state.dns_settings
       description: '[''The FQDN of the DNS record associated with the public IP address.'']'
@@ -1092,7 +1086,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get public IP facts
-    name: azure_rm_publicipaddress_info
+    name: azure-rm-publicipaddress-info
     outputs:
     - contextPath: AzureNetworking.publicipaddresses.id
       description: '[''Resource ID.'']'
@@ -1146,7 +1140,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the route. Use `present` to create or update
         and `absent` to delete.
@@ -1157,7 +1151,7 @@ script:
     - description: The destination CIDR to which the route applies.
       name: address_prefix
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: none
       description: The type of Azure hop the packet should be sent to.
       name: next_hop_type
@@ -1182,14 +1176,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure route resource
-    name: azure_rm_route
+    name: azure-rm-route
   - arguments:
     - description: Name of resource group.
       name: resource_group
@@ -1198,7 +1192,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the route table. Use `present` to create or
         update and `absent` to delete.
@@ -1206,7 +1200,7 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "False"
       description: Specified whether to disable the routes learned by BGP on that
         route table.
@@ -1223,14 +1217,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure route table resource
-    name: azure_rm_routetable
+    name: azure-rm-routetable
   - arguments:
     - description: Limit results to a specific route table.
       name: name
@@ -1242,7 +1236,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get route table facts
-    name: azure_rm_routetable_info
+    name: azure-rm-routetable-info
   - arguments:
     - description: |-
         The set of default rules automatically added to a security group at creation.
@@ -1253,12 +1247,12 @@ script:
       name: location
     - description: Name of the security group to operate on.
       name: name
-    - default: true
+    - default: false
       defaultValue: "no"
       description: Remove any existing rules not matching those defined in the default_rules
         parameter.
       name: purge_default_rules
-    - default: true
+    - default: false
       defaultValue: "no"
       description: Remove any existing rules not matching those defined in the rules
         parameters.
@@ -1270,7 +1264,7 @@ script:
         rule is a dictionary.
       name: rules
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the security group. Set to `present` to create
         or update a security group. Set to `absent` to remove a security group.
@@ -1286,14 +1280,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure network security groups
-    name: azure_rm_securitygroup
+    name: azure-rm-securitygroup
     outputs:
     - contextPath: AzureNetworking.state.default_rules
       description: '[''The default security rules of network security group.'']'
@@ -1329,7 +1323,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get security group facts
-    name: azure_rm_securitygroup_info
+    name: azure-rm-securitygroup-info
     outputs:
     - contextPath: AzureNetworking.securitygroups.etag
       description: '[''A unique read-only string that changes whenever the resource
@@ -1377,7 +1371,7 @@ script:
       - SOA
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: purge
       description: Whether existing record values not sent to the module should be
         purged.
@@ -1386,7 +1380,7 @@ script:
       - append
       - purge
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the record set. Use `present` to create or
         update and `absent` to delete.
@@ -1394,7 +1388,7 @@ script:
       predefined:
       - absent
       - present
-    - default: true
+    - default: false
       defaultValue: "3600"
       description: Time to live of the record set in seconds.
       name: time_to_live
@@ -1408,14 +1402,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Create, delete and update DNS record sets and records
-    name: azure_rm_dnsrecordset
+    name: azure-rm-dnsrecordset
     outputs:
     - contextPath: AzureNetworking.state.id
       description: '[''The DNS record set ID.'']'
@@ -1462,14 +1456,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Get DNS Record Set facts
-    name: azure_rm_dnsrecordset_info
+    name: azure-rm-dnsrecordset-info
     outputs:
     - contextPath: AzureNetworking.dnsrecordsets.id
       description: '[''ID of the dns recordset.'']'
@@ -1494,7 +1488,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: present
       description: Assert the state of the zone. Use `present` to create or update
         and `absent` to delete.
@@ -1528,14 +1522,14 @@ script:
         To remove tags set append_tags option to false.
       isArray: true
       name: tags
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Manage Azure DNS zones
-    name: azure_rm_dnszone
+    name: azure-rm-dnszone
   - arguments:
     - description: Limit results by resource group. Required when filtering by name.
       name: resource_group
@@ -1547,14 +1541,14 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    - default: true
+    - default: false
       defaultValue: "True"
       description: |-
         Use to control if tags field is canonical or just appends to existing tags.
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Get DNS zone facts
-    name: azure_rm_dnszone_info
+    name: azure-rm-dnszone-info
     outputs:
     - contextPath: AzureNetworking.dnszones.id
       description: '[''id of the DNS Zone.'']'
