@@ -12,7 +12,7 @@ This integration was integrated and tested with version 1.0.0 of Rapid7 InsightI
 | apiKey | InsightIDR API key | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-| first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | max_fetch | Fetch Limit | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |

@@ -1,2 +1,8 @@
 [file:PAN-OS]
 ignore=PA116
+
+[file:Panorama.yml]
+ignore=IN136
+
+[file:README.md]
+ignore=RM102

@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 import traceback
 import requests
@@ -71,7 +72,7 @@ def fetch_samples(client, mapper_in, report_url):
             workday_user = convert_incident_fields_to_cli_names(workday_user)
             entry['UserProfile'] = workday_user
             event = {
-                "name": f'{workday_user.get("givenname")} {workday_user.get("surname")}',
+                "name": workday_user.get('email'),
                 "rawJSON": json.dumps(entry),
                 "details": 'This is a sample event.'
             }
@@ -118,7 +119,7 @@ def fetch_incidents(client, mapper_in, report_url):
 
             entry['UserProfile'] = workday_user
             event = {
-                "name": f'{workday_user.get("givenname")} {workday_user.get("surname")}',
+                "name": workday_user.get('email'),
                 "rawJSON": json.dumps(entry),
                 "details": 'Profile changed. Changed fields: ' + str(changed_fields)
             }
@@ -321,6 +322,9 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
+
+
+from IAMApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
