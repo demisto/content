@@ -13,10 +13,11 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
         Private id set without the old data of the new package
     """
     for content_entity, content_entity_value_list in private_id_set.items():
-        for content_entity_value in content_entity_value_list[:]:
-            content_item_value = content_entity_value.get(list(content_entity_value.keys())[0], {})
-            if content_item_value.get('pack') == new_pack_name:
-                content_entity_value_list.remove(content_entity_value)
+        if content_entity != "Packs":
+            for content_entity_value in content_entity_value_list[:]:
+                content_item_value = content_entity_value.get(list(content_entity_value.keys())[0], {})
+                if content_item_value.get('pack') == new_pack_name:
+                    content_entity_value_list.remove(content_entity_value)
     return private_id_set
 
 
