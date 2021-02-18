@@ -114,7 +114,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get Azure Auto Scale Setting facts
-    name: azure-rm-autoscale_info
+    name: azure-rm-autoscale-info
   - arguments:
     - description: Name of a resource group where the availability set exists or will
         be created.
@@ -284,7 +284,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
       name: append_tags
     description: Create or destroy Azure Resource Manager template deployments
-    name: azure_rm_deployment
+    name: azure-rm-deployment
     outputs:
     - contextPath: AzureComputeV3.deployment.group_name
       description: '[''Name of the resource group.'']'

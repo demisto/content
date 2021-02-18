@@ -1143,7 +1143,7 @@ script:
       name: host
       required: true
     description: Gather facts on processes listening on TCP and UDP ports.
-    name: linux_listen_ports_facts
+    name: linux-listen-ports-facts
     outputs:
     - contextPath: Linux.ansible_facts.tcp_listen
       description: A list of processes that are listening on a TCP port.
@@ -3914,7 +3914,7 @@ script:
       description: Get file attributes using lsattr tool if present.
       name: get_attributes
     description: Retrieve file or file system status
-    name: linux_stat
+    name: linux-stat
     outputs:
     - contextPath: Linux.stat.exists
       description: If the destination path actually exists or not
