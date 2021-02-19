@@ -15,8 +15,8 @@ class Client:
     def _http_request(self, method, url_suffix='', full_url=None, params=None, headers=None, data=None, json_data=None):
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
         headers = headers if headers else self._headers
-        client_cert_path = None
-        client_key_path = None
+        client_cert_path = ''
+        client_key_path = ''
         if self._client_cert:
             client_cert_path = 'client.cert'
             with open(client_cert_path, 'wb') as file:

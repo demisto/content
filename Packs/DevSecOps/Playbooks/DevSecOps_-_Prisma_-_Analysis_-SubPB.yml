@@ -259,6 +259,7 @@ tasks:
       name: IaC Vulns Found?
       type: condition
       iscommand: false
+      description: ''
       brand: ""
     nexttasks:
       '#default#':

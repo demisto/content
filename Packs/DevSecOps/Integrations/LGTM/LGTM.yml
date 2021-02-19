@@ -266,9 +266,6 @@ script:
     - contextPath: LGTM.code_review_result.languages.alerts.fixed
       description: The number of alerts fixed by the patch for this query.
       type: Number
-    - contextPath: LGTM.code_review_result.languages.alerts.query.properties.id
-      description: LGTM Alert Query ID
-      type: Unknown
   - arguments:
     - default: false
       description: The numeric project identifier
@@ -633,7 +630,7 @@ script:
     - contextPath: LGTM.queryjob-results-overview.next
       description: LGTM Query Job Results Overview Next
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false

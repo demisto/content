@@ -42,6 +42,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "31"
@@ -85,6 +86,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "10"
@@ -1837,13 +1839,13 @@ outputs:
 - contextPath: CreatedIndicator
   description: commands.local.cmd.new.indicator.output.indicator
 - contextPath: LGTM.code_review_result
-  type: unknown
+  description: LGTM Code Review Results
 - contextPath: LGTM.code_review_result.languages
-  type: unknown
+  description: LGTM Code Review Result Languages
 - contextPath: LGTM.code_review_result.languages.alerts
-  type: unknown
+  description: LGTM Code Review Result Languages Alerts
 - contextPath: LGTM.code_review_result.languages.alerts.query.properties
-  type: unknown
+  description: LGTM Code Review Results Alerts Query Properties
 tests:
 - GitLab-test-playbook
 - LGTM-test-playbook

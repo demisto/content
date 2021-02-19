@@ -113,6 +113,7 @@ def get_object_command(client, args):
     length = int(args.get('length', 0))
     extra_query_params = args.get('extra_query_params', None)
     request_headers = args.get('request_headers', None)
+    object_bytes = None
     try:
         response = client.get_object(bucket_name=bucket_name, object_name=object_name, offset=offset,
                                      length=length, extra_query_params=extra_query_params,
@@ -122,8 +123,8 @@ def get_object_command(client, args):
         try:
             response.close()
             response.release_conn()
-        except Exception as e:
-            return_error(f"Failed to get object: {object_name}")
+        except Exception:
+            return_error("Failed to get object")
 
     return fileResult(filename=object_name, data=object_bytes)
 

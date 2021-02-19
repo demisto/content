@@ -2165,7 +2165,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870186,
                 "CreatedBy": "/bin/sh -c #(nop)  ENTRYPOINT [\"tini\" \"--\" \"/docker-entrypoint.sh\"]",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2173,7 +2173,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870186,
                 "CreatedBy": "/bin/sh -c cp config.default.js config.js",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 8142,
                 "Tags": null
             },
@@ -2181,7 +2181,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870185,
                 "CreatedBy": "/bin/sh -c #(nop) WORKDIR /node_modules/mongo-express",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2189,7 +2189,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870185,
                 "CreatedBy": "/bin/sh -c #(nop) COPY file:ad71ad0a2a1967b86be9140686f9a9aa6f78dc470d2ec9de89cbf1a25e85b550 in / ",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 1017,
                 "Tags": null
             },
@@ -2197,7 +2197,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870184,
                 "CreatedBy": "/bin/sh -c set -eux; \tapk add --no-cache --virtual .me-install-deps git; \tnpm install mongo-express@$MONGO_EXPRESS; \tapk del --no-network .me-install-deps",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 38458723,
                 "Tags": null
             },
@@ -2205,7 +2205,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870163,
                 "CreatedBy": "/bin/sh -c #(nop)  ENV MONGO_EXPRESS=0.54.0",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2213,7 +2213,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870162,
                 "CreatedBy": "/bin/sh -c #(nop)  ENV ME_CONFIG_EDITORTHEME=default ME_CONFIG_MONGODB_SERVER=mongo ME_CONFIG_MONGODB_ENABLE_ADMIN=true ME_CONFIG_BASICAUTH_USERNAME= ME_CONFIG_BASICAUTH_PASSWORD= VCAP_APP_HOST=0.0.0.0",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2221,7 +2221,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870162,
                 "CreatedBy": "/bin/sh -c #(nop)  EXPOSE 8081",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2229,7 +2229,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609870162,
                 "CreatedBy": "/bin/sh -c apk add --no-cache bash tini",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 2026658,
                 "Tags": null
             },
@@ -2237,7 +2237,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867823,
                 "CreatedBy": "/bin/sh -c #(nop)  CMD [\"node\"]",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2245,7 +2245,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867822,
                 "CreatedBy": "/bin/sh -c #(nop)  ENTRYPOINT [\"docker-entrypoint.sh\"]",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2253,7 +2253,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867822,
                 "CreatedBy": "/bin/sh -c #(nop) COPY file:238737301d47304174e4d24f4def935b29b3069c03c72ae8de97d94624382fce in /usr/local/bin/ ",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 116,
                 "Tags": null
             },
@@ -2261,7 +2261,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867821,
                 "CreatedBy": "/bin/sh -c apk add --no-cache --virtual .build-deps-yarn curl gnupg tar   && for key in     6A010C5166006599AA17F08146C2130DFD2497F5   ; do     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys \"$key\" ||     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys \"$key\" ||     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys \"$key\" ;   done   && curl -fsSLO --compressed \"https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz\"   && curl -fsSLO --compressed \"https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc\"   && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && mkdir -p /opt   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && apk del .build-deps-yarn   && yarn --version",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 7622724,
                 "Tags": null
             },
@@ -2269,7 +2269,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867816,
                 "CreatedBy": "/bin/sh -c #(nop)  ENV YARN_VERSION=1.22.5",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2277,7 +2277,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867816,
                 "CreatedBy": "/bin/sh -c addgroup -g 1000 node     && adduser -u 1000 -G node -s /bin/sh -D node     && apk add --no-cache         libstdc++     && apk add --no-cache --virtual .build-deps         curl     && ARCH= && alpineArch=\"$(apk --print-arch)\"       && case \"${alpineArch##*-}\" in         x86_64)           ARCH='x64'           CHECKSUM=\"783fbfc85228418d0630b778214bdcea3a82d5c3ac13aefcc14e4a81e977d9c9\"           ;;         *) ;;       esac   && if [ -n \"${CHECKSUM}\" ]; then     set -eu;     curl -fsSLO --compressed \"https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\";     echo \"$CHECKSUM  node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\" | sha256sum -c -       && tar -xJf \"node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\" -C /usr/local --strip-components=1 --no-same-owner       && ln -s /usr/local/bin/node /usr/local/bin/nodejs;   else     echo \"Building from source\"     && apk add --no-cache --virtual .build-deps-full         binutils-gold         g++         gcc         gnupg         libgcc         linux-headers         make         python2     && for key in       4ED778F539E3634C779C87C6D7062848A1AB005C       94AE36675C464D64BAFA68DD7434390BDBE9B9C5       1C050899334244A8AF75E53792EF661D867B9DFA       71DCFD284A79C3B38668286BC97EC7A07EDE3FC1       8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600       C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8       C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C       DD8F2338BAE7501E3DD5AC78C273792F7D83545D       A48C2BEE680E841632CD4E44F07496B3EB3C1762       108F52B48DB57BB0CC439B2997B01419BD92F80A       B9E2F5981AA6E0CD28160D9FF13993A75599653C     ; do       gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys \"$key\" ||       gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys \"$key\" ||       gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys \"$key\" ;     done     && curl -fsSLO --compressed \"https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz\"     && curl -fsSLO --compressed \"https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc\"     && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc     && grep \" node-v$NODE_VERSION.tar.xz\\$\" SHASUMS256.txt | sha256sum -c -     && tar -xf \"node-v$NODE_VERSION.tar.xz\"     && cd \"node-v$NODE_VERSION\"     && ./configure     && make -j$(getconf _NPROCESSORS_ONLN) V=     && make install     && apk del .build-deps-full     && cd ..     && rm -Rf \"node-v$NODE_VERSION\"     && rm \"node-v$NODE_VERSION.tar.xz\" SHASUMS256.txt.asc SHASUMS256.txt;   fi   && rm -f \"node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz\"   && apk del .build-deps   && node --version   && npm --version",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 75656589,
                 "Tags": null
             },
@@ -2285,7 +2285,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1609867804,
                 "CreatedBy": "/bin/sh -c #(nop)  ENV NODE_VERSION=12.20.1",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2293,7 +2293,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1608164389,
                 "CreatedBy": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 0,
                 "Tags": null
             },
@@ -2301,7 +2301,7 @@ Get the history of an image
                 "Comment": "",
                 "Created": 1608164389,
                 "CreatedBy": "/bin/sh -c #(nop) ADD file:8ed80010e443da19d72546bcee9a35e0a8d244c72052b1994610bf5939d479c2 in / ",
-                "Id": "<missing>",
+                "Id": "missing",
                 "Size": 5614943,
                 "Tags": null
             }
@@ -2316,24 +2316,23 @@ Get the history of an image
 >|Comment|Created|CreatedBy|Id|Size|Tags|
 >|---|---|---|---|---|---|
 >|  | 1609870186 | /bin/sh -c #(nop)  CMD ["mongo-express"] | sha256:05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e | 0 | mongo-express:latest |
->|  | 1609870186 | /bin/sh -c #(nop)  ENTRYPOINT ["tini" "--" "/docker-entrypoint.sh"] | <missing> | 0 |  |
->|  | 1609870186 | /bin/sh -c cp config.default.js config.js | <missing> | 8142 |  |
->|  | 1609870185 | /bin/sh -c #(nop) WORKDIR /node_modules/mongo-express | <missing> | 0 |  |
->|  | 1609870185 | /bin/sh -c #(nop) COPY file:ad71ad0a2a1967b86be9140686f9a9aa6f78dc470d2ec9de89cbf1a25e85b550 in /  | <missing> | 1017 |  |
->|  | 1609870184 | /bin/sh -c set -eux; 	apk add --no-cache --virtual .me-install-deps git; 	npm install mongo-express@$MONGO_EXPRESS; 	apk del --no-network .me-install-deps | <missing> | 38458723 |  |
->|  | 1609870163 | /bin/sh -c #(nop)  ENV MONGO_EXPRESS=0.54.0 | <missing> | 0 |  |
->|  | 1609870162 | /bin/sh -c #(nop)  ENV ME_CONFIG_EDITORTHEME=default ME_CONFIG_MONGODB_SERVER=mongo ME_CONFIG_MONGODB_ENABLE_ADMIN=true ME_CONFIG_BASICAUTH_USERNAME= ME_CONFIG_BASICAUTH_PASSWORD= VCAP_APP_HOST=0.0.0.0 | <missing> | 0 |  |
->|  | 1609870162 | /bin/sh -c #(nop)  EXPOSE 8081 | <missing> | 0 |  |
->|  | 1609870162 | /bin/sh -c apk add --no-cache bash tini | <missing> | 2026658 |  |
->|  | 1609867823 | /bin/sh -c #(nop)  CMD ["node"] | <missing> | 0 |  |
->|  | 1609867822 | /bin/sh -c #(nop)  ENTRYPOINT ["docker-entrypoint.sh"] | <missing> | 0 |  |
->|  | 1609867822 | /bin/sh -c #(nop) COPY file:238737301d47304174e4d24f4def935b29b3069c03c72ae8de97d94624382fce in /usr/local/bin/  | <missing> | 116 |  |
->|  | 1609867821 | /bin/sh -c apk add --no-cache --virtual .build-deps-yarn curl gnupg tar   && for key in     6A010C5166006599AA17F08146C2130DFD2497F5   ; do     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" \|\|     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" \|\|     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ;   done   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz"   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc"   && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && mkdir -p /opt   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && apk del .build-deps-yarn   && yarn --version | <missing> | 7622724 |  |
->|  | 1609867816 | /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.5 | <missing> | 0 |  |
->|  | 1609867816 | /bin/sh -c addgroup -g 1000 node     && adduser -u 1000 -G node -s /bin/sh -D node     && apk add --no-cache         libstdc++     && apk add --no-cache --virtual .build-deps         curl     && ARCH= && alpineArch="$(apk --print-arch)"       && case "${alpineArch##*-}" in         x86_64)           ARCH='x64'           CHECKSUM="783fbfc85228418d0630b778214bdcea3a82d5c3ac13aefcc14e4a81e977d9c9"           ;;         *) ;;       esac   && if [ -n "${CHECKSUM}" ]; then     set -eu;     curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz";     echo "$CHECKSUM  node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \| sha256sum -c -       && tar -xJf "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner       && ln -s /usr/local/bin/node /usr/local/bin/nodejs;   else     echo "Building from source"     && apk add --no-cache --virtual .build-deps-full         binutils-gold         g++         gcc         gnupg         libgcc         linux-headers         make         python2     && for key in       4ED778F539E3634C779C87C6D7062848A1AB005C       94AE36675C464D64BAFA68DD7434390BDBE9B9C5       1C050899334244A8AF75E53792EF661D867B9DFA       71DCFD284A79C3B38668286BC97EC7A07EDE3FC1       8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600       C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8       C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C       DD8F2338BAE7501E3DD5AC78C273792F7D83545D       A48C2BEE680E841632CD4E44F07496B3EB3C1762       108F52B48DB57BB0CC439B2997B01419BD92F80A       B9E2F5981AA6E0CD28160D9FF13993A75599653C     ; do       gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" \|\|       gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" \|\|       gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ;     done     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc"     && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc     && grep " node-v$NODE_VERSION.tar.xz\$" SHASUMS256.txt \| sha256sum -c -     && tar -xf "node-v$NODE_VERSION.tar.xz"     && cd "node-v$NODE_VERSION"     && ./configure     && make -j$(getconf _NPROCESSORS_ONLN) V=     && make install     && apk del .build-deps-full     && cd ..     && rm -Rf "node-v$NODE_VERSION"     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt;   fi   && rm -f "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz"   && apk del .build-deps   && node --version   && npm --version | <missing> | 75656589 |  |
->|  | 1609867804 | /bin/sh -c #(nop)  ENV NODE_VERSION=12.20.1 | <missing> | 0 |  |
->|  | 1608164389 | /bin/sh -c #(nop)  CMD ["/bin/sh"] | <missing> | 0 |  |
->|  | 1608164389 | /bin/sh -c #(nop) ADD file:8ed80010e443da19d72546bcee9a35e0a8d244c72052b1994610bf5939d479c2 in /  | <missing> | 5614943 |  |
+>|  | 1609870186 | /bin/sh -c cp config.default.js config.js | missing | 8142 |  |
+>|  | 1609870185 | /bin/sh -c #(nop) WORKDIR /node_modules/mongo-express | missing | 0 |  |
+>|  | 1609870185 | /bin/sh -c #(nop) COPY file:ad71ad0a2a1967b86be9140686f9a9aa6f78dc470d2ec9de89cbf1a25e85b550 in /  | missing | 1017 |  |
+>|  | 1609870184 | /bin/sh -c set -eux; 	apk add --no-cache --virtual .me-install-deps git; 	npm install mongo-express@$MONGO_EXPRESS; 	apk del --no-network .me-install-deps | missing | 38458723 |  |
+>|  | 1609870163 | /bin/sh -c #(nop)  ENV MONGO_EXPRESS=0.54.0 | missing | 0 |  |
+>|  | 1609870162 | /bin/sh -c #(nop)  ENV ME_CONFIG_EDITORTHEME=default ME_CONFIG_MONGODB_SERVER=mongo ME_CONFIG_MONGODB_ENABLE_ADMIN=true ME_CONFIG_BASICAUTH_USERNAME= ME_CONFIG_BASICAUTH_PASSWORD= VCAP_APP_HOST=0.0.0.0 | missing | 0 |  |
+>|  | 1609870162 | /bin/sh -c #(nop)  EXPOSE 8081 | missing | 0 |  |
+>|  | 1609870162 | /bin/sh -c apk add --no-cache bash tini | missing | 2026658 |  |
+>|  | 1609867823 | /bin/sh -c #(nop)  CMD ["node"] | missing | 0 |  |
+>|  | 1609867822 | /bin/sh -c #(nop)  ENTRYPOINT ["docker-entrypoint.sh"] | missing | 0 |  |
+>|  | 1609867822 | /bin/sh -c #(nop) COPY file:238737301d47304174e4d24f4def935b29b3069c03c72ae8de97d94624382fce in /usr/local/bin/  | missing | 116 |  |
+>|  | 1609867821 | /bin/sh -c apk add --no-cache --virtual .build-deps-yarn curl gnupg tar   && for key in     6A010C5166006599AA17F08146C2130DFD2497F5   ; do     gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" \|\|     gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" \|\|     gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ;   done   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz"   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc"   && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && mkdir -p /opt   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz   && apk del .build-deps-yarn   && yarn --version | missing | 7622724 |  |
+>|  | 1609867816 | /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.5 | missing | 0 |  |
+>|  | 1609867816 | /bin/sh -c addgroup -g 1000 node     && adduser -u 1000 -G node -s /bin/sh -D node     && apk add --no-cache         libstdc++     && apk add --no-cache --virtual .build-deps         curl     && ARCH= && alpineArch="$(apk --print-arch)"       && case "${alpineArch##*-}" in         x86_64)           ARCH='x64'           CHECKSUM="783fbfc85228418d0630b778214bdcea3a82d5c3ac13aefcc14e4a81e977d9c9"           ;;         *) ;;       esac   && if [ -n "${CHECKSUM}" ]; then     set -eu;     curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz";     echo "$CHECKSUM  node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \| sha256sum -c -       && tar -xJf "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner       && ln -s /usr/local/bin/node /usr/local/bin/nodejs;   else     echo "Building from source"     && apk add --no-cache --virtual .build-deps-full         binutils-gold         g++         gcc         gnupg         libgcc         linux-headers         make         python2     && for key in       4ED778F539E3634C779C87C6D7062848A1AB005C       94AE36675C464D64BAFA68DD7434390BDBE9B9C5       1C050899334244A8AF75E53792EF661D867B9DFA       71DCFD284A79C3B38668286BC97EC7A07EDE3FC1       8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600       C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8       C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C       DD8F2338BAE7501E3DD5AC78C273792F7D83545D       A48C2BEE680E841632CD4E44F07496B3EB3C1762       108F52B48DB57BB0CC439B2997B01419BD92F80A       B9E2F5981AA6E0CD28160D9FF13993A75599653C     ; do       gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" \|\|       gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" \|\|       gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ;     done     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"     && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc"     && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc     && grep " node-v$NODE_VERSION.tar.xz\$" SHASUMS256.txt \| sha256sum -c -     && tar -xf "node-v$NODE_VERSION.tar.xz"     && cd "node-v$NODE_VERSION"     && ./configure     && make -j$(getconf _NPROCESSORS_ONLN) V=     && make install     && apk del .build-deps-full     && cd ..     && rm -Rf "node-v$NODE_VERSION"     && rm "node-v$NODE_VERSION.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt;   fi   && rm -f "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz"   && apk del .build-deps   && node --version   && npm --version | missing | 75656589 |  |
+>|  | 1609867804 | /bin/sh -c #(nop)  ENV NODE_VERSION=12.20.1 | missing | 0 |  |
+>|  | 1608164389 | /bin/sh -c #(nop)  CMD ["/bin/sh"] | missing | 0 |  |
+>|  | 1608164389 | /bin/sh -c #(nop) ADD file:8ed80010e443da19d72546bcee9a35e0a8d244c72052b1994610bf5939d479c2 in /  | missing | 5614943 |  |
 
 
 ### docker-image-inspect

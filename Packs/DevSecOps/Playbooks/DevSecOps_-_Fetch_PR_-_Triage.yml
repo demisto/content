@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 519691fe-0a4c-4b49-81fd-a229ee131fc4
+    taskid: c17323cc-8578-4e3d-8e94-7a9e35346b80
     type: start
     task:
-      id: 519691fe-0a4c-4b49-81fd-a229ee131fc4
+      id: c17323cc-8578-4e3d-8e94-7a9e35346b80
       version: -1
       name: ""
       iscommand: false
@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 8aeba2d0-f099-4844-8384-4c32ca71d369
+    taskid: aaeb3249-e840-4f68-818a-e90b585d079b
     type: regular
     task:
-      id: 8aeba2d0-f099-4844-8384-4c32ca71d369
+      id: aaeb3249-e840-4f68-818a-e90b585d079b
       version: -1
       name: Get PR Details
       description: Get a pull request
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ed19b4bc-9733-4fcb-8ee1-46f8ce05ee86
+    taskid: 72ca98ee-558a-4087-804c-430dfa3fb11e
     type: regular
     task:
-      id: ed19b4bc-9733-4fcb-8ee1-46f8ce05ee86
+      id: 72ca98ee-558a-4087-804c-430dfa3fb11e
       version: -1
       name: Get Head Commit
       description: Get a commit
@@ -98,10 +98,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 8257647f-0235-4f7c-8ef6-469c69a2cd79
+    taskid: 70012bd9-7ead-42a2-838d-ce1f74e5c20f
     type: regular
     task:
-      id: 8257647f-0235-4f7c-8ef6-469c69a2cd79
+      id: 70012bd9-7ead-42a2-838d-ce1f74e5c20f
       version: -1
       name: Record Head Commit Details
       description: commands.local.cmd.set.incident
@@ -697,10 +697,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 528a7264-0740-4c31-88ff-0d9aa5156446
+    taskid: c5df7903-1221-4331-83d9-17f693953865
     type: regular
     task:
-      id: 528a7264-0740-4c31-88ff-0d9aa5156446
+      id: c5df7903-1221-4331-83d9-17f693953865
       version: -1
       name: Create a Commit Tracking Record
       description: commands.local.cmd.new.indicator
@@ -860,10 +860,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 1775ff5b-3e3b-451b-8e08-dd338630e5a3
+    taskid: cd36810a-c956-41d3-8783-4ea734f694c4
     type: regular
     task:
-      id: 1775ff5b-3e3b-451b-8e08-dd338630e5a3
+      id: cd36810a-c956-41d3-8783-4ea734f694c4
       version: -1
       name: Parse PR Details
       description: commands.local.cmd.set.incident
@@ -1461,10 +1461,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 89f65b93-0853-4e42-8b0d-86f3f7effd63
+    taskid: 00e1aa04-9fef-4cf2-82eb-4eeedaff67d9
     type: regular
     task:
-      id: 89f65b93-0853-4e42-8b0d-86f3f7effd63
+      id: 00e1aa04-9fef-4cf2-82eb-4eeedaff67d9
       version: -1
       name: Get PR Check Runs
       description: Get a check run details
@@ -1505,12 +1505,13 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: ae31a206-ea44-49ef-8f0b-da1672f66bb7
+    taskid: 1092355d-a88d-4e4f-87f3-a3162652bcbd
     type: condition
     task:
-      id: ae31a206-ea44-49ef-8f0b-da1672f66bb7
+      id: 1092355d-a88d-4e4f-87f3-a3162652bcbd
       version: -1
       name: LGTM Check Run Exists ?
+      description: LGTM Check Run Exists
       type: condition
       iscommand: false
       brand: ""
@@ -1541,50 +1542,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "35":
-    id: "35"
-    taskid: 8be9b159-64d7-4abd-86b9-3007bc0494b4
-    type: regular
-    task:
-      id: 8be9b159-64d7-4abd-86b9-3007bc0494b4
-      version: -1
-      name: Refresh The Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 390,
-          "y": 175
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "36":
     id: "36"
-    taskid: d39b756d-0cc4-42c8-8540-c2ed9ce4172a
+    taskid: 58ffa99d-9a34-4558-83bb-4263c6d76f5a
     type: condition
     task:
-      id: d39b756d-0cc4-42c8-8540-c2ed9ce4172a
+      id: 58ffa99d-9a34-4558-83bb-4263c6d76f5a
       version: -1
       name: Prisma Cloud Check Run Exists?
+      description: Prisma Cloud Check Run Exists
       type: condition
       iscommand: false
       brand: ""
@@ -1617,10 +1583,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 0c34ce1b-9219-4162-8a7d-b15a396fa8e2
+    taskid: 4f8c8055-6953-4043-8b53-cf35cc51b119
     type: playbook
     task:
-      id: 0c34ce1b-9219-4162-8a7d-b15a396fa8e2
+      id: 4f8c8055-6953-4043-8b53-cf35cc51b119
       version: -1
       name: DevSecOps - LGTM - Analysis - SubPB
       description: A CodeQL Code Analysis Playbook
@@ -1666,10 +1632,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: c298fb92-359b-4530-8143-0b4f853b9353
+    taskid: 44405001-df18-49d3-8aec-e73d49f6752d
     type: playbook
     task:
-      id: c298fb92-359b-4530-8143-0b4f853b9353
+      id: 44405001-df18-49d3-8aec-e73d49f6752d
       version: -1
       name: DevSecOps - Prisma - Analysis -SubPB
       description: Prisma Task Analysis Playbook
@@ -1709,10 +1675,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 24c651e8-77a9-44bb-8f23-0c24bcbba0ba
+    taskid: 4bae7bdc-cf63-4f3f-8e0c-36618e76ec10
     type: playbook
     task:
-      id: 24c651e8-77a9-44bb-8f23-0c24bcbba0ba
+      id: 4bae7bdc-cf63-4f3f-8e0c-36618e76ec10
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
@@ -1758,10 +1724,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 6c15288a-be73-4084-8dce-12f006c0b7ea
+    taskid: 9c1b9db2-ebba-4fed-833d-e9d434d57abb
     type: regular
     task:
-      id: 6c15288a-be73-4084-8dce-12f006c0b7ea
+      id: 9c1b9db2-ebba-4fed-833d-e9d434d57abb
       version: -1
       name: Update the PR Closure Date
       description: commands.local.cmd.set.incident
@@ -2352,10 +2318,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 2361f686-1afe-4072-8e29-8da4ec30e861
+    taskid: 41e272ec-486b-4da0-80f9-9408fd4a3924
     type: title
     task:
-      id: 2361f686-1afe-4072-8e29-8da4ec30e861
+      id: 41e272ec-486b-4da0-80f9-9408fd4a3924
       version: -1
       name: Playbook End
       type: title
@@ -2395,8 +2361,8 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
+fromversion: 6.0.0
 tests:
 - GitLab-test-playbook
 - LGTM-test-playbook
 - playbook-MinIO-Test
-fromversion: 6.0.0
