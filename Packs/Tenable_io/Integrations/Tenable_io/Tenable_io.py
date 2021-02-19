@@ -1,7 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-"""Tenable.io Demisto integration."""
 import json
 import os
 import sys
@@ -9,14 +5,14 @@ import time
 import traceback
 from datetime import datetime
 
+import demistomock as demisto  # noqa: F401
 import requests
+from CommonServerPython import *  # noqa: F401
 from requests.exceptions import HTTPError
 
-# disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Header names transformation maps
-# Format: {'OldName': 'NewName'}
+
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
     'ScanStart': 'StartTime',
@@ -42,7 +38,6 @@ ASSET_VULNS_NAMES_MAP = {
     'Count': 'VulnerabilityOccurences'
 }
 
-# Output Headers / Context Keys
 GET_SCANS_HEADERS = [
     'FolderId',
     'Id',
@@ -141,7 +136,6 @@ severity_to_text = [
     'High',
     'Critical']
 
-# Read integration parameters
 BASE_URL = demisto.params()['url']
 ACCESS_KEY = demisto.params()['access-key']
 SECRET_KEY = demisto.params()['secret-key']
@@ -160,7 +154,6 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 
-# Utility methods
 def flatten(d):
     r = {}  # type: ignore
     for k, v in d.iteritems():
@@ -247,8 +240,7 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
 
 def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
-    # trans_map - { 'OldKey': 'NewKey', ...}
-    # camelize - change all keys from snake_case to CamelCase
+
     def snake_to_camel(snake_str):
         components = snake_str.split('_')
         return ''.join(map(lambda x: x.decode('utf-8').title(), components))
@@ -309,15 +301,15 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
             if i < 4:
                 time.sleep(60)
             else:
+                err_msg = get_scan_error_message(res, scan_id)
                 if ignore_license_error and res.status_code in (403, 500):
                     err_msg = get_scan_error_message(res, scan_id)
                     return
                 if demisto.command() != 'test-module':
                     return_error(err_msg)
                 else:
-                    demisto.results(err_msg)
+                    demisto.error(err_msg)
                 demisto.error(traceback.format_exc())
-                sys.exit(0)
 
     try:
         return res.json()
@@ -374,7 +366,6 @@ def send_asset_vuln_request(asset_id, date_range):
     return res.json()
 
 
-# Command methods
 def test_module():
     send_scan_request()
     return 'ok'
@@ -383,7 +374,6 @@ def test_module():
 def get_scans_command():
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        # str(YYYY-MM-DD) to int(timestamp)
         last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
@@ -465,14 +455,12 @@ def args_to_request_params(hostname, ip, date_range):
 
     indicator = hostname if hostname else ip
 
-    # Query filter parameters to be passed in request
     params = {
-        "filter.0.filter": "host.target",  # filter by host target
-        "filter.0.quality": "eq",  # operator
-        "filter.0.value": indicator  # value
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": indicator
     }
 
-    # Add date_range filter if provided (timeframe to retrieve results, in days)
     if date_range:
         if not date_range.isdigit():
             return_error("Invalid date range: {}".format(date_range))
@@ -519,9 +507,33 @@ def pause_scan_command():
     scan_ids = str(demisto.getArg('scanIds')).split(",")
 
     results = []
+    count = 1
 
     for i in scan_ids:
         scan_id = i.strip()
+        if scan_id == "":
+            results.append(
+                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' was blank.".format(count, scan_id))
+            count += 1
+            continue
+        if scan_id.isalpha():
+            results.append(
+                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' contains alpha-numeric characters.".format(count, scan_id))
+            count += 1
+            continue
+        if len(scan_id) > 3:
+            results.append(
+                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
+            count += 1
+            continue
+        if scan_id.isdigit():
+            pass
+        else:
+            results.append(
+                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
+            count += 1
+            continue
+
         demisto.results(scan_id)
         scan_details = send_scan_request(scan_id)
         scan_status = {
@@ -605,7 +617,6 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
         return "No JSON to decode."
 
 
-# Command selector
 if demisto.command() == 'test-module':
     demisto.results(test_module())
 elif demisto.command() == 'tenable-io-list-scans':
