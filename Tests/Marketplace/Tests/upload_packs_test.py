@@ -5,7 +5,7 @@ import os
 import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, \
-    is_amount_of_private_packs_changed
+    is_amount_of_private_packs_changed, was_private_pack_updated
 
 
 # disable-secrets-detection-start
@@ -587,3 +587,38 @@ class TestUpdatedPrivatePacks:
         # add new private pack
         private_index_json.get("packs").append({"id": "new_private_pack"})
         assert is_amount_of_private_packs_changed(private_index_json, public_index_json)
+
+    def test_was_private_pack_updated(self):
+        """
+         Scenario: as part of upload packs flow, we want to check if there is at least one private pack was updated
+         by comparing "content commit hash" in the public index and in the private index files.
+
+         Given
+         - valid public index json
+         - valid private index json
+
+         When
+         - first check - there is no private pack that changed.
+         - second check - one commit hash was changed.
+
+         Then
+         - Ensure that the function recognises successfully the updated private pack.
+         """
+        index_folder_path = self.get_index_folder_path()
+        public_index_file_path = os.path.join(index_folder_path, f"index.json")
+        with open(public_index_file_path, 'r') as public_index_json_file:
+            public_index_json = json.load(public_index_json_file)
+
+        private_index_json = copy.deepcopy(public_index_json)
+        assert not was_private_pack_updated(private_index_json, public_index_json)
+
+        # changed content commit hash of one private pack
+        del (private_index_json.get("packs")[0])
+        private_index_json.get("packs").append({
+            "id": "first_non_updated_pack",
+            "price": 10,
+            "vendorId": "A_id",
+            "vendorName": "A_name",
+            "contentCommitHash": "111"
+        })
+        assert was_private_pack_updated(private_index_json, public_index_json)
