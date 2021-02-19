@@ -4,7 +4,7 @@
     "modified": "2020-11-10T15:15:25.39842636Z",
     "name": "RecordedFuture Risk rules",
     "ownerOnly": false,
-    "cliName": "recordedfuture_riskrules",
+    "cliName": "recordedfutureriskrules",
     "type": "tagsSelect",
     "closeForm": false,
     "editForm": true,
