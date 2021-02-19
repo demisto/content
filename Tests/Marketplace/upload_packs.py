@@ -570,53 +570,94 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def is_there_private_packs_to_upload(public_index_json, private_storage_bucket, extract_destination_path):
-    """ Checks if there are private packs that should be uploaded.
-    The checking idea is to compare the private index with the public one and to verify if:
-    1. Number of private packs
-
+def was_private_pack_updated(private_index_json, public_index_json):
+    """
+    Checks if Content commit hash of each private pack in private and public index files are equal. If there is at
+        least one private pack that has a different content commit hash, it tells us that this pack was updated and
+        should be uploaded. So, an upload flow should NOT be skipped.
 
     Args:
-        index_folder_path: The index folder path.
-        private_index_path: The path for the index of the private packs.
+        private_index_json (dict) : The private index file.
+        public_index_json (dict) : The public index file.
+
+    Returns:
+        (bool) True if Content commit hash of at least one private pack was changed.
 
     """
-    all_private_packs_from_public_index = public_index_json.get("packs")
-    num_of_private_packs = len(all_private_packs_from_public_index)
-    # open private index here
+    id_to_commit_hash_from_public_index = {}
+    for private_pack in public_index_json.get("packs"):
+        pack_id = private_pack.get("id")
+        content_commit_hash = private_pack.get("contentCommitHash", "")
+        id_to_commit_hash_from_public_index[pack_id] = content_commit_hash
+
+    for private_pack in private_index_json.get("packs"):
+        pack_id = private_pack.get("id")
+        content_commit_hash = private_pack.get("contentCommitHash", "")
+        if id_to_commit_hash_from_public_index[pack_id] != content_commit_hash:
+            return True
+    return False
+
+
+def is_amount_of_private_packs_changed(private_index_json, public_index_json):
+    """
+    Checks if the Number of private packs (in public index) is different from the number of private packs
+    (in private index). If so, a private pack was added or deleted so an upload flow should NOT be skipped.
+
+    Args:
+        private_index_json (dict) : The private index file.
+        public_index_json (dict) : The public index file.
+
+    Returns:
+        (bool) True if number of private packs was changed.
+
+    """
+    private_packs_from_public_index = public_index_json.get("packs")
+    private_packs_from_private_index = private_index_json.get("packs")
+    return len(private_packs_from_public_index) != len(private_packs_from_private_index)
+
+
+def is_there_private_packs_to_upload(public_index_json, private_storage_bucket, extract_destination_path):
+    """ Checks if there are private packs that should be uploaded.
+    The check compares the private index with the public one to verify if:
+    1. The Number of private packs (in public index) is different from the number of private packs (in private index).
+        If so, a private pack was added or deleted so an upload flow should NOT be skipped.
+    2. Content commit hash of each private pack in those files (private and public index files) are equal. If there is
+        one private pack that has a different content commit hash, it tells us that this pack was updated and should be
+        uploaded. So, an upload flow should NOT be skipped.
+
+    Args:
+        public_index_json (dict) : The public index file.
+        private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+        extract_destination_path (str): the full path of extract folder.
+
+    Returns:
+        (bool) True is there is at least one private pack that should be upload.
+              False otherwise (i.e there are no private packs that should upload)
+
+    """
+    logging.debug("Checking if there are private packs to upload")
+
+    # open private index file
     private_index_path, _, _ = download_and_extract_index(private_storage_bucket,
-                                                          os.path.join(extract_destination_path,
-                                                                       'private'))
+                                                          os.path.join(extract_destination_path, 'private'))
+
     with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
         private_index_json = json.load(private_index_file)
-        logging.debug("private index from private bucket:")
-        logging.debug(private_index_json)
 
-    all_private_packs_from_private_index = private_index_json.get("packs")
-    if len(all_private_packs_from_private_index) != num_of_private_packs:
-        logging.debug("The number of private packs has changed, upload won't be skipped")
+    if is_amount_of_private_packs_changed(private_index_json, public_index_json):
+        logging.debug("The number of private packs has changed, upload should not be skipped")
         return True
 
-    private_pack_to_content_commit_hash = {}
-    for private_pack in all_private_packs_from_public_index:
-        id = private_pack.get("id")
-        content_commit_hash = private_pack.get("contentCommitHash", "")
-        private_pack_to_content_commit_hash[id] = content_commit_hash
+    if was_private_pack_updated(private_index_json, public_index_json):
+        logging.debug(f"There is at least one private pack that was updated, upload should not be skipped")
+        return True
 
-    logging.debug(f"private_pack_to_content_commit_hash is {private_pack_to_content_commit_hash}")
-    for private_pack in all_private_packs_from_private_index:
-        id = private_pack.get("id")
-        content_commit_hash = private_pack.get("contentCommitHash", "")
-        if private_pack_to_content_commit_hash[id] != content_commit_hash:
-            logging.debug(f"The private pack {id} has changed and should be uploaded")
-            return True
-    logging.debug("No private packs should be upload")
     return False
 
 
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
                               previous_commit_hash: str, storage_bucket: Any,
-                              private_storage_bucket: str = "", extract_destination_path: str = ""):
+                              private_storage_bucket: Any = None, extract_private_destination_path: str = ""):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
@@ -626,8 +667,8 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         current_commit_hash (str): last commit hash of head.
         previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
-        private_storage_bucket
-        extract_destination_path
+        private_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+        extract_private_destination_path (str): the full path of private extract folder.
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
@@ -645,11 +686,12 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
             index_json = json.load(index_file)
 
-        if private_storage_bucket and extract_destination_path:
-            logging.debug("in check_if_index_is_updated , condition is true")
-            if is_there_private_packs_to_upload(index_json, private_storage_bucket, extract_destination_path):
-                logging.debug("there are private packs to be updated")
+        # check if there are private packs that should be uploaded
+        if private_storage_bucket and extract_private_destination_path:
+            if is_there_private_packs_to_upload(index_json, private_storage_bucket, extract_private_destination_path):
+                logging.debug("Not skipping upload flow because of private packs")
                 return
+
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
         try:
@@ -882,7 +924,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not option.override_all_packs:
-        private_storage_bucket = ""
+        private_storage_bucket = None
         if private_bucket_name:
             private_storage_bucket = storage_client.bucket(private_bucket_name)
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
