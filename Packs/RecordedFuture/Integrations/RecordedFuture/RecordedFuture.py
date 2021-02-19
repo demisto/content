@@ -1149,7 +1149,7 @@ def main() -> None:
     try:
         demisto_params = demisto.params()
         demisto_args = demisto.args()
-        base_url = demisto_params.get("server", "").rstrip("/")
+        base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("unsecure", False)
         proxy = demisto_params.get("proxy", False)
         headers = {
