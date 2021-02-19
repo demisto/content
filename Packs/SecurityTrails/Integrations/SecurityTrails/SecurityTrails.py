@@ -92,7 +92,7 @@ def get_domain_details(client: Client, **args) -> CommandResults:
     for record_type, record_values in current_dns.items():
         # If a record type has multiple values, this will output the last item in MD
         temp_values: Dict[Any, Any] = {}
-        for x in record_values["values"]:
+        for x in record_values.get("values", []):
             temp_values.update(**x)
         record_values.update(temp_values)
         del record_values["values"]
