@@ -39,15 +39,6 @@ def get_account_usage(client: Client, **args) -> CommandResults:
     return results
 
 
-# Only available for certain endpoints
-def get_scroll_results(client: Client, **args) -> CommandResults:
-    scroll_id = args.get("scroll_id")
-    uri = f"/scroll/{scroll_id}"
-    response = client._http_request("GET", uri)
-
-    return response
-
-
 def get_company_details(client: Client, **args) -> CommandResults:
     domain = args.get("domain")
     uri = f"/company/{domain}"
