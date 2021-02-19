@@ -1,10 +1,10 @@
 {
-    "id": "indicator_threatassessment",
+    "id": "indicator_recordedfuturethreatassessment",
     "version": -1,
     "modified": "2020-11-10T10:14:01.392787868Z",
-    "name": "Threat assessment",
+    "name": "RecordedFuture Threat assessment",
     "ownerOnly": false,
-    "cliName": "threatassessment",
+    "cliName": "recordedfuture_threatassessment",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

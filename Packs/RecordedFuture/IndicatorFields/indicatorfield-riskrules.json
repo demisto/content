@@ -1,10 +1,10 @@
 {
-    "id": "indicator_riskrules",
+    "id": "indicator_recordedfutureriskrules",
     "version": -1,
     "modified": "2020-11-10T15:15:25.39842636Z",
-    "name": "Risk rules",
+    "name": "RecordedFuture Risk rules",
     "ownerOnly": false,
-    "cliName": "riskrules",
+    "cliName": "recordedfuture_riskrules",
     "type": "tagsSelect",
     "closeForm": false,
     "editForm": true,
