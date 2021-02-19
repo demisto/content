@@ -144,17 +144,17 @@ def test_large_output_list_command(requests_mock,
 
 @pytest.mark.parametrize('action, command_args, command_api_url, mock_response_file, override_node', [
     ("escalate",
-     {"id": "incident_id", "reason_id": "some_reason"},
+     {"id": "incident_id", "escalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/escalate',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
     ("deescalate",
-     {"id": "incident_id", "reason_id": "some_reason"},
+     {"id": "incident_id", "deescalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/deescalate',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
     ("archive",
-     {"id": "incident_id", "reason_id": "some_reason"},
+     {"id": "incident_id", "archive_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/archive',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
@@ -164,17 +164,17 @@ def test_large_output_list_command(requests_mock,
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
     ("escalate",
-     {"number": "incident_number", "reason_id": "some_reason"},
+     {"number": "incident_number", "escalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/number/incident_number/escalate',
      'test_data/topdesk_incident.json',
      {'number': 'incident_number'}),
     ("deescalate",
-     {"number": "incident_number", "reason_id": "some_reason"},
+     {"number": "incident_number", "deescalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/number/incident_number/deescalate',
      'test_data/topdesk_incident.json',
      {'number': 'incident_number'}),
     ("archive",
-     {"number": "incident_number", "reason_id": "some_reason"},
+     {"number": "incident_number", "archive_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/number/incident_number/archive',
      'test_data/topdesk_incident.json',
      {'number': 'incident_number'}),
@@ -184,17 +184,17 @@ def test_large_output_list_command(requests_mock,
      'test_data/topdesk_incident.json',
      {'number': 'incident_number'}),
     ("escalate",
-     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     {"id": "incident_id", "number": "incident_number", "escalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/escalate',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
     ("deescalate",
-     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     {"id": "incident_id", "number": "incident_number", "deescalate_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/deescalate',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
     ("archive",
-     {"id": "incident_id", "number": "incident_number", "reason_id": "some_reason"},
+     {"id": "incident_id", "number": "incident_number", "archive_reason_id": "some_reason"},
      'https://test.com/api/v1/incidents/id/incident_id/archive',
      'test_data/topdesk_incident.json',
      {'id': 'incident_id'}),
@@ -243,8 +243,8 @@ def test_incident_do_commands(requests_mock,
                                           args=command_args,
                                           action=action)
     assert requests_mock.called
-    if command_args.get("reason_id", None):
-        assert requests_mock.last_request.json() == {'id': command_args.get("reason_id", None)}
+    if command_args.get(f"{action}_reason_id", None):
+        assert requests_mock.last_request.json() == {'id': command_args.get(f"{action}_reason_id", None)}
     else:
         assert requests_mock.last_request.json() == {}
 
@@ -318,6 +318,18 @@ def test_attachment_upload_command(mocker,
                               'https://test.com/api/v1/incidents/',
                               'test_data/topdesk_incident.json',
                               {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
+                             (True,
+                              {"caller": "some_caller", "description": "some_change"},
+                              'https://test.com/api/v1/incidents/',
+                              'test_data/topdesk_incident.json',
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE},
+                               'briefDescription': 'some_change'}),
+                             (True,
+                              {"caller": "some_caller", "description": "some_change", "category": "some_category_id"},
+                              'https://test.com/api/v1/incidents/',
+                              'test_data/topdesk_incident.json',
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE},
+                               'briefDescription': 'some_change', 'category': {'name': 'some_category_id'}}),
                              (False,
                               {"caller": "some_caller", "id": "incident_id"},
                               'https://test.com/api/v1/incidents/id/incident_id',
@@ -328,6 +340,12 @@ def test_attachment_upload_command(mocker,
                               'https://test.com/api/v1/incidents/number/incident_number',
                               'test_data/topdesk_incident.json',
                               {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE}}),
+                             (False,
+                              {"caller": "some_caller", "number": "incident_number", "description": "some_change"},
+                              'https://test.com/api/v1/incidents/number/incident_number',
+                              'test_data/topdesk_incident.json',
+                              {'callerLookup': {'id': 'some_caller'}, 'entryType': {'name': XSOAR_ENTRY_TYPE},
+                               'briefDescription': 'some_change'})
                          ])
 def test_caller_lookup_incident_touch_commands(requests_mock,
                                                create_func,
@@ -511,6 +529,10 @@ def test_non_registered_caller_incident_touch_commands(requests_mock,
     (get_incidents_list_command,
      {'page_size': 2, 'query': 'id==1st-incident-id'},
      ('https://test.com/api/v1/incidents?page_size=2&query=id==1st-incident-id', {})),
+    (get_incidents_list_command,
+     {'page_size': 2, 'category': 'some_category'},
+     ('https://test.com/api/v1/incidents?page_size=2&query=category==some_category', {}))
+
 ])
 def test_list_command_with_args(requests_mock,
                                 command,
@@ -602,16 +624,16 @@ def test_get_incidents_with_pagination(requests_mock,
 @pytest.mark.parametrize('command, new_query, command_args, command_api_request', [
     (list_persons_command,
      False,
-     {"query": "status=firstLine"},
-     'https://test.com/api/v1/persons?status=firstLine'),
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/persons?query=status==firstLine'),
     (list_operators_command,
      False,
-     {"query": "status=firstLine"},
-     'https://test.com/api/v1/operators?status=firstLine'),
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/operators?query=status==firstLine'),
     (branches_command,
      False,
-     {"query": "status=firstLine"},
-     'https://test.com/api/v1/branches?status=firstLine'),
+     {"query": "status==firstLine"},
+     'https://test.com/api/v1/branches?query=status==firstLine'),
     (get_incidents_list_command,
      False,
      {"query": "status=firstLine"},
@@ -626,8 +648,12 @@ def test_get_incidents_with_pagination(requests_mock,
      'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine'),
     (get_incidents_list_command,
      False,
+     {"query": 'caller_id=some_caller', "category": "some_category"},
+     'https://test.com/api/v1/incidents?caller_id=some_caller&category=some_category'),
+    (get_incidents_list_command,
+     False,
      {"query": 'caller_id=some_caller', "status": "firstLine", "branch_id": "some_branch"},
-     'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine&branch_id=some_branch'),
+     'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine&branch=some_branch'),
     (list_persons_command,
      True,
      {"query": "status==firstLine"},
@@ -654,8 +680,8 @@ def test_get_incidents_with_pagination(requests_mock,
      'https://test.com/api/v1/incidents?query=caller_id==some_caller&status==firstLine'),
     (get_incidents_list_command,
      True,
-     {"query": 'caller_id==some_caller', "status": "firstLine", "branch_id": "some_branch"},
-     'https://test.com/api/v1/incidents?query=caller_id==some_caller&status==firstLine&branch_id==some_branch')
+     {"query": 'status==firstLine', "caller_id": "some_caller_id", "branch_id": "some_branch"},
+     'https://test.com/api/v1/incidents?query=status==firstLine&caller==some_caller_id&branch==some_branch')
 ])
 def test_old_new_query(requests_mock,
                        command,
@@ -686,14 +712,38 @@ def test_old_new_query(requests_mock,
     assert requests_mock.called
 
 
+@pytest.mark.parametrize('command_args', [
+     ({"category": "blah"}), ({"subcategory": "blah"}), ({"call_type": "blah"}), ({"entry_type": "blah"})
+])
+def test_unsupported_old_query_param(command_args):
+    """Unit test
+    Given
+        - get_incidents_list_command old query setting unsupported command args
+    When
+        - running the command with old query setting
+    Then
+        - validate KeyError is raised.
+    """
+    client = Client(
+        base_url='https://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authentication': 'Basic some_encoded_credentials'
+        },
+        proxy=False,
+        new_query=False
+    )
+    with pytest.raises(KeyError, match="is not supported with old query setting."):
+        get_incidents_list_command(client=client, args=command_args)
+
+
 @pytest.mark.parametrize('topdesk_incidents_override, last_fetch_time, updated_fetch_time', [
-    ([{
+    ([{  # Last fetch is before incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
-    }], '2020-01-11T06:32:36.303+0000',
-        '2020-02-10T06:32:36Z'),  # Last fetch is before incident creation
-    ([{
+    }], '2020-01-11T06:32:36.303+0000', '2020-02-10T06:32:36Z'),
+    ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36Z',
         'will_be_fetched': False
@@ -701,14 +751,12 @@ def test_old_new_query(requests_mock,
         'number': 'TEST-2',
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
-    }], '2020-02-11T06:32:36.303+0000',
-        '2020-03-10T06:32:36Z'),  # Last fetch is after one incident creation and before other.
-    ([{
+    }], '2020-02-11T06:32:36.303+0000', '2020-03-10T06:32:36Z'),
+    ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'will_be_fetched': False
-    }], '2020-02-10T06:32:36Z',
-        '2020-02-10T06:32:36Z'),  # Last fetch is at incident creation
+    }], '2020-02-10T06:32:36Z', '2020-02-10T06:32:36Z'),
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """Unit test

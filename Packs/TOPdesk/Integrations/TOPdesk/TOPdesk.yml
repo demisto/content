@@ -10,26 +10,18 @@ configuration:
 - display: Username
   name: username
   required: true
-  type: 4
+  type: 0
 - display: Password
   name: password
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
 - defaultvalue: true
-  display: Use new style FIQL query (e.g. query=status==firsLine) available from TOPDesk
-    version 3.3.0
+  display: Always use new style FIQL query (e.g. query=status==firsLine)
+  additionalinfo: Getting incidents with new style FIQL query is available from TOPDeskRestApi version 3.3.0. If the checkbox is unchecked, old style queries will be used.
   name: new_query
   required: false
   type: 8
@@ -62,6 +54,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: TOPdesk’s Enterprise Service Management software (ESM) lets your service
   teams join forces and process requests from a single platform.
 display: TOPdesk
@@ -132,10 +132,9 @@ script:
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters
-        from earlier versions still work, but if this parameter is provided, all other
-        filter parameters are ignored. The FIQL query syntax is documented in the
-        TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
+        Available from Supporting-Files-API version 1.38.0.
+        The FIQL query syntax is documented in the TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -508,10 +507,9 @@ script:
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters
-        from earlier versions still work, but if this parameter is provided, all other
-        filter parameters are ignored. The FIQL query syntax is documented in the
-        TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
+        Available from Supporting-Files-API version 1.38.0.
+        The FIQL query syntax is documented in the TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -914,10 +912,9 @@ script:
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters
-        from earlier versions still work, but if this parameter is provided, all other
-        filter parameters are ignored. The FIQL query syntax is documented in the
-        TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. address.country.name=NL)
+        Available from Supporting-Files-API version 1.38.0.
+        The FIQL query syntax is documented in the TOPdesk tutorial.
       isArray: false
       name: query
       required: false
@@ -1428,10 +1425,10 @@ script:
       name: page_size
       required: false
       secret: false
-    - description: A FIQL search expression to filter the result. The query parameters
-        from earlier versions still work, but if this parameter is provided, all other
-        filter parameters are ignored. The FIQL query syntax is documented in the
-        TOPdesk tutorial.
+    - description: A search expression to filter the result.
+        The FIQL query syntax will be used if 'Use new query option' in the settings is checked, otherwise old style query will be used.
+        The FIQL query syntax is documented in the in the TOPdesk tutorial.
+        TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g. (old style) status=firsLine).
       isArray: false
       name: query
       required: false
@@ -1466,22 +1463,22 @@ script:
       name: branch_id
       required: false
       secret: false
-    - description: Retrive only the incidents of the given category.
+    - description: Retrive only the incidents of the given category. Supported only with new FIQL type queries.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Retrive only the incidents of the given subcategory.
+    - description: Retrive only the incidents of the given subcategory. Supported only with new FIQL type queries.
       isArray: false
       name: subcategory
       required: false
       secret: false
-    - description: Retrive only the incidents of the given call type.
+    - description: Retrive only the incidents of the given call type. Supported only with new FIQL type queries.
       isArray: false
       name: call_type
       required: false
       secret: false
-    - description: Retrive only the incidents of the given entry type.
+    - description: Retrive only the incidents of the given entry type. Supported only with new FIQL type queries.
       isArray: false
       name: entry_type
       required: false
@@ -2109,19 +2106,19 @@ script:
       name: action_invisible_for_caller
       required: false
       secret: false
-    - description: Entry type by id or name. Can only be set by operators. XSOAR is
+    - description: Entry type by name. Can only be set by operators. XSOAR is
         set by default for mirroring.
       isArray: false
       name: entry_type
       required: false
       secret: false
-    - description: Category by id or name. Can be set by operators. It is an error
+    - description: Category by name. Can be set by operators. It is an error
         to provide both an id and a name.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Subcategory by id or name. Can be set by operators. It is an error
+    - description: Subcategory by name. Can be set by operators. It is an error
         to provide both an id and a name.
       isArray: false
       name: subcategory
@@ -2773,19 +2770,19 @@ script:
       name: action_invisible_for_caller
       required: false
       secret: false
-    - description: Entry type by id or name. Can only be set by operators. XSOAR is
+    - description: Entry type by name. Can only be set by operators. XSOAR is
         set by default for mirroring.
       isArray: false
       name: entry_type
       required: false
       secret: false
-    - description: Category by id or name. Can be set by operators. It is an error
+    - description: Category by name. Can be set by operators. It is an error
         to provide both an id and a name.
       isArray: false
       name: category
       required: false
       secret: false
-    - description: Subcategory by id or name. Can be set by operators. It is an error
+    - description: Subcategory by name. Can be set by operators. It is an error
         to provide both an id and a name.
       isArray: false
       name: subcategory
@@ -3403,7 +3400,7 @@ script:
       secret: false
     - description: The escalation reason id.
       isArray: false
-      name: reason_id
+      name: escalate_reason_id
       required: true
       secret: false
     deprecated: false
@@ -4007,7 +4004,7 @@ script:
       secret: false
     - description: The deescalation reason id.
       isArray: false
-      name: reason_id
+      name: deescalate_reason_id
       required: true
       secret: false
     deprecated: false
@@ -4611,7 +4608,7 @@ script:
       secret: false
     - description: The archiving reason id.
       isArray: false
-      name: reason_id
+      name: archive_reason_id
       required: true
       secret: false
     deprecated: false

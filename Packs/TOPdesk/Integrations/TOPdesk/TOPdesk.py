@@ -57,7 +57,7 @@ class Client(BaseClient):
                 url_suffix = f"{url_suffix}?page_size={page_size}"
                 inline_parameters = True
         if query:
-            if self.new_query:
+            if list_type != "incidents" or self.new_query:
                 query = f"query={query}"
             if inline_parameters:
                 url_suffix = f"{url_suffix}&{query}"
@@ -93,27 +93,10 @@ class Client(BaseClient):
     def create_incident(self, args: Dict[str, Any] = {}) -> Dict[str, Any]:
         """Create incident in TOPdesk"""
 
-        request_params: Dict[str, Any] = {}
         if not args.get("caller", None):
             raise ValueError('Caller must be specified to create incident.')
-        if args.get('registered_caller', False):
-            request_params['callerLookup'] = {"id": args["caller"]}
-        else:
-            request_params['caller'] = {"dynamicName": args["caller"]}
 
-        if args.get("entry_type", None):
-            request_params["entryType"] = {"name": args["entry_type"]}
-        else:
-            request_params["entryType"] = {"name": XSOAR_ENTRY_TYPE}
-        optional_params = ["status", "description", "request", "action", "action_invisible_for_caller",
-                           "call_type", "category", "subcategory", "external_number", "main_incident"]
-        if args:
-            for optional_param in optional_params:
-                if args.get(optional_param, None):
-                    request_params[underscoreToCamelCase(optional_param)] = args.get(optional_param, None)
-
-        if args.get("additional_params", None):
-            request_params.update(args["additional_params"])
+        request_params = prepare_touch_request_params(args)
 
         return self._http_request(
             method='POST',
@@ -124,7 +107,6 @@ class Client(BaseClient):
     def update_incident(self, args: Dict[str, Any]) -> Dict[str, Any]:
         """Update incident in TOPdesk"""
 
-        request_params: Dict[str, Any] = {}
         if not args.get("id", None) and not args.get("number", None):
             raise ValueError('Either id or number must be specified to update incident.')
         if args.get("id", None):
@@ -132,32 +114,7 @@ class Client(BaseClient):
         else:
             endpoint = f"/incidents/number/{args['number']}"
 
-        if args.get("entry_type", None):
-            request_params["entryType"] = {"name": args["entry_type"]}
-        else:
-            request_params["entryType"] = {"name": XSOAR_ENTRY_TYPE}
-
-        optional_params = ["caller", "status", "description", "request", "action",
-                           "action_invisible_for_caller", "call_type", "category", "subcategory",
-                           "external_number", "main_incident"]
-        optional_named_params = ["call_type", "category", "subcategory"]
-        if args:
-            for optional_param in optional_params:
-                if args.get(optional_param, None):
-                    if optional_param == "description":
-                        request_params["briefDescription"] = args.get(optional_param, None)
-                    if optional_param == "caller":
-                        if args.get("registered_caller", False):
-                            request_params["callerLookup"] = {"id": args[optional_param]}
-                        else:
-                            request_params["caller"] = {"dynamicName": args[optional_param]}
-                    elif optional_param in optional_named_params:
-                        request_params[underscoreToCamelCase(optional_param)] = {"name": args[optional_param]}
-                    else:
-                        request_params[underscoreToCamelCase(optional_param)] = args.get(optional_param, None)
-
-        if args.get("additional_params", None):
-            request_params.update(args["additional_params"])
+        request_params = prepare_touch_request_params(args)
 
         return self._http_request(
             method='PUT',
@@ -223,26 +180,61 @@ class Client(BaseClient):
         os.remove(file_name)
         return response
 
-    def add_filter_to_query(self, query: Optional[str], filter_name: str, args: Dict[str, Any]) -> Optional[str]:
+    def add_filter_to_query(self, query: Optional[str], filter_name: str, filter_arg: str) -> Optional[str]:
         """Enhance query to include filter argument. Consider the supported query type."""
-        if self.new_query:
-            if args.get(filter_name, None):
-                if query:
-                    query = f"{query}&"
-                else:
-                    query = ''
-                query = f"{query}{filter_name}=={args.get(filter_name, None)}"
-        else:
-            if args.get(filter_name, None):
-                if query:
-                    query = f"{query}&"
-                else:
-                    query = ''
-                query = f"{query}{filter_name}={args.get(filter_name, None)}"
+        if filter_name and filter_arg:
+            if query:
+                query = f"{query}&"
+            else:
+                query = ''
+            if self.new_query:
+                query = f"{query}{filter_name}=={filter_arg}"
+            else:
+                query = f"{query}{filter_name}={filter_arg}"
         return query
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Prepare request parameters for incident-create and  incident-update commands."""
+    request_params: Dict[str, Any] = {}
+    if args.get("entry_type", None):
+        request_params["entryType"] = {"name": args["entry_type"]}
+    else:
+        request_params["entryType"] = {"name": XSOAR_ENTRY_TYPE}
+
+    optional_params = ["caller", "status", "description", "request", "action",
+                       "action_invisible_for_caller", "call_type", "category", "subcategory",
+                       "external_number", "main_incident"]
+    optional_named_params = ["call_type", "category", "subcategory"]
+    if args:
+        for optional_param in optional_params:
+            if args.get(optional_param, None):
+                if optional_param == "description":
+                    request_params["briefDescription"] = args.get(optional_param, None)
+                elif optional_param == "caller":
+                    if args.get("registered_caller", False):
+                        request_params["callerLookup"] = {"id": args[optional_param]}
+                    else:
+                        request_params["caller"] = {"dynamicName": args[optional_param]}
+                elif optional_param in optional_named_params:
+                    request_params[half_camelize(optional_param)] = {"name": args[optional_param]}
+                else:
+                    request_params[half_camelize(optional_param)] = args.get(optional_param, None)
+
+    if args.get("additional_params", None):
+        request_params.update(args["additional_params"])
+    return request_params
+
+
+def half_camelize(s: str, delimiter: str = '_') -> str:
+    """Convert an underscore separated string to camel case with first word not capitalized.
+        hello_world -> helloWorld
+    """
+    components = s.split(delimiter)
+    return f"{components[0]}{''.join(x.title() for x in components[1:])}"
 
 
 def command_with_all_fields_readable_list(results: List[Dict[str, Any]],
@@ -315,12 +307,23 @@ def get_incidents_list(client: Client,
             raise (ValueError(f"status {args.get('status', None)} id not in "
                               f"the allowed statuses list: {allowed_statuses}"))
         else:
-            filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
-                                "call_type", "entry_type"]
-            for filter_arg in filter_arguments:
+            filter_arguments: Dict[str, Any] = {"status": "status",
+                                                "caller_id": "caller",
+                                                "branch_id": "branch",
+                                                "category": "category",
+                                                "subcategory": "subcategory",
+                                                "call_type": "callType",
+                                                "entry_type": "entryType"}
+            old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
+
+            for filter_arg in filter_arguments.keys():
+                if not client.new_query:
+                    if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
+                        raise KeyError(f"{filter_arg} is not supported with old query setting.")
+
                 query = client.add_filter_to_query(query=query,
-                                                   filter_name=filter_arg,
-                                                   args=args)
+                                                   filter_name=filter_arguments.get(filter_arg, None),
+                                                   filter_arg=args.get(filter_arg, None))
             incidents = client.get_list_with_query(list_type="incidents",
                                                    start=start,
                                                    page_size=page_size,
@@ -336,19 +339,19 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
     if len(incidents) == 0:
         return CommandResults(readable_output='No incidents found')
 
-    headers = ['id', 'Number', 'Request', 'Line', 'Actions', 'Caller Name', 'Status', 'Operator', 'Priority']
+    headers = ['id', 'number', 'request', 'line', 'actions', 'caller name', 'status', 'operator', 'priority']
 
     readable_incidents = []
     for incident in incidents:
         readable_incident = {
             'id': incident.get('id', None),
-            'Number': incident.get('number', None),
-            'Request': incident.get('request', None),
-            'Line': incident.get('status', None),
-            'Caller Name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
-            'Status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
-            'Operator': replace_none(incident.get('operator', {}), {}).get('name', None),
-            'Priority': incident.get('priority', None)
+            'number': incident.get('number', None),
+            'request': incident.get('request', None),
+            'line': incident.get('status', None),
+            'caller name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
+            'status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
+            'operator': replace_none(incident.get('operator', {}), {}).get('name', None),
+            'priority': incident.get('priority', None)
         }
 
         readable_incidents.append(readable_incident)
@@ -389,23 +392,23 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if len(persons) == 0:
         return CommandResults(readable_output='No persons found')
 
-    headers = ['id', 'Compound Name', 'Telephone', 'Job Title', 'Department', 'City',
-               'Branch Name', 'Room']
+    headers = ['id', 'name', 'telephone', 'job title', 'department', 'city',
+               'branch name', 'room']
 
     readable_persons = []
     for person in persons:
         readable_person = {
             'id': person.get('id', None),
-            'Compound Name': person.get('dynamicName', None),
-            'Telephone': person.get('phoneNumber', None),
-            'Job Title': person.get('jobTitle', None),
-            'Department': person.get('department', None),
-            'City': person.get('city', None),
-            'Branch Name': replace_none(person.get('branch', {}), {}).get('name', None),
-            'Room': None
+            'name': person.get('dynamicName', None),
+            'telephone': person.get('phoneNumber', None),
+            'job title': person.get('jobTitle', None),
+            'department': person.get('department', None),
+            'city': person.get('city', None),
+            'branch name': replace_none(person.get('branch', {}), {}).get('name', None),
+            'room': None
         }
         if person.get('location', None):
-            readable_person['Room'] = person.get('location', None).get('room', None)
+            readable_person['room'] = person.get('location', None).get('room', None)
         readable_persons.append(readable_person)
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} persons',
@@ -431,20 +434,20 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if len(operators) == 0:
         return CommandResults(readable_output='No operators found')
 
-    headers = ['id', 'Compound Name', 'Telephone', 'Mobile Number', 'Job Title', 'Department',
-               'City', 'Login Name']
+    headers = ['id', 'name', 'telephone', 'job title', 'department',
+               'city', 'branch name', 'login name']
 
     readable_operators = []
     for operator in operators:
         readable_operators.append({
             'id': operator.get('id', None),
-            'Compound Name': operator.get('dynamicName', None),
-            'Telephone': operator.get('phoneNumber', None),
-            'Mobile Number': operator.get('mobileNumber', None),
-            'Job Title': operator.get('jobTitle', None),
-            'Department': operator.get('department', None),
-            'City': operator.get('city', None),
-            'Login Name': operator.get('tasLoginName', None),
+            'name': operator.get('dynamicName', None),
+            'telephone': operator.get('phoneNumber', None),
+            'job title': operator.get('jobTitle', None),
+            'department': operator.get('department', None),
+            'city': operator.get('city', None),
+            'branch name': replace_none(operator.get('branch', {}), {}).get('name', None),
+            'login name': operator.get('tasLoginName', None),
         })
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators',
@@ -530,17 +533,17 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(branches) == 0:
         return CommandResults(readable_output='No branches found')
 
-    headers = ['id', 'Status', 'Name', 'Phone', 'Website', 'Address']
+    headers = ['id', 'status', 'name', 'phone', 'website', 'address']
 
     readable_branches = []
     for branch in branches:
         readable_branch = {
             'id': branch.get('id', None),
-            'Status': branch.get('status', None),
-            'Name': branch.get('name', None),
-            'Phone': branch.get('phone', None),
-            'Website': branch.get('website', None),
-            'Address': branch.get('address', {}).get('addressMemo', None)
+            'status': branch.get('status', None),
+            'name': branch.get('name', None),
+            'phone': branch.get('phone', None),
+            'website': branch.get('website', None),
+            'address': branch.get('address', {}).get('addressMemo', None)
         }
         readable_branches.append(readable_branch)
 
@@ -557,15 +560,21 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
     """Parse arguments and return incidents list as CommandResults."""
-    return incidents_to_command_results(get_incidents_list(client=client,
+    try:
+        command_results = incidents_to_command_results(get_incidents_list(client=client,
                                                            incident_number=args.get('incident_number', None),
                                                            incident_id=args.get('incident_id', None),
                                                            query=args.get('query', None),
                                                            page_size=args.get('page_size', None),
                                                            start=args.get('start', None),
                                                            args=args))
+    except Exception as e:
+        if 'Error parsing query' in str(e):
+            return 'Error parsing query: make sure you are using the right query type.'
+
+    return command_results
 
 
 def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
@@ -593,7 +602,7 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
     return incidents_to_command_results([client.incident_do(action=action,
                                                             incident_id=args.get("id", None),
                                                             incident_number=args.get("number", None),
-                                                            reason_id=args.get("reason_id", None))])
+                                                            reason_id=args.get(f"{action}_reason_id", None))])
 
 
 def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -627,13 +636,14 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     if not response.get("downloadUrl", None):
         raise Exception(f"Failed uploading file: {response}")
 
-    headers = ['id', 'fileName', 'downloadUrl', 'size', 'description',
-               'invisibleForCaller', 'entryDate', 'operator']
+    headers = ['id', 'file name', 'download url', 'size', 'description',
+               'invisible for caller', 'entry date', 'operator']
+    half_camelized_headers = [half_camelize(header, ' ') for header in headers]
     readable_attachment: List[Dict[str, Any]] = [{}]
-    for header in headers:
-        readable_attachment[0][header] = response.get(header, None)
+    for header, half_camelized_header in zip(headers, half_camelized_headers):
+        readable_attachment[0][header] = response.get(half_camelized_header, None)
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} attachment',
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} attachment of incident {args.get('number', None)}",
                                       readable_attachment,
                                       headers=headers,
                                       removeNull=True)
@@ -721,6 +731,8 @@ def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params
     except DemistoException as e:
         if 'Error 401' in str(e):
             return 'Authorization Error: make sure username and password are correctly set'
+        if '[404] - Not Found' in str(e):
+            return 'Page Not Found: make sure the url is correctly set'
         else:
             raise e
     return 'ok'
