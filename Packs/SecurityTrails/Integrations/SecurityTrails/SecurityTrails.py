@@ -152,7 +152,7 @@ def get_domain_whois(client: Client, **args) -> CommandResults:
 def get_domain_associated_domains(client: Client, **args) -> CommandResults:
     domain = args.get("domain")
 
-    params = {"page": int(args.get("page"))}
+    params = {"page": int(args.get("page", 1))}
 
     uri = f"/domain/{domain}/associated"
     response = client._http_request("GET", uri, params=params)
@@ -172,7 +172,7 @@ def get_domain_dns_history(client: Client, **args) -> CommandResults:
     domain = args.get("domain")
     type = args.get("type")
 
-    params = {"page": int(args.get("page", 0))}
+    params = {"page": int(args.get("page", 1))}
 
     uri = f"/history/{domain}/dns/{type}"
     response = client._http_request("GET", uri, params=params)
@@ -191,7 +191,7 @@ def get_domain_dns_history(client: Client, **args) -> CommandResults:
 def get_domain_whois_history(client: Client, **args) -> CommandResults:
     domain = args.get("domain")
 
-    params = {"page": int(args.get("page", 0))}
+    params = {"page": int(args.get("page", 1))}
 
     uri = f"/history/{domain}/whois"
     response = client._http_request("GET", uri, params=params)
@@ -227,7 +227,7 @@ def get_ip_neighbors(client: Client, **args) -> CommandResults:
 def search_domain_with_dsl(client: Client, **args) -> CommandResults:
     params = {
         "include_ips": args.get("include_ips", "false"),
-        "page": int(args.get("page", 0))
+        "page": int(args.get("page", 1))
     }
 
     body = {"query": str(args.get("query"))}
@@ -251,7 +251,7 @@ def search_domain_with_dsl(client: Client, **args) -> CommandResults:
 def search_domain_with_dsl_statistics(client: Client, **args) -> CommandResults:
     params = {
         "include_ips": args.get("include_ips", "false"),
-        "page": int(args.get("page", 0))
+        "page": int(args.get("page", 1))
     }
 
     body = {"query": str(args.get("query"))}
@@ -272,7 +272,7 @@ def search_domain_with_dsl_statistics(client: Client, **args) -> CommandResults:
 
 
 def search_ip_with_dsl(client: Client, **args) -> CommandResults:
-    params = {"page": int(args.get("page"))}
+    params = {"page": int(args.get("page", 1))}
 
     # Docs: https://docs.securitytrails.com/docs/how-to-use-the-dsl
     # Example: ptr_part = 'stackoverflow.com'
@@ -334,7 +334,7 @@ def get_ip_whois(client: Client, **args) -> CommandResults:
 def get_ip_useragents(client: Client, **args) -> CommandResults:
     ip = args.get("ip")
 
-    params = {"page": int(args.get("page"))}
+    params = {"page": int(args.get("page", 1))}
 
     uri = f"/ips/{ip}/useragents"
     response = client._http_request("GET", uri, params=params)
