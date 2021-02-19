@@ -119,6 +119,39 @@ script:
     - contextPath: TOPdesk.callType..name
       description: ''
       type: String
+  - arguments: []
+    deprecated: false
+    description: Get list of deescalation reasons.
+    name: topdesk-deescalation-reasons-list
+    outputs:
+    - contextPath: TOPdesk.deescalation_reason..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.deescalation_reason..name
+      description: ''
+      type: String
+  - arguments: []
+    deprecated: false
+    description: Get list of escalation reasons.
+    name: topdesk-escalation-reasons-list
+    outputs:
+    - contextPath: TOPdesk.escalation_reason..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.escalation_reason..name
+      description: ''
+      type: String
+  - arguments: []
+    deprecated: false
+    description: Get list of archiving reasons.
+    name: topdesk-archiving-reasons-list
+    outputs:
+    - contextPath: TOPdesk.archive_reason..id
+      description: ''
+      type: String
+    - contextPath: TOPdesk.archive_reason..name
+      description: ''
+      type: String
   - arguments:
     - description: The offset at which to start listing the persons at. Must be greater
         or equal to 0, default is 0.

@@ -5,7 +5,8 @@ import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
-    get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command
+    get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command, \
+    escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command
 
 
 def util_load_json(path):
@@ -43,6 +44,27 @@ def util_load_json(path):
          'outputs_prefix': f'{INTEGRATION_NAME}.subcategories',
          'outputs_key_field': 'id'
      }),
+    (escalation_reasons_command,
+     'https://test.com/api/v1/incidents/escalation-reasons',
+     [{"id": "1st-id", "name": "escalation-name-1"}, {"id": "2st-id", "name": "escalation-name-2"}],
+     {
+         'outputs_prefix': f'{INTEGRATION_NAME}.escalation_reason',
+         'outputs_key_field': 'id'
+     }),
+    (deescalation_reasons_command,
+     'https://test.com/api/v1/incidents/deescalation-reasons',
+     [{"id": "1st-id", "name": "deescalation-name-1"}, {"id": "2st-id", "name": "deescalation-name-2"}],
+     {
+         'outputs_prefix': f'{INTEGRATION_NAME}.deescalation_reason',
+         'outputs_key_field': 'id'
+     }),
+    (archiving_reasons_command,
+     'https://test.com/api/v1/archiving-reasons',
+     [{"id": "1st-id", "name": "archiving-reason-1"}, {"id": "2st-id", "name": "archiving-reason-2"}],
+     {
+         'outputs_prefix': f'{INTEGRATION_NAME}.archive_reason',
+         'outputs_key_field': 'id'
+     })
 ])
 def test_list_command(requests_mock, command, command_api_url, mock_response, expected_results):
     """Unit test
@@ -59,7 +81,6 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     requests_mock.get(
@@ -124,7 +145,6 @@ def test_large_output_list_command(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
@@ -226,7 +246,6 @@ def test_incident_do_commands(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
@@ -288,7 +307,6 @@ def test_attachment_upload_command(mocker,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
 
@@ -370,7 +388,6 @@ def test_caller_lookup_incident_touch_commands(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     client_func = client.update_incident
@@ -436,7 +453,6 @@ def test_non_registered_caller_incident_touch_commands(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     client_func = client.update_incident
@@ -553,7 +569,6 @@ def test_list_command_with_args(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     requests_mock.get(
@@ -603,7 +618,6 @@ def test_get_incidents_with_pagination(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     for request in command_api_request:
@@ -646,10 +660,6 @@ def test_get_incidents_with_pagination(requests_mock,
      False,
      {"query": 'caller_id=some_caller', "status": "firstLine"},
      'https://test.com/api/v1/incidents?caller_id=some_caller&status=firstLine'),
-    (get_incidents_list_command,
-     False,
-     {"query": 'caller_id=some_caller', "category": "some_category"},
-     'https://test.com/api/v1/incidents?caller_id=some_caller&category=some_category'),
     (get_incidents_list_command,
      False,
      {"query": 'caller_id=some_caller', "status": "firstLine", "branch_id": "some_branch"},
@@ -703,7 +713,6 @@ def test_old_new_query(requests_mock,
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=new_query
     )
     requests_mock.get(command_api_request, json=[{}])
@@ -713,7 +722,7 @@ def test_old_new_query(requests_mock,
 
 
 @pytest.mark.parametrize('command_args', [
-     ({"category": "blah"}), ({"subcategory": "blah"}), ({"call_type": "blah"}), ({"entry_type": "blah"})
+    ({"category": "blah"}), ({"subcategory": "blah"}), ({"call_type": "blah"}), ({"entry_type": "blah"})
 ])
 def test_unsupported_old_query_param(command_args):
     """Unit test
@@ -730,7 +739,6 @@ def test_unsupported_old_query_param(command_args):
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=False
     )
     with pytest.raises(KeyError, match="is not supported with old query setting."):
@@ -775,7 +783,6 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
         headers={
             'Authentication': 'Basic some_encoded_credentials'
         },
-        proxy=False,
         new_query=True
     )
     mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')

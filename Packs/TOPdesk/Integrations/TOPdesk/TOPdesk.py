@@ -11,7 +11,7 @@ import urllib3
 import traceback
 import dateparser
 
-from typing import Any, Dict, List, Optional, Callable, Tuple
+from typing import Any, Dict, List, Optional, Callable, Tuple, Union
 from base64 import b64encode
 
 # Disable insecure warnings
@@ -30,8 +30,9 @@ MAX_API_PAGE_SIZE = 10000
 class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
-    def __init__(self, base_url, verify, headers, proxy, new_query):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+    def __init__(self, base_url, verify, headers, new_query):
+        super().__init__(base_url=base_url, verify=verify, headers=headers)
+        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.new_query = new_query
 
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
@@ -490,6 +491,33 @@ def categories_command(client: Client) -> CommandResults:
                                                  outputs_key_field='id')
 
 
+def escalation_reasons_command(client: Client) -> CommandResults:
+    """Get escalation reasons list from TOPdesk"""
+    escalation_reasons = client.get_list("/incidents/escalation-reasons")
+    return command_with_all_fields_readable_list(results=escalation_reasons,
+                                                 result_name='escalation reasons',
+                                                 output_prefix='escalation_reason',
+                                                 outputs_key_field='id')
+
+
+def deescalation_reasons_command(client: Client) -> CommandResults:
+    """Get deescalation reasons list from TOPdesk"""
+    deescalation_reasons = client.get_list("/incidents/deescalation-reasons")
+    return command_with_all_fields_readable_list(results=deescalation_reasons,
+                                                 result_name='deescalation reasons',
+                                                 output_prefix='deescalation_reason',
+                                                 outputs_key_field='id')
+
+
+def archiving_reasons_command(client: Client) -> CommandResults:
+    """Get archiving reasons list from TOPdesk"""
+    archiving_reasons = client.get_list("/archiving-reasons")
+    return command_with_all_fields_readable_list(results=archiving_reasons,
+                                                 result_name='archiving reasons',
+                                                 output_prefix='archive_reason',
+                                                 outputs_key_field='id')
+
+
 def subcategories_command(client: Client) -> CommandResults:
     """Get categories list from TOPdesk"""
     subcategories = client.get_list("/incidents/subcategories")
@@ -564,17 +592,19 @@ def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[Co
     """Parse arguments and return incidents list as CommandResults."""
     try:
         command_results = incidents_to_command_results(get_incidents_list(client=client,
-                                                           incident_number=args.get('incident_number', None),
-                                                           incident_id=args.get('incident_id', None),
-                                                           query=args.get('query', None),
-                                                           page_size=args.get('page_size', None),
-                                                           start=args.get('start', None),
-                                                           args=args))
+                                                                          incident_number=args.get('incident_number',
+                                                                                                   None),
+                                                                          incident_id=args.get('incident_id', None),
+                                                                          query=args.get('query', None),
+                                                                          page_size=args.get('page_size', None),
+                                                                          start=args.get('start', None),
+                                                                          args=args))
+        return command_results
     except Exception as e:
         if 'Error parsing query' in str(e):
             return 'Error parsing query: make sure you are using the right query type.'
-
-    return command_results
+        else:
+            raise e
 
 
 def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
@@ -748,7 +778,7 @@ def main() -> None:
     demisto_params = demisto.params()
     base_url = urljoin(demisto_params['url'], '/api')
     verify_certificate = not demisto_params.get('insecure', False)
-    proxy = demisto_params.get('proxy', False)
+    # proxy = demisto_params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -762,7 +792,6 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,
             new_query=demisto_params['new_query'])
 
         if demisto.command() == 'test-module':
@@ -779,6 +808,12 @@ def main() -> None:
             return_results(call_types_command(client))
         elif demisto.command() == 'topdesk-categories-list':
             return_results(categories_command(client))
+        elif demisto.command() == 'topdesk-escalation-reasons-list':
+            return_results(escalation_reasons_command(client))
+        elif demisto.command() == 'topdesk-deescalation-reasons-list':
+            return_results(deescalation_reasons_command(client))
+        elif demisto.command() == 'topdesk-archiving-reasons-list':
+            return_results(archiving_reasons_command(client))
         elif demisto.command() == 'topdesk-subcategories-list':
             return_results(subcategories_command(client))
         elif demisto.command() == 'topdesk-branches-list':
