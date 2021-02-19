@@ -195,7 +195,7 @@ def get_domain_whois_history(client: Client, **args) -> CommandResults:
 
     uri = f"/history/{domain}/whois"
     response = client._http_request("GET", uri, params=params)
-    records = response["result"].get("items")
+    records = response.get("result", {}).get("items")
 
     results = CommandResults(
         outputs_prefix="SecurityTrails",
