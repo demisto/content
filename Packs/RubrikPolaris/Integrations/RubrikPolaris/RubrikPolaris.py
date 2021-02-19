@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 import json
 import urllib3
 import traceback
 from typing import Tuple, List, Dict
 from datetime import date
+import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,7 +15,9 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+# The time, in minutes, that we should check for new incidents
 FETCH_TIME = 5
+OPERATION_NAME_PREFIX = "SdkCortexXsoar"
 
 
 ''' CLIENT CLASS '''
@@ -52,14 +54,16 @@ class Client(BaseClient):
 
         return response["access_token"]
 
-    def gql_query(self, query: str, variables: dict) -> dict:
+    def gql_query(self, operation_name: str, query: str, variables: dict, isPagination: bool) -> dict:
 
         query_api = "/graphql"
-
-        api_token = self.get_api_token()
-        self._headers["Authorization"] = f"Bearer {api_token}"
+        # When paginating the results we already have the session API token
+        if isPagination is False:
+            api_token = self.get_api_token()
+            self._headers["Authorization"] = f"Bearer {api_token}"
 
         query_body = {
+            "operationName": operation_name,
             "query": query,
             "variables": variables
 
@@ -72,9 +76,6 @@ class Client(BaseClient):
         )
 
         return response
-
-
-''' HELPER FUNCTIONS '''
 
 
 ''' COMMAND FUNCTIONS '''
@@ -93,7 +94,25 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    max_fetch = demisto.params().get('max_fetch')
+    first_fetch = demisto.params().get('first_fetch')
 
+    if max_fetch:
+
+        try:
+            max_fetch = int(max_fetch)
+        except ValueError:
+            return "The 'Fetch Limit' is not a valid integer. The default value is 50 with a maximum of 200."
+        if max_fetch > 200:
+            return "The 'Fetch Limit' can not be greater than 200."
+
+    if first_fetch:
+        try:
+            last_run_obj = dateparser.parse(first_fetch, [DATE_TIME_FORMAT])
+            if last_run_obj is None:
+                raise ValueError
+        except ValueError:
+            return "We were unable to parse the First Fetch variable. Make sure the provided value follows the Relative Dates outlined at https://dateparser.readthedocs.io/en/latest/#relative-dates"
     try:
         client.get_api_token()
     except DemistoException as e:
@@ -107,27 +126,35 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
+def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
 
     # Returns an obj with the previous run in it.
     last_run = demisto.getLastRun().get('last_fetch', None)
 
     if last_run is None:
         # if the last run has not been set (i.e on the first run)
-        # return the current time which will then be used to set the
-        # last_fetch variable
-        current_time = datetime.now()
-        return current_time.strftime(DATE_TIME_FORMAT), []
+        # check to see if a first_fetch value has been provided. If it hasn't
+        # return the current time
+        first_fetch = demisto.params().get('first_fetch')
+        last_run_obj = dateparser.parse(first_fetch, [DATE_TIME_FORMAT])
+        last_run = last_run_obj.strftime(DATE_TIME_FORMAT)
 
-    last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
+        if last_run_obj is None:
+            current_time = datetime.now()
+            return current_time.strftime(DATE_TIME_FORMAT), []
+    else:
+        last_run_obj = (datetime.strptime(last_run, DATE_TIME_FORMAT))
 
     if last_run_obj > (datetime.now() - timedelta(minutes=FETCH_TIME)):
         # It has not been FETCH_TIME since the last fetch
         # return blank values and skip the fetch
         return "", []
     else:
-        query = """query RadarEvents($filters: ActivitySeriesFilterInput) {
-                    activitySeriesConnection(filters: $filters) {
+
+        operation_name = f"{OPERATION_NAME_PREFIX}RadarEvents"
+
+        query = """query %s($filters: ActivitySeriesFilterInput, $after: String) {
+                    activitySeriesConnection(first: 20, filters: $filters, after: $after) {
                         edges {
                             node {
                                 id
@@ -154,8 +181,12 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
                                 }
                             }
                         }
+                        pageInfo {
+                            endCursor
+                            hasNextPage
+                        }
                     }
-                }"""
+                }""" % operation_name
 
         variables = {
             "filters": {
@@ -166,7 +197,25 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
             },
         }
 
-        radar_events = client.gql_query(query, variables)
+        radar_events = client.gql_query(operation_name, query, variables, False)
+
+        if radar_events['data']["activitySeriesConnection"]['pageInfo']['hasNextPage'] is True:
+            pagination_results = []
+
+            variables["after"] = radar_events['data']["activitySeriesConnection"]["pageInfo"]['endCursor']
+
+            while True:
+                radar_events_pagination = client.gql_query(operation_name, query, variables, True)
+
+                for data in radar_events_pagination["data"]["activitySeriesConnection"]["edges"]:
+                    pagination_results.append(data)
+                if radar_events_pagination['data']["activitySeriesConnection"]['pageInfo']['hasNextPage'] is False:
+                    break
+
+                variables["after"] = radar_events_pagination['data']["activitySeriesConnection"]["pageInfo"]['endCursor']
+
+            for node in pagination_results:
+                radar_events['data']["activitySeriesConnection"]["edges"].append(node)
 
         # Placeholder to save all anamaly events detected
         incidents = []
@@ -199,10 +248,13 @@ def fetch_incidents(client: Client) -> Tuple[str, List[dict]]:
                 process_incident["eventCompleted"] = "False"
 
             incidents.append({
-                "name": f'Rubrik Radar Anomaly - {process_incident["id"]}',
+                "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
                 "occurred": current_time.strftime(DATE_TIME_FORMAT),
                 "rawJSON": json.dumps(process_incident)
             })
+
+        if len(incidents) > max_fetch:
+            return current_time.strftime(DATE_TIME_FORMAT), incidents[:max_fetch]
 
         return current_time.strftime(DATE_TIME_FORMAT), incidents
 
@@ -215,9 +267,17 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
     # look up the value in the incident custom fields
     activitySeriesId = args.get('activitySeriesId', None)
     if not activitySeriesId:
-        activitySeriesId = incident.get("rubrikpolarisactivityseriesid")
+        try:
+            activitySeriesId = incident.get("rubrikpolarisactivityseriesid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The activitySeriesId value is required. Either manually provide or run this command in a 'Rubrik Radar Anomaly' incident where it will automatically looked up using the incident context.", error=e)
 
-    query = """query AnomalyEventSeriesDetailsQuery($activitySeriesId: UUID!, $clusterUuid: UUID!) {
+    operation_name = f"{OPERATION_NAME_PREFIX}AnomalyEventSeriesDetailsQuery"
+
+    query = """query %s($activitySeriesId: UUID!, $clusterUuid: UUID!) {
                     activitySeries(activitySeriesId: $activitySeriesId, clusterUuid: $clusterUuid) {
                         activityConnection {
                             nodes {
@@ -231,14 +291,14 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
                         lastActivityStatus
                     }
                 }
-                    """
+                    """ % operation_name
 
     variables = {
         "clusterUuid": incident.get("rubrikpolariscdmclusterid"),
         "activitySeriesId": activitySeriesId
     }
 
-    radar_update_events = client.gql_query(query, variables)
+    radar_update_events = client.gql_query(operation_name, query, variables, False)
 
     context = {
         "ClusterID": incident.get("rubrikpolariscdmclusterid"),
@@ -259,15 +319,20 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
 
 
 def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     incident = demisto.incident().get("CustomFields")
 
-    # activitySeriesId is an optional value for the command. When not set,
+    # objectName is an optional value for the command. When not set,
     # look up the value in the incident custom fields
-    # TODO - HANDLE NO VALUE BEING FOUND
     objectName = args.get('objectName', None)
     if not objectName:
-        objectName = incident.get("rubrikpolarisobjectname")
+        try:
+            objectName = incident.get("rubrikpolarisobjectname")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command in a 'Rubrik Radar Anomaly' incident where it will automatically looked up using the incident context.", error=e)
+
     # TODO - SET A LIMIT HERE?
     searchTimePeriod = args.get('searchTimePeriod', None)
     if not searchTimePeriod:
@@ -277,7 +342,9 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         searchTimePeriod = int(searchTimePeriod)
     object_details = {}
 
-    object_details_query = """query ObjectsListQuery($day: String!, $timezone: String!) {
+    operation_name_object_list = f"{OPERATION_NAME_PREFIX}ObjectsListQuery"
+
+    object_details_query = """query %s($day: String!, $timezone: String!) {
                             policyObjConnection(day: $day, timezone: $timezone) {
                                 edges {
                                     node {
@@ -298,7 +365,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
                                 }
                             }
                         }
-                    """
+                    """ % operation_name_object_list
 
     # Get todays current day
     search_day = date.today()
@@ -308,7 +375,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         "timezone": "UTC"
     }
 
-    sonar_object_detail = client.gql_query(object_details_query, object_details_variable)
+    sonar_object_detail = client.gql_query(operation_name_object_list, object_details_query, object_details_variable, False)
 
     # Check the sonar_object_detail for the provided object name and
     # store its details for subsequent API call
@@ -327,7 +394,8 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
 
             object_details_variable["day"] = past_search_day.strftime("%Y-%m-%d")
 
-            sonar_object_detail = client.gql_query(object_details_query, object_details_variable)
+            sonar_object_detail = client.gql_query(
+                operation_name_object_list, object_details_query, object_details_variable, False)
 
             for sonar_object in sonar_object_detail["data"]["policyObjConnection"]["edges"]:
                 if sonar_object["node"]["snappable"]["name"] is objectName:
@@ -347,7 +415,9 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
             outputs={}
         )
 
-    sensitive_hits_query = """query ObjectDetailQuery($snappableFid: String!, $snapshotFid: String!) {
+    operation_name_object_detail = f"{OPERATION_NAME_PREFIX}ObjectDetailQuery"
+
+    sensitive_hits_query = """query %s($snappableFid: String!, $snapshotFid: String!) {
                 policyObj(snappableFid: $snappableFid, snapshotFid: $snapshotFid) {
                     id
                     rootFileResult {
@@ -394,7 +464,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
                     }
                 }
             }
-                """
+                """ % operation_name_object_detail
 
     sensitive_hits_variables = {
         "snappableFid": object_details["id"],
@@ -403,7 +473,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
 
     # TODO - Handle errors like errors:[map[extensions:map[code:500 trace:map[operation:/api/graphql
     # spanId:uoH6A/2xDM8= traceId:/64k4L3xe74eS9LyVe3rjg==]] locations:[map[column:17 line:2]]
-    sensitive_hits = client.gql_query(sensitive_hits_query, sensitive_hits_variables)
+    sensitive_hits = client.gql_query(operation_name_object_detail, sensitive_hits_query, sensitive_hits_variables, False)
 
     policy_hits = {}  # type: ignore
     for h in sensitive_hits["data"]["policyObj"]["rootFileResult"]["analyzerGroupResults"]:
@@ -460,6 +530,10 @@ def main() -> None:
         verify=False
     )
 
+    max_fetch = demisto.params().get('max_fetch')
+    max_fetch = int(demisto.params().get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 50
+    max_fetch = max(min(200, max_fetch), 1)
+
     demisto.info(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
@@ -467,7 +541,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif demisto.command() == 'fetch-incidents':
-            current_time, incidents = fetch_incidents(client)
+            current_time, incidents = fetch_incidents(client, max_fetch)
             # A blank current_time is returned when it has not been 5 minutes
             # since the last fetch
             if current_time != "":
