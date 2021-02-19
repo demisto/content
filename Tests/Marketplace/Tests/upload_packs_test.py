@@ -614,11 +614,5 @@ class TestUpdatedPrivatePacks:
 
         # changed content commit hash of one private pack
         del (private_index_json.get("packs")[0])
-        private_index_json.get("packs").append({
-            "id": "first_non_updated_pack",
-            "price": 10,
-            "vendorId": "A_id",
-            "vendorName": "A_name",
-            "contentCommitHash": "111"
-        })
+        private_index_json.get("packs").append({"id": "first_non_updated_pack", "contentCommitHash": "111"})
         assert was_private_pack_updated(private_index_json, public_index_json)
