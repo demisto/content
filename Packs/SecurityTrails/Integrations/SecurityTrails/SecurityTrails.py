@@ -87,7 +87,7 @@ def get_domain_details(client: Client, **args) -> CommandResults:
             temp_values.update(**x)
         record_values.update(temp_values)
         del record_values["values"]
-        md += tableToMarkdown(f"DNS {record_type} Records for {domain}", record_values)
+        md += tableToMarkdown(f"/n DNS {record_type} Records for {domain}", record_values)
 
     results = CommandResults(
         outputs_prefix="SecurityTrails",
