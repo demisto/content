@@ -332,7 +332,7 @@ def test_get_mapping_fields_command(requests_mock):
     from ArgusManagedDefence import get_mapping_fields_command
 
     with pytest.raises(NotImplementedError) as no_implement:
-        get_mapping_fields_command({})
+        get_mapping_fields_command()
     assert no_implement.type == NotImplementedError
 
 
@@ -749,4 +749,3 @@ def test_download_case_attachments_command(requests_mock):
     for file in result:
         assert file.get("File") == "filename"
         assert file.get("Type") == 3  # File
-

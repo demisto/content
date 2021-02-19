@@ -12,6 +12,9 @@ import traceback
 from typing import Any, Dict, List, Union
 
 import logging
+
+# from argus_api.schema.cases.v2.case import get_case_metadata_by_id as case_schema
+
 from argus_api import session as argus_session
 from argus_api.exceptions.http import AccessDeniedException
 from argus_api.lib.currentuser.v1.user import get_current_user
@@ -81,12 +84,11 @@ ARGUS_STATUS_MAPPING = {
 }
 ARGUS_PRIORITY_MAPPING = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
-
 """ HELPER FUNCTIONS """
 
 
 def set_argus_settings(
-    api_key: str, base_url: str = None, proxies: dict = None, verify: bool = None
+        api_key: str, base_url: str = None, proxies: dict = None, verify: bool = None
 ):
     argus_session.api_key = api_key
     argus_session.base_url = base_url
@@ -107,7 +109,7 @@ def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
     min_severity_list = []
     for severity in severities:
         if argus_priority_to_demisto_severity(
-            min_severity.lower()
+                min_severity.lower()
         ) <= argus_priority_to_demisto_severity(severity):
             min_severity_list.append(severity)
     return min_severity_list
@@ -207,10 +209,10 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
         else ""
     )
     if comment["associatedAttachments"]:
-        string += f"<em>Associated attachment(s): "
+        string += "<em>Associated attachment(s): "
         for attachment in comment["associatedAttachments"]:
             string += f"{attachment.get('name', '')} "
-        string += f"</em><br>"
+        string += "</em><br>"
     string += "</small>"
     string += f"{comment['comment']}"
     return string
@@ -253,14 +255,14 @@ def test_module_command() -> str:
 
 
 def fetch_incidents(
-    last_run: dict,
-    first_fetch_period: str,
-    limit: int = 25,
-    min_severity: str = "low",
-    integration_instance: str = "",
-    mirror_direction: str = "None",
-    mirror_tags: str = "argus_mirror",
-    exclude_tag: str = "",
+        last_run: dict,
+        first_fetch_period: str,
+        limit: int = 25,
+        min_severity: str = "low",
+        integration_instance: str = "",
+        mirror_direction: str = "None",
+        mirror_tags: str = "argus_mirror",
+        exclude_tag: str = "",
 ):
     start_timestamp = last_run.get("start_time", None) if last_run else None
     # Exclude closed cases
@@ -310,10 +312,10 @@ def fetch_incidents(
 
 
 def get_remote_data_command(
-    args: Dict[str, Any],
-    integration_instance: str = "",
-    mirror_direction: str = "None",
-    mirror_tags: str = "argus_mirror",
+        args: Dict[str, Any],
+        integration_instance: str = "",
+        mirror_direction: str = "None",
+        mirror_tags: str = "argus_mirror",
 ) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
     case_id = remote_args.remote_incident_id
@@ -333,7 +335,7 @@ def get_remote_data_command(
     case = get_case_metadata_by_id(id=int(case_id)).get("data", {})
 
     # There are no updates to case, return empty
-    if last_mirror_update > dateparser.parse(case.get("lastUpdatedTime", "")):
+    if last_mirror_update > dateparser.parse(case.get("lastUpdatedTime", "")):  # type: ignore
         return GetRemoteDataResponse({}, [])
 
     entries = []
@@ -380,9 +382,9 @@ def get_remote_data_command(
             )
         # Existing comment has been updated
         elif (
-            comment.get("addedTimestamp", 0)
-            < last_update_timestamp
-            < comment.get("lastUpdatedTimestamp", "")
+                comment.get("addedTimestamp", 0)
+                < last_update_timestamp
+                < comment.get("lastUpdatedTimestamp", "")
         ):
             entries.append(
                 {
@@ -492,12 +494,12 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
 def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> None:
     demisto.debug(f"Appending entry to case {case_id}: {str(entry)}")
     if entry.get("type") == 1:  # type note / chat
-        comment = f"<h3>Note mirrored from XSOAR</h3>"
+        comment = "<h3>Note mirrored from XSOAR</h3>"
         comment += (
             f"<i>Added by {entry.get('user')} at "
             f"{pretty_print_date(entry.get('created'))}</i><br><br>"
         )
-        comment += entry.get("contents")  # TODO fixmarkdown
+        comment += str(entry.get("contents"))
         add_comment(caseID=case_id, comment=comment)
     elif entry.get("type") == 3:  # type file
         path_res = demisto.getFilePath(entry.get("id"))
@@ -507,7 +509,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         mime_type = mimetypes.guess_type(full_file_name)
         with open(path_res.get("path"), "rb") as file_to_send:
             # noinspection PyTypeChecker
-            r = add_attachment(
+            add_attachment(
                 caseID=case_id,
                 name=file_name,
                 mimeType=mime_type[0],
@@ -515,7 +517,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
             )
 
 
-def get_mapping_fields_command(args: Dict[str, Any]) -> GetMappingFieldsResponse:
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
     raise NotImplementedError
 
 
@@ -724,7 +726,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_attachment_by_filename_command(args: Dict[str, Any]) -> fileResult:
+def download_attachment_by_filename_command(args: Dict[str, Any]) -> dict:
     case_id = args.get("case_id", None)
     file_name = args.get("file_name", None)
     if case_id is None:
@@ -746,7 +748,7 @@ def download_attachment_by_filename_command(args: Dict[str, Any]) -> fileResult:
     return fileResult(file_name, result.content)
 
 
-def download_attachment_command(args: Dict[str, Any]) -> fileResult:
+def download_attachment_command(args: Dict[str, Any]) -> dict:
     case_id = args.get("case_id", None)
     attachment_id = args.get("attachment_id", None)
     file_name = args.get("file_name", attachment_id)
@@ -760,7 +762,7 @@ def download_attachment_command(args: Dict[str, Any]) -> fileResult:
     return fileResult(file_name, result.content)
 
 
-def download_case_attachments_command(args: Dict[str, Any]) -> [fileResult]:
+def download_case_attachments_command(args: Dict[str, Any]) -> List[Dict]:
     case_id = args.get("case_id", None)
     if case_id is None:
         raise ValueError("case id not specified")
@@ -1372,8 +1374,8 @@ def main() -> None:
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(demisto.args()))
 
-        elif demisto.command() == "get-mapping-fields":
-            return_results(get_mapping_fields_command(demisto.args()))
+        # elif demisto.command() == "get-mapping-fields":
+        #     return_results(get_mapping_fields_command())
 
         elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))

@@ -5883,22 +5883,22 @@ script:
       description: Time or timestamp case was last updated.
     description: Get remote data from a remote incident. This method does not update
       the current incident, and should be used for debugging purposes.
-  - name: get-modified-remote-data
-    arguments:
-    - name: id
-      auto: PREDEFINED
-      predefined:
-      - Time or timestamp case was last updated.
-      description: Argus Case ID
-      defaultValue: last_updated
-    description: Get updated only remote data from a remote incident. This method
-      does not update the current incident, and should be used for debugging purposes.
+#  - name: get-modified-remote-data
+#    arguments:
+#    - name: id
+#      auto: PREDEFINED
+#      predefined:
+#      - Time or timestamp case was last updated.
+#      description: Argus Case ID
+#      defaultValue: last_updated
+#    description: Get updated only remote data from a remote incident. This method
+#      does not update the current incident, and should be used for debugging purposes.
   - name: update-remote-system
     arguments: []
     description: Updates the remote system with incident changes.
-  - name: get-mapping-fields
-    arguments: []
-    description: Get mapping fields for mirroring
+#  - name: get-mapping-fields
+#    arguments: []
+#    description: Get mapping fields for mirroring
   - name: argus-download-attachment-by-filename
     arguments:
     - name: case_id
@@ -5959,11 +5959,11 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:1.0.0.16483
+  dockerimage: demisto/argus-toolbelt:2.0.0.16706
   isfetch: true
   runonce: false
   subtype: python3
-  ismappable: true
+  ismappable: false
   isremotesyncin: true
   isremotesyncout: true
 fromversion: 6.0.0
