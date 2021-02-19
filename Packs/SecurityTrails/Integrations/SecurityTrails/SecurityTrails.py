@@ -227,8 +227,7 @@ def get_ip_neighbors(client: Client, **args) -> CommandResults:
 def search_domain_with_dsl(client: Client, **args) -> CommandResults:
     params = {
         "include_ips": args.get("include_ips", "false"),
-        "page": int(args.get("page", 0)),
-        "scroll": str(args.get("scroll", "false")),
+        "page": int(args.get("page", 0))
     }
 
     body = {"query": str(args.get("query"))}
@@ -252,8 +251,7 @@ def search_domain_with_dsl(client: Client, **args) -> CommandResults:
 def search_domain_with_dsl_statistics(client: Client, **args) -> CommandResults:
     params = {
         "include_ips": args.get("include_ips", "false"),
-        "page": int(args.get("page", 0)),
-        "scroll": str(args.get("scroll", "false")),
+        "page": int(args.get("page", 0))
     }
 
     body = {"query": str(args.get("query"))}
