@@ -119,7 +119,7 @@ class Client(BaseClient):
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
-            list of feed dictionaries.
+            csv.DictReader: Iterates the csv returned from the api request
         """
         _session = requests.Session()
         prepared_request = self._build_request(service, indicator_type)
