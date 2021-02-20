@@ -1,8 +1,7 @@
-import io
-import tarfile
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import tarfile
+import io
 
 # arguments
 action = demisto.args().get('action')
@@ -41,8 +40,6 @@ if action == 'listfiles':
 # Return the selected files to the war room
 if action == "exportfiles":
     files = [f"/{file}" for file in file_names]
-    print(type(files))
-    print(type(file_names))
     exported_files = []
     with open(file_path, 'rb') as f:
         data = f.read()

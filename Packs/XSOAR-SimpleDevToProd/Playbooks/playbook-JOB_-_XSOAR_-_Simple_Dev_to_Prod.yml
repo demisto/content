@@ -1,26 +1,11 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: "This playbook is intended to be run as an adhoc job to quickly create\
-  \ a custom content bundle with only selected items from the servers custom content.\
-  \  \n\nThen you can import this new zip on the other XSOAR server."
+description: |-
+  This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.  You can import this new zip on the other XSOAR server, or push it to production using the Demisto REST API integration.
+
+  Please ensure to read the setup instructions for this pack carefully.
+
+  Create a Job with the Type “XSOAR Dev to Prod”, and select this playbook to get started. For more information on Jobs: https://xsoar.pan.dev/docs/incidents/incident-jobs
 id: JOB - XSOAR - Simple Dev to Prod
 inputs:
-- description: The name of the name of the DEV instance of the Demisto REST API integration.  Used
-    to download the dev content bundle.
-  key: dev_demisto_restapi_instance_name
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Demisto Dev
-- description: 'The name of the name of the PRODUCTION instance of the Demisto REST
-    API integration.  Used to download the dev content bundle. '
-  key: prod_demisto_restapi_instance_name
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Demisto Prod
 - description: 'Set this to True to enable pushing the selected content to the Production
     XSOAR server.  '
   key: dev_2_prod
@@ -37,26 +22,26 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - "24"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: ee723f34-ba58-4cb5-8eee-2b7d371fea35
+      id: 50c72773-5130-4311-8553-161d4eb463b4
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: ee723f34-ba58-4cb5-8eee-2b7d371fea35
+    taskid: 50c72773-5130-4311-8553-161d4eb463b4
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 50
+          "x": 950,
+          "y": -450
         }
       }
   "1":
@@ -75,13 +60,13 @@ tasks:
       uri:
         simple: /content/bundle
       using:
-        simple: ${inputs.dev_demisto_restapi_instance_name}
+        simple: Demisto Dev
     separatecontext: false
     skipunavailable: false
     task:
       brand: Demisto REST API
       description: Download files from Demisto server
-      id: 059ed20d-9abb-4205-876d-776a3a28e2ae
+      id: 45d6032a-9bfe-4db1-8b27-1e600f74a706
       iscommand: true
       name: Download Custom Content Bundle from Dev
       script: Demisto REST API|||demisto-api-download
@@ -89,50 +74,14 @@ tasks:
       - devcontent
       type: regular
       version: -1
-    taskid: 059ed20d-9abb-4205-876d-776a3a28e2ae
+    taskid: 45d6032a-9bfe-4db1-8b27-1e600f74a706
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1070
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "24"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 2edf65d9-ba97-4ebb-8d8c-a16cc7c63d14
-      iscommand: false
-      name: Delete Context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 2edf65d9-ba97-4ebb-8d8c-a16cc7c63d14
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 195
+          "x": 950,
+          "y": 1880
         }
       }
   "8":
@@ -147,20 +96,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c1a51d00-9bfb-40cf-80bb-48427652e4c5
+      id: 08427856-0c08-474e-8e6e-81b1b6fc5a12
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: c1a51d00-9bfb-40cf-80bb-48427652e4c5
+    taskid: 08427856-0c08-474e-8e6e-81b1b6fc5a12
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 3165
+          "x": 1927.5,
+          "y": 4375
         }
       }
   "9":
@@ -170,32 +119,32 @@ tasks:
       "no":
       - "10"
       "yes":
-      - "1"
+      - "19"
     note: false
     quietmode: 0
     scriptarguments:
-      brandname:
-        simple: Demisto REST API
+      instanceName:
+        simple: Demisto Dev
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      id: a05d2ac3-f16a-47d2-81da-422bedc67394
+      description: Checks if the provided Demisto REST API instance is available for
+        the XSOAR Simple Dev to Prod workflow.
+      id: 4dde15ac-db8b-41e3-8680-4e7927257751
       iscommand: false
-      name: Is the Demisto REST API Integration enabled?
-      script: IsIntegrationAvailable
+      name: Is the Demisto Dev - Demisto REST API integration instance enabled?
+      script: IsDemistoRestAPIInstanceAvailable
       type: condition
       version: -1
-    taskid: a05d2ac3-f16a-47d2-81da-422bedc67394
+    taskid: 4dde15ac-db8b-41e3-8680-4e7927257751
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 720
+          "x": 950,
+          "y": 195
         }
       }
   "10":
@@ -203,28 +152,30 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - "31"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Please setup an instance of the Demisto REST API Integration to
-        continue using this playbook.
-      id: 3d175a06-ca33-425b-8ba5-d01a36efba91
+      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Demisto\
+        \ REST API Integration for your Development server to continue using this\
+        \ playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this\
+        \ playbook once completed. \n\n"
+      id: 6b342869-d7bb-4c5a-80f9-f929a0836f69
       iscommand: false
-      name: Enable Demisto REST API Integration to continue
+      name: Enable Demisto Dev - Demisto REST API integration instance to continue
       type: regular
       version: -1
-    taskid: 3d175a06-ca33-425b-8ba5-d01a36efba91
+    taskid: 6b342869-d7bb-4c5a-80f9-f929a0836f69
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 1927.5,
+          "y": 440
         }
       }
   "11":
@@ -256,20 +207,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ea439c3e-2a98-4481-83c0-bef8c7e27c64
+      description: Parse the content bundle from dev
+      id: 0f903fda-facd-435d-8432-f1650e362bec
       iscommand: false
       name: Parse Dev Content Bundle
-      script: ca85276d-80e7-4627-8085-e2c660143d8b
+      script: CustomContentBundleWizardry
       type: regular
       version: -1
-    taskid: ea439c3e-2a98-4481-83c0-bef8c7e27c64
+    taskid: 0f903fda-facd-435d-8432-f1650e362bec
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1245
+          "x": 950,
+          "y": 2110
         }
       }
   "13":
@@ -320,19 +272,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9ded428c-2f33-4a70-88fc-ab27c6b151a6
+      description: Select the custom content items you want to migrate
+      id: ee5c0f0c-15a0-43e9-891a-65ce7619e3c6
       iscommand: false
       name: Select Content to Migrate
       type: collection
       version: -1
-    taskid: 9ded428c-2f33-4a70-88fc-ab27c6b151a6
+    taskid: ee5c0f0c-15a0-43e9-891a-65ce7619e3c6
     timertriggers: []
     type: collection
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1420
+          "x": 950,
+          "y": 2320
         }
       }
   "14":
@@ -368,20 +321,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 73389714-0102-46f0-881d-42abbdd084a6
+      description: Export the selected content items from the dev content bundle
+      id: 817c68c2-97e8-4aa9-8e19-9a4d064b9835
       iscommand: false
       name: Export Selected Files from Dev Content Bundle
-      script: ca85276d-80e7-4627-8085-e2c660143d8b
+      script: CustomContentBundleWizardry
       type: regular
       version: -1
-    taskid: 73389714-0102-46f0-881d-42abbdd084a6
+    taskid: 817c68c2-97e8-4aa9-8e19-9a4d064b9835
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 1770
+          "x": 950,
+          "y": 2765
         }
       }
   "15":
@@ -389,7 +343,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "19"
+      - "33"
     note: false
     quietmode: 0
     reputationcalc: 1
@@ -416,7 +370,7 @@ tasks:
     task:
       brand: ""
       description: Zip a file and upload to war room
-      id: b9eb8267-603a-457b-858d-41438d3f5ddb
+      id: f173bd0b-f6fe-4e42-85ca-fba213ba7d5c
       iscommand: false
       name: Create Selected Content Bundle
       script: ZipFile
@@ -424,47 +378,14 @@ tasks:
       - selectedcontent
       type: regular
       version: -1
-    taskid: b9eb8267-603a-457b-858d-41438d3f5ddb
+    taskid: f173bd0b-f6fe-4e42-85ca-fba213ba7d5c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 1945
-        }
-      }
-  "16":
-    id: "16"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
-    scriptarguments:
-      value:
-        simple: Download Content ${ZipFile.ZippedFile} and upload to Prod!
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: fbcbbfea-4b3d-47e6-87f4-f6bceb1af8a8
-      iscommand: false
-      name: Download Content ${ZipFile.ZippedFile} and upload to Prod!
-      script: Print
-      type: regular
-      version: -1
-    taskid: fbcbbfea-4b3d-47e6-87f4-f6bceb1af8a8
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 397.5,
-          "y": 2970
+          "x": 950,
+          "y": 2990
         }
       }
   "17":
@@ -489,56 +410,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5c2e5034-8dfb-4aad-8a65-0a0be63266ba
+      description: Check to ensure the user selected content items to export
+      id: d2b23151-667e-4422-8325-6b7d90dd6eae
       iscommand: false
       name: Are there selected content items to export?
       type: condition
       version: -1
-    taskid: 5c2e5034-8dfb-4aad-8a65-0a0be63266ba
+    taskid: d2b23151-667e-4422-8325-6b7d90dd6eae
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 1595
-        }
-      }
-  "18":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.dev_demisto_restapi_instance_name
-          operator: isNotEmpty
-      label: "yes"
-    id: "18"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "22"
-      "yes":
-      - "9"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 5f91da34-d0d1-45c9-8eb6-b29dbfa2cfa7
-      iscommand: false
-      name: Is the Demisto REST API Dev Instance input set?
-      type: condition
-      version: -1
-    taskid: 5f91da34-d0d1-45c9-8eb6-b29dbfa2cfa7
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 285,
-          "y": 545
+          "x": 950,
+          "y": 2520
         }
       }
   "19":
@@ -557,65 +442,29 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "16"
+      - "35"
       "yes":
-      - "20"
+      - "27"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: c4ff59ac-b912-4992-87b9-3a7cb9ecf85c
+      description: Is the Dev to Prod input set to True
+      id: 73c3d408-b5ca-470b-8555-e8a6488fafdc
       iscommand: false
       name: Are we trying Dev to Prod?
       type: condition
       version: -1
-    taskid: c4ff59ac-b912-4992-87b9-3a7cb9ecf85c
+    taskid: 73c3d408-b5ca-470b-8555-e8a6488fafdc
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 2120
-        }
-      }
-  "20":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.prod_demisto_restapi_instance_name
-          operator: isNotEmpty
-      label: "yes"
-    id: "20"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "22"
-      "yes":
-      - "23"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 02980dc9-b4e4-4a5d-8fcf-589768c5b040
-      iscommand: false
-      name: Is the Demisto REST API Production Instance input set?
-      type: condition
-      version: -1
-    taskid: 02980dc9-b4e4-4a5d-8fcf-589768c5b040
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 735,
-          "y": 2295
+          "x": 950,
+          "y": 440
         }
       }
   "21":
@@ -645,62 +494,26 @@ tasks:
       uri:
         simple: /content/bundle
       using:
-        simple: ${inputs.prod_demisto_restapi_instance_name}
+        simple: Demisto Prod
     separatecontext: false
     skipunavailable: false
     task:
       brand: Demisto REST API
       description: Send HTTP Multipart request to upload files to Demisto server
-      id: abac4444-4753-4b66-8798-788d5ed3e566
+      id: 1957024c-a9ab-4aa9-8fde-54d059eb654e
       iscommand: true
       name: Push Selected Content to Prod
       script: Demisto REST API|||demisto-api-multipart
       type: regular
       version: -1
-    taskid: abac4444-4753-4b66-8798-788d5ed3e566
+    taskid: 1957024c-a9ab-4aa9-8fde-54d059eb654e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 857.5,
-          "y": 2980
-        }
-      }
-  "22":
-    id: "22"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "8"
-    note: false
-    quietmode: 0
-    reputationcalc: 1
-    scriptarguments:
-      value:
-        simple: |-
-          # Set Playbook Inputs
-
-          Make sure to set the input for the inputs.dev_demisto_restapi_instance_name orprod_demisto_restapi_instance_name in the Playbook Inputs.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 091876b5-7ba7-488d-8b37-f3170009934d
-      iscommand: false
-      name: Print Instructions
-      script: Print
-      type: regular
-      version: -1
-    taskid: 091876b5-7ba7-488d-8b37-f3170009934d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 2470
+          "x": 950,
+          "y": 3910
         }
       }
   "23":
@@ -721,19 +534,19 @@ tasks:
         File Name: ${ZipFile.ZippedFile}
 
         File Contents: ${Select Custom Content.Answers.0}
-      id: 2b063b9e-8713-45b6-8c73-5e2fbd6dfb16
+      id: 677a9f78-d090-46c3-81d6-11dd0fc57618
       iscommand: false
       name: Push Content to Prod?
       type: condition
       version: -1
-    taskid: 2b063b9e-8713-45b6-8c73-5e2fbd6dfb16
+    taskid: 677a9f78-d090-46c3-81d6-11dd0fc57618
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 745,
-          "y": 2470
+          "x": 950,
+          "y": 3440
         }
       }
   "24":
@@ -741,7 +554,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "18"
+      - "30"
     note: false
     quietmode: 0
     scriptarguments:
@@ -758,9 +571,12 @@ tasks:
       alertid: {}
       alertname: {}
       app: {}
+      appchannelname: {}
       appendMultiSelect: {}
+      appendTags: {}
       applicationid: {}
       applicationname: {}
+      appmessage: {}
       approximatenumberofaffecteddatasubjects: {}
       assetid: {}
       assettable: {}
@@ -1217,6 +1033,7 @@ tasks:
       shadowitusersuggestions: {}
       signature: {}
       similarincident: {}
+      similarincidents: {}
       sizenumberofemployees: {}
       sizeturnover: {}
       skuname: {}
@@ -1265,6 +1082,7 @@ tasks:
       systemdefault: {}
       systems: {}
       targetfirewallversion: {}
+      teamname: {}
       technicalowner: {}
       technicalownercontact: {}
       technicaluser: {}
@@ -1273,6 +1091,7 @@ tasks:
       tenantname: {}
       terminatedaction: {}
       threatactor: {}
+      ticketacknowledgeddate: {}
       ticketcloseddate: {}
       ticketnumber: {}
       ticketopeneddate: {}
@@ -1338,16 +1157,9 @@ tasks:
       xdrstatusv2: {}
       xdrurl: {}
       xdrusercount: {}
+      xsoarReadOnlyRoles: {}
       xsoardevinstancename:
-        complex:
-          root: inputs.dev_demisto_restapi_instance_name
-          transformers:
-          - args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No instance set
-            operator: SetIfEmpty
+        simple: Demisto Dev
       xsoardevtoprodmethod:
         complex:
           root: inputs.dev_2_prod
@@ -1364,35 +1176,27 @@ tasks:
                   simple: Automated
             operator: If-Then-Else
       xsoarprodinstancename:
-        complex:
-          root: inputs.prod_demisto_restapi_instance_name
-          transformers:
-          - args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: No instance set
-            operator: SetIfEmpty
+        simple: Demisto Prod
       zipcode: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: dca0d669-2392-4eb7-82f3-d2ca4c445589
+      id: fe845f55-a5af-40de-8aba-fb94e5c03cac
       iscommand: true
       name: Set fields for XSOAR Dev to Prod Layout
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: dca0d669-2392-4eb7-82f3-d2ca4c445589
+    taskid: fe845f55-a5af-40de-8aba-fb94e5c03cac
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 370
+          "x": 950,
+          "y": -260
         }
       }
   "25":
@@ -1411,13 +1215,13 @@ tasks:
       uri:
         simple: /content/bundle
       using:
-        simple: ${inputs.prod_demisto_restapi_instance_name}
+        simple: Demisto Prod
     separatecontext: false
     skipunavailable: false
     task:
       brand: Demisto REST API
       description: Download files from Demisto server
-      id: 4c439b8c-26dd-454c-89cb-f13d68e71776
+      id: 9538b972-1086-4717-89ee-0b8e5e96446e
       iscommand: true
       name: 'Backup Custom Content Bundle from Prod '
       script: Demisto REST API|||demisto-api-download
@@ -1425,14 +1229,14 @@ tasks:
       - prodbackup
       type: regular
       version: -1
-    taskid: 4c439b8c-26dd-454c-89cb-f13d68e71776
+    taskid: 9538b972-1086-4717-89ee-0b8e5e96446e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 857.5,
-          "y": 2735
+          "x": 950,
+          "y": 3685
         }
       }
   "26":
@@ -1458,20 +1262,347 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: ce55cf42-9d40-431f-8eab-37d512749be0
+      id: 04e6f21a-97c6-4b4f-8008-59a496607fc5
       iscommand: true
       name: Close Job
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: ce55cf42-9d40-431f-8eab-37d512749be0
+    taskid: 04e6f21a-97c6-4b4f-8008-59a496607fc5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 397.5,
-          "y": 3340
+          "x": 1917.5,
+          "y": 4570
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "36"
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instanceName:
+        simple: Demisto Prod
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the provided Demisto REST API instance is available for
+        the XSOAR Simple Dev to Prod workflow.
+      id: 2f1df859-7924-4ccd-856c-1f17300cfb5b
+      iscommand: false
+      name: Is the Demisto Prod - Demisto REST API integration instance enabled?
+      script: IsDemistoRestAPIInstanceAvailable
+      type: condition
+      version: -1
+    taskid: 2f1df859-7924-4ccd-856c-1f17300cfb5b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 685
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: defaultIgnored
+                root: DemsistoAPIInstances
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the configuration on the Demisto REST API Prod instance
+        to see if it's correct
+      id: 511c189a-5f93-4289-8e1f-8404ed0f9a25
+      iscommand: false
+      name: Is the Production Demisto REST API setup properly?
+      type: condition
+      version: -1
+    taskid: 511c189a-5f93-4289-8e1f-8404ed0f9a25
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 985
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "# Setup Instructions for Demisto Prod\n\nThe Demisto Prod - Demisto\
+        \ REST API instance must be set to \"Do not use by default\" on the instance\
+        \ configuration. \n\nThe check in this playbook indicates this is not set\
+        \ properly, please ensure to read the setup instructions for this Pack.  \n\
+        \nPlease set the **Demisto Prod** instance properly, and re-run this playbook. "
+      id: 40db8672-b761-46e9-8fa9-2b87fb9fc443
+      iscommand: false
+      name: Demisto Prod Instance not setup properly, provide instructions
+      type: regular
+      version: -1
+    taskid: 40db8672-b761-46e9-8fa9-2b87fb9fc443
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1527.5,
+          "y": 1315
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 98f23446-f793-4179-856e-3d84dae45cf9
+      iscommand: false
+      name: Check Simple Dev to Prod Setup
+      type: title
+      version: -1
+      description: ''
+    taskid: 98f23446-f793-4179-856e-3d84dae45cf9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": -25
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a02857b5-53d3-4ed0-8f36-8d66b4304b89
+      iscommand: false
+      name: Setup Incomplete - Unable to Continue
+      type: title
+      version: -1
+      description: ''
+    taskid: a02857b5-53d3-4ed0-8f36-8d66b4304b89
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1927.5,
+          "y": 1625
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1158ae2a-04c5-4c78-802b-9ef608462c66
+      iscommand: false
+      name: Start XSOAR Simple Dev to Prod
+      type: title
+      version: -1
+      description: ''
+    taskid: 1158ae2a-04c5-4c78-802b-9ef608462c66
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1625
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.dev_2_prod
+          operator: isNotEqualString
+          right:
+            value:
+              simple: "False"
+      label: "yes"
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is the Dev to Prod input set to True
+      id: 9ab11766-4682-41eb-8be1-0147fdbc6da2
+      iscommand: false
+      name: Are we trying Dev to Prod?
+      type: condition
+      version: -1
+    taskid: 9ab11766-4682-41eb-8be1-0147fdbc6da2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 3210
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "The custom content bundle is created, and can be downloaded from\
+        \ the Dev to Prod tab.  \n\nThis can be uploaded to the production server\
+        \ from Settings -> Advanced -> Troubleshooting -> Import Custom Content.\n\
+        \nComplete this task to close the job."
+      id: 3616c9a8-6c88-46c8-8174-eb51e5fd77fd
+      iscommand: false
+      name: Download Custom Content Bundle
+      type: regular
+      version: -1
+    taskid: 3616c9a8-6c88-46c8-8174-eb51e5fd77fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 3910
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36942d7b-3d4c-4678-80e5-495be637dc54
+      iscommand: false
+      name: Bypass Production Checks
+      type: title
+      version: -1
+      description: ''
+    taskid: 36942d7b-3d4c-4678-80e5-495be637dc54
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 985
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "# Setup Demisto Prod\n\nPlease setup a single instance of the\
+        \ Demisto REST API Integration for your Production server to continue using\
+        \ this playbook. \n\nThis instance must be named **Demisto Prod**, and the\
+        \ instance must be marked as **Do not use by default**\n\nRerun this playbook\
+        \ once completed. \n\n"
+      id: 8c9702f6-e0a1-4888-8db8-5c5e5459b798
+      iscommand: false
+      name: Enable Demisto Prod - Demisto REST API integration instance to continue
+      type: regular
+      version: -1
+    taskid: 8c9702f6-e0a1-4888-8db8-5c5e5459b798
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1527.5,
+          "y": 985
         }
       }
 version: -1
@@ -1480,10 +1611,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3385,
-        "width": 1187.5,
-        "x": 50,
-        "y": 50
+        "height": 5115,
+        "width": 1917.5,
+        "x": 390,
+        "y": -450
       }
     }
   }

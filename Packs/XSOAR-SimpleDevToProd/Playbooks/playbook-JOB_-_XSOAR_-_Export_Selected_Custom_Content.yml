@@ -1,10 +1,9 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: "This playbook is intended to be run as an adhoc job to quickly create\
-  \ a custom content bundle with only selected items from the servers custom content.\
-  \  \n\nThen you can import this new zip on the other XSOAR server."
+description: |-
+  This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.
+
+  Then you can import this new zip on the other XSOAR server.
+
+  Create a Job with the Type “XSOAR Dev to Prod”, and select this playbook to get started. For more information on Jobs: https://xsoar.pan.dev/docs/incidents/incident-jobs
 id: JOB - XSOAR - Export Selected Custom Content
 inputs: []
 name: JOB - XSOAR - Export Selected Custom Content
@@ -16,26 +15,26 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "4"
+      - "18"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: ee723f34-ba58-4cb5-8eee-2b7d371fea35
+      id: 7922fd1f-dbe0-4fa3-8eff-eba023351715
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: ee723f34-ba58-4cb5-8eee-2b7d371fea35
+    taskid: 7922fd1f-dbe0-4fa3-8eff-eba023351715
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 50
+          "y": 340
         }
       }
   "1":
@@ -53,12 +52,14 @@ tasks:
       filename: {}
       uri:
         simple: /content/bundle
+      using:
+        simple: Demisto Dev
     separatecontext: false
     skipunavailable: false
     task:
       brand: Demisto REST API
       description: Download files from Demisto server
-      id: 1f51b5d6-1716-498e-88f1-70b4d21f6742
+      id: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
       iscommand: true
       name: Download Custom Content Bundle from Dev
       script: Demisto REST API|||demisto-api-download
@@ -66,50 +67,14 @@ tasks:
       - devcontent
       type: regular
       version: -1
-    taskid: 1f51b5d6-1716-498e-88f1-70b4d21f6742
+    taskid: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "18"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 2edf65d9-ba97-4ebb-8d8c-a16cc7c63d14
-      iscommand: false
-      name: Delete Context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 2edf65d9-ba97-4ebb-8d8c-a16cc7c63d14
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 642.5,
+          "y": 1200
         }
       }
   "8":
@@ -124,20 +89,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c1a51d00-9bfb-40cf-80bb-48427652e4c5
+      id: 916f6772-41c6-4f98-8b26-e02847307bce
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: c1a51d00-9bfb-40cf-80bb-48427652e4c5
+    taskid: 916f6772-41c6-4f98-8b26-e02847307bce
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2120
+          "x": 120,
+          "y": 2490
         }
       }
   "9":
@@ -147,32 +112,32 @@ tasks:
       "no":
       - "10"
       "yes":
-      - "1"
+      - "21"
     note: false
     quietmode: 0
     scriptarguments:
-      brandname:
-        simple: Demisto REST API
+      instanceName:
+        simple: Demisto Dev
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
-      id: a05d2ac3-f16a-47d2-81da-422bedc67394
+      description: Checks if the provided Demisto REST API instance is available for
+        the XSOAR Simple Dev to Prod workflow.
+      id: 7f36491b-0d32-469e-8a27-fd14a6f045c5
       iscommand: false
-      name: Is the Demisto REST API Integration enabled?
-      script: IsIntegrationAvailable
+      name: Is the Demisto Dev REST API integration instance enabled?
+      script: IsDemistoRestAPIInstanceAvailable
       type: condition
       version: -1
-    taskid: a05d2ac3-f16a-47d2-81da-422bedc67394
+    taskid: 7f36491b-0d32-469e-8a27-fd14a6f045c5
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 760
         }
       }
   "10":
@@ -180,28 +145,30 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Please setup an instance of the Demisto REST API Integration to
-        continue using this playbook.
-      id: 3d175a06-ca33-425b-8ba5-d01a36efba91
+      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Demisto\
+        \ REST API Integration for your Development server to continue using this\
+        \ playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this\
+        \ playbook once completed. \n"
+      id: e09f3cae-5301-451b-85ca-138e4ca93bbf
       iscommand: false
-      name: Enable Demisto REST API Integration to continue
+      name: Enable Demisto Dev - Demisto REST API integration instance to continue
       type: regular
       version: -1
-    taskid: 3d175a06-ca33-425b-8ba5-d01a36efba91
+    taskid: e09f3cae-5301-451b-85ca-138e4ca93bbf
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": -317.5,
+          "y": 1040
         }
       }
   "11":
@@ -233,20 +200,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 099b6c7a-9737-47cc-8a40-bf40dbe94215
+      description: Parse the content bundle from dev
+      id: 66f99526-0385-443a-80e5-dd89529dea49
       iscommand: false
       name: Parse Dev Content Bundle
-      script: ca85276d-80e7-4627-8085-e2c660143d8b
+      script: CustomContentBundleWizardry
       type: regular
       version: -1
-    taskid: 099b6c7a-9737-47cc-8a40-bf40dbe94215
+    taskid: 66f99526-0385-443a-80e5-dd89529dea49
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
+          "x": 642.5,
+          "y": 1385
         }
       }
   "13":
@@ -296,19 +264,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fc049e4d-388e-4867-8bbc-20488645962e
+      description: Select content items that you want to migrate
+      id: 9cf0328c-9e6d-458f-829e-879e2eaa6f5b
       iscommand: false
       name: Select Content to Migrate
       type: collection
       version: -1
-    taskid: fc049e4d-388e-4867-8bbc-20488645962e
+    taskid: 9cf0328c-9e6d-458f-829e-879e2eaa6f5b
     timertriggers: []
     type: collection
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 642.5,
+          "y": 1560
         }
       }
   "14":
@@ -344,20 +313,21 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: a6b8a186-a3b6-43a1-89aa-6a1ba555f0f2
+      description: Export the selected content items from the dev content bundle
+      id: c6e4bab4-3f16-471f-8a07-3c3cad15c156
       iscommand: false
       name: Export Selected Files from Dev Content Bundle
-      script: ca85276d-80e7-4627-8085-e2c660143d8b
+      script: CustomContentBundleWizardry
       type: regular
       version: -1
-    taskid: a6b8a186-a3b6-43a1-89aa-6a1ba555f0f2
+    taskid: c6e4bab4-3f16-471f-8a07-3c3cad15c156
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 642.5,
+          "y": 1940
         }
       }
   "15":
@@ -392,7 +362,7 @@ tasks:
     task:
       brand: ""
       description: Zip a file and upload to war room
-      id: 6629c7ab-b87a-4116-8e87-b9d32d964542
+      id: e1ab6f78-d0eb-4346-8abc-68ced7abedd5
       iscommand: false
       name: Create Selected Content Bundle
       script: ZipFile
@@ -400,14 +370,14 @@ tasks:
       - selectedcontent
       type: regular
       version: -1
-    taskid: 6629c7ab-b87a-4116-8e87-b9d32d964542
+    taskid: e1ab6f78-d0eb-4346-8abc-68ced7abedd5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 642.5,
+          "y": 2105
         }
       }
   "16":
@@ -427,20 +397,20 @@ tasks:
     task:
       brand: ""
       description: Prints text to war room (Markdown supported)
-      id: e7eea4c0-bc61-4be2-86fe-0687ce2e1226
+      id: b9624d9b-8120-4dbd-8a2d-882974536fc5
       iscommand: false
       name: Download Content ${ZipFile.ZippedFile} and upload to Prod!
       script: Print
       type: regular
       version: -1
-    taskid: e7eea4c0-bc61-4be2-86fe-0687ce2e1226
+    taskid: b9624d9b-8120-4dbd-8a2d-882974536fc5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 642.5,
+          "y": 2280
         }
       }
   "17":
@@ -465,19 +435,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5c2e5034-8dfb-4aad-8a65-0a0be63266ba
+      description: Check to ensure the user selected content items to export
+      id: 104dc8b1-c095-4b71-80a0-ee35abfdc92a
       iscommand: false
       name: Are there selected content items to export?
       type: condition
       version: -1
-    taskid: 5c2e5034-8dfb-4aad-8a65-0a0be63266ba
+    taskid: 104dc8b1-c095-4b71-80a0-ee35abfdc92a
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1420
+          "x": 642.5,
+          "y": 1735
         }
       }
   "18":
@@ -502,9 +473,12 @@ tasks:
       alertid: {}
       alertname: {}
       app: {}
+      appchannelname: {}
       appendMultiSelect: {}
+      appendTags: {}
       applicationid: {}
       applicationname: {}
+      appmessage: {}
       approximatenumberofaffecteddatasubjects: {}
       assetid: {}
       assettable: {}
@@ -575,6 +549,14 @@ tasks:
       cvsscollateraldamagepotential: {}
       cvssconfidentialityrequirement: {}
       cvssintegrityrequirement: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
       dataencryptionstatus: {}
       datetimeofthebreach: {}
       dbotMirrorDirection: {}
@@ -804,6 +786,7 @@ tasks:
       osversion: {}
       otherpiidatabreached: {}
       outgoingmirrorerror: {}
+      outofftheoffice: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -959,8 +942,11 @@ tasks:
       shadowitservicepurpose: {}
       shadowitsource: {}
       shadowitusersuggestions: {}
+      shiftmanagerbriefing: {}
+      shiftopenincidents: {}
       signature: {}
       similarincident: {}
+      similarincidents: {}
       sizenumberofemployees: {}
       sizeturnover: {}
       skuname: {}
@@ -1009,6 +995,7 @@ tasks:
       systemdefault: {}
       systems: {}
       targetfirewallversion: {}
+      teamname: {}
       technicalowner: {}
       technicalownercontact: {}
       technicaluser: {}
@@ -1017,15 +1004,19 @@ tasks:
       tenantname: {}
       terminatedaction: {}
       threatactor: {}
+      ticketacknowledgeddate: {}
       ticketcloseddate: {}
       ticketnumber: {}
       ticketopeneddate: {}
       title: {}
+      tojointhemeeting: {}
+      tostartthemeeting: {}
       totalfailedinstances: {}
       totalgoodinstances: {}
       totalinstances: {}
       trafficdirection: {}
       trainingmultiselect: {}
+      trainingshorttext: {}
       trainingteams: {}
       triggeredsecurityprofile: {}
       type: {}
@@ -1082,7 +1073,9 @@ tasks:
       xdrstatusv2: {}
       xdrurl: {}
       xdrusercount: {}
-      xsoardevinstancename: {}
+      xsoarReadOnlyRoles: {}
+      xsoardevinstancename:
+        simple: Demisto Dev
       xsoardevtoprodmethod:
         simple: Manual
       xsoarprodinstancename: {}
@@ -1092,20 +1085,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.set.incident
-      id: 743298cc-8e3a-4c1b-834a-b7b4ed68e534
+      id: 6db6e88b-0e57-400e-858b-082522f3e68a
       iscommand: true
       name: Set fields for XSOAR Dev to Prod Layout
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 743298cc-8e3a-4c1b-834a-b7b4ed68e534
+    taskid: 6db6e88b-0e57-400e-858b-082522f3e68a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 540
         }
       }
   "19":
@@ -1131,20 +1124,48 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: c581e152-17a2-4ac4-8f56-f01316eb69a4
+      id: 4b370d8e-ea57-4b38-8e16-8eb0963931bd
       iscommand: true
       name: Close Job
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: c581e152-17a2-4ac4-8f56-f01316eb69a4
+    taskid: 4b370d8e-ea57-4b38-8e16-8eb0963931bd
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2270
+          "x": 120,
+          "y": 2650
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 24e57e13-556b-4281-8ec9-26a8f8c1a2fb
+      iscommand: false
+      name: Start Export Custom Content Workflow
+      type: title
+      version: -1
+      description: ''
+    taskid: 24e57e13-556b-4281-8ec9-26a8f8c1a2fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1040
         }
       }
 version: -1
@@ -1153,10 +1174,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2315,
-        "width": 605,
-        "x": 50,
-        "y": 50
+        "height": 2405,
+        "width": 1340,
+        "x": -317.5,
+        "y": 340
       }
     }
   }
