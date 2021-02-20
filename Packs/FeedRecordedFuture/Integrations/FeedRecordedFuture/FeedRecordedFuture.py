@@ -1,4 +1,5 @@
 import gzip
+import itertools
 
 from CommonServerPython import *
 # IMPORTS
@@ -149,34 +150,13 @@ class Client(BaseClient):
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
             response_content = response_content.decode('utf-8')
-            with open("response.txt", "w") as f:
-                f.write(response_content)
+            data = response_content.split('\n')
         else:
-            with open("response.txt", "w") as f:
-                f.write(response.text)
+            data = response.text.split('\n')
 
-        file_stream = open("response.txt", 'r')
+        csvreader = csv.DictReader(data)
 
-        while True:
-            feed_batch = []
-            for line in file_stream:
-                feed_batch.append(line.strip())
-
-                if len(feed_batch) == 20:
-                    yield csv.DictReader(feed_batch)
-                    break
-
-            if not feed_batch:
-                return
-
-            feed_batch = [feed for _, feed in zip(range(BATCH_SIZE), file_stream) if feed]
-
-            if not feed_batch:
-                file_stream.close()
-                os.remove("response.txt")
-                return
-
-            yield csv.DictReader(feed_batch)
+        return csvreader
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -337,45 +317,42 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
     """
     indicators = []
     for service in client.services:
-        feed_batches = client.build_iterator(service, indicator_type)
-        for feed_dicts in feed_batches:
-            for item in feed_dicts:
-                raw_json = dict(item)
-                raw_json['value'] = value = item.get('Name')
-                raw_json['type'] = get_indicator_type(indicator_type, item)
-                score = 0
-                risk = item.get('Risk')
-                if isinstance(risk, str) and risk.isdigit():
-                    raw_json['score'] = score = client.calculate_indicator_score(risk)
-                    raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
-                lower_case_evidence_details_keys = []
-                evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
-                if evidence_details:
-                    raw_json['EvidenceDetails'] = evidence_details
-                    for rule in evidence_details:
-                        rule = dict((key.lower(), value) for key, value in rule.items())
-                        lower_case_evidence_details_keys.append(rule)
-                risk_string = item.get('RiskString')
-                if isinstance(risk_string, str):
-                    raw_json['RiskString'] = format_risk_string(risk_string)
+        iterator = client.build_iterator(service, indicator_type)
+        for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
+            raw_json = dict(item)
+            raw_json['value'] = value = item.get('Name')
+            raw_json['type'] = get_indicator_type(indicator_type, item)
+            score = 0
+            risk = item.get('Risk')
+            if isinstance(risk, str) and risk.isdigit():
+                raw_json['score'] = score = client.calculate_indicator_score(risk)
+                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
+            lower_case_evidence_details_keys = []
+            evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
+            if evidence_details:
+                raw_json['EvidenceDetails'] = evidence_details
+                for rule in evidence_details:
+                    rule = dict((key.lower(), value) for key, value in rule.items())
+                    lower_case_evidence_details_keys.append(rule)
+            risk_string = item.get('RiskString')
+            if isinstance(risk_string, str):
+                raw_json['RiskString'] = format_risk_string(risk_string)
 
-                indicator_obj = {
-                    'value': value,
-                    'type': raw_json['type'],
-                    'rawJSON': raw_json,
-                    'fields': {
-                        'recordedfutureevidencedetails': lower_case_evidence_details_keys,
-                        'tags': client.tags,
-                    },
-                    'score': score
-                }
+            indicator_obj = {
+                'value': value,
+                'type': raw_json['type'],
+                'rawJSON': raw_json,
+                'fields': {
+                    'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                    'tags': client.tags,
+                },
+                'score': score
+            }
 
-                if client.tlp_color:
-                    indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+            if client.tlp_color:
+                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
-                indicators.append(indicator_obj)
-                if limit and len(indicators) == limit:
-                    return indicators
+            indicators.append(indicator_obj)
 
     return indicators
 
