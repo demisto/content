@@ -1,8 +1,8 @@
 commonfields:
-  id: Tenable.io_1
+  id: Tenable.io
   version: -1
-name: Tenable.io_1
-display: Tenable.io_1
+name: Tenable.io
+display: Tenable.io
 category: Data Enrichment & Threat Intelligence
 description: A comprehensive asset centric solution to accurately track resources
   while accommodating dynamic assets such as cloud, mobile devices, containers and
