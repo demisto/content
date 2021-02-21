@@ -785,8 +785,7 @@ script:
             return res.Path;
         } else if(res.Body.length<=0){  // If body is empty return an empty object
             return {}
-            }
-        else{
+            } else {
             return JSON.parse(res.Body);
         }
     }
