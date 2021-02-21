@@ -3,6 +3,12 @@ commonfields:
   id: CrowdStrike Falcon X
   version: -1
 configuration:
+- defaultvalue: https://api.crowdstrike.com
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
+  hidden: false
+  name: base_url
+  required: false
+  type: 0
 - display: Client ID
   name: credentials
   required: true
@@ -417,7 +423,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sort order. Can be "asc" or "desc". 
+      description: Sort order. Can be "asc" or "desc".
       isArray: false
       name: sort
       predefined:
@@ -599,7 +605,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
