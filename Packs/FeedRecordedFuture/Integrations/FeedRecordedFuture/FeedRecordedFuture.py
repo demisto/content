@@ -1,5 +1,4 @@
 import gzip
-import itertools
 
 from CommonServerPython import *
 # IMPORTS
@@ -112,14 +111,15 @@ class Client(BaseClient):
             raise DemistoException(f'Service unknown: {service}')
         return response.prepare()
 
-    def build_iterator(self, service, indicator_type):
+    def build_iterator(self, service, indicator_type, limit):
         """Retrieves all entries from the feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+            limit (int): Optional. The number of the indicators to fetch
 
         Returns:
-            csv.DictReader: Iterates the csv returned from the api request
+            list of feed dictionaries.
         """
         _session = requests.Session()
         prepared_request = self._build_request(service, indicator_type)
@@ -150,13 +150,25 @@ class Client(BaseClient):
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
             response_content = response_content.decode('utf-8')
-            data = response_content.split('\n')
+            with open("response.txt", "w") as f:
+                f.write(response_content)
         else:
-            data = response.text.split('\n')
+            with open("response.txt", "w") as f:
+                f.write(response.text)
 
-        csvreader = csv.DictReader(data)
+        file_stream = open("response.txt", 'rt')
 
-        return csvreader
+        batch_size = limit if limit else BATCH_SIZE
+        while True:
+
+            feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
+
+            if not feed_batch:
+                file_stream.close()
+                os.remove("response.txt")
+                return
+
+            yield csv.DictReader(feed_batch)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -249,7 +261,7 @@ def get_indicator_type(indicator_type, item):
         return FeedIndicatorType.File
     elif indicator_type == 'domain':
         # If * is in the domain it is of type DomainGlob
-        if '*' in item.get('Name'):
+        if '*' in item.get('Name', ''):
             return FeedIndicatorType.DomainGlob
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
@@ -264,7 +276,6 @@ def ip_to_indicator_type(ip):
     :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
     """
     ip = str(ip)
-
     if re.match(ipv4cidrRegex, ip):
         return FeedIndicatorType.CIDR
 
@@ -315,46 +326,53 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
     Returns:
         list. List of indicators from the feed
     """
-    indicators = []
+
     for service in client.services:
-        iterator = client.build_iterator(service, indicator_type)
-        for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
-            raw_json = dict(item)
-            raw_json['value'] = value = item.get('Name')
-            raw_json['type'] = get_indicator_type(indicator_type, item)
-            score = 0
-            risk = item.get('Risk')
-            if isinstance(risk, str) and risk.isdigit():
-                raw_json['score'] = score = client.calculate_indicator_score(risk)
-                raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
-            lower_case_evidence_details_keys = []
-            evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
-            if evidence_details:
-                raw_json['EvidenceDetails'] = evidence_details
-                for rule in evidence_details:
-                    rule = dict((key.lower(), value) for key, value in rule.items())
-                    lower_case_evidence_details_keys.append(rule)
-            risk_string = item.get('RiskString')
-            if isinstance(risk_string, str):
-                raw_json['RiskString'] = format_risk_string(risk_string)
 
-            indicator_obj = {
-                'value': value,
-                'type': raw_json['type'],
-                'rawJSON': raw_json,
-                'fields': {
-                    'recordedfutureevidencedetails': lower_case_evidence_details_keys,
-                    'tags': client.tags,
-                },
-                'score': score
-            }
+        feed_batches = client.build_iterator(service, indicator_type, limit)
+        for feed_dicts in feed_batches:
 
-            if client.tlp_color:
-                indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+            indicators = []
+            for item in feed_dicts:
+                raw_json = dict(item)
+                raw_json['value'] = value = item.get('Name')
+                raw_json['type'] = get_indicator_type(indicator_type, item)
+                score = 0
 
-            indicators.append(indicator_obj)
+                risk = item.get('Risk')
+                if isinstance(risk, str) and risk.isdigit():
+                    raw_json['score'] = score = client.calculate_indicator_score(risk)
+                    raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
 
-    return indicators
+                lower_case_evidence_details_keys = []
+                evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
+                if evidence_details:
+                    raw_json['EvidenceDetails'] = evidence_details
+                    for rule in evidence_details:
+                        rule = dict((key.lower(), value) for key, value in rule.items())
+                        lower_case_evidence_details_keys.append(rule)
+
+                risk_string = item.get('RiskString')
+                if isinstance(risk_string, str):
+                    raw_json['RiskString'] = format_risk_string(risk_string)
+
+                indicator_obj = {
+                    'value': value,
+                    'type': raw_json['type'],
+                    'rawJSON': raw_json,
+                    'fields': {
+                        'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                        'tags': client.tags,
+                    },
+                    'score': score
+                }
+
+                if client.tlp_color:
+                    indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+                indicators.append(indicator_obj)
+
+            yield indicators
 
 
 def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
@@ -367,9 +385,16 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
         """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client, indicator_type, limit)
+
+    indicators_list: List[Dict] = []
+    for indicators in fetch_indicators_command(client, indicator_type, limit):
+        indicators_list.extend(indicators)
+
+        if limit and len(indicators_list) == limit:
+            break
+
     entry_result = camelize(indicators_list)
-    hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'])
+    hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'], removeNull=True)
 
     return hr, {}, entry_result
 
@@ -413,13 +438,12 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, client.indicator_type)
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                # remove duplicates due to performance issue -
-                # https://github.com/demisto/etc/issues/25033
-                non_duplicates_dict: Dict[str, Dict] = dict()
-                for indicator in b:
+            indicators_batch = fetch_indicators_command(client, client.indicator_type)
+            non_duplicates_dict: Dict[str, Dict] = dict()
+            for indicators in indicators_batch:
+                for indicator in indicators:
+                    # remove duplicates due to performance issue -
+                    # https://github.com/demisto/etc/issues/25033
                     indicator_value = indicator.get("value")
                     if indicator_value:
                         # each value is added to the dict only ones
