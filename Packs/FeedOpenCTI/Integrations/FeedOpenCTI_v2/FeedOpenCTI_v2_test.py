@@ -26,7 +26,7 @@ def test_get_indicators(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    new_last_id, indicators = get_indicators(client, indicator_type=['registry key', 'account'], limit=10)
+    new_last_id, indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
     assert len(indicators) == 2
     assert new_last_id == 'YXJyYXljb25uZWN0aW9uOjI='
 
@@ -43,7 +43,7 @@ def test_fetch_indicators_command(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    indicators = fetch_indicators_command(client, indicator_type=['registry key', 'account'], max_fetch=200)
+    indicators = fetch_indicators_command(client, indicator_types=['registry key', 'account'], max_fetch=200)
     assert len(indicators) == 2
 
 
@@ -65,7 +65,7 @@ def test_get_indicators_command(mocker):
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     results: CommandResults = get_indicators_command(client, args)
     assert len(results.raw_response) == 2
-    assert "Indicators from OpenCTI" in results.readable_output
+    assert "Indicators" in results.readable_output
 
 
 def test_get_indicators_command_with_no_data_to_return(mocker):
@@ -126,7 +126,7 @@ def test_indicator_field_update_command(mocker, field, value):
     }
     mocker.patch.object(client.stix_cyber_observable, 'update_field', return_value={'id': '123456'})
     results: CommandResults = indicator_field_update_command(client, args)
-    assert "Indicator updated successfully" in results.readable_output
+    assert "updated successfully" in results.readable_output
     assert {'id': '123456'} == results.outputs
 
 
@@ -225,7 +225,7 @@ def test_organization_list_command(mocker):
     client = Client
     mocker.patch.object(client.identity, 'list', return_value=[{'id': '1', 'name': 'test organization'}])
     results: CommandResults = organization_list_command(client, {})
-    assert "Organizations from OpenCTI" in results.readable_output
+    assert "Organizations" in results.readable_output
     assert [{'id': '1', 'name': 'test organization'}] == results.outputs
 
 
@@ -244,5 +244,5 @@ def test_organization_create_command(mocker):
     }
     mocker.patch.object(client.identity, 'create', return_value={'id': '1'})
     results: CommandResults = organization_create_command(client, args)
-    assert "Organization created successfully" in results.readable_output
+    assert "was created successfully" in results.readable_output
     assert {'id': '1'} == results.outputs

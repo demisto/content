@@ -72,7 +72,7 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client, indicator_types: List[str], limit: int, last_run_id: Optional[str] = None,
+def get_indicators(client, indicator_types: List[str], limit: Optional[int], last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
