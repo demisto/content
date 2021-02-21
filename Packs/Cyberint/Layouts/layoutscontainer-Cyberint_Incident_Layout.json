@@ -1205,7 +1205,7 @@
                         "i": "caseinfoid-002ded20-7134-11eb-b319-fb2580fa3636",
                         "items": [{
                             "endCol": 2,
-                            "fieldId": "alertattachments",
+                            "fieldId": "attachments",
                             "height": 22,
                             "id": "06af1e30-7134-11eb-b319-fb2580fa3636",
                             "index": 0,
