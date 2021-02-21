@@ -11,6 +11,7 @@ INDICATOR_TYPES = {
     'File MD5': DBotScoreType.FILE,
     'File SHA256': DBotScoreType.FILE,
     'File SHA-256': DBotScoreType.FILE,
+    'Email': DBotScoreType.URL,
     'URL': DBotScoreType.URL
 }
 
