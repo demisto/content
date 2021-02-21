@@ -1,11 +1,9 @@
 {
     "description": "Cyberint Incident Layout",
     "details": {
-        "sections": [
-            {
+        "sections": [{
                 "description": "",
-                "fields": [
-                    {
+                "fields": [{
                         "fieldId": "incident_type",
                         "isVisible": true
                     },
@@ -60,8 +58,7 @@
             },
             {
                 "description": "",
-                "fields": [
-                    {
+                "fields": [{
                         "fieldId": "incident_dbotcreated",
                         "isVisible": true
                     },
@@ -91,8 +88,7 @@
             },
             {
                 "description": "",
-                "fields": [
-                    {
+                "fields": [{
                         "fieldId": "incident_agentid",
                         "isVisible": true
                     },
@@ -506,12 +502,10 @@
             },
             {
                 "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_details",
-                        "isVisible": true
-                    }
-                ],
+                "fields": [{
+                    "fieldId": "incident_details",
+                    "isVisible": true
+                }],
                 "isVisible": true,
                 "name": "Details",
                 "query": null,
@@ -521,12 +515,10 @@
             },
             {
                 "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_labels",
-                        "isVisible": true
-                    }
-                ],
+                "fields": [{
+                    "fieldId": "incident_labels",
+                    "isVisible": true
+                }],
                 "isVisible": true,
                 "name": "Labels",
                 "query": null,
@@ -536,12 +528,10 @@
             },
             {
                 "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_attachment",
-                        "isVisible": true
-                    }
-                ],
+                "fields": [{
+                    "fieldId": "incident_attachment",
+                    "isVisible": true
+                }],
                 "isVisible": true,
                 "name": "Attachments",
                 "query": null,
@@ -675,18 +665,15 @@
         ]
     },
     "detailsV2": {
-        "tabs": [
-            {
+        "tabs": [{
                 "id": "caseinfoid",
                 "name": "Cyberint Incident",
-                "sections": [
-                    {
+                "sections": [{
                         "displayType": "ROW",
                         "h": 4,
                         "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [
-                            {
+                        "items": [{
                                 "endCol": 2,
                                 "fieldId": "type",
                                 "height": 22,
@@ -911,8 +898,7 @@
                         "displayType": "CARD",
                         "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-                        "items": [
-                            {
+                        "items": [{
                                 "endCol": 1,
                                 "fieldId": "occurred",
                                 "height": 53,
@@ -974,8 +960,7 @@
                         "h": 2,
                         "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
-                        "items": [
-                            {
+                        "items": [{
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "closurereason",
@@ -1012,17 +997,15 @@
                         "h": 2,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 106,
-                                "id": "incident-details-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "items": [{
+                            "endCol": 2,
+                            "fieldId": "details",
+                            "height": 106,
+                            "id": "incident-details-field",
+                            "index": 0,
+                            "sectionItemType": "field",
+                            "startCol": 0
+                        }],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -1039,8 +1022,7 @@
                         "h": 6,
                         "hideName": false,
                         "i": "caseinfoid-9a6e5c50-7123-11eb-9439-354a158abf78",
-                        "items": [
-                            {
+                        "items": [{
                                 "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "alertid",
@@ -1113,7 +1095,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "targetbrand",
+                                "fieldId": "targeted_brands",
                                 "height": 53,
                                 "id": "0b4e82d0-7127-11eb-9439-354a158abf78",
                                 "index": 8,
@@ -1193,19 +1175,17 @@
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-28e4eec0-7126-11eb-9439-354a158abf78",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "ioc",
-                                "height": 106,
-                                "id": "457cb9f0-7126-11eb-9439-354a158abf78",
-                                "index": 0,
-                                "listId": "caseinfoid-28e4eec0-7126-11eb-9439-354a158abf78",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "items": [{
+                            "dropEffect": "move",
+                            "endCol": 2,
+                            "fieldId": "ioc",
+                            "height": 106,
+                            "id": "457cb9f0-7126-11eb-9439-354a158abf78",
+                            "index": 0,
+                            "listId": "caseinfoid-28e4eec0-7126-11eb-9439-354a158abf78",
+                            "sectionItemType": "field",
+                            "startCol": 0
+                        }],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -1223,17 +1203,15 @@
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-002ded20-7134-11eb-b319-fb2580fa3636",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "alertattachments",
-                                "height": 22,
-                                "id": "06af1e30-7134-11eb-b319-fb2580fa3636",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "items": [{
+                            "endCol": 2,
+                            "fieldId": "alertattachments",
+                            "height": 22,
+                            "id": "06af1e30-7134-11eb-b319-fb2580fa3636",
+                            "index": 0,
+                            "sectionItemType": "field",
+                            "startCol": 0
+                        }],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
