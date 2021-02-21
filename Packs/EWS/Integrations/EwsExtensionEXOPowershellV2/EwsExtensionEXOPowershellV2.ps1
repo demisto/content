@@ -1,3 +1,11 @@
+<# IMPORTANT NOTICE
+# When conencting to ExchangeOnline - only needed command between CreateSession
+# and DisconnectSession and let also the `finally` term to disconnect (it will do nothing if everything is fine).
+# This will reduce the time sessions are opened between Exchange and the server and will create
+# less problems.
+# DO NOT USE ONE FINALLY STATEMENT: we don't know if and when it'll be executed and anyway it the DisconnectSession
+# should be called before returning results to the server.
+#>
 Import-Module ExchangeOnlineManagement
 
 $COMMAND_PREFIX = "ews"
@@ -59,12 +67,15 @@ class ExchangeOnlinePowershellV2Client {
         if ($user_principal_name) {
             $cmd_params.UserPrincipalName = $user_principal_name
         }
+        $this.CreateSession()
         if ($limit -gt 0){
-            return Get-EXOCASMailbox @cmd_params -ResultSize $limit
+            $results = Get-EXOCASMailbox @cmd_params -ResultSize $limit
         } else
         {
-            return Get-EXOCASMailbox @cmd_params -ResultSize Unlimited
+            $results =  Get-EXOCASMailbox @cmd_params -ResultSize Unlimited
         }
+        $this.DisconnectSession()
+        return $results
 
         <#
         .DESCRIPTION
@@ -121,12 +132,17 @@ class ExchangeOnlinePowershellV2Client {
         if ($property_sets){
             $cmd_params.PropertySets = $property_sets
         }
-        if ($limit -gt 0){
-            return Get-EXOMailbox @cmd_params -ResultSize $limit
-        } else
+        $this.CreateSession()
+        if ($limit -gt 0)
         {
-            return Get-EXOMailbox @cmd_params -ResultSize Unlimited
+            $results = Get-EXOMailbox @cmd_params -ResultSize $limit
         }
+        else
+        {
+            $results = Get-EXOMailbox @cmd_params -ResultSize Unlimited
+        }
+        $this.DisconnectSession()
+        return $results
         <#
         .DESCRIPTION
         Use the Get-EXOMailbox cmdlet to view mailbox objects and attributes,
@@ -167,7 +183,11 @@ class ExchangeOnlinePowershellV2Client {
         if ($identity) {
             $cmd_params.Identity = $identity
         }
-        return Get-EXOMailboxPermission @cmd_params
+        $this.CreateSession()
+        $results = Get-EXOMailboxPermission @cmd_params
+        $this.DisconnectSession()
+        return $results
+
         <#
         .DESCRIPTION
         View information about SendAs permissions that are configured for users.
@@ -194,13 +214,17 @@ class ExchangeOnlinePowershellV2Client {
         if ($identity) {
             $cmd_params.Identity = $identity
         }
+        $this.CreateSession()
         if ($limit -gt 0){
-            return Get-EXORecipientPermission @cmd_params -ResultSize $limit
+            $cmd_params.ResultSize = $limit
         }
         else
         {
-            return Get-EXORecipientPermission @cmd_params -ResultSize Unlimited
+            $cmd_params.ResulySize = Unlimited
         }
+        $results = Get-EXORecipientPermission @cmd_params
+        $this.DisconnectSession()
+        return $results
         <#
         .DESCRIPTION
         Use the Get-EXORecipientPermission cmdlet to view information about SendAs permissions that are
@@ -233,14 +257,17 @@ class ExchangeOnlinePowershellV2Client {
             {
                 $cmd_params.Identity = $identity
             }
+            $this.CreateSession()
             if ($limit -gt 0)
             {
-                return Get-EXORecipient @cmd_params -ResultSize $limit
+                $results = Get-EXORecipient @cmd_params -ResultSize $limit
             }
             else
             {
-                return Get-EXORecipient @cmd_params -ResultSize Unlimited
+                $results = Get-EXORecipient @cmd_params -ResultSize Unlimited
             }
+            $this.DisconnectSession()
+            return $results
             <#
             .DESCRIPTION
             Use the Get-ExORecipient cmdlet to view existing recipient objects in your organization.
@@ -302,7 +329,6 @@ function GetEXOMailBoxCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
-    $property_sets = $kwargs.property_sets
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXOMailBox($identity, $kwargs.property_sets, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
@@ -328,9 +354,14 @@ function GetEXOCASMailboxCommand {
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function TestModuleCommand(){
-    Get-EXOMailbox
-    $demisto.results("ok")
+function TestModuleCommand($client){
+    try{
+        $client.CreateSession()
+        $demisto.results("ok")
+    } finally {
+        $client.DisconnectSession()
+    }
+
 }
 function Main {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
@@ -354,13 +385,11 @@ function Main {
             $password
             )
     try {
-        # Creating ExchangeOnline client
-        $exo_client.CreateSession()
         # Executing command
         $Demisto.Debug("Command being called is $Command")
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
             }
             "$script:COMMAND_PREFIX-cas-mailbox-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
@@ -403,6 +432,7 @@ function Main {
         }
     }
     finally {
+        # Always disconnect the session, even if no sessions available.
         $exo_client.DisconnectSession()
     }
 }
