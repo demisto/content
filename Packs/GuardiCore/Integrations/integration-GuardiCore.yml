@@ -733,7 +733,7 @@ script:
         if (token) {
             headers.Authorization = ['Bearer ' + token];
         }
-        console.log('Sending request: ' + server + url);
+        console.log('Sending logout request: ' + server + url);
         http(server + url,
             {
                 Method: method,
