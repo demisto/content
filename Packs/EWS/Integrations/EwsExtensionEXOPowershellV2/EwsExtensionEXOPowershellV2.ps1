@@ -11,24 +11,28 @@ Import-Module ExchangeOnlineManagement
 $COMMAND_PREFIX = "ews"
 $INTEGRATION_ENTRY_CONTEXT = "EWS"
 
-class ExchangeOnlinePowershellV2Client {
+class ExchangeOnlinePowershellV2Client
+{
     [string]$url
     [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
     [string]$organization
     [string]$app_id
     [SecureString]$password
     ExchangeOnlinePowershellV2Client(
-        [string]$url,
-        [string]$app_id,
-        [string]$organization,
-        [string]$certificate,
-        [SecureString]$password
-    ) {
+            [string]$url,
+            [string]$app_id,
+            [string]$organization,
+            [string]$certificate,
+            [SecureString]$password
+    )
+    {
         $this.url = $url
         try
         {
             $ByteArray = [System.Convert]::FromBase64String($certificate)
-        } catch {
+        }
+        catch
+        {
             throw "Could not decode the certificate. Try to re-enter it"
         }
         $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
@@ -36,43 +40,53 @@ class ExchangeOnlinePowershellV2Client {
         $this.organization = $organization
         $this.app_id = $app_id
     }
-    CreateSession() {
+    CreateSession()
+    {
         $cmd_params = @{
-            "AppID"        = $this.app_id
+            "AppID" = $this.app_id
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
         Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue | Out-Null
     }
-    DisconnectSession() {
+    DisconnectSession()
+    {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue | Out-Null
     }
-    [PSObject]GetEXOCASMailbox(
-        [string]$identity,
-        [string]$organizational_unit,
-        [string]$primary_smtp_address,
-        [string]$user_principal_name,
-        [int]$limit
-    ) {
-        $cmd_params = @{}
-        if ($identity) {
+    [PSObject]
+    GetEXOCASMailbox(
+            [string]$identity,
+            [string]$organizational_unit,
+            [string]$primary_smtp_address,
+            [string]$user_principal_name,
+            [int]$limit
+    )
+    {
+        $cmd_params = @{ }
+        if ($identity)
+        {
             $cmd_params.Identity = $identity
         }
-        if ($organizational_unit) {
+        if ($organizational_unit)
+        {
             $cmd_params.OrganizationalUnit = $organizational_unit
         }
-        if ($primary_smtp_address) {
+        if ($primary_smtp_address)
+        {
             $cmd_params.PrimarySmtpAddress = $primary_smtp_address
         }
-        if ($user_principal_name) {
+        if ($user_principal_name)
+        {
             $cmd_params.UserPrincipalName = $user_principal_name
         }
         $this.CreateSession()
-        if ($limit -gt 0){
-            $results = Get-EXOCASMailbox @cmd_params -ResultSize $limit
-        } else
+        if ($limit -gt 0)
         {
-            $results =  Get-EXOCASMailbox @cmd_params -ResultSize Unlimited
+            $results = Get-EXOCASMailbox @cmd_params -ResultSize $limit
+        }
+        else
+        {
+            $results = Get-EXOCASMailbox @cmd_params -ResultSize Unlimited
         }
         $this.DisconnectSession()
         return $results
@@ -120,16 +134,20 @@ class ExchangeOnlinePowershellV2Client {
         #>
     }
 
-    [PSObject]GetEXOMailbox(
-        [string]$identity,
-        [string]$property_sets,
-        [int]$limit
-    ) {
-        $cmd_params = @{}
-        if ($identity) {
+    [PSObject]
+    GetEXOMailbox(
+            [string]$identity,
+            [string]$property_sets,
+            [int]$limit
+    )
+    {
+        $cmd_params = @{ }
+        if ($identity)
+        {
             $cmd_params.Identity = $identity
         }
-        if ($property_sets){
+        if ($property_sets)
+        {
             $cmd_params.PropertySets = $property_sets
         }
         $this.CreateSession()
@@ -175,12 +193,15 @@ class ExchangeOnlinePowershellV2Client {
         #>
     }
 
-    [PSObject]GetEXOMailboxPermission(
-        [string]$identity
-    ) {
+    [PSObject]
+    GetEXOMailboxPermission(
+            [string]$identity
+    )
+    {
         # Import and Execute command
-        $cmd_params = @{}
-        if ($identity) {
+        $cmd_params = @{ }
+        if ($identity)
+        {
             $cmd_params.Identity = $identity
         }
         $this.CreateSession()
@@ -206,23 +227,40 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-exomailboxpermission?view=exchange-ps
         #>
     }
-    [PSObject]GetEXORecipientPermission(
-        [string]$identity,
-        [int]$limit
-    ) {
-        $cmd_params = @{}
-        if ($identity) {
+    [PSObject]
+    GetEXORecipientPermission(
+            [string]$identity,
+            [int]$limit
+    )
+    {
+        $cmd_params = @{ }
+        if ($identity)
+        {
             $cmd_params.Identity = $identity
         }
         $this.CreateSession()
-        if ($limit -gt 0){
-            $cmd_params.ResultSize = $limit
+        if ($limit -gt 0)
+        {
+            if ($identity)
+            {
+                $results = Get-EXORecipientPermission -Identity $identity -ResultSize $limit
+            }
+            else
+            {
+                $results = Get-EXORecipientPermission -ResultSize $limit
+            }
         }
         else
         {
-            $cmd_params.ResulySize = Unlimited
+            if ($identity)
+            {
+                $results = Get-EXORecipientPermission -Identity $identity -ResultSize Unlimited
+            }
+            else
+            {
+                $results = Get-EXORecipientPermission -ResultSize Unlimited
+            }
         }
-        $results = Get-EXORecipientPermission @cmd_params
         $this.DisconnectSession()
         return $results
         <#
@@ -247,38 +285,40 @@ class ExchangeOnlinePowershellV2Client {
             * SamAccountName
         #>
     }
-        [PSObject]GetEXORecipient(
-        [string]$identity,
-        [int]$limit
+    [PSObject]
+    GetEXORecipient(
+            [string]$identity,
+            [int]$limit
     )
+    {
+        $cmd_params = @{ }
+        if ($identity)
         {
-            $cmd_params = @{ }
-            if ($identity)
-            {
-                $cmd_params.Identity = $identity
-            }
-            $this.CreateSession()
-            if ($limit -gt 0)
-            {
-                $results = Get-EXORecipient @cmd_params -ResultSize $limit
-            }
-            else
-            {
-                $results = Get-EXORecipient @cmd_params -ResultSize Unlimited
-            }
-            $this.DisconnectSession()
-            return $results
-            <#
+            $cmd_params.Identity = $identity
+        }
+        $this.CreateSession()
+        if ($limit -gt 0)
+        {
+            $results = Get-EXORecipient @cmd_params -ResultSize $limit
+        }
+        else
+        {
+            $results = Get-EXORecipient @cmd_params -ResultSize Unlimited
+        }
+        $this.DisconnectSession()
+        return $results
+        <#
             .DESCRIPTION
             Use the Get-ExORecipient cmdlet to view existing recipient objects in your organization.
             This cmdlet returns all mail-enabled objects (for example,
             mailboxes, mail users, mail contacts, and distribution groups).
 
             #>
-        }
+    }
 }
 
-function GetEXORecipientCommand {
+function GetEXORecipientCommand
+{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
@@ -288,11 +328,12 @@ function GetEXORecipientCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXORecipient($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Recipient(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Recipient(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
-function GetEXORecipientPermissionCommand {
+function GetEXORecipientPermissionCommand
+{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
@@ -302,10 +343,11 @@ function GetEXORecipientPermissionCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function GetEXOMailBoxPermissionCommand {
+function GetEXOMailBoxPermissionCommand
+{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
@@ -322,7 +364,8 @@ function GetEXOMailBoxPermissionCommand {
     }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function GetEXOMailBoxCommand {
+function GetEXOMailBoxCommand
+{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
@@ -336,7 +379,8 @@ function GetEXOMailBoxCommand {
         "$script:INTEGRATION_ENTRY_CONTEXT.Mailbox(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function GetEXOCASMailboxCommand {
+function GetEXOCASMailboxCommand
+{
     [CmdletBinding()]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
@@ -351,29 +395,36 @@ function GetEXOCASMailboxCommand {
             $identity, $organizational_unit, $primary_smtp_address, $user_principal_name, $limit
     )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function TestModuleCommand($client){
-    try{
+function TestModuleCommand($client)
+{
+    try
+    {
         $client.CreateSession()
         $demisto.results("ok")
-    } finally {
+    }
+    finally
+    {
         $client.DisconnectSession()
     }
 
 }
-function Main {
+function Main
+{
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     param()
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
 
-    if ($integration_params.certificate.password){
+    if ($integration_params.certificate.password)
+    {
         $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
     }
-    else {
+    else
+    {
         $password = $null
     }
 
@@ -383,11 +434,13 @@ function Main {
             $integration_params.organization,
             $integration_params.certificate.identifier,
             $password
-            )
-    try {
+    )
+    try
+    {
         # Executing command
         $Demisto.Debug("Command being called is $Command")
-        switch ($command) {
+        switch ($command)
+        {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
             }
@@ -413,31 +466,36 @@ function Main {
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
-    catch {
+    catch
+    {
         $Demisto.debug(
-            "Integration: $script:INTEGRATION_NAME
+                "Integration: $script:INTEGRATION_NAME
         Command: $command
-        Arguments: $($command_arguments | ConvertTo-Json)
-        Error: $($_.Exception.Message)"
+        Arguments: $( $command_arguments | ConvertTo-Json )
+        Error: $( $_.Exception.Message )"
         )
-        if ($command -ne "test-module") {
+        if ($command -ne "test-module")
+        {
             ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command
-            Arguments: $($command_arguments | ConvertTo-Json)
-            Error: $($_.Exception)"
+            Arguments: $( $command_arguments | ConvertTo-Json )
+            Error: $( $_.Exception )"
         }
-        else {
+        else
+        {
             ReturnError $_.Exception.Message
         }
     }
-    finally {
+    finally
+    {
         # Always disconnect the session, even if no sessions available.
         $exo_client.DisconnectSession()
     }
 }
 
 # Execute Main when not in Tests
-if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
+if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT$Test)
+{
     Main
 }
