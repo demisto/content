@@ -41,7 +41,7 @@
               },
               "Device Name": {
                   "complex": null,
-                  "simple": "device.hostnam"
+                  "simple": "device.hostname"
               },
               "File Name": {
                   "complex": null,
