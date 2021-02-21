@@ -585,7 +585,6 @@ def was_private_pack_updated(private_index_json, public_index_json):
         content_commit_hash = private_pack.get("contentCommitHash", "")
         id_to_commit_hash_from_public_index[pack_id] = content_commit_hash
 
-    id_to_commit_hash_from_public_index["HelloWorldPremium"] = "testCommitHash"
     for private_pack in private_index_json.get("packs"):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
@@ -658,6 +657,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
                 logging.debug("Not skipping upload flow because of private packs")
                 return
 
+        sys.exit()
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
         try:
@@ -888,7 +888,6 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
-    packs_list = []
 
     # taking care of private packs
     private_index_path = ""
