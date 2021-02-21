@@ -772,7 +772,7 @@ script:
             params.insecure,
             params.proxy
         );
-        console.log('Response from api: ' + JSON.stringify(res))  # print response to console for debugging
+        console.log('Response from api: ' + JSON.stringify(res))  // print response to console for debugging
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (token) {
                 request_logout(methodDictionary.logout, urlDictionary.logout, token);
@@ -797,6 +797,7 @@ script:
     delete(args['raw-response']);
 
     var res_login =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password})
+
     if(JSON.stringify(res_login) == '{}'){
         return 'Authentication at login failed '
     }
