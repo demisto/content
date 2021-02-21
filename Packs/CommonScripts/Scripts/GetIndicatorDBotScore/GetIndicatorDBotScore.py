@@ -24,7 +24,7 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 
 
 def iterate_indicator_entry(indicator, entry):
-    indicator_type = entry["indicator_type"]  # File SHA-256
+    indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
     sources = entry.get('sourceBrands', [])
     sources = sources if sources else [None]
