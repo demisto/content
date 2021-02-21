@@ -58,13 +58,6 @@ Display the uncommon domains.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-unresolved-domains
 ***
 Display the unresolved domains.
@@ -82,13 +75,6 @@ Display the unresolved domains.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### guardicore-show-endpoint
 ***
@@ -109,13 +95,6 @@ Display information about the endpoint given its ID.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-dns-requests
 ***
 Display the DNS requests.
@@ -133,13 +112,6 @@ Display the DNS requests.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### guardicore-search-endpoint
 ***
@@ -161,13 +133,6 @@ Display information about the endpoint by its hostname or IP address.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-misconfigurations
 ***
 Display the misconfigurations.
@@ -185,13 +150,6 @@ Display the misconfigurations.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### guardicore-get-incident
 ***
@@ -212,13 +170,6 @@ Display information about the given incident.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-get-incident-iocs
 ***
 Display the IOCs (Indicators of Compromise) of the given incident.
@@ -237,13 +188,6 @@ Display the IOCs (Indicators of Compromise) of the given incident.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### guardicore-get-incident-events
 ***
@@ -264,13 +208,6 @@ Display the events related to the given incidents.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-get-incident-pcap
 ***
 Retrieve the PCAP file attached to the given incident.
@@ -290,13 +227,6 @@ Retrieve the PCAP file attached to the given incident.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### guardicore-get-incident-attachments
 ***
 Retrieve the files attached to the given incidents.
@@ -315,13 +245,6 @@ Retrieve the files attached to the given incidents.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### guardicore-search-network-log
 ***
@@ -344,10 +267,3 @@ Searches within the network log (with filters).
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
