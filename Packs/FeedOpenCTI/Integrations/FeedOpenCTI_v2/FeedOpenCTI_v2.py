@@ -49,7 +49,12 @@ FILE_TYPES = {
 
 
 def build_indicator_list(indicator_list: List[str]) -> List[str]:
-    """Builds an indicator list for the query"""
+    """Builds an indicator list for the query
+    Args:
+        indicator_list: List of XSOAR indicators types to return..
+
+    Returns:
+        indicators: list of OPENCTI indicators types"""
     result = []
     if 'ALL' in indicator_list:
         # Replaces "ALL" for all types supported on XSOAR.
@@ -207,17 +212,17 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     # works only with score and description
     key = KEY_TO_CTI_NAME[args.get("field")]  # type: ignore
     value = args.get("value")
-    result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
-
-    if result.get('id'):
-        readable_output = f'Indicator {indicator_id} updated successfully.'
-    else:
+    try:
+        result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
+    except Exception as e:
+        demisto.error(str(e))
         raise DemistoException("Can't update indicator.")
+
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
         outputs_key_field='id',
         outputs={'id': result.get('id')},
-        readable_output=readable_output,
+        readable_output=f'Indicator {indicator_id} updated successfully.',
         raw_response=result
     )
 
@@ -306,6 +311,46 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     )
 
 
+def indicator_add_marking(client, id: Optional[str], value: Optional[str]):
+    """ Add indicator marking to opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): indicator id to update
+            value(str): marking name to add
+
+        Returns:
+            true if added successfully, else false.
+        """
+    try:
+        mark_obj = MarkingDefinition(client)
+        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
+        result = client.stix_cyber_observable.add_marking_definition(id=id, marking_definition_id=marking)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't add marking to indicator.")
+    return result
+
+
+def indicator_add_label(client, id: Optional[str], value: Optional[str]):
+    """ Add indicator label to opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): indicator id to update
+            value(str): label name to add
+
+        Returns:
+            true if added successfully, else false.
+        """
+    try:
+        label_obj = Label(client)
+        label_id = label_obj.create(value=value).get('id')
+        result = client.stix_cyber_observable.add_label(id=id, label_id=label_id)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't add label to indicator.")
+    return result
+
+
 def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
     """ Add indicator marking or label to opencti
 
@@ -323,21 +368,54 @@ def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
     result = {}
 
     if key == 'marking':
-        mark_obj = MarkingDefinition(client)
-        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
-        result = client.stix_cyber_observable.add_marking_definition(id=indicator_id, marking_definition_id=marking)
+        result = indicator_add_marking(client=client, id=indicator_id, value=value)
 
     elif key == 'label':
+        result = indicator_add_label(client=client, id=indicator_id, value=value)
+    if result:
+        return CommandResults(readable_output=f'Added {key} successfully.')
+    else:
+        return CommandResults(readable_output=f'Cant add {key} to indicator.')
+
+
+def indicator_remove_label(client, id: Optional[str], value: Optional[str]):
+    """ Remove indicator label from opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): indicator id to update
+            value(str): label name to remove
+
+        Returns:
+            true if removed successfully, else false.
+        """
+    try:
         label_obj = Label(client)
         label_id = label_obj.create(value=value).get('id')
-        result = client.stix_cyber_observable.add_label(id=indicator_id, label_id=label_id)
+        result = client.stix_cyber_observable.remove_label(id=id, label_id=label_id)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't remove label from indicator.")
+    return result
 
-    if result:
-        readable_output = f'Added {key} successfully.'
-    else:
-        raise DemistoException(f"Can't add {key}.")
 
-    return CommandResults(readable_output=readable_output)
+def indicator_remove_marking(client, id: Optional[str], value: Optional[str]):
+    """ Remove indicator marking from opencti
+        Args:
+            client: OpenCTI Client object
+            id(str): indicator id to update
+            value(str): marking name to remove
+
+        Returns:
+            true if removed successfully, else false.
+        """
+    try:
+        mark_obj = MarkingDefinition(client)
+        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
+        result = client.stix_cyber_observable.remove_marking_definition(id=id, marking_definition_id=marking)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't remove label from indicator.")
+    return result
 
 
 def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResults:
@@ -357,20 +435,15 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     result = {}
 
     if key == 'marking':
-        mark_obj = MarkingDefinition(client)
-        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
-        result = client.stix_cyber_observable.remove_marking_definition(id=indicator_id, marking_definition_id=marking)
+        result = indicator_remove_label(client=client, id=indicator_id, value=value)
 
     elif key == 'label':
-        label_obj = Label(client)
-        label_id = label_obj.create(value=value).get('id')
-        result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
+        result = indicator_remove_label(client=client, id=indicator_id, value=value)
 
     if result:
         readable_output = f'{key}: {value} was removed successfully from indicator: {indicator_id}.'
     else:
         raise DemistoException(f"Can't remove {key}.")
-
     return CommandResults(readable_output=readable_output)
 
 
@@ -415,18 +488,23 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
     name = args.get("name")
     description = args.get("description")
     reliability = args.get('reliability')
-    identity = Identity(client)
-    result = identity.create(name=name, type='Organization', x_opencti_reliability=reliability,
-                             description=description)
+    try:
+        identity = Identity(client)
+        result = identity.create(name=name, type='Organization', x_opencti_reliability=reliability,
+                                 description=description)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't remove label from indicator.")
+
     if organization_id := result.get('id'):
         readable_output = f'Organization {name} was created successfully with id: {organization_id}.'
+        return CommandResults(outputs_prefix='OpenCTI.Organization',
+                              outputs_key_field='id',
+                              outputs={'id': result.get('id')},
+                              readable_output=readable_output,
+                              raw_response=result)
     else:
         raise DemistoException("Can't create organization.")
-    return CommandResults(outputs_prefix='OpenCTI.Organization',
-                          outputs_key_field='id',
-                          outputs={'id': result.get('id')},
-                          readable_output=readable_output,
-                          raw_response=result)
 
 
 def main():
