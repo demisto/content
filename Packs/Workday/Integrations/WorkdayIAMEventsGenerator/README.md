@@ -40,6 +40,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Generate workday new hire event.
 
+After running this command, a new incident will be created of type: ``IAM - New Hire``
+
+
 
 #### Base Command
 
@@ -63,6 +66,8 @@ Generate workday new hire event.
 ### workday-generate-update-event
 ***
 Generate workday update event.
+
+After running this command, a new incident will be created of type: ``IAM - Update User``
 
 
 #### Base Command
@@ -90,6 +95,8 @@ Generate workday update event.
 ***
 Generate workday rehire event.
 
+After running this command, a new incident will be created of type: ``IAM - Rehire User``
+
 
 #### Base Command
 
@@ -111,6 +118,8 @@ Generate workday rehire event.
 ### workday-generate-terminate-event
 ***
 Generate workday terminate event.
+
+After running this command, a new incident will be created of type: ``IAM - Terminate User``
 
 
 #### Base Command
