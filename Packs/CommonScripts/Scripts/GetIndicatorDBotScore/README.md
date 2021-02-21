@@ -5,7 +5,7 @@ Add into the incident's context the system internal DBot score for the input ind
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | python2 |
 | Tags | DBot, Enrichment |
 | Demisto Version | 5.0.0 |
 
