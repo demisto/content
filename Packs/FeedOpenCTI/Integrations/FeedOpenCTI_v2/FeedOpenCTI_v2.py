@@ -1,6 +1,5 @@
 from typing import List, Optional, Tuple
 from io import StringIO
-from datetime import datetime
 import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
@@ -40,11 +39,7 @@ OPENCTI_TYPES_TO_XSOAR = {
 }
 KEY_TO_CTI_NAME = {
     'description': 'x_opencti_description',
-    'score': 'x_opencti_score',
-    'created_by': 'createdBy',
-    'external_references': 'externalReferences',
-    'marking': 'objectMarking',
-    'label': 'objectLabel'
+    'score': 'x_opencti_score'
 }
 FILE_TYPES = {
     'file-md5': "file.hashes.md5",
@@ -77,13 +72,13 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: Optional[str] = None,
+def get_indicators(client, indicator_types: List[str], limit: int, last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
     Args:
         client: OpenCTI Client object.
-        indicator_type: List of indicators types to return.
+        indicator_types: List of indicators types to return.
         last_run_id: The last id from the previous call to use pagination.
         limit: the max indicators to fetch
         tlp_color: traffic Light Protocol color
@@ -92,7 +87,7 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
         new_last_run: the id of the last indicator
         indicators: list of indicators
     """
-    indicator_type = build_indicator_list(indicator_type)
+    indicator_type = build_indicator_list(indicator_types)
 
     observables = client.stix_cyber_observable.list(types=indicator_type, first=limit, after=last_run_id,
                                                     withPagination=True)
@@ -115,12 +110,12 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_color=None, is_test=False) -> list:
+def fetch_indicators_command(client, indicator_types: list, max_fetch: int, tlp_color=None, is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
     Args:
         client: OpenCTI Client object
-        indicator_type(list): List of indicators types to get.
+        indicator_types(list): List of indicators types to get.
         max_fetch: (int) max indicators to fetch.
         tlp_color: (str)
         is_test: (bool) Indicates that it's a test and then does not save the last run.
@@ -129,11 +124,14 @@ def fetch_indicators_command(client, indicator_type: list, max_fetch: int, tlp_c
     """
     last_run_id = demisto.getIntegrationContext().get('last_run_id')
 
-    new_last_run, indicators_list = get_indicators(client, indicator_type, limit=max_fetch, last_run_id=last_run_id,
+    new_last_run, indicators_list = get_indicators(client, indicator_types, limit=max_fetch, last_run_id=last_run_id,
                                                    tlp_color=tlp_color)
 
     if new_last_run and not is_test:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
+        # we submit the indicators in batches
+        for b in batch(indicators_list, batch_size=2000):
+            demisto.createIndicators(b)
 
     return indicators_list
 
@@ -149,9 +147,8 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         readable_output, raw_response
     """
     indicator_type = argToList(args.get("indicator_types"))
-    limit = int(args.get('limit', 50))
-    limit = 500 if limit > 500 else limit
-    last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit)
+    limit = min(arg_to_number(args.get('limit', 50)), 500)
+    _, indicators_list = get_indicators(client, indicator_type, limit=limit)
     if indicators_list:
         indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
                        'createdBy': indicator['rawJSON'].get('createdBy').get('id')
@@ -162,7 +159,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
                        'marking': [mark.get('definition') for mark in indicator['rawJSON'].get('objectMarking')]
                        }
                       for indicator in indicators_list]
-        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators,
+        readable_output = tableToMarkdown('Indicators', indicators,
                                           headers=["type", "value", "id"],
                                           removeNull=True)
 
@@ -190,7 +187,8 @@ def indicator_delete_command(client, args: dict) -> CommandResults:
     indicator_id = args.get("id")
     try:
         client.stix_cyber_observable.delete(id=indicator_id)
-    except Exception:
+    except Exception as e:
+        demisto.error(str(e))
         raise DemistoException("Can't delete indicator.")
     return CommandResults(readable_output='Indicator deleted.')
 
@@ -212,7 +210,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
 
     if result.get('id'):
-        readable_output = 'Indicator updated successfully.'
+        readable_output = f'Indicator {indicator_id} updated successfully.'
     else:
         raise DemistoException("Can't update indicator.")
     return CommandResults(
@@ -234,7 +232,6 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
         Returns:
             readable_output, raw_response
         """
-    indicator_id = args.get("id")
     indicator_type = args.get("type")
     created_by = args.get("created_by")
     marking = None
@@ -281,7 +278,7 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
         result = client.stix_cyber_observable.create(
             simple_observable_key=simple_observable_key,
             simple_observable_value=simple_observable_value,
-            simple_observable_id=indicator_id, type=indicator_type,
+            type=indicator_type,
             createdBy=created_by, objectMarking=marking,
             objectLabel=label, externalReferences=external_references,
             simple_observable_description=description,
@@ -370,7 +367,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
         result = client.stix_cyber_observable.remove_label(id=indicator_id, label_id=label_id)
 
     if result:
-        readable_output = 'Field removed successfully.'
+        readable_output = f'{key}: {value} was removed successfully from indicator: {indicator_id}.'
     else:
         raise DemistoException(f"Can't remove {key}.")
 
@@ -391,9 +388,9 @@ def organization_list_command(client, args) -> CommandResults:
     organizations_list = client.identity.list(types='Organization', first=limit)
     if organizations_list:
         organizations = [
-            {'name': organization['name'], 'id': organization['id']}
+            {'name': organization.get('name'), 'id': organization.get('id')}
             for organization in organizations_list]
-        readable_output = tableToMarkdown('Organizations from OpenCTI', organizations, headerTransform=pascalToSpace)
+        readable_output = tableToMarkdown('Organizations', organizations, headerTransform=pascalToSpace)
         return CommandResults(
             outputs_prefix='OpenCTI.Organizations',
             outputs_key_field='id',
@@ -422,7 +419,7 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
     result = identity.create(name=name, type='Organization', x_opencti_reliability=reliability,
                              description=description)
     if organization_id := result.get('id'):
-        readable_output = f'Organization created successfully with id: {organization_id}.'
+        readable_output = f'Organization {name} was created successfully with id: {organization_id}.'
     else:
         raise DemistoException("Can't create organization.")
     return CommandResults(outputs_prefix='OpenCTI.Organization',
@@ -455,16 +452,13 @@ def main():
 
         # Switch case
         if command == "fetch-indicators":
-            indicators = fetch_indicators_command(client, indicator_types, max_fetch, tlp_color=tlp_color)
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+            fetch_indicators_command(client, indicator_types, max_fetch, tlp_color=tlp_color)
 
         elif command == "test-module":
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.
             and if not he immediately sends an error'''
             fetch_indicators_command(client, indicator_types, max_fetch, is_test=True)
-            return_outputs('ok')
+            return_results(CommandResults('ok'))
 
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
@@ -494,7 +488,8 @@ def main():
             return_results(organization_create_command(client, args))
 
     except Exception as e:
-        return_error(f"Error [{e}]")
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f"Error:\n [{e}]")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

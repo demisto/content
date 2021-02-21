@@ -10,8 +10,8 @@ This integration was integrated and tested with version v4.0.7 of OpenCTI.
     | --- | --- | --- |
     | Base URL |  | True |
     | API Key |  | True |
-    | Indicators Type to fetch | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL". | True |
-    | Max. indicators per fetch (default is 500) |  | False |
+    | Indicators Type to fetch | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The rest will not cause automatic indicator creation in XSOAR. The default is "ALL". | True |
+    | Max. indicators per fetch |  | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
@@ -39,7 +39,7 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return per fetch. The default value is "50". Maximum value is "200". Default is 50. | Optional | 
-| indicator_types | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL". Possible values are: ALL, User-Account, Domain, Email-Address, File-MD5, File-SHA1, File-SHA256, HostName, IPV4-Addr, IPV6-Addr, Registry-Key-Value, URL. Default is ALL. | Optional | 
+| indicator_types | The indicator types to fetch. Possible values are: "Account", "Domain", "Email", "File", "Host", "IP", "IPv6", "Registry Key", and "URL". The default is "ALL". | Optional | 
 
 
 #### Context Output
@@ -75,7 +75,7 @@ Gets indicators from the feed.
                     "TLP:GREEN"
                 ],
                 "score": 50,
-                "type": "IPV4-Addr",
+                "type": "IP",
                 "value": "1.1.1.1"
             },
             {
@@ -89,7 +89,7 @@ Gets indicators from the feed.
                     "TLP:RED"
                 ],
                 "score": 100,
-                "type": "IPV4-Addr",
+                "type": "IP",
                 "value": "1.2.3.4"
             },
             {
@@ -103,7 +103,7 @@ Gets indicators from the feed.
                     "TLP:RED"
                 ],
                 "score": 90,
-                "type": "IPV4-Addr",
+                "type": "IP",
                 "value": "1.2.3.5"
             }
         ]
@@ -116,9 +116,9 @@ Gets indicators from the feed.
 >### Indicators from OpenCTI
 >|type|value|id|
 >|---|---|---|
->| IPV4-Addr | 1.1.1.1 | 85b04cf3-d608-4a1f-8e55-d6d732e82749 |
->| IPV4-Addr | 1.2.3.4 | 69c38da9-feb2-4751-a8fa-51f1059b9af3 |
->| IPV4-Addr | 1.2.3.5 | 006c3ccf-a9c3-4dce-b3b7-4ca981661a31 |
+>| IP | 1.1.1.1 | 85b04cf3-d608-4a1f-8e55-d6d732e82749 |
+>| IP | 1.2.3.4 | 69c38da9-feb2-4751-a8fa-51f1059b9af3 |
+>| IP | 1.2.3.5 | 006c3ccf-a9c3-4dce-b3b7-4ca981661a31 |
 
 
 ### opencti-indicator-delete
@@ -201,7 +201,7 @@ Create new indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The indicator type to create. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Possible values are: User-Account, Domain, Email-Address, File-MD5, File-SHA1, File-SHA256, HostName, IPV4-Addr, IPV6-Addr, Registry-Key-Value, URL. | Required | 
+| type | The indicator type to create. "Account", "Domain", "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry Key", "URL". | Required | 
 | created_by | Organization id. Use opencti-organization-list to find all organizations id at opencti, or use  opencti-organization-create to create new organization id. | Optional | 
 | marking | Indicator marking. Possible values are: TLP:WHITE, TLP:GREEN, TLP:AMBER, TLP:RED. | Optional | 
 | label | Indicator label name. | Optional | 
