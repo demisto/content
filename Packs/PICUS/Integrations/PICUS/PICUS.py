@@ -44,7 +44,7 @@ def test_module() -> str:
         req = requests.post(url, headers=headers, verify=VERIFY_SSL)
         parsed = json.loads(req.content)
         data = parsed['data']
-        accessToken = data['access_token']
+        # accessToken = data['access_token']
 
     except Exception as e:
         if ('Forbidden' in str(e)):
