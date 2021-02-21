@@ -1,17 +1,9 @@
-Widget script to view a full set of information about the relationship information the Cyren Threat InDepth
+Widget script to view information about the relationship information the Cyren Threat InDepth
 feeds offer. For instance, you can see and navigate to a malicious SHA256 that was hosted by
 a malicious URL.
 
-The script can be used similar to the **Feed Related Indicators**.
-
-This script uses the script `CyrenThreatInDepthRenderRelated` using the following (default) columns:
-
-* Indicator Type
-* Value (hyperlinked if possible)
-* Reputation
-* Relationship Type
-* Entity Category
-* Timestamp UTC
+The script provides base functionality for other scripts that are supposed to be used similar
+to the **Feed Related Indicators**.
 
 ## Script Data
 ---
@@ -19,12 +11,16 @@ This script uses the script `CyrenThreatInDepthRenderRelated` using the followin
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | dynamic-indicator-section |
+| Tags | cyren |
 | XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
-There are no inputs for this script.
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| indicator | JSON representation of the indicator holding the relationship data. |
+| columns | *Optional* Comma-separated column list (for instance `Value,Indicator Type`). If not provided, the full list of supported columns is assumed. |
 
 ## Outputs
 ---
