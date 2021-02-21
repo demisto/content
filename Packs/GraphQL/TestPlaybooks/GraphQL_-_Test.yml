@@ -102,7 +102,7 @@ tasks:
       variables_names:
         simple: number_of_repos
       variables_types:
-        simple: Int
+        simple: number
       variables_values:
         simple: "3"
     separatecontext: false

@@ -14,10 +14,9 @@ urllib3.disable_warnings()
 
 
 CAST_MAPPING = {
-    'String': str,
-    'Boolean': bool,
-    'Int': int,
-    'Float': float,
+    'string': str,
+    'boolean': bool,
+    'number': arg_to_number,
 }
 
 

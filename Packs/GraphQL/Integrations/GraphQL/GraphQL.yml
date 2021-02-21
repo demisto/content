@@ -52,8 +52,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An optional comma-separated list of types, for example: Boolean,Int,Float.
-        Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans
+      description: 'An optional comma-separated list of types, for example: boolean,number,number.
+        Optional values are: string, boolean and number. If not provided, integers and booleans
         will be detected automatically, and the rest of the variables will be handled as strings.'
       isArray: true
       name: variables_types
@@ -108,8 +108,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An optional comma-separated list of types, for example: Boolean,Int,Float.
-        Optional values are: String, Boolean, Int and Float. If not provided, integers and booleans
+      description: 'An optional comma-separated list of types, for example: boolean,number,number.
+        Optional values are: string, boolean and number. If not provided, integers and booleans
         will be detected automatically, and the rest of the variables will be handled as strings.'
       isArray: true
       name: variables_types
