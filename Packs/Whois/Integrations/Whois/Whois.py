@@ -8381,6 +8381,42 @@ def domain_command():
         })
 
 
+def ip_command(ips):
+    try:
+        from ipwhois import IPWhois
+    except ImportError as e:
+        return_error("The Docker needs to be updated to use an IP command")
+
+    results = []
+    for ip in argToList(ips):
+        ip_obj = IPWhois(ip)
+        response = ip_obj.lookup_rdap(depth=1)
+
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name='whois',
+            score=Common.DBotScore.NONE
+        )
+        ip_output = Common.IP(
+            ip=ip,
+            asn=response.get('asn'),
+            dbot_score=dbot_score
+        )
+        result = CommandResults(
+            outputs_prefix='Whois.IP',
+            outputs_key_field='query',
+            outputs=response,
+            readable_output=tableToMarkdown('Whois results:', response,
+                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date', 'asn_description']),
+            raw_response=response,
+            indicator=ip_output
+        )
+        results.append(result)
+        print('hii')
+    return results
+
+
 def whois_command():
     query = demisto.args().get('query')
     domain = get_domain_from_query(query)
@@ -8444,22 +8480,27 @@ def setup_proxy():
 
 def main():
     LOG('command is {}'.format(str(demisto.command())))
-    org_socket = socket.socket
     command = demisto.command()
     try:
-        setup_proxy()
-        if command == 'test-module':
-            test_command()
-        elif command == 'whois':
-            whois_command()
-        elif command == 'domain':
-            domain_command()
+        if command == 'ip':
+            return_results(ip_command(demisto.args().get('ip')))
+        else:
+            org_socket = socket.socket
+            setup_proxy()
+            if command == 'test-module':
+                test_command()
+            elif command == 'whois':
+                whois_command()
+            elif command == 'domain':
+                domain_command()
+
     except Exception as e:
         LOG(e)
         return_error(str(e))
     finally:
-        socks.set_default_proxy()  # clear proxy settings
-        socket.socket = org_socket  # type: ignore
+        if command != 'ip':
+            socks.set_default_proxy()  # clear proxy settings
+            socket.socket = org_socket  # type: ignore
 
 
 # python2 uses __builtin__ python3 uses builtins

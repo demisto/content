@@ -319,12 +319,26 @@ script:
     - contextPath: Domain.Whois.QueryResult
       description: Whether the query found a matching result.
       type: Boolean
+  - arguments:
+    - default: true
+      description: The IP to enrich.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for ips.
+    execution: false
+    name: ip
   dockerimage: demisto/ippysocks:1.0.0.13524
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python2
+  type: python
 defaultEnabled: false
 tests:
 - whois_test

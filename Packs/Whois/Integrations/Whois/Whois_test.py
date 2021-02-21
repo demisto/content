@@ -141,3 +141,9 @@ def test_query_result(whois_result, domain, expected):
     from Whois import create_outputs
     md, standard_ec, dbot_score = create_outputs(whois_result, domain)
     assert standard_ec['Whois']['QueryResult'] == expected
+
+
+def test_ip_command():
+    from Whois import ip_command
+    result = ip_command()
+    assert 1 == 1
