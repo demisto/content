@@ -1,5 +1,5 @@
 Data center breach detection
-This integration was integrated and tested with version xx of GuardiCore
+This integration was integrated with version v3.0 of GuardiCore
 ## Configure GuardiCore on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
