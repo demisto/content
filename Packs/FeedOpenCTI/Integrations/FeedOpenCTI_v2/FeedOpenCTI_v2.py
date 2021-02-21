@@ -61,9 +61,8 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
         result = ['User-Account', 'Domain-Name', 'Email-Addr', 'StixFile', 'X-OpenCTI-Hostname', 'IPv4-Addr',
                   'IPv6-Addr', 'Windows-Registry-Key', 'Url']
         # Checks for additional types not supported by XSOAR, and adds them.
-        for indicator in indicator_list:
-            if not XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), ''):
-                result.append(indicator)
+        result += [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator)
+                   for indicator in indicator_list if indicator != 'ALL']
     else:
         result = [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator) for indicator in indicator_list]
     return result
@@ -512,9 +511,7 @@ def main():
     args = demisto.args()
 
     api_key = params.get('apikey')
-    base_url = params.get('base_url')
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
+    base_url = params.get('base_url').strip('/')
     indicator_types = params.get('indicator_types', ['ALL'])
     max_fetch = params.get('max_indicator_to_fetch')
     tlp_color = params.get('tlp_color')
