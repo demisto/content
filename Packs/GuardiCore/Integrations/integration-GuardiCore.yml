@@ -783,7 +783,7 @@ script:
 
         if (isRawOutput) {
             return res.Path;
-        } else if(res.Body.length<=0){  // If body is empty return an empty object
+        } else if (res.Body.length <= 0) {  // If body is empty return an empty object
             return {}
             } else {
             return JSON.parse(res.Body);
