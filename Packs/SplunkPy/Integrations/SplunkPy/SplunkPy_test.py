@@ -2,6 +2,8 @@ from copy import deepcopy
 import pytest
 import SplunkPy as splunk
 import demistomock as demisto
+from CommonServerPython import *
+
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -420,6 +422,83 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     output = splunk.get_kv_store_config(Name())
     expected_output = '{}{}'.format(START_OUTPUT, expected_output)
     assert output == expected_output
+
+
+def test_get_remote_data_command(mocker):
+    updated_notable = {'status': '1', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=False)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [updated_notable]
+
+
+def test_get_remote_data_command_close_incident(mocker):
+    updated_notable = {'status': '5', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=True)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [
+        updated_notable,
+        {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
+
+
+def test_get_modified_remote_data_command(mocker):
+    updated_incidet_review = {'rule_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: [updated_incidet_review]
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_modified_remote_data_command(Service(), args)
+    results = demisto.results.call_args[0][0]['Contents']
+    assert demisto.results.call_count == 1
+    assert results == [updated_incidet_review['rule_id']]
 
 
 def test_fetch_incidents(mocker):

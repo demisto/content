@@ -629,15 +629,15 @@ script:
     name: get-mapping-fields
   - arguments:
       - default: false
-        description: The remote event id
+        description: The remote event ID.
         isArray: false
         name: id
         required: true
         secret: false
       - default: false
         defaultValue: '0'
-        description: UTC timestamp in seconds. The incident is only updated if it was
-          modified after the last update time.
+        description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was
+          modified after the last update time. 
         isArray: false
         name: lastUpdate
         required: false
@@ -649,8 +649,8 @@ script:
     name: get-remote-data
   - arguments:
       - default: false
-        description: Date string representing the local time. The incident is only returned
-          if it was modified after the last update time. E.g. 2021-02-09T16:41:30.589575+02:00
+        description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned
+          if it was modified after the last update time.
         isArray: false
         name: lastUpdate
         required: false

@@ -374,7 +374,8 @@ There is no context output for this command.
 ```!get-mapping-fields using="SplunkPy_7.2" raw-response="true"```
 
 ##### Human Readable Output
-```{
+```
+{
     "Access - Brute Force Access Behavior Detected - Rule": {
         "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "712:21939",
@@ -436,7 +437,9 @@ There is no context output for this command.
         "src_risk_object_type": "system",
         "src_risk_score": "380",
         "urgency": "low"
-=======
+}
+```
+
 ### splunk-kv-store-collection-create
 ***
 Creates a new KV store table.
@@ -761,6 +764,47 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The values of the demisto_store were deleted successfully
+
+
+### get-remote-data
+***
+Get data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote event ID. | Required | 
+| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.  | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### get-modified-remote-data
+***
+Get the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
+
+
+#### Base Command
+
+`get-modified-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
 
 ## Aditional Information
 To get the HEC Token
