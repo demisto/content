@@ -294,23 +294,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if DEVICE_GROUP:
         if not PRE_POST:
@@ -6616,16 +6616,17 @@ def show_user_id_interface_config_request(args):
     vsys = demisto.params().get('vsys')
     # firewall instance xpath
     if VSYS:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/zone"
 
     # panorama instance xpath
     elif not template_stack:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']" \
-                f"/config/devices/entry[@name='localhost.localdomain']/" \
-                f"vsys/entry[@name='{vsys}']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
+                "/config/devices/entry[@name='localhost.localdomain']/" \
+                "vsys/entry[@name=\'" + vsys + "\']/zone"
     else:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/template-stack/entry[@name='{template_stack}']" \
-                f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{vsys}']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']" \
+                "/template-stack/entry[@name=\'" + template_stack + "\']" \
+                "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
 
     params = {
         'action': 'show',
@@ -6667,29 +6668,30 @@ def list_configured_user_id_agents_request(args, version):
     template_stack = args.get('template_stack')
     if VSYS:
         if version < 10:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']/" \
-                    f"vsys/entry[@name='{VSYS}']/user-id-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
+                    "vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
         else:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']" \
-                    f"/vsys/entry[@name='{VSYS}']/redistribution-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']" \
+                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
 
     elif template_stack:
         if version < 10:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template-stack" \
-                    f"/entry[@name='{template_stack}']/config/devices/entry[@name='localhost.localdomain']" \
-                    f"/vsys/entry[@name='{VSYS}']/user-id-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
+                    "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
+                    "/vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
         else:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template-stack" \
-                    f"/entry[@name='{template_stack}']/config/devices/entry[@name='localhost.localdomain']" \
-                    f"/vsys/entry[@name='{VSYS}']/redistribution-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
+                    "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
+                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
     else:
         if version < 10:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']" \
-                    f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}’]/user-id-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
+                    "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
+                    "\']/user-id-agent"
         else:
-            xpath = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']" \
-                    f"/config/devices/entry[@name='localhost.localdomain']" \
-                    f"/vsys/entry[@name='{VSYS}']/redistribution-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
+                    "/config/devices/entry[@name='localhost.localdomain']" \
+                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
 
     params = {
         'action': 'show',
