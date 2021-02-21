@@ -888,6 +888,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    packs_list = []
 
     # taking care of private packs
     private_index_path = ""
