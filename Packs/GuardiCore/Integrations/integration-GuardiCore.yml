@@ -728,7 +728,8 @@ script:
         return entry;
     }
 
-    var request_logout = function(method, url, token){
+
+    var requestLogout = function(method, url, token) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
             headers.Authorization = ['Bearer ' + token];
