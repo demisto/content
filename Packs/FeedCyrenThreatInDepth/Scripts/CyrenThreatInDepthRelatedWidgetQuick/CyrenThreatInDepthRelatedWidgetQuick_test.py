@@ -34,13 +34,15 @@ def test_cyren_feed_relationship_normal(mocker):
     When: Running cyren_feed_relationship command.
     Then: The output is redirected from the inner script and default columns are used
     """
-    from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
+    from CyrenThreatInDepthRelatedWidgetQuick import cyren_feed_relationship
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand())
     args = dict(indicator=dict(some="value"))
     result = cyren_feed_relationship(args)
 
-    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated", dict(indicator="{\"some\": \"value\"}"))
+    demisto.executeCommand.assert_any_call("CyrenThreatInDepthRenderRelated",
+                                           dict(indicator="{\"some\": \"value\"}",
+                                                columns="Indicator Type,Value"))
     assert result.readable_output == "tha output!"
 
 
@@ -50,7 +52,7 @@ def test_cyren_feed_relationship_no_indicator(mocker):
     When: Running cyren_feed_relationship command.
     Then: An exception is raised
     """
-    from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
+    from CyrenThreatInDepthRelatedWidgetQuick import cyren_feed_relationship
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand())
     with pytest.raises(ValueError):
@@ -63,7 +65,7 @@ def test_cyren_feed_relationship_error_response(mocker):
     When: Running cyren_feed_relationship command.
     Then: An exception is raised
     """
-    from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
+    from CyrenThreatInDepthRelatedWidgetQuick import cyren_feed_relationship
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(error=True))
     args = dict(indicator=dict(some="value"))
