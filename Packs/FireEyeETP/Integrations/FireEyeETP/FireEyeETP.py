@@ -349,31 +349,31 @@ def get_message_command():
 
 def alert_readable_data_summery(alert):
     return {
-        'Alert ID': alert['id'],
-        'Alert Timestamp': alert['alert']['timestamp'],
-        'From': alert['email']['headers']['from'],
-        'Recipients': '{}|{}'.format(alert['email']['headers']['to'], alert['email']['headers']['cc']),
-        'Subject': alert['email']['headers']['subject'],
-        'MD5': alert['alert'].get('malware_md5'),
-        'URL/Attachment': alert['email']['attachment'],
-        'Email Status': alert['email']['status'],
-        'Email Accepted': alert['email']['timestamp']['accepted'],
-        'Threat Intel': alert['ati']
+        'Alert ID': alert.get('id'),
+        'Alert Timestamp': alert.get('alert').get('timestamp'),
+        'From': alert.get('email').get('headers').get('from'),
+        'Recipients': '{}|{}'.format(alert.get('email').get('headers').get('to'), alert.get('email').get('headers').get('cc')),
+        'Subject': alert.get('email').get('headers').get('subject'),
+        'MD5': alert.get('alert').get('malware_md5'),
+        'URL/Attachment': alert.get('email').get('attachment'),
+        'Email Status': alert.get('email').get('status'),
+        'Email Accepted': alert.get('email').get('timestamp').get('accepted'),
+        'Threat Intel': alert.get('ati')
     }
 
 
 def alert_readable_data(alert):
     return {
-        'Alert ID': alert['id'],
-        'Alert Timestamp': alert['alert']['timestamp'],
-        'From': alert['email']['headers']['from'],
-        'Recipients': '{}|{}'.format(alert['email']['headers']['to'], alert['email']['headers']['cc']),
-        'Subject': alert['email']['headers']['subject'],
-        'MD5': alert['alert'].get('malware_md5'),
-        'URL/Attachment': alert['email']['attachment'],
-        'Email Status': alert['email']['status'],
-        'Email Accepted': alert['email']['timestamp']['accepted'],
-        'Sevirity': alert['alert']['severity']
+        'Alert ID': alert.get('id'),
+        'Alert Timestamp': alert.get('alert').get('timestamp'),
+        'From': alert.get('email').get('headers').get('from'),
+        'Recipients': '{}|{}'.format(alert.get('email').get('headers').get('to'), alert.get('email').get('headers').get('cc')),
+        'Subject': alert.get('email').get('headers').get('subject'),
+        'MD5': alert.get('alert').get('malware_md5'),
+        'URL/Attachment': alert.get('email').get('attachment'),
+        'Email Status': alert.get('email').get('status'),
+        'Email Accepted': alert.get('email').get('timestamp').get('accepted'),
+        'Sevirity': alert.get('alert').get('severity')
     }
 
 
