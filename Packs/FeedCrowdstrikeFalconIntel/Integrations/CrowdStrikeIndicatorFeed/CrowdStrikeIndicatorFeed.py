@@ -80,9 +80,11 @@ class Client(BaseClient):
         current_timestamp = datetime.timestamp(current_time)
         timestamp = str(int(current_timestamp))
         demisto.setIntegrationContext({'last_modified_time': timestamp})
+        demisto.info(f'set last_run: {timestamp}')
 
     def get_last_run(self) -> str:
         if last_run := demisto.getIntegrationContext().get('last_modified_time'):
+            demisto.info(f'get last_run: {last_run}')
             params = f'last_updated:>{last_run}'
             self.set_last_run()
         else:
@@ -106,6 +108,7 @@ class Client(BaseClient):
                 filter = f'{last_run}+{filter}' if filter else last_run
                 self.set_last_run()
 
+        demisto.info(f' filter {filter}')
         params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
 
         response = self.http_request(
