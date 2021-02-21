@@ -424,6 +424,83 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"
+
+
+SPLUNK_RESULTS = [
+    {
+        "rawJSON":
+            '{"source": "This is the alert type", "field_name1": "field_val1", "field_name2": "field_val2"}',
+        "details": "Endpoint - High Or Critical Priority Host With Malware - Rule",
+        "labels": [
+            {
+                "type": "security_domain",
+                "value": "Endpoint - High Or Critical Priority Host With Malware - Rule"
+            }
+        ],
+    }
+]
+
+EXPECTED_OUTPUT = {
+    'This is the alert type': {
+        "source": "This is the alert type",
+        "field_name1": "field_val1",
+        "field_name2": "field_val2"
+    }
+
+}
+
+
+def test_create_mapping_dict():
+    mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
+    assert mapping_dict == EXPECTED_OUTPUT
+
+
+""" ========== Mirroring Mechanism Tests ========== """
+
+
+@pytest.mark.parametrize('last_update, demisto_params, splunk_time_timestamp', [
+    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '0'}, 1612874490),
+    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '+120'}, 1612881690),
+    ('2021-02-09T16:41:30.589575+02:00', {}, '')
+])
+def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
+    """ Tests the conversion of the Demisto server time into timestamp in Splunk Server time
+
+    Given:
+        - The last update time in the Demisto server
+        - The timezone in the Splunk Server
+    When:
+        Converting the time in the Demisto server into timestamp in Splunk Server time
+    Then:
+        - Conversion is correct
+        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+    if demisto_params:
+        assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp
+    else:
+        error_msg = 'Cannot mirror incidents when timezone is not configured. Please enter the '
+        'timezone of the Splunk server being used in the integration configuration.'
+        with pytest.raises(Exception, match=error_msg):
+            splunk.get_last_update_in_splunk_time(last_update)
+
+
 def test_get_remote_data_command(mocker):
     updated_notable = {'status': '1', 'event_id': 'id'}
 
@@ -501,78 +578,24 @@ def test_get_modified_remote_data_command(mocker):
     assert results == [updated_incidet_review['rule_id']]
 
 
-def test_fetch_incidents(mocker):
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
-    incidents = demisto.incidents.call_args[0][0]
-    assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
-    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
-                                   "Recurring Malware Infection - Rule"
-
-
-SPLUNK_RESULTS = [
-    {
-        "rawJSON":
-            '{"source": "This is the alert type", "field_name1": "field_val1", "field_name2": "field_val2"}',
-        "details": "Endpoint - High Or Critical Priority Host With Malware - Rule",
-        "labels": [
-            {
-                "type": "security_domain",
-                "value": "Endpoint - High Or Critical Priority Host With Malware - Rule"
-            }
-        ],
-    }
-]
-
-EXPECTED_OUTPUT = {
-    'This is the alert type': {
-        "source": "This is the alert type",
-        "field_name1": "field_val1",
-        "field_name2": "field_val2"
-    }
-
-}
-
-
-def test_create_mapping_dict():
-    mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
-    assert mapping_dict == EXPECTED_OUTPUT
-
-
-""" ========== Mirroring Mechanism Tests ========== """
-
-
-@pytest.mark.parametrize('last_update, demisto_params, splunk_time_timestamp', [
-    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '0'}, 1612874490),
-    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '+120'}, 1612881690),
-    ('2021-02-09T16:41:30.589575+02:00', {}, '')
+@pytest.mark.parametrize('args, params, call_count, success', [
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 4, True),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, False),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
+     5, True)
 ])
-def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
-    """ Tests the conversion of the Demisto server time into timestamp in Splunk Server time
-
-    Given:
-        - The last update time in the Demisto server
-        - The timezone in the Splunk Server
-    When:
-        Converting the time in the Demisto server into timestamp in Splunk Server time
-    Then:
-        - Conversion is correct
-        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
-
-    """
-    mocker.patch.object(demisto, 'params', return_value=demisto_params)
-    if demisto_params:
-        assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp
-    else:
-        error_msg = 'Cannot mirror incidents when timezone is not configured. Please enter the '
-        'timezone of the Splunk server being used in the integration configuration.'
-        with pytest.raises(Exception, match=error_msg):
-            splunk.get_last_update_in_splunk_time(last_update)
+def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
+    requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
+    if not success:
+        mocker.patch.object(demisto, 'error')
+    assert splunk.update_remote_system_command(args, params, False) == args['remoteId']
+    assert demisto.info.call_count == call_count
+    if not success:
+        assert demisto.error.call_count == 1

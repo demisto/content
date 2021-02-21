@@ -16,14 +16,6 @@ configuration:
   name: port
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  name: unsecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
   display: Fetch notable events ES query
   name: fetchQuery
@@ -36,20 +28,6 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
-  type: 8
-- defaultvalue: 'false'
-  display: Mirror incoming incidents
-  hidden: false
-  name: incoming_mirror
-  required: false
-  type: 8
-- additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex
-    XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
-  hidden: false
-  name: close_incident
   required: false
   type: 8
 - display: Incident type
@@ -98,6 +76,59 @@ configuration:
   name: extractFields
   required: false
   type: 12
+- additionalinfo: Used only for Mapping with the Select Schema option. The name of
+    the field that contains the type of the event or alert. The default value is "source",
+    which is a good option for Notable Events, however you may choose any custom field
+    that suits the need.
+  defaultvalue: source
+  display: Event Type Field
+  hidden: false
+  name: type_field
+  required: false
+  type: 0 
+- defaultvalue: 'false'
+  display: Use CIM Schemas for Mapping
+  name: use_cim
+  required: false
+  type: 8
+  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info.
+- defaultvalue: None
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk
+      to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to
+      XSOAR and Splunk).'
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+    - None
+    - Incoming
+    - Outgoing
+    - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in Splunk.
+  defaultvalue: 'false'
+  display: Close Mirrored Splunk Notable Event
+  hidden: false
+  name: close_notable
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - display: The app context of the namespace
   name: app
   required: false
@@ -114,16 +145,6 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
-- additionalinfo: Used only for Mapping with the Select Schema option. The name of
-    the field that contains the type of the event or alert. The default value is "source",
-    which is a good option for Notable Events, however you may choose any custom field
-    that suits the need.
-  defaultvalue: source
-  display: Event Type Field
-  hidden: false
-  name: type_field
-  required: false
-  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -660,13 +681,14 @@ script:
       This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/splunksdk:1.0.0.11989
+  dockerimage: demisto/splunksdk:1.0.0.15975
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   ismappable: true
   isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python2

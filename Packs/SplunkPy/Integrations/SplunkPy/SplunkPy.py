@@ -32,6 +32,12 @@ FETCH_TIME = demisto.params().get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -201,7 +207,7 @@ def parse_notable(notable, to_dict=False):
         # so we go over the fields, and check if the key equals the value and set the value to be empty string
         if key == val:
             demisto.debug('Found notable event raw field [{}] with key that equals the value - replacing the value '
-                         'with empty string'.format(key))
+                          'with empty string'.format(key))
             notable[key] = ''
     return dict(notable) if to_dict else notable
 
@@ -229,7 +235,7 @@ def notable_to_incident(event):
     # Mirroring fields
     event.update({
         'mirror_instance': demisto.integrationInstance(),
-        'mirror_direction': 'In' if demisto.params().get('incoming_mirror') else None
+        'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
     })
 
     incident["rawJSON"] = json.dumps(event)
@@ -640,20 +646,38 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(proxy):
+def get_session_key(proxy, params, base_url):
+    """
+
+    Args:
+        proxy (bool): Use system proxy settings or not
+        params (dict): Demisto params
+        base_url (str): The base URL for the request
+
+    Returns:
+        session_key (str): The Splunk session key
+
+    """
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
         os.environ["https_proxy"] = ""
         os.environ["http_proxy"] = ""
-    baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
-    username = demisto.params()['authentication']['identifier']
-    password = demisto.params()['authentication']['password']
-    auth_req = requests.post(baseurl + 'services/auth/login',
+    username = params['authentication']['identifier']
+    password = params['authentication']['password']
+    auth_req = requests.post(base_url + 'services/auth/login',
                              data={'username': username, 'password': password, 'output_mode': 'json'},
                              verify=VERIFY_CERTIFICATE)
 
-    sessionKey = auth_req.json()['sessionKey']
+    session_key = auth_req.json()['sessionKey']
+    return session_key
+
+
+def splunk_edit_notable_event_command(proxy):
+    params = demisto.params()
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    sessionKey = get_session_key(proxy, params, base_url)
+
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
         eventIDsStr = demisto.args()['eventIDs']
@@ -661,7 +685,8 @@ def splunk_edit_notable_event_command(proxy):
     status = None
     if demisto.get(demisto.args(), 'status'):
         status = int(demisto.args()['status'])
-    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=baseurl,
+
+    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=base_url,
                                         comment=demisto.get(demisto.args(), 'comment'), status=status,
                                         urgency=demisto.get(demisto.args(), 'urgency'),
                                         owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
@@ -715,11 +740,11 @@ def test_module(service):
         kwargs = {'count': 1, 'earliest_time': time}
         query = params['fetchQuery']
         try:
-            if argToBoolean(params.get('incoming_mirror', False)) and not params.get('timezone'):
+            if MIRROR_DIRECTION.get(params.get('mirror_direction')) and not params.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
-                if argToBoolean(params.get('incoming_mirror', False)):
+                if MIRROR_DIRECTION.get(params.get('mirror_direction')):
                     if 'event_id' not in item:
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
         except HTTPError as error:
@@ -1111,8 +1136,8 @@ def get_last_update_in_splunk_time(last_update):
 
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    dem_params = demisto.params()
-    splunk_timezone = dem_params.get('timezone')
+    params = demisto.params()
+    splunk_timezone = params.get('timezone')
     if not splunk_timezone:
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
@@ -1190,6 +1215,63 @@ def get_modified_remote_data_command(service, args):
         modified_notable_ids.append(item['rule_id'])
 
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
+
+
+def update_remote_system_command(args, params, proxy):
+    """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
+
+    Args:
+        args (dict): Demisto args
+        params (dict): Demisto params
+        proxy (bool): Use system proxy settings or not
+
+    Returns:
+        notable_id (str): The notable id
+
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    notable_id = parsed_args.remote_incident_id
+
+    if parsed_args.incident_changed and delta:
+        demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
+                      '{}'.format(str(list(delta.keys())), notable_id))
+        changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
+        for field in delta:
+            if field in ('comment', 'status', 'owner', 'urgency'):
+                changed_data[field] = delta[field]
+
+        # Close notable if relevant
+        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
+            demisto.debug('Closing notable {}'.format(notable_id))
+            changed_data['status'] = '5'
+
+        if any(changed_data.values()):
+            demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
+            base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+            try:
+                session_key = get_session_key(proxy, params, base_url)
+                response_info = updateNotableEvents(
+                    sessionKey=session_key, baseurl=base_url, comment=changed_data['comment'],
+                    status=changed_data['status'], urgency=changed_data['urgency'], owner=changed_data['owner'],
+                    eventIDs=[notable_id]
+                )
+                msg = response_info.get('message')
+                if 'success' not in response_info or not response_info['success']:
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                else:
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+
+            except Exception as e:
+                demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
+                              'Error message: {}'.format(notable_id, str(e)))
+        else:
+            demisto.debug("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
+
+    else:
+        demisto.debug('Incident corresponding to notable {} was not changed.'.format(notable_id))
+
+    return notable_id
 
 
 def main():
@@ -1282,6 +1364,8 @@ def main():
         get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'))
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
+    elif command == 'update-remote-system':
+        update_remote_system_command(demisto.args(), demisto.params(), proxy)
     else:
         raise NotImplementedError('Command not implemented: {}'.format(command))
 
