@@ -314,7 +314,7 @@ def parse_related_indicators(report: Dict, related_ids: List, id_to_object: Dict
             relation_value_field = relation_object.get('external_references')
         elif relation.startswith('indicator'):
             # Need to create the connection only to file hashes
-            if not relation_object.get('pattern').startswith('[file:'):
+            if not relation_object.get('pattern', '').startswith('[file:'):
                 continue
 
             type_name = 'Indicator'
@@ -415,10 +415,10 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
         tmp_table = []
         for course_of_action in courses_list:
             row = {}
-            if relationship_product in (COURSE_OF_ACTION_U42):
+            if relationship_product in COURSE_OF_ACTION_U42:
                 row['title'] = course_of_action.get('x_panw_coa_u42_title')
 
-            if relationship_product in (COURSE_OF_ACTION_BP):
+            if relationship_product in COURSE_OF_ACTION_BP:
                 row['title'] = course_of_action.get('x_panw_coa_bp_title')
                 row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
                 row['recommendation number'] = course_of_action.get('x_panw_coa_bp_recommendation_number')
