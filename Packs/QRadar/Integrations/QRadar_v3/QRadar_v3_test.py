@@ -8,10 +8,22 @@ from datetime import datetime
 import pytest
 import pytz
 
+# from CommonServerPython import CommandResults
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, Client
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, replace_keys, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
-    get_offense_source_addresses, get_offense_destination_addresses
+    get_offense_addresses
+
+# from typing import *
+
+# , qradar_offenses_list_command, \
+# qradar_offense_update_command, qradar_closing_reasons_list_command, qradar_offense_notes_list_command, \
+# qradar_offense_notes_create_command, qradar_rules_list_command, qradar_rule_groups_list_command, \
+# qradar_assets_list_command, qradar_saved_searches_list_command, qradar_searches_list_command, \
+# qradar_search_create_command, qradar_search_status_get_command, qradar_search_results_get_command, \
+# qradar_reference_sets_list_command, qradar_reference_set_create_command, qradar_reference_set_delete_command, \
+# qradar_reference_set_value_upsert_command, qradar_reference_set_value_delete_command, qradar_domains_list_command, \
+# qradar_indicators_upload_command, qradar_geolocations_for_ip_command, qradar_log_sources_list_command
 
 client = Client(
     server='https://192.168.0.1',
@@ -31,6 +43,9 @@ def util_load_json(path):
 
 
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
+
+
+# command_test_data = util_load_json('./test_data/command_test_data.json')
 
 
 @pytest.mark.parametrize('arg, iso_format, epoch_format, expected',
@@ -139,36 +154,48 @@ def test_build_headers(first_headers, all_headers):
     assert (build_headers(first_headers, all_headers))[:len(first_headers)] == first_headers
 
 
-@pytest.mark.parametrize('enrich_func, mock_func_name, outputs, mock_response, expected',
+@pytest.mark.parametrize('enrich_func, mock_func_name, args, mock_response, expected',
                          [
                              (get_offense_types,
                               'offense_types',
-                              [{'offense_type': 1, 'offense_name': 'offense1'},
-                               {'offense_type': 2, 'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'offense_type': 1, 'offense_name': 'offense1'},
+                                               {'offense_type': 2, 'offense_name': 'offense2'}]
+                              },
                               [{'id': 1, 'name': 'Scheduled Search'},
                                {'id': 2, 'name': 'Destination IP Identity'}],
                               {1: 'Scheduled Search', 2: 'Destination IP Identity'}
                               ),
                              (get_offense_closing_reasons,
                               'closing_reasons_list',
-                              [{'closing_reason_id': 3, 'offense_name': 'offense1'},
-                               {'closing_reason_id': 4, 'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'closing_reason_id': 3, 'offense_name': 'offense1'},
+                                               {'closing_reason_id': 4, 'offense_name': 'offense2'}]
+                              },
                               [{'id': 3, 'text': 'Non-Issue'},
                                {'id': 4, 'text': 'Policy Violation'}],
                               {3: 'Non-Issue', 4: 'Policy Violation'}
                               ),
                              (get_domain_names,
                               'domains_list',
-                              [{'domain_id': 5, 'offense_name': 'offense1'},
-                               {'domain_id': 6, 'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'outputs': [{'domain_id': 5, 'offense_name': 'offense1'},
+                                              {'domain_id': 6, 'offense_name': 'offense2'}]
+                              },
                               [{'id': 5, 'name': 'domain1'},
                                {'id': 6, 'name': 'domain2'}],
                               {5: 'domain1', 6: 'domain2'}
                               ),
                              (get_rules_names,
                               'rules_list',
-                              [{'rules': [{'id': 7}, {'id': 8}], 'offense_name': 'offense1'},
-                               {'rules': [{'id': 9}], 'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'rules': [{'id': 7}, {'id': 8}], 'offense_name': 'offense1'},
+                                               {'rules': [{'id': 9}], 'offense_name': 'offense2'}]
+                              },
                               [{'id': 7, 'name': 'Devices with High Event Rates'},
                                {'id': 8, 'name': 'Excessive Database Connections'},
                                {'id': 9, 'name': 'Anomaly: Excessive Firewall Accepts Across Multiple Hosts'}],
@@ -176,10 +203,14 @@ def test_build_headers(first_headers, all_headers):
                                8: 'Excessive Database Connections',
                                9: 'Anomaly: Excessive Firewall Accepts Across Multiple Hosts'}
                               ),
-                             (get_offense_source_addresses,
-                              'source_addresses',
-                              [{'source_address_ids': [1, 2], 'offense_name': 'offense1'},
-                               {'source_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                             (get_offense_addresses,
+                              'get_addresses',
+                              {
+                                  'client': client,
+                                  'offenses': [{'source_address_ids': [1, 2], 'offense_name': 'offense1'},
+                                               {'source_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                                  'is_destination_addresses': False
+                              },
                               [{'id': 1, 'source_ip': '1.2.3.4'},
                                {'id': 2, 'source_ip': '1.2.3.5'},
                                {'id': 3, 'source_ip': '1.2.3.6'},
@@ -189,10 +220,14 @@ def test_build_headers(first_headers, all_headers):
                                3: '1.2.3.6',
                                4: '192.168.0.2'}
                               ),
-                             (get_offense_destination_addresses,
-                              'destination_addresses',
-                              [{'local_destination_address_ids': [1, 2], 'offense_name': 'offense1'},
-                               {'local_destination_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                             (get_offense_addresses,
+                              'get_addresses',
+                              {
+                                  'client': client,
+                                  'offenses': [{'local_destination_address_ids': [1, 2], 'offense_name': 'offense1'},
+                                               {'local_destination_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                                  'is_destination_addresses': True
+                              },
                               [{'id': 1, 'local_destination_ip': '1.2.3.4'},
                                {'id': 2, 'local_destination_ip': '1.2.3.5'},
                                {'id': 3, 'local_destination_ip': '1.2.3.6'},
@@ -202,68 +237,175 @@ def test_build_headers(first_headers, all_headers):
                                3: '1.2.3.6',
                                4: '192.168.0.2'}
                               ),
+                             (enrich_assets_results,
+                              'domains_list',
+                              {
+                                  'client': client,
+                                  'assets': asset_enrich_data['assets'],
+                                  'full_enrichment': asset_enrich_data['case_one']['full_enrichment']
+                              },
+                              asset_enrich_data['domain_mock_response'],
+                              asset_enrich_data['case_one']['expected']
+                              ),
+                             (enrich_assets_results,
+                              'domains_list',
+                              {
+                                  'client': client,
+                                  'assets': asset_enrich_data['assets'],
+                                  'full_enrichment': asset_enrich_data['case_two']['full_enrichment']
+                              },
+                              asset_enrich_data['domain_mock_response'],
+                              asset_enrich_data['case_two']['expected']
+                              ),
 
                              # Empty cases
                              (get_offense_types,
                               'offense_types',
-                              [{'offense_name': 'offense1'},
-                               {'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'offense_name': 'offense1'},
+                                               {'offense_name': 'offense2'}],
+                              },
                               None,
                               dict()
                               ),
                              (get_offense_closing_reasons,
                               'closing_reasons_list',
-                              [{'offense_name': 'offense1'},
-                               {'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'offense_name': 'offense1'},
+                                               {'offense_name': 'offense2'}],
+                              },
                               None,
                               dict()
                               ),
                              (get_domain_names,
                               'domains_list',
-                              [{'offense_name': 'offense1'},
-                               {'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'outputs': [{'offense_name': 'offense1'},
+                                              {'offense_name': 'offense2'}],
+                              },
                               None,
                               dict()
                               ),
                              (get_rules_names,
                               'rules_list',
-                              [{'offense_name': 'offense1'},
-                               {'offense_name': 'offense2'}],
+                              {
+                                  'client': client,
+                                  'offenses': [{'offense_name': 'offense1'},
+                                               {'offense_name': 'offense2'}],
+                              },
                               None,
                               dict()
                               ),
-                             (get_offense_source_addresses,
-                              'source_addresses',
-                              [{'source_address_ids': [], 'offense_name': 'offense1'},
-                               {'source_address_ids': [], 'offense_name': 'offense2'}],
+                             (get_offense_addresses,
+                              'get_addresses',
+                              {
+                                  'client': client,
+                                  'offenses': [{'source_address_ids': [], 'offense_name': 'offense1'},
+                                               {'source_address_ids': [], 'offense_name': 'offense2'}],
+                                  'is_destination_addresses': False
+                              },
                               None,
                               dict()
                               ),
-                             (get_offense_destination_addresses,
-                              'destination_addresses',
-                              [{'local_destination_address_ids': [], 'offense_name': 'offense1'},
-                               {'local_destination_address_ids': [], 'offense_name': 'offense2'}],
+                             (get_offense_addresses,
+                              'get_addresses',
+                              {
+                                  'client': client,
+                                  'offenses': [{'local_destination_address_ids': [], 'offense_name': 'offense1'},
+                                               {'local_destination_address_ids': [], 'offense_name': 'offense2'}],
+                                  'is_destination_addresses': True
+                              },
                               None,
                               dict()
+                              ),
+                             (enrich_assets_results,
+                              'domains_list',
+                              {
+                                  'client': client,
+                                  'assets': asset_enrich_data['empty_case']['assets'],
+                                  'full_enrichment': False
+                              },
+                              asset_enrich_data['domain_mock_response'],
+                              asset_enrich_data['empty_case']['expected_basic_enrichment']
+                              ),
+                             (enrich_assets_results,
+                              'domains_list',
+                              {
+                                  'client': client,
+                                  'assets': asset_enrich_data['empty_case']['assets'],
+                                  'full_enrichment': True
+                              },
+                              asset_enrich_data['domain_mock_response'],
+                              asset_enrich_data['empty_case']['expected_full_enrichment']
                               )
                          ])
-def test_outputs_enriches(mocker, enrich_func, mock_func_name, outputs, mock_response, expected):
+def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_response, expected):
+    """
+    Given:
+     - Function to do enrichment.
+     - List of outputs.
+
+    When:
+     - Calling function to return the dict containing values of the enrichment.
+
+    Then:
+     - Ensure dict containing the enrichment is as expected.
+    """
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
-    assert (enrich_func(client, outputs)) == expected
+    assert (enrich_func(**args)) == expected
 
-
-@pytest.mark.parametrize('assets, domain_mock_response, full_enrichment, expected', [
-    (asset_enrich_data['assets'],
-     asset_enrich_data['domain_mock_response'],
-     asset_enrich_data['case_one']['full_enrichment'],
-     asset_enrich_data['case_one']['expected']
-     ),
-    (asset_enrich_data['assets'],
-     asset_enrich_data['domain_mock_response'],
-     asset_enrich_data['case_two']['full_enrichment'],
-     asset_enrich_data['case_two']['expected']
-     )])
-def test_assets_enriches(mocker, assets, domain_mock_response, full_enrichment, expected):
-    mocker.patch.object(client, 'domains_list', return_value=domain_mock_response)
-
-    assert (enrich_assets_results(client, assets, full_enrichment)) == expected
+# @pytest.mark.parametrize('command_func, command_name',
+#                          [(qradar_offenses_list_command, 'offenses_list'),
+#                           (qradar_offense_update_command, 'offense_update'),
+#                           (qradar_closing_reasons_list_command, 'closing_reasons_list'),
+#                           (qradar_offense_notes_list_command, 'offense_notes_list'),
+#                           (qradar_offense_notes_create_command, 'offense_notes_create'),
+#                           (qradar_rules_list_command, 'rules_list'),
+#                           (qradar_rule_groups_list_command, 'rule_groups_list'),
+#                           (qradar_assets_list_command, 'assets_list'),
+#                           (qradar_saved_searches_list_command, 'saved_searches_list'),
+#                           (qradar_searches_list_command, 'searches_list'),
+#                           (qradar_search_create_command, 'search_create'),
+#                           (qradar_search_status_get_command, 'search_status_get'),
+#                           (qradar_search_results_get_command, 'search_results_get'),
+#                           (qradar_reference_sets_list_command, 'reference_sets_list'),
+#                           (qradar_reference_set_create_command, 'reference_set_create'),
+#                           (qradar_reference_set_delete_command, 'reference_set_delete'),
+#                           (qradar_reference_set_value_upsert_command, 'reference_set_value_upsert'),
+#                           (qradar_reference_set_value_delete_command, 'reference_set_value_delete'),
+#                           (qradar_domains_list_command, 'domains_list'),
+#                           (qradar_indicators_upload_command, 'indicators_upload'),
+#                           (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
+#                           (qradar_log_sources_list_command, 'log_sources_list')])
+# def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+#     """
+#     Given:
+#      - command function.
+#      - Demisto arguments.
+#
+#     When:
+#      - Executing a command
+#
+#     Then:
+#      - Ensure that the expected CommandResults object is returned by the command function.
+#     """
+#     args = command_test_data[command_name]['args']
+#     response = command_test_data[command_name]['response']
+#     expected = command_test_data[command_name]['expected']
+#     expected_command_results = CommandResults(
+#         outputs_prefix=expected.get('outputs_prefix'),
+#         outputs_key_field=expected.get('outputs_key_field'),
+#         outputs=expected.get('outputs'),
+#         raw_response=response
+#     )
+#     mocker.patch.object(client, command_name, return_value=response)
+#
+#     results = command_func(client, args)
+#
+#     assert results.outputs_prefix == expected_command_results.outputs_prefix
+#     assert results.outputs_key_field == expected_command_results.outputs_key_field
+#     assert results.outputs == expected_command_results.outputs
+#     assert results.raw_response == expected_command_results.raw_response

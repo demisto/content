@@ -22,6 +22,50 @@ configuration:
   name: api_version
   type: 0
   required: true
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '20'
+  display: Number of offenses to pull per API call (max 50)
+  name: offenses_per_fetch
+  required: false
+  type: 0
+- defaultvalue: Fetch With All Events
+  display: Fetch mode
+  hidden: false
+  name: fetch_mode
+  options:
+  - Fetch Without Events
+  - Fetch With All Events
+  - Fetch Correlation Events Only
+  required: true
+  type: 15
+- display: Query to fetch offenses
+  name: query
+  required: false
+  type: 0
+  additionalinfo: Define a query to determine which offenses to fetch. e.g. status=OPEN.
+- defaultvalue: 'true'
+  display: Incident IP Enrichment
+  hidden: false
+  name: ip_enrich
+  required: false
+  type: 8
+  additionalinfo: Set to true if you want to transform IDs of the IPs of the offense into IP values.
+- defaultvalue: 'true'
+  display: Incident Asset Enrichment
+  hidden: false
+  name: asset_enrich
+  required: false
+  type: 8
+  additionalinfo: Enable this to fetch assets that correlate to the fetched offenses.
+- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
+  display: Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping).
+  name: events_columns
+  required: false
+  additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
+  type: 12
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -97,6 +141,14 @@ script:
       required: false
       description: The closing reason ID to retrieve its details. Specify closing_reason_id
         if you want to get details only about certain closing reason.
+    - name: include_reserved
+      required: false
+      description: If true, reserved closing reasons are included in the response.
+      defaultValue: false
+    - name: include_deleted
+      required: false
+      description: If true, deleted closing reasons are included in the response.
+      defaultValue: false
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -270,6 +322,11 @@ script:
     - name: search_id
       required: true
       description: The identifier for an Ariel search.
+    - name: output_path
+      required: false
+      description: Replaces the default context output path for the query result (QRadar.Search.Result).
+        e.g. for output_path=QRadar.Correlations the result will be under the key
+        'QRadar.Correlations' in the context data.
     - name: range
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -280,9 +337,6 @@ script:
       required: false
       description: The reference name of the reference set to retrieve its details.
         Specify ref_name if you want to get details only about certain reference set.
-    - name: value
-      required: false
-      description: TODO understand how to use it
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -338,12 +392,27 @@ script:
         full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
       isArray: true
   - name: qradar-reference-set-delete
-    description: Removes a reference set or purges its contents. TODO see if purge
+    description: Removes a reference set or purges its contents.
       or not
     arguments:
     - name: ref_name
       required: true
       description: The name of the reference set to be deleted.
+    - name: purge_only
+      description:  Indicates if the reference set should have its contents purged (true), keeping the reference set structure. If the value is 'false', or not specified the reference set is removed completely.
+      defaultValue: "false"
+      auto: PREDEFINED
+      required: false
+      predefined:
+        - 'true'
+        - 'false'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+          Use this parameter to specify which fields you would like to get back in the
+          response. Fields that are not explicitly named are excluded. Specify subfields
+          in brackets and multiple fields in the same object separated by commas. For
+          full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-DELETE.html'
+      isArray: true
   - name: qradar-reference-set-value-upsert
     description: Add or update an element in a reference set.
     arguments:
@@ -352,9 +421,9 @@ script:
       description: The name of the reference set to add or update an element in.
     - name: value
       required: true
-      description: "The value to add or update in the reference set. If value chosen\
-        \ is date, supported date formats are: epoch, ISO, and time range (<number>\
-        \ <time unit>', e.g., 12 hours, 7 days.)"
+      description: "Comma separated list. The values to add or update in the reference set. If values chosen are date,
+       supported date formats are: epoch, ISO, and time range (<number> <time unit>', e.g., 12 hours, 7 days.)."
+      isArray: true
     - name: source
       required: false
       description: An indication of where the data originated.
@@ -423,6 +492,26 @@ script:
         in brackets and multiple fields in the same object separated by commas. For
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html'
       isArray: true
+  - name: qradar-indicators-upload
+    description: Uploads indicators from Demisto to Qradar.
+    arguments:
+    - name: ref_name
+      description: The name of map to add or update data in. TODO add get ref maps command
+      required: true
+    - name: query
+      description: The query for getting indicators from Demisto.
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of indicators to fetch from Demisto.
+    - name: page
+      description: The page from which to get the indicators.
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+      Use this parameter to specify which fields you would like to get back in the
+      response. Fields that are not explicitly named are excluded. Specify subfields
+      in brackets and multiple fields in the same object separated by commas. For
+      full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
+      isArray: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind geoip data for the given IP address.
     arguments:
@@ -445,7 +534,7 @@ script:
     arguments:
     - name: qrd_encryption_algorithm
       description: The algorithm to use for encrypting the sensitive data of this
-        endpoint
+        endpoint.
       auto: PREDEFINED
       required: true
       predefined:
@@ -466,6 +555,25 @@ script:
         in brackets and multiple fields in the same object separated by commas. For
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html'
       isArray: true
+
+  - name: qradar-get-custom-properties
+    description: Retrieves a list of event regex properties.
+    arguments:
+    - name: field_name
+      description: A comma-separated list of names of an exact properties to search for.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query to filter regex properties. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html'
+      isArray: true
+
   runonce: false
   script: '-'
   type: python

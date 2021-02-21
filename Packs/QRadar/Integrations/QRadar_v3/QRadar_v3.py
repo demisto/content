@@ -1,3 +1,5 @@
+from enum import Enum
+
 import pytz
 import urllib3
 
@@ -24,7 +26,21 @@ SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the even
 ''' CONSTANTS '''
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
+DEFAULT_LIMIT_VALUE = 50
+DEFAULT_EVENTS_LIMIT = 20
+MAXIMUM_OFFENSES_PER_FETCH = 50
+DEFAULT_OFFENSES_PER_FETCH = 20
+EVENT_COLUMNS_DEFAULT_VALUE = 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
+                              'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
+                              'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
+                              'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
+                              'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
+                              'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
+                              'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
+                              'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 UTC_TIMEZONE = pytz.timezone('utc')
+ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)\d(?:\s+|$)')
+ASCENDING_ID_ORDER = '%2Bid'
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -134,6 +150,7 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_seen'}
 
 ''' ENRICHMENT MAPS '''
+
 ASSET_PROPERTIES_NAME_MAP = {
     "Unified Name": "Name",
     "CVSS Collateral Damage Potential": "AggregatedCVSSScore",
@@ -150,6 +167,20 @@ FULL_ASSET_PROPERTIES_NAMES_MAP = {
     "Group Name": "GroupName",
     "Vulnerabilities": "Vulnerabilities",
 }
+
+''' ENUMS '''
+
+
+class FetchMode(Enum):
+    """
+    Enums for the options of fetching the incidents.
+    """
+    no_events = 'Fetch Without Events'
+    all_events = 'Fetch With All Events'
+    correlations_events_only = 'Fetch Correlation Events Only'
+
+
+FETCH_MODE_DEFAULT_VALUE = FetchMode.all_events.value
 
 ''' CLIENT CLASS '''
 
@@ -179,12 +210,12 @@ class Client(BaseClient):
         )
 
     def offenses_list(self, offense_id: Optional[int], range_: str, filter_: Optional[str],
-                      fields: Optional[str]):
+                      fields: Optional[str], sort: Optional[str]):
         id_suffix = f'/{offense_id}' if offense_id else ''
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offenses{id_suffix}',
-            params=assign_params(filter=filter_, fields=fields),
+            params=assign_params(filter=filter_, fields=fields, sort=sort),
             additional_headers={'Range': range_} if not offense_id else None
         )
 
@@ -204,14 +235,16 @@ class Client(BaseClient):
             )
         )
 
-    def closing_reasons_list(self, closing_reason_id: Optional[int], range_: Optional[str], filter_: Optional[str],
+    def closing_reasons_list(self, closing_reason_id: Optional[int], include_reserved: Optional[bool],
+                             include_deleted: Optional[bool], range_: Optional[str], filter_: Optional[str],
                              fields: Optional[str]):
         id_suffix = f'/{closing_reason_id}' if closing_reason_id else ''
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/offense_closing_reasons{id_suffix}',
             additional_headers={'Range': range_} if not closing_reason_id and range_ else None,
-            params=assign_params(filter=filter_, fields=fields)
+            params=assign_params(include_reserved=include_reserved, include_deleted=include_deleted, filter=filter_,
+                                 fields=fields)
         )
 
     def offense_notes_list(self, offense_id: Optional[int], note_id: Optional[int], range_: str,
@@ -322,10 +355,11 @@ class Client(BaseClient):
             )
         )
 
-    def reference_set_delete(self, ref_name: Optional[str]):
+    def reference_set_delete(self, ref_name: Optional[str], purge_only: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{ref_name}'
+            url_suffix=f'/reference_data/sets/{ref_name}',
+            params=assign_params(purge_only=purge_only, fields=fields)
         )
 
     def reference_set_value_upsert(self, ref_name: Optional[str], value: Optional[str], source: Optional[str],
@@ -352,8 +386,13 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    # discuss with arseny
-    # def indicators_upload
+    def indicators_upload(self, ref_name: Optional[str], indicators: Optional[Any], fields: Optional[str]):
+        return self.http_request(
+            method='POST',
+            url_suffix=f'/reference_data/maps/bulk_load/{ref_name}',
+            data=indicators,
+            additional_headers={'fields': fields} if fields else None
+        )
 
     def geolocations_for_ip(self, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
@@ -375,6 +414,14 @@ class Client(BaseClient):
             }
         )
 
+    def get_custom_properties(self, range_: str, filter_: Optional[str], fields: Optional[str]):
+        return self.http_request(
+            method='GET',
+            url_suffix='/config/event_sources/custom_properties/regex_properties',
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_}
+        )
+
     def offense_types(self, filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
@@ -386,20 +433,6 @@ class Client(BaseClient):
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/{address_suffix}',
-            params=assign_params(filter=filter_, fields=fields)
-        )
-
-    def source_addresses(self, filter_: Optional[str], fields: Optional[str]):
-        return self.http_request(
-            method='GET',
-            url_suffix='/siem/source_addresses',
-            params=assign_params(filter=filter_, fields=fields)
-        )
-
-    def destination_addresses(self, filter_: Optional[str], fields: Optional[str]):
-        return self.http_request(
-            method='GET',
-            url_suffix='/siem/local_destination_addresses',
             params=assign_params(filter=filter_, fields=fields)
         )
 
@@ -440,13 +473,14 @@ def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
         dicts (List[Dict]): List of the dicts to be transformed.
 
     Returns:
-        New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
+        (List[Dict]): New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
     return [{k: (get_time_parameter(v, iso_format=True) if k in USECS_ENTRIES else v)
              for k, v in dict_.items()} for dict_ in dicts]
 
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> List[Dict]:
+    # TODO add tests
     """
     Gets a list of all the outputs, and sanitizes outputs.
     - Removes empty elements.
@@ -454,10 +488,10 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> L
     - Replaces keys by the given 'key_replace_dict' values.
     Args:
         outputs (List[Dict]): List of the outputs to be sanitized.
-        key_replace_dict (Dict): Dict of the keys to transform their names
+        key_replace_dict (Dict): Dict of the keys to transform their names.
 
     Returns:
-        Sanitized outputs.
+        (List[Dict]): Sanitized outputs.
     """
     if not isinstance(outputs, list):
         outputs = [outputs]
@@ -505,7 +539,7 @@ def replace_keys(outputs: Union[List[Dict], Dict], old_new_dict: Dict) -> List[D
         old_new_dict (Dict): Old key name mapped to new key name.
 
     Returns:
-        (Dict) The dictionary with the transformed keys.
+        (Dict): The dictionary with the transformed keys.
     """
     if isinstance(outputs, Dict):
         outputs = [outputs]
@@ -558,7 +592,7 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
     closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses if offense.get('closing_reason_id')}
     if not closing_reason_ids:
         return dict()
-    closing_reasons = client.closing_reasons_list(None, None,
+    closing_reasons = client.closing_reasons_list(None, None, None, None,
                                                   f'''id in ({','.join(map(str, closing_reason_ids))})''',
                                                   'id,text')
     return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
@@ -600,58 +634,36 @@ def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
     return {rule.get('id'): rule.get('name') for rule in rules}
 
 
-def get_offense_source_addresses(client: Client, offenses: List[Dict]) -> Dict:
+def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_addresses: bool) -> Dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the source IP values
     matching the source IPs IDs of the offenses.
     Args:
         client (Client): Client to perform the API request to QRadar.
         offenses (List[Dict]): List of all of the offenses.
+        is_destination_addresses(bool): Whether addresses to enrich are destination IPs (or source).
 
     Returns:
-        (Dict): Dictionary of {source_address_id: source_address_name}
+        (Dict): Dictionary of {source_address_id: source_address_name}.
     """
+    address_type = 'local_destination' if is_destination_addresses else 'source'
+    address_field = f'{address_type}_ip'
+    address_list_field = f'{address_type}_address_ids'
+    url_suffix = f'{address_type}_addresses'
 
-    def get_source_addresses_for_batch(b: List):
-        return client.source_addresses(f'''id in ({','.join(map(str, b))})''', 'id,source_ip')
+    def get_addresses_for_batch(b: List):
+        return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
 
-    source_addresses_ids = [address_id for offense in offenses
-                            for address_id in offense.get('source_address_ids', [])]
+    addresses_ids = [address_id for offense in offenses
+                     for address_id in offense.get(address_list_field, [])]
 
-    # Submit addresses in batches to avoid time out from QRadar service
-    source_addresses_batches = [get_source_addresses_for_batch(b) for b
-                                in batch(source_addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
+    # Submit addresses in batches to avoid overloading QRadar service
+    addresses_batches = [get_addresses_for_batch(b) for b
+                         in batch(addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
 
-    return {source_address.get('id'): source_address.get('source_ip')
-            for addresses_batch in source_addresses_batches
-            for source_address in addresses_batch}
-
-
-def get_offense_destination_addresses(client: Client, offenses: List[Dict]) -> Dict:
-    """
-    Receives list of offenses, and performs API call to QRadar service to retrieve the destination IP values
-    matching the destination IPs IDs of the offenses.
-    Args:
-        client (Client): Client to perform the API request to QRadar.
-        offenses (List[Dict]): List of all of the offenses.
-
-    Returns:
-        (Dict): Dictionary of {destination_address_id: destination_address_name}
-    """
-
-    def get_destination_addresses_for_batch(b: List):
-        return client.destination_addresses(f'''id in ({','.join(map(str, b))})''', 'id,local_destination_ip')
-
-    destination_addresses_ids = [address_id for offense in offenses
-                                 for address_id in offense.get('local_destination_address_ids', [])]
-
-    # Submit addresses in batches to avoid time out from QRadar service
-    destination_addresses_batches = [get_destination_addresses_for_batch(b) for b
-                                     in batch(destination_addresses_ids[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))]
-
-    return {destination_address.get('id'): destination_address.get('local_destination_ip')
-            for addresses_batch in destination_addresses_batches
-            for destination_address in addresses_batch}
+    return {address_data.get('id'): address_data.get(address_field)
+            for addresses_batch in addresses_batches
+            for address_data in addresses_batch}
 
 
 def enrich_offenses_result(client: Client, offenses: List[Dict], enrich_ip_addresses: bool = False) -> List[Dict]:
@@ -675,9 +687,8 @@ def enrich_offenses_result(client: Client, offenses: List[Dict], enrich_ip_addre
     closing_reasons_id_name_dict = get_offense_closing_reasons(client, offenses)
     domain_id_name_dict = get_domain_names(client, offenses) if DOMAIN_ENRCH_FLG == 'True' else dict()
     rules_id_name_dict = get_rules_names(client, offenses) if RULES_ENRCH_FLG == 'True' else dict()
-    source_addresses_id_ip_dict = get_offense_source_addresses(client, offenses) if enrich_ip_addresses else dict()
-    destination_addresses_id_ip_dict = get_offense_destination_addresses(client,
-                                                                         offenses) if enrich_ip_addresses else dict()
+    source_addresses_id_ip_dict = get_offense_addresses(client, offenses, False) if enrich_ip_addresses else dict()
+    destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
         basic_enriches = {
@@ -766,12 +777,15 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
 
         ip_enrichment = {
             'IPAddress': [ip_address.get('value') for interface in interfaces
-                          for ip_address in interface.get("ip_addresses", [])]}
+                          for ip_address in interface.get("ip_addresses", [])
+                          if ip_address.get('value')]
+        }
 
         os_enrichment = {'OS': os_name} if os_name else dict()
 
         mac_enrichment = {
-            'MACAddress': [interface.get("mac_address") for interface in interfaces]} if full_enrichment else dict()
+            'MACAddress': [interface.get("mac_address") for interface in interfaces if
+                           interface.get('mac_address')]} if full_enrichment else dict()
 
         domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id)} if full_enrichment and domain_id else dict()
 
@@ -779,11 +793,38 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
 
         basic_properties_enrichment = enrich_asset_properties(interfaces, ASSET_PROPERTIES_NAME_MAP)
         full_properties_enrichment = enrich_asset_properties(interfaces,
-                                                             FULL_ASSET_PROPERTIES_NAMES_MAP) if full_enrichment else dict()
+                                                             FULL_ASSET_PROPERTIES_NAMES_MAP) \
+            if full_enrichment else dict()
 
         return dict(asset, **endpoint_dict, **basic_properties_enrichment, **full_properties_enrichment)
 
     return [enrich_single_asset(asset) for asset in assets]
+
+
+def get_minimum_id_to_fetch(last_run_offense_id: int, user_query: Optional[str]) -> int:
+    """
+    Receives the highest offense ID saved from last run, and user query.
+    Checks if user query has a limitation for a minimum ID.
+    If such ID exists, returns the maximum between last run ID and the minimum ID
+    limitation received by the user query.
+    Args:
+        last_run_offense_id (int): Minimum ID to fetch offenses by from last run
+        user_query (Optional[str]): User query for QRadar service.
+
+    Returns:
+        (int): The Minimum ID to fetch offenses by
+    """
+    # TODO ADD TESTS
+    if user_query:
+        id_query = ID_QUERY_REGEX.search(user_query)
+        if id_query:
+            id_query_raw = id_query.group(0)
+            operator = '>=' if '>=' in id_query_raw else '>'
+            # safe to int parse without catch because regex checks for number
+            user_offense_id = int(id_query.group(0).split(operator)[1].strip())
+            user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            return max(last_run_offense_id, user_lowest_offense_id)
+    return last_run_offense_id
 
 
 ''' COMMAND FUNCTIONS '''
@@ -814,6 +855,62 @@ def test_module_command(client: Client) -> str:
     return message
 
 
+def fetch_incidents_command(client: Client, params: Dict) -> None:
+    pass
+
+
+def long_running_execution_command(client: Client, params: Dict):
+    """
+
+    Args:
+        client:
+        params:
+
+    Returns:
+
+    """
+    last_run = demisto.getLastRun()
+
+    # incident_type = params.get('incidentType')
+    offenses_per_fetch = arg_to_number(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
+    # fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    user_query = params.get('query')
+    # ip_enrich = argToBoolean(params.get('ip_enrich', True))
+    # asset_enrich = argToBoolean(params.get('asset_enrich', True))
+    # events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+    # events_limit = arg_to_number(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+
+    offense_highest_id = get_minimum_id_to_fetch(last_run.get('offense_id', 0), user_query)
+
+    filter_fetch_query = f'id>{offense_highest_id} AND {user_query}'
+    range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH
+    range_ = f'0-{range_max - 1}'
+    # print debug message
+    raw_offenses = client.offenses_list(None, range_, filter_fetch_query, None, ASCENDING_ID_ORDER)
+    #     if raw_offenses:
+    #         print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
+    # check if list not empty to avoid error
+    # highest_offense_id = raw_offenses[-1].get['id']
+
+
+#     if ip_enrich or asset_enrich:
+#         print_debug_msg("Enriching offenses")
+#         enrich_offense_result(client, raw_offenses, ip_enrich, asset_enrich)
+#         print_debug_msg("Enriched offenses successfully.")
+#
+#     # handle reset signal
+#     if is_reset_triggered(client.lock, handle_reset=True):
+#         return
+#
+#     incidents_batch = create_incidents(raw_offenses, incident_type)
+#     incidents_batch_for_sample = (
+#         incidents_batch if incidents_batch else last_run.get("samples", [])
+#     )
+#
+#     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
+#     set_integration_context(context, sync=SYNC_CONTEXT)
+
+
 def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Retrieves list of offenses from QRadar service.
@@ -838,7 +935,7 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     filter_ = args.get('filter')
     fields = args.get('fields')
 
-    response = client.offenses_list(offense_id, range_, filter_, fields)
+    response = client.offenses_list(offense_id, range_, filter_, fields, sort=None)
     outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
     enriched_outputs = enrich_offenses_result(client, outputs)
     final_outputs = replace_keys(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
@@ -892,7 +989,6 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
     response = client.offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
                                      fields)
     outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
-    # TODO check
     enriched_outputs = enrich_offenses_result(client, outputs, enrich_ip_addresses=True)
 
     return CommandResults(
@@ -924,11 +1020,14 @@ def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandRe
         CommandResults.
     """
     closing_reason_id = args.get('closing_reason_id')
+    include_reserved = argToBoolean(args.get('include_reserved', False))
+    include_deleted = argToBoolean(args.get('include_deleted', False))
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
 
-    response = client.closing_reasons_list(closing_reason_id, range_, filter_, fields)
+    response = client.closing_reasons_list(closing_reason_id, include_reserved, include_deleted, range_, filter_,
+                                           fields)
     outputs = sanitize_outputs(response, CLOSING_REASONS_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_OLD_NEW_MAP.values()))
 
@@ -972,7 +1071,7 @@ def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResu
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs),
-        outputs_prefix='QRadar.offenseNote',
+        outputs_prefix='QRadar.Note',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response
@@ -1005,7 +1104,7 @@ def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandRe
 
     return CommandResults(
         readable_output=tableToMarkdown('Create Note', outputs),
-        outputs_prefix='QRadar.offenseNote',
+        outputs_prefix='QRadar.Note',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response
@@ -1055,7 +1154,25 @@ def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def qradar_rule_groups_list_command(client: Client, args: Dict):
+def qradar_rule_groups_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of rule groups from QRadar service.
+    possible arguments:
+    - rule_group_id: Retrieves details of the specific rule group that corresponds to the ID given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     rule_group_id = args.get('rule_group_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
@@ -1073,7 +1190,7 @@ def qradar_rule_groups_list_command(client: Client, args: Dict):
     )
 
 
-def qradar_assets_list_command(client: Client, args: Dict):
+def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Retrieves list of assets from QRadar service.
     possible arguments:
@@ -1116,7 +1233,25 @@ def qradar_assets_list_command(client: Client, args: Dict):
     )
 
 
-def qradar_saved_searches_list_command(client: Client, args: Dict):
+def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of saved searches from QRadar service.
+    possible arguments:
+    - saved_search_id: Retrieves details of the specific saved search that corresponds to the ID given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     saved_search_id = args.get('saved_search_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
@@ -1134,7 +1269,21 @@ def qradar_saved_searches_list_command(client: Client, args: Dict):
     )
 
 
-def qradar_searches_list_command(client: Client, args: Dict):
+def qradar_searches_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of searches IDs from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
 
@@ -1142,15 +1291,27 @@ def qradar_searches_list_command(client: Client, args: Dict):
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Searches List', outputs),
-        outputs_prefix='QRadar.Search',
+        readable_output=tableToMarkdown('Search ID List', outputs),
+        outputs_prefix='QRadar.SearchID',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )
 
 
-def qradar_search_create_command(client: Client, args: Dict):
+def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Create a search in QRadar service.
+    possible arguments:
+    - query_expression: The AQL query to execute. Mutually exclusive with saved_search_id.
+    - saved_search_id: Saved search ID to execute. Mutually exclusive with query_expression.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     query_expression = args.get('query_expression')
     saved_search_id = args.get('saved_search_id')
 
@@ -1167,6 +1328,17 @@ def qradar_search_create_command(client: Client, args: Dict):
 
 
 def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves search status from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to retrieve its status.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     search_id = args.get('search_id')
 
     response = client.search_status_get(search_id)
@@ -1174,7 +1346,7 @@ def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResul
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
-        outputs_prefix='QRadar.SearchStatus',
+        outputs_prefix='QRadar.Search',
         outputs_key_field='search_id',
         outputs=outputs,
         raw_response=response
@@ -1182,7 +1354,21 @@ def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResul
 
 
 def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves search results from QRadar service.
+    possible arguments:
+    - search_id: Search ID to retrieve its results.
+    - output_path: If specified, will be context output path prefix.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     search_id = args.get('search_id')
+    output_path = args.get('output_path')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
 
     response = client.search_results_get(search_id, range_)
@@ -1192,7 +1378,7 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
-        outputs_prefix='QRadar.SearchStatus',
+        outputs_prefix=output_path if output_path else 'QRadar.SearchStatus',
         outputs_key_field='search_id',
         outputs=outputs,
         raw_response=response
@@ -1200,8 +1386,25 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
 
 
 def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of reference sets from QRadar service.
+    possible arguments:
+    - ref_name: Retrieves details of the specific reference that corresponds to the reference name given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     ref_name = args.get('ref_name')
-    # value = args.get('value')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
@@ -1215,7 +1418,7 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Sets List', outputs),
-        outputs_prefix='QRadar.ReferenceSet',
+        outputs_prefix='QRadar.Reference',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1229,7 +1432,7 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
 #     )
 
 
-def qradar_reference_set_create_command(client: Client, args: Dict):
+def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandResults:
     """
     Create a new reference set.
     possible arguments:
@@ -1261,46 +1464,103 @@ def qradar_reference_set_create_command(client: Client, args: Dict):
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Set Create', outputs),
-        outputs_prefix='QRadar.ReferenceSet',
+        outputs_prefix='QRadar.Reference',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
     )
 
 
-def qradar_reference_set_delete_command(client: Client, args: Dict):
-    ref_name = args.get('ref_name')
+def qradar_reference_set_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Removes a reference set or purges its contents.
+    possible arguments:
+    - ref_name (Required): The name of the new reference set.
+    - purge_only: Indicates if the reference set should have its contents purged (true),
+                  keeping the reference set structure. If the value is 'false',
+                  or not specified the reference set is removed completely.
+                  Default is 'false'.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
 
-    response = client.reference_set_delete(ref_name)
-    #     maybe add output for the task to be monitored. add to yml after decisions
+    Returns:
+        CommandResults.
+    """
+    ref_name = args.get('ref_name')
+    purge_only = args.get('purge_only')
+    fields = args.get('fields')
+
+    response = client.reference_set_delete(ref_name, purge_only, fields)
     return CommandResults(
         raw_response=response,
-        readable_output=f'### Reference {ref_name} is being deleted.')
+        readable_output=f'''### Reference {ref_name} Was Asked To Be Deleted. Current Deletion Status: {response.get(
+            'status', 'Unknown')}''')
 
 
 def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Update or insert new value to a reference set from QRadar service.
+    possible arguments:
+    - ref_name (Required): The reference name to insert/update a value for.
+    - values (Required): Comma separated list. All the values to be inserted/updated.
+    - source: An indication of where the data originated. Default is reference data api.
+    - date_value: Boolean, specifies if values given are dates or not.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     ref_name = args.get('ref_name')
-    value = args.get('value')
+    values = argToList(args.get('value'))
     source = args.get('source')
     date_value = argToBoolean(args.get('date_value', False))
     fields = args.get('fields')
 
     if date_value:
-        value = get_time_parameter(value, epoch_format=True)
+        values = [get_time_parameter(value, epoch_format=True) for value in values]
 
-    response = client.reference_set_value_upsert(ref_name, value, source, fields)
+    if len(values) == 1:
+        response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
+
+    else:
+        response = client.indicators_upload(ref_name, values, fields)
+
     outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Update Create', outputs),
-        outputs_prefix='QRadar.ReferenceSetValue',
+        outputs_prefix='QRadar.Reference',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
     )
 
 
-def qradar_reference_set_value_delete_command(client: Client, args: Dict):
+def qradar_reference_set_value_delete_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Delete a value in reference set from QRadar service.
+    possible arguments:
+    - ref_name (Required): The reference name to insert/update a value for.
+    - value (Required): Value to be deleted.
+    - date_value: Boolean, specifies if values given are dates or not.
+
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     ref_name = args.get('ref_name')
     value = args.get('value')
     date_value = argToBoolean(args.get('date_value', False))
@@ -1317,7 +1577,28 @@ def qradar_reference_set_value_delete_command(client: Client, args: Dict):
     )
 
 
-def qradar_domains_list_command(client: Client, args: Dict):
+def qradar_domains_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves list of domains sets from QRadar service.
+    If you do not have the System Administrator or Security Administrator permissions,
+    then for each domain assigned to your security profile you can only view the values
+    for the id and name fields. All other values return null.
+    possible arguments:
+    - domain_id: Retrieves details of the specific domain that corresponds to the ID given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     domain_id = args.get('domain_id')
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
@@ -1328,17 +1609,74 @@ def qradar_domains_list_command(client: Client, args: Dict):
 
     return CommandResults(
         readable_output=tableToMarkdown('Domains List', outputs),
-        outputs_prefix='QRadar.Domain',
+        outputs_prefix='QRadar.Domains',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response
     )
 
 
-# discuss with arseny
-# def qradar_indicators_upload_command
+def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Uploads list of indicators from Demisto to a reference set in QRadar service.
+    possible arguments:
+    - ref_name (Required): Name of the reference set to upload indicators to.
+    - query: The query for getting indicators from Demisto.
+    - limit: Maximum number of indicators to fetch from Demisto.
+    - page: The page from which to get the indicators.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
 
-def qradar_geolocations_for_ip_command(client: Client, args: Dict):
+    Returns:
+        CommandResults.
+    """
+    ref_name = args.get('ref_name')
+    query = args.get('query')
+    limit = args.get('limit', DEFAULT_LIMIT_VALUE)
+    page = args.get('page')
+    fields = args.get('fields')
+
+    indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
+    # TODO see how iocs are returned
+    indicators_values = [indicator.get('value') for indicator in indicators if indicator.get('value')]
+    if not indicators_values:
+        return CommandResults(
+            readable_output=f'### No Indicators Were Found For Reference Set {ref_name}'
+        )
+    # indicators_data = [{'Value': indicator.get('value'), 'Type': indicator.get('indicator_type')}
+    #                    for indicator in indicators if indicator.get('value')]
+
+    response = client.indicators_upload(ref_name, indicators_values, fields)
+    outputs = sanitize_outputs(response)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs),
+        outputs_prefix='QRadar.Reference',
+        outputs_key_field='name',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves the MaxMind geoip data for the given IP addresses.
+    possible arguments:
+    - ips (Required): Comma separated list. the IPs to retrieve data for.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     ips = argToList(args.get('ips'))
     if not ips:
         raise DemistoException('''IPs list cannot be empty for command 'qradar-geolocations-for-ip-get'.''')
@@ -1357,7 +1695,28 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict):
     )
 
 
-def qradar_log_sources_list_command(client: Client, args: Dict):
+def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves a list of log sources from QRadar service.
+    possible arguments:
+    - qrd_encryption_algorithm (Required): The algorithm to use for encrypting the sensitive data of this
+        endpoint.
+    - qrd_encryption_password: The password to use for encrypting the sensitive data of this endpoint.
+        Default value is the user's password. Default is user's password.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
     qrd_encryption_algorithm = args.get('qrd_encryption_algorithm')
     qrd_encryption_password = args.get('qrd_encryption_password', client.password)
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
@@ -1367,9 +1726,49 @@ def qradar_log_sources_list_command(client: Client, args: Dict):
     response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
     outputs = sanitize_outputs(response)
 
-    # TODO finish
     return CommandResults(
         readable_output=tableToMarkdown('Log Sources List', outputs),
+        outputs_prefix='QRadar.LogSource',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Retrieves a list of event regex properties from QRadar service.
+    possible arguments:
+    - field_names: A comma-separated list of names of an exact properties to search for.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    field_names = argToList(args.get('field_name'))
+    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    if not filter_ and field_names:
+        filter_ = f'''name IN ({','.join(map(lambda name: f'"{str(name)}"', field_names))})'''
+
+    response = client.get_custom_properties(range_, filter_, fields)
+    outputs = sanitize_outputs(response)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Custom Properties', outputs),
+        outputs_prefix='QRadar.Properties',
+        outputs_key_field='identifier',
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1404,7 +1803,10 @@ def main() -> None:
             return_results(test_module_command(client))
 
         elif command == 'fetch-incidents':
-            raise NotImplementedError
+            fetch_incidents_command(client, params)
+
+        elif command == "long-running-execution":
+            long_running_execution_command(client, params)
 
         elif command == 'qradar-offenses-list':
             return_results(qradar_offenses_list_command(client, args))
@@ -1463,15 +1865,17 @@ def main() -> None:
         elif command == 'qradar-domains-list':
             return_results(qradar_domains_list_command(client, args))
 
-        # elif command == 'qradar-indicators-upload':
-        #     return_results(qradar_indicators_upload_command(client, args))
-        # QRadar.Indicator
+        elif command == 'qradar-indicators-upload':
+            return_results(qradar_indicators_upload_command(client, args))
 
         elif command == 'qradar-geolocations-for-ip':
             return_results(qradar_geolocations_for_ip_command(client, args))
 
         elif command == 'qradar-log-sources-list':
             return_results(qradar_log_sources_list_command(client, args))
+
+        elif command == 'qradar-get-custom-properties':
+            return_results(qradar_get_custom_properties_command(client, args))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

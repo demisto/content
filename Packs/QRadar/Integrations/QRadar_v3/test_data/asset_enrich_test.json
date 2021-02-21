@@ -338,5 +338,155 @@
       "id": 6,
       "name": "domain2"
     }
-  ]
+  ],
+  "empty_case": {
+    "assets": [
+      {
+        "domain_id": 15,
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "A",
+                "value": "B"
+              },
+              {
+                "name": "C",
+                "value": "D",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": []
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes 2",
+                "value": "note",
+                "last_reported_by": "Adam"
+              }
+            ],
+            "ip_addresses": []
+          }
+        ]
+      },
+      {
+        "domain_id": 16,
+        "interfaces": [
+          {
+            "properties": [],
+            "ip_addresses": []
+          },
+          {
+            "properties": [],
+            "ip_addresses": []
+          }
+        ]
+      }
+    ],
+    "expected_basic_enrichment": [
+      {
+        "Endpoint": {
+          "IPAddress": []
+        },
+        "domain_id": 15,
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "A",
+                "value": "B"
+              },
+              {
+                "name": "C",
+                "value": "D",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": []
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes 2",
+                "value": "note",
+                "last_reported_by": "Adam"
+              }
+            ],
+            "ip_addresses": []
+          }
+        ]
+      },
+      {
+        "Endpoint": {
+          "IPAddress": []
+        },
+        "domain_id": 16,
+        "interfaces": [
+          {
+            "properties": [],
+            "ip_addresses": []
+          },
+          {
+            "properties": [],
+            "ip_addresses": []
+          }
+        ]
+      }
+    ],
+    "expected_full_enrichment": [
+      {
+        "Endpoint": {
+          "IPAddress": [],
+          "MACAddress": [],
+          "Domain": null
+        },
+        "domain_id": 15,
+        "interfaces": [
+          {
+            "properties": [
+              {
+                "name": "A",
+                "value": "B"
+              },
+              {
+                "name": "C",
+                "value": "D",
+                "last_reported_by": "admin"
+              }
+            ],
+            "ip_addresses": []
+          },
+          {
+            "properties": [
+              {
+                "name": "Compliance Notes 2",
+                "value": "note",
+                "last_reported_by": "Adam"
+              }
+            ],
+            "ip_addresses": []
+          }
+        ]
+      },
+      {
+        "Endpoint": {
+          "IPAddress": [],
+          "MACAddress": [],
+          "Domain": null
+        },
+        "domain_id": 16,
+        "interfaces": [
+          {
+            "properties": [],
+            "ip_addresses": []
+          },
+          {
+            "properties": [],
+            "ip_addresses": []
+          }
+        ]
+      }
+    ]
+  }
 }

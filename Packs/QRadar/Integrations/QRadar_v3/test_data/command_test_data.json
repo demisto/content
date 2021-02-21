@@ -1,0 +1,310 @@
+{
+  "offenses_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "offense_update": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "closing_reasons_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "offense_notes_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "offense_notes_create": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "rules_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "rule_groups_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "assets_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "saved_searches_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "searches_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "search_create": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "search_status_get": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "search_results_get": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "reference_sets_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "reference_set_create": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "reference_set_delete": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "reference_set_value_upsert": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "reference_set_value_delete": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "domains_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "indicators_upload": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "geolocations_for_ip": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  },
+  "log_sources_list": {
+    "response": {
+    },
+    "expected": {
+      "outputs_prefix": {
+      },
+      "outputs_key_field": {
+      },
+      "outputs": {
+      }
+    },
+    "args": {
+    }
+  }
+}
