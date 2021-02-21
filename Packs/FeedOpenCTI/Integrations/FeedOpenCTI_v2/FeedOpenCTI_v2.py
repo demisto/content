@@ -435,7 +435,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     result = {}
 
     if key == 'marking':
-        result = indicator_remove_label(client=client, id=indicator_id, value=value)
+        result = indicator_remove_marking(client=client, id=indicator_id, value=value)
 
     elif key == 'label':
         result = indicator_remove_label(client=client, id=indicator_id, value=value)
