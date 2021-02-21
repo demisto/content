@@ -744,6 +744,9 @@ script:
             params.insecure,
             params.proxy
         );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
     }
 
 
@@ -780,7 +783,10 @@ script:
 
         if (isRawOutput) {
             return res.Path;
-        } else {
+        } else if(res.Body.length<=0){  // If body is empty return an empty object
+            return {}
+            }
+        else{
             return JSON.parse(res.Body);
         }
     }
@@ -790,14 +796,18 @@ script:
 
     delete(args['raw-response']);
 
+    var res_login =  sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password})
+    if(JSON.stringify(res_login) == '{}'){
+        return 'Authentication at login failed '
+    }
 
-    var token = sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
+    var token = res_login.access_token;
 
     var commandUrlKey;
 
     switch (command) {
         case 'test-module':
-            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            request_logout(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
 
         case 'guardicore-get-incident-pcap':
@@ -821,7 +831,7 @@ script:
 
     var entries = entriesFromResponse(command, result, token);
 
-    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+    request_logout(methodDictionary.logout, urlDictionary.logout, token);
 
 
     return entries;
