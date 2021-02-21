@@ -22,7 +22,7 @@ def create_incident_field(path: Path, incident_to_associate: str) -> str:
     Returns:
         The path to the incident field
     """
-    hello_field_path = 'Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Status.json'
+    hello_field_path = 'Packs/HelloWorld/IncidentFields/incidentfield-QualysFIM_Approval_Status.json'
     with open(hello_field_path) as stream:
         field = json.load(stream)
     name = 'Hello World Incident Test'
