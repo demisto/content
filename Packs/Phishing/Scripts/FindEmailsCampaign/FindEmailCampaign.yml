@@ -125,27 +125,27 @@ args:
   - ''
   required: false
   secret: false
-comment: Find a campaing of emails based on their textual similarity.
+comment: Find a campaign of emails based on their textual similarity.
 commonfields:
-  id: FindEmailsCampaign
+  id: FindEmailCampaign
   version: -1
 enabled: false
-name: FindEmailsCampaign
+name: FindEmailCampaign
 outputs:
-- contextPath: EmailsCampaign.isCampaignFound
+- contextPath: EmailCampaign.isCampaignFound
   description: Whether a campaign was found
   type: Boolean
-- contextPath: EmailsCampaign.incidents.id
+- contextPath: EmailCampaign.incidents.id
   description: The IDs of the incidents involved in the campaign
   type: Unknown
-- contextPath: EmailsCampaign.incidents.similarity
+- contextPath: EmailCampaign.incidents.similarity
   description: The textual similarity of the emails of the corresponding incidents
     ids with current incident.
   type: Unknown
-- contextPath: EmailsCampaign.indicators.id
+- contextPath: EmailCampaign.indicators.id
   description: The IDs of the mututal indicators of incidents invovled in the campaign.
   type: Unknown
-- contextPath: EmailsCampaign.indicators.value
+- contextPath: EmailCampaign.indicators.value
   description: The values of the mututal indicators of incidents invovled in the campaign.
   type: Unknown
 script: '-'
@@ -161,4 +161,3 @@ tests:
 - No tests (auto formatted)
 runonce: true
 fromversion: 5.0.0
-vcShouldKeepItemLegacyProdMachine: false
