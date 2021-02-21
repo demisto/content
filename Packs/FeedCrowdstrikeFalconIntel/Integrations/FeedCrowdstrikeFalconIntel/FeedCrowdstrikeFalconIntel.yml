@@ -3,6 +3,11 @@ commonfields:
   id: Crowdstrike Falcon Intel Feed
   version: -1
 configuration:
+- defaultvalue: https://api.crowdstrike.com/
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
+  name: server_url
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
