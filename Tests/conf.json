@@ -3216,6 +3216,10 @@
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test"
         }
     ],
     "skipped_tests": {
@@ -3272,7 +3276,6 @@
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
@@ -3294,7 +3297,10 @@
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
-        "Trend Micro Apex - Test": "Issue 27280"
+        "Trend Micro Apex - Test": "Issue 27280",
+        "Azure SecurityCenter - Test": "Issue 27391",
+        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
+        "Field polling test": "Issue 33951"
     },
     "skipped_integrations": {
         
