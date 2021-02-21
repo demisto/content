@@ -1,0 +1,2 @@
+!domain domain = "google.com"
+!hostio-domain-search field="twitter" value="elonmust"

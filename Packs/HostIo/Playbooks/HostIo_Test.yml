@@ -1,0 +1,302 @@
+id: HostIo_Test
+version: -1
+fromversion: 5.0.0
+name: HostIo_Test
+description: this is a test playbook to test the flow of the hostio integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a933786d-3457-4068-8cdb-957c36fb223f
+    type: start
+    task:
+      id: a933786d-3457-4068-8cdb-957c36fb223f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 93e8dbc8-f3f5-4cd7-8c67-8378bd981d5a
+    type: regular
+    task:
+      id: 93e8dbc8-f3f5-4cd7-8c67-8378bd981d5a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ad60a0c1-dc34-4516-8567-9f0d7c5b70e7
+    type: regular
+    task:
+      id: ad60a0c1-dc34-4516-8567-9f0d7c5b70e7
+      version: -1
+      name: domain
+      description: Returns Domain information and reputation.
+      script: HostIo|||domain
+      type: regular
+      iscommand: true
+      brand: HostIo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: google.com
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 291927ea-acea-4a3b-88ea-0c4d8200bf41
+    type: regular
+    task:
+      id: 291927ea-acea-4a3b-88ea-0c4d8200bf41
+      version: -1
+      name: hostio-domain-search
+      description: Returns a list of domain associated with a specific field, and
+        the total amount of these domains
+      script: HostIo|||hostio-domain-search
+      type: regular
+      iscommand: true
+      brand: HostIo
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field:
+        simple: twitter
+      limit:
+        simple: "5"
+      value:
+        simple: elonmusk
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ce4d318e-3dfd-4c98-813b-60e93a1d3776
+    type: condition
+    task:
+      id: ce4d318e-3dfd-4c98-813b-60e93a1d3776
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HostIo.Domain.web.rank
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Domain.web.server
+            iscontext: true
+          right:
+            value:
+              simple: gws
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e4bfa5c5-e5cc-47cc-8613-8ea226060631
+    type: regular
+    task:
+      id: e4bfa5c5-e5cc-47cc-8613-8ea226060631
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0dd2c644-05a1-4ef2-859b-b93a93d01b25
+    type: condition
+    task:
+      id: 0dd2c644-05a1-4ef2-859b-b93a93d01b25
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Search.Field
+            iscontext: true
+          right:
+            value:
+              simple: twitter
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Search.Value
+            iscontext: true
+          right:
+            value:
+              simple: elonmusk
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HostIo.Search.Total
+            iscontext: true
+          right:
+            value:
+              simple: "283"
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 1330,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

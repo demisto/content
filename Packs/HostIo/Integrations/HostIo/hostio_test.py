@@ -33,19 +33,17 @@ def test_domain(requests_mock):
     )
 
     args = {
-        'domain': domain_to_check,
-        'threshold': 65,
+        'domain': domain_to_check
     }
     response = domain_command(client, args)
 
-    mock_response['updated_date'] = '2021-01-26T01:33:56.000Z'
+    mock_response['updated_date'] = '2021-01-26T01:33:56Z'
 
     assert response[0].outputs == mock_response
     assert response[0].outputs_prefix == 'HostIo.Domain'
     assert response[0].outputs_key_field == 'domain'
     assert response[0].indicator.domain == domain_to_check
 
-    assert isinstance(response, list)
     assert isinstance(response[0].indicator, Common.Domain)
 
 
@@ -91,5 +89,16 @@ def test_search(requests_mock):
     assert response.outputs == context
     assert response.raw_response == mock_response
     assert response.outputs_prefix == 'HostIo.Search'
-    assert response.outputs_key_field == ['field', 'value']
+    assert response.outputs_key_field == ['Field', 'Value']
     assert response.raw_response == mock_response
+
+
+def test_parsing_date():
+    from hostio import parse_domain_date
+
+    date_to_check = '2021-01-26T01:33:56.129Z'
+    mock_result = '2021-01-26T01:33:56Z'
+
+    result = parse_domain_date(date_to_check)
+
+    assert result == mock_result

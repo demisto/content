@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 import urllib3
 from CommonServerPython import *
 
@@ -42,10 +42,10 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
+def parse_domain_date(domain_date: str, date_format: str = DATE_FORMAT) -> Optional[str]:
     """Converts whois date format to an ISO8601 string
 
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
+    Converts date (YYYY-mm-dd HH:MM:SS) format
     in a datetime. If a list is returned with multiple elements, takes only
     the first one.
 
@@ -53,20 +53,13 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
     :param date_format:
         a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
 
-    :return: Parsed time in ISO8601 format
+    :return: Parsed time in ISO8601 format ISO8601 format
     :rtype: ``Optional[str]``
     """
 
-    if isinstance(domain_date, str):
-        # if str parse the value
-        domain_date_dt = dateparser.parse(domain_date)
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        domain_date_dt = dateparser.parse(domain_date[0])
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
+    domain_date_dt = dateparser.parse(domain_date)
+    if domain_date_dt:
+        return domain_date_dt.strftime(date_format)
     # in any other case return nothing
     return None
 
@@ -115,25 +108,20 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     :rtype: ``CommandResults``
     """
     domains = argToList(args.get('domain'))
-    if len(domains) == 0:
-        raise ValueError('domain(s) not specified')
 
     command_results: List[CommandResults] = []
     for domain in domains:
         domain_data = client.get_domain_data(domain)
-        domain_data['domain'] = domain
 
-        if domain_data['web'] and 'date' in domain_data['web']:
+        if domain_data.get('web', {}).get('date'):
             domain_data['updated_date'] = parse_domain_date(domain_data['web']['date'])
 
-        reputation = int(domain_data['web'].get('rank', 0))
         score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(
             indicator=domain,
             integration_name='HostIo',
             indicator_type=DBotScoreType.DOMAIN,
-            score=score,
-            malicious_description=f'HostIo returned reputation {reputation}'
+            score=score
         )
 
         domain_standard_context = Common.Domain(
@@ -166,7 +154,8 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = args.get('limit', 25)
 
     data = client.get_search_data(field, value, limit)
-    read = tableToMarkdown('Search', data)
+    read = tableToMarkdown(f'Domains associated with {field}: {value}', data)
+
     context = {
         'Field': field,
         'Value': value,
@@ -177,7 +166,7 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=read,
         outputs_prefix='HostIo.Search',
-        outputs_key_field=['field', 'value'],
+        outputs_key_field=['Field', 'Value'],
         outputs=context,
         raw_response=data)
 
@@ -198,19 +187,19 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    headers = {
+        'Authorization': f'Bearer {api_key}'
+    }
+
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,)
 
         if demisto.command() == 'test-module':
-            result = test_module_command(client)
-            return_results(result)
+            return_results(test_module_command(client))
 
         elif demisto.command() == 'domain':
             return_results(domain_command(client, demisto.args()))
