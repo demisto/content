@@ -1,16 +1,17 @@
 {
-    "name": "AWS - Security Hub",
-    "description": "Amazon Web Services Security Hub Service .",
+    "name": "Microsoft Graph Applications",
+    "description": "Use this pack to manage connected applications and services",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": []
 }
