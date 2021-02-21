@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com/
-  display: Server URL (e.g., https://example.net)
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
   name: server_url
   required: false
   type: 0
