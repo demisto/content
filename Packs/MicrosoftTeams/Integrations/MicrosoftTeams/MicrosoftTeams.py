@@ -868,6 +868,24 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     return channel_id
 
 
+def create_meeting(subject: str, start_date_time: str, end_date_time: str) -> dict:
+    """
+    Creates a Microsoft Teams meeting
+    :param subject: The meeting's subject
+    :param start_date_time: The meeting's start time
+    :param end_date_time: The meeting's end time
+    :return: ID of created meeting
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/me/onlineMeetings'
+    request_json: dict = {
+        'startDateTime': start_date_time,
+        'endDateTime': end_date_time,
+        'subject': subject
+    }
+    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    return channel_data
+
+
 def create_channel_command():
     channel_name: str = demisto.args().get('channel_name', '')
     channel_description: str = demisto.args().get('description', '')
@@ -877,6 +895,59 @@ def create_channel_command():
     channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
     if channel_id:
         demisto.results(f'The channel "{channel_name}" was created successfully')
+
+
+def create_meeting_command():
+    subject: str = demisto.args().get('subject', '')
+    start_date_time: str = demisto.args().get('start_date_time', '')
+    end_date_time: str = demisto.args().get('end_date_time', '')
+
+    meeting_data: dict = create_meeting(subject, start_date_time, end_date_time)
+    thread_id = ''
+    message_id = ''
+    chat_info = meeting_data.get('chatInfo', {})
+    if chat_info:
+        thread_id = chat_info.get('threadId', '')
+        message_id = chat_info.get('threadId', '')
+
+    participant_id, participant_display_name = get_participant_info(meeting_data.get('participants', {}))
+
+    outputs = {
+        'creationDateTime': meeting_data.get('creationDateTime', ""),
+        'threadId': thread_id,
+        'messageId': message_id,
+        'id': meeting_data.get('id', ""),
+        'joinWebUrl': meeting_data.get('joinWebUrl', ""),
+        'participantId': participant_id,
+        'participantDisplayName': participant_display_name
+    }
+    return CommandResults(
+        readable_output=f'The meeting "{subject}" was created successfully',
+        outputs_prefix='MicrosoftTeams.CreateMeeting',
+        outputs_key_field='id',
+        outputs=outputs
+    )
+
+
+def get_participant_info(participants: dict):
+    """
+    Retrieves the participant id and name
+    :param participants: The participants in the Team meeting
+    :return: he participant id and name
+    """
+    participant_id = ""
+    participant_display_name = ""
+
+    if participants:
+        organizer = participants.get('organizer', {})
+        if organizer:
+            identity = organizer.get('identity', {})
+            if identity:
+                user = identity.get('user', {})
+                if user:
+                    participant_id.append(user.get('id'))
+                    participant_display_name.append(user.get('displayName'))
+    return participant_id, participant_display_name
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -1674,6 +1745,7 @@ def main():
         'microsoft-teams-ring-user': ring_user,
         'microsoft-teams-create-channel': create_channel_command,
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
+        'microsoft-teams-create-meeting': create_meeting_command,
     }
 
     ''' EXECUTION '''

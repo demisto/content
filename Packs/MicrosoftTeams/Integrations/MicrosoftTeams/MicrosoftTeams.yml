@@ -291,6 +291,51 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
+  - arguments:
+    - default: false
+      description: The meeting start time.
+      isArray: false
+      name: start_date_time
+      required: true
+      secret: false
+    - default: false
+      description: The meeting end time.
+      isArray: false
+      name: end_date_time
+      required: true
+      secret: false
+    - default: false
+      description: The meeting subject.
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new meeting in a Microsoft Teams.
+    execution: false
+    name: microsoft-teams-create-meeting
+    outputs:
+    - contextPath: MicrosoftTeams.CreateMeeting.creationDateTime
+      description: Meeting creation time
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.threadId
+      description: Meeting thread ID
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.messageId
+      description: Meeting message ID
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.id
+      description: Meeting ID
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.joinWebUrl
+      description: The URL to join the meeting
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.participants
+      description: 'The meeting participants '
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.displayName
+      description: 'The display Name of the participants  '
+      type: String
   dockerimage: demisto/teams:1.0.0.13080
   feed: false
   isfetch: false
