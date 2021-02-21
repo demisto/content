@@ -46,8 +46,8 @@ def test_module() -> str:
         data = parsed['data']
         accessToken = data['access_token']
 
-    except DemistoException as e:
-        if ('Forbidden' in str(e)) or not(accessToken):
+    except Exception as e:
+        if ('Forbidden' in str(e)):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
