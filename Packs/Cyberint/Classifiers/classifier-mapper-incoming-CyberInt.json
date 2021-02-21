@@ -1,17 +1,7 @@
 {
-    "brands": null,
-    "defaultIncidentType": "",
-    "description": "",
+    "description": "Cyberint Mapper",
     "feed": false,
-    "fromServerVersion": "",
-    "id": "61135ae3-250d-4eea-8daa-aaa3657ceeec",
-    "incidentSamples": null,
-    "indicatorSamples": null,
-    "instanceIds": null,
-    "itemVersion": "",
-    "keyTypeMap": {},
-    "locked": false,
-    "logicalVersion": 22,
+    "id": "abcd-5678",
     "mapping": {
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
@@ -19,18 +9,26 @@
                 "Alert ID": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "ref_id",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "Alert Name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "title",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 }
@@ -42,9 +40,13 @@
                 "Alert Attachments": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "attachments",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -71,9 +73,13 @@
                 "Created Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "created_date",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -84,12 +90,18 @@
                 "Description": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "description",
-                        "transformers": [{
-                            "args": {},
-                            "operator": "trim"
-                        }]
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "trim"
+                            }
+                        ]
                     },
                     "simple": ""
                 },
@@ -104,19 +116,28 @@
                 "IOC": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "iocs",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "Impacts": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "impacts",
-                        "transformers": [{
-                                "args": {},
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
                                 "operator": "Stringify"
                             },
                             {
@@ -142,9 +163,13 @@
                 "Related Entities": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "related_entities",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -155,9 +180,13 @@
                 "Source Username": {
                     "complex": {
                         "accessor": "username",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "alert_data.csv",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -172,27 +201,39 @@
                 "Tags": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "tags",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "Target Brand": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "targeted_brands",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
                 "Target vector": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "targeted_vectors",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -215,33 +256,41 @@
                 "occurred": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "created_date",
-                        "transformers": [{
-                            "args": {
-                                "prefix": {
-                                    "isContext": false,
-                                    "value": null
-                                },
-                                "suffix": {
-                                    "isContext": false,
-                                    "value": {
-                                        "complex": null,
-                                        "simple": "Z"
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Z"
+                                        }
                                     }
-                                }
-                            },
-                            "operator": "concat"
-                        }]
+                                },
+                                "operator": "concat"
+                            }
+                        ]
                     },
                     "simple": ""
                 },
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
-                        "transformers": []
+                        "transformers": [
+
+                        ]
                     },
                     "simple": ""
                 },
@@ -253,20 +302,7 @@
         }
     },
     "name": "CyberInt (mapper)",
-    "nameRaw": "CyberInt (mapper)",
-    "packID": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "sortValues": null,
-    "sourceClassifierId": "",
-    "system": false,
-    "toServerVersion": "",
-    "transformer": {
-        "complex": null,
-        "simple": ""
-    },
     "type": "mapping-incoming",
-    "unclassifiedCases": null,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
