@@ -46,6 +46,12 @@ FILE_TYPES = {
     'file-sha1': "file.hashes.sha-1",
     'file-sha256': "file.hashes.sha-256"
 }
+MARKING_TYPE_TO_ID = {
+    'TLP:RED': 'c9819001-c80c-45e1-8edb-e543e350f195',
+    'TLP:GREEN': 'dc911977-796a-4d96-95e4-615bd1c41263',
+    'TLP:WHITE': '43a643e9-f761-45b2-9c9d-fbc08358f253',
+    'TLP:AMBER': '9128e411-c759-4af0-aeb0-b65f12082648'
+}
 
 
 def build_indicator_list(indicator_list: List[str]) -> List[str]:
@@ -60,9 +66,6 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
         # Replaces "ALL" for all types supported on XSOAR.
         result = ['User-Account', 'Domain-Name', 'Email-Addr', 'StixFile', 'X-OpenCTI-Hostname', 'IPv4-Addr',
                   'IPv6-Addr', 'Windows-Registry-Key', 'Url']
-        # Checks for additional types not supported by XSOAR, and adds them.
-        result += [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator)
-                   for indicator in indicator_list if indicator != 'ALL']
     else:
         result = [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator) for indicator in indicator_list]
     return result
@@ -76,7 +79,7 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client, indicator_types: List[str], limit: Optional[int], last_run_id: Optional[str] = None,
+def get_indicators(client, indicator_types: List[str], limit: Optional[int] = None, last_run_id: Optional[str] = None,
                    tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
@@ -151,17 +154,17 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         readable_output, raw_response
     """
     indicator_type = argToList(args.get("indicator_types"))
-    limit = min(arg_to_number(args.get('limit', 50)), 500)
-    _, indicators_list = get_indicators(client, indicator_type, limit=limit)
+    limit = arg_to_number(args.get('limit', 50))
+    offset = arg_to_number(args.get('limit', 0))
+    _, indicators_list = get_indicators(client, indicator_type)
+
+    indicators_list = indicators_list[offset: (offset + limit)]
+
     if indicators_list:
-        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id': indicator['rawJSON']['id'],
-                       'createdBy': indicator['rawJSON'].get('createdBy').get('id')
-                       if indicator['rawJSON'].get('createdBy') else None,
-                       'score': indicator['rawJSON']['x_opencti_score'],
-                       'description': indicator['rawJSON']['x_opencti_description'],
-                       'labels': [label.get('value') for label in indicator['rawJSON'].get('objectLabel')],
-                       'marking': [mark.get('definition') for mark in indicator['rawJSON'].get('objectMarking')]
-                       }
+        indicators = [{'type': indicator['type'],
+                       'value': indicator['value'],
+                       'id': indicator['rawJSON']['id'],
+                       'rawJSON': indicator['rawJSON']}
                       for indicator in indicators_list]
         readable_output = tableToMarkdown('Indicators', indicators,
                                           headers=["type", "value", "id"],
@@ -226,6 +229,25 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     )
 
 
+def label_create(client, label_name: str):
+    """ Create label at opencti
+
+        Args:
+            client: OpenCTI Client object
+            label_name(str): label name to create
+
+        Returns:
+            readable_output, raw_response
+        """
+    try:
+        label_obj = Label(client)
+        label = label_obj.create(value=label_name)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException("Can't create label.")
+    return label
+
+
 def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     """ Create indicator at opencti
 
@@ -239,28 +261,18 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     indicator_type = args.get("type")
     created_by = args.get("created_by")
     marking = None
-    if marking_name := args.get("marking"):
-        mark_obj = MarkingDefinition(client)
-        marking = mark_obj.create(definition=marking_name, definition_type='TLP').get('id')
+    try:
+        if marking_name := args.get("marking"):
+            marking = MARKING_TYPE_TO_ID[marking_name]
+    except Exception:
+        raise DemistoException("Unknown marking value.")
 
-    label = None
-    if label_name := args.get("label"):
-        label_obj = Label(client)
-        label = label_obj.create(value=label_name).get('id')
+    label = args.get("label_id")
 
-    external_references = None
-    external_references_source_name = args.get('external_references_source_name')
-    external_references_url = args.get('external_references_url')
-    if external_references_url and external_references_source_name:
-        external_references_object = ExternalReference(client)
-        external_references = external_references_object.create(source_name=external_references_source_name,
-                                                                url=external_references_url).get('id')
-    elif external_references_url or external_references_source_name:
-        return_error("Missing argument. In order to use external references, "
-                     "external_references_url and external_references_source_name are mandatory.")
+    external_references_id = args.get("external_references_id")
 
     description = args.get("description")
-    score = int(args.get("score", '50'))
+    score = arg_to_number(args.get("score", '50'))
     data = {}
     try:
         data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
@@ -284,7 +296,7 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
             simple_observable_value=simple_observable_value,
             type=indicator_type,
             createdBy=created_by, objectMarking=marking,
-            objectLabel=label, externalReferences=external_references,
+            objectLabel=label, externalReferences=external_references_id,
             simple_observable_description=description,
             x_opencti_score=score, observableData=data
         )
@@ -320,14 +332,15 @@ def indicator_add_marking(client, id: Optional[str], value: Optional[str]):
         Returns:
             true if added successfully, else false.
         """
-    try:
-        mark_obj = MarkingDefinition(client)
-        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
-        result = client.stix_cyber_observable.add_marking_definition(id=id, marking_definition_id=marking)
-    except Exception as e:
-        demisto.error(str(e))
-        raise DemistoException("Can't add marking to indicator.")
-    return result
+    if marking := MARKING_TYPE_TO_ID.get(value):
+        try:
+            result = client.stix_cyber_observable.add_marking_definition(id=id, marking_definition_id=marking)
+        except Exception as e:
+            demisto.error(str(e))
+            raise DemistoException("Can't add marking to indicator.")
+        return result
+    else:
+        raise DemistoException("Unknown marking value.")
 
 
 def indicator_add_label(client, id: Optional[str], value: Optional[str]):
@@ -341,9 +354,7 @@ def indicator_add_label(client, id: Optional[str], value: Optional[str]):
             true if added successfully, else false.
         """
     try:
-        label_obj = Label(client)
-        label_id = label_obj.create(value=value).get('id')
-        result = client.stix_cyber_observable.add_label(id=id, label_id=label_id)
+        result = client.stix_cyber_observable.add_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
         raise DemistoException("Can't add label to indicator.")
@@ -388,9 +399,7 @@ def indicator_remove_label(client, id: Optional[str], value: Optional[str]):
             true if removed successfully, else false.
         """
     try:
-        label_obj = Label(client)
-        label_id = label_obj.create(value=value).get('id')
-        result = client.stix_cyber_observable.remove_label(id=id, label_id=label_id)
+        result = client.stix_cyber_observable.remove_label(id=id, label_id=value)
     except Exception as e:
         demisto.error(str(e))
         raise DemistoException("Can't remove label from indicator.")
@@ -407,14 +416,15 @@ def indicator_remove_marking(client, id: Optional[str], value: Optional[str]):
         Returns:
             true if removed successfully, else false.
         """
-    try:
-        mark_obj = MarkingDefinition(client)
-        marking = mark_obj.create(definition=value, definition_type='TLP').get('id')
-        result = client.stix_cyber_observable.remove_marking_definition(id=id, marking_definition_id=marking)
-    except Exception as e:
-        demisto.error(str(e))
-        raise DemistoException("Can't remove label from indicator.")
-    return result
+    if marking := MARKING_TYPE_TO_ID.get(value):
+        try:
+            result = client.stix_cyber_observable.remove_marking_definition(id=id, marking_definition_id=marking)
+        except Exception as e:
+            demisto.error(str(e))
+            raise DemistoException("Can't remove marking from indicator.")
+        return result
+    else:
+        raise DemistoException("Unknown marking value.")
 
 
 def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResults:
@@ -446,7 +456,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     return CommandResults(readable_output=readable_output)
 
 
-def organization_list_command(client, args) -> CommandResults:
+def organization_list_command(client, args: Dict[str, str]) -> CommandResults:
     """ Get organizations list from opencti
 
         Args:
@@ -456,8 +466,11 @@ def organization_list_command(client, args) -> CommandResults:
         Returns:
             readable_output, raw_response
         """
-    limit = int(args.get('limit', '50'))
-    organizations_list = client.identity.list(types='Organization', first=limit)
+    limit = arg_to_number(args.get('limit', '50'))
+    offset = arg_to_number(args.get('offset', '0'))
+
+    organizations_list = client.identity.list(types='Organization')
+    organizations_list = organizations_list[offset: (offset + limit)]
     if organizations_list:
         organizations = [
             {'name': organization.get('name'), 'id': organization.get('id')}
@@ -506,6 +519,92 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException("Can't create organization.")
 
 
+def label_list_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Get label list from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    limit = arg_to_number(args.get('limit', '50'))
+    offset = arg_to_number(args.get('offset', '0'))
+    label_list = client.label.list()
+
+    label_list = label_list[offset: (offset + limit)]
+
+    if label_list:
+        labels = [
+            {'value': label.get('value'), 'id': label.get('id')}
+            for label in label_list]
+        readable_output = tableToMarkdown('Labels', labels, headerTransform=pascalToSpace)
+        return CommandResults(
+            outputs_prefix='OpenCTI.Labels',
+            outputs_key_field='id',
+            outputs=labels,
+            readable_output=readable_output,
+            raw_response=label_list
+        )
+    else:
+        return CommandResults(readable_output='No labels')
+
+
+def label_create_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Create label at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    name = args.get("name")
+    result = label_create(client=client, label_name=name)
+
+    if label_id := result.get('id'):
+        readable_output = f'Label {name} was created successfully with id: {label_id}.'
+        return CommandResults(outputs_prefix='OpenCTI.Label',
+                              outputs_key_field='id',
+                              outputs={'id': result.get('id')},
+                              readable_output=readable_output,
+                              raw_response=result)
+    else:
+        raise DemistoException("Can't create label.")
+
+
+def external_reference_create_command(client, args: Dict[str, str]) -> CommandResults:
+    """ Create external reference at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    external_references_source_name = args.get('source_name')
+    external_references_url = args.get('url')
+
+    result = client.external_reference.create(
+        source_name=external_references_source_name,
+        url=external_references_url
+    )
+
+    if external_reference_id := result.get('id'):
+        readable_output = f'Reference {external_references_source_name} was created successfully with id: ' \
+                          f'{external_reference_id}.'
+        return CommandResults(outputs_prefix='OpenCTI.externalReference',
+                              outputs_key_field='id',
+                              outputs={'id': result.get('id')},
+                              readable_output=readable_output,
+                              raw_response=result)
+    else:
+        raise DemistoException("Can't create external reference.")
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -516,7 +615,7 @@ def main():
     max_fetch = params.get('max_indicator_to_fetch')
     tlp_color = params.get('tlp_color')
     if max_fetch:
-        max_fetch = int(max_fetch)
+        max_fetch = arg_to_number(max_fetch)
     else:
         max_fetch = 500
 
@@ -561,6 +660,15 @@ def main():
 
         elif command == "opencti-organization-create":
             return_results(organization_create_command(client, args))
+
+        elif command == "opencti-label-list":
+            return_results(label_list_command(client, args))
+
+        elif command == "opencti-label-create":
+            return_results(label_create_command(client, args))
+
+        elif command == "opencti-external-reference-create":
+            return_results(external_reference_create_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
