@@ -773,7 +773,6 @@ script:
             params.insecure,
             params.proxy
         );
-        console.log('Response from api: ' + JSON.stringify(res))  // print response to console for debugging
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (token) {
                 requestLogout(methodDictionary.logout, urlDictionary.logout, token);
