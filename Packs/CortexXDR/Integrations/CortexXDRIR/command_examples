@@ -27,3 +27,12 @@
 !xdr-get-script-code script_uid=548023b6e4a01ec51a495ba6e5d2a15d
 !xdr-action-status-get action_id="1819"
 !xdr-delete-endpoints endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916
+!xdr-run-script script_uid=414763381b5bfb7b05796c9fe690df46 endpoint_ids=23a86310665d413a958926fce5b794b3 parameters={"path":"test.txt"}
+!xdr-run-snippet-code-script endpoint_ids=23a86310665d413a958926fce5b794b3 snippet_code="print('hello world')"
+!xdr-get-script-execution-status action_id=3641
+!xdr-get-script-execution-results action_id=3641
+!xdr-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3
+!xdr-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands_list=tasklist
+!xdr-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!xdr-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
+!xdr-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe

@@ -3217,6 +3217,10 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "MicrosoftGraphIdentityandAccess",
+            "playbookID": "Identity & Access test playbook"
+        },
+        {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
             "playbookID": "Audit Log - Test"
         },
