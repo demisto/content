@@ -945,8 +945,8 @@ def get_participant_info(participants: dict):
             if identity:
                 user = identity.get('user', {})
                 if user:
-                    participant_id.append(user.get('id'))
-                    participant_display_name.append(user.get('displayName'))
+                    participant_id = user.get('id')
+                    participant_display_name = user.get('displayName')
     return participant_id, participant_display_name
 
 
