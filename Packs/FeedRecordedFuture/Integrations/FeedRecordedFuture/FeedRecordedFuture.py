@@ -242,7 +242,7 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
-        client.build_iterator(service, client.indicator_type)
+        client.build_iterator(service, client.indicator_type, limit=1)
     return 'ok', {}, {}
 
 
@@ -317,7 +317,7 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None) -> List[dict]:
+def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client.
