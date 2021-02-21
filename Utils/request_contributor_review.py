@@ -24,7 +24,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
     response = requests.get(user_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling user {github_user} data")
+        print(f"Failed in pulling user {github_user} data:\n{response.text}")
         sys.exit(1)
 
     github_user_info = response.json()
@@ -42,7 +42,7 @@ def get_pr_author(pr_number, github_token, verify_ssl):
     response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling PR {pr_number} data")
+        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")
         sys.exit(1)
 
     pr_info = response.json()
@@ -58,7 +58,7 @@ def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
     response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed in pulling PR {pr_number} data")
+        print(f"Failed in pulling PR {pr_number} data:\n{response.text}")
         sys.exit(1)
 
     pr_changed_data = response.json()
@@ -86,7 +86,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
     response = requests.post(comments_endpoint, headers=headers, verify=verify_ssl, json=comment_body)
 
     if response.status_code not in [200, 201]:
-        print(f"Failed posting comment on PR {pr_number}")
+        print(f"Failed posting comment on PR {pr_number}:\n{response.text}")
         sys.exit(1)
 
 
@@ -99,7 +99,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     response = requests.get(comments_endpoint, headers=headers, verify=verify_ssl)
 
     if response.status_code != requests.codes.ok:
-        print(f"Failed requesting PR {pr_number} comments")
+        print(f"Failed requesting PR {pr_number} comments:\n{response.text}")
         sys.exit(1)
 
     comments_info = response.json()

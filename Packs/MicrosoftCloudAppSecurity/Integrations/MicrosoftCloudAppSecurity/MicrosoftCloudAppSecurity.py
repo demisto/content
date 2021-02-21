@@ -493,7 +493,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
         # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
         first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time

@@ -1005,3 +1005,46 @@ def test_list_enterprise_events_command(requests_mock, mocker):
     assert requests_mock.request_history[0].qs.get('created_after')[0] > '2020-12-12t09:51:28'
 
     assert len(response.outputs) > 0
+
+
+def test_move_folder_command(requests_mock, mocker):
+    """
+     Tests the box-move-folder function and command.
+
+     Configures a requests_mock instance to generate the appropriate
+     user API response which is loaded from a local JSON file. Checks
+     the output of the command function with the expected output.
+     Verifies:
+      - The request is being made with the correct owned_by body.
+      - The response is a folder response object.
+      - Length of returned events are greater than 0.
+
+     Given: A valid to user ID and a valid from user id.
+     When: Executing the box-move-folder command.
+     Then: Return the result where the outputs match the mocked response.
+
+     """
+    from BoxV2 import move_folder_command
+
+    client = TestBox(mocker).client
+
+    args = {
+        'from_user_id': '123456',
+        'to_user_id': '7890',
+        'notify': 'true'
+    }
+    mock_response = util_load_json('test_data/get_folder.json')
+    requests_mock.put(
+        'https://api.box.com/2.0/users/123456/folders/0/',
+        json=mock_response
+    )
+
+    response = move_folder_command(client, args)
+
+    assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].json().get('owned_by').get('id') == '7890'
+    assert response.outputs_prefix == 'Box.Folder'
+    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response
+
+    assert len(response.outputs) > 0

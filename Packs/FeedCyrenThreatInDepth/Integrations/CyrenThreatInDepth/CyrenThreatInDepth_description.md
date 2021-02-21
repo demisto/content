@@ -19,4 +19,6 @@ is being stored and updated for you in the integration instance context. The int
 a high enough value so that you get all the feed indicators for maximum product value, to handle bursts
 etc.(the value cannot be higher than 100.000 and it will be capped at that value if you set a higher one).
 
+In case you want to want to reset the offset value, use the `cyren-threat-indepth-reset-client-offset` command.
+
 Please head over to [https://www.cyren.com/threat-indepth-demo](https://www.cyren.com/threat-indepth-demo) to get started!
