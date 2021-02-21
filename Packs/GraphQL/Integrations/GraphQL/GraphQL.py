@@ -1,5 +1,5 @@
 from itertools import zip_longest
-from typing import Dict
+from typing import Callable, Dict
 
 import urllib3
 
@@ -13,7 +13,7 @@ from gql.transport.requests import RequestsHTTPTransport
 urllib3.disable_warnings()
 
 
-CAST_MAPPING = {
+CAST_MAPPING: Dict[str, Callable] = {
     'string': str,
     'boolean': bool,
     'number': arg_to_number,
