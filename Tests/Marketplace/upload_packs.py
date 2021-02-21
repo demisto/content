@@ -657,7 +657,6 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
                 logging.debug("Not skipping upload flow because of private packs")
                 return
 
-        sys.exit()
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
         try:
