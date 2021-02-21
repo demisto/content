@@ -15,7 +15,6 @@ outputs:
   description: The instance is available.
 - contextPath: "no"
   description: The instance is not available.
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -25,3 +24,6 @@ tags:
 - Condition
 - infra
 type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
