@@ -1,0 +1,691 @@
+category: IT Services
+commonfields:
+  id: HCloud
+  version: -1
+configuration:
+- additionalinfo: This is the API Token for the Hetzner Cloud.
+  display: API Token
+  name: api_token
+  required: true
+  type: 4
+- additionalinfo: This is the API Endpoint for the Hetzner Cloud.
+  defaultvalue: https://api.hetzner.cloud/v1
+  display: Endpoint
+  name: endpoint
+  required: true
+  type: 0
+description: Manage your Hetzner Cloud environment
+display: HCloud
+name: HCloud
+script:
+  commands:
+  - arguments:
+    - description: The ID of the datacenter you want to get.
+      name: id
+    - description: The name of the datacenter you want to get.
+      name: name
+    description: Gather info about the Hetzner Cloud datacenters.
+    name: hcloud-datacenter-info
+    outputs:
+    - contextPath: HCloud.hcloud_datacenter_info.id
+      description: Numeric identifier of the datacenter
+      type: number
+    - contextPath: HCloud.hcloud_datacenter_info.name
+      description: Name of the datacenter
+      type: string
+    - contextPath: HCloud.hcloud_datacenter_info.description
+      description: Detail description of the datacenter
+      type: string
+    - contextPath: HCloud.hcloud_datacenter_info.location
+      description: Name of the location where the datacenter resides in
+      type: string
+    - contextPath: HCloud.hcloud_datacenter_info.city
+      description: City of the location
+      type: string
+  - arguments:
+    - description: The ID of the Floating IP you want to get.
+      name: id
+    - description: The label selector for the Floating IP you want to get.
+      name: label_selector
+    description: Gather infos about the Hetzner Cloud Floating IPs.
+    name: hcloud-floating-ip-info
+    outputs:
+    - contextPath: HCloud.hcloud_floating_ip_info.id
+      description: Numeric identifier of the Floating IP
+      type: number
+    - contextPath: HCloud.hcloud_floating_ip_info.description
+      description: Description of the Floating IP
+      type: string
+    - contextPath: HCloud.hcloud_floating_ip_info.ip
+      description: IP address of the Floating IP
+      type: string
+    - contextPath: HCloud.hcloud_floating_ip_info.type
+      description: Type of the Floating IP
+      type: string
+    - contextPath: HCloud.hcloud_floating_ip_info.server
+      description: Name of the server where the Floating IP is assigned to.
+      type: string
+    - contextPath: HCloud.hcloud_floating_ip_info.home_location
+      description: Location the Floating IP was created in
+      type: string
+    - contextPath: HCloud.hcloud_floating_ip_info.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID of the image you want to get.
+      name: id
+    - description: The name of the image you want to get.
+      name: name
+    - description: The label selector for the images you want to get.
+      name: label_selector
+    - auto: PREDEFINED
+      default: false
+      defaultValue: system
+      description: The label selector for the images you want to get.
+      name: type
+      predefined:
+      - system
+      - snapshot
+      - backup
+    description: Gather infos about your Hetzner Cloud images.
+    name: hcloud-image-info
+    outputs:
+    - contextPath: HCloud.hcloud_image_info.id
+      description: Numeric identifier of the image
+      type: number
+    - contextPath: HCloud.hcloud_image_info.type
+      description: Type of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.status
+      description: Status of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.name
+      description: Name of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.description
+      description: Detail description of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.os_flavor
+      description: OS flavor of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.os_version
+      description: OS version of the image
+      type: string
+    - contextPath: HCloud.hcloud_image_info.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID of the location you want to get.
+      name: id
+    - description: The name of the location you want to get.
+      name: name
+    description: Gather infos about your Hetzner Cloud locations.
+    name: hcloud-location-info
+    outputs:
+    - contextPath: HCloud.hcloud_location_info.id
+      description: Numeric identifier of the location
+      type: number
+    - contextPath: HCloud.hcloud_location_info.name
+      description: Name of the location
+      type: string
+    - contextPath: HCloud.hcloud_location_info.description
+      description: Detail description of the location
+      type: string
+    - contextPath: HCloud.hcloud_location_info.country
+      description: Country code of the location
+      type: string
+    - contextPath: HCloud.hcloud_location_info.city
+      description: City of the location
+      type: string
+  - arguments:
+    - description: |-
+        The ID of the Hetzner Cloud Networks to manage.
+        Only required if no Network `name` is given.
+      name: id
+    - description: |-
+        The Name of the Hetzner Cloud Network to manage.
+        Only required if no Network `id` is given or a Network does not exists.
+      name: name
+    - description: |-
+        IP range of the Network.
+        Required if Network does not exists.
+      name: ip_range
+    - description: User-defined labels (key-value pairs).
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the Network.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Create and manage cloud Networks on the Hetzner Cloud.
+    name: hcloud-network
+    outputs:
+    - contextPath: HCloud.hcloud_network.id
+      description: ID of the Network
+      type: number
+    - contextPath: HCloud.hcloud_network.name
+      description: Name of the Network
+      type: string
+    - contextPath: HCloud.hcloud_network.ip_range
+      description: IP range of the Network
+      type: string
+    - contextPath: HCloud.hcloud_network.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID of the network you want to get.
+      name: id
+    - description: The name of the network you want to get.
+      name: name
+    - description: The label selector for the network you want to get.
+      name: label_selector
+    description: Gather info about your Hetzner Cloud networks.
+    name: hcloud-network-info
+    outputs:
+    - contextPath: HCloud.hcloud_network_info.id
+      description: Numeric identifier of the network
+      type: number
+    - contextPath: HCloud.hcloud_network_info.name
+      description: Name of the network
+      type: string
+    - contextPath: HCloud.hcloud_network_info.ip_range
+      description: IP range of the network
+      type: string
+    - contextPath: HCloud.hcloud_network_info.subnetworks
+      description: Subnetworks belonging to the network
+    - contextPath: HCloud.hcloud_network_info.routes
+      description: Routes belonging to the network
+    - contextPath: HCloud.hcloud_network_info.servers
+      description: Servers attached to the network
+    - contextPath: HCloud.hcloud_network_info.labels
+      description: Labels of the network
+  - arguments:
+    - description: The name of the Hetzner Cloud server you want to add the reverse
+        DNS entry to.
+      name: server
+      required: true
+    - description: The IP address that should point to `dns_ptr`.
+      name: ip_address
+      required: true
+    - description: |-
+        The DNS address the `ip_address` should resolve to.
+        Omit the param to reset the reverse DNS entry to the default value.
+      name: dns_ptr
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the reverse DNS entry.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Create and manage reverse DNS entries on the Hetzner Cloud.
+    name: hcloud-rdns
+    outputs:
+    - contextPath: HCloud.hcloud_rdns.server
+      description: Name of the server
+      type: string
+    - contextPath: HCloud.hcloud_rdns.ip_address
+      description: The IP address that point to the DNS ptr
+      type: string
+    - contextPath: HCloud.hcloud_rdns.dns_ptr
+      description: The DNS that resolves to the IP
+      type: string
+  - arguments:
+    - description: The name of the Hetzner Cloud Network.
+      name: network
+      required: true
+    - description: Destination network or host of this route.
+      name: destination
+      required: true
+    - description: Gateway for the route.
+      name: gateway
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the route.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Create and delete cloud routes on the Hetzner Cloud.
+    name: hcloud-route
+    outputs:
+    - contextPath: HCloud.hcloud_route.network
+      description: Name of the Network
+      type: string
+    - contextPath: HCloud.hcloud_route.destination
+      description: Destination network or host of this route
+      type: string
+    - contextPath: HCloud.hcloud_route.gateway
+      description: Gateway of the route
+      type: string
+  - arguments:
+    - description: |-
+        The ID of the Hetzner Cloud server to manage.
+        Only required if no server `name` is given
+      name: id
+    - description: |-
+        The Name of the Hetzner Cloud server to manage.
+        Only required if no server `id` is given or a server does not exists.
+      name: name
+    - description: |-
+        The Server Type of the Hetzner Cloud server to manage.
+        Required if server does not exists.
+      name: server_type
+    - description: |-
+        List of SSH key names
+        The key names correspond to the SSH keys configured for your Hetzner Cloud account access.
+      isArray: true
+      name: ssh_keys
+    - description: List of Volumes IDs that should be attached to the server on server
+        creation.
+      isArray: true
+      name: volumes
+    - description: |-
+        Image the server should be created from.
+        Required if server does not exists.
+      name: image
+    - description: |-
+        Location of Server.
+        Required if no `datacenter` is given and server does not exists.
+      name: location
+    - description: |-
+        Datacenter of Server.
+        Required of no `location` is given and server does not exists.
+      name: datacenter
+    - default: false
+      defaultValue: "False"
+      description: Enable or disable Backups for the given Server.
+      name: backups
+    - default: false
+      defaultValue: "False"
+      description: |-
+        Resize the disk size, when resizing a server.
+        If you want to downgrade the server later, this value should be False.
+      name: upgrade_disk
+    - default: false
+      defaultValue: "False"
+      description: |-
+        Force the upgrade of the server.
+        Power off the server if it is running on upgrade.
+      name: force_upgrade
+    - description: |-
+        User Data to be passed to the server on creation.
+        Only used if server does not exists.
+      name: user_data
+    - description: Add the Hetzner rescue system type you want the server to be booted
+        into.
+      name: rescue_mode
+    - description: User-defined labels (key-value pairs).
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the server.
+      name: state
+      predefined:
+      - absent
+      - present
+      - restarted
+      - started
+      - stopped
+      - rebuild
+    description: Create and manage cloud servers on the Hetzner Cloud.
+    name: hcloud-server
+    outputs:
+    - contextPath: HCloud.hcloud_server.id
+      description: Numeric identifier of the server
+      type: number
+    - contextPath: HCloud.hcloud_server.name
+      description: Name of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.status
+      description: Status of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.server_type
+      description: Name of the server type of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.ipv4_address
+      description: Public IPv4 address of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.ipv6
+      description: IPv6 network of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.location
+      description: Name of the location of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.datacenter
+      description: Name of the datacenter of the server
+      type: string
+    - contextPath: HCloud.hcloud_server.rescue_enabled
+      description: True if rescue mode is enabled, Server will then boot into rescue
+        system on next reboot
+      type: boolean
+    - contextPath: HCloud.hcloud_server.backup_window
+      description: Time window (UTC) in which the backup will run, or null if the
+        backups are not enabled
+      type: boolean
+    - contextPath: HCloud.hcloud_server.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID of the server you want to get.
+      name: id
+    - description: The name of the server you want to get.
+      name: name
+    - description: The label selector for the server you want to get.
+      name: label_selector
+    description: Gather infos about your Hetzner Cloud servers.
+    name: hcloud-server-info
+    outputs:
+    - contextPath: HCloud.hcloud_server_info.id
+      description: Numeric identifier of the server
+      type: number
+    - contextPath: HCloud.hcloud_server_info.name
+      description: Name of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.status
+      description: Status of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.server_type
+      description: Name of the server type of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.ipv4_address
+      description: Public IPv4 address of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.ipv6
+      description: IPv6 network of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.location
+      description: Name of the location of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.datacenter
+      description: Name of the datacenter of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_info.rescue_enabled
+      description: True if rescue mode is enabled, Server will then boot into rescue
+        system on next reboot
+      type: boolean
+    - contextPath: HCloud.hcloud_server_info.backup_window
+      description: Time window (UTC) in which the backup will run, or null if the
+        backups are not enabled
+      type: boolean
+    - contextPath: HCloud.hcloud_server_info.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The name of the Hetzner Cloud Networks.
+      name: network
+      required: true
+    - description: The name of the Hetzner Cloud server.
+      name: server
+      required: true
+    - description: The IP the server should have.
+      name: ip
+    - description: Alias IPs the server has.
+      isArray: true
+      name: alias_ips
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the server_network.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Manage the relationship between Hetzner Cloud Networks and servers
+    name: hcloud-server-network
+    outputs:
+    - contextPath: HCloud.hcloud_server_network.network
+      description: Name of the Network
+      type: string
+    - contextPath: HCloud.hcloud_server_network.server
+      description: Name of the server
+      type: string
+    - contextPath: HCloud.hcloud_server_network.ip
+      description: IP of the server within the Network ip range
+      type: string
+    - contextPath: HCloud.hcloud_server_network.alias_ips
+      description: Alias IPs of the server within the Network ip range
+      type: string
+  - arguments:
+    - description: The ID of the server type you want to get.
+      name: id
+    - description: The name of the server type you want to get.
+      name: name
+    description: Gather infos about the Hetzner Cloud server types.
+    name: hcloud-server-type-info
+    outputs:
+    - contextPath: HCloud.hcloud_server_type_info.id
+      description: Numeric identifier of the server type
+      type: number
+    - contextPath: HCloud.hcloud_server_type_info.name
+      description: Name of the server type
+      type: string
+    - contextPath: HCloud.hcloud_server_type_info.description
+      description: Detail description of the server type
+      type: string
+    - contextPath: HCloud.hcloud_server_type_info.cores
+      description: Number of cpu cores a server of this type will have
+      type: number
+    - contextPath: HCloud.hcloud_server_type_info.memory
+      description: Memory a server of this type will have in GB
+      type: number
+    - contextPath: HCloud.hcloud_server_type_info.disk
+      description: Disk size a server of this type will have in GB
+      type: number
+    - contextPath: HCloud.hcloud_server_type_info.storage_type
+      description: Type of server boot drive
+      type: string
+    - contextPath: HCloud.hcloud_server_type_info.cpu_type
+      description: Type of cpu
+      type: string
+  - arguments:
+    - description: |-
+        The ID of the Hetzner Cloud ssh_key to manage.
+        Only required if no ssh_key `name` is given
+      name: id
+    - description: |-
+        The Name of the Hetzner Cloud ssh_key to manage.
+        Only required if no ssh_key `id` is given or a ssh_key does not exists.
+      name: name
+    - description: |-
+        The Fingerprint of the Hetzner Cloud ssh_key to manage.
+        Only required if no ssh_key `id` or `name` is given.
+      name: fingerprint
+    - description: User-defined labels (key-value pairs)
+      isArray: true
+      name: labels
+    - description: |-
+        The Public Key to add.
+        Required if ssh_key does not exists.
+      name: public_key
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the ssh_key.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Create and manage ssh keys on the Hetzner Cloud.
+    name: hcloud-ssh-key
+    outputs:
+    - contextPath: HCloud.hcloud_ssh_key.id
+      description: ID of the ssh_key
+      type: number
+    - contextPath: HCloud.hcloud_ssh_key.name
+      description: Name of the ssh_key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key.fingerprint
+      description: Fingerprint of the ssh_key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key.public_key
+      description: Public key of the ssh_key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID of the ssh key you want to get.
+      name: id
+    - description: The name of the ssh key you want to get.
+      name: name
+    - description: The fingerprint of the ssh key you want to get.
+      name: fingerprint
+    - description: The label selector for the ssh key you want to get.
+      name: label_selector
+    description: Gather infos about your Hetzner Cloud ssh_keys.
+    name: hcloud-ssh-key-info
+    outputs:
+    - contextPath: HCloud.hcloud_ssh_key_info.id
+      description: Numeric identifier of the ssh_key
+      type: number
+    - contextPath: HCloud.hcloud_ssh_key_info.name
+      description: Name of the ssh_key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key_info.fingerprint
+      description: Fingerprint of the ssh key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key_info.public_key
+      description: The actual public key
+      type: string
+    - contextPath: HCloud.hcloud_ssh_key_info.labels
+      description: User-defined labels (key-value pairs)
+  - arguments:
+    - description: The ID or Name  of the Hetzner Cloud Networks.
+      name: network
+      required: true
+    - description: IP range of the subnetwork.
+      name: ip_range
+      required: true
+    - description: Type of subnetwork.
+      name: type
+      required: true
+    - description: Name of network zone.
+      name: network_zone
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the subnetwork.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Manage cloud subnetworks on the Hetzner Cloud.
+    name: hcloud-subnetwork
+    outputs:
+    - contextPath: HCloud.hcloud_subnetwork.network
+      description: Name of the Network
+      type: string
+    - contextPath: HCloud.hcloud_subnetwork.ip_range
+      description: IP range of the Network
+      type: string
+    - contextPath: HCloud.hcloud_subnetwork.type
+      description: Type of subnetwork
+      type: string
+    - contextPath: HCloud.hcloud_subnetwork.network_zone
+      description: Name of network zone
+      type: string
+    - contextPath: HCloud.hcloud_subnetwork.gateway
+      description: Gateway of the subnetwork
+      type: string
+  - arguments:
+    - description: |-
+        The ID of the Hetzner Cloud Block Volume to manage.
+        Only required if no volume `name` is given
+      name: id
+    - description: |-
+        The Name of the Hetzner Cloud Block Volume to manage.
+        Only required if no volume `id` is given or a volume does not exists.
+      name: name
+    - description: |-
+        The size of the Block Volume in GB.
+        Required if volume does not yet exists.
+      name: size
+    - description: Automatically mount the Volume.
+      name: automount
+    - auto: PREDEFINED
+      description: |-
+        Automatically Format the volume on creation
+        Can only be used in case the Volume does not exists.
+      name: format
+      predefined:
+      - xfs
+      - ext4
+    - description: |-
+        Location of the Hetzner Cloud Volume.
+        Required if no `server` is given and Volume does not exists.
+      name: location
+    - description: |-
+        Server Name the Volume should be assigned to.
+        Required if no `location` is given and Volume does not exists.
+      name: server
+    - description: User-defined key-value pairs.
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the volume.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: Create and manage block volumes on the Hetzner Cloud.
+    name: hcloud-volume
+    outputs:
+    - contextPath: HCloud.hcloud_volume.id
+      description: ID of the volume
+      type: number
+    - contextPath: HCloud.hcloud_volume.name
+      description: Name of the volume
+      type: string
+    - contextPath: HCloud.hcloud_volume.size
+      description: Size in GB of the volume
+      type: number
+    - contextPath: HCloud.hcloud_volume.location
+      description: Location name where the volume is located at
+      type: string
+    - contextPath: HCloud.hcloud_volume.labels
+      description: User-defined labels (key-value pairs)
+    - contextPath: HCloud.hcloud_volume.server
+      description: Server name where the volume is attached to
+      type: string
+  - arguments:
+    - description: The ID of the volume you want to get.
+      name: id
+    - description: The name of the volume you want to get.
+      name: name
+    - description: The label selector for the volume you want to get.
+      name: label_selector
+    description: Gather infos about your Hetzner Cloud volumes.
+    name: hcloud-volume-info
+    outputs:
+    - contextPath: HCloud.hcloud_volume_info.id
+      description: Numeric identifier of the volume
+      type: number
+    - contextPath: HCloud.hcloud_volume_info.name
+      description: Name of the volume
+      type: string
+    - contextPath: HCloud.hcloud_volume_info.size
+      description: Size of the volume
+      type: string
+    - contextPath: HCloud.hcloud_volume_info.location
+      description: Name of the location where the volume resides in
+      type: string
+    - contextPath: HCloud.hcloud_volume_info.server
+      description: Name of the server where the volume is attached to
+      type: string
+    - contextPath: HCloud.hcloud_volume_info.labels
+      description: User-defined labels (key-value pairs)
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
