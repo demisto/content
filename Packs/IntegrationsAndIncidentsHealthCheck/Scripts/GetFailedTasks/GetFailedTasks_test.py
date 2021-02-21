@@ -86,7 +86,7 @@ def test_get_failed_tasks(mocker):
     assert entry_context.get('NumberofFailedIncidents', [])[0].get('Number of total errors') == 6
     assert entry_context.get('NumberofFailedIncidents', [])[0].get('total of failed incidents') == 3
 
-    assert entry_context.get('GetFailedTasks', [])[2] == {'Command Description': 'RunPollingCommand',
+    assert entry_context.get('GetFailedTasks', [])[1] == {'Command Description': 'RunPollingCommand',
                                                           'Command Name': 'RunPollingCommand',
                                                           'Error Entry ID': ['4@7', '5@7'],
                                                           'Incident Created Date': '2020-09-29 14:02:45.82647067Z',

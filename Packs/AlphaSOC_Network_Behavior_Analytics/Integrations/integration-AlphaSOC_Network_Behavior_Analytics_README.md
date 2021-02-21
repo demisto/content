@@ -38,7 +38,7 @@
 <p>Medium severity alerts have lower fidelity and include beaconing to a suspicious domain, ICMP tunneling, and policy violations, for example, P2P activity, third-party VPN use, potentially unwanted programs or browser extensions present. We recommend leaving this field set to 3, but if you only want to load high-fidelity / high-confidence details of infected hosts into Demisto, you can set this to 4.</p>
 <p>The Include policy violations field defaults to true and can be set to false if you wish to suppress alerting of items that indicate poor hygiene within the environment, such as potentially unwanted programs (PUPs), unwanted browser extensions, P2P applications (such as BitTorrent), third-party VPN utilities, and remote access software, for example TeamViewer and GoToMyPC.</p>
 <p> </p>
-<h2>Test the Integration&amp;lt</h2>
+<h2>Test the Integration</h2>
 <hr>
 <p>When you have telemetry flowing into the AlphaSOC Analytics Engine and the Demisto integration configured, you can synthesize malicious traffic and generate alerts for threats including C2 callbacks, DNS tunneling, DGA traffic, and port scanning using our open source Network Flight Simulator utility.</p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-AlphaSOC_Network_Behavior_Analytics_mceclip1.png"></p>

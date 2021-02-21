@@ -1,5 +1,8 @@
 {
     "associatedToAll": false,
+    "associatedTypes": [
+        "URL"
+    ],
     "caseInsensitive": true,
     "cliName": "cyrenindustries",
     "closeForm": false,

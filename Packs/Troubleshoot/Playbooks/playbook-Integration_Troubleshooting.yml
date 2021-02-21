@@ -1,5 +1,7 @@
 id: Integration Troubleshooting
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Integration Troubleshooting
 description: Troubleshoot a problem with either an integration's configuration or
   with running a command.
@@ -861,10 +863,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: bf562983-8479-43bd-8363-f6f863a0c917
+    taskid: 54c18a7d-f18c-4c10-8808-04e9fdd4e6db
     type: condition
     task:
-      id: bf562983-8479-43bd-8363-f6f863a0c917
+      id: 54c18a7d-f18c-4c10-8808-04e9fdd4e6db
       version: -1
       name: What is the troubleshooting type?
       description: What is the troubleshooting type (command or integration)?
@@ -880,7 +882,7 @@ tasks:
     conditions:
     - label: command
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -888,10 +890,10 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: I have a problem with running a command.
+              simple: command
     - label: configuration
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -899,7 +901,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: I'm unable to configure an instance.
+              simple: configure
     view: |-
       {
         "position": {

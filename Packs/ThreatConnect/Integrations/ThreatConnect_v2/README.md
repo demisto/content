@@ -8,7 +8,7 @@ Deprecated. Use the ThreatConnect v2 integration instead.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| baseUrl | baseUrl | True |
+| baseUrl | Base Url | True |
 | accessId | Access ID | True |
 | secretKey | Secret Key | True |
 | defaultOrg | Default Organization | False |

@@ -8,11 +8,11 @@ After the remediation, if there are no new alerts, the playbook stops the alert 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR device control violations
+* Calculate Severity - Generic v2
 * Cortex XDR Alerts Handling
+* Cortex XDR device control violations
 * Block Indicators - Generic v2
 * Entity Enrichment - Generic v3
-* Calculate Severity - Generic v2
 * Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
@@ -21,13 +21,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 * FindSimilarIncidents
-* DemistoLinkIncidents
 * Set
 
 ### Commands
-* closeInvestigation
 * xdr-get-incident-extra-data
+* linkIncidents
 * xdr-update-incident
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -36,15 +36,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | incident_id | Incident ID. | incident.xdrincidentid | Optional |
 | similarIncidentFields | A comma-separated list of similar incident field keys. | xdrdescription | Optional |
-| LinkSimilarIncidents | This input indicates whether the playbook will link similar incidents. To link similar incidents you must enable Demisto REST API integration. Specify Yes/No. | Yes | Optional |
+| LinkSimilarIncidents | This input indicates whether the playbook will link similar incidents. To link similar incidents, Specify Yes/No. | Yes | Optional |
 | Hunting | This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No. | Yes | Optional |
-| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list <br/>"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). <br/>If a list is not provided, will use the default list provided in the IsIPInRanges |  | Optional |
+| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list <br/>"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). <br/>If a list is not provided, will use the default list provided in the IsIPInRanges, |  | Optional |
 | CriticalUsernames | A comma-separated list of names of critical users in the organization.<br/>This will affect the calculated severity of the incident. | admin,administrator | Optional |
 | CriticalHostnames | A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident. |  | Optional |
 | CriticalADGroups | CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident. |  | Optional |
-| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
-| InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
-| TimeStamp | Timestamp in relative date format for query device control events from Cortex XDR | 10 days | Optional |
+| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \\w\{6\}\\d\{1\}. |  | Optional |
+| InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\). |  | Optional |
+| TimeStamp | Timestamp in relative date format for query device control events from Cortex XDR. | 10 days | Optional |
 
 ## Playbook Outputs
 ---

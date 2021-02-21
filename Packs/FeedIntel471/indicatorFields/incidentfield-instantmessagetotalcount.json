@@ -1,0 +1,30 @@
+{
+ "id": "indicator_intel471instantmessagetotalcount",
+ "version": -1,
+ "modified": "2021-01-12T09:43:00.799293+02:00",
+ "name": "Instant Message Total Count",
+ "ownerOnly": false,
+ "cliName": "intel471instantmessagetotalcount",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "STIX Threat Actor"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

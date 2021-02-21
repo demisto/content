@@ -818,12 +818,14 @@ SENSITIVE_PARAM = {
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
-         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass:'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC))
+         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass.'
+         ' basic auth: {}'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC, basic_auth))
 
-    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass', basic_auth):
         assert s not in ilog.messages[0]
 
 
@@ -1373,7 +1375,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1458,7 +1461,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1488,7 +1492,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1521,7 +1526,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1735,7 +1741,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_create_certificate(self):
@@ -2137,7 +2144,8 @@ class TestCommandResults:
                 }]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -2300,6 +2308,28 @@ class TestCommandResults:
 
         assert results.to_context().get('IgnoreAutoExtract') is True
 
+    def test_entry_as_note(self):
+        """
+        Given:
+        - mark_as_note set to True
+
+        When:
+        - creating a CommandResults object
+
+        Then:
+        - the Note field is set to True
+        """
+        from CommonServerPython import CommandResults
+
+        results = CommandResults(
+            outputs_prefix='Test',
+            outputs_key_field='value',
+            outputs=None,
+            mark_as_note=True
+        )
+
+        assert results.to_context().get('Note') is True
+
 
 class TestBaseClient:
     from CommonServerPython import BaseClient
@@ -2423,6 +2453,12 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
         with raises(DemistoException, match="SSL Certificate Verification Failed"):
             self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_ssl_error_insecure(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+            client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
         from CommonServerPython import DemistoException

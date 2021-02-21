@@ -147,6 +147,9 @@ class Client(BaseClient):
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                # in case the "Trust any certificate" is already checked
+                if not self._verify:
+                    raise
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)

@@ -8,6 +8,13 @@ args:
   required: false
   secret: false
 - default: false
+  defaultValue: '300'
+  description: Maximum number of incidents to query.
+  isArray: false
+  name: max_incidents
+  required: false
+  secret: false
+- default: false
   description: Rest API instance to use.
   isArray: false
   name: rest_api_instance
@@ -24,7 +31,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.1.15759
 runas: DBotWeakRole
 runonce: false
 tests:

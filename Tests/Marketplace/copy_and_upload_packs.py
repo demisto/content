@@ -358,15 +358,7 @@ def main():
             pack.cleanup()
             continue
 
-        # Create a local copy of the pack's index changelog
-        task_status = pack.create_local_changelog(build_index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
-
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              pack.latest_version,
                                                                               pc_successful_packs_dict)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name

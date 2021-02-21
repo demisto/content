@@ -964,7 +964,7 @@ def main() -> None:
     logging.getLogger("argus_cli").setLevel("WARNING")
 
     first_fetch_period = parse_first_fetch(
-        demisto.params().get("first_fetch_period", "-1 day")
+        demisto.params().get("first_fetch", "-1 day")
     )
 
     set_argus_settings(

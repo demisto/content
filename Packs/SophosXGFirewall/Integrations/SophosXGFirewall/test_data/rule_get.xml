@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <SecurityPolicy transactionid="">
+    <Name>forunitest2</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>Top</Position>
+    <PolicyType>Network</PolicyType>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <SourceZones>
+      <Zone>LAN</Zone>
+    </SourceZones>
+  </SecurityPolicy>
+</Response>

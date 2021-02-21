@@ -9,7 +9,7 @@ import requests
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs, PackStatus
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -151,7 +151,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         if failed_packs:
             steps_fields += [{
                 "title": "Failed Packs:",
-                "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                "value": "\n".join([f"{pack_name}: {PackStatus[pack_data.get(BucketUploadFlow.STATUS)].value}"
                                     for pack_name, pack_data in failed_packs.items()]),
                 "short": False
             }]

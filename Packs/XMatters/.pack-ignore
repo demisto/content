@@ -1,1 +1,8 @@
-xMatters-Test.yml
+[file:xMatters-Test.yml]
+ignore=auto-test
+
+[file:xMatters.yml]
+ignore=IN136
+
+[file:README.md]
+ignore=RM102

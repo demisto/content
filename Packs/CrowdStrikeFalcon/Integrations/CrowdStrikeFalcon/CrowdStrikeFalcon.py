@@ -222,8 +222,12 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     params=params,
                     data=data,
                     headers=headers,
+                    files=files,
+                    json=json,
                     safe=safe,
-                    get_token_flag=False
+                    get_token_flag=False,
+                    status_code=status_code,
+                    no_json=no_json,
                 )
             elif safe:
                 return None

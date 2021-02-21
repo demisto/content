@@ -1,0 +1,7 @@
+!acalvio-is-deception-host host="10.10.10.10"
+!acalvio-is-deception-user username="tom" domain="acalvio.com"
+!acalvio-is-deception-file endpoint="win10-ep" filename="t33.pdf"
+!acalvio-mute-deception-host host="win10-host"
+!acalvio-unmute-deception-host host="win10-host"
+!acalvio-mute-deception-on-endpoint endpoint="win10-ep"
+!acalvio-unmute-deception-on-endpoint endpoint="win10-ep"

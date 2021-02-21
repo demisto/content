@@ -4,8 +4,9 @@ from IncidentsCheck_Widget_IncidentsErrorsInfo import main
 
 
 @pytest.mark.parametrize('list_, expected', [
-    ([{'Contents': '''[{"incidentid": "7", "numberoferrors": 2, "owner": "", "playbookname": "AutoFocusPolling", "taskid": "3",
-       "taskname": "RunPollingCommand", "commandname": "RunPollingCommand",
+    ([{"Type": "note",
+       'Contents': '''[{"incidentid": "7", "numberoferrors": 2, "owner": "", "playbookname": "AutoFocusPolling",
+       "taskid": "3", "taskname": "RunPollingCommand", "commandname": "RunPollingCommand",
        "creationdate": "2020-09-29 16:48:30.261438285Z"},
       {"playbookname": "JOB - Integrations and Playbooks Health Check", "taskid": "132",
        "taskname": "Creates failed Integrations grid", "commandname": "SetGridField",
@@ -50,15 +51,15 @@ from IncidentsCheck_Widget_IncidentsErrorsInfo import main
                 'Task ID': '5',
                 'Task Name': 'Get account info from Active Directory'}],
       'total': 4}),
-    ([{}], {'data': [{'Command Name': 'N\\A',
-                      'Incident Creation Date': 'N\\A',
-                      'Incident ID': 'N\\A',
-                      'Incident Owner': 'N\\A',
-                      'Number of Errors': 'N\\A',
-                      'Playbook Name': 'N\\A',
-                      'Task ID': 'N\\A',
-                      'Task Name': 'N\\A'}],
-            'total': 1})
+    ([{'Type': 'error'}], {'data': [{'Command Name': 'N\\A',
+                                     'Incident Creation Date': 'N\\A',
+                                     'Incident ID': 'N\\A',
+                                     'Incident Owner': 'N\\A',
+                                     'Number of Errors': 'N\\A',
+                                     'Playbook Name': 'N\\A',
+                                     'Task ID': 'N\\A',
+                                     'Task Name': 'N\\A'}],
+                           'total': 1})
 ])
 def test_script(mocker, list_, expected):
     mocker.patch.object(demisto, 'executeCommand', return_value=list_)

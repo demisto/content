@@ -1,0 +1,20 @@
+{
+    "name": "Acalvio ShadowPlex",
+    "description": "Acalvio ShadowPlex Autonomous Deception Solution",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Acalvio Technologies",
+    "url": "https://www.acalvio.com",
+    "email": "support@acalvio.com",
+    "created": "2020-12-22T10:37:17Z",
+    "categories": [
+        "Deception"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "deception",
+        "apt"
+    ],
+    "githubUser": []
+}

@@ -8,17 +8,35 @@ from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
+from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts
 
-CHANGELOG_DATA = {
+CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
         "releaseNotes": "Sample description",
         "displayName": "1.0.0 - 62492",
         "released": "2020-12-21T12:10:55Z"
     }
+}
+CHANGELOG_DATA_MULTIPLE_VERSIONS = {
+    "1.0.0": {
+        "releaseNotes": "Sample description",
+        "displayName": "1.0.0 - 62492",
+        "released": "2020-12-21T12:10:55Z"
+    },
+    "1.1.0": {
+        "releaseNotes": "Sample description2",
+        "displayName": "1.1.0 - 64321",
+        "released": "2021-01-20T12:10:55Z"
+    }
+}
+TEST_METADATA = {
+    "description": "description",
+    "created": "2020-04-14T00:00:00Z",
+    "updated": "2020-11-24T08:08:35Z",
 }
 
 
@@ -77,6 +95,7 @@ class TestMetadataParsing:
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
+        assert parsed_metadata['searchRank'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self, dummy_pack):
@@ -101,6 +120,7 @@ class TestMetadataParsing:
         assert parsed_metadata['certification'] == Metadata.CERTIFIED
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == "dummy_server_version"
+        assert parsed_metadata['searchRank'] == 10
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
@@ -118,6 +138,126 @@ class TestMetadataParsing:
                                                           downloads_count=10)
 
         assert parsed_metadata['price'] == expected
+
+    def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a certified new pack (created less than 30 days ago)
+        Then: add "New" tag and raise the searchRank
+        """
+        dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+        assert parsed_metadata['searchRank'] == 20
+
+    def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a certified pack that was created more than 30 days ago
+        Then: remove "New" tag and make sure the searchRank is reduced
+        """
+        dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
+        if 'New' not in dummy_pack_metadata['tags']:
+            dummy_pack_metadata['tags'].append('New')
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert parsed_metadata['searchRank'] == 10
+
+    def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: All the integrations in it are deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                }
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == -40
+
+    def test_partdeprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: Only one of the two integrations is deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+                {
+                    "name": "packname2",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == 10
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
@@ -396,6 +536,7 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
+
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -412,8 +553,9 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -446,8 +588,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -480,8 +623,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is False
         assert not_updated_build is False
 
@@ -514,8 +658,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -624,7 +769,8 @@ This is visible
         build_number = "5555"
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False)
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -647,35 +793,83 @@ This is visible
                                                                initial_release=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
-        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    def test_create_changelog_entry_modified_pack(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - pack was modified but a new version wasn't created
+           Then:
+               - return changelog entry with release notes and with R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
+
+    def test_create_changelog_entry_pack_wasnt_modified(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - pack wasn't modified
+           Then:
+               - return an empty dict
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=False)
+
+        assert not version_changelog
 
     @staticmethod
-    def dummy_pack_changelog():
+    def dummy_pack_changelog(changelog_data):
         temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
-        with open(temp_changelog_file, 'w',) as changelog_file:
-            changelog_file.write(json.dumps(CHANGELOG_DATA))
+        with open(temp_changelog_file, 'w', ) as changelog_file:
+            changelog_file.write(json.dumps(changelog_data))
         return str(temp_changelog_file)
 
     @staticmethod
+    def dummy_pack_metadata(metadata_data):
+        temp_metadata_file = os.path.join(os.getcwd(), 'dummy_metadata.json')
+        with open(temp_metadata_file, 'w', ) as changelog_file:
+            changelog_file.write(json.dumps(metadata_data))
+        return str(temp_metadata_file)
+
+    @staticmethod
     def mock_os_path_join(path, *paths):
-        if not str(path).startswith('changelog'):
+        if not str(path).startswith('changelog') and not str(path).startswith('metadata'):
             if paths:
                 return path + '/' + '/'.join(paths)
             return path
 
         path_to_non_existing_changelog = 'dummy_path'
-
-        if path == 'changelog_exist':
-            return TestChangelogCreation.dummy_pack_changelog()
-        if path == 'changelog_not_exist':
+        if path == 'metadata':
+            return TestChangelogCreation.dummy_pack_metadata(TEST_METADATA)
+        if path == 'changelog_init_exist':
+            return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
+        if path == 'changelog_new_exist':
+            return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
+        if path == 'changelog_not_exist' or path == 'metadata_not_exist':
             return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")
-    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
-        ('changelog_exist', '2020-12-21T12:10:55Z'),
-        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    @pytest.mark.parametrize('is_metadata_exist, expected_date', [
+        ('metadata', '2020-04-14T00:00:00Z'),
+        ('metadata_not_exist', '2020-11-04T13:34:14Z')
     ])
-    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_metadata_exist, expected_date):
         """
            Given:
                - existing 1.0.0 changelog, pack created_date
@@ -690,10 +884,34 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
-        if is_changelog_exist == 'changelog_exist':
-            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        pack_created_date = dummy_pack._get_pack_creation_date(is_metadata_exist)
+        if is_metadata_exist == 'metadata':
+            os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
         assert pack_created_date == expected_date
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
+        ('changelog_new_exist', '2021-01-20T12:10:55Z'),
+        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    ])
+    def test_handle_pack_update_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+        """
+           Given:
+               - existing changelog with 2 versions
+               - not existing changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, False)
+        if is_changelog_exist == 'changelog_new_exist':
+            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        assert pack_update_date == expected_date
 
 
 class TestImagesUpload:
@@ -836,9 +1054,19 @@ class TestCopyAndUploadToStorage:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
 
         # case: latest version is not in build bucket
+        dummy_pack.latest_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = []
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {})
+        successful_packs_dict = {
+            dummy_pack.name: {
+                BucketUploadFlow.STATUS: "",
+                BucketUploadFlow.AGGREGATED: "False",
+                BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+            }
+        }
+
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict
+        )
         assert not task_status
         assert not skipped_pack
 
@@ -855,11 +1083,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
-        dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {})
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {})
         assert task_status
         assert skipped_pack
 
@@ -876,11 +1100,18 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_pack.latest_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {"TestPack": {"status": "status1",
-                                                                                                 "aggregated": True}})
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, {
+                "TestPack": {
+                    BucketUploadFlow.STATUS: "status1",
+                    BucketUploadFlow.AGGREGATED: "False",
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                }
+            }
+        )
         assert task_status
         assert not skipped_pack
 
@@ -1333,12 +1564,13 @@ class TestStoreInCircleCIArtifacts:
 
     """
     FAILED_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS}': PackStatus.FAILED_UPLOADING_PACK.name,
-        f'{BucketUploadFlow.AGGREGATED}': 'False'
+        BucketUploadFlow.STATUS: PackStatus.FAILED_UPLOADING_PACK.name,
+        BucketUploadFlow.AGGREGATED: 'False'
     }
     SUCCESSFUL_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS}': PackStatus.SUCCESS.name,
-        f'{BucketUploadFlow.AGGREGATED}': '[1.0.0, 1.0.1] => 1.0.1'
+        BucketUploadFlow.STATUS: PackStatus.SUCCESS.name,
+        BucketUploadFlow.AGGREGATED: '[1.0.0, 1.0.1] => 1.0.1',
+        BucketUploadFlow.LATEST_VERSION: '1.0.1'
     }
 
     @staticmethod
@@ -1348,6 +1580,7 @@ class TestStoreInCircleCIArtifacts:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
             pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
+            pack.latest_version = '1.0.1'
         return successful_packs
 
     @staticmethod

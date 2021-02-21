@@ -7,6 +7,7 @@ import sys
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 
 def main():
@@ -48,11 +49,13 @@ def main():
             logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
 
         try:
-            logging.debug(f'logging out of docker on server for server {env["InstanceDNS"]}')
+            container_engine_type = 'podman' if is_redhat_instance(env["InstanceDNS"]) else 'docker'
+            logging.debug(f'logging out of {container_engine_type} on server for server {env["InstanceDNS"]}')
             subprocess.check_output(
-                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} sudo -u demisto docker logout'.split())
+                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} '
+                f'cd /home/demisto && sudo -u demisto {container_engine_type} logout'.split())
         except Exception:
-            logging.exception(f'Could not log out of docker on {env["InstanceDNS"]}')
+            logging.exception(f'Could not log out of {container_engine_type} on {env["InstanceDNS"]}')
 
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')

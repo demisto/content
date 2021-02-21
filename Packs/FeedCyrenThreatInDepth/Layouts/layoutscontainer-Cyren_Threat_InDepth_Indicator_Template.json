@@ -954,5 +954,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "This template contains layouts and widgets to be used in Indicator Quick Views and Summaries. Besides general information Cyren Threat InDepth provides detailed information and relationship information on each indicator."
 }

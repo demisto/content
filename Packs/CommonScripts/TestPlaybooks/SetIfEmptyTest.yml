@@ -1,0 +1,224 @@
+id: SetIfEmpty - non-ascii chars - Test
+version: -1
+name: SetIfEmpty - non-ascii chars - Test
+description: Test playbook for SetIfEmpty. checks for non-ascii chars in value (cannot be tested with unit-test).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 802a500a-1580-4563-81ea-605369e66228
+    type: start
+    task:
+      id: 802a500a-1580-4563-81ea-605369e66228
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2340b207-b4e4-4fd7-8884-96c5c2feec5f
+    type: regular
+    task:
+      id: 2340b207-b4e4-4fd7-8884-96c5c2feec5f
+      version: -1
+      name: Setup context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test
+      stringify: {}
+      value:
+        simple: abc-Ä‡e-paymeÅnt in $
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b9dd6e13-ce26-4544-86a8-dcf87ac81dfd
+    type: regular
+    task:
+      id: b9dd6e13-ce26-4544-86a8-dcf87ac81dfd
+      version: -1
+      name: Test SetIfEmpty - using non-ascii chars
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Test2
+      stringify: {}
+      value:
+        complex:
+          root: Test
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: hello
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1b66283b-a9d5-4cc3-8d08-bdf01f4137d1
+    type: condition
+    task:
+      id: 1b66283b-a9d5-4cc3-8d08-bdf01f4137d1
+      version: -1
+      name: Compare results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Test
+            iscontext: true
+          right:
+            value:
+              simple: Test2
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c330c50a-ea84-4bd3-855d-06cb56178bec
+    type: title
+    task:
+      id: c330c50a-ea84-4bd3-855d-06cb56178bec
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: add34e74-ea79-46e0-8484-84f91f5ef0c5
+    type: regular
+    task:
+      id: add34e74-ea79-46e0-8484-84f91f5ef0c5
+      version: -1
+      name: Test failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          Did not get the expected results.
+          Test: ${Test}
+          Test2: ${Test2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 620,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

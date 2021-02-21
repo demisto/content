@@ -168,6 +168,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
             logging.warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
             return True
 
         # Copy new files and add metadata for latest version
@@ -874,18 +875,26 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
+                                                              previous_commit_hash)
+        if not task_status:
+            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
+            continue
+
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
-                                           packs_statistic_df=packs_statistic_df)
+                                           packs_statistic_df=packs_statistic_df,
+                                           pack_was_modified=pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
@@ -914,13 +923,6 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              previous_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            pack.cleanup()
-            continue
-
         (task_status, skipped_pack_uploading, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                    storage_bucket, override_all_packs
@@ -937,12 +939,6 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path and in index, skipped further steps
-        if skipped_pack_uploading and exists_in_index:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -953,6 +949,12 @@ def main():
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+        if skipped_pack_uploading and exists_in_index:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
 

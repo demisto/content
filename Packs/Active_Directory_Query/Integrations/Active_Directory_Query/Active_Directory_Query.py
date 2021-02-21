@@ -1163,7 +1163,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if not user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
-                                        skip=True, skip_reason="User doesn't exists")
+                                        skip=True, skip_reason="User doesn't exist")
             return iam_user_profile
 
         dn = user_dn(sam_account_name, default_base_dn)
@@ -1535,6 +1535,8 @@ def main():
         if last_log_detail_level:
             set_library_log_detail_level(last_log_detail_level)
 
+
+from IAMApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
