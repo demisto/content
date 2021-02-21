@@ -4,8 +4,7 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, \
-    is_amount_of_private_packs_changed, was_private_pack_updated
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, was_private_pack_updated
 
 
 # disable-secrets-detection-start
@@ -559,34 +558,6 @@ class TestUpdatedPrivatePacks:
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
                updated_private_packs[0] != "second_non_updated_pack"
-
-    def test_is_amount_of_private_packs_changed(self):
-        """
-         Scenario: as part of upload packs flow, we want to check if the number of private packs was changed by
-         comparing "packs" in the public index and in the private index files.
-
-         Given
-         - valid public index json
-         - valid private index json
-
-         When
-         - first check - the number of private packs did not changed.
-         - second check - the number of private packs did changed - a new private pack was added.
-
-         Then
-         - Ensure that the function recognises successfully the new private pack.
-         """
-        index_folder_path = self.get_index_folder_path()
-        public_index_file_path = os.path.join(index_folder_path, f"index.json")
-        with open(public_index_file_path, 'r') as public_index_json_file:
-            public_index_json = json.load(public_index_json_file)
-
-        private_index_json = copy.deepcopy(public_index_json)
-        assert not is_amount_of_private_packs_changed(private_index_json, public_index_json)
-
-        # add new private pack
-        private_index_json.get("packs").append({"id": "new_private_pack"})
-        assert is_amount_of_private_packs_changed(private_index_json, public_index_json)
 
     def test_was_private_pack_updated(self):
         """
