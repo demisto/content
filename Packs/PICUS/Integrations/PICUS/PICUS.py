@@ -42,10 +42,10 @@ def test_module() -> str:
         endpoint = "/authenticator/v1/access-tokens/generate"
         url = SERVER + endpoint
         req = requests.post(url, headers=headers, verify=VERIFY_SSL)
-        parsed = json.loads(req.content)
-        data = parsed['data']
-        # accessToken = data['access_token']
-
+        status = int(req.status_code)
+        if status != 200:
+            return status
+        
     except Exception as e:
         if ('Forbidden' in str(e)):
             return 'Authorization Error: make sure API Key is correctly set'
