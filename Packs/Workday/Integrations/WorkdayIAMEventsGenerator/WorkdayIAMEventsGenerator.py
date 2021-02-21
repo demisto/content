@@ -2,7 +2,6 @@
 from flask import Flask, jsonify
 from gevent.pywsgi import WSGIServer
 from CommonServerPython import *
-import datetime
 
 FIRST_RUN_REPORT = {
     "Report_Entry": [
@@ -527,7 +526,7 @@ def get_full_report():
 
 def test_module():
     if int(demisto.params().get('longRunningPort', '')) and demisto.params().get("longRunning"):
-        user_report =  get_full_report()
+        user_report = get_full_report()
         if user_report:
             demisto.results('ok')
         else:
@@ -584,7 +583,7 @@ def get_terminate_report():
     user_email = demisto.args().get('user_email')
     integration_context = get_integration_context()
     existing_email_addressees = []
-    now = datetime.datetime.now()
+    now = datetime.now()
     current_date = now.strftime("%m/%d/%Y")
     for report in integration_context['Report_Entry']:
         email_address = report.get('Email_Address')
