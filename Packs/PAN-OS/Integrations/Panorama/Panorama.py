@@ -6713,18 +6713,46 @@ def prettify_configured_user_id_agents(user_id_agents: List, version) -> List:
                 'Host': agent['host-port']['host'],
                 'Port': agent['host-port']['port'],
                 'NtlmAuth': agent['host-port']['ntlm-auth'],
+                'LdapProxy': agent['host-port']['ldap-proxy'],
                 'EnableHipCollection': agent['enable-hip-collection']
-
+            })
+    else:
+        for agent in user_id_agents:
+            pretty_user_id_agents.append({
+                'Name': agent['@name'],
+                'Host': agent['host-port']['host'],
+                'Port': agent['host-port']['port'],
+                'LdapProxy': agent['host-port']['ldap-proxy'],
+                'IpUserMapping': agent['ip-user-mappings']
             })
 
-    return pretty_interface_config
+    return pretty_user_id_agents
 
 
 def list_configured_user_id_agents_command(args):
     version = get_pan_os_major_version()
-    raw_response = show_user_id_interface_config_request(args, version)
+    raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
+        formatted_results = prettify_configured_user_id_agents(raw_response, version)
+        if version < 10:
+            headers = ['Name', 'Host', 'Port', 'LdapProxy', 'NtlmAuth', 'EnableHipCollection']
 
+        else:
+            headers = ['Name', 'Host', 'Port', 'LdapProxy', 'IpUserMapping']
+
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('User ID Agents:', formatted_results,
+                                             headers, removeNull=True),
+            'EntryContext': {
+                "Panorama.UserIDAgents(val.Name == obj.Name)": formatted_results
+            }
+        })
+    else:
+        return_results("No results found")
 
 
 def initialize_instance(args: Dict[str, str], params: Dict[str, str]):

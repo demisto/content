@@ -2588,7 +2588,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
+    description: Returns a list of all PCAP files by PCAP type. Not available for
+      threat PCAPs.
     execution: false
     name: panorama-list-pcaps
   - arguments:
@@ -4446,6 +4447,46 @@ script:
       type: String
     - contextPath: Panorama.UserInterfaces.Network.log-setting
       description: The interface network log settings.
+      type: String
+  - arguments:
+    - default: false
+      description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration paramater.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: The template stack to use when running the command.
+      isArray: false
+      name: template_stack
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves list of user-id agents configured in the system.
+    execution: false
+    name: panorama-list-configured-user-id-agents
+    outputs:
+    - contextPath: Panorama.UserIDAgents.Name
+      description: The user ID Agent name.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Host
+      description: The user ID Agent host.
+      type: Unknown
+    - contextPath: Panorama.UserIDAgents.Port
+      description: The user ID Agent port.
+      type: Number
+    - contextPath: Panorama.UserIDAgents.LdapProxy
+      description: Whther LDAP proxy is used in the user ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.NtlmAuth
+      description: 'Whether NLTM authentication is used in the user ID agent. '
+      type: String
+    - contextPath: Panorama.UserIDAgents.EnableHipCollection
+      description: Whether HIP collection is enabled in the user ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.IpUserMapping
+      description: Whether IP user mapping is enabled in the user ID agent.
       type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
