@@ -42,9 +42,9 @@ def test_module() -> str:
         endpoint = "/authenticator/v1/access-tokens/generate"
         url = SERVER + endpoint
         req = requests.post(url, headers=headers, verify=VERIFY_SSL)
-        status = int(req.status_code)
+        status = req.status_code
         if status != 200:
-            return status
+            return str(status)
         
     except Exception as e:
         if ('Forbidden' in str(e)):
