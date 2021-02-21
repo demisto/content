@@ -2787,7 +2787,7 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
     )
 
 
-def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_script_command(client: Client, args: Dict) -> CommandResults:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600))
@@ -2797,44 +2797,44 @@ def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
         raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Script', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def run_snippet_code_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResults:
     snippet_code = args.get('snippet_code')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     response = client.run_snippet_code_script(snippet_code, endpoint_ids)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Snippet Code Script', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Snippet Code Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def get_script_execution_status_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def get_script_execution_status_command(client: Client, args: Dict) -> CommandResults:
     action_id = args.get('action_id', '')
     response = client.get_script_execution_status(action_id)
     reply = response.get('reply')
     reply['action_id'] = int(action_id)
-    return (
-        tableToMarkdown(f'Script Execution Status - {action_id}', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def get_script_execution_results_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def get_script_execution_results_command(client: Client, args: Dict) -> CommandResults:
     action_id = args.get('action_id', '')
     response = client.get_script_execution_results(action_id)
     results = response.get('reply', {}).get('results')
@@ -2842,12 +2842,12 @@ def get_script_execution_results_command(client: Client, args: Dict) -> Tuple[st
         'action_id': int(action_id),
         'results': results,
     }
-    return (
-        tableToMarkdown(f'Script Execution Results - {action_id}', results, removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult(val.action_id == obj.action_id)': context
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
+        outputs_key_field='action_id',
+        outputs=context,
+        raw_response=response,
     )
 
 
@@ -2863,63 +2863,63 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
     return fileResult(filename, file_response.content)
 
 
-def run_script_execute_commands_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600))
     parameters = {'commands_list': argToList(args.get('commands'))}
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Script Execute Commands', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Execute Commands', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def run_script_delete_file_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600))
     parameters = {'file_path': args.get('file_path')}
     response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Script Delete File', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Delete File', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def run_script_file_exists_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600))
     parameters = {'path': args.get('file_path')}
     response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Script File Exists', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script File Exists', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
-def run_script_kill_process_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
+def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600))
     parameters = {'process_name': args.get('process_name')}
     response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
-    return (
-        tableToMarkdown('Run Script Kill Process', reply),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun(val.action_id == obj.action_id)': reply
-        },
-        response
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Kill Process', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
     )
 
 
@@ -3084,31 +3084,31 @@ def main():
             return_results(get_modified_remote_data_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-run-script':
-            return_outputs(*run_script_command(client, args))
+            return_results(run_script_command(client, args))
 
         elif demisto.command() == 'xdr-run-snippet-code-script':
-            return_outputs(*run_snippet_code_script_command(client, args))
+            return_results(run_snippet_code_script_command(client, args))
 
         elif demisto.command() == 'xdr-get-script-execution-status':
-            return_outputs(*get_script_execution_status_command(client, args))
+            return_results(get_script_execution_status_command(client, args))
 
         elif demisto.command() == 'xdr-get-script-execution-results':
-            return_outputs(*get_script_execution_results_command(client, args))
+            return_results(get_script_execution_results_command(client, args))
 
         elif demisto.command() == 'xdr-get-script-execution-result-files':
             return_results(get_script_execution_result_files_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-execute-commands':
-            return_outputs(*run_script_execute_commands_command(client, args))
+            return_results(run_script_execute_commands_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-delete-file':
-            return_outputs(*run_script_delete_file_command(client, args))
+            return_results(run_script_delete_file_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-file-exists':
-            return_outputs(*run_script_file_exists_command(client, args))
+            return_results(run_script_file_exists_command(client, args))
 
         elif demisto.command() == 'xdr-run-script-kill-process':
-            return_outputs(*run_script_kill_process_command(client, args))
+            return_results(run_script_kill_process_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

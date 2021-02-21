@@ -1821,7 +1821,7 @@ def test_run_script_command(requests_mock):
 
     response = run_script_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': script_uid,
@@ -1866,11 +1866,10 @@ def test_run_snippet_code_script_command(requests_mock):
 
     response = run_snippet_code_script_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'snippet_code': snippet_code,
-            # 'timeout': int(timeout),
             'filters': [{
                 'field': 'endpoint_id_list',
                 'operator': 'in',
@@ -1907,7 +1906,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -1941,7 +1940,11 @@ def test_get_script_execution_results_command(requests_mock):
 
     response = get_script_execution_results_command(client, args)
 
-    assert response[2] == api_response
+    expected_output = {
+        'action_id': int(action_id),
+        'results': api_response.get('reply').get('results')
+    }
+    assert response.outputs == expected_output
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2034,7 +2037,7 @@ def test_run_script_execute_commands_command(requests_mock):
 
     response = run_script_execute_commands_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf',
@@ -2079,7 +2082,7 @@ def test_run_script_delete_file_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2124,7 +2127,7 @@ def test_run_script_file_exists_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2169,7 +2172,7 @@ def test_run_script_kill_process_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[2] == api_response
+    assert response.outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
