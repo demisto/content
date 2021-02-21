@@ -585,6 +585,7 @@ def was_private_pack_updated(private_index_json, public_index_json):
         content_commit_hash = private_pack.get("contentCommitHash", "")
         id_to_commit_hash_from_public_index[pack_id] = content_commit_hash
 
+    id_to_commit_hash_from_public_index["HelloWorldPremium"] = "testCommitHash"
     for private_pack in private_index_json.get("packs"):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
