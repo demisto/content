@@ -45,7 +45,6 @@ def test_module() -> str:
         status = req.status_code
         if status != 200:
             return str(status)
-        
     except Exception as e:
         if ('Forbidden' in str(e)):
             return 'Authorization Error: make sure API Key is correctly set'
