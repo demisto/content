@@ -14,6 +14,7 @@ import urllib3.util
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import run_command
 # Disable insecure warnings
+from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 urllib3.disable_warnings()
@@ -52,10 +53,7 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
     cloud_init_log_path = '/var/log/cloud-init-output.log'
     try:
         # downloading cloud-init logs to artifacts
-        check_output(['scp',
-                      '-o', ' StrictHostKeyChecking=no',
-                      f'ec2-user@{ip}:{cloud_init_log_path}',
-                      f'{ARTIFACTS_PATH}/{ip}-cloud_init.log'])
+        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} {ARTIFACTS_PATH}/{ip}-cloud_init.log'.split())
     except Exception:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
 
@@ -71,9 +69,8 @@ def docker_login(ip: str) -> None:
     container_engine_type = 'podman' if is_redhat_instance(ip) else 'docker'
     try:
         check_output(
-            f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
-            f'cd /home/demisto && '
-            f'sudo -u demisto {container_engine_type} login --username {docker_username} --password-stdin'.split(),
+            f'ssh {SSH_USER}@{ip} cd /home/demisto && sudo -u demisto {container_engine_type} '
+            f'login --username {docker_username} --password-stdin'.split(),
             input=docker_password.encode())
     except Exception:
         logging.exception(f'Could not login to {container_engine_type} on server {ip}')
@@ -86,11 +83,11 @@ def main():
     ready_ami_list = []
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
-        instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
+        instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 
     loop_start_time = time.time()
     last_update_time = loop_start_time
-    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
+    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
                             ami_instance_name == instance_name_to_wait_on]
 
     logging.info('Starting wait loop')
@@ -99,13 +96,12 @@ def main():
             current_time = time.time()
             exit_if_timed_out(loop_start_time, current_time)
 
-            for ami_instance_name, ami_instance_ip in instance_ips:
+            for ami_instance_name, ami_instance_ip, tunnel_port in instance_ips:
                 if ami_instance_ip in instance_ips_to_poll:
-                    host = "https://{}".format(ami_instance_ip)
-                    path = '/health'
+                    url = f"https://localhost:{tunnel_port}/health"
                     method = 'GET'
                     try:
-                        res = requests.request(method=method, url=(host + path), verify=False)
+                        res = requests.request(method=method, url=url, verify=False)
                     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
                         logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
                         if SETUP_TIMEOUT != 60 * 10:
@@ -132,7 +128,7 @@ def main():
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
     finally:
-        instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
+        instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
                                               ami_instance_name == instance_name_to_wait_on]
         for ip in instance_ips_to_download_log_files:
             download_cloud_init_logs_from_server(ip)

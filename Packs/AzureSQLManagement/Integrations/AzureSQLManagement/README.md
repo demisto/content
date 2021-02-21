@@ -488,7 +488,7 @@ Creates or updates the database's auditing policy.
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
 | state | Set the state of the policy. Possible values: "Enable" or "Disable". When *state* is enabled, *storage_endpoint* or *is_azure_monitor_target_enabled* are required. | Required | 
-| audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management. | Optional | 
+| audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15. | Optional | 
 | is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false". | Optional | 
 | is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false". | Optional | 
 | queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 

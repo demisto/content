@@ -52,12 +52,12 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Maximum is 30 days.
   name: first_fetch
   defaultvalue: 7 days
   type: 0
   required: false
-- display: Query string for fetch incidents
+- display: Query string for fetch incidents. For example - "updated>='2020-06-06T15:39:55.616Z' and updated<'2020-08-07T00:00:00.000Z' "
   defaultvalue: ""
   name: fetch_incidents_query
   type: 0
@@ -313,7 +313,7 @@ script:
         } else if (unit.indexOf('month') >= 0) {
             d.setTime(d.getTime() - (number * 30 * 24 * 60 * 60 * 1000));
         } else if (unit.indexOf('year') >= 0) {
-            d.setTime(d.getTime() - (number * 365 * 30 * 24 * 60 * 60 * 1000));
+            d.setTime(d.getTime() - (number * 365 * 24 * 60 * 60 * 1000));
         } else {
             throw 'The unit of date_range is invalid. Must be minutes, hours, days, months or years.';
         }
@@ -321,18 +321,26 @@ script:
     };
 
 
-    var getIncidentsFromIncidentsResult = function(res) {
-        return res.map(function(r){
+    var getIncidentsFromIncidentsResult = function(res, lastRun) {
+        var max_timestamp = lastRun;
+        incidents = res.map(function(r){
+            max_timestamp = Date.parse(r.time) > Date.parse(max_timestamp) ? r.time : max_timestamp;
             return {
                 name: r.summary,
+                occurred: r.time,
                 rawJSON: JSON.stringify(r)
             };
         });
+        // Adding a millisecond to the timestamp to avoid conflicts when fetching.
+        max_timestamp = new Date(Date.parse(max_timestamp) + 1).toISOString()
+        return [max_timestamp, incidents]
     };
 
 
-    var getIncidentsFromEventsResult = function(res) {
-        return res.map(function(r){
+    var getIncidentsFromEventsResult = function(res, lastRun) {
+        var max_timestamp = lastRun;
+        incidents = res.map(function(r){
+            max_timestamp = Date.parse(r.time) > Date.parse(max_timestamp) ? r.time : max_timestamp;
             var name;
             if ('message' in r){
                 name = r.message;
@@ -343,9 +351,14 @@ script:
             }
             return {
                 name: name,
+                occurred: r.time,
                 rawJSON: JSON.stringify(r)
             };
         });
+        // Adding a millisecond to the timestamp to avoid conflicts when fetching.
+        max_timestamp = new Date(Date.parse(max_timestamp) + 1).toISOString()
+        return [max_timestamp, incidents]
+
     };
 
 
@@ -359,9 +372,8 @@ script:
         var lastRun = getLastRun();
         var now = new Date();
         var endTime = now.toISOString();
-        var startTime;
+        var startTime, currentFetch;
         var next = null;
-        var n;
 
         if (lastRun && lastRun.time && lastRun.time !== '') {
             startTime = lastRun.time;
@@ -369,13 +381,13 @@ script:
                 next = lastRun.next;
 
                 if (lastRun.end_time && lastRun.end_time !== '') {
-                        endTime = lastRun.end_time;
+                    endTime = lastRun.end_time;
                 }
             }
         } else if (first_fetch_time) {
             startTime = parseOffsetDate(first_fetch_time).toISOString();
         } else {
-            n = now;
+            var n = now;
             n.setTime(now.getTime() - 1 * DAY_IN_MILLIS);
             startTime = n.toISOString();
         }
@@ -384,7 +396,7 @@ script:
         addTime(p, 'start_time', startTime);
         addTime(p, 'end_time', endTime);
         add(p, 'next', next);
-        
+
         if (limit) {
             p.limit = parseInt(limit);
         }
@@ -392,17 +404,21 @@ script:
         var res = doReq('POST', type, p);
         if (res.obj.result && res.obj.result.length !== 0) {
             if (type == 'incidents') {
-                incidents = incidents.concat(getIncidentsFromIncidentsResult(res.obj.result));
+                var result = getIncidentsFromIncidentsResult(res.obj.result, startTime);
+                currentFetch = result[0];
+                incidents = incidents.concat(result[1]);
             } else {
-                incidents = incidents.concat(getIncidentsFromEventsResult(res.obj.result));
+                var result = getIncidentsFromEventsResult(res.obj.result, startTime);
+                currentFetch = result[0];
+                incidents = incidents.concat(result[1]);
             }
         }
         next = 'next' in res.obj ? res.obj.next : null;
-        
+
         if (next) {
             setLastRun({ time: startTime, next: next, end_time: endTime });
         } else {
-            setLastRun({ time: endTime });
+            setLastRun({ time: currentFetch ? currentFetch : startTime});
         }
         return JSON.stringify(incidents);
     };

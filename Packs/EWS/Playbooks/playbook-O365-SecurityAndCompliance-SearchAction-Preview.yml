@@ -188,8 +188,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
-          == "InProgress" || val.Status == "Starting" || val.Status == "Purging")
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status && val.Status
+          == "InProgress" || val.Status == "Starting" || val.Status == "Purging").Name
     separatecontext: true
     skipunavailable: false
     task:
