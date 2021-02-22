@@ -361,7 +361,7 @@ def main():
 
     headers = {"Content-Type": "application/json", "APIKEY": args.get("api_key")}
 
-    LOG(f"Command being called is {demisto.command()}")
+    demisto.infof"Command being called is {demisto.command()}")
     client = Client(
         base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
     )
