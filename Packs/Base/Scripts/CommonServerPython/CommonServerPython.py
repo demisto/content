@@ -246,7 +246,7 @@ class DBotScoreType(object):
             DBotScoreType.DOMAINGLOB,
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
-            DBotScoreType.EMAIL
+            DBotScoreType.EMAIL,
         )
 
 
