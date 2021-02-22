@@ -4,7 +4,7 @@ import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, MarkingDefinition, Label, ExternalReference, Identity
+from pycti import OpenCTIApiClient, Identity
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -48,7 +48,7 @@ FILE_TYPES = {
 }
 
 
-def label_create(client, label_name: str):
+def label_create(client, label_name: Optional[str]):
     """ Create label at opencti
 
         Args:
@@ -66,7 +66,7 @@ def label_create(client, label_name: str):
     return label
 
 
-def marking_create(client, definition: str):
+def marking_create(client, definition: Optional[str]):
     """ Create marking at opencti
 
         Args:
