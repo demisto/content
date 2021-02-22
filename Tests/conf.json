@@ -3235,6 +3235,7 @@
         }
     ],
     "skipped_tests": {
+        "EwsExtension": "Connection problem under powershell and gcp",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
