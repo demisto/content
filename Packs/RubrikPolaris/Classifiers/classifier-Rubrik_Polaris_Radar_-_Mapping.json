@@ -39,10 +39,6 @@
                     "complex": null,
                     "simple": "id"
                 },
-                "Rubrik Polaris Event Type": {
-                    "complex": null,
-                    "simple": "lastActivityType"
-                },
                 "Rubrik Polaris Last Activity Status": {
                     "complex": {
                         "accessor": "",
@@ -111,10 +107,6 @@
                         ]
                     },
                     "simple": ""
-                },
-                "Polaris Event ID": {
-                    "complex": null,
-                    "simple": "fid"
                 },
                 "severity": {
                     "complex": {

@@ -194,33 +194,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "objectname",
-                                "height": 22,
-                                "id": "4df1a2b0-454a-11eb-ba5e-05d9566e6d05",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "objectid",
-                                "height": 22,
-                                "id": "4f68d960-454a-11eb-ba5e-05d9566e6d05",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "cdmclustername",
-                                "height": 22,
-                                "id": "46870960-49e7-11eb-898a-7d76dcc8f075",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "rubrikpolarisobjectname",
                                 "height": 22,
                                 "id": "fca80bf0-6fd9-11eb-befe-85443460d735",
