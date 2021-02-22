@@ -156,7 +156,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_closurereason",
+                        "fieldId": "indicator_cyrencountryname",
                         "isVisible": true
                     },
                     {
@@ -168,11 +168,15 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_confidence",
+                        "fieldId": "indicator_cyrenmalwarefamily",
                         "isVisible": true
                     },
                     {
                         "fieldId": "incident_createdby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_createddate",
                         "isVisible": true
                     },
                     {

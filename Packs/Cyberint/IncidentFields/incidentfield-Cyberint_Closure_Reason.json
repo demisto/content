@@ -1,5 +1,5 @@
 {
-    "id": "incident_closurereason",
+    "id": "indicator_cyrencountryname",
     "version": -1,
     "modified": "2021-02-17T14:53:46.71085976+02:00",
     "name": "Closure Reason",
@@ -25,6 +25,5 @@
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72,
-    "fromVersion": "5.0.0"
+    "threshold": 72
 }
