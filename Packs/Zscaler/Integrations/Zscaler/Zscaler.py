@@ -81,7 +81,8 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                url,
                                verify=USE_SSL,
                                data=data,
-                               headers=headers
+                               headers=headers,
+                               timeout=15
                                )
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
