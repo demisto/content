@@ -17,7 +17,7 @@ configuration:
   name: user_service_account_json
   required: true
   type: 4
-- additionalinfo: G Suite domain admin's Email ID which acts on behalf of the end-user.
+- additionalinfo: G Suite domain administrator's email ID that acts on behalf of the end-user.
   display: Admin Email
   hidden: false
   name: admin_email
@@ -71,8 +71,8 @@ configuration:
   type: 16
 - additionalinfo: |-
     An advanced filter to fetch the list of alerts.
-    Example: source:"Google" AND type="Suspicious login".
-    Note: Takes higher precedence against filter parameters. To fetch alerts using createTime, use the first fetch time interval parameter.
+    For example: source:"Google" AND type="Suspicious login".
+    Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.
   display: Filter
   hidden: false
   name: filter
@@ -94,7 +94,7 @@ configuration:
   type: 8
 description: G Suite Security Alert Center allows users to fetch different alert types
   such as Suspicious login, Device compromised, Leaked password, and more. Users can
-  delete or recover a single alert or batch of alerts and retrieve the alert's metadata.
+  delete or recover a single alert or a batch of alerts and retrieve the alert's metadata.
   This integration allows users to provide feedback for alerts and fetch existing
   feedback for a particular alert.
 display: G Suite Security Alert Center
@@ -117,14 +117,14 @@ script:
     - default: false
       description: |-
         A query string for filtering alert results.
-        Example: createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login"
+        For example: createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login".
       isArray: false
       name: filter
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The sort order of the list results.
+      description: 'The sort order of the list results. Possible values: "createTime asc", "createTime desc", "updateTime asc", and "updateTime desc".'
       isArray: false
       name: order_by
       predefined:
@@ -136,8 +136,8 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Lists the alerts. Use the filter to filter it by various alert types.
-      Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
+        Lists the alerts. Use the filter to filter the list by various alert types.
+        Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
     execution: false
     name: gsac-alert-list
     outputs:
@@ -178,14 +178,14 @@ script:
       description: The time the alert was last updated.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.etag
-      description: Etag is used for optimistic concurrency control as a way to help
+      description: ETag is used for optimistic concurrency control as a way to help
         prevent simultaneous updates of an alert from overwriting each other.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.customerId
       description: The unique identifier of the Google account of the customer.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.alertId
-      description: The alert identifier.
+      description: The unique identifier of the alert.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.status
       description: The current status of the alert.
@@ -200,20 +200,20 @@ script:
       description: The severity value of the alert.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.etag
-      description: Etag is used for optimistic concurrency control as a way to help
+      description: ETag is used for optimistic concurrency control as a way to help
         prevent simultaneous updates of an alert metadata from overwriting each other.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.@type
-      description: Alert data of alert types.
+      description: Alert data of the alert types.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.takeoutRequestId
       description: The takeout request ID.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.email
       description: "The email of the associated event. \nDomain wide takeout initiated\
-        \ implies to the email of the admin who initiated the takeout.\nGoogle identity\
-        \ implies to the email of the user that the event belongs to.\nMobile device\
-        \ management/State Sponsored Attack implies to the email of the user the alert\
+        \ applies to the email of the admin who initiated the takeout.\nGoogle identity\
+        \ applies to the email of the user who the event belongs to.\nMobile device\
+        \ management/State Sponsored Attack applies to the email of the user the alert\
         \ was created for."
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.domainId.customerPrimaryDomain
@@ -229,7 +229,7 @@ script:
       description: The sender email address.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.maliciousEntity.displayName
-      description: The header from display name.
+      description: The header from the display name.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.messageId
       description: The message ID.
@@ -242,13 +242,13 @@ script:
         emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.md5HashSubject
-      description: The MD5 Hash of email's subject (only available for reported emails).
+      description: The MD5 hash of the email's subject (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.subjectText
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The list of SHA256 hashes of email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of the email's attachment and all MIME parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -267,7 +267,7 @@ script:
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.loginDetails.loginTime
       description: The successful login time that is associated with the warning event.
-        This isn't present for blocked login attempts.
+        This is not present for blocked login attempts.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.loginDetails.ipAddress
       description: The human-readable IP address (for example, 11.22.33.44) that is
@@ -280,11 +280,11 @@ script:
       description: Description of the associated alert type.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.affectedUserEmails
-      description: The list of emails which correspond to the users directly affected
+      description: The list of emails that correspond to the users directly affected
         by the incident.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.attachmentData.csv.headers
-      description: The list of headers for data columns in a CSV file.
+      description: The list of headers for the data columns in a CSV file.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.attachmentData.csv.dataRows.entries
       description: The data entries in a CSV file row, as a string array rather than
@@ -306,14 +306,14 @@ script:
       description: The device resource ID.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.iosVendorId
-      description: Required for iOS, empty for others.
+      description: iOS vendor ID. Required for iOS, empty for others.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.deviceCompromisedState
       description: The device compromised state. Possible values are "Compromised"
         or "Not Compromised".
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.deviceProperty
-      description: The device property which was changed.
+      description: The device property that was changed.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.oldValue
       description: The old value of the device property before the change.
@@ -325,7 +325,7 @@ script:
       description: The application that requires the SQL setup.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.requestInfo.appDeveloperEmail
-      description: List of app developers who triggered notifications for above application.
+      description: List of app developers who triggered notifications for the application.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.requestInfo.numberOfRequests
       description: Number of requests sent for the application to set up default SQL
@@ -380,13 +380,13 @@ script:
       description: Rule window size. Possible values are 1 hour or 24 hours.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.threshold
-      description: Alert threshold is for example "COUNT > 5".
+      description: Alert threshold, for example "COUNT > 5".
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.createTime
-      description: Rule create timestamp.
+      description: The timestamp indicating when the rule was created.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.updateTime
-      description: The timestamp of the last update to the rule.
+      description: The timestamp indicating when the rule was last updated.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.triggerSource
       description: The trigger sources for the rule.
@@ -411,7 +411,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Gets the specified alert. \nNote: To get the alert_id, execute gsac-alert-list\
+    description: "Gets the specified alert. \nNote: To get the alert_id, execute the gsac-alert-list\
       \  command."
     execution: false
     name: gsac-alert-get
@@ -447,14 +447,14 @@ script:
       description: The time the alert was last updated.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.etag
-      description: Etag is used for optimistic concurrency control as a way to help
+      description: ETag is used for optimistic concurrency control as a way to help
         prevent simultaneous updates of an alert from overwriting each other.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.customerId
       description: The unique identifier of the Google account of the customer.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.alertId
-      description: The alert identifier.
+      description: The unique identifier of the alert.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.status
       description: The current status of the alert.
@@ -473,16 +473,16 @@ script:
         prevent simultaneous updates of an alert metadata from overwriting each other.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.@type
-      description: Alert data of alert types.
+      description: Alert data of the alert types.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.takeoutRequestId
       description: The takeout request ID.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.email
       description: "The email of the associated event. \nDomain wide takeout initiated\
-        \ implies to the email of the admin who initiated the takeout.\nGoogle identity\
-        \ implies to the email of the user that the event belongs to.\nMobile device\
-        \ management/State Sponsored Attack implies to the email of the user the alert\
+        \ applies to the email of the admin who initiated the takeout.\nGoogle identity\
+        \ applies to the email of the user who the event belongs to.\nMobile device\
+        \ management/State Sponsored Attack applies to the email of the user the alert\
         \ was created for."
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.domainId.customerPrimaryDomain
@@ -498,7 +498,7 @@ script:
       description: The sender email address.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.maliciousEntity.displayName
-      description: The header from display name.
+      description: The header from the display name.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.messageId
       description: The message ID.
@@ -511,13 +511,13 @@ script:
         emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.md5HashSubject
-      description: The MD5 Hash of email's subject (only available for reported emails).
+      description: The MD5 hash of the email's subject (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.subjectText
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The list of SHA256 hashes of email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of the email's attachment and all MIME parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -536,7 +536,7 @@ script:
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.loginDetails.loginTime
       description: The successful login time that is associated with the warning event.
-        This isn't present for blocked login attempts.
+        This is not present for blocked login attempts.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.loginDetails.ipAddress
       description: The human-readable IP address (for example, 11.22.33.44) that is
@@ -549,11 +549,11 @@ script:
       description: Description of the associated alert type.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.affectedUserEmails
-      description: The list of emails which correspond to the users directly affected
+      description: The list of emails that correspond to the users directly affected
         by the incident.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.attachmentData.csv.headers
-      description: The list of headers for data columns in a CSV file.
+      description: The list of headers for the data columns in a CSV file.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.attachmentData.csv.dataRows.entries
       description: The data entries in a CSV file row, as a string array rather than
@@ -575,14 +575,14 @@ script:
       description: The device resource ID.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.iosVendorId
-      description: Required for iOS, empty for others.
+      description: iOS vendor ID. Required for iOS, empty for others.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.deviceCompromisedState
       description: The device compromised state. Possible values are "Compromised"
         or "Not Compromised".
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.deviceProperty
-      description: The device property which was changed.
+      description: The device property that was changed.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.events.oldValue
       description: The old value of the device property before the change.
@@ -594,7 +594,7 @@ script:
       description: The application that requires the SQL setup.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.requestInfo.appDeveloperEmail
-      description: List of app developers who triggered notifications for above application.
+      description: List of app developers who triggered notifications for the application.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.requestInfo.numberOfRequests
       description: Number of requests sent for the application to set up default SQL
@@ -649,13 +649,13 @@ script:
       description: Rule window size. Possible values are 1 hour or 24 hours.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.threshold
-      description: Alert threshold is for example "COUNT > 5".
+      description: Alert threshold, for example "COUNT > 5".
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.createTime
-      description: Rule create timestamp.
+      description: The timestamp indicating when the rule was created.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.updateTime
-      description: The timestamp of the last update to the rule.
+      description: The timestamp indicating when the rule was last updated.
       type: Date
     - contextPath: GSuiteSecurityAlert.Alert.data.triggerSource
       description: The trigger sources for the rule.
@@ -681,7 +681,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of alert feedback.
+      description: 'The type of alert feedback. Possible values: "ALERT_FEEDBACK_TYPE_UNSPECIFIED", "NOT_USEFUL", "SOMEWHAT_USEFUL", and "VERY_USEFUL".'
       isArray: false
       name: feedback_type
       predefined:
@@ -712,12 +712,12 @@ script:
       description: The type of the feedback.
       type: String
     - contextPath: GSuiteSecurityAlert.Feedback.email
-      description: The email of the user that provided the feedback.
+      description: The email of the user who provided the feedback.
       type: String
   - arguments:
     - default: false
       description: The identifier of the alert the feedbacks belong to. The "-" wildcard
-        could be used to represent all alerts.
+        can be used to represent all alerts.
       isArray: false
       name: alert_id
       required: true
@@ -725,7 +725,7 @@ script:
     - default: false
       description: |-
         A query string for filtering alert results.
-        Example: alert_id = alertId01 AND feedback_id = feedbackId01
+        For example: alert_id = alertId01 AND feedback_id = feedbackId01.
       isArray: false
       name: filter
       required: false
@@ -758,11 +758,11 @@ script:
       description: The type of the feedback.
       type: String
     - contextPath: GSuiteSecurityAlert.Feedback.email
-      description: The email of the user that provided the feedback.
+      description: The email of the user who provided the feedback.
       type: String
   - arguments:
     - default: false
-      description: List of comma-separated alert IDs to be marked for deletion.
+      description: Comma-separated list of alert IDs to be marked for deletion.
       isArray: true
       name: alert_id
       required: true
@@ -770,7 +770,7 @@ script:
     deprecated: false
     description: |-
       Performs delete operation on alerts.
-      Note: The alerts that are marked for deletion will be removed from Alert Center after 30 days.
+      Note: The alerts that are marked for deletion will be removed from the Alert Center after 30 days.
     execution: false
     name: gsac-alert-delete
     outputs:
@@ -781,20 +781,20 @@ script:
       description: The list of alert IDs failed to be marked for deletion.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Delete.failedAlerts.code
-      description: The status code.
+      description: The status code of the failed alerts.
       type: Number
     - contextPath: GSuiteSecurityAlert.Delete.failedAlerts.message
       description: A developer-facing error message.
       type: String
     - contextPath: GSuiteSecurityAlert.Delete.failedAlerts.status
-      description: Status of alert deletion.
+      description: Status of the failed alert deletion.
       type: String
     - contextPath: GSuiteSecurityAlert.Delete.successAlerts.status
-      description: Status of alert deletion.
+      description: Status of the successful alert deletion.
       type: String
   - arguments:
     - default: false
-      description: List of comma-separated alert IDs to be recovered.
+      description: Comma-separated list of alert IDs to be recovered.
       isArray: true
       name: alert_id
       required: true
@@ -813,16 +813,16 @@ script:
       description: The list of alert IDs failed to be marked for recovery.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.code
-      description: The status code.
+      description: The status code of the failed alerts to be recovered.
       type: Number
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.message
-      description: A developer-facing error message.
+      description: A developer-facing error message for the failed alerts.
       type: String
     - contextPath: GSuiteSecurityAlert.Recover.successAlerts.status
-      description: Status of alert recovery.
+      description: Status of the successful alert recovery.
       type: String
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
-      description: Status of alert recovery.
+      description: Status of the failed alert recovery.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.15845
   feed: false
