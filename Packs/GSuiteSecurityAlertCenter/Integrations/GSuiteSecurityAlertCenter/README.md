@@ -1,6 +1,6 @@
 G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or recover a single alert or batch of alerts and retrieve the alert's metadata. 
 This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert. 
-This integration was integrated and tested with version v1beta1 dated Oct 15, 2018 of G Suite Security Alert Center.
+This integration was integrated and tested with version v1beta1 dated Oct 15, 2018 of Google Workspace Alert Center.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Configure Service Account for G Suite Security Alert Center
@@ -16,16 +16,19 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
     
     1. Under the main menu, select APIs & Services -> Library:
         ![Setup Account](./../../doc_files/google-api-menu.png)
+        
+    2. Search ``Google Workspace Alert Center API`` in ``Search for APIs & Services``:
+        ![Setup Account](./../../doc_files/search-api.png)
     
-    2. Enable ``G Suite Alert Center API``:
+    3. Enable ``Google Workspace Alert Center API``:
         ![Setup Account](../../doc_files/gsuite_security_alert_center_api.png)
     
-    3. Select the project and click OPEN:
+    4. Select the project and click OPEN:
         ![Setup Account](./../../doc_files/enable-gke-api-enable-2.png)    
 
 4. Create a service account with correct restricted permissions:
 
-    1. Under the main menu, select Identity -> Service Accounts:
+    1. Under the main menu, select IAM & Admin -> Service Accounts:
         ![Setup Account](./../../doc_files/service-acount-menu.png)
     
     2. In the top bar, select ``CREATE SERVICE ACCOUNT``:

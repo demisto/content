@@ -12,6 +12,6 @@
     ],
     "tags": ["Threat Intelligence", "Alerts", "Attack"],
     "useCases": ["Threat Intelligence Management"],
-    "keywords": ["Phishing", "Enrichment", "Threat", "Google", "GSuite"],
+    "keywords": ["Phishing", "Enrichment", "Threat", "Google", "GSuite", "Workspace"],
     "githubUser": []
 }
