@@ -268,14 +268,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The field for which to sort the indicators by.
+      description: The field by which to sort the indicators by.
       isArray: false
       name: sort_field
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The order in which to order the indicators. The options are `asc` or `desc`.
+      description: The direction by which to order the indicators. The options are `asc` or `desc`.
       isArray: false
       name: sort_order
       predefined:

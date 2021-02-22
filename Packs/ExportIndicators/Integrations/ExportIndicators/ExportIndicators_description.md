@@ -47,9 +47,9 @@ Use the following arguments in the URL to change the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
 11. **tx** - Whether to output `csv` or `xsoar-csv` formats as textual web pages.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&tx
-12. **sf** - The field for which to sort the indicators by. Only applicable with the `sort_order` argument.
+12. **sf** - The field by which to sort the indicators by. Only applicable with the `sort_order` argument.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&sf=last_seen&so=asc
-13. **so** - The order in which to order the indicators. The options are `asc` or `desc`. Only applicable with the `sort_field` argument.
+13. **so** - The direction by which to order the indicators. The options are `asc` or `desc`. Only applicable with the `sort_field` argument.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&sf=last_seen&so=desc
 
 ### When running in On-Demand mode
