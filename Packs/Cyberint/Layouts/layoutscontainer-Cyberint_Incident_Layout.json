@@ -156,7 +156,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "indicator_cyrencountryname",
+                        "fieldId": "incident_closurereason",
                         "isVisible": true
                     },
                     {

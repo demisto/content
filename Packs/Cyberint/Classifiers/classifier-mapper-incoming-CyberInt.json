@@ -62,7 +62,7 @@
                     "complex": null,
                     "simple": "title"
                 },
-                "Closure Reason": {
+                "ClosureReason": {
                     "complex": null,
                     "simple": "closure_reason"
                 },

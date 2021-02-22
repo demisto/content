@@ -1,8 +1,8 @@
 {
-    "id": "indicator_cyrencountryname",
+    "id": "incident_closurereason",
     "version": -1,
     "modified": "2021-02-17T14:53:46.71085976+02:00",
-    "name": "Closure Reason",
+    "name": "ClosureReason",
     "ownerOnly": false,
     "cliName": "closurereason",
     "type": "shortText",
