@@ -24,6 +24,7 @@ SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 SDK_CONTENT_CHANNEL = 'dmst-content-team'
 
+
 def get_faild_steps_list():
     options = options_handler()
     failed_steps_list = []

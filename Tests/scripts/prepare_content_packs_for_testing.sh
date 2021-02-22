@@ -30,8 +30,11 @@ CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== BUCKET CONFIGURATION  ======
-# TODO: add a default value? does it get triggered from somewhere else than config.yml?
-GCS_MARKET_BUCKET=$1
+if [[ -z "$1" ]]; then
+  GCS_MARKET_BUCKET='marketplace-dist'
+else
+  GCS_MARKET_BUCKET=$1
+fi
 
 if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
   SOURCE_PATH="content"
@@ -43,6 +46,7 @@ else
   echo "Finished copying successfully."
   # ====== UPDATING TESTING BUCKET ======
 fi
+echo "source path: $SOURCE_PATH bucket name = $GCS_MARKET_BUCKET"
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$CONTENT_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
