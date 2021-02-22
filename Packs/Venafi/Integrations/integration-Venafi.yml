@@ -200,6 +200,8 @@ script:
       description: Certificates that expire after the specified date
     - name: ValidToLess
       description: Certificates that expire before the specified date
+    - name: Limit
+      description: The maximum number of certificates to return
     outputs:
     - contextPath: Venafi.Certificate.CreatedOn
       description: Certificate creation date
