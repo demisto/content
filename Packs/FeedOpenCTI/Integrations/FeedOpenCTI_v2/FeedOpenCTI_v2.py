@@ -66,24 +66,6 @@ def label_create(client, label_name: Optional[str]):
     return label
 
 
-def marking_create(client, definition: Optional[str]):
-    """ Create marking at opencti
-
-        Args:
-            client: OpenCTI Client object
-            definition(str): marking name to create
-
-        Returns:
-            readable_output, raw_response
-        """
-    try:
-        marking = client.marking_definition.create(definition=definition, definition_type='TLP')
-    except Exception as e:
-        demisto.error(str(e))
-        raise DemistoException("Can't create marking.")
-    return marking
-
-
 def build_indicator_list(indicator_list: List[str]) -> List[str]:
     """Builds an indicator list for the query
     Args:
@@ -657,29 +639,6 @@ def marking_list_command(client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output='No markings')
 
 
-def marking_create_command(client, args: Dict[str, str]) -> CommandResults:
-    """ Create marking defenition at opencti
-
-        Args:
-            client: OpenCTI Client object
-            args: demisto.args()
-
-        Returns:
-            readable_output, raw_response
-        """
-    marking = args.get("name")
-    result = marking_create(client=client, definition=marking)
-
-    if marking_id := result.get('id'):
-        readable_output = f'Marking {marking} was created successfully with id: {marking_id}.'
-        return CommandResults(outputs_prefix='OpenCTI.MarkingDefinition',
-                              outputs_key_field='id',
-                              outputs={'id': result.get('id')},
-                              readable_output=readable_output,
-                              raw_response=result)
-    else:
-        raise DemistoException("Can't create marking.")
-
 
 def main():
     params = demisto.params()
@@ -748,9 +707,6 @@ def main():
 
         elif command == "opencti-marking-definition-list":
             return_results(marking_list_command(client, args))
-
-        elif command == "opencti-marking-definition-create":
-            return_results(marking_create_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

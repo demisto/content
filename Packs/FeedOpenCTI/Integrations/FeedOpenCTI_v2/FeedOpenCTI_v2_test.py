@@ -329,22 +329,3 @@ def test_marking_list_command(mocker):
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
     assert [{'id': '1', 'value': 'TLP:RED'}] == results.outputs.get('MarkingDefinitions')
-
-
-def test_marking_create_command(mocker):
-    """Tests marking_create_command function
-    Given
-        - name: marking name to create
-    When
-        - Calling `marking_create_command`
-    Then
-        - validate the readable_output ,context
-    """
-    client = Client
-    args = {
-        'name': 'TLP:GREEN',
-    }
-    mocker.patch.object(client.marking_definition, 'create', return_value={'id': '1'})
-    results: CommandResults = marking_create_command(client, args)
-    assert "was created successfully" in results.readable_output
-    assert {'id': '1'} == results.outputs
