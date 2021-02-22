@@ -505,6 +505,7 @@ def get_updated_private_packs(private_packs, index_folder_path):
         if private_pack_was_updated:
             updated_private_packs.append(private_pack_id)
 
+    logging.debug(f"Updated private packs are: {updated_private_packs}")
     return updated_private_packs
 
 
@@ -592,7 +593,8 @@ def is_private_packs_updated(public_index_json, private_index_path):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
         if id_to_commit_hash_from_public_index.get(pack_id) != content_commit_hash:
-            logging.debug("There is at least one private pack that was updated, upload should not be skipped")
+            logging.debug(
+                f"There is at least one private pack that was updated, upload should not be skipped: {pack_id}")
             return True
 
     logging.debug("No private packs were changed")
