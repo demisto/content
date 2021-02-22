@@ -86,11 +86,13 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None)
         incidents_context = []
     else:
         incident_id = demisto.incident()['id']
-        incident_df = incidents_df[['id', 'similarity']]
+        incident_df = incidents_df[['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD]]
         incident_df = incident_df[incident_df['id'] != incident_id]
+        incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
     return {
         'isCampaignFound': campaign_found,
+        'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
         'incidents': incidents_context
     }
 

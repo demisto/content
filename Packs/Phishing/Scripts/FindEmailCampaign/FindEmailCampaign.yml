@@ -135,6 +135,9 @@ outputs:
 - contextPath: EmailCampaign.isCampaignFound
   description: Whether a campaign was found
   type: Boolean
+- contextPath: EmailCampaign.involvedIncidentsCount
+  description: The number of incidents involved in the campagin
+  type: Number
 - contextPath: EmailCampaign.incidents.id
   description: The IDs of the incidents involved in the campaign
   type: Unknown
@@ -142,11 +145,17 @@ outputs:
   description: The textual similarity of the emails of the corresponding incidents
     ids with current incident.
   type: Unknown
+- contextPath: EmailCampaign.incidents.emailfrom
+  description: The email sender of the corresponding incidents ids
+  type: Unknown
+- contextPath: EmailCampaign.incidents.emailfromdomain
+  description: The email sender's domain of the corresponding incidents ids
+  type: Unknown
 - contextPath: EmailCampaign.indicators.id
-  description: The IDs of the mututal indicators of incidents invovled in the campaign.
+  description: The IDs of the mututal indicators of incidents invovled in the campaign
   type: Unknown
 - contextPath: EmailCampaign.indicators.value
-  description: The values of the mututal indicators of incidents invovled in the campaign.
+  description: The values of the mututal indicators of incidents invovled in the campaign
   type: Unknown
 script: '-'
 subtype: python3
