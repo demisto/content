@@ -415,7 +415,7 @@ script:
     description: Retrieves a sample.
     execution: false
     name: wildfire-get-sample
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
@@ -426,4 +426,5 @@ script:
   type: python
 tests:
 - Wildfire Test
+- Detonate File - WildFire - Test
 fromversion: 5.0.0
