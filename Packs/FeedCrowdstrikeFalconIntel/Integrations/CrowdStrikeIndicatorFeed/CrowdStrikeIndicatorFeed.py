@@ -79,17 +79,14 @@ class Client(BaseClient):
         current_time = datetime.now()
         current_timestamp = datetime.timestamp(current_time)
         timestamp = str(int(current_timestamp))
-        demisto.setIntegrationContext({'last_modified_time': timestamp})
-        demisto.info(f'set last_run: {timestamp}')
+        return timestamp
 
     def get_last_run(self) -> str:
         if last_run := demisto.getIntegrationContext().get('last_modified_time'):
             demisto.info(f'get last_run: {last_run}')
-            params = f'last_updated:>{last_run}'
-            self.set_last_run()
+            params = f'last_updated:>={last_run}'
         else:
             params = ''
-            self.set_last_run()
         return params
 
     def get_indicators(self, type=None, malicious_confidence='', filter='', q='',
@@ -101,15 +98,16 @@ class Client(BaseClient):
 
         if malicious_confidence:
             malicious_confidence_fql = f"malicious_confidence:'{malicious_confidence}'"
-            filter = f"{malicious_confidence_fql}+{filter}" if filter else malicious_confidence_fql
+            filter = f"{filter}+{malicious_confidence_fql}" if filter else malicious_confidence_fql
 
         if not get_indicators_command:
             if last_run := self.get_last_run():
-                filter = f'{last_run}+{filter}' if filter else last_run
-                self.set_last_run()
+                filter = f'{filter}+{last_run}' if filter else last_run
 
         demisto.info(f' filter {filter}')
         params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
+
+        timestamp = self.set_last_run()
 
         response = self.http_request(
             method='GET',
@@ -117,6 +115,10 @@ class Client(BaseClient):
             headers=self._headers,
             url_suffix='intel/combined/indicators/v1'
         )
+
+        if response and not get_indicators_command:
+            demisto.setIntegrationContext({'last_modified_time': timestamp})
+            demisto.info(f'set last_run: {timestamp}')
         return response
 
     def build_type_fql(self, types_list: list) -> str:
@@ -165,10 +167,20 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
         indicator = {
             'type': CROWDSTRIKE_TO_XSOHR_TYPES.get(resource.get('type'), resource.get('type')),
             'value': resource.get('indicator'),
+            'actor': resource.get('actors'),
+            'reports': resource.get('reports'),
+            'malwarefamily': resource.get('malware_families'),
+            'kill_chains': resource.get('kill_chains'),
+            'ipadress': resource.get('ip_address_types'),
+            'domainname': resource.get('domain_types'),
+            'targets': resource.get('targets'),
+            'threattypes': resource.get('threat_types'),
+            'vulnerabilities': resource.get('vulnerabilities'),
+            'malicious_confidence': resource.get('malicious_confidence'),
+            'updateddate': resource.get('last_updated'),
+            'creationdate': resource.get('published_date'),
             'rawJSON': resource,
-            'fields': {
-                'tags': [label.get('name') for label in resource.get('labels')]  # type: ignore
-            }
+            'tagstype': [label.get('name') for label in resource.get('labels')]  # type: ignore
         }
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
