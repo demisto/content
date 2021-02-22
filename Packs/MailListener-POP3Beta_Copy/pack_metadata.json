@@ -1,0 +1,17 @@
+{
+    "name": "MailListener - POP3 Beta_copy",
+    "description": "Test to see if empty pack reproduce",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Timor Test",
+    "url": "",
+    "email": "",
+    "created": "2021-02-22T15:25:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "teizenman"
+    ]
+}
