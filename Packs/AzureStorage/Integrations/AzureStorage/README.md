@@ -1,5 +1,5 @@
 Deploy and manage storage accounts and blob services.
-This integration was integrated and tested with version xx of Azure Storage
+This integration was integrated and tested with version 2019-06-01 of Azure Storage
 ## Permissions
 
 ## Configure Azure Storage on Cortex XSOAR
@@ -195,10 +195,10 @@ Run this command to get the all or spesific account storage details
                         "virtualNetworkRules": []
                     },
                     "primaryEndpoints": {
-                        "blob": "https://cs20f907ea4bc8bx4c11x9d7.blob.core.windows.net/",
-                        "file": "https://cs20f907ea4bc8bx4c11x9d7.file.core.windows.net/",
-                        "queue": "https://cs20f907ea4bc8bx4c11x9d7.queue.core.windows.net/",
-                        "table": "https://cs20f907ea4bc8bx4c11x9d7.table.core.windows.net/"
+                        "blob": "",
+                        "file": "",
+                        "queue": "",
+                        "table": ""
                     },
                     "primaryLocation": "eastus",
                     "privateEndpointConnections": [],

@@ -491,6 +491,7 @@ def main() -> None:
         demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
 
+
 from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

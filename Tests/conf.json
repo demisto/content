@@ -3216,6 +3216,10 @@
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
+        },
+        {
+            "integrations": "Azure Storage",
+            "playbookID": "Azure Storage - Test"
         }
     ],
     "skipped_tests": {
