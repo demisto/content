@@ -70,7 +70,7 @@
                     "complex": null,
                     "simple": "confidence"
                 },
-                "Created By": {
+                "CreatedBy": {
                     "complex": null,
                     "simple": "created_by.email"
                 },

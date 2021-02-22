@@ -1,10 +1,10 @@
 {
-    "id": "indicator_cyrenmalwarefamily",
+    "id": "incident_cyberintcreatedby",
     "version": -1,
     "modified": "2021-02-17T14:54:42.064661182+02:00",
-    "name": "Created By",
+    "name": "CreatedBy",
     "ownerOnly": false,
-    "cliName": "createdby",
+    "cliName": "cyberintcreatedby",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -25,5 +25,6 @@
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "5.0.0"
 }

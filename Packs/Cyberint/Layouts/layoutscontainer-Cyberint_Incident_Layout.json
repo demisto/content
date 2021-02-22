@@ -172,7 +172,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "indicator_cyrenmalwarefamily",
+                        "fieldId": "incident_cyberintcreatedby",
                         "isVisible": true
                     },
                     {
@@ -697,7 +697,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "createdby",
+                                "fieldId": "cyberintcreatedby",
                                 "height": 22,
                                 "id": "4ac61c60-7128-11eb-9439-354a158abf78",
                                 "index": 2,
