@@ -32,7 +32,7 @@
                     },
                     "simple": ""
                 },
-                "Alert Attachments": {
+                "Notify Attachments": {
                     "complex": {
                         "accessor": "",
                         "filters": [
@@ -50,7 +50,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Alert Attachments": {
+                "Notify Attachments": {
                     "complex": null,
                     "simple": "attachments"
                 },
@@ -98,14 +98,12 @@
 
                         ],
                         "root": "description",
-                        "transformers": [
-                            {
-                                "args": {
+                        "transformers": [{
+                            "args": {
 
-                                },
-                                "operator": "trim"
-                            }
-                        ]
+                            },
+                            "operator": "trim"
+                        }]
                     },
                     "simple": ""
                 },
@@ -137,8 +135,7 @@
 
                         ],
                         "root": "impacts",
-                        "transformers": [
-                            {
+                        "transformers": [{
                                 "args": {
 
                                 },
@@ -264,24 +261,22 @@
 
                         ],
                         "root": "created_date",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "Z"
-                                        }
-                                    }
+                        "transformers": [{
+                            "args": {
+                                "prefix": {
+                                    "isContext": false,
+                                    "value": null
                                 },
-                                "operator": "concat"
-                            }
-                        ]
+                                "suffix": {
+                                    "isContext": false,
+                                    "value": {
+                                        "complex": null,
+                                        "simple": "Z"
+                                    }
+                                }
+                            },
+                            "operator": "concat"
+                        }]
                     },
                     "simple": ""
                 },

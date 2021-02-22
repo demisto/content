@@ -2,7 +2,7 @@
     "id": "incident_alertattachments",
     "version": -1,
     "modified": "2021-02-21T16:02:16.739079287+02:00",
-    "name": "Alert Attachments",
+    "name": "Notify Attachments",
     "ownerOnly": false,
     "cliName": "alertattachments",
     "type": "grid",

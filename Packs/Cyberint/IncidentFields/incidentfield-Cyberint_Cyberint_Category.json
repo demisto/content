@@ -1,1 +1,30 @@
-{"id": "incident_cyberintcategory", "version": 1, "modified": "2021-02-17T15:35:18.727794883+02:00", "sortValues": null, "packID": "", "itemVersion": "", "fromServerVersion": "", "toServerVersion": "", "vcShouldIgnore": false, "vcShouldKeepItemLegacyProdMachine": false, "commitMessage": "", "shouldCommit": false, "name": "Cyberint Category", "prevName": "Cyberint Category", "ownerOnly": false, "placeholder": "", "description": "", "cliName": "cyberintcategory", "type": "shortText", "closeForm": false, "editForm": true, "required": false, "script": "", "fieldCalcScript": "", "neverSetAsRequired": false, "isReadOnly": false, "selectValues": null, "validationRegex": "", "useAsKpi": false, "locked": false, "system": false, "content": false, "group": 0, "mergeStrategy": "", "hidden": false, "associatedTypes": ["Cyberint Incident"], "systemAssociatedTypes": null, "associatedToAll": false, "unmapped": false, "unsearchable": false, "caseInsensitive": true, "columns": null, "defaultRows": null, "sla": 0, "threshold": 72, "breachScript": "", "validatedError": ""}
+{
+    "id": "incident_cyberintcategory",
+    "version": -1,
+    "modified": "2021-02-17T15:35:18.727794883+02:00",
+    "name": "Cyberint Category",
+    "ownerOnly": false,
+    "cliName": "cyberintcategory",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cyberint Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

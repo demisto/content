@@ -1,1 +1,67 @@
-{"id": "incident_ioc", "version": 2, "modified": "2021-02-17T16:42:07.221870288+02:00", "sortValues": null, "packID": "", "itemVersion": "", "fromServerVersion": "", "toServerVersion": "", "vcShouldIgnore": false, "vcShouldKeepItemLegacyProdMachine": false, "commitMessage": "", "shouldCommit": false, "name": "IOC", "prevName": "IOC", "ownerOnly": false, "placeholder": "", "description": "", "cliName": "ioc", "type": "grid", "closeForm": false, "editForm": true, "required": false, "script": "", "fieldCalcScript": "", "neverSetAsRequired": false, "isReadOnly": true, "selectValues": [], "validationRegex": "", "useAsKpi": false, "locked": false, "system": false, "content": false, "group": 0, "mergeStrategy": "", "hidden": false, "associatedTypes": ["Cyberint Incident"], "systemAssociatedTypes": null, "associatedToAll": false, "unmapped": false, "unsearchable": false, "caseInsensitive": true, "columns": [{"key": "type", "displayName": "Type", "type": "shortText", "required": false, "script": "", "width": 230, "isDefault": true, "fieldCalcScript": "", "isReadOnly": false, "selectValues": null}, {"key": "value", "displayName": "Value", "type": "shortText", "required": false, "script": "", "width": 150, "isDefault": true, "fieldCalcScript": "", "isReadOnly": false, "selectValues": null}], "defaultRows": [{}, {}, {}], "sla": 0, "threshold": 72, "breachScript": "", "validatedError": ""}
+{
+    "id": "incident_ioc",
+    "version": -1,
+    "modified": "2021-02-17T16:42:07.221870288+02:00",
+    "name": "IOC",
+    "ownerOnly": false,
+    "cliName": "ioc",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cyberint Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "type",
+            "displayName": "Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 230,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "value",
+            "displayName": "Value",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}
