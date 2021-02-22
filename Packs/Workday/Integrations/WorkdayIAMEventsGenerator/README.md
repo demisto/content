@@ -19,8 +19,7 @@ Generates mock reports and events for Workday IAM. Use these for testing and dev
 To configure a long running integration to be accessed via Cortex XSOAR Server's https endpoint perform the following:
 
 1. Configure the long running integration to listen on a unique port
-2. Make sure the long running integration is setup to use HTTP (not HTTPS)
-3. Add the following advanced Server parameter:
+2. Add the following advanced Server parameter:
     - Name: instance.execute.external.<instance_name>
     - Value: true
 
@@ -33,7 +32,7 @@ To configure a long running integration to be accessed via Cortex XSOAR Server's
 You will then be able to access the long running integration via the Cortex XSOAR Server's HTTPS endpoint. The route to the integration will be available at:
 https://<server_hostname>/instance/execute/<instance_name>
 
-Use this URL to configure `Workday_IAM` integration.
+Use this URL to configure `Workday_IAM` integration and invoke *Fetch_incidents*
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

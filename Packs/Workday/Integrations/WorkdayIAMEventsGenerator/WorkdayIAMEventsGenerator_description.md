@@ -4,9 +4,8 @@ Note: This is a beta Integration, which lets you implement and test pre-release 
 
 To configure a long running integration to be accessed via Cortex XSOAR Server's https endpoint perform the following:
 
-1. Configure the long running integration to listen on a unique port
-2. Make sure the long running integration is setup to use HTTP (not HTTPS)
-3. Add the following advanced Server parameter:
+1. Configure the integration to listen on a unique port
+2. Add the following advanced Server parameter:
     - Name: instance.execute.external.<instance_name>
     - Value: true
 
