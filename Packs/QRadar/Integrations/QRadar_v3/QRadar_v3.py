@@ -1,4 +1,6 @@
+import concurrent.futures
 from enum import Enum
+from threading import Lock
 
 import pytz
 import urllib3
@@ -24,14 +26,17 @@ MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offe
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 
 ''' CONSTANTS '''
+RESET_KEY = 'reset'
+LAST_FETCH_KEY = 'id'
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
 DEFAULT_LIMIT_VALUE = 50
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
+TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 EVENT_COLUMNS_DEFAULT_VALUE = 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
-                              'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
+                              'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, '\
                               'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
                               'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
                               'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
@@ -39,8 +44,9 @@ EVENT_COLUMNS_DEFAULT_VALUE = 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGOR
                               'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
                               'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 UTC_TIMEZONE = pytz.timezone('utc')
-ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)\d(?:\s+|$)')
+ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '%2Bid'
+EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -147,7 +153,8 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_persisted_time',
                  'modification_date',
                  'last_seen',
-                 'first_seen'}
+                 'first_seen',
+                 'starttime'}
 
 ''' ENRICHMENT MAPS '''
 
@@ -196,6 +203,7 @@ class Client(BaseClient):
         self.base_headers = {
             'Version': api_version,
         }
+        self.lock = Lock()
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None, data: Optional[Dict] = None,
                      additional_headers: Optional[Dict] = None):
@@ -485,7 +493,8 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> L
     Gets a list of all the outputs, and sanitizes outputs.
     - Removes empty elements.
     - adds ISO entries to the outputs.
-    - Replaces keys by the given 'key_replace_dict' values.
+    - Outputs only keys found in 'key_replace_dict', saving their names by 'key_replace_dict values,
+      if 'key_replace_dict' is not None.
     Args:
         outputs (List[Dict]): List of the outputs to be sanitized.
         key_replace_dict (Dict): Dict of the keys to transform their names.
@@ -497,7 +506,7 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> L
         outputs = [outputs]
     outputs = [remove_empty_elements(output) for output in outputs]
     add_iso_entries_to_dict(outputs)
-    return replace_keys(outputs, key_replace_dict) if key_replace_dict else outputs
+    return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
 
 def get_time_parameter(arg: Optional[str], iso_format: bool = False, epoch_format: bool = False):
@@ -530,20 +539,20 @@ def get_time_parameter(arg: Optional[str], iso_format: bool = False, epoch_forma
     return aware_time_date
 
 
-def replace_keys(outputs: Union[List[Dict], Dict], old_new_dict: Dict) -> List[Dict]:
+def build_final_outputs(outputs: Union[List[Dict], Dict], old_new_dict: Dict) -> List[Dict]:
     """
     Receives outputs, or a single output, and a dict containing mapping of old key names to new key names.
-    Returns a list of outputs, overriding the old name contained in old_new_dict with its value.
+    Returns a list of outputs containing the new names contained in old_new_dict.
     Args:
         outputs (Dict): Outputs to replace its keys.
         old_new_dict (Dict): Old key name mapped to new key name.
 
     Returns:
-        (Dict): The dictionary with the transformed keys.
+        (Dict): The dictionary with the transformed keys and their values.
     """
     if isinstance(outputs, Dict):
         outputs = [outputs]
-    return [{old_new_dict.get(k, k): v for k, v in output.items()} for output in outputs]
+    return [{old_new_dict.get(k): v for k, v in output.items() if k in old_new_dict} for output in outputs]
 
 
 def build_headers(first_headers: List[str], all_headers: Set[str]) -> List[str]:
@@ -666,7 +675,9 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
             for address_data in addresses_batch}
 
 
-def enrich_offenses_result(client: Client, offenses: List[Dict], enrich_ip_addresses: bool = False) -> List[Dict]:
+def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool = False,
+                           enrich_assets: bool = False) -> List[Dict]:
+    # TODO add enrich assets
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -674,15 +685,18 @@ def enrich_offenses_result(client: Client, offenses: List[Dict], enrich_ip_addre
     - Adds a link to the URL of each offense.
     - Adds the domain name of the domain ID for each offense.
     - Adds to each rule of the offense its name.
-    - Adds enrichment to each source/destination IP ID to its address
+    - Adds enrichment to each source/destination IP ID to its address (if enrich_ip_addresses is true).
+    - Adds enrichment of assets to each offense (if enrich_assets is true).
     Args:
         client (Client): Client to perform the API calls.
-        offenses (List[Dict]): List of all of the offenses to enrich.
+        offenses (Any): List of all of the offenses to enrich.
         enrich_ip_addresses (bool): Whether to enrich the offense source/destination IP addresses.
+        enrich_assets (bool): Whether to enrich the offense with assets.
 
     Returns:
         (List[Dict]): The enriched offenses.
     """
+    print_debug_msg("Enriching offenses")
     offense_types_id_name_dict = get_offense_types(client, offenses)
     closing_reasons_id_name_dict = get_offense_closing_reasons(client, offenses)
     domain_id_name_dict = get_domain_names(client, offenses) if DOMAIN_ENRCH_FLG == 'True' else dict()
@@ -726,7 +740,9 @@ def enrich_offenses_result(client: Client, offenses: List[Dict], enrich_ip_addre
         return dict(offense, **basic_enriches, **domain_enrich, **rules_enrich, **source_addresses_enrich,
                     **destination_addresses_enrich)
 
-    return [create_enriched_offense(offense) for offense in offenses]
+    result = [create_enriched_offense(offense) for offense in offenses]
+    print_debug_msg("Enriched offenses successfully.")
+    return result
 
 
 def enrich_asset_properties(interfaces: List, property_old_new_dict: Dict) -> Dict:
@@ -801,20 +817,19 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     return [enrich_single_asset(asset) for asset in assets]
 
 
-def get_minimum_id_to_fetch(last_run_offense_id: int, user_query: Optional[str]) -> int:
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
     """
     Receives the highest offense ID saved from last run, and user query.
     Checks if user query has a limitation for a minimum ID.
-    If such ID exists, returns the maximum between last run ID and the minimum ID
+    If such ID exists, returns the maximum between 'highest_offense_id' and the minimum ID
     limitation received by the user query.
     Args:
-        last_run_offense_id (int): Minimum ID to fetch offenses by from last run
+        highest_offense_id (int): Minimum ID to fetch offenses by from last run.
         user_query (Optional[str]): User query for QRadar service.
 
     Returns:
-        (int): The Minimum ID to fetch offenses by
+        (int): The Minimum ID to fetch offenses by.
     """
-    # TODO ADD TESTS
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -823,8 +838,58 @@ def get_minimum_id_to_fetch(last_run_offense_id: int, user_query: Optional[str])
             # safe to int parse without catch because regex checks for number
             user_offense_id = int(id_query.group(0).split(operator)[1].strip())
             user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
-            return max(last_run_offense_id, user_lowest_offense_id)
-    return last_run_offense_id
+            return max(highest_offense_id, user_lowest_offense_id)
+    return highest_offense_id
+
+
+def print_debug_msg(msg: str, lock: Lock = None):
+    """
+    Prints a message to debug with QRadarMsg prefix.
+    Uses lock because calls can be concurrent.
+    If lock cannot be acquired until timeout, will skip writing message to log.
+    Args:
+        msg (str): Message to be logged.
+        lock (Lock): Lock used to avoid race conditions during logging.
+
+    Returns:
+
+    """
+    debug_msg = f"QRadarMsg - {msg}"
+    if lock:
+        if lock.acquire(timeout=LOCK_WAIT_TIME):
+            demisto.debug(debug_msg)
+            lock.release()
+    else:
+        demisto.debug(debug_msg)
+
+
+def is_reset_triggered(lock, handle_reset=False):
+    """
+    Checks if reset of integration context have been made by the user.
+    Because fetch is long running execution, user communicates with us
+    by calling 'qradar-reset-last-run' command which sets reset flag in
+    context.
+    Using lock because calls to this function concurrent
+    Args:
+        lock (Lock): The lock for avoiding race conditions.
+        handle_reset (bool): Whether the reset should be handled by the caller.
+
+    Returns:
+        (bool):
+        - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
+        - False if lock could not be acquired until timeout.
+        - False if lock was acquired, and reset flag was not found in integration context.
+    """
+    if lock.acquire(timeout=LOCK_WAIT_TIME):
+        ctx = get_integration_context()
+        if ctx and RESET_KEY in ctx:
+            if handle_reset:
+                print_debug_msg("Reset fetch-incidents.")
+                set_integration_context({"samples": ctx.get("samples", [])})
+            lock.release()
+            return True
+        lock.release()
+    return False
 
 
 ''' COMMAND FUNCTIONS '''
@@ -855,60 +920,273 @@ def test_module_command(client: Client) -> str:
     return message
 
 
-def fetch_incidents_command(client: Client, params: Dict) -> None:
-    pass
-
-
-def long_running_execution_command(client: Client, params: Dict):
+def fetch_incidents_command() -> List[Dict]:
     """
-
+    Fetch incidents implemented, for mapping purposes only.
+    Returns list of samples saved by long running execution.
     Args:
-        client:
-        params:
 
     Returns:
-
+        (List[Dict]): List of incidents samples.
     """
-    last_run = demisto.getLastRun()
+    # TODO ADD TESTS
+    return get_integration_context().get('samples', [])
 
-    # incident_type = params.get('incidentType')
-    offenses_per_fetch = arg_to_number(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
-    # fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
-    user_query = params.get('query')
-    # ip_enrich = argToBoolean(params.get('ip_enrich', True))
-    # asset_enrich = argToBoolean(params.get('asset_enrich', True))
-    # events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
-    # events_limit = arg_to_number(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
 
-    offense_highest_id = get_minimum_id_to_fetch(last_run.get('offense_id', 0), user_query)
+def create_search_with_retry(client: Client, query_expression: str) -> Optional[Dict]:
+    # TODO ADD TESTS
+    """
+    Creates a search to retrieve events for an offense.
+    Has retry mechanism, because QRadar service tends to return random errors when
+    it is loaded.
+    Therefore, 'EVENTS_FAILURE_LIMIT' retries will be made, to try avoid such cases as much as possible.
+    Args:
+        client (Client): Client to perform the API calls.
+        query_expression (str): The query to retrieve events.
+
+    Returns:
+        (Dict): If search was created successfully.
+        None: If reset was triggered or number of retries exceeded limit.
+    """
+    num_of_failures = 0
+    while num_of_failures <= EVENTS_FAILURE_LIMIT:
+        if is_reset_triggered(client.lock):
+            return None
+        try:
+            return client.search_create(query_expression, None)
+        except Exception as e:
+            err = str(e)
+            num_of_failures += 1
+            if num_of_failures == EVENTS_FAILURE_LIMIT:
+                print_debug_msg(f'Unable to create search for offense. Error: {err}', client.lock)
+                break
+            time.sleep(FAILURE_SLEEP)
+    return None
+
+
+def poll_offense_events_with_retry(client, search_id: str, offense_id: int) -> List[Dict]:
+    # TODO ADD TESTS
+    """
+    Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
+    Afterwards, performs a call to retrieve the events returned by the search.
+    Has retry mechanism, because QRadar service tends to return random errors when
+    it is loaded.
+    Therefore, 'EVENTS_FAILURE_LIMIT' retries will be made, to try avoid such cases as much as possible.
+
+    Args:
+        client (Client): Client to perform the API calls.
+        search_id (str): ID of the search to poll for its status.
+        offense_id (int): ID of the offense to enrich with events returned by search. Used for logging purposes here.
+
+    Returns:
+        (List[Dict]): List of events returned by query. Returns empty list if number of retries exceeded limit.
+    """
+    num_of_failures = 0
+    start_time = time.time()
+    while num_of_failures <= EVENTS_FAILURE_LIMIT:
+        try:
+            if is_reset_triggered(client.lock):
+                return []
+            search_status_response = client.search_status_get(search_id)
+            query_status = search_status_response.get('status')
+            # failures are relevant only when consecutive
+            num_of_failures = 0
+            if query_status in TERMINATING_SEARCH_STATUSES:
+                search_results_response = client.search_results_get(search_id)
+                events = search_results_response.get('events', [])
+                sanitized_events = sanitize_outputs(events)
+                print_debug_msg(f'Events fetched for offense {offense_id}.', client.lock)
+                return sanitized_events
+            elapsed = time.time() - start_time
+            if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
+                print_debug_msg(f'Still fetching offense {offense_id} events, search_id: {search_id}.', client.lock)
+                start_time = time.time()
+            time.sleep(EVENTS_INTERVAL_SECS)
+        except Exception as e:
+            # TODO - QRadar v2 no lock? check
+            print_debug_msg(
+                f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)}',
+                client.lock)
+            num_of_failures += 1
+            if num_of_failures < EVENTS_FAILURE_LIMIT:
+                time.sleep(FAILURE_SLEEP)
+    return []
+
+
+def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int):
+    """
+    Enriches offense given with events.
+    Has retry mechanism for events returned by query to QRadar. This is needed because events might not be
+    indexed when performing the search, and QRadar will return less events than expected.
+    Retry mechanism here meant to avoid such cases as much as possible
+    Args:
+        client (Client): Client to perform the API calls.
+        offense (Dict): Offense to enrich with events.
+        fetch_mode (str): Which enrichment mode was requested.
+                          Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
+        events_columns (str): Columns of the events to be extracted from query.
+        events_limit (int): Maximum number of events to enrich the offense.
+
+    Returns:
+        (Dict): Enriched offense with events.
+    """
+    # TODO ADD TESTS
+    if is_reset_triggered(client.lock):
+        return offense
+
+    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
+        if fetch_mode == FetchMode.correlations_events_only.value else ''
+    # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
+    # end_time is equal
+    offense_start_time = offense['start_time'] - 60 * 1000
+    offense_id = offense['id']
+    query_expression = (
+        f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
+        f'START {offense_start_time}'
+    )
+    for i in range(MAX_FETCH_EVENT_RETIRES):
+        # retry to check if we got all the event (its not an error retry) this is needed because events might not be
+        # indexed when performing the search, and we will get less events than expected, so we will retry and create
+        # a new search
+        search_response = create_search_with_retry(client, query_expression)
+        if not search_response or is_reset_triggered(client.lock):
+            return dict()
+
+        events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        offense['events'] = events
+        if len(events) >= min(offense.get('event_count', 0), events_limit) or i == MAX_FETCH_EVENT_RETIRES:
+            offense['events'] = events[:min(offense.get('event_count', 0), events_limit)]
+            break
+        time.sleep(SLEEP_FETCH_EVENT_RETIRES)
+
+    return offense
+
+
+def get_offenses_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
+                                        events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
+                                        last_highest_id: int):
+    """
+    Gets offenses from QRadar service in a long running execution.
+    Args:
+        client (Client): Client to perform the API calls.
+        offenses_per_fetch (int): Maximum number of offenses to be fetched.
+        user_query (str): If given, the user filters for fetching offenses from QRadar service.
+        fetch_mode (str): Fetch mode of the offenses.
+                          Can be 'Fetch Without Events', 'Fetch With All Events', 'Fetch Correlation Events Only'
+        events_columns (str): Events columns to extract by search query for each offense. Only used when fetch mode
+                              is not 'Fetch Without Events'.
+        events_limit (int): Number of events to be fetched for each offense. Only used when fetch mode is not
+                            'Fetch Without Events'.
+        ip_enrich (bool): Whether to enrich offense by changing IP IDs of each offense to its IP value.
+        asset_enrich (bool): Whether to enrich offense with assets
+        last_highest_id (int): The highest ID of all the offenses that have been fetched from QRadar service.
+
+    Returns:
+        (List[Dict], int): List of the enriched offenses, and the new highest ID for next fetch.
+    """
+    # TODO ADD TESTS
+    offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
 
     filter_fetch_query = f'id>{offense_highest_id} AND {user_query}'
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH
     range_ = f'0-{range_max - 1}'
-    # print debug message
-    raw_offenses = client.offenses_list(None, range_, filter_fetch_query, None, ASCENDING_ID_ORDER)
-    #     if raw_offenses:
-    #         print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
-    # check if list not empty to avoid error
-    # highest_offense_id = raw_offenses[-1].get['id']
+
+    offenses = client.offenses_list(None, range_, filter_fetch_query, None, ASCENDING_ID_ORDER)
+    new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
+
+    if fetch_mode != FetchMode.no_events.value:
+        futures = []
+        for offense in offenses:
+            futures.append(EXECUTOR.submit(
+                enrich_offense_with_events,
+                client=client,
+                offense=offense,
+                fetch_mode=fetch_mode,
+                events_columns=events_columns,
+                events_limit=events_limit,
+            ))
+        offenses = [future.result() for future in futures]
+
+    if is_reset_triggered(client.lock, handle_reset=True):
+        return None, None
+
+    enriched_offenses = enrich_offenses_result(client, offenses, ip_enrich, asset_enrich)
+    final_offenses = sanitize_outputs(enriched_offenses)
+    return final_offenses, new_highest_offense_id
 
 
-#     if ip_enrich or asset_enrich:
-#         print_debug_msg("Enriching offenses")
-#         enrich_offense_result(client, raw_offenses, ip_enrich, asset_enrich)
-#         print_debug_msg("Enriched offenses successfully.")
-#
-#     # handle reset signal
-#     if is_reset_triggered(client.lock, handle_reset=True):
-#         return
-#
-#     incidents_batch = create_incidents(raw_offenses, incident_type)
-#     incidents_batch_for_sample = (
-#         incidents_batch if incidents_batch else last_run.get("samples", [])
-#     )
-#
-#     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-#     set_integration_context(context, sync=SYNC_CONTEXT)
+def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
+    # TODO ADD TESTS
+    """
+    Transforms list of offenses given into incidents for Demisto.
+    Args:
+        offenses (List[Dict]): List of the offenses to transform into incidents.
+        incident_type (Optional[str]): Incident type to be used for each incident.
+
+    Returns:
+        (List[Dict]): Incidents list.
+    """
+    print_debug_msg(f'Creating {len(offenses)} incidents')
+    return [{
+        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+        'labels': 'TODO',
+        'rawJSON': json.dumps(offense),
+        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+        'type': incident_type
+    } for offense in offenses]
+
+
+def long_running_execution_command(client: Client, params: Dict):
+    # TODO ADD TESTS
+    """
+    Long running execution of fetching incidents from QRadar service.
+    Will continue to fetch in an infinite loop offenses from QRadar,
+    Enriching each offense with events/IPs/assets according to the
+    configurations given in Demisto params.
+    transforming the offenses into incidents and sending them to Demisto
+    to save the incidents.
+    Args:
+        client (Client): Client to perform API calls.
+        params (Dict): Demisto params.
+
+    Returns:
+
+    """
+    incident_type = params.get('incidentType')
+    offenses_per_fetch = arg_to_number(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
+    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    user_query = params.get('query', '')
+    ip_enrich = argToBoolean(params.get('ip_enrich', True))
+    asset_enrich = argToBoolean(params.get('asset_enrich', True))
+    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+
+    while True:
+        is_reset_triggered(client.lock, handle_reset=True)
+        ctx = get_integration_context()
+        print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
+
+        offenses, new_highest_id = get_offenses_long_running_execution(
+            client=client,
+            offenses_per_fetch=offenses_per_fetch,
+            user_query=user_query,
+            fetch_mode=fetch_mode,
+            events_columns=events_columns,
+            events_limit=events_limit,
+            ip_enrich=ip_enrich,
+            asset_enrich=asset_enrich,
+            last_highest_id=ctx.get(LAST_FETCH_KEY, 0)
+        )
+        # Reset was called during execution, skip creating incidents.
+        if not offenses and not new_highest_id:
+            continue
+
+        incidents = create_incidents_from_offenses(offenses, incident_type)
+        incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+        set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
+        demisto.createIncidents(incidents)
+
+        time.sleep(FETCH_SLEEP)
 
 
 def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
@@ -936,9 +1214,8 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     fields = args.get('fields')
 
     response = client.offenses_list(offense_id, range_, filter_, fields, sort=None)
-    outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
-    enriched_outputs = enrich_offenses_result(client, outputs)
-    final_outputs = replace_keys(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
+    enriched_outputs = enrich_offenses_result(client, response)
+    final_outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
     headers = build_headers(['ID', 'Description'], set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
     return CommandResults(
@@ -988,14 +1265,14 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
                                      fields)
-    outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
-    enriched_outputs = enrich_offenses_result(client, outputs, enrich_ip_addresses=True)
+    enriched_outputs = enrich_offenses_result(client, response, enrich_ip_addresses=True)
+    final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
 
     return CommandResults(
-        readable_output=tableToMarkdown('offense Update', enriched_outputs),
+        readable_output=tableToMarkdown('offense Update', final_outputs),
         outputs_prefix='QRadar.offense',
         outputs_key_field='id',
-        outputs=enriched_outputs,
+        outputs=final_outputs,
         raw_response=response
     )
 
@@ -1414,7 +1691,10 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
 
     if ref_name:
         for output in outputs:
-            add_iso_entries_to_dict(output.get('data', []))
+            output['data'] = add_iso_entries_to_dict(output.get('data', []))
+            if output['ElementType'] == 'DATE':
+                for indicator in output.get('data', []):
+                    indicator['value'] = get_time_parameter(indicator['value'], iso_format=True)
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Sets List', outputs),
@@ -1423,13 +1703,6 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
         outputs=outputs,
         raw_response=response
     )
-
-
-#      TODO: understand what was done here
-
-#       convert_date_elements = (
-#         True if date_value == "True" and ref["ElementType"] == "DATE" else False
-#     )
 
 
 def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandResults:
@@ -1803,7 +2076,7 @@ def main() -> None:
             return_results(test_module_command(client))
 
         elif command == 'fetch-incidents':
-            fetch_incidents_command(client, params)
+            demisto.incidents(fetch_incidents_command())
 
         elif command == "long-running-execution":
             long_running_execution_command(client, params)

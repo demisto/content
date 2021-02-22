@@ -10,9 +10,9 @@ import pytz
 
 # from CommonServerPython import CommandResults
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, Client
-from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, replace_keys, build_headers, \
+from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
-    get_offense_addresses
+    get_offense_addresses, get_minimum_id_to_fetch
 
 # from typing import *
 
@@ -109,13 +109,13 @@ def test_add_iso_entries_to_dict():
 
 
 @pytest.mark.parametrize('output, old_new_dict, expected',
-                         [([{'a': 2, 'c': 3}], {'a': 'b'}, [{'b': 2, 'c': 3}]),
+                         [([{'a': 2, 'c': 3}], {'a': 'b'}, [{'b': 2}]),
                           ([OFFENSE_OLD_NEW_NAMES_MAP], OFFENSE_OLD_NEW_NAMES_MAP,
                            [{v: v for v in OFFENSE_OLD_NEW_NAMES_MAP.values()}]),
-                          ([{'description': 'bla'}], {'name': 'Adam'}, [{'description': 'bla'}]),
+                          ([{'description': 'bla'}], {'name': 'Adam'}, [{}]),
                           ([{'a': 1, 'b': 2, 'c': 3}, {'a': 4, 'd': 5, 'e': 6}],
-                           {'a': 'A', 'b': 'B', 'd': 'D'}, [{'A': 1, 'B': 2, 'c': 3}, {'A': 4, 'D': 5, 'e': 6}])])
-def test_replace_keys(output, old_new_dict, expected):
+                           {'a': 'A', 'b': 'B', 'd': 'D'}, [{'A': 1, 'B': 2}, {'A': 4, 'D': 5}])])
+def test_build_final_outputs(output, old_new_dict, expected):
     """
     Given:
      - Output.
@@ -131,7 +131,7 @@ def test_replace_keys(output, old_new_dict, expected):
      - Case b: All of the keys are replaced (because all keys intersects).
      - Case c: No key is replaced (no intersect).
     """
-    assert (replace_keys(output, old_new_dict)) == expected
+    assert (build_final_outputs(output, old_new_dict)) == expected
 
 
 @pytest.mark.parametrize('first_headers, all_headers',
@@ -152,6 +152,31 @@ def test_build_headers(first_headers, all_headers):
      - Case b: First headers are first in the list.
     """
     assert (build_headers(first_headers, all_headers))[:len(first_headers)] == first_headers
+
+
+@pytest.mark.parametrize('last_run_offense_id, user_query, expected',
+                         [(1, None, 1),
+                          (2, 'status=open or id > 4', 4),
+                          (6, 'username_count > 2 and id > 3 or event_count < 6', 6),
+                          (4, 'id >= 4', 4),
+                          (2, 'id >= 4', 3),
+                          (32, 'as4ll a4as ll5ajs 352lk aklj id     >           35 zjfzlkfj selkj', 35),
+                          (32, 'as4ll a4as ll5ajs 352lk aklj id     >=           35 zjfzlkfj selkj', 34),
+                          (32, 'a id     >=           35001 ', 35000),
+                          (1523, 'closing_reason_id > 5000', 1523)])
+def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
+    """
+    Given:
+     - The highest fetched offense ID from last run.
+     - The user query for fetch.
+
+    When:
+     - Fetching incidents in long time execution.
+
+    Then:
+     - Ensure that returned value is the lowest ID to fetch from.
+    """
+    assert get_minimum_id_to_fetch(last_run_offense_id, user_query) == expected
 
 
 @pytest.mark.parametrize('enrich_func, mock_func_name, args, mock_response, expected',
