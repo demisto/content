@@ -2324,7 +2324,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
-            "memory_threshold": 100,
+            "memory_threshold": 200,
             "fromversion": "5.5.0"
         },
         {
@@ -3503,7 +3503,6 @@
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
