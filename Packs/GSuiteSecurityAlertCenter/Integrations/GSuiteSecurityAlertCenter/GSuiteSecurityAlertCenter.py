@@ -16,14 +16,15 @@ urllib3.disable_warnings()
 DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_MAX_FETCH = 15
 BASE_URL = 'https://alertcenter.googleapis.com/'
-NEXT_PAGE_TOKEN = '### Next Page Token: {}\n'
+NEXT_PAGE_TOKEN = '### Next Page Token:\n{}\n'
+LIST_FEEDBACK_PAGE_SIZE = 50
 
 URL_SUFFIX: Dict[str, str] = {
     'LIST_ALERTS': 'v1beta1/alerts',
     'FEEDBACK': 'v1beta1/alerts/{0}/feedback',
     'GET_ALERT': 'v1beta1/alerts/{}',
     'BATCH_DELETE': 'v1beta1/alerts:batchDelete',
-    'BATCH_UNDELETE': 'v1beta1/alerts:batchUndelete'
+    'BATCH_RECOVER': 'v1beta1/alerts:batchUndelete'
 }
 
 OUTPUT_PATHS = {
@@ -32,8 +33,8 @@ OUTPUT_PATHS = {
     'FEEDBACK': 'GSuiteSecurityAlert.Feedback',
     'BATCH_DELETE_SUCCESS': 'GSuiteSecurityAlert.Delete.successAlerts(val.id && val.id == obj.id)',
     'BATCH_DELETE_FAILED': 'GSuiteSecurityAlert.Delete.failedAlerts(val.id && val.id == obj.id)',
-    'BATCH_UNDELETE_SUCCESS': 'GSuiteSecurityAlert.Undelete.successAlerts(val.id && val.id == obj.id)',
-    'BATCH_UNDELETE_FAILED': 'GSuiteSecurityAlert.Undelete.failedAlerts(val.id && val.id == obj.id)'
+    'BATCH_RECOVER_SUCCESS': 'GSuiteSecurityAlert.Recover.successAlerts(val.id && val.id == obj.id)',
+    'BATCH_RECOVER_FAILED': 'GSuiteSecurityAlert.Recover.failedAlerts(val.id && val.id == obj.id)'
 }
 
 MESSAGES: Dict[str, str] = {
@@ -119,18 +120,22 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any], last_run: Dict) 
     advance_filter = params.get('filter', '').replace("'", '"')
     if 'createTime' in advance_filter or 'create_time' in advance_filter:
         raise ValueError(MESSAGES['INVALID_FILTER'])
-    if advance_filter != '':
-        alert_filter += f' AND {advance_filter}'
 
-    if 'type' not in alert_filter:
-        alert_types = params.get('alert_type', '').split(',')
+    if 'type' not in advance_filter:
+        alert_types = params.get('alert_type', [])
 
         for index in range(0, len(alert_types)):
             alert_types[index] = alert_types[index].replace("\"", "").replace("'", "").strip()
-            if index == 0 and alert_types[index] != '':
-                alert_filter += f' AND type="{alert_types[index]}"'
-            elif alert_types[index] != '':
+            if index == 0:
+                alert_filter += f' AND (type="{alert_types[index]}"'
+            else:
                 alert_filter += f' OR type="{alert_types[index]}"'
+
+        if '(' in alert_filter:
+            alert_filter += ')'
+
+    if advance_filter != '':
+        alert_filter += f' AND {advance_filter}'
 
     # If next_page_token is present replace filter with filter present in last_run as API does not support
     # change in filter.
@@ -177,7 +182,7 @@ def prepare_hr_for_alerts(alerts: List[Dict[str, Any]], header: str) -> str:
     Prepare the Human readable info for alerts command.
 
     :param alerts: The alerts data.
-    :param header: Header of the hr.
+    :param header: Header of the hr table.
     :return: Human readable.
     """
 
@@ -222,10 +227,10 @@ def prepare_hr_for_alert_feedback(feedbacks: List[Dict[str, Any]]) -> str:
 
 def prepare_hr_for_batch_command(response: Dict[str, Any], method: str) -> str:
     """
-    Prepare the Human readable info for batch delete and undelete alerts command.
+    Prepare the Human readable info for batch delete and recover alerts command.
 
-    :param response: The delete and undelete alerts data.
-    :param method: To delete or undelete alerts.
+    :param response: The delete and recover alerts data.
+    :param method: To delete or recover alerts.
     :return: Human readable.
     """
 
@@ -254,9 +259,9 @@ def prepare_hr_for_batch_command(response: Dict[str, Any], method: str) -> str:
 
 def create_custom_context_for_batch_command(response: Dict[str, Any]) -> Tuple[List, List]:
     """
-    Prepare the custom Context Output for batch delete and undelete alerts command.
+    Prepare the custom Context Output for batch delete and recover alerts command.
 
-    :param response: The batch delete and undelete alerts data.
+    :param response: The batch delete and recover alerts data.
     :return: Success alerts list and failed alerts list
     """
     success_list: List = []
@@ -348,14 +353,13 @@ def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
     if not total_records:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('alert(s)'))
 
-    readable_hr = ''
     token_ec = {}
+
+    # Creating human-readable
+    readable_hr = prepare_hr_for_alerts(total_records, 'Alerts')
     if response.get('nextPageToken'):
         readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
         token_ec = {'name': 'gsac-alert-list', 'nextPageToken': response.get('nextPageToken')}
-
-    # Creating human-readable
-    readable_hr += prepare_hr_for_alerts(total_records, 'Alerts')
 
     # Creating entry context
     output = {
@@ -375,7 +379,7 @@ def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
 @logger
 def gsac_get_alert_command(client, args: Dict[str, str]) -> CommandResults:
     """
-    Get alert from G Suite Security Alert center.
+    Get a single alert from G Suite Security Alert center.
 
     :param client: Client object.
     :param args: Command arguments.
@@ -455,9 +459,9 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
 
 
 @logger
-def gsac_batch_undelete_alerts_command(client, args: Dict[str, str]) -> CommandResults:
+def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandResults:
     """
-    Performs batch undelete operation on alerts.
+    Performs batch recover operation on alerts.
 
     :param client: Client object.
     :param args: Command arguments.
@@ -477,23 +481,23 @@ def gsac_batch_undelete_alerts_command(client, args: Dict[str, str]) -> CommandR
 
     # API Call
     client.set_authorized_http(scopes=SCOPES['ALERT'], subject=admin_email)
-    batch_undelete_response = client.http_request(url_suffix=URL_SUFFIX['BATCH_UNDELETE'], method='POST',
-                                                  body=json_body)
+    batch_recover_response = client.http_request(url_suffix=URL_SUFFIX['BATCH_RECOVER'], method='POST',
+                                                 body=json_body)
 
     # Create entry context
-    success_list, failed_list = create_custom_context_for_batch_command(batch_undelete_response)
+    success_list, failed_list = create_custom_context_for_batch_command(batch_recover_response)
     custom_context: Dict[str, Any] = {
-        OUTPUT_PATHS['BATCH_UNDELETE_SUCCESS']: success_list,
-        OUTPUT_PATHS['BATCH_UNDELETE_FAILED']: failed_list
+        OUTPUT_PATHS['BATCH_RECOVER_SUCCESS']: success_list,
+        OUTPUT_PATHS['BATCH_RECOVER_FAILED']: failed_list
     }
 
     # Create HR
-    hr = prepare_hr_for_batch_command(batch_undelete_response, 'Undelete Alerts')
+    hr = prepare_hr_for_batch_command(batch_recover_response, 'Recover Alerts')
 
     return CommandResults(
         outputs=GSuiteClient.remove_empty_entities(custom_context),
         readable_output=hr,
-        raw_response=batch_undelete_response
+        raw_response=batch_recover_response
     )
 
 
@@ -563,6 +567,8 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
         'filter': args.get('filter', '').replace("'", '"'),
     }
     admin_email = args.get('admin_email')
+    page_size = args.get('page_size', LIST_FEEDBACK_PAGE_SIZE)
+    page_size = GSuiteClient.validate_get_int(page_size, message=MESSAGES['INTEGER_ERROR'].format('page_size'))
 
     # API call
     gsuite_client.set_authorized_http(scopes=SCOPES['ALERT'], subject=admin_email)
@@ -571,10 +577,11 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
         method='GET',
         params=GSuiteClient.remove_empty_entities(params))
 
-    no_records = len(list_alert_feedback_response.get('feedback', []))
-    if no_records == 0:
+    no_records = len(list_alert_feedback_response.get('feedback', [])) == 0
+    if no_records:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('feedback(s)'))
 
+    list_alert_feedback_response["feedback"] = list_alert_feedback_response["feedback"][0:page_size]
     # Create HR
     hr = prepare_hr_for_alert_feedback(list_alert_feedback_response["feedback"])
 
@@ -640,6 +647,7 @@ def fetch_incidents(client, last_run: Dict, params: Dict, is_test: bool = False)
                 alert['feedback'] = feedback_response[0]
         incident = {
             'name': f'{alert.get("type")} - {alert.get("source")}',
+            'occurred': alert.get('createTime'),
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
@@ -668,7 +676,7 @@ def main() -> None:
         'gsac-alert-get': gsac_get_alert_command,
         'gsac-alert-delete': gsac_batch_delete_alerts_command,
         'gsac-alert-feedback-list': gsac_list_alert_feedback_command,
-        'gsac-alert-undelete': gsac_batch_undelete_alerts_command
+        'gsac-alert-recover': gsac_batch_recover_alerts_command
     }
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -695,7 +703,7 @@ def main() -> None:
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
             result = test_module(gsuite_client, {}, params)
-            demisto.results(result)
+            return_results(result)
         elif demisto.command() == 'fetch-incidents':
             incidents, next_run = fetch_incidents(gsuite_client,
                                                   last_run=demisto.getLastRun(),

@@ -1,4 +1,3 @@
-### Next Page Token: dummy_next_page_token
 ### Alerts
 |Alert ID|Alert Type|Source|Severity|Status|Create Time|Update Time|
 |---|---|---|---|---|---|---|
@@ -11,3 +10,5 @@
 | demo_alertId | AppMaker Default Cloud SQL setup | AppMaker Editor | LOW | NOT_STARTED | 2020-10-28T20:43:34.381Z | 2020-10-28T20:43:34.381Z |
 | demo_alertId | Activity Rule | Security Center rules | LOW | NOT_STARTED | 2020-10-28T20:43:34.381Z | 2020-10-28T20:43:34.381Z |
 | demo_alertId | Data Loss Prevention | Data Loss Prevention | LOW | NOT_STARTED | 2020-10-28T20:43:34.381Z | 2020-10-28T20:43:34.381Z |
+### Next Page Token:
+ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ

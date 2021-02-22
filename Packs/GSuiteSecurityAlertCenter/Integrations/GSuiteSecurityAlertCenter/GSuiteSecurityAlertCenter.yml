@@ -39,18 +39,40 @@ configuration:
   required: false
   type: 0
 - additionalinfo: |-
-    Fetches alerts by alert type such as 'Leaked password', 'Phishing reclassification' etc.
-    Note: Fetches all types of alerts if left empty. Provide alert types in a comma-separated manner to fetch multiple alert types.
-    Example: Suspicious login, User reported spam spike
+    Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
+    Note: If type is present in the Filter parameter this value will be overwritten.
   display: Alert Type
   hidden: false
   name: alert_type
+  options:
+  - Customer takeout initiated
+  - Malware reclassification
+  - Misconfigured whitelist
+  - Phishing reclassification
+  - Suspicious message reported
+  - User reported phishing
+  - User reported spam spike
+  - Leaked password
+  - Suspicious login
+  - Suspicious login (less secure app)
+  - Suspicious programmatic login
+  - User suspended
+  - User suspended (spam)
+  - User suspended (spam through relay)
+  - User suspended (suspicious activity)
+  - Google Operations
+  - Government attack warning
+  - Device compromised
+  - Suspicious activity
+  - AppMaker Default Cloud SQL setup
+  - Activity Rule
+  - Data Loss Prevention
   required: false
-  type: 0
+  type: 16
 - additionalinfo: |-
     An advanced filter to fetch the list of alerts.
     Example: source:"Google" AND type="Suspicious login".
-    Note: Takes higher precedence against filter parameters.
+    Note: Takes higher precedence against filter parameters. To fetch alerts using createTime, use the first fetch time interval parameter.
   display: Filter
   hidden: false
   name: filter
@@ -72,7 +94,7 @@ configuration:
   type: 8
 description: G Suite Security Alert Center allows users to fetch different alert types
   such as Suspicious login, Device compromised, Leaked password, and more. Users can
-  delete or undelete a single alert or batch of alerts and retrieve the alert's metadata.
+  delete or recover a single alert or batch of alerts and retrieve the alert's metadata.
   This integration allows users to provide feedback for alerts and fetch existing
   feedback for a particular alert.
 display: G Suite Security Alert Center
@@ -113,7 +135,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists the alerts. Use the filter to filter it by various alert types.
+    description: |-
+      Lists the alerts. Use the filter to filter it by various alert types.
+      Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
     execution: false
     name: gsac-alert-list
     outputs:
@@ -224,7 +248,7 @@ script:
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The SHA256 hash of email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of email's attachment and all MIME parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -493,7 +517,7 @@ script:
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The SHA256 hash of email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of email's attachment and all MIME parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -706,6 +730,13 @@ script:
       name: filter
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The requested page size.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists all the feedback for an alert.
     execution: false
@@ -737,7 +768,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Performs delete operation on alerts.
+    description: |-
+      Performs delete operation on alerts.
+      Note: The alerts that are marked for deletion will be removed from Alert Center after 30 days.
     execution: false
     name: gsac-alert-delete
     outputs:
@@ -761,33 +794,35 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of comma-separated alert IDs to be undeleted.
+      description: List of comma-separated alert IDs to be recovered.
       isArray: true
       name: alert_id
       required: true
       secret: false
     deprecated: false
-    description: Performs undelete operation on alerts.
+    description: |-
+      Performs recover operation on alerts.
+      Note: Recovers the alerts that were marked for deletion within the past 30 days.
     execution: false
-    name: gsac-alert-undelete
+    name: gsac-alert-recover
     outputs:
-    - contextPath: GSuiteSecurityAlert.Undelete.successAlerts.id
-      description: The list of alert IDs successfully marked for undeletion.
+    - contextPath: GSuiteSecurityAlert.Recover.successAlerts.id
+      description: The list of alert IDs successfully marked for recovery.
       type: Unknown
-    - contextPath: GSuiteSecurityAlert.Undelete.failedAlerts.id
-      description: The list of alert IDs failed to be marked for undeletion.
+    - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.id
+      description: The list of alert IDs failed to be marked for recovery.
       type: Unknown
-    - contextPath: GSuiteSecurityAlert.Undelete.failedAlerts.code
+    - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.code
       description: The status code.
       type: Number
-    - contextPath: GSuiteSecurityAlert.Undelete.failedAlerts.message
+    - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.message
       description: A developer-facing error message.
       type: String
-    - contextPath: GSuiteSecurityAlert.Undelete.successAlerts.status
-      description: Status of alert undeletion.
+    - contextPath: GSuiteSecurityAlert.Recover.successAlerts.status
+      description: Status of alert recovery.
       type: String
-    - contextPath: GSuiteSecurityAlert.Undelete.failedAlerts.status
-      description: Status of alert undeletion.
+    - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
+      description: Status of alert recovery.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.15845
   feed: false
@@ -799,7 +834,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- G Suite Security Alert Center-Test
 defaultmapperin: G Suite Security Alert Center - Mapper
 defaultclassifier: G Suite Security Alert Center - Classifier
 fromversion: 5.0.0

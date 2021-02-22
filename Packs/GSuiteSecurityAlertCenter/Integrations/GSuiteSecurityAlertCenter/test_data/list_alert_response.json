@@ -9,6 +9,7 @@
       "type": "Customer takeout initiated",
       "source": "Domain wide takeout",
       "data": {
+        "@type": "demo type",
         "takeoutRequestId": "demo_takeoutRequestId",
         "email": "demo_email"
       },
@@ -314,5 +315,5 @@
       "etag": "demo_etag=="
     }
   ],
-  "nextPageToken": "dummy_next_page_token"
+  "nextPageToken": "ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ"
 }

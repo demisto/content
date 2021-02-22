@@ -7,6 +7,7 @@
     "type": "Customer takeout initiated",
     "source": "Domain wide takeout",
     "data": {
+      "@type": "demo type",
       "takeoutRequestId": "demo_takeoutRequestId",
       "email": "demo_email"
     },

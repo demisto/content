@@ -9,6 +9,7 @@
       "type": "Customer takeout initiated",
       "source": "Domain wide takeout",
       "data": {
+        "@type": "demo type",
         "takeoutRequestId": "demo_takeoutRequestId",
         "email": "demo_email"
       },
@@ -316,6 +317,6 @@
   ],
   "GSuiteSecurityAlert.PageToken.Alert(val.name == val.name)": {
     "name": "gsac-alert-list",
-    "nextPageToken": "dummy_next_page_token"
+    "nextPageToken": "ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ"
   }
 }

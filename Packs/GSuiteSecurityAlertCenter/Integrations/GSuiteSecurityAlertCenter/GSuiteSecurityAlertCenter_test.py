@@ -432,34 +432,34 @@ def test_gsac_batch_delete_alerts_command_success(mocker_http_request, gsuite_cl
 
 
 @patch(MOCKER_HTTP_METHOD)
-def test_gsac_batch_undelete_alerts_command_success(mocker_http_request, gsuite_client):
+def test_gsac_batch_recover_alerts_command_success(mocker_http_request, gsuite_client):
     """
-    Scenario: For gsac_get_batch_undelete_alerts command successful run.
+    Scenario: For gsac_get_batch_recover_alerts command successful run.
 
     Given:
     - Command args.
 
     When:
-    - Calling gsac_get_batch_undelete_alerts command with the parameters provided.
+    - Calling gsac_get_batch_recover_alerts command with the parameters provided.
 
     Then:
     - Ensure command's  raw_response, outputs and readable_output should be as expected.
     """
-    from GSuiteSecurityAlertCenter import gsac_batch_undelete_alerts_command
+    from GSuiteSecurityAlertCenter import gsac_batch_recover_alerts_command
 
-    with open('test_data/batch_undelete_alerts_raw_response.json') as data:
+    with open('test_data/batch_recover_alerts_raw_response.json') as data:
         mock_response = json.load(data)
 
-    with open('test_data/batch_undelete_alerts_context.json') as data:
+    with open('test_data/batch_recover_alerts_context.json') as data:
         expected_res = json.load(data)
 
-    with open('test_data/batch_undelete_alerts.md') as data:
+    with open('test_data/batch_recover_alerts.md') as data:
         expected_hr = data.read()
 
     mocker_http_request.return_value = mock_response
     args = {'alert_id': 'dummy_alertId1,dummy_alertId2'}
 
-    result = gsac_batch_undelete_alerts_command(gsuite_client, args)
+    result = gsac_batch_recover_alerts_command(gsuite_client, args)
 
     assert result.raw_response == mock_response
     assert result.outputs == expected_res
@@ -541,13 +541,13 @@ def test_validate_params_for_fetch_incidents():
     from GSuiteSecurityAlertCenter import validate_params_for_fetch_incidents
 
     input = {
-        'alert_type': 'Suspicious login,User spam spike',
+        'alert_type': ['Suspicious login', 'User spam spike'],
         'first_fetch': '3 days',
         'max_fetch': '1'
     }
     response, _ = validate_params_for_fetch_incidents(input, {})
     filter = response['filter'].split('AND')
-    assert filter[1] == ' type="Suspicious login" OR type="User spam spike"'
+    assert filter[1] == ' (type="Suspicious login" OR type="User spam spike")'
 
 
 def test_fetch_incidents(gsuite_client, mocker):

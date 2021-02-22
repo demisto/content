@@ -1,4 +1,4 @@
-G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or undelete a single alert or batch of alerts and retrieve the alert's metadata. 
+G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or recover a single alert or batch of alerts and retrieve the alert's metadata. 
 This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert. 
 This integration was integrated and tested with version v1beta1 dated Oct 15, 2018 of G Suite Security Alert Center.
 Supported Cortex XSOAR versions: 5.0.0 and later.
@@ -74,8 +74,8 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
     | Admin Email | G Suite domain admin's Email ID which acts on behalf of the end-user. | True |
     | Maximum number of incidents per fetch | The maximum allowed value is 1000. | True |
     | First fetch time interval | The time range to consider for the initial data fetch. Formats accepted: YYYY-MM-dd, YYYY-MM-ddTHH:mm:ss, 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years. Accepted timezone: UTC | False |
-    | Alert Type | Fetches alerts by alert type such as 'Leaked password', 'Phishing reclassification' etc. Note: Fetches all types of alerts if left empty. Provide alert types in a comma-separated manner to fetch multiple alert types. Example: Suspicious login, User reported spam spike | False |
-    | Filter | An advanced filter to fetch the list of alerts. Example: source:"Google" AND type="Suspicious login". Note: Takes higher precedence against filter parameters. | False |
+    | Alert Type | Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty. Note: If type is present in the Filter parameter this value will be overwritten. | False |
+    | Filter | An advanced filter to fetch the list of alerts. Example: source:"Google" AND type="Suspicious login". Note: Takes higher precedence against filter parameters. To fetch alerts using createTime, use the first fetch time interval parameter. | False |
     | Fetch feedback | Fetches the latest type of feedback for each alert. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -92,6 +92,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### gsac-alert-list
 ***
 Lists the alerts. Use the filter to filter it by various alert types.
+Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
 
 
 #### Base Command
@@ -144,7 +145,7 @@ Lists the alerts. Use the filter to filter it by various alert types.
 | GSuiteSecurityAlert.Alert.data.messages.messageBodySnippet | String | The snippet of the message body text \(only available for reported emails\). | 
 | GSuiteSecurityAlert.Alert.data.messages.md5HashSubject | String | The MD5 Hash of email's subject \(only available for reported emails\). | 
 | GSuiteSecurityAlert.Alert.data.messages.subjectText | String | The email subject text \(only available for reported emails\). | 
-| GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash | Unknown | The SHA256 hash of email's attachment and all MIME parts. | 
+| GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash | Unknown | The list of SHA256 hashes of email's attachment and all MIME parts. | 
 | GSuiteSecurityAlert.Alert.data.messages.recipient | String | The recipient of the email. | 
 | GSuiteSecurityAlert.Alert.data.messages.date | Date | The date the malicious email was sent. | 
 | GSuiteSecurityAlert.Alert.data.isInternal | Boolean | If true, the email originated from within the organization. | 
@@ -305,7 +306,7 @@ Lists the alerts. Use the filter to filter it by various alert types.
         "PageToken": {
             "Alert": {
                 "name": "gsac-alert-list",
-                "nextPageToken": "dummy_next_page_token"
+                "nextPageToken": "ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ"
             }
         }
     }
@@ -314,13 +315,13 @@ Lists the alerts. Use the filter to filter it by various alert types.
 
 #### Human Readable Output
 
->### Next Page Token: dummy_next_page_token
 >### Alerts
 >|Alert Id|Alert Type|Source|Severity|Status|Create Time|Update Time|
 >|---|---|---|---|---|---|---|
 >| dummy_alert_id1 | User reported phishing | Gmail phishing | HIGH | NOT_STARTED | 2021-01-21T13:49:06.315483Z | 2021-01-21T13:49:06.315483Z |
 >| dummy_alert_id2 | User reported phishing | Gmail phishing | HIGH | NOT_STARTED | 2020-12-30T09:50:22.824822Z | 2020-12-30T09:50:22.824822Z |
-
+>### Next Page Token:
+>ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ
 
 ### gsac-alert-get
 ***
@@ -373,7 +374,7 @@ Note: To get the alert_id, execute gsac-alert-list  command.
 | GSuiteSecurityAlert.Alert.data.messages.messageBodySnippet | String | The snippet of the message body text \(only available for reported emails\). | 
 | GSuiteSecurityAlert.Alert.data.messages.md5HashSubject | String | The MD5 Hash of email's subject \(only available for reported emails\). | 
 | GSuiteSecurityAlert.Alert.data.messages.subjectText | String | The email subject text \(only available for reported emails\). | 
-| GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash | Unknown | The SHA256 hash of email's attachment and all MIME parts. | 
+| GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash | Unknown | The list of SHA256 hashes of email's attachment and all MIME parts. | 
 | GSuiteSecurityAlert.Alert.data.messages.recipient | String | The recipient of the email. | 
 | GSuiteSecurityAlert.Alert.data.messages.date | Date | The date the malicious email was sent. | 
 | GSuiteSecurityAlert.Alert.data.isInternal | Boolean | If true, the email originated from within the organization. | 
@@ -539,6 +540,7 @@ Lists all the feedback for an alert.
 | --- | --- | --- |
 | alert_id | The identifier of the alert the feedbacks belong to. The "-" wildcard could be used to represent all alerts. | Required | 
 | filter | A query string for filtering alert results. Example: alert_id = alertId01 AND feedback_id = feedbackId01. | Optional | 
+| page_size | The requested page size. | Optional |
 
 
 #### Context Output
@@ -603,6 +605,7 @@ Lists all the feedback for an alert.
 ### gsac-alert-delete
 ***
 Performs delete operation on alerts.
+Note: The alerts that are marked for deletion will be removed from Alert Center after 30 days.
 
 
 #### Base Command
@@ -660,43 +663,44 @@ Note: The gsac-alert-delete command returns a custom context that contains the s
 >| dummy_alert_id2 | Fail (NOT_FOUND) |
 
 
-### gsac-alert-undelete
+### gsac-alert-recover
 ***
-Performs undelete operation on alerts.
+Performs recover operation on alerts.
+Note: Recovers the alerts that were marked for deletion within the past 30 days.
 
 
 #### Base Command
 
-`gsac-alert-undelete`
+`gsac-alert-recover`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | List of comma-separated alert IDs to be undeleted. | Required | 
+| alert_id | List of comma-separated alert IDs to be recovered. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuiteSecurityAlert.Undelete.successAlerts.id | Unknown | The list of alert IDs successfully marked for undeletion. | 
-| GSuiteSecurityAlert.Undelete.failedAlerts.id | Unknown | The list of alert IDs failed to be marked for undeletion. | 
-| GSuiteSecurityAlert.Undelete.failedAlerts.code | Number | The status code. | 
-| GSuiteSecurityAlert.Undelete.failedAlerts.message | String | A developer-facing error message. | 
-| GSuiteSecurityAlert.Undelete.successAlerts.status | String | Status of alert undeletion. | 
-| GSuiteSecurityAlert.Undelete.failedAlerts.status | String | Status of alert undeletion. | 
+| GSuiteSecurityAlert.Recover.successAlerts.id | Unknown | The list of alert IDs successfully marked for recovery. | 
+| GSuiteSecurityAlert.Recover.failedAlerts.id | Unknown | The list of alert IDs failed to be marked for recovery. | 
+| GSuiteSecurityAlert.Recover.failedAlerts.code | Number | The status code. | 
+| GSuiteSecurityAlert.Recover.failedAlerts.message | String | A developer-facing error message. | 
+| GSuiteSecurityAlert.Recover.successAlerts.status | String | Status of alert recovery. | 
+| GSuiteSecurityAlert.Recover.failedAlerts.status | String | Status of alert recovery. | 
 
-Note: The gsac-alert-undelete command returns a custom context that contains the status key that shows the status of the alert ID marked for undeletion.
+Note: The gsac-alert-recover command returns a custom context that contains the status key that shows the status of the alert ID marked for recovery.
 
 #### Command Example
-```!gsac-alert-undelete alert_id="dummy_alert_id1,dummy_alert_id2"```
+```!gsac-alert-recover alert_id="dummy_alert_id1,dummy_alert_id2"```
 
 
 #### Context Example
 ```json
 {
     "GSuiteSecurityAlert": {
-        "Undelete": {
+        "Recover": {
             "failedAlerts": {
                 "code": 5,
                 "id": "dummy_alert_id2",
@@ -714,7 +718,7 @@ Note: The gsac-alert-undelete command returns a custom context that contains the
 
 #### Human Readable Output
 
->### Undelete Alerts
+>### Recover Alerts
 >|Alert ID|Status|
 >|---|---|
 >| dummy_alert_id1 | Success |
