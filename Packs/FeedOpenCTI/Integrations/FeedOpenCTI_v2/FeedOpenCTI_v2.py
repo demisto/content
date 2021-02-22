@@ -479,7 +479,8 @@ def organization_list_command(client, args: Dict[str, str]) -> CommandResults:
         organizations = [
             {'name': organization.get('name'), 'id': organization.get('id')}
             for organization in organizations_list.get('entities')]
-        readable_output = tableToMarkdown('Organizations', organizations, headerTransform=pascalToSpace)
+        readable_output = tableToMarkdown('Organizations', organizations, headers=['name', 'id'],
+                                          headerTransform=pascalToSpace)
         outputs = {
             'organizationsLastRun': new_last_run,
             'Organizations': organizations
@@ -546,7 +547,8 @@ def label_list_command(client, args: Dict[str, str]) -> CommandResults:
         labels = [
             {'value': label.get('value'), 'id': label.get('id')}
             for label in label_list.get('entities')]
-        readable_output = tableToMarkdown('Labels', labels, headerTransform=pascalToSpace)
+        readable_output = tableToMarkdown('Labels', labels, headers=['value', 'id'],
+                                          headerTransform=pascalToSpace)
         outputs = {
             'labelsLastRun': new_last_run,
             'Labels': labels
@@ -636,7 +638,8 @@ def marking_list_command(client, args: Dict[str, str]) -> CommandResults:
             {'value': mark.get('definition'), 'id': mark.get('id')}
             for mark in marking_list.get('entities')]
 
-        readable_output = tableToMarkdown('Markings', markings, headerTransform=pascalToSpace)
+        readable_output = tableToMarkdown('Markings', markings, headers=['value', 'id'],
+                                          headerTransform=pascalToSpace)
 
         outputs = {
             'markingsLastRun': new_last_run,
@@ -664,7 +667,7 @@ def marking_create_command(client, args: Dict[str, str]) -> CommandResults:
         Returns:
             readable_output, raw_response
         """
-    marking = args.get("marking")
+    marking = args.get("name")
     result = marking_create(client=client, definition=marking)
 
     if marking_id := result.get('id'):
