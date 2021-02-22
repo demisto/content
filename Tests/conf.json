@@ -2319,7 +2319,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
-            "memory_threshold": 100,
+            "memory_threshold": 200,
             "fromversion": "5.5.0"
         },
         {
