@@ -17,7 +17,7 @@ from typing import Callable, List, Any, cast, Dict, Tuple
 
 class Handler:
     @staticmethod
-    def write(msg):
+    def write(msg: str):
         demisto.info(msg)
 
 
@@ -69,6 +69,9 @@ DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRs"
 COLLAPSE_TO_RANGES = "To Ranges"
 
+SORT_ASCENDING = 'asc'
+SORT_DESCENDING = 'desc'
+
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
@@ -81,7 +84,8 @@ class RequestArguments:
     def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
-                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False):
+                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = '',
+                 sort_order: str = ''):
 
         self.query = query
         self.out_format = out_format
@@ -94,6 +98,8 @@ class RequestArguments:
         self.category_attribute = []  # type:List
         self.collapse_ips = collapse_ips
         self.csv_text = csv_text
+        self.sort_field = sort_field
+        self.sort_order = sort_order
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -101,7 +107,7 @@ class RequestArguments:
             if len(category_attribute_list) != 1 or '' not in category_attribute_list:
                 self.category_attribute = category_attribute_list
 
-    def is_request_change(self, last_update_data):
+    def is_request_change(self, last_update_data: Dict):
         if self.limit != last_update_data.get('last_limit'):
             return True
 
@@ -132,6 +138,12 @@ class RequestArguments:
         elif self.csv_text != last_update_data.get('csv_text'):
             return True
 
+        elif self.sort_field != last_update_data.get('sort_field'):
+            return True
+
+        elif self.sort_order != last_update_data.get('sort_order'):
+            return True
+
         return False
 
 
@@ -151,7 +163,7 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def get_params_port(params: dict = demisto.params()) -> int:
+def get_params_port(params: dict) -> int:
     """
     Gets port from the integration parameters
     """
@@ -169,6 +181,26 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
+def sort_iocs(request_args: RequestArguments, iocs: list) -> list:
+    """
+    Sorts the IoCs according to the sort field and order.
+    Returns: Sorted List of IoCs, if sorting arguments are defined.
+    """
+    try:
+        if request_args.sort_field:
+            if request_args.sort_order == SORT_ASCENDING:
+                return sorted(iocs, key=lambda ioc: ioc[request_args.sort_field], reverse=False)
+            elif request_args.sort_order == SORT_DESCENDING:
+                return sorted(iocs, key=lambda ioc: ioc[request_args.sort_field], reverse=True)
+    except KeyError:
+        demisto.debug('ExportIndicators - Could not sort IoCs, please verify that you entered the correct field name.\n'
+                      f'Field used: {request_args.sort_field}')
+    except Exception as e:
+        demisto.debug(f'ExportIndicators - Could not sort IoCs due to an unknown error.\n{e}')
+
+    return iocs
+
+
 def refresh_outbound_context(request_args: RequestArguments) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
@@ -177,6 +209,7 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     now = datetime.now()
     # poll indicators into list from demisto
     iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
+    iocs = sort_iocs(request_args, iocs)
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     # if in CSV format - the "indicator" header
@@ -198,6 +231,7 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
 
         # add the new results to the existing results
         iocs += new_iocs
+        iocs = sort_iocs(request_args, iocs)
 
         # reformat the output
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
@@ -235,7 +269,9 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
         'category_default': request_args.category_default,
         'category_attribute': request_args.category_attribute,
         'collapse_ips': request_args.collapse_ips,
-        'csv_text': request_args.csv_text
+        'csv_text': request_args.csv_text,
+        'sort_field': request_args.sort_field,
+        'sort_order': request_args.sort_order,
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -421,7 +457,7 @@ def add_indicator_to_category(indicator, category, category_dict):
     return category_dict
 
 
-def create_proxysg_out_format(iocs: list, category_attribute: list, category_default='bc_category'):
+def create_proxysg_out_format(iocs: list, category_attribute: list, category_default: str = 'bc_category'):
     formatted_indicators = ''
     category_dict = {}  # type:Dict
     num_of_returned_indicators = 0
@@ -552,10 +588,13 @@ def get_outbound_mimetype() -> str:
 
 
 def get_outbound_ioc_values(on_demand, request_args: RequestArguments,
-                            last_update_data={}, cache_refresh_rate=None) -> str:
+                            last_update_data=None, cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
+    if last_update_data is None:
+        last_update_data = {}
+
     last_update = last_update_data.get('last_run')
     last_query = last_update_data.get('last_query')
     current_iocs = last_update_data.get('current_iocs')
@@ -651,6 +690,8 @@ def get_request_args(params):
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
     csv_text = request.args.get('tx', params.get('csv_text', False))
+    sort_field = request.args.get('sf', params.get('sort_field'))
+    sort_order = request.args.get('so', params.get('sort_order'))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -709,7 +750,7 @@ def get_request_args(params):
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text)
+                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
 
 @APP.route('/', methods=['GET'])
@@ -783,7 +824,7 @@ def test_module(args, params):
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
-    return 'ok', {}, {}
+    return 'ok'
 
 
 def run_long_running(params, is_test=False):
@@ -849,7 +890,7 @@ def update_outbound_command(args, params):
     """
     Updates the export_iocs values and format on demand
     """
-    on_demand = demisto.params().get('on_demand')
+    on_demand = params.get('on_demand')
     if not on_demand:
         raise DemistoException(
             '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
@@ -870,9 +911,11 @@ def update_outbound_command(args, params):
     category_default = args.get('category_default')
     collapse_ips = args.get('collapse_ips')
     csv_text = args.get('csv_text') == 'True'
+    sort_field = args.get('sort_field')
+    sort_order = args.get('sort_order')
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text)
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
     indicators = refresh_outbound_context(request_args)
     if indicators:
@@ -882,7 +925,7 @@ def update_outbound_command(args, params):
     else:
         hr = "No Results Found For the Query"
 
-    return hr, {}, indicators
+    return CommandResults(readable_output=hr, raw_response=indicators)
 
 
 def main():
@@ -909,9 +952,10 @@ def main():
     try:
         if command == 'long-running-execution':
             run_long_running(params)
+        elif command in commands:
+            return_results(commands[command](demisto.args(), params))
         else:
-            readable_output, outputs, raw_response = commands[command](demisto.args(), params)
-            return_outputs(readable_output, outputs, raw_response)
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
