@@ -168,7 +168,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "indicator_cyrenmalwarefamily",
+                        "fieldId": "incident_confidence",
                         "isVisible": true
                     },
                     {
