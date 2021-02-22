@@ -565,65 +565,43 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
             update_index_folder(index_folder_path, d.name, d.path)
 
 
-def was_private_pack_updated(private_index_json, public_index_json):
-    """
-    Checks if Content commit hash of each private pack in private and public index files are equal. If there is at
-        least one private pack that has a different content commit hash, it tells us that this pack was updated and
-        should be uploaded. So, an upload flow should NOT be skipped.
+def is_private_packs_updated(public_index_json, private_index_path):
+    """Checks whether there were changes in private packs from the last upload.
+    The check compares the `content commit hash` field in the public index with the value stored in the private index.
+    If there is at least one private pack that has been updated/released, the upload should be performed and not
+    skipped.
 
     Args:
-        private_index_json (dict) : The private index file.
-        public_index_json (dict) : The public index file.
+        public_index_json (dict) : The public index.json file.
+        private_index_path : Path to where the private index.zip is located.
 
     Returns:
-        (bool) True if Content commit hash of at least one private pack was changed.
+        (bool) True if there is at least one private pack that was updated/released.
+              False otherwise (i.e there are no private packs that have been updated/released).
 
     """
-    id_to_commit_hash_from_public_index = {}
-    for private_pack in public_index_json.get("packs"):
-        pack_id = private_pack.get("id")
-        content_commit_hash = private_pack.get("contentCommitHash", "")
-        id_to_commit_hash_from_public_index[pack_id] = content_commit_hash
+    logging.debug("Checking if there are updated private packs")
+
+    private_index_file_path = os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")
+    private_index_json = load_json(private_index_file_path)
+
+    id_to_commit_hash_from_public_index = {private_pack.get("id"): private_pack.get("contentCommitHash", "") for
+                                           private_pack in public_index_json.get("packs", [])}
 
     for private_pack in private_index_json.get("packs"):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
-        if id_to_commit_hash_from_public_index[pack_id] != content_commit_hash:
+        if id_to_commit_hash_from_public_index.get(pack_id) != content_commit_hash:
+            logging.debug("There is at least one private pack that was updated, upload should not be skipped")
             return True
-    return False
 
-
-def is_there_private_packs_to_upload(public_index_json, private_index_path):
-    """ Checks if there are private packs that should be uploaded.
-    The check compares the private index with the public one to verify if Content commit hash of each private pack in
-    those files (private and public index files) are equal. If there is one private pack that has a different
-    content commit hash, it tells us that this pack was updated and should be uploaded. So, an upload flow should NOT
-    be skipped.
-
-    Args:
-        public_index_json (dict) : The public index file.
-        private_index_path : Path to where the private index is located.
-
-    Returns:
-        (bool) True is there is at least one private pack that should be upload.
-              False otherwise (i.e there are no private packs that should upload)
-
-    """
-    logging.debug("Checking if there are private packs to upload")
-
-    with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
-        private_index_json = json.load(private_index_file)
-
-    if was_private_pack_updated(private_index_json, public_index_json):
-        logging.debug(f"There is at least one private pack that was updated, upload should not be skipped")
-        return True
-
+    logging.debug("No private packs were changed")
     return False
 
 
 def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current_commit_hash: str,
                               previous_commit_hash: str, storage_bucket: Any,
-                              private_index_path: str = ""):
+                              should_upload_private_packs: bool = False):
     """ Checks stored at index.json commit hash and compares it to current commit hash. In case no packs folders were
     added/modified/deleted, all other steps are not performed.
 
@@ -633,7 +611,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         current_commit_hash (str): last commit hash of head.
         previous_commit_hash (str): the previous commit to diff with
         storage_bucket: public storage bucket.
-        private_index_path : Path to where the private index is located.
+        should_upload_private_packs (bool): True if there are private packs to upload. False otherwise.
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
@@ -651,11 +629,9 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
         with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as index_file:
             index_json = json.load(index_file)
 
-        if private_index_path:
-            # check if there are private packs that should be uploaded
-            if is_there_private_packs_to_upload(index_json, private_index_path):
-                logging.debug("Not skipping upload flow because of private packs")
-                return
+        if should_upload_private_packs:
+            logging.debug("Not skipping upload flow because of private packs")
+            return
 
         index_commit_hash = index_json.get('commit', previous_commit_hash)
 
@@ -846,6 +822,48 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
+def are_there_private_packs_to_upload(public_index_folder_path, private_bucket_name, extract_destination_path,
+                                      storage_client, public_pack_names) -> Tuple[bool, list, list]:
+    """
+    Checks if there are private packs that should be uploaded.
+
+    Args:
+        public_index_folder_path: extracted public index folder full path.
+        private_bucket_name: Private storage bucket name
+        extract_destination_path: full path to extract directory.
+        storage_client : initialized google cloud storage client.
+        public_pack_names : unique collection of public packs names to upload.
+
+    Returns:
+        should_upload_private_packs (bool): True if there is at least one private pack that was updated/released.
+                                            False otherwise (i.e there are no private packs that have been
+                                            updated/released).
+        private_packs (list) : priced packs from private bucket.
+        updated_private_packs_ids (list): all private packs id's that were updated.
+    """
+    should_upload_private_packs = False
+    if private_bucket_name:
+        private_storage_bucket = storage_client.bucket(private_bucket_name)
+        (private_index_path, _, _) = download_and_extract_index(private_storage_bucket,
+                                                                os.path.join(extract_destination_path, 'private'))
+
+        public_index_file_path = os.path.join(public_index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
+        public_index_json = load_json(public_index_file_path)
+
+        if public_index_json and private_index_path:
+            # check if there are private packs that should be uploaded
+            should_upload_private_packs = is_private_packs_updated(public_index_json, private_index_path)
+            if should_upload_private_packs:
+                private_packs, updated_private_packs_ids = update_index_with_priced_packs(private_index_path,
+                                                                                          extract_destination_path,
+                                                                                          public_index_folder_path,
+                                                                                          public_pack_names)
+                return should_upload_private_packs, private_packs, updated_private_packs_ids
+
+            logging.debug("Skipping index update of priced packs")
+    return should_upload_private_packs, [], []
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
@@ -889,25 +907,12 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # taking care of private packs
-    private_index_path = ""
-    if private_bucket_name:
-        private_storage_bucket = storage_client.bucket(private_bucket_name)
-        (private_index_path, private_index_blob, _) = download_and_extract_index(private_storage_bucket,
-                                                                                 os.path.join(
-                                                                                     extract_destination_path,
-                                                                                     'private'))
+    should_upload_private_packs, private_packs, updated_private_packs_ids = are_there_private_packs_to_upload(
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names)
+
     if not option.override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
-                                  storage_bucket, private_index_path)
-
-    updated_private_packs_ids = []
-    if private_index_path:  # Add private packs to the index
-        private_packs, updated_private_packs_ids = update_index_with_priced_packs(private_index_path,
-                                                                                  extract_destination_path,
-                                                                                  index_folder_path, pack_names)
-    else:  # skipping private packs
-        logging.debug("Skipping index update of priced packs")
-        private_packs = []
+                                  storage_bucket, should_upload_private_packs)
 
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)

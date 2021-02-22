@@ -4,7 +4,7 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, was_private_pack_updated
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
 
 # disable-secrets-detection-start
@@ -559,7 +559,7 @@ class TestUpdatedPrivatePacks:
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
                updated_private_packs[0] != "second_non_updated_pack"
 
-    def test_was_private_pack_updated(self):
+    def test_is_private_packs_updated(self, mocker):
         """
          Scenario: as part of upload packs flow, we want to check if there is at least one private pack was updated
          by comparing "content commit hash" in the public index and in the private index files.
@@ -576,14 +576,16 @@ class TestUpdatedPrivatePacks:
          - Ensure that the function recognises successfully the updated private pack.
          """
         index_folder_path = self.get_index_folder_path()
-        public_index_file_path = os.path.join(index_folder_path, f"index.json")
-        with open(public_index_file_path, 'r') as public_index_json_file:
+        index_file_path = os.path.join(index_folder_path, "index.json")
+        with open(index_file_path, 'r') as public_index_json_file:
             public_index_json = json.load(public_index_json_file)
 
         private_index_json = copy.deepcopy(public_index_json)
-        assert not was_private_pack_updated(private_index_json, public_index_json)
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert not is_private_packs_updated(public_index_json, index_file_path)
 
         # changed content commit hash of one private pack
         del (private_index_json.get("packs")[0])
         private_index_json.get("packs").append({"id": "first_non_updated_pack", "contentCommitHash": "111"})
-        assert was_private_pack_updated(private_index_json, public_index_json)
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)
