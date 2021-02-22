@@ -681,6 +681,9 @@ def main() -> None:
         command = demisto.command()
         if command == 'test-module':
             try:
+                server = demisto.params().get("server")
+                server_url = demisto.params().get("server_url")
+                return_results(f'server={server}, server_url={server_url}')
                 client.entity_lookup(['8.8.8.8'], 'ip')
                 return_results('ok')
             except Exception as err:
@@ -696,6 +699,10 @@ def main() -> None:
             entities = argToList(demisto_args.get(command))
             return_results(lookup_command(client, entities, command))
         elif command == 'recordedfuture-threat-assessment':
+            server = demisto.params().get("server")
+            server_url = demisto.params().get("server_url")
+            return_error(f'server={server}, server_url={server_url}')
+
             context = demisto_args.get('context')
             entities = {'ip': argToList(demisto_args.get('ip')),
                         'domain': argToList(demisto_args.get('domain')),
