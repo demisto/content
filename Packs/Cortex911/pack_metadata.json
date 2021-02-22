@@ -1,0 +1,17 @@
+{
+    "name": "Cortex 911",
+    "description": "Endpoint Protection + EDR + Threat Intel + Remediation:\nCortex XDR Licence for Endpoints w/Host-Insights\nCortex XDR Licence for TB (Analytics on PANW and 3rd party Sources)\nAutofocus\nXSOAR (inc. TIM) Tenant with pre-build playbooks to help CSIRT / MDR to speed-up Investigation and Remediation\nExpanse - Expander attack surface viewer\nPackage in the MarketPlace to integrate XSOAR and XDR and provide all automation immediately\nServices:\nPartner Incident Response Team (CSIRT). Help understand \u201cwhat happened?\u201d, by analyzing available information and evidence\nCortex Managed Threat Hunting. \nMonitor \u201cwhat is happening?\u201d\n24/7 threat hunting powered by Cortex XDR and world-class experts from Unit 42 (by palo Alto Networks)\nGet assistance from I&R Partner teams to hunt down complex threats \nCrypsis Emergency Response Team - Optional - Can be replaced by RRR\u2019s partners\nDuration: 30 days\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Palo Alto Networks",
+    "url": "",
+    "email": "",
+    "created": "2021-02-22T09:20:53Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "kondor117"
+    ]
+}
