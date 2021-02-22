@@ -942,6 +942,32 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
+    def move_folder(self, from_user_id: str, to_user_id: str, notify: bool = False):
+        """
+        Moves the folders from one user to another. Please note, only the root "0" folder can be
+        moved to another user. This operation also requires the "Read and write all files and
+        folders stored in Box" permission scope.
+
+        :param from_user_id: str - The ID of the user who currently owns the folder.
+        :param to_user_id: str - The ID of the user to acquire the folder.
+        :param notify: bool - Indicates if the users should receive an email notification.
+        :return: Status code indicating success or not.
+        """
+        url_suffix = f'/users/{from_user_id}/folders/0/'
+        query_params = {'notify': notify}
+        request_body = {
+            'owned_by': {
+                'id': to_user_id
+            }
+        }
+        return self._http_request(
+            method='PUT',
+            url_suffix=url_suffix,
+            params=query_params,
+            json_data=request_body,
+            timeout=30
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1857,6 +1883,35 @@ def download_file_command(auth_params: dict, base_url: str, verify: bool, proxy:
     return fileResult(filename=file_name, data=response.content)
 
 
+def move_folder_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command executed when `box-move-folder` is called. Will move the folder from one user to another
+
+    :param client: Client - Initialized Client object.
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
+    function.
+    :return: CommandResults - Returns a CommandResults object which is consumed by the
+    return_results function in main()
+    """
+    from_user_id: str = args.get('from_user_id')  # type:ignore
+    to_user_id: str = args.get('to_user_id')  # type:ignore
+    notify: bool = bool(strtobool(args.get('notify', 'true')))
+
+    response = client.move_folder(from_user_id=from_user_id, to_user_id=to_user_id, notify=notify)
+    readable_output: str = tableToMarkdown(
+        name='Folder overview for transferred folder.',
+        t=response,
+        removeNull=True,
+        headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Box.Folder',
+        outputs_key_field='id',
+        outputs=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2046,6 +2101,9 @@ def main() -> None:
 
         elif demisto.command() == 'box-search-content':
             return_results(search_content_command(client=client, args=demisto.args()))
+
+        elif demisto.command() == 'box-move-folder':
+            return_results(move_folder_command(client=client, args=demisto.args()))
 
         elif demisto.command() == 'box-download-file':
             return_results(download_file_command(
