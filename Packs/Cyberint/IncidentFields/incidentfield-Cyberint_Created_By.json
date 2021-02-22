@@ -1,5 +1,5 @@
 {
-    "id": "incident_createdby",
+    "id": "indicator_cyrenmalwarefamily",
     "version": -1,
     "modified": "2021-02-17T14:54:42.064661182+02:00",
     "name": "Created By",

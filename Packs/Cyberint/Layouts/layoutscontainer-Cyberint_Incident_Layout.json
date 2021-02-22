@@ -172,7 +172,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_createdby",
+                        "fieldId": "indicator_cyrenmalwarefamily",
                         "isVisible": true
                     },
                     {
