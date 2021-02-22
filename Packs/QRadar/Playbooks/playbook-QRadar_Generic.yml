@@ -1858,9 +1858,8 @@ inputs:
   required: false
   description: Determines whether to use the default mapping as provided in the QRadar
     generic mapper to set the XSOAR incident severity or set the severity using the
-    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Default value
-    is false and will use the values from mapping. Any other value will be Considered
-    as true and will use the playbooks inputs.
+    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. The mapper will be used by default.
+    Any value other than False will be considered as True and will cause the playbook inputs to be used.
   playbookInputQuery:
 - key: FieldToSetSeverityFrom
   value:
