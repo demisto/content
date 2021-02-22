@@ -26,24 +26,10 @@
   "contextValue": "Address",
   "excludedBrands": [],
   "defaultMapping": {
-    "blocked": {
-      "simple": "",
-      "complex": {
-        "root": "Account",
-        "filters": [],
-        "accessor": "Blocked",
-        "transformers": [
-          {
-            "operator": "uniq",
-            "args": {}
-          }
-        ]
-      }
-    },
     "domainname": {
       "simple": "",
       "complex": {
-        "root": "Account",
+        "root": "Email",
         "filters": [],
         "accessor": "Domain",
         "transformers": [
@@ -57,9 +43,9 @@
     "emailaddress": {
       "simple": "",
       "complex": {
-        "root": "Account",
+        "root": "Email",
         "filters": [],
-        "accessor": "Email.Address",
+        "accessor": "Address",
         "transformers": [
           {
             "operator": "uniq",
