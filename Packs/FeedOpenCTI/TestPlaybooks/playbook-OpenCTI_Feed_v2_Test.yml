@@ -149,7 +149,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "20"
     scriptarguments:
       id:
         simple: ${OpenCTI.Indicator.id}
@@ -158,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 3520
         }
       }
     note: false
@@ -193,7 +193,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2470
         }
       }
     note: false
@@ -228,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2645
         }
       }
     note: false
@@ -238,10 +238,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 4d3e0af2-551a-4a25-88b9-4bc35dbd34e2
+    taskid: f5bc5a03-b178-460d-8c01-b9693cbc495e
     type: regular
     task:
-      id: 4d3e0af2-551a-4a25-88b9-4bc35dbd34e2
+      id: f5bc5a03-b178-460d-8c01-b9693cbc495e
       version: -1
       name: opencti-indicator-create
       description: Create new indicator.
@@ -259,13 +259,16 @@ tasks:
         simple: '{"value": "BadHost-TestPlaybook"}'
       description:
         simple: Test playbook bad hostname indicator
-      external_references_id: {}
+      external_references_id:
+        simple: ${OpenCTI.externalReference.id}
       label:
         simple: testplaybook
-      label_id: {}
+      label_id:
+        simple: ${OpenCTI.Label.id}
       marking:
         simple: TLP:GREEN
-      marking_id: {}
+      marking_id:
+        simple: ${OpenCTI.MarkingDefinition.id}
       score:
         simple: "70"
       type:
@@ -275,7 +278,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 2120
         }
       }
     note: false
@@ -315,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2295
         }
       }
     note: false
@@ -340,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4570
         }
       }
     note: false
@@ -364,7 +367,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "5"
     scriptarguments:
       field:
         simple: label
@@ -377,7 +380,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 3345
         }
       }
     note: false
@@ -414,7 +417,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3170
         }
       }
     note: false
@@ -443,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4045
         }
       }
     note: false
@@ -500,7 +503,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -519,7 +522,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4220
         }
       }
     note: false
@@ -540,7 +543,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -588,7 +591,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2820
         }
       }
     note: false
@@ -610,7 +613,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "20"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -629,7 +632,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2995
         }
       }
     note: false
@@ -663,7 +666,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3695
         }
       }
     note: false
@@ -685,7 +688,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -704,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3870
         }
       }
     note: false
@@ -739,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 1070
         }
       }
     note: false
@@ -775,7 +778,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 1245
         }
       }
     note: false
@@ -808,7 +811,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 1420
         }
       }
     note: false
@@ -844,7 +847,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 1595
         }
       }
     note: false
@@ -877,7 +880,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 1770
         }
       }
     note: false
@@ -899,7 +902,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -913,7 +916,59 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "28":
+    id: "28"
+    taskid: de5edc95-e378-4ef1-8fdb-6e1173203aeb
+    type: playbook
+    task:
+      id: de5edc95-e378-4ef1-8fdb-6e1173203aeb
+      version: -1
+      name: OpenCTI Create Indicator
+      playbookName: OpenCTI Create Indicator
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      created_by_id: {}
+      data:
+        simple: '{"value":"TestPlaybookIncidentCreate"}'
+      description:
+        simple: test description
+      external_reference_source_name:
+        simple: test _reference
+      external_reference_url:
+        simple: www.test.com
+      label_name:
+        simple: test-label
+      marking_definition:
+        simple: TLP:RED
+      score:
+        simple: "90"
+      type:
+        simple: Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
         }
       }
     note: false
@@ -927,7 +982,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4410,
+        "height": 4585,
         "width": 380,
         "x": 50,
         "y": 50
