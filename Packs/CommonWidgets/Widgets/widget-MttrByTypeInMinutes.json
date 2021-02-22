@@ -2,7 +2,7 @@
  "id": "mttr-by-type-minutes",
  "version": -1,
  "fromVersion": "5.0.0",
- "name": "MTTR by Type(in minutes)",
+ "name": "MTTR by Type (in minutes)",
  "dataType": "incidents",
  "widgetType": "line",
  "query": "-category:job and status:closed",
@@ -28,5 +28,5 @@
   ],
   "timeFrame": "minutes"
  },
- "description": "Shows changes in Mean Time to Resolution(in minutes), over time, while differentiating between incident types."
+ "description": "Shows changes in Mean Time to Resolution (in minutes), over time, while differentiating between incident types."
 }
