@@ -223,7 +223,7 @@ script:
     name: mirror-investigation
   - arguments:
     - default: true
-      description: The message content.
+      description: "The message content. When mentioning another slack user, make sure to do so in the following format: <@user_name>."
       isArray: false
       name: message
       required: false

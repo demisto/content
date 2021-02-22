@@ -1,0 +1,182 @@
+commonfields:
+  id: Server Message Block (SMB) v2
+  version: -1
+name: Server Message Block (SMB) v2
+display: Server Message Block (SMB) v2
+category: Utilities
+description: Files and Directories management with an SMB server. Supports SMB2 and SMB3 protocols.
+configuration:
+- display: Server IP / Hostname (e.g. 1.2.3.4)
+  name: hostname
+  type: 0
+  required: false
+- display: Port
+  name: port
+  defaultvalue: "445"
+  type: 0
+  required: false
+- display: Domain Controller
+  name: dc
+  type: 0
+  required: false
+  additionalinfo: The domain controller hostname. This is useful for environments
+    with DFS servers as it is used to identify the DFS domain information automatically.
+- display: Username
+  name: credentials
+  type: 9
+  required: false
+- display: Client GUID
+  name: client_guid
+  type: 0
+  required: false
+  additionalinfo: The client machine name to identify the client to the server on a new connection.
+- display: Force Encryption
+  name: encrypt
+  type: 8
+  required: false
+  additionalinfo: Force encryption on the connection, requires SMBv3 or newer on the remote server. Default is "false".
+- display: Secure Dialect Negotiation
+  name: require_secure_negotiate
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation
+script:
+  commands:
+  - name: smb-download
+    arguments:
+    - name: file_path
+      required: true
+      default: true
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: string
+    - contextPath: File.Info
+      description: Information about the file.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    description: Downloads a file from the server.
+  - name: smb-upload
+    arguments:
+    - name: file_path
+      required: true
+      default: true
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
+    - name: entryID
+      default: false
+      description: EntryID of the file to send to the share.
+    - name: content
+      default: false
+      description: File content to send to the share. Ignored if EntryID argument is specified.
+    description: Uploads a file to the server.
+  - name: smb-directory-list
+    arguments:
+    - name: path
+      required: true
+      default: true
+      description: 'The path to the directory, starting from the share, for example: Share/Folder. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
+    description: Returns a list containing the names of the entries in the directory given by path.
+    outputs:
+      - contextPath: SMB.Path.SharedFolder
+        description: The full path of the shared folder.
+        type: String
+      - contextPath: SMB.Path.Files
+        description: List of files under the shared folder.
+        type: Unknown
+      - contextPath: SMB.Path.Directories
+        description: List of directories under the shared folder.
+        type: Unknown
+  - name: smb-file-remove
+    arguments:
+    - name: file_path
+      required: true
+      default: true
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty,
+        the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password
+        from the instance configuration is used.
+    description: Removes a file from the server.
+  - name: smb-directory-create
+    arguments:
+    - name: path
+      required: true
+      default: true
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty,
+        the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password
+        from the instance configuration is used.
+    description: Creates a new directory under the given path.
+  - name: smb-directory-remove
+    arguments:
+    - name: path
+      required: true
+      default: true
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+    - name: hostname
+      description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
+    - name: username
+      description: The username to use when creating a new SMB session. If empty,
+        the username from the instance configuration is used.
+    - name: password
+      description: The password to use for authentication. If empty, the password
+        from the instance configuration is used.
+    description: Removes a directory from the given path.
+  dockerimage: demisto/smbprotocol:1.0.0.16104
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- SMB_v2-Test
+fromversion: 5.0.0
