@@ -1,6 +1,6 @@
 {
-    "name": "Powershell Payload Response",
-    "description": "The Powershell Payload Response playbook is designed to handle a suspected file/payload execution within Powershell. The playbook will isolate the endpoint machine, detonate the suspected file in an isolated environment, and then check to see if other endpoint machines have this same executable stored somewhere. All of this can be configured to update to a specified SIEM/Ticket Tracking platform of your choosing. This will help improve remediation time by doing the busy work of investigating and detonating files, isolating endpoints, and checking for other files like it in the system, and present the analyst with a series of findings for them to make a judgement call on, as well as pre-scripted remediation actions in order to remove said files from the infected endpoint machines and get them back online.",
+    "name": "Malware Lateral Movement Assessment and Response",
+    "description": "This playbook identifies and remediates malware's lateral movement impact due to a phishing campaign in an organization.\n\nThis playbook takes the hosts and attachments with the phishing email and then 1. It scans at the endpoint on which the phishing link was clicked and takes action to resolve any C&C activity and 2. It retroactively scans the logging history to identify lateral movement and quartines or resolve the traffic communication from those hosts",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Accenture",
