@@ -91,14 +91,3 @@ def test_search(requests_mock):
     assert response.outputs_prefix == 'HostIo.Search'
     assert response.outputs_key_field == ['Field', 'Value']
     assert response.raw_response == mock_response
-
-
-def test_parsing_date():
-    from hostio import parse_domain_date
-
-    date_to_check = '2021-01-26T01:33:56.129Z'
-    mock_result = '2021-01-26T01:33:56Z'
-
-    result = parse_domain_date(date_to_check)
-
-    assert result == mock_result

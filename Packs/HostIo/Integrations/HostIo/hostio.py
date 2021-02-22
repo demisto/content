@@ -39,31 +39,6 @@ class Client(BaseClient):
         )
 
 
-''' HELPER FUNCTIONS '''
-
-
-def parse_domain_date(domain_date: str, date_format: str = DATE_FORMAT) -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
-    Converts date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    :type domain_date: ``Union[List[str],str]``
-    :param date_format:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
-    :return: Parsed time in ISO8601 format ISO8601 format
-    :rtype: ``Optional[str]``
-    """
-
-    domain_date_dt = dateparser.parse(domain_date)
-    if domain_date_dt:
-        return domain_date_dt.strftime(date_format)
-    # in any other case return nothing
-    return None
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -114,7 +89,9 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         domain_data = client.get_domain_data(domain)
 
         if domain_data.get('web', {}).get('date'):
-            domain_data['updated_date'] = parse_domain_date(domain_data['web']['date'])
+            domain_date_dt = dateparser.parse(domain_data['web']['date'])
+            if domain_date_dt:
+                domain_data['updated_date'] =  domain_date_dt.strftime(DATE_FORMAT)
 
         score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(
@@ -162,6 +139,8 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         'Domains': data.get('domains', []),
         'Total': data.get('total')
     }
+    if data.get('total') == 0:
+        context['Domains'] = f'No Domains associated with {field}'
 
     return CommandResults(
         readable_output=read,
