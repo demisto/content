@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List, Any
 import urllib3
 from CommonServerPython import *
+from math import ceil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,11 +25,12 @@ class Client(BaseClient):
             params={}
         )
 
-    def get_search_data(self, field: str, value: str, limit: int) -> Dict[str, Any]:
+    def get_search_data(self, field: str, value: str, limit: int, page: int) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
             url_suffix=f'domains/{field}/{value}',
-            params={'limit': limit}
+            params={'limit': limit,
+                    'page': page}
         )
 
     def test_module(self):
@@ -91,7 +93,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         if domain_data.get('web', {}).get('date'):
             domain_date_dt = dateparser.parse(domain_data['web']['date'])
             if domain_date_dt:
-                domain_data['updated_date'] =  domain_date_dt.strftime(DATE_FORMAT)
+                domain_data['updated_date'] = domain_date_dt.strftime(DATE_FORMAT)
 
         score = Common.DBotScore.NONE
         dbot_score = Common.DBotScore(
@@ -130,17 +132,31 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     value = args.get('value', None)
     limit = args.get('limit', 25)
 
-    data = client.get_search_data(field, value, limit)
+    data = client.get_search_data(field, value, limit, 0)
+
+    domains = data.get('domains', [])
+    total = data.get('total')
+
+    if total == 0:
+        domains = f'No Domains associated with {field}'
+    elif int(str(total)) > int(str(limit)):
+        pages = ceil((int(str(total)) - len(domains)) / len(domains))  # i set it as len domains since in trial its always 5
+        page = 1
+        while page <= pages:
+            data = client.get_search_data(field, value, limit, page)
+            domains += data.get('domains', [])
+            page += 1
+
+        data['domains'] = domains
+
     read = tableToMarkdown(f'Domains associated with {field}: {value}', data)
 
     context = {
         'Field': field,
         'Value': value,
-        'Domains': data.get('domains', []),
-        'Total': data.get('total')
+        'Domains': domains,
+        'Total': total
     }
-    if data.get('total') == 0:
-        context['Domains'] = f'No Domains associated with {field}'
 
     return CommandResults(
         readable_output=read,
