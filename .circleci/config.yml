@@ -112,6 +112,12 @@ parameters:
   bucket_upload:
     type: string
     default: ""
+  gcs_market_bucket:
+    type: string
+    default: "marketplace-dist"
+  slack_channel:
+    type: string
+    default: "dmst-content-team"
 
 references:
   environment: &environment
@@ -124,6 +130,8 @@ references:
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
+      GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+      SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
@@ -337,6 +345,11 @@ references:
       name: Validate Files and Yaml
       when: always
       command: |
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+          echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
+          exit 0
+        fi
+
         # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
@@ -349,6 +362,11 @@ references:
       when: always
       no_output_timeout: 5h
       command: |
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+          echo "Skipping validations when uploading to a test bucket."
+          exit 0
+        fi
+
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
         echo "flake8 py2 version: $(python2 -m flake8 --version)"
@@ -534,10 +552,19 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Create Instances:
+    - Run Unit Testing And Lint:
         context: bucket_upload_env
         requires:
           - Setup Environment
+    - Run Validations:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
+    - Create Instances:
+        context: bucket_upload_env
+        requires:
+          - Run Unit Testing And Lint
+          - Run Validations
     - Install Packs in Server 6_0:
         context: bucket_upload_env
         requires:
@@ -555,9 +582,11 @@ references:
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
       condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
+        and:
+          - or:
+            - << pipeline.parameters.force_pack_upload >>
+            - << pipeline.parameters.bucket_upload >>
+          - equal: [ marketplace-dist, << pipeline.parameters.gcs_market_bucket >> ]
       steps:
         - run:
             name: Check User Permissions to Upload Pack
@@ -644,7 +673,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             else
               ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
             fi
@@ -714,7 +743,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
 
@@ -757,7 +786,7 @@ jobs:
                     echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
                     exit 0
                   fi
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
                   echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
                 name: Zip Content Packs From GCS
@@ -785,7 +814,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
 
@@ -998,6 +1027,7 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
+      - *check_user_permissions_to_upload_packs
       - run:
           name: Force Upload Packs To Marketplace Storage
           command: |
@@ -1010,9 +1040,9 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
-            GCS_MARKET_BUCKET="marketplace-dist-dev"
-            STORAGE_BATH_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
-
+            if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+              STORAGE_BATH_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+            fi
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BATH_PATH}"
             rm $GCS_PATH
           when: on_success
@@ -1028,9 +1058,10 @@ jobs:
       - *prepare_environment
       - when:
           condition:
-            equal:
-              - upload-flow-dev
-              - << pipeline.git.branch >>
+            or:
+              - equal: [ master , << pipeline.git.branch >> ]
+              - not:
+                  equal: [ marketplace-dist, << pipeline.parameters.gcs_market_bucket >> ]
           steps:
             - set-instance-role-env-variable:
                 instance_role: Server Master
@@ -1048,10 +1079,11 @@ jobs:
                   echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-                  SOURCE_TESTING_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+                    SOURCE_TESTING_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+                  fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
                   rm $GCS_PATH
             - run:
                 name: Validate Premium Packs
@@ -1064,7 +1096,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *store_artifacts
@@ -1207,7 +1239,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *persist_to_workspace
@@ -1240,7 +1272,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *destroy_instances
@@ -1301,18 +1333,10 @@ workflows:
           context: bucket_upload_env
       - Create Instances:
           context: bucket_upload_env
-          filters:
-            branches:
-              only:
-                - upload-flow-dev
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
           context: bucket_upload_env
-          filters:
-            branches:
-              only:
-                - upload-flow-dev
           requires:
             - Create Instances
 
