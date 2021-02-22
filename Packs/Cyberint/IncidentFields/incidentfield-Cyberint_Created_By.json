@@ -1,10 +1,10 @@
 {
-    "id": "incident_cyberintcreatedby",
+    "id": "incident_createdby",
     "version": -1,
     "modified": "2021-02-17T14:54:42.064661182+02:00",
     "name": "CreatedBy",
     "ownerOnly": false,
-    "cliName": "cyberintcreatedby",
+    "cliName": "createdby",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
