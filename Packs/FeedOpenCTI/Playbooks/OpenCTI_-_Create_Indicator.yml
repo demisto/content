@@ -44,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "7"
       "yes":
       - "2"
     separatecontext: false
@@ -102,44 +102,6 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-  "3":
-    id: "3"
-    taskid: 9df66273-0619-4bd2-8322-9743e13e37be
-    type: condition
-    task:
-      id: 9df66273-0619-4bd2-8322-9743e13e37be
-      version: -1
-      name: Check if marking provided?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.marking_definition
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
   "4":
     id: "4"
     taskid: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
@@ -153,7 +115,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -168,75 +130,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "5":
-    id: "5"
-    taskid: 89474b6a-2f35-4088-8229-0037ae05d659
-    type: regular
-    task:
-      id: 89474b6a-2f35-4088-8229-0037ae05d659
-      version: -1
-      name: opencti-marking-definition-create
-      description: Create marking definition.
-      script: '|||opencti-marking-definition-create'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      name:
-        simple: ${inputs.marking_definition}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "6":
-    id: "6"
-    taskid: 3b5cc321-9f3c-4532-89d1-f55c38a5028d
-    type: condition
-    task:
-      id: 3b5cc321-9f3c-4532-89d1-f55c38a5028d
-      version: -1
-      name: Verify Output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpenCTI.MarkingDefinition.id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
         }
       }
     note: false
@@ -279,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 720
         }
       }
     note: false
@@ -314,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1420
+          "y": 895
         }
       }
     note: false
@@ -350,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1595
+          "y": 1070
         }
       }
     note: false
@@ -361,10 +254,10 @@ tasks:
     isoversize: false
   "10":
     id: "10"
-    taskid: 7a04d83e-aef8-4a48-8eca-e9c74b301111
+    taskid: 296a0d14-77b1-4fc3-8a39-483983b45ae6
     type: regular
     task:
-      id: 7a04d83e-aef8-4a48-8eca-e9c74b301111
+      id: 296a0d14-77b1-4fc3-8a39-483983b45ae6
       version: -1
       name: opencti-create-indicator
       description: Create new indicator.
@@ -387,7 +280,7 @@ tasks:
       label_id:
         simple: ${OpenCTI.Label.id}
       marking_id:
-        simple: ${OpenCTI.MarkingDefinition.id}
+        simple: ${inputs.marking_definition_id}
       score:
         simple: ${inputs.score}
       type:
@@ -397,7 +290,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 1245
         }
       }
     note: false
@@ -433,7 +326,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 1420
         }
       }
     note: false
@@ -458,7 +351,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1595
         }
       }
     note: false
@@ -472,7 +365,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 1610,
         "width": 605,
         "x": 50,
         "y": 50
@@ -492,15 +385,18 @@ inputs:
     "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry
     Key" and "URL".'
   playbookInputQuery: null
-- key: marking_definition
+- key: marking_definition_id
   value: {}
   required: false
-  description: Marking definition to add to new indicator.
+  description: 'Marking definition id to add to new indicator. Use opencti-marking-definition-list
+    to get marking id. '
   playbookInputQuery: null
 - key: created_by_id
   value: {}
   required: false
-  description: Creator of the new indicator.
+  description: Creator of the new indicator. Use opencti-organization-list to find
+    all organizations id at opencti, or use  opencti-organization-create to create
+    new organization id.
   playbookInputQuery: null
 - key: external_reference_source_name
   value: {}
@@ -517,7 +413,7 @@ inputs:
 - key: description
   value: {}
   required: false
-  description: New Indicator description.
+  description: New indicator description.
   playbookInputQuery: null
 - key: score
   value: {}
@@ -539,3 +435,6 @@ outputs:
   type: string
 - contextPath: OpenCTI.Indicator.data
   description: New indicator data.
+fromversion: 5.5.0
+tests:
+- OpenCTI Feed v2 Test

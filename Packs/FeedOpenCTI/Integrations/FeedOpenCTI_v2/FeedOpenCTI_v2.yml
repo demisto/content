@@ -264,7 +264,7 @@ script:
       secret: false
     - default: false
       description: Organization id. Use opencti-organization-list to find all organizations
-        id at opencti, or use  opencti-organization-create to create new organization
+        id at opencti, or use opencti-organization-create to create new organization
         id.
       isArray: false
       name: created_by
@@ -272,7 +272,7 @@ script:
       secret: false
     - default: false
       description: Indicator marking id. Use opencti-marking-definition-list to find all marking definitions
-        id at opencti, or use opencti-marking-definition-create to create new marking.
+        id at opencti.
       isArray: false
       name: marking_id
       required: false
@@ -342,7 +342,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Value of the field to add. Enter label id or marking id. Use opencti-label-list to find all labels id at opencti, or use opencti-label-create to create new label. Use opencti-marking-definition-list to find all marking definitions id at opencti, or use opencti-marking-definition-create to create new marking."
+      description: "Value of the field to add. Enter label id or marking id. Use opencti-label-list to find all labels id at opencti, or use opencti-label-create to create new label. Use opencti-marking-definition-list to find all marking definitions id at opencti"
       isArray: false
       name: value
       required: true
@@ -541,21 +541,6 @@ script:
       type: String
     - contextPath: OpenCTI.markingsLastRun
       description: the id of the last fetch to use pagination.
-      type: String
-  - arguments:
-    - default: false
-      description: "Name of marking definition to create. For example TLP:RED, LP:GREEN."
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Create marking definition.
-    execution: false
-    name: opencti-marking-definition-create
-    outputs:
-    - contextPath: OpenCTI.MarkingDefinition.id
-      description: New Marking Definition id.
       type: String
   dockerimage: demisto/opencti-v4:1.0.0.16772
   feed: true
