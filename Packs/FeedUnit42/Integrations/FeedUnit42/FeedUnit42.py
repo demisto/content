@@ -389,12 +389,15 @@ def create_mitre_indicator(indicator_val: str, relation_object: Dict, matched_re
         "value": indicator_val,
         "type": 'MITRE ATT&CK',
         "fields": {
+            "mitrename": relation_object.get('name').partition(':')[2],
+            "mitredescription": relation_object.get('description'),
             "firstseenbysource": relation_object.get('created'),
             "indicatoridentification": relation_object.get('id'),
             "tags": [],
             "modified": relation_object.get('modified'),
             "reportedby": 'Unit42',
-            "mitrecourseofaction": create_course_of_action_field(courses_of_action)
+            "mitrecourseofaction": create_course_of_action_field(courses_of_action),
+            "mitrekillchainphases": relation_object.get('kill_chain_phases')
         }
     }
 
@@ -417,6 +420,7 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
             row = {}
             if relationship_product in COURSE_OF_ACTION_U42:
                 row['title'] = course_of_action.get('x_panw_coa_u42_title')
+                row['description'] = course_of_action.get('description')
 
             if relationship_product in COURSE_OF_ACTION_BP:
                 row['title'] = course_of_action.get('x_panw_coa_bp_title')
@@ -424,13 +428,12 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
                 row['recommendation number'] = course_of_action.get('x_panw_coa_bp_recommendation_number')
                 row['description'] = course_of_action.get('x_panw_coa_bp_description')
                 row['remediation procedure'] = course_of_action.get('x_panw_coa_bp_remediation_procedure')
-                row['impact statement'] = course_of_action.get('x_panw_coa_bp_impact_statement')
 
-            row['description'] = course_of_action.get('description')
             row['name'] = course_of_action.get('name')
 
             tmp_table.append(row)
-        md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True, headerTransform=string_to_table_header)
+        md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True,
+                                   headerTransform=string_to_table_header, headers= ['name', 'title', 'description', 'impact statement', 'recommendation number', 'remediation procedure'])
         markdown = f'{markdown}\n{md_table}'
     return markdown
 
