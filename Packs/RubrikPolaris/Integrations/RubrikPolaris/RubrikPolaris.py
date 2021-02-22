@@ -11,14 +11,12 @@ import dateparser
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 # The time, in minutes, that we should check for new incidents
 FETCH_TIME = 5
 OPERATION_NAME_PREFIX = "SdkCortexXsoar"
-
 
 ''' CLIENT CLASS '''
 
@@ -33,7 +31,6 @@ class Client(BaseClient):
     """
 
     def get_api_token(self) -> str:
-
         # email is the customer facing version of the username
         # param
         username = demisto.params().get('email', False)
@@ -55,7 +52,6 @@ class Client(BaseClient):
         return response["access_token"]
 
     def gql_query(self, operation_name: str, query: str, variables: dict, isPagination: bool) -> dict:
-
         query_api = "/graphql"
         # When paginating the results we already have the session API token
         if isPagination is False:
@@ -112,7 +108,8 @@ def test_module(client: Client) -> str:
             if last_run_obj is None:
                 raise ValueError
         except ValueError:
-            return "We were unable to parse the First Fetch variable. Make sure the provided value follows the Relative Dates outlined at https://dateparser.readthedocs.io/en/latest/#relative-dates"
+            return "We were unable to parse the First Fetch variable. Make sure the provided value follows the " \
+                   "Relative Dates outlined at https://dateparser.readthedocs.io/en/latest/#relative-dates"
     try:
         client.get_api_token()
     except DemistoException as e:
@@ -127,7 +124,6 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
-
     # Returns an obj with the previous run in it.
     last_run = demisto.getLastRun().get('last_fetch', None)
 
@@ -212,7 +208,8 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 if radar_events_pagination['data']["activitySeriesConnection"]['pageInfo']['hasNextPage'] is False:
                     break
 
-                variables["after"] = radar_events_pagination['data']["activitySeriesConnection"]["pageInfo"]['endCursor']
+                variables["after"] = radar_events_pagination['data']["activitySeriesConnection"]["pageInfo"][
+                    'endCursor']
 
             for node in pagination_results:
                 radar_events['data']["activitySeriesConnection"]["edges"].append(node)
@@ -260,7 +257,6 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
 
 
 def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     incident = demisto.incident().get("CustomFields")
 
     # activitySeriesId is an optional value for the command. When not set,
@@ -273,7 +269,10 @@ def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -
             # if still not found return an error message about it being
             # required
             return_error(
-                message="The activitySeriesId value is required. Either manually provide or run this command in a 'Rubrik Radar Anomaly' incident where it will automatically looked up using the incident context.", error=e)
+                message="The activitySeriesId value is required. Either manually provide or run this "
+                        "command in a 'Rubrik Radar Anomaly' incident where it will automatically looked "
+                        "up using the incident context.",
+                error=e)
 
     operation_name = f"{OPERATION_NAME_PREFIX}AnomalyEventSeriesDetailsQuery"
 
@@ -331,9 +330,11 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
             # if still not found return an error message about it being
             # required
             return_error(
-                message="The objectName value is required. Either manually provide or run this command in a 'Rubrik Radar Anomaly' incident where it will automatically looked up using the incident context.", error=e)
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
 
-    # TODO - SET A LIMIT HERE?
     searchTimePeriod = args.get('searchTimePeriod', None)
     if not searchTimePeriod:
         searchTimePeriod = 7
@@ -375,7 +376,8 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         "timezone": "UTC"
     }
 
-    sonar_object_detail = client.gql_query(operation_name_object_list, object_details_query, object_details_variable, False)
+    sonar_object_detail = client.gql_query(operation_name_object_list, object_details_query, object_details_variable,
+                                           False)
 
     # Check the sonar_object_detail for the provided object name and
     # store its details for subsequent API call
@@ -383,7 +385,8 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
 
         if sonar_object["node"]["snappable"]["name"] == objectName:
             object_details["id"] = sonar_object["node"]["snappable"]["id"]
-            object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotTime"]
+            object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"][
+                "snapshotTime"]
             object_details["snapshot_fid"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotFid"]
 
     # If the provided object does not have any sensitive hits for today, look for
@@ -400,8 +403,10 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
             for sonar_object in sonar_object_detail["data"]["policyObjConnection"]["edges"]:
                 if sonar_object["node"]["snappable"]["name"] is objectName:
                     object_details["id"] = sonar_object["node"]["snappable"]["id"]
-                    object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotTime"]
-                    object_details["snapshot_fid"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"]["snapshotFid"]
+                    object_details["snapshot_time"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"][
+                        "snapshotTime"]
+                    object_details["snapshot_fid"] = sonar_object["node"]["objectStatus"]["latestSnapshotResult"][
+                        "snapshotFid"]
 
             if len(object_details) == 1:
                 break
@@ -471,9 +476,9 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         "snapshotFid": object_details["snapshot_fid"]
     }
 
-    # TODO - Handle errors like errors:[map[extensions:map[code:500 trace:map[operation:/api/graphql
     # spanId:uoH6A/2xDM8= traceId:/64k4L3xe74eS9LyVe3rjg==]] locations:[map[column:17 line:2]]
-    sensitive_hits = client.gql_query(operation_name_object_detail, sensitive_hits_query, sensitive_hits_variables, False)
+    sensitive_hits = client.gql_query(operation_name_object_detail, sensitive_hits_query, sensitive_hits_variables,
+                                      False)
 
     policy_hits = {}  # type: ignore
     for h in sensitive_hits["data"]["policyObj"]["rootFileResult"]["analyzerGroupResults"]:
