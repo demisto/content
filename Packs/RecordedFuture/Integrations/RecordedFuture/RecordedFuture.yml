@@ -9,8 +9,8 @@ description: Unique threat intel technology that automatically serves up relevan
   insights in real time.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/v2/)
-  name: server
-  defaultvalue: https://api.recordedfuture.com/v2/
+  name: server_url
+  defaultvalue: https://api.recordedfuture.com/v2/test
   type: 0
   required: true
 - display: API Token
