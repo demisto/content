@@ -160,14 +160,13 @@ def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
     with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_ops) as executor:
         try:
             for func_to_execute, func_args in operations:
-                future = executor.submit(func_to_execute, *func_args)
-                res = future.result()
-                demisto.debug(f'{res=}')
+                executor.submit(func_to_execute, *func_args)
         except Exception as e:
             demisto.debug(f'Stopping concurrent operations of validation script due to error - {e}')
             try:
                 executor.shutdown(wait=False)
-            except Exception:
+            except Exception as e:
+                demisto.debug(f'Failed shutting down executor - {e}')
                 pass
             raise
 
