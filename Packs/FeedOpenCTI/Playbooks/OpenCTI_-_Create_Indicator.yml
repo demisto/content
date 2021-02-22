@@ -1,0 +1,541 @@
+id: 26e00078-3084-4ba4-8296-efbdb3062401
+version: 14
+vcShouldKeepItemLegacyProdMachine: false
+name: OpenCTI Create Indicator
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b7079274-e913-4401-826a-ec5298081011
+    type: start
+    task:
+      id: b7079274-e913-4401-826a-ec5298081011
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: ef8501f6-a2ff-4a30-88b8-28139e8566aa
+    type: condition
+    task:
+      id: ef8501f6-a2ff-4a30-88b8-28139e8566aa
+      version: -1
+      name: Check if label provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.label_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "2":
+    id: "2"
+    taskid: 1ba7eb11-e1ea-41ea-812f-74c233ccf2c1
+    type: regular
+    task:
+      id: 1ba7eb11-e1ea-41ea-812f-74c233ccf2c1
+      version: -1
+      name: opencti-label-create
+      description: Create label.
+      script: '|||opencti-label-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      name:
+        simple: ${inputs.label_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "3":
+    id: "3"
+    taskid: 9df66273-0619-4bd2-8322-9743e13e37be
+    type: condition
+    task:
+      id: 9df66273-0619-4bd2-8322-9743e13e37be
+      version: -1
+      name: Check if marking provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.marking_definition
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "4":
+    id: "4"
+    taskid: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
+    type: condition
+    task:
+      id: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Label.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "5":
+    id: "5"
+    taskid: 89474b6a-2f35-4088-8229-0037ae05d659
+    type: regular
+    task:
+      id: 89474b6a-2f35-4088-8229-0037ae05d659
+      version: -1
+      name: opencti-marking-definition-create
+      description: Create marking definition.
+      script: '|||opencti-marking-definition-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      name:
+        simple: ${inputs.marking_definition}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "6":
+    id: "6"
+    taskid: 3b5cc321-9f3c-4532-89d1-f55c38a5028d
+    type: condition
+    task:
+      id: 3b5cc321-9f3c-4532-89d1-f55c38a5028d
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.MarkingDefinition.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "7":
+    id: "7"
+    taskid: 8fe0a73f-f9b6-417b-809d-86a4083ef96e
+    type: condition
+    task:
+      id: 8fe0a73f-f9b6-417b-809d-86a4083ef96e
+      version: -1
+      name: Check if external reference provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.external_reference_source_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.external_reference_url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "8":
+    id: "8"
+    taskid: b019e6c7-31ec-468d-8d45-3d2ea8324c5f
+    type: regular
+    task:
+      id: b019e6c7-31ec-468d-8d45-3d2ea8324c5f
+      version: -1
+      name: opencti-external-reference-create
+      description: Create external reference.
+      script: '|||opencti-external-reference-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      source_name:
+        simple: ${inputs.external_reference_source_name}
+      url:
+        simple: ${inputs.external_reference_url}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "9":
+    id: "9"
+    taskid: 5b6f679f-8931-4d43-8ab6-c13ab3f5f8b4
+    type: condition
+    task:
+      id: 5b6f679f-8931-4d43-8ab6-c13ab3f5f8b4
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.externalReference.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "10":
+    id: "10"
+    taskid: 7a04d83e-aef8-4a48-8eca-e9c74b301111
+    type: regular
+    task:
+      id: 7a04d83e-aef8-4a48-8eca-e9c74b301111
+      version: -1
+      name: opencti-create-indicator
+      description: Create new indicator.
+      script: '|||opencti-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      created_by:
+        simple: ${inputs.created_by_id}
+      data:
+        simple: ${inputs.data}
+      description:
+        simple: ${inputs.description}
+      external_references_id:
+        simple: ${OpenCTI.externalReference.id}
+      label_id:
+        simple: ${OpenCTI.Label.id}
+      marking_id:
+        simple: ${OpenCTI.MarkingDefinition.id}
+      score:
+        simple: ${inputs.score}
+      type:
+        simple: ${inputs.type}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "11":
+    id: "11"
+    taskid: a50a3d95-af54-4b06-86f6-10dfb831a548
+    type: condition
+    task:
+      id: a50a3d95-af54-4b06-86f6-10dfb831a548
+      version: -1
+      name: 'Check if indicator created? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: OpenCTI.Indicator.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "12":
+    id: "12"
+    taskid: 4bddfa64-a958-476c-85b0-ef00f470ecd8
+    type: title
+    task:
+      id: 4bddfa64-a958-476c-85b0-ef00f470ecd8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: label_name
+  value: {}
+  required: false
+  description: Label name to add to new indicator.
+  playbookInputQuery: null
+- key: type
+  value: {}
+  required: true
+  description: 'The indicator type to create. Possible values:  "Account", "Domain",
+    "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry
+    Key" and "URL".'
+  playbookInputQuery: null
+- key: marking_definition
+  value: {}
+  required: false
+  description: Marking definition to add to new indicator.
+  playbookInputQuery: null
+- key: created_by_id
+  value: {}
+  required: false
+  description: Creator of the new indicator.
+  playbookInputQuery: null
+- key: external_reference_source_name
+  value: {}
+  required: false
+  description: External References Source Name. In order to use external references,
+    external_reference_url and external_reference_source_name are mandatory.
+  playbookInputQuery: null
+- key: external_reference_url
+  value: {}
+  required: false
+  description: External References URL. In order to use external references, external_reference_url
+    and external_reference_source_name are mandatory.
+  playbookInputQuery: null
+- key: description
+  value: {}
+  required: false
+  description: New Indicator description.
+  playbookInputQuery: null
+- key: score
+  value: {}
+  required: false
+  description: 'New indicator score. Valid value: number between 0 to 100.'
+  playbookInputQuery: null
+- key: data
+  value: {}
+  required: false
+  description: 'Indicator data - json. Mandatory Data fields are: value - value of
+    the indicator, mandatory for the following types: Domain, Email, IP, IPV6-Addr,
+    URL, Host. For file-md5, file-sha1, file-sha256 data argument should contain hash.
+    For Account type data should contain account_login. Registry Key data json should
+    contain key "key".'
+  playbookInputQuery: null
+outputs:
+- contextPath: OpenCTI.Indicator.id
+  description: New indicator id.
+  type: string
+- contextPath: OpenCTI.Indicator.data
+  description: New indicator data.
