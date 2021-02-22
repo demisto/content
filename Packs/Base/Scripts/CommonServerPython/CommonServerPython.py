@@ -2590,13 +2590,11 @@ class Common(object):
         """
         CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None):
+        def __init__(self, address, dbot_score, domain=None):
             # type (str, str, bool) -> None
 
             self.address = address
             self.domain = domain
-            self.blocked = blocked
-
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -2606,9 +2604,6 @@ class Common(object):
 
             if self.domain:
                 email_context['Domain'] = self.domain
-
-            if self.blocked:
-                email_context['Blocked'] = self.blocked
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context

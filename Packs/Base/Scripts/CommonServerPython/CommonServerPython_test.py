@@ -3789,8 +3789,15 @@ class TestCommonTypes:
             indicator_type=DBotScoreType.EMAIL,
             score=Common.DBotScore.GOOD
         )
-        context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+        dbot_context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
                    'val.Vendor == obj.Vendor && val.Type == obj.Type)':
                        {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
 
-        assert context == dbot_score.to_context()
+        assert dbot_context == dbot_score.to_context()
+
+        email_context = Common.EMAIL(
+            domain='example.com',
+            address='user@example.com',
+            dbot_score=dbot_score
+        )
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}

@@ -17,16 +17,16 @@ GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
     ]
 
 )
-def test_validate_args(indicator, indicator_type, expected):
+def test_validate_indicator_type(indicator, indicator_type, expected):
     """
         Given:
             - an indicator's data
 
         When:
-            - creating a search process task
+            - running the script
 
         Then:
-            - validating the body sent to request is matching the search
+            - validating the dbotScoreType matches the correct indicator type
     """
     from GetIndicatorDBotScore import get_dbot_score_data, INDICATOR_TYPES
     indicator_type_after_mapping = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
