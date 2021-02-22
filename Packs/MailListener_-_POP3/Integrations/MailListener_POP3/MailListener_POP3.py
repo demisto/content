@@ -212,7 +212,7 @@ def parse_mail_parts(parts):
             attachments.extend(part_attachments)
         elif not is_attachment:
             if headers.get('content-transfer-encoding') == 'base64':
-                text = base64.b64decode(part._payload).decode('utf-8')
+                text = base64.b64decode(part._payload).decode('utf-8', 'replace')
             elif headers.get('content-transfer-encoding') == 'quoted-printable':
                 str_utf8 = part._payload.decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')
