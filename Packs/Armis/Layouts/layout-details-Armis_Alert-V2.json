@@ -1,12 +1,16 @@
 {
-  "group": "incident",
-  "id": "Armis Alert",
-  "name": "Armis Alert - Layout",
-  "system": false,
+  "TypeName": "Armis Alert",
+  "kind": "details",
+  "typeId": "Armis Alert",
   "version": -1,
-  "fromVersion": "6.0.0",
-  "description": "Armis Alert - Layout",
-  "detailsV2": {
+  "fromVersion": "5.0.0",
+  "toVersion": "5.9.9",
+  "layout": {
+    "TypeName": "",
+    "id": "Armis Alert",
+    "kind": "details",
+    "name": "Armis Alert - Layout",
+    "system": false,
     "tabs": [
       {
         "id": "summary",
@@ -479,6 +483,8 @@
         "name": "Canvas",
         "type": "canvas"
       }
-    ]
+    ],
+    "typeId": "Armis Alert",
+    "version": -1
   }
 }
