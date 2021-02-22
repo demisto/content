@@ -105,7 +105,11 @@ class Client(BaseClient):
                 filter = f'{filter}+{last_run}' if filter else last_run
 
         demisto.info(f' filter {filter}')
-        params = assign_params(include_deleted=include_deleted, limit=limit, offset=offset, q=q, filter=filter)
+        params = assign_params(include_deleted=include_deleted,
+                               limit=limit,
+                               offset=offset, q=q,
+                               filter=filter,
+                               sort='last_updated|asc')
 
         timestamp = self.set_last_run()
 
