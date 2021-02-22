@@ -34,12 +34,23 @@ PRIVATE_ID_SET = {
     "Layouts": [],
     "Reports": [],
     "Widgets": [],
-    "Mappers": []
+    "Mappers": [],
+    "Packs": {
+        "Workday": {
+            "name": "Workday"
+        },
+        "Accessdata": {
+            "name": "Accessdata"
+        },
+        "ActiveMQ": {
+            "name": "ActiveMQ"
+        }
+    }
 }
 
-WORKDAY_PACK = {"Workday": {"name": "Workday", "pack": "Workday"}}
-ACCESSDATA_PACK = {"Accessdata": {"name": "Accessdata", "pack": "Accessdata"}}
-ACTIVEMQ_PACK = {"ActiveMQ": {"name": "ActiveMQ", "pack": "ActiveMQ"}}
+WORKDAY_INTEGRATION = {"Workday": {"name": "Workday", "pack": "Workday"}}
+ACCESSDATA_INTEGRATION = {"Accessdata": {"name": "Accessdata", "pack": "Accessdata"}}
+ACTIVEMQ_INTEGRATION = {"ActiveMQ": {"name": "ActiveMQ", "pack": "ActiveMQ"}}
 
 
 def test_remove_old_pack_from_private_id_set():
@@ -54,10 +65,13 @@ def test_remove_old_pack_from_private_id_set():
     - ensure that in case there is no pack name no error returns, and the ID set remains as it is
     """
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, 'Workday')
-    assert WORKDAY_PACK not in private_id_set['integrations']
+    assert WORKDAY_INTEGRATION not in private_id_set['integrations']
+    assert 'Workday' not in list(private_id_set.get('Packs').keys())
 
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, 'Accessdata')
-    assert ACCESSDATA_PACK not in private_id_set['integrations']
+    assert ACCESSDATA_INTEGRATION not in private_id_set['integrations']
+    assert "Accessdata" not in list(private_id_set.get('Packs').keys())
 
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, '')
-    assert ACTIVEMQ_PACK in private_id_set['integrations']
+    assert ACTIVEMQ_INTEGRATION in private_id_set['integrations']
+    assert "ActiveMQ" in list(private_id_set.get('Packs').keys())

@@ -14,10 +14,18 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
     """
     for content_entity, content_entity_value_list in private_id_set.items():
         if content_entity != "Packs":
-            for content_entity_value in content_entity_value_list[:]:
+            entity_value_list = []
+            for content_entity_value in content_entity_value_list:
                 content_item_value = content_entity_value.get(list(content_entity_value.keys())[0], {})
-                if content_item_value.get('pack') == new_pack_name:
-                    content_entity_value_list.remove(content_entity_value)
+                if content_item_value.get('pack') != new_pack_name:
+                    entity_value_list.append(content_entity_value)
+
+            private_id_set[content_entity] = entity_value_list
+
+        else:
+            packs_list = {k: v for k, v in content_entity_value_list.items() if k != new_pack_name}
+            private_id_set[content_entity] = packs_list
+
     return private_id_set
 
 
