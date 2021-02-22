@@ -48,8 +48,8 @@ if action == "exportfiles":
         for member in tar.getmembers():
             path = member.name
             if path in files:
-                data = tar.extractfile(member)
-                f = data.read()
+                data = tar.extractfile(member)  # type:ignore
+                f = data.read()  # type:ignore
                 exported_files.append(member.name[1:])
                 demisto.results(fileResult(member.name[1:], f))
 
