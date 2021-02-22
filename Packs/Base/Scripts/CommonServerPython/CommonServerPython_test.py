@@ -3779,7 +3779,7 @@ class TestCommonTypes:
         When
            - creating an Common.EMAIL object
        Then
-           - The CommandResults.__init__() should raise an ValueError with appropriate error
+           - The context created matches the data entry
        """
         from CommonServerPython import Common, DBotScoreType
         mocker.patch.object(demisto, 'params', return_value={'insecure': True})
