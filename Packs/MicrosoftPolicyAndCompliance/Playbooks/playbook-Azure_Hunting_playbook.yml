@@ -275,6 +275,7 @@ tasks:
       id: 32bb1304-61c7-4d72-8535-c086a3a10bed
       version: -1
       name: Is Microsoft Policy And Compliance enabled?
+      description: Checks if Microsoft Policy And Compliance enabled
       type: condition
       iscommand: false
       brand: ""
@@ -725,6 +726,7 @@ tasks:
       id: 5ce1ba8d-8292-476c-8a58-70f3248c1296
       version: -1
       name: Found mail permissions were added to a service principal?
+      description: Cehcks for cases where mail permissions were added to a service principal.
       type: condition
       iscommand: false
       brand: ""
