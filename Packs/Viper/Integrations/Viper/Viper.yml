@@ -1,0 +1,51 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Viper
+  version: -1
+configuration:
+- display: ""
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: default
+  display: Viper Project
+  name: viper_project
+  required: true
+  type: 0
+description: 'Viper is a binary analysis and management framework. '
+display: Viper
+name: Viper
+script:
+  commands:
+  - arguments:
+    - description: SHA256 Value
+      name: file_hash
+      required: true
+    description: Download a sample with file hash
+    name: viper-download
+  - arguments:
+    - description: SHA256 Value
+      name: file_hash
+      required: true
+    description: Search for sample with file hash
+    name: viper-search
+  dockerimage: demisto/python3:3.8.6.13358
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,218 @@
+Received: from BL2NAM02FT036.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::204) by DM5PR05CA0022.outlook.office365.com
+ (9.9.9.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1856.5 via Frontend
+ Transport; Sun, 28 Apr 2019 14:29:03 +0000
+Authentication-Results: spf=fail (sender IP is 9.9.9.9)
+ smtp.mailfrom=test.com; test1.com; dkim=pass (signature was
+ verified) header.d=test.onmicrosoft.com;test1.com; dmarc=none
+ action=none header.from=test.com;compauth=pass reason=115
+Received-SPF: Fail (protection.outlook.com: domain of test.com does not
+ designate 9.9.9.9 as permitted sender)
+ receiver=protection.outlook.com; client-ip=9.9.9.9;
+ helo=mx0b-00169c01.pphosted.com;
+Received: from mx0b-00169c01.pphosted.com (9.9.9.9) by
+ BL2NAM02FT036.mail.protection.outlook.com (9.9.9.9) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.1835.13 via Frontend Transport; Sun, 28 Apr 2019 14:29:03 +0000
+Received: from pps.filterd (m0048189.ppops.net [127.0.0.1])
+	by mx0b-00169c01.pphosted.com (9.9.9.9/9.9.9.9) with SMTP id x3SEN3r4019131
+	for <example1@example.com>; Sun, 28 Apr 2019 07:29:02 -0700
+Authentication-Results-Original: test1.com;	spf=pass
+ smtp.mailfrom=test@test.com;	dkim=pass
+ header.d=test.onmicrosoft.com header.s=selector1-test-com;	dmarc=none
+Received: from nam05-by2-obe.outbound.protection.outlook.com (mail-eopbgr710137.outbound.protection.outlook.com [9.9.9.9])
+	by mx0b-00169c01.pphosted.com with ESMTP id 2s4pk2auwr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+	for <example1@example.com>; Sun, 28 Apr 2019 07:29:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=test.onmicrosoft.com; s=selector1-test-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FkSwQgA5J46mwwJBgK4DqlGIfYhw1t0OaWgjszz+ulM=;
+ b=HsyJFf1d3YuCnfQ1GVH6Z/DkA7icEo3zMr7hvqRTsJjfZn+onQu8auyOdrWEtbWu35Y6yzF/uwWbslYPGf0yF2g0/4p7MnbUxwt3qmzoaSfoNKw8fxKzqmXkq9hlBFuHw846yNkbbFDNOFvOfqjZz/rTsF8VlFaWtjkBxZjbPGk=
+Received: from BN7PR11MB2804.namprd11.prod.outlook.com (9.9.9.9) by
+ BN7PR11MB2594.namprd11.prod.outlook.com (9.9.9.9) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1835.14; Sun, 28 Apr 2019 14:28:57 +0000
+Received: from BN7PR11MB2804.namprd11.prod.outlook.com
+ ([fe80::8c87:a425:1dc1:d35e]) by BN7PR11MB2804.namprd11.prod.outlook.com
+ ([fe80::8c87:a425:1dc1:d35e%4]) with mapi id 15.20.1835.016; Sun, 28 Apr 2019
+ 14:28:57 +0000
+From: "✅✅✅ ВА !
+ https://example.com  ." <no-reply@google.com>
+To: Guy Test <test@test.com>, Guy Test1
+	<example1@example.com>
+CC: Guy Test <test@test.com>, Guy Test1
+	<example1@example.com>
+Subject: Test self
+Thread-Topic: Test self
+Thread-Index: AQHU/c62bzFFSd2XWUK2Uw8bk+N+wg==
+Date: Sun, 28 Apr 2019 14:28:56 +0000
+Message-ID: <5b4831d0-5322-ea23-6312-864ff419a1f1@test.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [9.9.9.9]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-Correlation-Id: 135dd907-37ed-4efc-10f5-08d6cbe5dcd4
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(2017052603328)(7193020);SRVR:BN7PR11MB2594;
+X-MS-TrafficTypeDiagnostic: BN7PR11MB2594:|SN6PR05MB4606:
+X-MS-Exchange-PUrlCount: 2
+x-microsoft-antispam-prvs: <2594.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
+x-forefront-prvs: 0021920B5A
+X-Forefront-Antispam-Report-Untrusted:
+ SFV:NSPM;SFS:(10019020)(39840400004)(366004)(346002)(136003)(396003)(376002)(199004)(189003)(8936002)(8676002)(54896002)(81166006)(76116006)(99286004)(6512007)(97736004)(4326008)(66446008)(66556008)(66476007)(66946007)(64756008)(81156014)(3480700005)(6306002)(6486002)(555874004)(36756003)(83716004)(91956017)(25786009)(73956011)(6436002)(256004)(53936002)(71190400001)(71200400001)(44832011)(316002)(476003)(486006)(33656002)(54906003)(110136005)(14454004)(2616005)(86362001)(82746002)(68736007)(186003)(26005)(221733001)(6506007)(102836004)(2906002)(558084003)(7736002)(4270600006)(5660300002)(66066001)(7116003)(3846002)(478600001)(6116002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN7PR11MB2594;H:BN7PR11MB2804.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: test.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+X-Microsoft-Antispam-Message-Info-Original:
+ cep+1gS6rkdCfnReSIJS09fujwyxj9epw9BiHpjKDwZ4GHLYO/Tm1e4bIjEsE0dC8sd0ZOi48u/3jW6gDJvrGjRd3VnAWEy6xvgTeUZWTe1NHhPFlss1/UEHaXQUiJuNtcftPGtwaaNtBDvQU1mjUGQPm/QLz8jD7bbv5+O9zDIo0cRHyjA3MUEZqjENIRPfXyckl0813Hz/1RYt8y86v9ugUILFwLCXGR+/rI+ak1CK+UbPw4/lLmAeYowIS4x2ZEtsEZ3bGM1LiApkLDX8PfYRLxk3NR/LMtqVcvr/2/Jf1WHz6Xa7z/oAS2Ov5saCzOyq9Q5XTEXDN8zMlB3s9kiZokIUiHMG9jgcAmWpo84rHGEBEdTjWQoyHuZgtznHHHnwS0UzB4WoqpBMe9LQuB/kC4RgCCggcak5eqmyAMc=
+MIME-Version: 1.0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2594
+X-CLX-Shades: MLX
+X-CLX-Response: 1TFkXGxISEQpMehcZGhEKWUQXZGgaZX9LWGFjX0wRClhYF25DYH5zG09aaX1 iEQp4ThdgQFheSGdEZ2NAXBEKeUwXaWZ4Q09PH3xETx0RCnlDF2QdQnBPXX1LcBgBEQpZTRdnZn IRCllJFxpxGhAadwYbHBJxEx4QGncGGBoGGhEKWV4XaGN5EQpJRhdaS0ZFS0ZeRURPXl1FWEFZd
+ UJFWV5PThEKQ04XGVNDR1BJHW1hGUFkeHxaa35kblIebR5ZeR1zXUgbUFwRClhcFx8EGgQbHRsH EhxPEk9MHEwFGxoEGxsaBB4SBBsTExAbHhofGhEKXlkXfgEbG2ARCk1cFxsSGBEKTFoXaGlNTWs RCkxGF29ra2tra2sRCkJPF20FRF1DX1xGXFxBEQpDWhceGgQbGh0EHRsEGxkdEQpCXhcbEQpEXh
+ cYEQpESRcYEQpCXBcaEQpCRRdiEltjY2FgHRxcaREKQk4XYEBYXkhnRGdjQFwRCkJMF25DYH5zG 09aaX1iEQpCbBdneUdmY3tdSFxMGhEKQkAXZnJgeWdNTmEcfRMRCkJYF29QbmIdbH5AHHNaEQpN XhcbEQpaWBcdEQpwaBdrRmttS25pUn1fQhASGxEKcGgXaRJEckEFblscYH8QHB0RCnBoF2sbW1h
+ DR1pcaxp5EBsYGBEKcGgXbhJMRVNHbmhSf1oQGRoRCnBoF3plRl8BTlhCXBh/EBsaHBEKcGwXbE JQe0Zfa2J5XW4QGRoRCnBDF2MFGEJQeWQdXWYeEBsaExEKbX4XGxEKWE0XSxEg
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-28_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=30 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=188
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=479 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1904280106
+Return-Path: test@test.com
+X-MS-Exchange-Organization-ExpirationStartTime: 28 Apr 2019 14:29:03.2338
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 2:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ 135dd907-37ed-4efc-10f5-08d6cbe5dcd4
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 66b66353-3b76-4e41-9dc3-fee328bd400e:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ BL2NAM02FT036.eop-nam02.prod.protection.outlook.com
+X-Forefront-Antispam-Report:
+ CIP:9.9.9.9;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:SKN;SFS:;DIR:INB;SFP:;SCL:-1;SRVR:SN6PR05MB4606;H:mx0b-00169c01.pphosted.com;FPR:;SPF:None;LANG:en;
+X-MS-Exchange-Organization-SCL: -1
+X-MS-Exchange-Organization-AuthSource:
+ BL2NAM02FT036.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+ 62601dad-d3aa-4420-ad0d-08d6cbe5d926
+X-Microsoft-Antispam:
+ BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(5600141)(710020)(711020)(4605104)(1401320)(8001031)(1420029)(1421009)(1422010)(1423009)(1417108)(71702078)(7193020);SRVR:SN6PR05MB4606;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2019 14:29:03.1327
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 135dd907-37ed-4efc-10f5-08d6cbe5dcd4
+X-MS-Exchange-CrossTenant-Id: 66b66353-3b76-4e41-9dc3-fee328bd400e
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB4606
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:01.8500598
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.1856.000
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;ex:0;auth:0;dest:I;ENG:(750119)(520011016)(944506303)(944626516);
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?OiLocbb38z0fk9YmwdHe2MEqP++q2++7s2TceB4afo1V+/HLVIB+B1wz9a6s?=
+ =?us-ascii?Q?x/+NeK56rDjtU40/JwX9Yd6y6qpmItuqEpGzCcr8Q6lJAiJBBaZ5LFyLcD7q?=
+ =?us-ascii?Q?EV/9oYR+euRCtaaeOmeOOfTCj0VFRHtoa1ngX74Y7ffnuzrgALsIouZLXLyI?=
+ =?us-ascii?Q?1MuGJ9YixgV3cPO2TB48MMn+iZLMzGjDVcEoMgM8h9W+VwEonw1d9qhIOHNE?=
+ =?us-ascii?Q?2Sz4kXM4uLRgXiBJ3/R0PjLctdXCDQJ8Ka3sPuSH68jEHsGIFsTEt+Gofhm/?=
+ =?us-ascii?Q?P+VhalUttSbpEuisa3P/Sd3TeLgjHZKrFi/uV+4fkGcJZ5tt66kf1tv37Kv3?=
+ =?us-ascii?Q?9jhZhtXjD+UnOYu2DhW29tbsoFtG8P9Vm3o0f/ErcFM1gjAKzyPpe/TnozFn?=
+ =?us-ascii?Q?pQV4qCvbvbXChCYuTRk3oxZZIlaWxw5soFKSQbA5wDMMYem/nL7lx9LAiO7n?=
+ =?us-ascii?Q?zOURPQFqDd+gYK9k5F8Qge5ioJyHG3nrWbuiWuByU/1R9jaL6GKuFhJqJxq6?=
+ =?us-ascii?Q?FdqDp1FqmTQHvQJCf/5Q5H4ULgQqceOyWBvhNFo7kqrEVODF/Pwk8LrVT1cJ?=
+ =?us-ascii?Q?gda+NOJwm4DpkJ4lY53pc96UsXVGxsN0kcDzKoeecor0P5qePYrAYiYC1+mC?=
+ =?us-ascii?Q?7nzj9opXIgGC23Zgd8TQIIfSx+738N/v3TWIQ+oY/7lRNxgcy2P2v2GHBpHR?=
+ =?us-ascii?Q?Paxg0vIlK0PamT16ks8Qf9IINc6CSBqDR5zF/cv1Em3Jx7QgeC/fKqO8Kv7V?=
+ =?us-ascii?Q?t9onf9JnSwG9kLOJJsTxL0k2b5FjcqXbFfsm5ZZtfFP9CLldiSIzXD7rKr6A?=
+ =?us-ascii?Q?dAK9Z6NzmipR4tZna4N7s+GUsHRxuekhZOU0qzeQqjXIx24ll6d9J0DYF0Ou?=
+ =?us-ascii?Q?MP/v0zfuhkfihD34jzmClWNA+VDeG38P0sACIClPR18TquYuwD9xypdPAvUU?=
+ =?us-ascii?Q?Kt+9AvzSfSC4sOqdMNaSjL/ptSGV5Iy6Bg+G8BCZM7+iAi0MQIgtk2RD371C?=
+ =?us-ascii?Q?V+2EB5xRowQVGT+tn2vBpBH+e0ZfgM5moCZ2830PuOEr6wo=3D?=
+Content-type: multipart/alternative;
+	boundary="B_3639319120_2104275262"
+
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+--B_3639319120_2104275262
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: 7bit
+
+Test for self
+
+
+
+Guy
+
+
+--B_3639319120_2104275262
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:schema=
+s-microsoft-com:office:word"                 xmlns:m=3D"http://schemas.microsoft=
+..com/office/2004/12/omml" xmlns=3D"http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style>
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt">Test for self<o:p></o:p=
+></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt"><o:p>&nbsp;</o:p></span=
+></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt">Guy<o:p></o:p></span></=
+p>
+</div>
+</body>
+</html>
+
+
+--B_3639319120_2104275262--
+

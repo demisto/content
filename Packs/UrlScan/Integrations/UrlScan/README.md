@@ -1,6 +1,5 @@
 <!-- HTML_DOC -->
 <p>Use urlscan.io integration to perform scans on suspected urls and see their reputation.</p>
-<p>This integration was integrated and tested with version xx of urlscan.io.</p>
 <h2>Configure urlscan.io on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

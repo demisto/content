@@ -991,6 +991,16 @@ script:
       name: search-name
       required: true
       secret: false
+    - description: Whether to return only mailboxes which contain the email. Default is "False".
+      isArray: false
+      name: show-only-recipients
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'False'
+      predefined:
+      - 'True'
+      - 'False'
     deprecated: false
     description: Returns the status and results of a compliance search.
     execution: false
@@ -999,6 +1009,15 @@ script:
     - contextPath: EWS.ComplianceSearch.Status
       description: The status of the compliance search.
       type: Unknown
+    - contextPath: EWS.ComplianceSearch.Results.Location
+      description: The mailbox.
+      type: String
+    - contextPath: EWS.ComplianceSearch.Results.Item Count
+      description: The number of emails found in the mailbox.
+      type: Number
+    - contextPath: EWS.ComplianceSearch.Results.Total Size
+      description: Total number of emails in the mailbox.
+      type: Number
   - arguments:
     - default: true
       description: The name of the compliance search.

@@ -1,0 +1,25 @@
+{
+  "kind": "tm:asm:policies:host-names:host-namecollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names?ver=15.1.0",
+  "totalItems": 2,
+  "items": [
+    {
+      "kind": "tm:asm:policies:host-names:host-namestate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names/hostname-md5-1?ver=15.1.0",
+      "createdBy": "GUI",
+      "name": "example.com",
+      "includeSubdomains": true,
+      "id": "hostname-md5-1",
+      "lastUpdateMicros": 1598962937000000.0
+    },
+    {
+      "_kind": "tm:asm:policies:host-names:host-namestate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names/hostname-md5-2?ver=15.1.0",
+      "createdBy": "GUI",
+      "name": "qmasters.co.il",
+      "includeSubdomains": false,
+      "id": "hostname-md5-2",
+      "lastUpdateMicros": 1598963797000000.0
+    }
+  ]
+}

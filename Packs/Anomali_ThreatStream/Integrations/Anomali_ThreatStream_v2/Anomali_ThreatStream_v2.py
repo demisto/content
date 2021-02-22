@@ -49,7 +49,7 @@ DBOT_MAPPING = {
     'source': 'Vendor',
 }
 
-INDICATOR_MAPPING = {
+DEFAULT_INDICATOR_MAPPING = {
     'asn': 'ASN',
     'value': 'Address',
     'country': 'Country',
@@ -155,15 +155,18 @@ def build_params(**params):
     return params
 
 
-def get_dbot_context(indicator, threshold):
+def get_dbot_context(indicator, threshold, mapping=None):
     """
          Builds and returns dictionary with Indicator, Type, Vendor and Score keys
          and values from the indicator that will be returned to context.
     """
-    dbot_context = {DBOT_MAPPING[k]: v for (k, v) in indicator.items() if k in DBOT_MAPPING.keys()}
+    if not mapping:
+        mapping = DBOT_MAPPING
+    dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
     indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
     # the indicator will be considered as malicious in case it's score is greater or equal to threshold
     dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
+    dbot_context['Vendor'] = 'ThreatStream'
 
     return dbot_context
 
@@ -236,11 +239,24 @@ def get_domain_context(indicator, threshold):
     return domain_context
 
 
+def get_file_type(file_indicator):
+    """
+        The function gets a file indicator data and returns it's subtype.
+    """
+    indicator_type = file_indicator.get('subtype', '')
+    return indicator_type
+
+
 def get_file_context(indicator, threshold):
     """
         Builds and returns dictionary that will be set to File generic context.
     """
-    file_context = {'MD5': indicator.get('value', '')}
+    indicator_type = get_file_type(indicator)
+    indicator_value = indicator.get('value', '')
+    file_context = {}
+    if indicator_type:
+        file_context = {indicator_type: indicator_value}
+
     mark_as_malicious(indicator, threshold, file_context)
 
     return file_context
@@ -256,13 +272,16 @@ def get_url_context(indicator, threshold):
     return url_context
 
 
-def get_threat_generic_context(indicator):
+def get_threat_generic_context(indicator, indicator_mapping=None):
     """
         Receives indicator and builds new dictionary from values that were defined in
-        INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
+        DEFAULT_INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
     """
-    threat_ip_context = {INDICATOR_MAPPING[k]: v for (k, v) in indicator.items() if
-                         k in INDICATOR_MAPPING.keys()}
+    # True when the indicator isn't a file (file indicator has a modified indicator_mapping).
+    if not indicator_mapping:
+        indicator_mapping = DEFAULT_INDICATOR_MAPPING
+    threat_ip_context = {indicator_mapping[k]: v for (k, v) in indicator.items() if
+                         k in indicator_mapping.keys()}
     try:
         threat_ip_context['Severity'] = indicator['meta']['severity']
     except KeyError:
@@ -341,6 +360,10 @@ def parse_indicators_list(iocs_list):
     """
         Parses the indicator list and returns dictionary that will be set to context.
     """
+    for indicator in iocs_list:
+        if indicator.get('type', '') == 'md5':
+            indicator['type'] = indicator.get('subtype', '')
+
     iocs_context = list(map(lambda i: {INDICATOR_EXTENDED_MAPPING[k]: v for (k, v) in i.items() if
                                        k in INDICATOR_EXTENDED_MAPPING.keys()}, iocs_list))
 
@@ -371,6 +394,17 @@ def build_model_data(model, name, is_public, tlp, tags, intelligence, descriptio
         data['intelligence'] = intelligence if isinstance(intelligence, list) else [i.strip() for i in
                                                                                     intelligence.split(',')]
     return data
+
+
+def get_file_mapping():
+    """
+    Returns the file indicator mapping after changing it's type field to subtype.
+    """
+    file_indicator_mapping = DEFAULT_INDICATOR_MAPPING.copy()
+    # The real type of the hash is in subtype field.
+    file_indicator_mapping.pop('type', '')
+    file_indicator_mapping['subtype'] = 'Type'
+    return file_indicator_mapping
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -418,7 +452,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
 
 def domains_reputation_command(domain, threshold=None, status="active,inactive"):
     """
-        Wrapper function for get_url_reputation.
+        Wrapper function for get_domain_reputation.
     """
     domains = argToList(domain, ',')
     for single_domain in domains:
@@ -452,7 +486,7 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
 
 def files_reputation_command(file, threshold=None, status="active,inactive"):
     """
-        Wrapper function for get_url_reputation.
+        Wrapper function for get_file_reputation.
     """
     files = argToList(file, ',')
     for single_file in files:
@@ -461,7 +495,7 @@ def files_reputation_command(file, threshold=None, status="active,inactive"):
 
 def get_file_reputation(file, threshold=None, status="active,inactive"):
     """
-        Checks the reputation of given md5 of the file from ThreatStream and
+        Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
     """
     params = build_params(value=file, type="md5", status=status, limit=0)
@@ -470,20 +504,28 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
         return
 
     threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
+    file_dbot_mapping = {
+        'value': 'Indicator',
+        'subtype': 'Type',
+        'source': 'Vendor',
+    }
+    dbot_context = get_dbot_context(indicator, threshold, file_dbot_mapping)
+    file_type = get_file_type(indicator)
     file_context = get_file_context(indicator, threshold)
-    threat_file_context = get_threat_generic_context(indicator)
-    threat_file_context['MD5'] = threat_file_context.pop('Address')
+    file_indicator_mapping = get_file_mapping()
+
+    threat_file_context = get_threat_generic_context(indicator, file_indicator_mapping)
+    threat_file_context[file_type] = threat_file_context.pop('Address')
     threat_file_context.pop("ASN", None)
     threat_file_context.pop("Organization", None)
     threat_file_context.pop("Country", None)
 
     ec = {
         'DBotScore': dbot_context,
-        'File(val.MD5 == obj.MD5)': file_context,
-        'ThreatStream.File(val.MD5 == obj.MD5)': threat_file_context
+        Common.File.CONTEXT_PATH: file_context,
+        f'ThreatStream.{Common.File.CONTEXT_PATH}': threat_file_context
     }
-    human_readable = tableToMarkdown(F"MD5 reputation for: {file}", threat_file_context)
+    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
 
     return_outputs(human_readable, ec, indicator)
 
@@ -573,49 +615,42 @@ def get_passive_dns(value, type="ip", limit=50):
 
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
-                             url_mapping=False, email_mapping=False, md5_mapping=False):
+                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
+                             url_mapping=None, email_mapping=None, md5_mapping=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    ip_mapping = demisto.args().get('ip_mapping', 'no') == 'yes'
-    domain_mapping = demisto.args().get('domain_mapping', 'no') == 'yes'
-    url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
-    email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
-    md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
-
     files = None
     uploaded_file = None
-    data = {
-        'confidence': confidence,
-        'classification': classification,
-        'ip_mapping': ip_mapping,
-        'domain_mapping': domain_mapping,
-        'url_mapping': url_mapping,
-        'email_mapping': email_mapping,
-        'md5_mapping': md5_mapping,
-        'threat_type': threat_type,
-        'severity': severity
-    }
+    data = assign_params(
+        classification=classification,
+        confidence=int(confidence),
+        ip_mapping=ip_mapping,
+        domain_mapping=domain_mapping,
+        url_mapping=url_mapping,
+        email_mapping=email_mapping,
+        md5_mapping=md5_mapping,
+        threat_type=threat_type,
+        severity=severity,
+    )
 
     if import_type == 'file-id':
         try:
             # import_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(import_value)
         except Exception:
-            return_error(F"Entry {import_value} does not contain a file.")
+            raise DemistoException(f"Entry {import_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
-        params = build_params()
+    elif import_type == 'url':
+        data['url'] = import_value
     else:
-        if import_value == 'url':
-            params = build_params(url=import_value)
-        else:
-            params = build_params(datatext=import_value)
+        data['datatext'] = import_value
 
+    params = build_params()
     # in case import_type is not file-id, http_requests will receive None as files
     res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
@@ -897,18 +932,31 @@ def get_indicators(**kwargs):
         Returns filtered indicators by parameters from ThreatStream.
         By default the limit of indicators result is set to 20.
     """
+    limit = kwargs['limit'] = int(kwargs.get('limit', 20))
+    offset = kwargs['offset'] = 0
     if 'query' in kwargs:
-        params = build_params(q=kwargs['query'], limit=kwargs.get('limit', 20))
-    else:
-        params = build_params(**kwargs)
-
+        kwargs['q'] = kwargs['query']
+        kwargs.pop('query', None)
+    params = build_params(**kwargs)
     iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
-
     if not iocs_list:
         demisto.results('No indicators found from ThreatStream')
         sys.exit()
-
     iocs_context = parse_indicators_list(iocs_list)
+
+    # handle the issue that the API does not return more than 1000 indicators.
+    if limit > 1000:
+        while len(iocs_context) < limit:
+            offset += len(iocs_list)
+            limit -= len(iocs_list)
+            kwargs['limit'] = limit
+            kwargs['offset'] = offset
+            params = build_params(**kwargs)
+            iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
+            if iocs_list:
+                iocs_context.extend(parse_indicators_list(iocs_list))
+            else:
+                break
     ec = {'ThreatStream.Indicators': iocs_context}
     return_outputs(tableToMarkdown("The indicators results", iocs_context), ec, iocs_list)
 

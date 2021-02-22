@@ -1,0 +1,17 @@
+{
+    "status": "ok",
+    "result": {
+        "type": "user",
+        "iden": "e91a646b096c66cbec485b28409ff7a6",
+        "name": "new_user",
+        "rules": [],
+        "roles": [
+            "ff7afe8c4df42771d09d9b4d14fc5068"
+        ],
+        "admin": false,
+        "email": null,
+        "locked": false,
+        "archived": false,
+        "authgates": {}
+    }
+}

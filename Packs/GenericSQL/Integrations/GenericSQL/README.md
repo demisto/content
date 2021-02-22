@@ -30,7 +30,7 @@ There are two options to use to bind variables:
 2. Use only bind variable values, for example:
     INSERT into Table(ID, Name) VALUES (%s, %s)" bind_variables_values= "123, Ben”
 
-## Configure Generic SQL on Demisto
+## Configure Generic SQL on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Generic SQL.
@@ -256,6 +256,17 @@ echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726
 ```
 
 **Note:** Kerberos authentication is not supported.
+
+### Oracle
+If you require connecting to Oracle via a **SERVICE_NAME**, leave the `Database Name` parameter empty and add to the `Connection Arguments` the following:
+```
+service_name=<SERVICE_NAME>
+```
+For example:
+```
+service_name=XEXDB
+```
+
 
 ## Possible Errors:
 * The bind variables lists are not is the same length

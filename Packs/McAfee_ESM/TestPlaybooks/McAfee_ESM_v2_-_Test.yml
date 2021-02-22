@@ -353,7 +353,8 @@ tasks:
       limit:
         simple: "30"
       queryType: {}
-      timeOut: {}
+      timeOut:
+        simple: "30"
       timeRange:
         simple: CURRENT_YEAR
     separatecontext: false

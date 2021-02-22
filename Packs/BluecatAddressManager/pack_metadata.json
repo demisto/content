@@ -1,16 +1,16 @@
 {
-  "name": "Bluecat Address Manager",
-  "description": "Use the BlueCat Address Manager integration to enrich IP addresses and manage response policies.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Bluecat Address Manager",
+    "description": "Use the BlueCat Address Manager integration to enrich IP addresses and manage response policies.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -640
         }
       }
   "1":
@@ -45,14 +45,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
-    reputationcalc: 0
+      - "8"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": -510
         }
       }
   "2":
@@ -63,7 +63,15 @@ tasks:
       id: 6f12a822-db6c-40b7-813d-714a77e77f1f
       version: -1
       name: QRadar - Get offense correlations v2
-      description: ""
+      description: |-
+        Run on a QRadar offense to get more information:
+
+        * Get all correlations relevant to the offense
+        * Get all logs relevant to the correlations (not done by default - set "GetCorrelationLogs" to "True")
+
+        Inputs:
+        * GetCorrelationLogs (default: False)
+        * MaxLogsCount (default: 20)
       playbookName: QRadar - Get offense correlations v2
       type: playbook
       iscommand: false
@@ -82,9 +90,7 @@ tasks:
         simple: "20"
       StartTime:
         complex:
-          root: incident
-          accessor: labels.start_time
-    reputationcalc: 0
+          root: Time
     separatecontext: true
     loop:
       iscommand: false
@@ -94,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 50
         }
       }
   "3":
@@ -119,20 +125,19 @@ tasks:
           root: QRadar
           accessor: Correlation.DestinationIP
           transformers:
-          - operator: general.uniq
+          - operator: uniq
       SrcIP:
         complex:
           root: QRadar
           accessor: Correlation.SourceIP
           transformers:
-          - operator: general.uniq
+          - operator: uniq
       Username:
         complex:
           root: QRadar
           accessor: Correlation.Username
           transformers:
-          - operator: general.uniq
-    reputationcalc: 0
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -142,7 +147,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 835
+          "y": 545
         }
       }
   "4":
@@ -166,7 +171,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 400
         }
       }
   "5":
@@ -187,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1010
+          "y": 710
         }
       }
   "7":
@@ -233,8 +238,8 @@ tasks:
           root: QRadar
           accessor: Correlation.DestinationIP
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       destntdomain: {}
       details: {}
       duration: {}
@@ -292,16 +297,16 @@ tasks:
           root: QRadar
           accessor: Correlation.SourceIP
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       srcntdomain: {}
       srcuser:
         complex:
           root: QRadar
           accessor: Correlation.Username
           transformers:
-          - operator: general.uniq
-          - operator: general.Stringify
+          - operator: uniq
+          - operator: Stringify
       systems: {}
       test: {}
       test2: {}
@@ -315,24 +320,221 @@ tasks:
       vendorid: {}
       vendorproduct: {}
       vulnerabilitycategory: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 225
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 975ea04b-4f88-4d4b-87f2-e84069981424
+    type: condition
+    task:
+      id: 975ea04b-4f88-4d4b-87f2-e84069981424
+      version: -1
+      name: Is QRadar v1 enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aac3592e-525f-41ad-8ca7-97b3ac752554
+    type: condition
+    task:
+      id: aac3592e-525f-41ad-8ca7-97b3ac752554
+      version: -1
+      name: Is QRadar v2 enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 58b12c72-eff4-40eb-850d-f2950246e20c
+    type: regular
+    task:
+      id: 58b12c72-eff4-40eb-850d-f2950246e20c
+      version: -1
+      name: Set timestamp to epoch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: incident.labels
+          accessor: start_time
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%S.%fZ'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1fd3c2d2-c84b-485b-8a79-8dbb71e767c7
+    type: regular
+    task:
+      id: 1fd3c2d2-c84b-485b-8a79-8dbb71e767c7
+      version: -1
+      name: Set timestamp
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: inputs.StartTime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1025,
-        "width": 380,
-        "x": 50,
-        "y": 50
+        "height": 1415,
+        "width": 1200,
+        "x": -360,
+        "y": -640
       }
     }
   }

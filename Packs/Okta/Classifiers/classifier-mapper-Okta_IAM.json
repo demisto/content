@@ -1,0 +1,405 @@
+{
+	"description": "",
+	"feed": false,
+	"id": "Okta IAM - App Sync (mapper)",
+	"mapping": {
+		"IAM - App Add": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Application Id": {
+					"complex": {
+						"accessor": "id",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "AppInstance"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Application Name": {
+					"complex": {
+						"accessor": "alternateId",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "AppInstance"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Display Name": {
+					"complex": {
+						"accessor": "displayName",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Event Type": {
+					"complex": null,
+					"simple": "eventType"
+				},
+				"User Id": {
+					"complex": {
+						"accessor": "id",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Username": {
+					"complex": {
+						"accessor": "alternateId",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"actor": {
+					"complex": null,
+					"simple": "actor.alternateId"
+				},
+				"details": {
+					"complex": null,
+					"simple": "displayMessage"
+				},
+				"name": {
+					"complex": {
+						"accessor": "displayName",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		},
+		"IAM - App Remove": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Application Id": {
+					"complex": {
+						"accessor": "id",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "AppInstance"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Application Name": {
+					"complex": {
+						"accessor": "alternateId",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "AppInstance"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Display Name": {
+					"complex": {
+						"accessor": "displayName",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Event Type": {
+					"complex": null,
+					"simple": "eventType"
+				},
+				"User Id": {
+					"complex": {
+						"accessor": "id",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Username": {
+					"complex": {
+						"accessor": "alternateId",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"actor": {
+					"complex": null,
+					"simple": "actor.alternateId"
+				},
+				"details": {
+					"complex": null,
+					"simple": "displayMessage"
+				},
+				"name": {
+					"complex": {
+						"accessor": "displayName",
+						"filters": [
+							[
+								{
+									"ignoreCase": false,
+									"left": {
+										"isContext": true,
+										"value": {
+											"complex": null,
+											"simple": "target.type"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "User"
+										}
+									}
+								}
+							]
+						],
+						"root": "target",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "Okta IAM - App Sync (mapper)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -1,0 +1,27 @@
+{
+    "response": {
+        "data": {
+            "allContents": {
+                "augment": {
+                    "entitlement": [
+                        {
+                            "user_id": "external_user@gmail.com",
+                            "type": "external",
+                            "user_name": "external_user@gmail.com"
+                        },
+                        {
+                            "user_id": "insider@org.com",
+                            "type": "internal",
+                            "user_name": "John Doe"
+                        },
+                        {
+                            "user_id": "insider_group@org.com",
+                            "type": "group",
+                            "user_name": "Data"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -137,7 +137,7 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
 
         if verbose:
             reports = sum([report_dict.get("categories") for report_dict in analysis.get("reports")], [])  # type: list
-            categories = set(reports)
+            categories = set(filter(lambda category_id: category_id in CATEGORIES_NAME.keys(), reports))
             abuse_ec["IP"]["Reports"] = {CATEGORIES_NAME[c]: reports.count(c) for c in categories}
 
         human_readable.append(abuse_ec['IP'])

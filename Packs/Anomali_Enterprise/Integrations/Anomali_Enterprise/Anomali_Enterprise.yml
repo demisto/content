@@ -1,0 +1,190 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Anomali Enterprise
+  version: -1
+configuration:
+- defaultvalue: https://127.0.0.1:8080
+  display: Server URL (e.g., https://www.test.com)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use Anomali Match to search indicators and enrich domains.
+display: Anomali Match
+name: Anomali Enterprise
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'The time the indicators first appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is 1 day ago.'
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: 'The time the indicators last appeared, in the format: <number> <time unit>, e.g., 1 hour, 30 minutes. Default is now.'
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of indicators to search.
+      isArray: true
+      name: indicators
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates a forensic search of the indicators.
+    execution: false
+    name: anomali-enterprise-retro-forensic-search
+    outputs:
+    - contextPath: AnomaliEnterprise.ForensicSearch.job_id
+      description: The job ID of the search.
+      type: String
+    - contextPath: AnomaliEnterprise.ForensicSearch.status
+      description: The status of the search.
+      type: String
+  - arguments:
+    - default: false
+      description: The forensic search job ID.
+      isArray: true
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Limit the stream results to return. Default is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to print the stream results to the War Room. Default is "true".
+      predefined:
+        - 'false'
+        - 'true'
+      isArray: false
+      name: verbose
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the forensic search results.
+    execution: false
+    name: anomali-enterprise-retro-forensic-search-results
+    outputs:
+    - contextPath: AnomaliEnterprise.ForensicSearch.job_id
+      description: The job ID of the search.
+      type: String
+    - contextPath: AnomaliEnterprise.ForensicSearch.status
+      description: The status of the search.
+      type: String
+    - contextPath: AnomaliEnterprise.ForensicSearch.scannedEvents
+      description: The number of scanned events.
+      type: Number
+    - contextPath: AnomaliEnterprise.ForensicSearch.processedFiles
+      description: The number of processed files.
+      type: Number
+    - contextPath: AnomaliEnterprise.ForensicSearch.result_file_name
+      description: The matched file name.
+      type: String
+    - contextPath: AnomaliEnterprise.ForensicSearch.totalMatches
+      description: The number of total matches.
+      type: Number
+    - contextPath: AnomaliEnterprise.ForensicSearch.complete
+      description: Whether the search was complete.
+      type: Bool
+    - contextPath: AnomaliEnterprise.ForensicSearch.category
+      description: The search category.
+      type: String
+    - contextPath: AnomaliEnterprise.ForensicSearch.streamResults
+      description: The stream results for the search.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A comma-separated list of domains to search.
+      isArray: true
+      name: domains
+      required: true
+      secret: false
+    deprecated: false
+    description: The search domains Domain Generation Algorithm (DGA).
+    execution: false
+    name: anomali-enterprise-dga-domain-status
+    outputs:
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The domain that was checked.
+      type: String
+    - contextPath: AnomaliEnterprise.DGA.malware_family
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The probability of the domain being malicious.
+      type: Number
+  - arguments:
+    - default: true
+      description: A comma-separated list of domains to search.
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: The search domains Domain Generation Algorithm (DGA). Includes DBotScore and domain information.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The domain that was checked.
+      type: String
+    - contextPath: AnomaliEnterprise.DGA.malware_family
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: AnomaliEnterprise.DGA.domain
+      description: The probability of the domain being malicious.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: Domain.Name
+      description: The domain name. For example, "google.com".
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor that reported that the domain is malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- Anomali Match Forensic Search - Test

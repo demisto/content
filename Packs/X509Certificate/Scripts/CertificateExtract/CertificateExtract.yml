@@ -1,0 +1,141 @@
+args:
+- default: false
+  description: Certificate in PEM format. This argument is mutually exclusive with the "entry_id" argument.
+  isArray: false
+  name: pem
+  required: false
+  secret: false
+- default: false
+  description: Certificate entry ID (in DER or PEM format). This argument is mutually exclusive with the "pem" argument.
+  isArray: false
+  name: entry_id
+  required: false
+  secret: false
+comment: Extract fields from a certificate file and return the standard context.
+commonfields:
+  id: CertificateExtract
+  version: -1
+enabled: false
+name: CertificateExtract
+outputs:
+- contextPath: Certificate.Name
+  description: Name (CN or SAN) that appears in the certificate.
+  type: String
+- contextPath: Certificate.SubjectDN
+  description: |
+    The Subject Distinguished Name of the certificate.
+    This field includes the Common Name of the certificate.
+  type: String
+- contextPath: Certificate.PEM
+  description: Certificate in PEM format.
+  type: String
+- contextPath: Certificate.IssuerDN
+  description: The Issuer Distinguished Name of the certificate.
+  type: String
+- contextPath: Certificate.SerialNumber
+  description: The serial number of the certificate.
+  type: String
+- contextPath: Certificate.ValidityNotAfter
+  description: End of the certificate validity period.
+  type: Date
+- contextPath: Certificate.ValidityNotBefore
+  description: Start of the certificate validity period.
+  type: Date
+- contextPath: Certificate.SubjectAlternativeName.Type
+  description: Type of the Subject Alternative Name (SAN).
+  type: String
+- contextPath: Certificate.SubjectAlternativeName.Value
+  description: Name of the SAN.
+  type: String
+- contextPath: Certificate.SHA512
+  description: SHA512 fingerprint of the certificate in DER format.
+  type: String
+- contextPath: Certificate.SHA256
+  description: SHA256 fingerprint of the certificate in DER format.
+  type: String
+- contextPath: Certificate.SHA1
+  description: SHA1 fingerprint of the certificate in DER format.
+  type: String
+- contextPath: Certificate.MD5
+  description: MD5 fingerprint of the certificate in DER format.
+  type: String
+- contextPath: Certificate.PublicKey.Algorithm
+  description: Algorithm used for the public key of the certificate.
+  type: String
+- contextPath: Certificate.PublicKey.Length
+  description: Length in bits of the public key of the certificate.
+  type: Number
+- contextPath: Certificate.PublicKey.Modulus
+  description: Modulus of the public key for RSA keys.
+  type: String
+- contextPath: Certificate.PublicKey.Exponent
+  description: Exponent of the public key for RSA keys.
+  type: Number
+- contextPath: Certificate.PublicKey.PublicKey
+  description: The public key for DSA/unknown keys.
+  type: String
+- contextPath: Certificate.PublicKey.P
+  description: The P parameter for DSA keys.
+  type: String
+- contextPath: Certificate.PublicKey.Q
+  description: The Q parameter for DSA keys.
+  type: String
+- contextPath: Certificate.PublicKey.G
+  description: The G parameter for t DSA keys.
+  type: String
+- contextPath: Certificate.PublicKey.X
+  description: The X parameter for EC keys.
+  type: String
+- contextPath: Certificate.PublicKey.Y
+  description: The Y parameter for EC keys.
+  type: String
+- contextPath: Certificate.PublicKey.Curve
+  description: Curve of the public key for EC keys.
+  type: String
+- contextPath: Certificate.SPKISHA256
+  description: SHA256 fingerprint of the certificate Subject Public Key Info.
+  type: String
+- contextPath: Certificate.Signature.Algorithm
+  description: Algorithm used in the signature of the certificate.
+  type: String
+- contextPath: Certificate.Signature.Signature
+  description: Signature of the certificate.
+  type: String
+- contextPath: Certificate.Extension.Critical
+  description: Critical flag of the certificate extension.
+  type: Bool
+- contextPath: Certificate.Extension.OID
+  description: OID of the certificate extension.
+  type: String
+- contextPath: Certificate.Extension.Name
+  description: Name of the certificate extension.
+  type: String
+- contextPath: Certificate.Extension.Value
+  description: Value of the certificate extension.
+  type: Unknown
+- contextPath: Certificate.Malicious.Vendor
+  description: The vendor that reported the file as malicious.
+  type: String
+- contextPath: Certificate.Malicious.Description
+  description: A description explaining why the file was determined to be malicious.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/crypto:1.0.0.14297
+fromversion: 6.0.0

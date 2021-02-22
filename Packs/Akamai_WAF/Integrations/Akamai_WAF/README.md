@@ -69,6 +69,8 @@ Returns a list of all network lists available for an authenticated user who belo
 |--- |--- |--- |
 |list_type|The network list type by which to filter the results. Can be "IP" or "GEO".|Optional|
 |search|The query by which to search for list names and list items.|Optional|
+|extended|When enabled, provides additional response data identifying who created and updated the list and when, and the network list’s deployment status in both STAGING and PRODUCTION environments. This data takes longer to provide. Possible values are: true, false. Default is true.|Optional|
+|include_elements|If enabled, the response list includes all items. For large network lists, this may slow responses and yield large response objects. The default false value when listing more than one network list omits the network list’s elements and only provides higher-level metadata. Possible values are: true, false. Default is true.|Optional|
 
 ##### Context Output
 

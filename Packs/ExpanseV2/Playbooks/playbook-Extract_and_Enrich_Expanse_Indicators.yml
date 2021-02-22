@@ -1,0 +1,2043 @@
+id: Extract and Enrich Expanse Indicators
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Extract and Enrich Expanse Indicators
+description: |2-
+    Subplaybook for Handle Expanse Incident playbooks.
+    Extract and Enrich Indicators (CIDRs, IPs, Certificates, Domains and DomainGlobs) from Expanse Incidents.
+    Enrichment is performed via enrichIndicators command and generic playbooks.
+    Returns the enriched indicators.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7fe7c23e-a7b5-4373-89ac-ae2e84e45e6e
+    type: start
+    task:
+      id: 7fe7c23e-a7b5-4373-89ac-ae2e84e45e6e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "172"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 26a4a765-9582-431c-89f8-8943225e1dd2
+    type: title
+    task:
+      id: 26a4a765-9582-431c-89f8-8943225e1dd2
+      version: -1
+      name: Done Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 6273470e-eed9-493f-874d-f4071fe1ff32
+    type: condition
+    task:
+      id: 6273470e-eed9-493f-874d-f4071fe1ff32
+      version: -1
+      name: Are there Certificates to enrich?
+      description: Check if there are Expanse Certificates in the inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "174"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Expanse Assets
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.Expanse Assets.assettype
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Certificate
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: assetkey
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: c5913d87-f0a5-4f00-840c-e390d15978ad
+    type: regular
+    task:
+      id: c5913d87-f0a5-4f00-840c-e390d15978ad
+      version: -1
+      name: Create Certificate Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansecommonname: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanseissuerdn: {}
+      expanselastobserved: {}
+      expansemd5hash: {}
+      expansepemmd5hash: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expansesans: {}
+      expanseserialnumber: {}
+      expanseservicestatus: {}
+      expansesha256fingerprint: {}
+      expansesourcedomain: {}
+      expansesubjectdn: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expansevalidnotafter: {}
+      expansevalidnotbefore: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5:
+        complex:
+          root: Certificate
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      serialnumber: {}
+      service: {}
+      sha1:
+        complex:
+          root: Certificate
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      sha256:
+        complex:
+          root: Certificate
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Certificate
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      value:
+        complex:
+          root: Certificate
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 7e0a56f1-1ab6-47bd-8c5f-bd62eaa97131
+    type: regular
+    task:
+      id: 7e0a56f1-1ab6-47bd-8c5f-bd62eaa97131
+      version: -1
+      name: Enrich Certificate Indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "174"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: CreatedIndicator
+          accessor: Value
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: a19d15b5-1bab-4050-8a89-ba7d136a5a14
+    type: regular
+    task:
+      id: a19d15b5-1bab-4050-8a89-ba7d136a5a14
+      version: -1
+      name: Add Certificate details to Context
+      description: Get certificate details by certificate md5 hash or search certificates
+      script: '|||expanse-get-certificate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "179"
+    scriptarguments:
+      businessunitnames: {}
+      businessunits: {}
+      has_active_service: {}
+      has_certificate_advertisement: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      limit: {}
+      md5_hash:
+        complex:
+          root: inputs.Expanse Assets
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.Expanse Assets.assettype
+                iscontext: true
+              right:
+                value:
+                  simple: Certificate
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: assetkey
+          - operator: uniq
+      pem_md5_hash:
+        complex:
+          root: inputs.Expanse Assets
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.Expanse Assets.assettype
+                iscontext: true
+              right:
+                value:
+                  simple: Certificate
+          accessor: assetkey
+      providernames: {}
+      providers: {}
+      search: {}
+      tagnames: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: a543688b-f1d7-48eb-8305-690750831c50
+    type: condition
+    task:
+      id: a543688b-f1d7-48eb-8305-690750831c50
+      version: -1
+      name: Are there Domains to enrich?
+      description: Check if there are Expanse Domains in the inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "176"
+      "yes":
+      - "180"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedExpanseDomains
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "131":
+    id: "131"
+    taskid: 00ebed74-37ee-4d15-877b-2cc4d58b8260
+    type: condition
+    task:
+      id: 00ebed74-37ee-4d15-877b-2cc4d58b8260
+      version: -1
+      name: Are there IP Ranges to enrich?
+      description: Check if there are Expanse IP Ranges in the inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "190"
+      "yes":
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Expanse Assets
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.Expanse Assets.assettype
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IpRange
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: assetkey
+                - operator: toUpperCase
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "132":
+    id: "132"
+    taskid: f2a6fd6d-89b9-44ef-8662-a67edce6ac21
+    type: regular
+    task:
+      id: f2a6fd6d-89b9-44ef-8662-a67edce6ac21
+      version: -1
+      name: Add IP Range details to Context
+      description: Get ip-range by id or search ip-ranges
+      script: '|||expanse-get-iprange'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "190"
+    scriptarguments:
+      businessunitnames: {}
+      businessunits: {}
+      id:
+        complex:
+          root: incident.expanseasset
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.expanseasset.assettype
+                iscontext: true
+              right:
+                value:
+                  simple: IpRange
+          accessor: assetkey
+      include: {}
+      inet: {}
+      tagnames: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "169":
+    id: "169"
+    taskid: 0caa3254-d166-4903-8e58-a2d6a118fece
+    type: regular
+    task:
+      id: 0caa3254-d166-4903-8e58-a2d6a118fece
+      version: -1
+      name: Extract Domain Indicators from Expanse Assets
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExtractedExpanseDomains
+      stringify: {}
+      value:
+        complex:
+          root: inputs.Expanse Assets
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.Expanse Assets.assettype
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          - - operator: notStartWith
+              left:
+                value:
+                  simple: inputs.Expanse Assets.assetkey
+                iscontext: true
+              right:
+                value:
+                  simple: '*.'
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: assetkey
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "170":
+    id: "170"
+    taskid: c49a92e8-8dbb-4adb-87de-1b146847c1b7
+    type: regular
+    task:
+      id: c49a92e8-8dbb-4adb-87de-1b146847c1b7
+      version: -1
+      name: Extract DomainGlob indicators from Expanse Assets
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "183"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExtractedExpanseDomainGlobs
+      stringify: {}
+      value:
+        complex:
+          root: incident.expanseasset
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.expanseasset.assettype
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          - - operator: startWith
+              left:
+                value:
+                  simple: incident.expanseasset.assetkey
+                iscontext: true
+              right:
+                value:
+                  simple: '*.'
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: assetkey
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "172":
+    id: "172"
+    taskid: a2dfa010-52fb-4f69-806b-ad7dae16e2de
+    type: title
+    task:
+      id: a2dfa010-52fb-4f69-806b-ad7dae16e2de
+      version: -1
+      name: Create and Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "173"
+      - "175"
+      - "182"
+      - "189"
+      - "191"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "173":
+    id: "173"
+    taskid: 46eb5d61-37c0-4e63-8c2f-3d150247b854
+    type: title
+    task:
+      id: 46eb5d61-37c0-4e63-8c2f-3d150247b854
+      version: -1
+      name: Certificates
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "174":
+    id: "174"
+    taskid: 7bc36881-22ef-4688-8ba7-5b841f165227
+    type: title
+    task:
+      id: 7bc36881-22ef-4688-8ba7-5b841f165227
+      version: -1
+      name: Done with Certificates
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "175":
+    id: "175"
+    taskid: 43140a92-b584-4961-8bd8-416e8b790795
+    type: title
+    task:
+      id: 43140a92-b584-4961-8bd8-416e8b790795
+      version: -1
+      name: Domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "169"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "176":
+    id: "176"
+    taskid: 487ead84-14ab-42be-8b69-e0f4a205ae17
+    type: title
+    task:
+      id: 487ead84-14ab-42be-8b69-e0f4a205ae17
+      version: -1
+      name: Done with Domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "177":
+    id: "177"
+    taskid: 6af301d6-96bb-4b13-8385-dc87782be59d
+    type: regular
+    task:
+      id: 6af301d6-96bb-4b13-8385-dc87782be59d
+      version: -1
+      name: Create Domain Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansecommonname: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanseissuerdn: {}
+      expanselastobserved: {}
+      expansepemmd5hash: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expansesans: {}
+      expanseserialnumber: {}
+      expanseservicestatus: {}
+      expansesha256fingerprint: {}
+      expansesourcedomain: {}
+      expansesubjectdn: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expansevalidnotafter: {}
+      expansevalidnotbefore: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Domain
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: ExtractedExpanseDomains
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "178":
+    id: "178"
+    taskid: 67057610-c3a5-4139-8949-5c4e8ea3f3f7
+    type: regular
+    task:
+      id: 67057610-c3a5-4139-8949-5c4e8ea3f3f7
+      version: -1
+      name: Enrich Domain Indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "181"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedExpanseDomains
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "179":
+    id: "179"
+    taskid: 4a5fae93-580e-40e0-8234-dd8128083169
+    type: condition
+    task:
+      id: 4a5fae93-580e-40e0-8234-dd8128083169
+      version: -1
+      name: Create Indicators?
+      description: Check whether the playbook should create new indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "174"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Create Indicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": -115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "180":
+    id: "180"
+    taskid: 88afe70e-9ecf-4368-8ea7-8fdbf66ecee7
+    type: condition
+    task:
+      id: 88afe70e-9ecf-4368-8ea7-8fdbf66ecee7
+      version: -1
+      name: Create Indicators?
+      description: Check whether the playbook should create new indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "181"
+      "yes":
+      - "177"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Create Indicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "181":
+    id: "181"
+    taskid: 11042a52-0f13-445c-8485-c1a65b5d82c9
+    type: playbook
+    task:
+      id: 11042a52-0f13-445c-8485-c1a65b5d82c9
+      version: -1
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "196"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ExtractedExpanseDomains
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "182":
+    id: "182"
+    taskid: 8e9bc964-38ef-4663-87ad-9d38b249e03c
+    type: title
+    task:
+      id: 8e9bc964-38ef-4663-87ad-9d38b249e03c
+      version: -1
+      name: DomainGlobs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "170"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "183":
+    id: "183"
+    taskid: b064f52b-4f34-4b99-8f25-710fa900c3c0
+    type: condition
+    task:
+      id: b064f52b-4f34-4b99-8f25-710fa900c3c0
+      version: -1
+      name: Are there DomainGlobs to enrich?
+      description: Check if there are Expanse Domain Globs in the inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "184"
+      "yes":
+      - "185"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedExpanseDomainGlobs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "184":
+    id: "184"
+    taskid: f2f4ddda-d5ea-4ec2-865f-98b5a88da9a4
+    type: title
+    task:
+      id: f2f4ddda-d5ea-4ec2-865f-98b5a88da9a4
+      version: -1
+      name: Done with DomainGlobs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "185":
+    id: "185"
+    taskid: 9d606698-071e-4382-8b36-06af2fa0ff05
+    type: condition
+    task:
+      id: 9d606698-071e-4382-8b36-06af2fa0ff05
+      version: -1
+      name: Create Indicators?
+      description: Check whether the playbook should create new indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "186"
+      "yes":
+      - "187"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Create Indicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "186":
+    id: "186"
+    taskid: 5ae97ec0-209f-4943-8bd7-104a6952c607
+    type: playbook
+    task:
+      id: 5ae97ec0-209f-4943-8bd7-104a6952c607
+      version: -1
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "195"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ExtractedExpanseDomainGlobs
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "187":
+    id: "187"
+    taskid: ae428ced-a2ad-47d3-82a3-509630aa3c2c
+    type: regular
+    task:
+      id: ae428ced-a2ad-47d3-82a3-509630aa3c2c
+      version: -1
+      name: Create DomainGlob Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "188"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      city: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansecommonname: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanseissuerdn: {}
+      expanselastobserved: {}
+      expansepemmd5hash: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expansesans: {}
+      expanseserialnumber: {}
+      expanseservicestatus: {}
+      expansesha256fingerprint: {}
+      expansesourcedomain: {}
+      expansesubjectdn: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expansevalidnotafter: {}
+      expansevalidnotbefore: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relateToIncident: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source:
+        simple: DBot
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      surname: {}
+      tags: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type:
+        simple: DomainGlob
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: ExtractedExpanseDomainGlobs
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "188":
+    id: "188"
+    taskid: 4fea3473-5dbd-43d3-8580-a5c0730dfd52
+    type: regular
+    task:
+      id: 4fea3473-5dbd-43d3-8580-a5c0730dfd52
+      version: -1
+      name: Enrich DomainGlob Indicators
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "186"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedExpanseDomainGlobs
+      using-brand: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "189":
+    id: "189"
+    taskid: 30d91afa-127a-44c0-864d-85512ba34232
+    type: title
+    task:
+      id: 30d91afa-127a-44c0-864d-85512ba34232
+      version: -1
+      name: IP Ranges
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "131"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "190":
+    id: "190"
+    taskid: b97d4455-7890-4f73-8fd8-5654b2b05d0a
+    type: title
+    task:
+      id: b97d4455-7890-4f73-8fd8-5654b2b05d0a
+      version: -1
+      name: Done with IP Ranges
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "191":
+    id: "191"
+    taskid: 4c24e375-8b73-4575-83af-f1b6dd6dd102
+    type: title
+    task:
+      id: 4c24e375-8b73-4575-83af-f1b6dd6dd102
+      version: -1
+      name: IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "192"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3410,
+          "y": -655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "192":
+    id: "192"
+    taskid: 36e6db51-1bc4-40cc-8b5d-d0694872356c
+    type: condition
+    task:
+      id: 36e6db51-1bc4-40cc-8b5d-d0694872356c
+      version: -1
+      name: Is there an IP to enrich?
+      description: Check if there are Expanse Certificates in the inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "193"
+      "yes":
+      - "194"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Expanse IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3410,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "193":
+    id: "193"
+    taskid: 44381f68-75f1-4c8c-8265-647694ff775e
+    type: title
+    task:
+      id: 44381f68-75f1-4c8c-8265-647694ff775e
+      version: -1
+      name: Done with IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3410,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "194":
+    id: "194"
+    taskid: 6d490d3f-2a80-4b64-8852-8982eb283cb7
+    type: playbook
+    task:
+      id: 6d490d3f-2a80-4b64-8852-8982eb283cb7
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "193"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.Expanse IP
+          transformers:
+          - operator: uniq
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "195":
+    id: "195"
+    taskid: d88734fb-b877-497d-8c31-cb2c65d12139
+    type: regular
+    task:
+      id: d88734fb-b877-497d-8c31-cb2c65d12139
+      version: -1
+      name: Add Expanse Domain Details to Context
+      description: Get domain details by domain name or search certificates
+      script: '|||expanse-get-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "184"
+    scriptarguments:
+      businessunitnames: {}
+      businessunits: {}
+      domain:
+        complex:
+          root: ExtractedExpanseDomainGlobs
+          transformers:
+          - operator: uniq
+      has_active_service: {}
+      has_dns_resolution: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      providernames: {}
+      providers: {}
+      search: {}
+      tagnames: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "196":
+    id: "196"
+    taskid: 4425a1a5-d657-478f-8ec2-745cf0e5eff1
+    type: regular
+    task:
+      id: 4425a1a5-d657-478f-8ec2-745cf0e5eff1
+      version: -1
+      name: Add Expanse Domain Details to Context
+      description: Get domain details by domain name or search certificates
+      script: '|||expanse-get-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "197"
+    scriptarguments:
+      businessunitnames: {}
+      businessunits: {}
+      domain:
+        complex:
+          root: ExtractedExpanseDomains
+          transformers:
+          - operator: uniq
+      has_active_service: {}
+      has_dns_resolution: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      providernames: {}
+      providers: {}
+      search: {}
+      tagnames: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "197":
+    id: "197"
+    taskid: 716cf6fc-f145-4b2f-823e-a8d51733effa
+    type: regular
+    task:
+      id: 716cf6fc-f145-4b2f-823e-a8d51733effa
+      version: -1
+      name: Get Domain DNS Details
+      description: Returns DNS details for a domain
+      scriptName: GetDomainDNSDetails
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      domain:
+        complex:
+          root: ExtractedExpanseDomains
+      qtype: {}
+      server: {}
+      use_tcp: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2265,
+        "width": 3740,
+        "x": 50,
+        "y": -1070
+      }
+    }
+  }
+inputs:
+- key: Expanse Assets
+  value:
+    complex:
+      root: incident
+      accessor: expanseasset
+  required: false
+  description: Expanse Assets to Extract and Enrich.
+  playbookInputQuery:
+- key: Create Indicators
+  value:
+    simple: "true"
+  required: false
+  description: Create Indicators for types that are not handled by AutoExtract, such
+    as Certificates, Domains and DomainGlobs.
+  playbookInputQuery:
+- key: Expanse IP
+  value:
+    complex:
+      root: incident
+      accessor: expanseip
+  required: false
+  description: IP from the Expanse Incident.
+  playbookInputQuery:
+outputs:
+- contextPath: Expanse.Certificate
+  description: Expanse Certificate Information
+  type: unknown
+- contextPath: Expanse.IPRange
+  description: Expanse IP Range
+  type: unknown
+- contextPath: Domain
+  description: The domain objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Expanse.Domain
+  description: Expanse Domain
+  type: unknown
+- contextPath: DomainDNSDetails
+  description: Domain DNS Details
+  type: Unknown
+tests:
+- No tests
+fromversion: 6.0.0

@@ -2,10 +2,10 @@
     "name": "Smokescreen IllusionBLACK",
     "description": "Smokescreen IllusionBLACK is a deception-based threat defense platform designed to accurately and efficiently detect targeted threats including reconnaissance, lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks, and ransomware in real-time.",
     "support": "partner",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.6",
     "author": "Smokescreen Technologies",
     "url": "",
-    "email": "akshays@smokescreen.io",
+    "email": "customersupport@smokescreen.io",
     "created": "2020-03-16T16:11:43Z",
     "categories": [
         "Deception"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "smokescreen-akshay"
-    ]
+    ],
+    "certification": "certified"
 }

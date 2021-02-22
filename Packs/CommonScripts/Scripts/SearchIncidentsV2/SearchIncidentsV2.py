@@ -35,6 +35,14 @@ def is_valid_args(args: Dict):
     return True
 
 
+def add_incidents_link(data):
+    server_url = demisto.demistoUrls().get('server')
+    for incident in data:
+        incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+        incident['incidentLink'] = incident_link
+    return data
+
+
 def search_incidents(args: Dict):
     if is_valid_args(args):
         res: List = demisto.executeCommand('getIncidents', args)
@@ -44,18 +52,25 @@ def search_incidents(args: Dict):
         if incident_found is False:
             return 'Incidents not found.', {}, {}
         else:
-            data: Dict = res[0]['Contents']['data']
-            context_entry: Dict = {'foundIncidents': data}
-            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
+            data = res[0]['Contents']['data']
+            data = add_incidents_link(data)
+            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
             md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-            return md, context_entry, res
+            return md, data, res
 
 
 def main():
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
-        return_outputs(readable_output, outputs, raw_response)
+        results = CommandResults(
+            outputs_prefix='foundIncidents',
+            outputs_key_field='id',
+            readable_output=readable_output,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+        return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
 

@@ -31,3 +31,17 @@ to get the __Authentication Token__  __Registration ID__ __Encryption Key__
     * __Severity of events to fetch (Firewall)__: Select from all,Critical,High,Medium,Low,Informational,Unused
     * __Subtype of events to fetch (Firewall)__: Select from all,attack,url,virus,spyware,vulnerability,file,scan,flood,packet,resource,data,url-content,wildfire,extpcap,wildfire-virus,http-hdr-insert,http-hdr,email-hdr,spyware-dns,spyware-wildfire-dns,spyware-wpc-dns,spyware-custom-dns,spyware-cloud-dns,spyware-raven,spyware-wildfire-raven,spyware-wpc-raven,wpc-virus,sctp
 8. Click __Test__ to validate the URLs, token, and connection.
+
+## CDL Server - API Calls Caching Mechanism
+The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
+When the intgeration reaches the limit of allowed calls, the following error will be shown:
+
+```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
+
+The integration will re-attempt authentication if the command was called under the following cases:
+
+1. First hour - once every minute.
+2. First 48 hours - once in 10 minutes.
+3. After that every 60 minutes.
+
+If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.

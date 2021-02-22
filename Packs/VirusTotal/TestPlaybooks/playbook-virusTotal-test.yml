@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d4748b8a-5e9a-499c-8f38-7839c3b77f05
+    taskid: 50799508-c9b1-4771-8b64-5d605a61cc61
     type: start
     task:
-      id: d4748b8a-5e9a-499c-8f38-7839c3b77f05
+      id: 50799508-c9b1-4771-8b64-5d605a61cc61
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 995fb4e2-6a42-4b82-8590-4968c34b46ea
+    taskid: e0318ac5-b242-49db-829e-b39325c938c7
     type: regular
     task:
-      id: 995fb4e2-6a42-4b82-8590-4968c34b46ea
+      id: e0318ac5-b242-49db-829e-b39325c938c7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b5f5a1ce-2963-4be3-81cf-94d9bf09f495
+    taskid: 3b00960a-e41a-48dc-8d38-6e54a7f31338
     type: regular
     task:
-      id: b5f5a1ce-2963-4be3-81cf-94d9bf09f495
+      id: 3b00960a-e41a-48dc-8d38-6e54a7f31338
       version: -1
       name: ip
       description: Checks the reputation of an IP address.
@@ -112,10 +112,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 801d8f74-ed83-4f42-84ba-c066df977c4b
+    taskid: 48798ea0-ddfa-4fb5-8a0a-82f1f122f51c
     type: condition
     task:
-      id: 801d8f74-ed83-4f42-84ba-c066df977c4b
+      id: 48798ea0-ddfa-4fb5-8a0a-82f1f122f51c
       version: -1
       name: VerifyContext
       description: |-
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 5d0fb28d-ec14-4e8f-8ca1-dbcac35a0b8c
+    taskid: 95b57616-52fd-47f2-803d-06b5ca8aa9c1
     type: regular
     task:
-      id: 5d0fb28d-ec14-4e8f-8ca1-dbcac35a0b8c
+      id: 95b57616-52fd-47f2-803d-06b5ca8aa9c1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -198,10 +198,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 7878f1ec-9f4c-46da-8340-3c397fbcaf47
+    taskid: 32746042-090b-437f-8a6e-981c8d11ff24
     type: regular
     task:
-      id: 7878f1ec-9f4c-46da-8340-3c397fbcaf47
+      id: 32746042-090b-437f-8a6e-981c8d11ff24
       version: -1
       name: VerifyContext
       description: |-
@@ -238,10 +238,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 2b653488-9328-4e52-84ea-d68e91b25e2d
+    taskid: 275201e9-2809-4dd7-8a46-5887e2b30218
     type: regular
     task:
-      id: 2b653488-9328-4e52-84ea-d68e91b25e2d
+      id: 275201e9-2809-4dd7-8a46-5887e2b30218
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -272,10 +272,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 82e394e7-d191-4435-83da-bc2d106f9f0f
+    taskid: cc97747a-577d-4efd-802e-fa053eb0676e
     type: regular
     task:
-      id: 82e394e7-d191-4435-83da-bc2d106f9f0f
+      id: cc97747a-577d-4efd-802e-fa053eb0676e
       version: -1
       name: domain
       description: Checks the reputation of a domain.
@@ -311,10 +311,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f6967db6-a526-4d4f-86d9-b500cc3415d3
+    taskid: eca0ab84-d372-4b2f-8fa5-0507ee280b00
     type: regular
     task:
-      id: f6967db6-a526-4d4f-86d9-b500cc3415d3
+      id: eca0ab84-d372-4b2f-8fa5-0507ee280b00
       version: -1
       name: file
       description: Checks the file reputation of the specified hash.
@@ -327,7 +327,7 @@ tasks:
       - "65"
     scriptarguments:
       file:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
+        simple: 7657fcb7d772448a6d8504e4b20168b8,d8c1df8a83ae7e3b33f8b766a72b75c2
       long: {}
       retries: {}
       threshold: {}
@@ -348,10 +348,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: ac33cd85-2239-4cf5-812e-8da005b1099f
+    taskid: e77d91d7-af12-4522-8618-ec80a85757b1
     type: condition
     task:
-      id: ac33cd85-2239-4cf5-812e-8da005b1099f
+      id: e77d91d7-af12-4522-8618-ec80a85757b1
       version: -1
       name: VerifyContext
       description: |-
@@ -378,22 +378,14 @@ tasks:
           right:
             value:
               simple: 7657fcb7d772448a6d8504e4b20168b8
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: File.DetectionEngines
-            iscontext: true
-          right:
-            value:
-              simple: "72"
       - - operator: isEqualString
           left:
             value:
-              simple: File.PositiveDetections
+              simple: File.MD5
             iscontext: true
           right:
             value:
-              simple: "69"
+              simple: d8c1df8a83ae7e3b33f8b766a72b75c2
     view: |-
       {
         "position": {
@@ -408,10 +400,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 866c3dab-fa54-44f1-87e2-45caaf2bc3b6
+    taskid: 8e2dde7b-ff7f-4fad-8661-99df143c08b8
     type: regular
     task:
-      id: 866c3dab-fa54-44f1-87e2-45caaf2bc3b6
+      id: 8e2dde7b-ff7f-4fad-8661-99df143c08b8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -442,10 +434,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: d3274bf5-3472-404c-88a3-e8c25c19dd7a
+    taskid: e9843e14-1294-4aa1-8954-ad7021c5dee3
     type: regular
     task:
-      id: d3274bf5-3472-404c-88a3-e8c25c19dd7a
+      id: e9843e14-1294-4aa1-8954-ad7021c5dee3
       version: -1
       name: url long demisto.com
       description: Checks the reputation of a URL.
@@ -482,10 +474,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e2019911-8b71-4dc8-844f-5c784e8c725a
+    taskid: 20fac48b-3573-4457-8723-15b99fda5c5a
     type: regular
     task:
-      id: e2019911-8b71-4dc8-844f-5c784e8c725a
+      id: 20fac48b-3573-4457-8723-15b99fda5c5a
       version: -1
       name: VerifyContext
       description: |-
@@ -522,10 +514,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 3a5692a0-7ed1-4530-84a0-2da041efd878
+    taskid: 61973206-7388-4bcd-82ca-98020cd64151
     type: regular
     task:
-      id: 3a5692a0-7ed1-4530-84a0-2da041efd878
+      id: 61973206-7388-4bcd-82ca-98020cd64151
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -556,10 +548,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: af074911-abad-442a-8d4e-affb076a05e8
+    taskid: 58735554-764a-4e94-8783-90fe9cb63a69
     type: regular
     task:
-      id: af074911-abad-442a-8d4e-affb076a05e8
+      id: 58735554-764a-4e94-8783-90fe9cb63a69
       version: -1
       name: file (second hash)
       description: Checks the file reputation of the specified hash.
@@ -593,10 +585,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 19dd3349-d6f5-48a1-8ebc-6343af27e78e
+    taskid: 5d6a6b67-061c-4b6a-845c-33bbbef00e51
     type: condition
     task:
-      id: 19dd3349-d6f5-48a1-8ebc-6343af27e78e
+      id: 5d6a6b67-061c-4b6a-845c-33bbbef00e51
       version: -1
       name: VerifyContext
       description: |-
@@ -644,10 +636,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 61b388fb-47a4-4cca-8ca3-9b9a825da5be
+    taskid: a1ef9112-c8b9-424d-8916-ca41a6f2d4b1
     type: regular
     task:
-      id: 61b388fb-47a4-4cca-8ca3-9b9a825da5be
+      id: a1ef9112-c8b9-424d-8916-ca41a6f2d4b1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -678,10 +670,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: e9241585-430a-4772-8e04-9dbcd73d467c
+    taskid: 5fd0d8c5-a57d-4cb8-8f6c-37a171b13001
     type: regular
     task:
-      id: e9241585-430a-4772-8e04-9dbcd73d467c
+      id: 5fd0d8c5-a57d-4cb8-8f6c-37a171b13001
       version: -1
       name: file long (second hash)
       description: Checks the file reputation of the specified hash.
@@ -716,10 +708,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: f2c5004a-ac46-4a88-8aef-501f5faa9788
+    taskid: 4a672159-6aeb-452b-814f-206d2d2163aa
     type: regular
     task:
-      id: f2c5004a-ac46-4a88-8aef-501f5faa9788
+      id: 4a672159-6aeb-452b-814f-206d2d2163aa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -750,10 +742,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: fc324caf-d5a9-4b75-86a4-d358a8722561
+    taskid: 474bbbc7-0414-4250-8d1f-3c92245c47f5
     type: condition
     task:
-      id: fc324caf-d5a9-4b75-86a4-d358a8722561
+      id: 474bbbc7-0414-4250-8d1f-3c92245c47f5
       version: -1
       name: VerifyContext
       description: |-
@@ -796,10 +788,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: e48fea20-7aff-4bb5-8111-5711ebd81ad4
+    taskid: 830982f7-6b67-43c2-8a80-3d956eb15c19
     type: regular
     task:
-      id: e48fea20-7aff-4bb5-8111-5711ebd81ad4
+      id: 830982f7-6b67-43c2-8a80-3d956eb15c19
       version: -1
       name: file long
       description: Checks the file reputation of the specified hash.
@@ -834,10 +826,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: dd9b5725-e2b1-4dcd-8dd8-37bc7d2ea969
+    taskid: a7bc1f6b-642b-4681-8235-f6184f57c569
     type: condition
     task:
-      id: dd9b5725-e2b1-4dcd-8dd8-37bc7d2ea969
+      id: a7bc1f6b-642b-4681-8235-f6184f57c569
       version: -1
       name: VerifyContext
       description: |-
@@ -880,10 +872,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: f6c6f5ae-e3e3-4e2b-8435-9a173dc75567
+    taskid: 3997d8f4-daa5-4655-8ff2-f8f38d1e7e06
     type: regular
     task:
-      id: f6c6f5ae-e3e3-4e2b-8435-9a173dc75567
+      id: 3997d8f4-daa5-4655-8ff2-f8f38d1e7e06
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -914,10 +906,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 75814240-a785-486d-8ef3-69816336276d
+    taskid: 5a14800e-e95c-4086-8c0a-1e3c8b354253
     type: regular
     task:
-      id: 75814240-a785-486d-8ef3-69816336276d
+      id: 5a14800e-e95c-4086-8c0a-1e3c8b354253
       version: -1
       name: url coffedoesgood.com
       description: Checks the reputation of a URL.
@@ -954,10 +946,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 0cb12db3-e987-43cd-8843-93e6d728388b
+    taskid: cdbbe254-2686-4023-8d9c-e72bdb213fed
     type: regular
     task:
-      id: 0cb12db3-e987-43cd-8843-93e6d728388b
+      id: cdbbe254-2686-4023-8d9c-e72bdb213fed
       version: -1
       name: VerifyContext
       description: |-
@@ -994,10 +986,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 738e4faf-f075-4798-879b-b2f299b84d73
+    taskid: 80c23667-0079-46f8-860a-6382e3218cb9
     type: regular
     task:
-      id: 738e4faf-f075-4798-879b-b2f299b84d73
+      id: 80c23667-0079-46f8-860a-6382e3218cb9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1028,10 +1020,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 36e4ab0b-6329-47f4-87de-c9c4c419511c
+    taskid: b571591a-0e2f-4002-8252-648379ad3ef8
     type: regular
     task:
-      id: 36e4ab0b-6329-47f4-87de-c9c4c419511c
+      id: b571591a-0e2f-4002-8252-648379ad3ef8
       version: -1
       name: url long coffedoesgood.com
       description: Checks the reputation of a URL.
@@ -1069,10 +1061,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: f939fd59-f18a-49c9-8a43-e363815bf477
+    taskid: fca2c714-65e9-4ef3-86bb-d23a19f01981
     type: condition
     task:
-      id: f939fd59-f18a-49c9-8a43-e363815bf477
+      id: fca2c714-65e9-4ef3-86bb-d23a19f01981
       version: -1
       name: VerifyContext
       description: |-
@@ -1129,10 +1121,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 13bedd49-7bb9-4a03-8b6b-234d28d42cd2
+    taskid: b4bdd659-67a5-41bc-8773-847cea9ffa7d
     type: regular
     task:
-      id: 13bedd49-7bb9-4a03-8b6b-234d28d42cd2
+      id: b4bdd659-67a5-41bc-8773-847cea9ffa7d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1163,10 +1155,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: c1c2768f-388c-4a57-8fb8-5d6de0f098ce
+    taskid: ffd797ed-568a-4cec-8b45-7b6e1e273bae
     type: regular
     task:
-      id: c1c2768f-388c-4a57-8fb8-5d6de0f098ce
+      id: ffd797ed-568a-4cec-8b45-7b6e1e273bae
       version: -1
       name: url demisto.com
       description: Checks the reputation of a URL.
@@ -1202,10 +1194,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 2742dbc1-7866-4999-888e-0f67980b1137
+    taskid: ba179d7f-d313-4d8c-8bd2-40ec6fa0d439
     type: regular
     task:
-      id: 2742dbc1-7866-4999-888e-0f67980b1137
+      id: ba179d7f-d313-4d8c-8bd2-40ec6fa0d439
       version: -1
       name: VerifyContext
       description: |-
@@ -1242,10 +1234,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: c80c3dc0-e864-4085-897d-7198e22a0a55
+    taskid: b84a2271-7bc0-4450-8422-a2751566e54c
     type: regular
     task:
-      id: c80c3dc0-e864-4085-897d-7198e22a0a55
+      id: b84a2271-7bc0-4450-8422-a2751566e54c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1276,10 +1268,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: fa24cc24-feb8-4445-8cd3-cf627bc182f3
+    taskid: 70dbdcc2-fd20-4c52-85a2-2e061287c3c2
     type: regular
     task:
-      id: fa24cc24-feb8-4445-8cd3-cf627bc182f3
+      id: 70dbdcc2-fd20-4c52-85a2-2e061287c3c2
       version: -1
       name: domain
       description: Checks the reputation of a domain.
@@ -1316,10 +1308,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 6e61b708-4c62-48d8-87b2-94515a92fb42
+    taskid: c7518baa-2379-4154-8400-dc7dd51d50f0
     type: regular
     task:
-      id: 6e61b708-4c62-48d8-87b2-94515a92fb42
+      id: c7518baa-2379-4154-8400-dc7dd51d50f0
       version: -1
       name: VerifyContext
       description: |-
@@ -1356,10 +1348,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 51214195-80d2-437e-8361-abb5e555cc30
+    taskid: 694b84b7-179a-4ac2-800f-2d0f36557a49
     type: regular
     task:
-      id: 51214195-80d2-437e-8361-abb5e555cc30
+      id: 694b84b7-179a-4ac2-800f-2d0f36557a49
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1390,10 +1382,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 897f8585-a6f4-4548-85e5-bddd3a03e4e1
+    taskid: 00558b47-686e-4a37-839b-f040b6f76d2c
     type: regular
     task:
-      id: 897f8585-a6f4-4548-85e5-bddd3a03e4e1
+      id: 00558b47-686e-4a37-839b-f040b6f76d2c
       version: -1
       name: Set
       description: Sets a value into the context with the given context key
@@ -1425,10 +1417,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 0d0da4f7-15b8-4521-84d3-cc401ca76f3f
+    taskid: 93b82511-d806-4826-8e20-615c6a2d0071
     type: regular
     task:
-      id: 0d0da4f7-15b8-4521-84d3-cc401ca76f3f
+      id: 93b82511-d806-4826-8e20-615c6a2d0071
       version: -1
       name: Set2
       description: Sets a value into the context with the given context key
@@ -1461,10 +1453,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 03c969d5-6a6c-405c-8b90-e3f6ff8917c2
+    taskid: 9bee4073-8abc-4afc-857e-c029c784bc78
     type: regular
     task:
-      id: 03c969d5-6a6c-405c-8b90-e3f6ff8917c2
+      id: 9bee4073-8abc-4afc-857e-c029c784bc78
       version: -1
       name: File (1 call)
       description: Checks the file reputation of the specified hash.
@@ -1507,10 +1499,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 343a7192-0d56-480f-8284-1a830db02667
+    taskid: ea15656a-88dd-45b8-892a-72c65aae5005
     type: regular
     task:
-      id: 343a7192-0d56-480f-8284-1a830db02667
+      id: ea15656a-88dd-45b8-892a-72c65aae5005
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1543,13 +1535,14 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 6673cf1b-e726-4db3-8811-fd90ed2769f2
+    taskid: ddfb94ac-289b-4646-810f-f8ce41e288e2
     type: condition
     task:
-      id: 6673cf1b-e726-4db3-8811-fd90ed2769f2
+      id: ddfb94ac-289b-4646-810f-f8ce41e288e2
       version: -1
       name: Exists
-      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1585,13 +1578,14 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: f4a30eb7-63cf-42d3-8e02-a81faadbf8e2
+    taskid: a7e9a553-1669-40c6-8301-b641984da72b
     type: condition
     task:
-      id: f4a30eb7-63cf-42d3-8e02-a81faadbf8e2
+      id: a7e9a553-1669-40c6-8301-b641984da72b
       version: -1
       name: Exists2
-      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -1628,10 +1622,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: a1d173cd-e1e4-485d-8725-79ea43996d9a
+    taskid: a21a21d0-0476-43da-837b-79186688c3fc
     type: condition
     task:
-      id: a1d173cd-e1e4-485d-8725-79ea43996d9a
+      id: a21a21d0-0476-43da-837b-79186688c3fc
       version: -1
       name: Check for error
       type: condition
@@ -1665,10 +1659,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 991f36f2-dfcf-49cf-807f-9d74456634aa
+    taskid: dd9573d3-785c-49e4-8300-e33d074df5c8
     type: condition
     task:
-      id: 991f36f2-dfcf-49cf-807f-9d74456634aa
+      id: dd9573d3-785c-49e4-8300-e33d074df5c8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1703,10 +1697,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 510a4c04-9bc3-4b87-8293-dd73932a42d2
+    taskid: 832084de-7b1b-4aee-86c6-f669182b289e
     type: condition
     task:
-      id: 510a4c04-9bc3-4b87-8293-dd73932a42d2
+      id: 832084de-7b1b-4aee-86c6-f669182b289e
       version: -1
       name: Check for error
       type: condition
@@ -1740,10 +1734,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 4070efc2-d697-4285-8283-236a833e7cd9
+    taskid: 6f990f61-99e4-46f4-89c5-d8fa02480087
     type: condition
     task:
-      id: 4070efc2-d697-4285-8283-236a833e7cd9
+      id: 6f990f61-99e4-46f4-89c5-d8fa02480087
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1778,10 +1772,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 15af7fd7-7666-4ab6-8d82-a3bc54053f13
+    taskid: 0288da72-a580-492f-824e-99ee28e56596
     type: condition
     task:
-      id: 15af7fd7-7666-4ab6-8d82-a3bc54053f13
+      id: 0288da72-a580-492f-824e-99ee28e56596
       version: -1
       name: Check for error
       type: condition
@@ -1815,10 +1809,10 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 09fc3aa5-45ad-427f-841d-5cfebd29634f
+    taskid: 8042a0c6-3d19-4546-8447-4189e5f5ec20
     type: condition
     task:
-      id: 09fc3aa5-45ad-427f-841d-5cfebd29634f
+      id: 8042a0c6-3d19-4546-8447-4189e5f5ec20
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1853,10 +1847,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: c7ae112c-e00f-4eec-84ae-b56524768737
+    taskid: 0197ff4f-6fe9-4f28-8f67-af892e26660e
     type: condition
     task:
-      id: c7ae112c-e00f-4eec-84ae-b56524768737
+      id: 0197ff4f-6fe9-4f28-8f67-af892e26660e
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1891,10 +1885,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 495269d2-826c-4cb9-86b9-660417e9ebd8
+    taskid: 9b354b33-ec30-4f8e-85c7-46e952229432
     type: condition
     task:
-      id: 495269d2-826c-4cb9-86b9-660417e9ebd8
+      id: 9b354b33-ec30-4f8e-85c7-46e952229432
       version: -1
       name: Check for error
       type: condition
@@ -1928,10 +1922,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 69cebfaa-db9d-4765-88e3-81f2e56fecab
+    taskid: f679dd10-9fcf-4ccf-8f54-73789a812c24
     type: condition
     task:
-      id: 69cebfaa-db9d-4765-88e3-81f2e56fecab
+      id: f679dd10-9fcf-4ccf-8f54-73789a812c24
       version: -1
       name: Check for error
       type: condition
@@ -1965,10 +1959,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 12434655-4d73-42fe-833d-8572e284dc00
+    taskid: 8d5719b8-64ba-46c7-8864-bba2d2cab5f1
     type: condition
     task:
-      id: 12434655-4d73-42fe-833d-8572e284dc00
+      id: 8d5719b8-64ba-46c7-8864-bba2d2cab5f1
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2003,10 +1997,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 8b9bc3bc-9982-40d8-81a4-c339326ae262
+    taskid: 51f9613a-bd52-4ae3-8d05-802ea2d2100b
     type: condition
     task:
-      id: 8b9bc3bc-9982-40d8-81a4-c339326ae262
+      id: 51f9613a-bd52-4ae3-8d05-802ea2d2100b
       version: -1
       name: Check for error
       type: condition
@@ -2040,10 +2034,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 3f2dfcea-f289-47b3-8dfc-657dac985dcc
+    taskid: c6e43259-324e-4019-816b-472a675654e7
     type: condition
     task:
-      id: 3f2dfcea-f289-47b3-8dfc-657dac985dcc
+      id: c6e43259-324e-4019-816b-472a675654e7
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2078,10 +2072,10 @@ tasks:
     quietmode: 0
   "71":
     id: "71"
-    taskid: 900d62e2-3e32-4d86-8742-f9ad5fb89313
+    taskid: 62560371-bcbf-4e21-862c-13052464b5b9
     type: condition
     task:
-      id: 900d62e2-3e32-4d86-8742-f9ad5fb89313
+      id: 62560371-bcbf-4e21-862c-13052464b5b9
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2116,10 +2110,10 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: a19f8bcc-4caf-410b-87f7-08f1b3f6dcc6
+    taskid: 05002938-013f-4c0e-8fb2-59212394da4e
     type: condition
     task:
-      id: a19f8bcc-4caf-410b-87f7-08f1b3f6dcc6
+      id: 05002938-013f-4c0e-8fb2-59212394da4e
       version: -1
       name: Check for error
       type: condition
@@ -2153,10 +2147,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 5faf3a73-9431-4dfb-869e-f3532af2100f
+    taskid: 1a4a7ea3-2c1a-402e-8a88-4793532035cc
     type: condition
     task:
-      id: 5faf3a73-9431-4dfb-869e-f3532af2100f
+      id: 1a4a7ea3-2c1a-402e-8a88-4793532035cc
       version: -1
       name: Check for error
       type: condition
@@ -2190,10 +2184,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: a8ef6d72-794d-4f02-8003-8241133cb019
+    taskid: 89574191-6775-4087-84fa-f4602a6fcd6b
     type: condition
     task:
-      id: a8ef6d72-794d-4f02-8003-8241133cb019
+      id: 89574191-6775-4087-84fa-f4602a6fcd6b
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2228,10 +2222,10 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 8d1f736e-c622-46e6-854e-3a53ed0f4131
+    taskid: cfc5df83-a8cc-4ffe-8eb0-21e27c015598
     type: condition
     task:
-      id: 8d1f736e-c622-46e6-854e-3a53ed0f4131
+      id: cfc5df83-a8cc-4ffe-8eb0-21e27c015598
       version: -1
       name: Check for error
       type: condition
@@ -2265,10 +2259,10 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 5566aaf0-1a6b-4ba9-8ea7-2432895158a1
+    taskid: b8638a64-b903-4cd7-8fcc-ac37377c44e8
     type: condition
     task:
-      id: 5566aaf0-1a6b-4ba9-8ea7-2432895158a1
+      id: b8638a64-b903-4cd7-8fcc-ac37377c44e8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2303,10 +2297,10 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 1ad6d7fa-f070-41cd-8ab4-2127178b64b6
+    taskid: 730c533d-a6be-4e04-8fc5-6b3ac15c7940
     type: condition
     task:
-      id: 1ad6d7fa-f070-41cd-8ab4-2127178b64b6
+      id: 730c533d-a6be-4e04-8fc5-6b3ac15c7940
       version: -1
       name: Check for error
       type: condition
@@ -2340,10 +2334,10 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: c0e80e60-3464-4832-80c0-c8250c0ad864
+    taskid: 4e2e6543-d1a9-461a-88b2-a110a4601094
     type: condition
     task:
-      id: c0e80e60-3464-4832-80c0-c8250c0ad864
+      id: 4e2e6543-d1a9-461a-88b2-a110a4601094
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2378,10 +2372,10 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: 321e2167-1cbe-4469-8cc6-462679fd895a
+    taskid: 691e3544-428d-42f9-849d-0fa3f2c7d338
     type: condition
     task:
-      id: 321e2167-1cbe-4469-8cc6-462679fd895a
+      id: 691e3544-428d-42f9-849d-0fa3f2c7d338
       version: -1
       name: Check for error
       type: condition
@@ -2415,10 +2409,10 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 1a5b7fdb-93c6-498e-8c60-44e5451bc931
+    taskid: 58ff3cf0-ade4-40ff-872f-41b82e705498
     type: condition
     task:
-      id: 1a5b7fdb-93c6-498e-8c60-44e5451bc931
+      id: 58ff3cf0-ade4-40ff-872f-41b82e705498
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2453,10 +2447,10 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: d8f39838-e45d-455a-845b-33668ad5706f
+    taskid: c3d8a1ff-ba9b-48a7-8ff1-141fdb374618
     type: condition
     task:
-      id: d8f39838-e45d-455a-845b-33668ad5706f
+      id: c3d8a1ff-ba9b-48a7-8ff1-141fdb374618
       version: -1
       name: Check for error
       type: condition
@@ -2490,10 +2484,10 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 4d51b910-e7bc-4f84-8df4-8b8e5b1fd70f
+    taskid: 9c620dca-be9a-4711-8b28-cbd459f3dc2a
     type: condition
     task:
-      id: 4d51b910-e7bc-4f84-8df4-8b8e5b1fd70f
+      id: 9c620dca-be9a-4711-8b28-cbd459f3dc2a
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2528,10 +2522,10 @@ tasks:
     quietmode: 0
   "83":
     id: "83"
-    taskid: d301b2f3-f2b3-4b3a-863e-efd0039e7568
+    taskid: 6ea23def-6980-49e5-8056-20be1c94f893
     type: regular
     task:
-      id: d301b2f3-f2b3-4b3a-863e-efd0039e7568
+      id: 6ea23def-6980-49e5-8056-20be1c94f893
       version: -1
       name: ip
       description: Checks the reputation of an IP address.
@@ -2566,10 +2560,10 @@ tasks:
     quietmode: 0
   "84":
     id: "84"
-    taskid: b7314577-fd22-4245-848f-e7f8a8fb3c35
+    taskid: a7d9a0de-3599-4ebe-8fa8-79605e92e0bc
     type: condition
     task:
-      id: b7314577-fd22-4245-848f-e7f8a8fb3c35
+      id: a7d9a0de-3599-4ebe-8fa8-79605e92e0bc
       version: -1
       name: Verify no duplicates
       type: condition
@@ -2612,10 +2606,10 @@ tasks:
     quietmode: 0
   "85":
     id: "85"
-    taskid: 51a40df6-7113-4083-8370-c8bec5d7e9ce
+    taskid: 699fdb8e-578d-4e1e-8afd-b1bba515cdae
     type: regular
     task:
-      id: 51a40df6-7113-4083-8370-c8bec5d7e9ce
+      id: 699fdb8e-578d-4e1e-8afd-b1bba515cdae
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2644,10 +2638,10 @@ tasks:
     quietmode: 0
   "86":
     id: "86"
-    taskid: 4bb76e1f-9cad-44b5-873c-d4405d710fe1
+    taskid: 9ba54655-5d9a-4272-8375-670420b9426a
     type: regular
     task:
-      id: 4bb76e1f-9cad-44b5-873c-d4405d710fe1
+      id: 9ba54655-5d9a-4272-8375-670420b9426a
       version: -1
       name: ip_with_CSV
       description: Checks the reputation of an IP address.
@@ -2683,10 +2677,10 @@ tasks:
     quietmode: 0
   "87":
     id: "87"
-    taskid: 88b98d70-da03-4b61-84d9-41fbae76db2b
+    taskid: 8e0a8a2d-9333-41f3-85dc-95f6a7e98a4d
     type: condition
     task:
-      id: 88b98d70-da03-4b61-84d9-41fbae76db2b
+      id: 8e0a8a2d-9333-41f3-85dc-95f6a7e98a4d
       version: -1
       name: verify_ip_csv
       type: condition
@@ -2729,10 +2723,10 @@ tasks:
     quietmode: 0
   "88":
     id: "88"
-    taskid: 585ec7fc-c513-4d89-870d-e3a77429adf0
+    taskid: 30fd7953-3bd2-4c6c-8f97-038f5867ee52
     type: regular
     task:
-      id: 585ec7fc-c513-4d89-870d-e3a77429adf0
+      id: 30fd7953-3bd2-4c6c-8f97-038f5867ee52
       version: -1
       name: url_with_csv
       description: Checks the reputation of a URL.
@@ -2767,10 +2761,10 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 67bf877d-8433-44ae-8d9e-fcf5593254a2
+    taskid: bb256988-65e9-4d4f-8552-516b7d2c8d01
     type: condition
     task:
-      id: 67bf877d-8433-44ae-8d9e-fcf5593254a2
+      id: bb256988-65e9-4d4f-8552-516b7d2c8d01
       version: -1
       name: verify_url_csv
       type: condition
@@ -2813,10 +2807,10 @@ tasks:
     quietmode: 0
   "90":
     id: "90"
-    taskid: 16b8616e-59a1-4510-8c2e-f289453d29fa
+    taskid: 03784f54-fb50-48b0-8f65-adc35ca53fa0
     type: regular
     task:
-      id: 16b8616e-59a1-4510-8c2e-f289453d29fa
+      id: 03784f54-fb50-48b0-8f65-adc35ca53fa0
       version: -1
       name: domain_with_csv
       description: Checks the reputation of a domain.
@@ -2851,10 +2845,10 @@ tasks:
     quietmode: 0
   "91":
     id: "91"
-    taskid: ab3acc0c-b6b7-4407-809b-e8a8772eb9eb
+    taskid: 4145c462-6494-4d53-81d2-e8782c0fd62f
     type: condition
     task:
-      id: ab3acc0c-b6b7-4407-809b-e8a8772eb9eb
+      id: 4145c462-6494-4d53-81d2-e8782c0fd62f
       version: -1
       name: verify_domain_csv
       type: condition
@@ -2897,10 +2891,10 @@ tasks:
     quietmode: 0
   "92":
     id: "92"
-    taskid: f3472ec8-75a5-4c53-8756-0a3fe284cb80
+    taskid: cc352495-53bc-41ca-84b3-01eb1da84753
     type: regular
     task:
-      id: f3472ec8-75a5-4c53-8756-0a3fe284cb80
+      id: cc352495-53bc-41ca-84b3-01eb1da84753
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2928,10 +2922,10 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: dd13848f-75e5-4c31-8d83-a1ca233fdb37
+    taskid: cdfdf0f3-393b-4114-8039-2c52436b1f72
     type: regular
     task:
-      id: dd13848f-75e5-4c31-8d83-a1ca233fdb37
+      id: cdfdf0f3-393b-4114-8039-2c52436b1f72
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2960,10 +2954,10 @@ tasks:
     quietmode: 0
   "94":
     id: "94"
-    taskid: 4cfda401-5673-4bff-83e2-f782970c1b92
+    taskid: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
     type: regular
     task:
-      id: 4cfda401-5673-4bff-83e2-f782970c1b92
+      id: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
       version: -1
       name: Sleep
       description: Sleep for X seconds

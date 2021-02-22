@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Expanse Issue"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expanselatestevidence",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_expanselatestevidence",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Latest Evidence",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

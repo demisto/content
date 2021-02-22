@@ -1,8 +1,8 @@
 {
     "name": "Lacework",
-    "description": "Lacework is focused on giving customers visibility and control over their cloud operations at cloud scale to the monitoring of all activities across all cloud components.",
+    "description": "Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Alan Nix",
     "url": "https://github.com/alannix-lw",
     "email": "",

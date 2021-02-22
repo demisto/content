@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "HIPAA Breach Notification"
+        "HIPAA Breach Notification",
+        "US Breach Notification"
     ],
     "breachScript": "",
     "caseInsensitive": true,

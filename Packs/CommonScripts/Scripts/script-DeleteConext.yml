@@ -34,6 +34,12 @@ script: >
                       Type: entryTypes.error};
   }
 
+  function hasDuplicates(arr) {
+      return arr.some( function(item) {
+          return arr.indexOf(item) !== arr.lastIndexOf(item);
+      });
+  }
+
   if (shouldDeleteAll) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
@@ -41,6 +47,10 @@ script: >
       for (var i = 0; i < keysToKeep.length; i++) {
           value = dq(invContext, keysToKeep[i]);
           if (value) {
+              if (Array.isArray(value) && hasDuplicates(value)) {
+                  setContext(keysToKeep[i], value);
+                  continue;
+              }
               keysToKeepObj[keysToKeep[i]] = value;
           }
       }
@@ -49,7 +59,11 @@ script: >
       // delete each field in context
       var errorsStr = "";
       for (var i = 0; i < fieldsToDelete.length; i++) {
-          var result = executeCommand('delContext', {key: fieldsToDelete[i]});
+          var key = fieldsToDelete[i];
+          if (isSubPlaybookKey) {
+              key = 'subplaybook-${currentPlaybookID}.' + key;
+          }
+          var result = executeCommand('delContext', {key: key});
           if(!result || result.type === entryTypes.error) {
               errorsStr = errorsStr + "\n" + result.Contents;
           }

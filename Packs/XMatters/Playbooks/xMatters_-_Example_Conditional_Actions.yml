@@ -1,0 +1,375 @@
+id: xMatters - Example Conditional Actions
+version: -1
+name: xMatters - Example Conditional Actions
+description: 'Example playbook showing how to use the Trigger and Wait sub-playbook
+  to fire an event to xMatters and wait for a response from a user. This playbook
+  then inspects the user''s chosen response and branches accordingly. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05f4c511-77f3-4002-8597-a075296eaadc
+    type: start
+    task:
+      id: 05f4c511-77f3-4002-8597-a075296eaadc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f15345fc-7f39-49ae-8057-84a7bcada062
+    type: condition
+    task:
+      id: f15345fc-7f39-49ae-8057-84a7bcada062
+      version: -1
+      name: Check Response
+      description: Checks the user's response and branches accordingly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Ban Host:
+      - "4"
+      Isolate:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Isolate
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XMatters.UserResponseOut
+            iscontext: true
+          right:
+            value:
+              simple: Isolate
+    - label: Ban Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XMatters.UserResponseOut
+            iscontext: true
+          right:
+            value:
+              simple: Ban Host
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3f2cc148-2edc-4ce2-895c-d7a0bad8fe1c
+    type: regular
+    task:
+      id: 3f2cc148-2edc-4ce2-895c-d7a0bad8fe1c
+      version: -1
+      name: Example Do Isolate Command
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: Moving to Isolate Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b1f8a460-6c93-4793-89af-ecd90db0dbd7
+    type: regular
+    task:
+      id: b1f8a460-6c93-4793-89af-ecd90db0dbd7
+      version: -1
+      name: Example Ban Host Command
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: Do Ban Host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 200efe5c-6b95-4a81-8a93-e6af947980d4
+    type: regular
+    task:
+      id: 200efe5c-6b95-4a81-8a93-e6af947980d4
+      version: -1
+      name: Example Review
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: Review
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 600cd981-5fef-427e-8135-de6817e552a7
+    type: condition
+    task:
+      id: 600cd981-5fef-427e-8135-de6817e552a7
+      version: -1
+      name: Is xMatters Enabled?
+      description: 'Checks to see if the xMatters integration is enabled. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xMatters
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 01cb2706-dd35-41e6-8296-7d0f24126120
+    type: title
+    task:
+      id: 01cb2706-dd35-41e6-8296-7d0f24126120
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 58c9084b-2c7d-46c3-8002-f22677230dc4
+    type: title
+    task:
+      id: 58c9084b-2c7d-46c3-8002-f22677230dc4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ef6fe423-b869-491a-86b1-9ead40837fd9
+    type: playbook
+    task:
+      id: ef6fe423-b869-491a-86b1-9ead40837fd9
+      version: -1
+      name: xMatters - Wait for Response
+      description: Trigger an xMatters workflow to notify a user for a response.
+      playbookName: xMatters - Wait for Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: ${inputs.body}
+      incident_id:
+        simple: ${incident.id}
+      recipients:
+        simple: ${inputs.recipients}
+      subject:
+        simple: ${inputs.subject}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: recipients
+  value:
+    simple: ${incident.owner}
+  required: false
+  description: Recipients of the xMatters Message
+  playbookInputQuery:
+- key: subject
+  value:
+    simple: ${incident.name}
+  required: false
+  description: Subject of the xMatters Message
+  playbookInputQuery:
+- key: body
+  value:
+    simple: ${incident.details}
+  required: false
+  description: Body of the xMatters Message
+  playbookInputQuery:
+- key: incident_id
+  value:
+    simple: ${incident.id}
+  required: false
+  description: The related incident id
+  playbookInputQuery:
+outputs: []
+tests:
+- xMatters-Test
+fromversion: 5.5.0

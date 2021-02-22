@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "User Profile"
+ ],
+ "caseInsensitive": true,
+ "cliName": "jobcode",
+ "closeForm": false,
+ "content": true,
+ "description": "Job Code",
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_jobcode",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Job Code",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

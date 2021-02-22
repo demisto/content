@@ -83,6 +83,20 @@
       }
     },
     {
+      "test_fake_playbook": {
+        "name": "test_fake_playbook",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/test_fake_playbook.yml",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "fromversion": "5.0.0",
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "FakePack"
+      }
+    },
+    {
       "Calculate Severity By Highest DBotScore": {
         "name": "Calculate Severity By Highest DBotScore",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_playbooks/fake_playbook.yml",
@@ -116,9 +130,19 @@
     {
       "fake_integration": {
         "name": "fake_integration",
-        "fromversion": "4.1.0",
-        "toversion": "5.4.9",
+        "fromversion": "5.5.0",
+        "toversion": "6.0.0",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/fake_integration.yml",
+        "commands": [
+          "fake-command"
+        ]
+      }
+    },
+    {
+      "test_fake_integration": {
+        "name": "test_fake_integration",
+        "fromversion": "6.0.0",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_integrations/test_fake_integration.yml",
         "commands": [
           "fake-command"
         ]
@@ -235,7 +259,21 @@
       "fake_test_playbook": {
         "name": "fake_test_playbook",
         "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
-        "fromversion": "4.1.0",
+        "fromversion": "5.5.0",
+        "implementing_scripts": [
+          "fake-script"
+        ],
+        "command_to_integration": {
+          "fake-command": ""
+        },
+        "pack": "fake_pack"
+      }
+    },
+    {
+      "fake_test_playbook_to_version": {
+        "name": "fake_test_playbook_to_version",
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook_to_version.yml",
+        "toversion": "5.9.9",
         "implementing_scripts": [
           "fake-script"
         ],
@@ -346,7 +384,8 @@
     {
       "Calculate Severity - Standard - Test": {
         "name": "Calculate Severity - Standard - Test",
-        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml"
+        "file_path": "Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml",
+        "pack": "CommonPlaybooks"
       }
     },
     {
@@ -368,6 +407,12 @@
         "implementing_playbooks": [
           "Extract Indicators From File - Generic"
         ]
+      }
+    },
+    {
+      "Test XDR Playbook": {
+        "name": "Test XDR Playbook",
+        "pack": "CortexXDR"
       }
     }
   ]

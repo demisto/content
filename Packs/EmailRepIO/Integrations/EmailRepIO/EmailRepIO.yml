@@ -1,0 +1,302 @@
+category: Utilities
+commonfields:
+  id: EmailRepIO
+  version: -1
+configuration:
+- defaultvalue: https://emailrep.io
+  display: Server URL (e.g., https://emailrep.io)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Mandatory for the emailrepio-email-address-report command
+  display: API Key
+  name: apikey
+  required: false
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Provides email address reputation and reports.
+display: EmailRep.io
+name: EmailRepIO
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The email address to get the reputation for.
+      isArray: false
+      name: email_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the EmailRepIO reputation for the given email address.
+    execution: false
+    name: emailrepio-email-reputation-get
+    outputs:
+    - contextPath: EmailRepIO.Email.email
+      type: String
+      description: The email address that was queried.
+    - contextPath: EmailRepIO.Email.reputation
+      type: String
+      description: 'The reputation of the email. Possible values are: "high", "medium", "low", and "none".'
+    - contextPath: EmailRepIO.Email.suspicious
+      type: Boolean
+      description: Whether the email address should be treated as suspicious or risky.
+    - contextPath: EmailRepIO.Email.references
+      type: Number
+      description: The total number of positive and negative sources of the reputation. Note
+        that these may not all be direct references to the email address, but can
+        include reputation sources for the domain or other related information.
+    - contextPath: EmailRepIO.Email.details.blacklisted
+      type: Boolean
+      description: Whether the email is believed to be malicious or spam.
+    - contextPath: EmailRepIO.Email.details.malicious_activity
+      type: Boolean
+      description: Whether the email exhibited malicious behavior (e.g., phishing or fraud).
+    - contextPath: EmailRepIO.Email.details.malicious_activity_recent
+      type: Boolean
+      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal
+        account takeovers).
+    - contextPath: EmailRepIO.Email.details.credentials_leaked
+      type: Boolean
+      description: Whether the email credentials were ever leaked (e.g., a data breach,
+        pastebin, dark web, etc.).
+    - contextPath: EmailRepIO.Email.details.credentials_leaked_recent
+      type: Boolean
+      description: Whether the email credentials were leaked in the last 90 days.
+    - contextPath: EmailRepIO.Email.details.data_breach
+      type: Boolean
+      description: Whether the email was ever in a data breach.
+    - contextPath: EmailRepIO.Email.details.first_seen
+      type: Date
+      description: The first date the email was observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
+    - contextPath: EmailRepIO.Email.details.last_seen
+      type: Date
+      description: The last date the email was observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior.
+    - contextPath: EmailRepIO.Email.details.domain_exists
+      type: Boolean
+      description: Whether the domain is a valid domain.
+    - contextPath: EmailRepIO.Email.details.domain_reputation
+      type: String
+      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable,
+        or doesn’t exist.'
+    - contextPath: EmailRepIO.Email.details.new_domain
+      type: Boolean
+      description: Whether the domain was created within the last year.
+    - contextPath: EmailRepIO.Email.details.days_since_domain_creation
+      type: Number
+      description: The number of days since the domain was created.
+    - contextPath: EmailRepIO.Email.details.suspicious_tld
+      type: Boolean
+      description: Whether the email has a suspicious top level domain (tld).
+    - contextPath: EmailRepIO.Email.details.spam
+      type: Boolean
+      description: Whether the email has exhibited spammy behavior (e.g., spam traps, login form abuse).
+    - contextPath: EmailRepIO.Email.details.free_provider
+      type: Boolean
+      description: Whether the email uses a free email provider.
+    - contextPath: EmailRepIO.Email.details.disposable
+      type: Boolean
+      description: Whether the email uses a temporary or disposable service.
+    - contextPath: EmailRepIO.Email.details.deliverable
+      type: Boolean
+      description: Whether the email is deliverable.
+    - contextPath: EmailRepIO.Email.details.accept_all
+      type: Boolean
+      description: Whether the mail server has a default accept all policy. Some mail servers return inconsistent responses, so the default may be an accept all policy.
+    - contextPath: EmailRepIO.Email.details.valid_mx
+      type: Boolean
+      description: Whether the email has a mail exchanger (MX) record.
+    - contextPath: EmailRepIO.Email.details.spoofable
+      type: Boolean
+      description: Whether the email address can be spoofed (e.g., not a strict Sender Policy Framework (SPF) policy or Domain-based Message Authentication, Reporting & Conformance (DMARC) is not enforced).
+    - contextPath: EmailRepIO.Email.details.spf_strict
+      type: Boolean
+      description: Whether there is a sufficiently strict SPF record to prevent spoofing.
+    - contextPath: EmailRepIO.Email.details.dmarc_enforced
+      type: Boolean
+      description: Whether DMARC is configured correctly and enforced.
+    - contextPath: EmailRepIO.Email.details.profiles
+      type: String
+      description: The online profiles used by the email.
+  - arguments:
+    - default: true
+      description: The email address to get the reputation for.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the DBot score for the given email address using the EmailRepIO reputation.
+    execution: false
+    name: email
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: EmailRepIO.Email.email
+      type: String
+      description: The email address that was queried.
+    - contextPath: EmailRepIO.Email.reputation
+      type: String
+      description: 'The reputation of the email. Possible values are: "high", "medium", "low", and "none".'
+    - contextPath: EmailRepIO.Email.suspicious
+      type: Boolean
+      description: Whether the email address should be treated as suspicious or risky.
+    - contextPath: EmailRepIO.Email.references
+      type: Number
+      description: The total number of positive and negative sources of the reputation. Note
+        that these may not all be direct references to the email address, but can
+        include reputation sources for the domain or other related information.
+    - contextPath: EmailRepIO.Email.details.blacklisted
+      type: Boolean
+      description: Whether the email is believed to be malicious or spam.
+    - contextPath: EmailRepIO.Email.details.malicious_activity
+      type: Boolean
+      description: Whether the email exhibited malicious behavior (e.g., phishing or fraud).
+    - contextPath: EmailRepIO.Email.details.malicious_activity_recent
+      type: Boolean
+      description: Whether the email exhibited malicious behavior in the last 90 days (e.g., in the case of temporal
+        account takeovers).
+    - contextPath: EmailRepIO.Email.details.credentials_leaked
+      type: Boolean
+      description: Whether the email credentials were ever leaked (e.g., a data breach,
+        pastebin, dark web, etc.).
+    - contextPath: EmailRepIO.Email.details.credentials_leaked_recent
+      type: Boolean
+      description: Whether the email credentials were leaked in the last 90 days.
+    - contextPath: EmailRepIO.Email.details.data_breach
+      type: Boolean
+      description: Whether the email was ever in a data breach.
+    - contextPath: EmailRepIO.Email.details.first_seen
+      type: Date
+      description: The first date the email was observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
+    - contextPath: EmailRepIO.Email.details.last_seen
+      type: Date
+      description: The last date the email was observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak,
+        or exhibiting malicious or spammy behavior.
+    - contextPath: EmailRepIO.Email.details.domain_exists
+      type: Boolean
+      description: Whether the domain is a valid domain.
+    - contextPath: EmailRepIO.Email.details.domain_reputation
+      type: String
+      description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable,
+        or doesn’t exist.'
+    - contextPath: EmailRepIO.Email.details.new_domain
+      type: Boolean
+      description: Whether the domain was created within the last year.
+    - contextPath: EmailRepIO.Email.details.days_since_domain_creation
+      type: Number
+      description: The number of days since the domain was created.
+    - contextPath: EmailRepIO.Email.details.suspicious_tld
+      type: Boolean
+      description: Whether the email has a suspicious top level domain (tld).
+    - contextPath: EmailRepIO.Email.details.spam
+      type: Boolean
+      description: Whether the email exhibited spammy behavior (e.g., spam traps, login
+        form abuse).
+    - contextPath: EmailRepIO.Email.details.free_provider
+      type: Boolean
+      description: Whether the email uses a free email provider.
+    - contextPath: EmailRepIO.Email.details.disposable
+      type: Boolean
+      description: Whether the email uses a temporary or disposable service.
+    - contextPath: EmailRepIO.Email.details.deliverable
+      type: Boolean
+      description: Whether the email is deliverable.
+    - contextPath: EmailRepIO.Email.details.accept_all
+      type: Boolean
+      description: Whether the mail server has a default accept all policy. Some mail servers return inconsistent responses, so the default may be an accept all policy.
+    - contextPath: EmailRepIO.Email.details.valid_mx
+      type: Boolean
+      description: Whether the email has a mail exchanger (MX) record.
+    - contextPath: EmailRepIO.Email.details.spoofable
+      type: Boolean
+      description: Whether the email address can be spoofed (e.g., not a strict Sender Policy Framework (SPF) policy or Domain-based Message Authentication, Reporting & Conformance (DMARC) is not enforced).
+    - contextPath: EmailRepIO.Email.details.spf_strict
+      type: Boolean
+      description: Whether there is a sufficiently strict SPF record to prevent spoofing.
+    - contextPath: EmailRepIO.Email.details.dmarc_enforced
+      type: Boolean
+      description: Whether DMARC is configured correctly and enforced.
+    - contextPath: EmailRepIO.Email.details.profiles
+      type: String
+      description: The online profiles used by the email.
+  - arguments:
+    - default: false
+      description: The email address to report.
+      isArray: false
+      name: email_address
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The tags to apply to the email. See detailed descriptions in the EmailRepIO documentation for more information.
+      isArray: true
+      name: tags
+      predefined:
+      - account_takeover
+      - bec
+      - brand_impersonation
+      - browser_exploit
+      - credential_phishing
+      - generic_phishing
+      - malware
+      - scam
+      - spam
+      - spoofed
+      - task_request
+      - threat_actor
+      required: true
+      secret: false
+    - default: false
+      description: Additional information and context.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: The time the activity occurred in UTC time format. Defaults to now().
+      isArray: false
+      name: timestamp
+      required: false
+      secret: false
+    - default: false
+      description: The number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless the "account_takeover" tag is specified, in which case the default is 14 days.
+      isArray: false
+      name: expires
+      required: false
+      secret: false
+    deprecated: false
+    description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
+    execution: false
+    name: emailrepio-email-address-report
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

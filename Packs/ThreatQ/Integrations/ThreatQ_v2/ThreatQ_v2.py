@@ -22,9 +22,6 @@ THRESHOLD = int(demisto.params().get('threshold', '0'))
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
-domain_regex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
-               r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
-               r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 url_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)?(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)'\
             r'[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
@@ -34,7 +31,6 @@ REGEX_MAP = {
     'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
     'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
     'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
-    'domain': re.compile(domain_regex, regexFlags)
 }
 
 TQ_TO_DEMISTO_INDICATOR_TYPES = {
@@ -1253,11 +1249,7 @@ def get_domain_reputation():
     domains = argToList(args.get('domain'))
 
     for domain in domains:
-        if not REGEX_MAP['domain'].match(domain):
-            return_error('{0} is not a valid domain.'.format(domain))
-
         generic_context = {'Name': domain}
-
         make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
 
 

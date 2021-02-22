@@ -144,7 +144,7 @@ def get_managed_accounts():
 
         })
 
-    entry_context = {'BeyondTrust.Account(val.AccountID === obj.AccountID)': managed_accounts}
+    entry_context = {'BeyondTrust.Account(val.AccountId && val.AccountId === obj.AccountId)': managed_accounts}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
@@ -394,7 +394,8 @@ def fetch_credentials():
         item = {
             'SystemId': account.get('SystemId'),
             'AccountId': account.get('AccountId'),
-            'DurationMinutes': duration_minutes
+            'DurationMinutes': duration_minutes,
+            'ConflictOption': 'reuse'
         }
 
         release_id = create_release_request(str(item))
@@ -406,9 +407,9 @@ def fetch_credentials():
             'password': password,
             'name': system_name + '_' + account_name
         })
-
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
+        demisto.debug("Amount of credentials for identifier: {} is {}".format(identifier, len(credentials)))
 
     demisto.credentials(credentials)
 

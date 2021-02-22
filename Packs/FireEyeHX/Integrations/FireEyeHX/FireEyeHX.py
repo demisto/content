@@ -37,6 +37,7 @@ def set_proxies():
 GLOBAL VARS
 
 """
+TOKEN = ''
 SERVER_URL = demisto.params()['server']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
@@ -1033,13 +1034,13 @@ def get_agent_id(host_name):
 def collect_endpoint_contxt(host):
 
     return {
-        'Hostname': host['hostname'],
-        'ID': host['_id'],
-        'IPAddress': host['primary_ip_address'],
-        'Domain': host['domain'],
-        'MACAddress': host['primary_mac'],
-        'OS': host['os']['platform'],
-        'OSVersion': host['os']['product_name']
+        'Hostname': host.get('hostname'),
+        'ID': host.get('_id'),
+        'IPAddress': host.get('primary_ip_address'),
+        'Domain': host.get('domain'),
+        'MACAddress': host.get('primary_mac'),
+        'OS': host.get('os', {}).get('platform'),
+        'OSVersion': host.get('os', {}).get('product_name')
     }
 
 
@@ -1062,12 +1063,23 @@ def containment_request(agent_id):
         'state': 'contain'
     }
 
-    http_request(
-        'POST',
-        url,
-        body=body,
-        headers=POST_HEADERS
-    )
+    try:
+        api_version = int(VERSION[-1])
+    except Exception as exc:
+        raise ValueError('Invalid version was set: {} - {}'.format(VERSION, str(exc)))
+    if api_version > 3:
+        http_request(
+            'POST',
+            url,
+            headers=POST_HEADERS
+        )
+    else:
+        http_request(
+            'POST',
+            url,
+            body=body,
+            headers=POST_HEADERS
+        )
     # no exception raised - successful request
 
 
@@ -2005,7 +2017,7 @@ def start_search():
         pending = search_info.get('stats', {}).get('search_state', {}).get('PENDING', 0)
         if search_info.get('state') == 'STOPPED' or matched >= limit or pending == 0:
             break
-        time.sleep(60)
+        time.sleep(60)  # pylint: disable=sleep-exists
 
     results = get_search_results_request(search_id)
     md_entries = [host_results_md_entry(host_results) for host_results in results]
@@ -2164,7 +2176,7 @@ def file_acquisition():
         state = acquisition_info.get('state')
         if state in ['COMPLETE', 'ERROR', 'FAILED']:
             break
-        time.sleep(10)
+        time.sleep(10)  # pylint: disable=sleep-exists
     LOG('acquisition process has been complete. Fetching zip file.')
 
     acquired_file = file_acquisition_package_request(acquisition_id)
@@ -2272,7 +2284,7 @@ def data_acquisition():
         acquisition_info = data_acquisition_information_request(acquisition_id)
         if acquisition_info.get('state') == 'COMPLETE':
             break
-        time.sleep(30)
+        time.sleep(30)  # pylint: disable=sleep-exists
     LOG('Acquisition process has been complete. Fetching mans file.')
 
     message = '{} acquired successfully'.format(args.get('fileName'))
@@ -2361,6 +2373,7 @@ def fetch_incidents():
         demisto.setLastRun({'min_id': min_id})
 
 
+@logger
 def parse_alert_to_incident(alert):
 
     event_type = alert.get('event_type')
@@ -2375,9 +2388,13 @@ def parse_alert_to_incident(alert):
     event_indicator = event_indicators_map.get(event_type)
     event_indicator = 'No Indicator' if not event_indicator else event_indicator
 
+    indicator = ''
+    if isinstance(event_values, dict):
+        indicator = event_values.get(event_indicator, '')
+
     incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
-        indicator=event_values.get(event_indicator)
+        indicator=indicator
     )
 
     incident = {
@@ -2575,58 +2592,62 @@ EXECUTION
 """
 
 
-set_proxies()
+def main():
+    global TOKEN
+    set_proxies()
 
-command = demisto.command()
-LOG('Running command "{}"'.format(command))
+    command = demisto.command()
+    LOG('Running command "{}"'.format(command))
 
-# ask for a token using user credentials
-TOKEN = get_token()
+    # ask for a token using user credentials
+    TOKEN = get_token()
 
-try:
-    if command == 'test-module':
-        # token generated - credentials are valid
-        demisto.results('ok')
-    elif command == 'fetch-incidents':
-        fetch_incidents()
-    elif command == 'fireeye-hx-get-alerts':
-        get_alerts()
-    elif command == 'fireeye-hx-cancel-containment':
-        containment_cancellation()
-    elif command == 'fireeye-hx-host-containment':
-        containment()
-    elif command == 'fireeye-hx-create-indicator':
-        create_indicator()
-    elif command == 'fireeye-hx-get-indicator':
-        get_indicator()
-        get_indicator_conditions()
-    elif command == 'fireeye-hx-get-indicators':
-        get_indicators()
-    elif command == 'fireeye-hx-suppress-alert':
-        suppress_alert()
-    elif command == 'fireeye-hx-get-host-information':
-        get_host_information()
-    elif command == 'fireeye-hx-get-alert':
-        get_alert()
-    elif command == 'fireeye-hx-file-acquisition':
-        file_acquisition()
-    elif command == 'fireeye-hx-delete-file-acquisition':
-        delete_file_acquisition()
-    elif command == 'fireeye-hx-data-acquisition':
-        data_acquisition()
-    elif command == 'fireeye-hx-delete-data-acquisition':
-        delete_data_acquisition()
-    elif command == 'fireeye-hx-search':
-        start_search()
-    elif command == 'fireeye-hx-get-host-set-information':
-        get_host_set_information()
-    elif command == 'fireeye-hx-append-conditions':
-        append_conditions()
-    elif command == 'fireeye-hx-get-all-hosts-information':
-        get_hosts_information()
-except ValueError as e:
-    LOG(e)
-    LOG.print_log()
-    return_error(e)
-finally:
-    logout()
+    try:
+        if command == 'test-module':
+            # token generated - credentials are valid
+            demisto.results('ok')
+        elif command == 'fetch-incidents':
+            fetch_incidents()
+        elif command == 'fireeye-hx-get-alerts':
+            get_alerts()
+        elif command == 'fireeye-hx-cancel-containment':
+            containment_cancellation()
+        elif command == 'fireeye-hx-host-containment':
+            containment()
+        elif command == 'fireeye-hx-create-indicator':
+            create_indicator()
+        elif command == 'fireeye-hx-get-indicator':
+            get_indicator()
+            get_indicator_conditions()
+        elif command == 'fireeye-hx-get-indicators':
+            get_indicators()
+        elif command == 'fireeye-hx-suppress-alert':
+            suppress_alert()
+        elif command == 'fireeye-hx-get-host-information':
+            get_host_information()
+        elif command == 'fireeye-hx-get-alert':
+            get_alert()
+        elif command == 'fireeye-hx-file-acquisition':
+            file_acquisition()
+        elif command == 'fireeye-hx-delete-file-acquisition':
+            delete_file_acquisition()
+        elif command == 'fireeye-hx-data-acquisition':
+            data_acquisition()
+        elif command == 'fireeye-hx-delete-data-acquisition':
+            delete_data_acquisition()
+        elif command == 'fireeye-hx-search':
+            start_search()
+        elif command == 'fireeye-hx-get-host-set-information':
+            get_host_set_information()
+        elif command == 'fireeye-hx-append-conditions':
+            append_conditions()
+        elif command == 'fireeye-hx-get-all-hosts-information':
+            get_hosts_information()
+    except ValueError as e:
+        return_error(e)
+    finally:
+        logout()
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

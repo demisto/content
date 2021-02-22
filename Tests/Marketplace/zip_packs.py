@@ -4,11 +4,12 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import shutil
 import sys
+import logging
 from time import sleep
 from zipfile import ZipFile
 from Tests.Marketplace.marketplace_services import init_storage_client, IGNORED_FILES, PACKS_FULL_PATH
-
-from demisto_sdk.commands.common.tools import print_error, print_success, print_warning, LooseVersion, str2bool
+from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.common.tools import LooseVersion, str2bool
 
 ARTIFACT_NAME = 'content_marketplace_packs.zip'
 MAX_THREADS = 4
@@ -60,7 +61,7 @@ def zip_packs(packs, destination_path):
     with ZipFile(os.path.join(destination_path, ARTIFACT_NAME), mode='w') as zf:
         for zip_pack in packs:
             for name, path in zip_pack.items():
-                print(f'Adding {name} to the zip file')
+                logging.info(f'Adding {name} to the zip file')
                 zf.write(path, f'{name}.zip')
 
 
@@ -79,7 +80,7 @@ def remove_test_playbooks_if_exist(zips_path, packs):
                 dir_names = [os.path.basename(os.path.dirname(content)) for content in zip_contents]
                 if 'TestPlaybooks' in dir_names:
                     remove = True
-                    print(f'Removing TestPlaybooks from the pack {name}')
+                    logging.info(f'Removing TestPlaybooks from the pack {name}')
                     new_path = os.path.join(zips_path, name)
                     os.mkdir(new_path)
                     pack_zip.extractall(path=new_path,
@@ -109,7 +110,7 @@ def remove_test_playbooks_from_signatures(path, filenames):
         with open(signature_file_path, 'w') as signature_file:
             json.dump(signature, signature_file)
     else:
-        print_warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
+        logging.warning(f'Could not find signatures in the pack {os.path.basename(os.path.dirname(path))}')
 
 
 def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_build, branch_name):
@@ -145,24 +146,24 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
             if blobs:
                 blob = get_latest_pack_zip_from_blob(pack.name, blobs)
                 if not blob:
-                    print_warning(f'Failed to get the zip of the pack {pack.name} from GCP')
+                    logging.warning(f'Failed to get the zip of the pack {pack.name} from GCP')
                     continue
                 download_path = os.path.join(destination_path, f"{pack.name}.zip")
                 zipped_packs.append({pack.name: download_path})
-                print(f'Downloading pack from GCP: {pack.name}')
+                logging.info(f'Downloading pack from GCP: {pack.name}')
                 executor_submit(executor, download_path, blob)
                 sleep(1)
                 if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
-                    print(f"Copying pack from {download_path} to /home/runner/work/content-private/"
-                          f"content-private/content/artifacts/packs/{pack.name}.zip")
+                    logging.info(f"Copying pack from {download_path} to /home/runner/work/content-private/"
+                                 f"content-private/content/artifacts/packs/{pack.name}.zip")
                     shutil.copy(download_path,
                                 f'/home/runner/work/content-private/content-private/content/artifacts/'
                                 f'packs/{pack.name}.zip')
             else:
-                print_warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
+                logging.warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
 
     if not zipped_packs:
-        print_error('Did not find any pack to download from GCP.')
+        logging.critical('Did not find any pack to download from GCP.')
         sys.exit(1)
     return zipped_packs
 
@@ -205,6 +206,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
 
 
 def main():
+    install_logging('Zip_Content_Packs_From_GCS.log')
     option = option_handler()
     storage_bucket_name = option.bucket_name
     zip_path = option.zip_path
@@ -219,10 +221,10 @@ def main():
         packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
         zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
         if not os.path.exists(packs_dir):
-            print("Packs dir not found. Creating.")
+            logging.debug("Packs dir not found. Creating.")
             os.mkdir(packs_dir)
         if not os.path.exists(zip_path):
-            print("Temp dir not found. Creating.")
+            logging.debug("Temp dir not found. Creating.")
             os.mkdir(zip_path)
         artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
 
@@ -242,34 +244,34 @@ def main():
     success = True
     try:
         zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
-    except Exception as e:
-        print_error(f'Failed downloading packs: {e}')
+    except Exception:
+        logging.exception('Failed downloading packs')
         success = False
 
     if remove_test_playbooks:
         try:
             remove_test_playbooks_if_exist(zip_path, zipped_packs)
-        except Exception as e:
-            print_error(f'Failed removing test playbooks from packs: {e}')
+        except Exception:
+            logging.exception('Failed removing test playbooks from packs')
             success = False
 
     if zipped_packs and success:
         try:
             zip_packs(zipped_packs, zip_path)
-        except Exception as e:
-            print_error(f'Failed zipping packs: {e}')
+        except Exception:
+            logging.exception('Failed zipping packs')
             success = False
 
         if success:
-            print_success('Successfully zipped packs.')
+            logging.info('Successfully zipped packs.')
             if artifacts_path:
                 # Save in the artifacts
                 shutil.copy(os.path.join(zip_path, ARTIFACT_NAME), os.path.join(artifacts_path, ARTIFACT_NAME))
         else:
-            print_error('Failed zipping packs.')
+            logging.critical('Failed zipping packs.')
             sys.exit(1)
     else:
-        print_warning('Did not find any packs to zip.')
+        logging.warning('Did not find any packs to zip.')
 
     cleanup(zip_path)
 

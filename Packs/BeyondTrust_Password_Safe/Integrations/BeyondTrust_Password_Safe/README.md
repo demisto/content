@@ -9,7 +9,7 @@
 <li>In the managed system, create a managed account.<br>The name of the managed account will be the username/email (depending on how the instance is configured) and the password will be the password of the integration (when creating an instance).</li>
 </ol>
 <h2>Create a BeyondTrust API Key</h2>
-<p><span>To configure an integration instance, you need your BeyondTrust API key. The API key is generated after you configure an API Registration. For detailed instructions, see the </span><a href="https://www.beyondtrust.com/docs/password-safe/documents/6-9/ps-admin-6-9-0.pdf" rel="nofollow">BeyondTrust Password Safe Admin Guide</a><span>.</span></p>
+<p><span>To configure an integration instance, you need your BeyondTrust API key. The API key is generated after you configure an API Registration. For detailed instructions, see the </span><a href="https://www.beyondtrust.com/docs/archive/password-safe-beyondinsight/6-9/ps-admin-6-9-0.pdf" rel="nofollow">BeyondTrust Password Safe Admin Guide</a><span>.</span></p>
 <h2>Configure BeyondTrust Password Safe on Demisto</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>

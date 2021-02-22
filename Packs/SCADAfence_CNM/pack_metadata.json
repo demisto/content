@@ -2,10 +2,10 @@
     "name": "SCADAfence CNM",
     "description": "Fetching data from CNM",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "SCADAfence CNM",
     "url": "www.scadafence.com",
-    "email": "tom@scadafence.com",
+    "email": "support@scadafence.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Network Security"
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "AlexzxelA"
-    ]
+    ],
+    "certification": "certified"
 }

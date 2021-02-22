@@ -1,0 +1,150 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integrations and Incidents Health Check"
+ ],
+ "caseInsensitive": true,
+ "cliName": "playbooktaskserrors",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Creation Date",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "creationdate",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "date",
+   "width": 150
+  },
+  {
+   "displayName": "Incident ID",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "incidentid",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Playbook Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "playbookname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Task Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "taskname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Task ID",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "taskid",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Command Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "commandname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Number of Errors",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "numberoferrors",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Owner",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "owner",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Analyst Note",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "analystnote",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_playbooktaskserrors",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Playbook Tasks Errors",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

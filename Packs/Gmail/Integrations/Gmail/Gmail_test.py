@@ -73,7 +73,6 @@ MOCK_MAIL_NO_LABELS = {
     u'id': u'<id>'
 }
 
-
 EXPECTED_GMAIL_CONTEXT = {
     'To': u'<some_mail>',
     'Body': u'',
@@ -164,3 +163,16 @@ def test_parse_privileges():
     privileges = [{'serviceId': '', 'privilegeName': 'name_no_id'}, {'serviceId': '', 'privilegeName': ''},
                   {'serviceId': 'id', 'privilegeName': 'name'}]
     assert sorted(parse_privileges(privileges)) == sorted([{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}])
+
+
+def test_dict_keys_snake_to_camelcase():
+    """
+    Tests dict_keys_snake_to_camelcase method works as expected.
+    e.g. family_name -> familyName
+    """
+    from Gmail import dict_keys_snake_to_camelcase
+    dictionary = {
+        'user_name': 'user1',
+        'user_id': '2'
+    }
+    assert dict_keys_snake_to_camelcase(dictionary) == {'userName': 'user1', 'userId': '2'}

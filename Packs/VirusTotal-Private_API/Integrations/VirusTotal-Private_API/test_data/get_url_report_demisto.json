@@ -1,0 +1,57 @@
+{
+    "scans": {
+        "Trustwave": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "CLEAN MX": {
+            "detected": false,
+            "result": "clean site"
+        },
+        "MalwareDomainList": {
+            "detected": false,
+            "result": "clean site",
+            "detail": "http://www.someurl.com/?search=demisto.com"
+        }
+    },
+    "permalink": "https://www.someurl.com/",
+    "resource": "demisto.com",
+    "url": "http://demisto.com/",
+    "response_code": 1,
+    "scan_date": "2020-09-24 13:35:46",
+    "scan_id": "someId",
+    "verbose_msg": "Scan finished, scan information embedded in this object",
+    "filescan_id": null,
+    "positives": 0,
+    "first_seen": "2015-07-28 01:10:38",
+    "total": 79,
+    "additional_info": {
+        "sophos category": "general business",
+        "Response content SHA-256": "someSHA",
+        "URL after redirects": "https://www.paloaltonetworks.com/cortex/xsoar",
+        "rlength": 476704,
+        "Forcepoint ThreatSeeker category": "information technology",
+        "Comodo Valkyrie Verdict category": "media sharing",
+        "Response code": 200,
+        "Response headers": {
+            "access-control-allow-credentials": "true",
+            "strict-transport-security": "max-age=300",
+            "x-content-type-options": "nosniff",
+            "transfer-encoding": "chunked",
+            "set-cookie": "AKA_A2=A; expires=Thu, 24-Sep-2020 14:35:50 GMT; path=/; domain=paloaltonetworks.com; secure; HttpOnly",
+            "expires": "Thu, 24 Sep 2020 13:50:50 GMT",
+            "vary": "Accept-Encoding",
+            "server": "Apache",
+            "server-timing": "cdn-cache; desc=HIT, edge; dur=16",
+            "connection": "keep-alive, Transfer-Encoding",
+            "link": "somelink",
+            "cache-control": "public, max-age=900",
+            "date": "Thu, 24 Sep 2020 13:35:50 GMT",
+            "x-frame-options": "SAMEORIGIN",
+            "content-type": "text/html;charset=utf-8",
+            "x-akamai-transformed": "9 81423 0 pmb=mRUM,2"
+        },
+        "resolution": "1.2.3.4"
+    },
+    "last_seen": "2020-09-24 13:35:46"
+}

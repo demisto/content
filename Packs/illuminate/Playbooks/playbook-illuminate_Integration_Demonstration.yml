@@ -1,9 +1,10 @@
 id: Illuminate Integration Demonstration
 version: -1
 name: Illuminate Integration Demonstration
-description: A quick demonstration of the various illuminate enrichment commands.
+description: Deprecated. A quick demonstration of the various illuminate enrichment commands.
 fromversion: 5.0.0
 starttaskid: '0'
+hidden: true
 tasks:
   '0':
     id: '0'
@@ -468,5 +469,3 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-- illuminate Integration Demonstration - Test

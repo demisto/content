@@ -1,0 +1,30 @@
+{
+ "id": "incident_techniquebestpractice",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-25T11:26:21.045708682Z",
+ "name": "Technique Best Practice",
+ "ownerOnly": false,
+ "cliName": "techniquebestpractice",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

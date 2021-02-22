@@ -1,0 +1,1160 @@
+{
+    "id": "91717fca-49c5-4dd4-8b93-68d857f39e3d",
+    "modified": "2020-09-23T07:54:57.783240299Z",
+    "startDate": "0001-01-01T00:00:00Z",
+    "times": 0,
+    "recurrent": false,
+    "endingDate": "0001-01-01T00:00:00Z",
+    "timezoneOffset": 0,
+    "cronView": false,
+    "scheduled": false,
+    "name": "Integrations and Incidents Health Check",
+    "type": "pdf",
+    "system": false,
+    "locked": false,
+    "sections": [
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "cx": 104.905,
+                    "cy": 135,
+                    "innerRadius": 70.85729840948372,
+                    "layout": "horizontal",
+                    "maxRadius": 188.95279575862327,
+                    "outerRadius": 94.47639787931163
+                },
+                "chartType": "pie",
+                "columnPos": 3,
+                "dimensions": {
+                    "height": 300,
+                    "width": 343
+                },
+                "h": 3,
+                "i": "210bd6b0-f362-11ea-b5d1-6dc6981f5afa",
+                "legendStyle": {
+                    "align": "left",
+                    "hideLegend": null,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "width": 113.19000000000001
+                },
+                "rowPos": 0,
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IntegrationsCheck-Widget-IntegrationsCategory",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Failing Instances Category",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 9,
+                "h": 3,
+                "i": "244cd0e0-f362-11ea-b5d1-6dc6981f5afa",
+                "layout": "vertical",
+                "rowPos": 0,
+                "sign": null,
+                "signAlignment": null,
+                "style": {
+                },
+                "w": 3
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IntegrationsCheck-Widget-NumberChecked",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Number of Checked Integrations",
+            "titleStyle": null
+        },
+        {
+            "type": "table",
+            "data": null,
+            "layout": {
+                "classes": "striped stackable small compact",
+                "columnPos": 0,
+                "h": 3,
+                "i": "a0311fe0-f362-11ea-b5d1-6dc6981f5afa",
+                "readableHeaders": {
+                    "Brand": "Brand",
+                    "Category": "Category",
+                    "Information": "Information",
+                    "Instance": "Instance"
+                },
+                "rowPos": 3,
+                "tableColumns": [
+                    "Brand",
+                    "Category",
+                    "Information",
+                    "Instance"
+                ],
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IntegrationsCheck-Widget-IntegrationsErrorsInfo",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Failing Instances Information",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 0,
+                "h": 3,
+                "i": "ace0a710-f362-11ea-b5d1-6dc6981f5afa",
+                "layout": "vertical",
+                "rowPos": 0,
+                "sign": null,
+                "signAlignment": null,
+                "style": {
+                },
+                "w": 3
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IntegrationsCheck-Widget-NumberFailingInstances",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Number Of Failing Instances",
+            "titleStyle": null
+        },
+        {
+            "type": "table",
+            "data": null,
+            "layout": {
+                "classes": "striped stackable small compact",
+                "columnPos": 0,
+                "h": 3,
+                "i": "f7f4dac0-f36f-11ea-b5d1-6dc6981f5afa",
+                "readableHeaders": {
+                    "Command Name": "Command Name",
+                    "Incident Creation Date": "Incident Creation Date",
+                    "Incident ID": "Incident ID",
+                    "Incident Owner": "Incident Owner",
+                    "Number of Errors": "Number of Errors",
+                    "Playbook Name": "Playbook Name",
+                    "Task ID": "Task ID",
+                    "Task Name": "Task Name"
+                },
+                "rowPos": 11,
+                "tableColumns": [
+                    "Command Name",
+                    "Incident Creation Date",
+                    "Incident ID",
+                    "Incident Owner",
+                    "Number of Errors",
+                    "Playbook Name",
+                    "Task ID",
+                    "Task Name"
+                ],
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-IncidentsErrorsInfo",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Failing Incidents Information",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 0,
+                "h": 2,
+                "i": "ffa42b90-f36f-11ea-b5d1-6dc6981f5afa",
+                "layout": "horizontal",
+                "rowPos": 6,
+                "sign": null,
+                "signAlignment": null,
+                "style": {
+                },
+                "w": 3
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-NumberofErrors",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Number of Errors",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 3,
+                "h": 3,
+                "i": "061297f0-f370-11ea-b5d1-6dc6981f5afa",
+                "layout": "vertical",
+                "rowPos": 6,
+                "sign": null,
+                "signAlignment": null,
+                "style": {
+                },
+                "w": 3
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-UnassignedFailingIncidents",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Number of Failing Unassigned Incidents",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "cx": 104.905,
+                    "cy": 135,
+                    "innerRadius": 70.85729840948372,
+                    "layout": "horizontal",
+                    "maxRadius": 188.95279575862327,
+                    "outerRadius": 94.47639787931163
+                },
+                "chartType": "pie",
+                "columnPos": 6,
+                "dimensions": {
+                    "height": 300,
+                    "width": 343
+                },
+                "h": 3,
+                "i": "07699c70-f370-11ea-b5d1-6dc6981f5afa",
+                "legendStyle": {
+                    "align": "left",
+                    "hideLegend": null,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "width": 113.19000000000001
+                },
+                "rowPos": 8,
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-CommandsNames",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Top Failing Commands",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 15,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "vertical"
+                },
+                "chartType": "bar",
+                "columnPos": 6,
+                "dimensions": {
+                    "height": 108,
+                    "width": 343
+                },
+                "h": 2,
+                "i": "0971a170-f370-11ea-b5d1-6dc6981f5afa",
+                "legendStyle": {
+                    "align": "center",
+                    "hideLegend": false,
+                    "iconType": "square",
+                    "layout": "horizontal",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "maxHeight": 48,
+                        "top": 5,
+                        "width": "100%"
+                    }
+                },
+                "rowPos": 6,
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-PlaybookNames",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Top Failing Playbook Names",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "format": "DD MMM Y",
+                    "isDatesChart": true,
+                    "layout": "vertical",
+                    "margin": {
+                        "bottom": 0,
+                        "left": -20,
+                        "right": 0,
+                        "top": 5
+                    },
+                    "timeFrame": "days"
+                },
+                "chartType": "line",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 180,
+                    "width": 343
+                },
+                "h": 2,
+                "i": "0c28d230-f370-11ea-b5d1-6dc6981f5afa",
+                "legendStyle": {
+                    "align": "center",
+                    "iconSize": 8,
+                    "iconType": "square",
+                    "verticalAlign": "top",
+                    "width": 343,
+                    "wrapperStyle": {
+                        "maxHeight": 48
+                    }
+                },
+                "rowPos": 9,
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-CreationDate",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Creation Date of Failing Incidents",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 0,
+                "h": 1,
+                "i": "30b6bb30-f370-11ea-b5d1-6dc6981f5afa",
+                "layout": "horizontal",
+                "rowPos": 8,
+                "sign": null,
+                "signAlignment": null,
+                "style": {
+                },
+                "w": 3
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IncidentsCheck-Widget-NumberFailingIncidents",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Number of Failing Incidents",
+            "titleStyle": null
+        }
+    ],
+    "recipients": [
+    ],
+    "orientation": "portrait",
+    "paperSize": "A4",
+    "runOnce": false,
+    "latestReportTime": "0001-01-01T00:00:00Z",
+    "latestScheduledReportTime": "0001-01-01T00:00:00Z",
+    "nextScheduledTime": "0001-01-01T00:00:00Z",
+    "decoder": {
+        "evidences.fetched": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.markedDate": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.occurred": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "incident.activated": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.closed": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.dbotStatus.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.dbotStatus.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.dbotStatus.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.dueDate": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.modified": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.occurred": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "incident.phase.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.reminder": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.roles.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.severity.0": {
+            "type": "string",
+            "value": "Unknown"
+        },
+        "incident.severity.0.5": {
+            "type": "string",
+            "value": "Informational"
+        },
+        "incident.severity.1": {
+            "type": "string",
+            "value": "Low"
+        },
+        "incident.severity.2": {
+            "type": "string",
+            "value": "Medium"
+        },
+        "incident.severity.3": {
+            "type": "string",
+            "value": "High"
+        },
+        "incident.severity.4": {
+            "type": "string",
+            "value": "Critical"
+        },
+        "incident.status.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.status.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.status.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.totalTime": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.firstSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.lastSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.score.0": {
+            "type": "string",
+            "value": "null"
+        },
+        "indicators.score.1": {
+            "type": "string",
+            "value": "Good"
+        },
+        "indicators.score.2": {
+            "type": "string",
+            "value": "suspicious"
+        },
+        "indicators.score.3": {
+            "type": "string",
+            "value": "Bad"
+        },
+        "investigation.closed": {
+            "type": "date",
+            "value": "02 Jan 2006"
+        },
+        "investigation.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "investigation.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "investigation.status.0": {
+            "type": "string",
+            "value": "Active"
+        },
+        "investigation.status.1": {
+            "type": "string",
+            "value": "Done"
+        },
+        "investigation.type.0": {
+            "type": "string",
+            "value": "Standard"
+        },
+        "investigation.type.1": {
+            "type": "string",
+            "value": "Restricted"
+        },
+        "investigation.type.9": {
+            "type": "string",
+            "value": "Playground"
+        }
+    },
+    "sensitive": false,
+    "disableHeader": false,
+    "dashboard": {
+        "id": "",
+        "version": 0,
+        "modified": "0001-01-01T00:00:00Z",
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "name": "Integrations and Incidents Health",
+        "layout": [
+            {
+                "id": "210bd6b0-f362-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 3,
+                "y": 0,
+                "i": "210bd6b0-f362-11ea-b5d1-6dc6981f5afa",
+                "w": 6,
+                "h": 3,
+                "widget": {
+                    "id": "Failing-Instances-Category-Pie",
+                    "version": 1,
+                    "modified": "2020-09-09T14:02:27.423018192Z",
+                    "name": "Failing Instances Category",
+                    "dataType": "scripts",
+                    "widgetType": "pie",
+                    "query": "IntegrationsCheck-Widget-IntegrationsCategory",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "244cd0e0-f362-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 9,
+                "y": 0,
+                "i": "244cd0e0-f362-11ea-b5d1-6dc6981f5afa",
+                "w": 3,
+                "h": 3,
+                "widget": {
+                    "id": "Checked-Integrations-Number",
+                    "version": 1,
+                    "modified": "2020-09-09T14:02:42.884400443Z",
+                    "name": "Number of Checked Integrations",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "IntegrationsCheck-Widget-NumberChecked",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "a0311fe0-f362-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 3,
+                "i": "a0311fe0-f362-11ea-b5d1-6dc6981f5afa",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "Failing-Instances-Info-Table",
+                    "version": 1,
+                    "modified": "2020-09-10T09:51:49.454455658Z",
+                    "name": "Failing Instances Information",
+                    "dataType": "scripts",
+                    "widgetType": "table",
+                    "query": "IntegrationsCheck-Widget-IntegrationsErrorsInfo",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "ace0a710-f362-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 0,
+                "i": "ace0a710-f362-11ea-b5d1-6dc6981f5afa",
+                "w": 3,
+                "h": 3,
+                "widget": {
+                    "id": "Failing-Instances-Number",
+                    "version": 1,
+                    "modified": "2020-09-09T14:02:33.741145611Z",
+                    "name": "Number Of Failing Instances",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "IntegrationsCheck-Widget-NumberFailingInstances",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "f7f4dac0-f36f-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 11,
+                "i": "f7f4dac0-f36f-11ea-b5d1-6dc6981f5afa",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "Failing-Incidents-Info-Table",
+                    "version": 1,
+                    "modified": "2020-09-10T10:01:35.884347069Z",
+                    "name": "Failing Incidents Information",
+                    "dataType": "scripts",
+                    "widgetType": "table",
+                    "query": "IncidentsCheck-Widget-IncidentsErrorsInfo",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "ffa42b90-f36f-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 6,
+                "i": "ffa42b90-f36f-11ea-b5d1-6dc6981f5afa",
+                "w": 3,
+                "h": 2,
+                "widget": {
+                    "id": "Number-of-Errors-Number",
+                    "version": 1,
+                    "modified": "2020-09-09T10:16:19.321609482Z",
+                    "name": "Number of Errors",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "IncidentsCheck-Widget-NumberofErrors",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "061297f0-f370-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 3,
+                "y": 6,
+                "i": "061297f0-f370-11ea-b5d1-6dc6981f5afa",
+                "w": 3,
+                "h": 3,
+                "widget": {
+                    "id": "Number-of-Failing-Unassigned-Incidents-Number",
+                    "version": 1,
+                    "modified": "2020-09-09T10:16:28.615042606Z",
+                    "name": "Number of Failing Unassigned Incidents",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "IncidentsCheck-Widget-UnassignedFailingIncidents",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "07699c70-f370-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 6,
+                "y": 8,
+                "i": "07699c70-f370-11ea-b5d1-6dc6981f5afa",
+                "w": 6,
+                "h": 3,
+                "widget": {
+                    "id": "Failing-Playbook-Commands-Pie",
+                    "version": 1,
+                    "modified": "2020-09-09T09:54:24.238334065Z",
+                    "name": "Top Failing Commands",
+                    "dataType": "scripts",
+                    "widgetType": "pie",
+                    "query": "IncidentsCheck-Widget-CommandsNames",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "0971a170-f370-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 6,
+                "y": 6,
+                "i": "0971a170-f370-11ea-b5d1-6dc6981f5afa",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "Failing-Playbook-Names-Bar",
+                    "version": 2,
+                    "modified": "2020-09-09T09:56:57.236436809Z",
+                    "name": "Top Failing Playbook Names",
+                    "dataType": "scripts",
+                    "widgetType": "bar",
+                    "query": "IncidentsCheck-Widget-PlaybookNames",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "days",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": {
+                        "tableColumns": [
+                            {
+                                "isDefault": true,
+                                "key": "color",
+                                "position": 0
+                            },
+                            {
+                                "isDefault": true,
+                                "key": "count",
+                                "position": 1
+                            },
+                            {
+                                "isDefault": true,
+                                "key": "data",
+                                "position": 2
+                            },
+                            {
+                                "isDefault": true,
+                                "key": "floatData",
+                                "position": 3
+                            },
+                            {
+                                "isDefault": true,
+                                "key": "groups",
+                                "position": 4
+                            },
+                            {
+                                "isDefault": true,
+                                "key": "name",
+                                "position": 5
+                            }
+                        ]
+                    },
+                    "size": 0
+                }
+            },
+            {
+                "id": "0c28d230-f370-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 9,
+                "i": "0c28d230-f370-11ea-b5d1-6dc6981f5afa",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "Line-Incident-Created-Date-Line",
+                    "version": 1,
+                    "modified": "2020-09-10T09:57:17.179885569Z",
+                    "name": "Creation Date of Failing Incidents",
+                    "dataType": "scripts",
+                    "widgetType": "line",
+                    "query": "IncidentsCheck-Widget-CreationDate",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "30b6bb30-f370-11ea-b5d1-6dc6981f5afa",
+                "forceRange": false,
+                "x": 0,
+                "y": 8,
+                "i": "30b6bb30-f370-11ea-b5d1-6dc6981f5afa",
+                "w": 3,
+                "h": 1,
+                "widget": {
+                    "id": "Number-of-Failing-Incidents-Number",
+                    "version": 1,
+                    "modified": "2020-09-09T10:10:08.834711075Z",
+                    "name": "Number of Failing Incidents",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "IncidentsCheck-Widget-NumberFailingIncidents",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            }
+        ]
+    },
+    "fromVersion": "6.0.0",
+    "description": "All failed enabled integrations and failed open incident.",
+    "tags": [
+    ],
+    "createdBy": ""
+}

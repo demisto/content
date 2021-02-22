@@ -1,0 +1,1267 @@
+id: Rundeck_test
+version: -1
+name: Rundeck_test
+description: test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1d7a2a2-7700-4947-80eb-b6016ffd1690
+    type: start
+    task:
+      id: b1d7a2a2-7700-4947-80eb-b6016ffd1690
+      version: -1
+      name: ""
+      description: delete context
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 384fca8b-3e26-4c6a-86a6-54039d2b7b81
+    type: regular
+    task:
+      id: 384fca8b-3e26-4c6a-86a6-54039d2b7b81
+      version: -1
+      name: projects list
+      description: Gets all existing projects on the server.
+      script: '|||rundeck-projects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2258211f-9eba-40e9-84bf-6dbdf9b7a9a4
+    type: condition
+    task:
+      id: 2258211f-9eba-40e9-84bf-6dbdf9b7a9a4
+      version: -1
+      name: test projects list
+      description: test list projects
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Rundeck.Projects
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 52a8239f-747d-4108-8ace-a2f7d36e42d8
+    type: title
+    task:
+      id: 52a8239f-747d-4108-8ace-a2f7d36e42d8
+      version: -1
+      name: done
+      description: list all jobs
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 5440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2900dffd-2707-489e-80de-325d9c27ad7f
+    type: regular
+    task:
+      id: 2900dffd-2707-489e-80de-325d9c27ad7f
+      version: -1
+      name: jobs list
+      description: Gets a list of all the jobs exist in a project
+      script: '|||rundeck-jobs-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      group_path: {}
+      group_path_exact: {}
+      id_list:
+        simple: 20339db3-9303-4b7f-a92d-7aae8dfa99e6,08c51ae2-9a7a-451b-b23b-2013af47590b
+      job_exact_filter: {}
+      job_filter: {}
+      scheduled_filter:
+        simple: "false"
+      server_node_uuid_filter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9ee05539-d1be-406b-8378-5d66ff77d135
+    type: condition
+    task:
+      id: 9ee05539-d1be-406b-8378-5d66ff77d135
+      version: -1
+      name: test jobs list
+      description: test execute job with argstring as parameter
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Rundeck.Jobs
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 12a010e1-f1ab-4aad-8f91-29f5e3aae3cc
+    type: regular
+    task:
+      id: 12a010e1-f1ab-4aad-8f91-29f5e3aae3cc
+      version: -1
+      name: execute job with argstring as parameter
+      description: Executes a new job
+      script: '|||rundeck-job-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      arg_string:
+        simple: -arg1 value1
+      as_user:
+        simple: galb
+      job_id:
+        simple: 08c51ae2-9a7a-451b-b23b-2013af47590b
+      log_level:
+        simple: WARN
+      node_filter: {}
+      options: {}
+      run_at_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: c82f3592-d003-40e2-8d76-f8d45fc948f5
+    type: condition
+    task:
+      id: c82f3592-d003-40e2-8d76-f8d45fc948f5
+      version: -1
+      name: test execute job with argstring as parameter
+      description: execute job with options as parameter
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs
+                accessor: user
+            iscontext: true
+          right:
+            value:
+              simple: galb
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c0853740-046f-4c24-87a8-15d95ed6ebd1
+    type: regular
+    task:
+      id: c0853740-046f-4c24-87a8-15d95ed6ebd1
+      version: -1
+      name: delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: Rundeck
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f9f67749-db63-4312-8016-da9ead84e0a0
+    type: regular
+    task:
+      id: f9f67749-db63-4312-8016-da9ead84e0a0
+      version: -1
+      name: execute job with options as parameter
+      description: Executes a new job
+      script: '|||rundeck-job-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      arg_string: {}
+      as_user: {}
+      job_id:
+        simple: 08c51ae2-9a7a-451b-b23b-2013af47590b
+      log_level: {}
+      node_filter: {}
+      options:
+        simple: op1=val1,op2=val2
+      run_at_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f118b2bc-8243-4198-89dc-69363dc99b39
+    type: condition
+    task:
+      id: f118b2bc-8243-4198-89dc-69363dc99b39
+      version: -1
+      name: test execute job with options as parameter
+      description: test execute job with options as parameter
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs.job.options
+                accessor: op1
+            iscontext: true
+          right:
+            value:
+              simple: val1
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs.job.options
+                accessor: op2
+            iscontext: true
+          right:
+            value:
+              simple: val2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1ad1e10c-cf77-45c7-8341-8b3314c5b707
+    type: regular
+    task:
+      id: 1ad1e10c-cf77-45c7-8341-8b3314c5b707
+      version: -1
+      name: abort execution
+      description: Aborts an active execution
+      script: '|||rundeck-job-execution-abort'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      execution_id:
+        complex:
+          root: Rundeck.ExecutedJobs
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 71e181ee-04f7-4ad7-814d-a016463bec52
+    type: condition
+    task:
+      id: 71e181ee-04f7-4ad7-814d-a016463bec52
+      version: -1
+      name: test abort execution
+      description: test abort execution
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Rundeck.Aborted.abort
+                accessor: status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a869e138-3ed9-465c-8b66-6ca7785b8694
+    type: regular
+    task:
+      id: a869e138-3ed9-465c-8b66-6ca7785b8694
+      version: -1
+      name: job retry
+      description: Retry running a failed execution
+      script: '|||rundeck-job-retry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      arg_string: {}
+      as_user:
+        simple: galb
+      execution_id:
+        complex:
+          root: Rundeck.Aborted.execution
+          accessor: id
+      failed_nodes:
+        simple: "true"
+      job_id:
+        simple: 08c51ae2-9a7a-451b-b23b-2013af47590b
+      log_level:
+        simple: VERBOSE
+      options:
+        simple: op1=val1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b98ee869-a8c2-46cb-8a80-c33dfb64c23f
+    type: regular
+    task:
+      id: b98ee869-a8c2-46cb-8a80-c33dfb64c23f
+      version: -1
+      name: delete Rundeck.ExecutedJobs context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: Rundeck.ExecutedJobs
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: cae52c1a-cc03-4035-8d09-0c54b416e5ff
+    type: condition
+    task:
+      id: cae52c1a-cc03-4035-8d09-0c54b416e5ff
+      version: -1
+      name: test retry job
+      description: test retry job
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs
+                accessor: user
+            iscontext: true
+          right:
+            value:
+              simple: galb
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs
+                accessor: argstring
+            iscontext: true
+          right:
+            value:
+              simple: -op1 val1 -op2 val2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: bf3ffa2c-5a57-4cbb-8586-0db5b8ce3bce
+    type: regular
+    task:
+      id: bf3ffa2c-5a57-4cbb-8586-0db5b8ce3bce
+      version: -1
+      name: query exections
+      description: Gets all exections base on job or execution details
+      script: '|||rundeck-job-executions-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      aborted_by_filter: {}
+      adhoc:
+        simple: "false"
+      begin: {}
+      end: {}
+      exclude_group_path: {}
+      exclude_group_path_exact: {}
+      exclude_job_exact_filter: {}
+      exclude_job_filter: {}
+      exclude_job_id_list_filter: {}
+      exclude_job_list_filter: {}
+      execution_type_filter: {}
+      group_path: {}
+      group_path_exact: {}
+      job_exact_filter: {}
+      job_filter: {}
+      job_id_list_filter: {}
+      job_list_filter: {}
+      max_results:
+        simple: "3"
+      offset: {}
+      older_filter: {}
+      project_name:
+        simple: Demisto
+      recent_filter: {}
+      status_filter:
+        simple: failed
+      user_filter:
+        simple: galb
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 08a8fe54-ef58-4ac3-8eda-833cab4c5810
+    type: condition
+    task:
+      id: 08a8fe54-ef58-4ac3-8eda-833cab4c5810
+      version: -1
+      name: test query executions
+      description: test query executions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutionsQuery.executions.[0]
+                accessor: user
+            iscontext: true
+          right:
+            value:
+              simple: galb
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutionsQuery.executions.[0]
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: failed
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutionsQuery.executions.[0]
+                accessor: project
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 30a32644-d0ff-494c-8455-373ed58379c4
+    type: regular
+    task:
+      id: 30a32644-d0ff-494c-8455-373ed58379c4
+      version: -1
+      name: job execution output
+      description: Gets the metadata associated with workflow step state
+      script: '|||rundeck-job-execution-output'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      execution_id:
+        complex:
+          root: Rundeck.ExecutedJobs
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: fdbaec10-a8ca-4352-8661-e90d9ee1110d
+    type: condition
+    task:
+      id: fdbaec10-a8ca-4352-8661-e90d9ee1110d
+      version: -1
+      name: test job execution output
+      description: test job execution output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecutionsOutput
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Rundeck.ExecutedJobs
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: bebc9276-2e51-4e4f-8c00-bc03ad72e0b9
+    type: regular
+    task:
+      id: bebc9276-2e51-4e4f-8c00-bc03ad72e0b9
+      version: -1
+      name: adhoc command run
+      description: Executes shell commands in nodes
+      script: '|||rundeck-adhoc-command-run'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      as_user:
+        simple: testCommand
+      exec_command:
+        simple: echo hello
+      node_filter: {}
+      node_keepgoing:
+        simple: "true"
+      node_thread_count: {}
+      project_name:
+        simple: Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 1d63dfc8-8b27-4362-8def-d9637447a549
+    type: condition
+    task:
+      id: 1d63dfc8-8b27-4362-8def-d9637447a549
+      version: -1
+      name: test adhoc command run
+      description: test adhoc command run
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecuteCommand
+                accessor: message
+            iscontext: true
+          right:
+            value:
+              simple: Immediate execution scheduled
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 78662d50-8b5f-42e5-8f5c-d090b576c7c6
+    type: regular
+    task:
+      id: 78662d50-8b5f-42e5-8f5c-d090b576c7c6
+      version: -1
+      name: upload file
+      description: upload file for testing adhoc run script from file command
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 97e0feb8-f964-4a2e-8721-106161fac143
+    type: regular
+    task:
+      id: 97e0feb8-f964-4a2e-8721-106161fac143
+      version: -1
+      name: adhoc script run
+      description: Runs a script from file
+      script: '|||rundeck-adhoc-script-run'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      arg_string: {}
+      as_user:
+        simple: testScriptFile
+      entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+      file_extension: {}
+      interpreter_args_quoted: {}
+      node_filter: {}
+      node_keepgoing: {}
+      node_thread_count: {}
+      project_name: {}
+      script_interpreter: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: f742560c-3d2e-4fce-810a-1ab5caddf6fa
+    type: condition
+    task:
+      id: f742560c-3d2e-4fce-810a-1ab5caddf6fa
+      version: -1
+      name: test adhoc script run
+      description: test adhoc script run
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Rundeck.ExecuteScriptFile
+                accessor: message
+            iscontext: true
+          right:
+            value:
+              simple: Immediate execution scheduled
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 72106c01-d6f0-4a18-8a78-12edfea200f8
+    type: regular
+    task:
+      id: 72106c01-d6f0-4a18-8a78-12edfea200f8
+      version: -1
+      name: adhoc script run from url
+      description: Runs a script from URL
+      script: '|||rundeck-adhoc-script-run-from-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      arg_string: {}
+      as_user:
+        simple: testfromurl
+      file_extension: {}
+      interpreter_args_quoted: {}
+      node_filter: {}
+      node_keepgoing: {}
+      node_thread_count: {}
+      project_name: {}
+      script_interpreter: {}
+      script_url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/IndicatorsList.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 713eb923-2b28-4ded-8d6e-be82bb6aeada
+    type: condition
+    task:
+      id: 713eb923-2b28-4ded-8d6e-be82bb6aeada
+      version: -1
+      name: test adhoc script from url
+      description: test adhoc script from url
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Rundeck.ScriptExecutionFromUrl
+                accessor: message
+            iscontext: true
+          right:
+            value:
+              simple: Immediate execution scheduled
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8f5cf7ba-3a0b-4023-822d-ea7467f5e767
+    type: regular
+    task:
+      id: 8f5cf7ba-3a0b-4023-822d-ea7467f5e767
+      version: -1
+      name: webhooks list
+      description: Gets a list of all existing webhooks
+      script: '|||rundeck-webhooks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      project_name:
+        simple: Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 28b68230-9419-45ab-80fe-f2e9de8a82c7
+    type: condition
+    task:
+      id: 28b68230-9419-45ab-80fe-f2e9de8a82c7
+      version: -1
+      name: test webhooks list
+      description: ' test Gets a list of all existing webhooks'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Rundeck.Webhooks
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: e33e8102-7b42-4a73-894d-f7a0fe122ae8
+    type: regular
+    task:
+      id: e33e8102-7b42-4a73-894d-f7a0fe122ae8
+      version: -1
+      name: webhook event send
+      description: Send webhook event
+      script: '|||rundeck-webhook-event-send'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      auth_token:
+        simple: yu1taKjUv4CxRROo0btjnPgbu2X3tfqU
+      json: {}
+      options:
+        simple: op1=val1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 5080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 325068aa-418d-467c-837c-5c6868995e8a
+    type: condition
+    task:
+      id: 325068aa-418d-467c-837c-5c6868995e8a
+      version: -1
+      name: test webhook event send
+      description: test webhook event send
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Rundeck.WebhookEvent
+                accessor: executionId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5455,
+        "width": 430,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+tests:
+ -  No tests

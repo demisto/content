@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "certificatevalidationchecks",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_certificatevalidationchecks",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Certificate Validation Checks",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
+flake8 = "*"
+
+[packages]
+requests = "*"
+uvicorn = "*"
+fastapi = "*"
+
+[requires]
+python_version = "3.8"

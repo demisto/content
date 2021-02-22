@@ -73,7 +73,7 @@ def make_headers(endpoint, token):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'User-Agent': 'Expanse_Demisto/1.1.1'
+        'User-Agent': 'Expanse_Demisto/1.1.3'
     }
     if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
@@ -314,7 +314,9 @@ def get_domain_context(data):
     """
     return {
         "Name": data['domain'],
-        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
+        "DNS": ((data.get('details') or {}).get('recentIps')
+                if is_not_empty_value((data.get('details') or {}).get('recentIps'))
+                else None),
         "CreationDate": data['whois'][0]['creationDate'],
         "DomainStatus": data['dnsResolutionStatus'],
         "ExpirationDate": data['whois'][0]['registryExpiryDate'],
@@ -369,7 +371,9 @@ def get_expanse_domain_context(data):
     """
     c = {
         "Name": data['domain'],
-        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
+        "DNS": ((data.get('details') or {}).get('recentIps')
+                if is_not_empty_value(((data.get('details') or {}).get('recentIps')))
+                else None),
         "CreationDate": data['whois'][0].get('creationDate'),
         "DomainStatus": data.get('dnsResolutionStatus'),
         "ExpirationDate": (data['whois'][0].get('registryExpiryDate')
@@ -463,9 +467,11 @@ def get_expanse_domain_context(data):
         "Tenant": data['tenant'].get('name') if is_not_empty_value(data['tenant'].get('name')) else None,
         "BusinessUnits": [],
         "DNSSEC": data['whois'][0].get('dnssec') if is_not_empty_value(data['whois'][0].get('dnssec')) else None,
-        "RecentIPs": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
-        "CloudResources": (data['details'].get('cloudResources')
-                           if is_not_empty_value(data['details'].get('cloudResources'))
+        "RecentIPs": ((data.get('details') or {}).get('recentIps')
+                      if is_not_empty_value(((data.get('details') or {}).get('recentIps')))
+                      else None),
+        "CloudResources": ((data['details'] or {}).get('cloudResources')
+                           if is_not_empty_value(((data['details'] or {}).get('cloudResources')))
                            else None),
         "LastSubdomainMetadata": (data.get('lastSubdomainMetadata')
                                   if is_not_empty_value(data.get('lastSubdomainMetadata'))

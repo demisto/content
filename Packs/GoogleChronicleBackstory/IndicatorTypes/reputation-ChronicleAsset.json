@@ -1,0 +1,21 @@
+{
+ "id": "ChronicleAsset",
+ "version": -1,
+ "modified": "2020-07-24T13:13:29.372790638+05:30",
+ "shouldCommit": false,
+ "regex": "",
+ "details": "ChronicleAsset",
+ "prevDetails": "ChronicleAsset",
+ "enhancementScriptNames": [
+  "ListDeviceEvents"
+ ],
+ "system": false,
+ "locked": false,
+ "disabled": false,
+ "file": false,
+ "updateAfter": 0,
+ "mergeContext": false,
+ "expiration": 0,
+ "fromVersion": "5.0.0",
+ "layout": "ChronicleAsset Indicator"
+}

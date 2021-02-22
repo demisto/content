@@ -2,25 +2,24 @@ commonfields:
   id: AMP
   version: -1
 name: AMP
-display: Cisco AMP
+display: AMP
 category: Endpoint
 image: data:image/png;base64,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
 description: Uses CISCO AMP Endpoint
-detaileddescription: To learn how to generate a Client ID and API Key, which are required for this integration, see the [Cisco AMP documentation.]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).
+detaileddescription: To learn how to generate a Client ID and API Key, which are required
+  for this integration, see the [Cisco AMP documentation.]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).
 configuration:
 - display: Server URL (e.g. https://api.amp.cisco.com)
   name: server
-  defaultvalue: "https://api.amp.cisco.com"
+  defaultvalue: https://api.amp.cisco.com
   type: 0
   required: true
 - display: Client ID
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -39,9 +38,6 @@ script:
         if (args) {
             var keys = Object.keys(args);
             for (var i = 0; i<keys.length; i++) {
-                if (i !== 0) {
-                    query += '&';
-                }
                 newArgs[fixBracketsArgs(command, keys[i])] = args[keys[i]];
             }
         }
@@ -72,6 +68,9 @@ script:
 
 
     var methodDict = {
+        'amp_delete_computers_isolation': 'DELETE',
+        'amp_put_computers_isolation': 'PUT',
+        'amp_get_computers_isolation': 'GET',
         'amp_get_computers': 'GET',
         'amp_get_computer_by_connector': 'GET',
         'amp_get_computer_trajctory': 'GET',
@@ -96,6 +95,9 @@ script:
 
 
     var urlDict = {
+        'amp_delete_computers_isolation':'/v1/computers',
+        'amp_put_computers_isolation':'/v1/computers',
+        'amp_get_computers_isolation':'/v1/computers',
         'amp_get_computers': '/v1/computers',
         'amp_get_computer_by_connector': '/v1/computers',
         'amp_get_computer_trajctory': '/v1/computers',
@@ -122,11 +124,24 @@ script:
     var getURL = function(command, args) {
         var base = urlDict[command];
         switch (command) {
-            case 'amp_get_computer_by_connector':
-                base += '/' + args['connector_guid'];
+
+            case 'amp_delete_computers_isolation':
+                base += '/' + args['connector_guid'] + '/isolation';
+                delete args['connector_guid'];
+                break;
+            case 'amp_put_computers_isolation':
+                base += '/' + args['connector_guid'] + '/isolation';
+                delete args['connector_guid'];
+                break;
+            case 'amp_get_computers_isolation':
+                base += '/' + args['connector_guid'] + '/isolation';
                 delete args['connector_guid'];
                 break;
             case 'amp_move_computer':
+                base += '/' + args['connector_guid'];
+                delete args['connector_guid'];
+                break;
+            case 'amp_get_computer_by_connector':
                 base += '/' + args['connector_guid'];
                 delete args['connector_guid'];
                 break;
@@ -282,7 +297,8 @@ script:
     - name: group_guid
       required: true
       description: The group GUID.
-    description: Moves a computer to a group with the corresponding connector_guid and group_guid, respectively.
+    description: Moves a computer to a group with the corresponding connector_guid
+      and group_guid, respectively.
   - name: amp_get_computer_activity
     arguments:
     - name: q
@@ -373,7 +389,8 @@ script:
     - name: sha256
       required: true
       description: SHA256 hash.
-    description: Returns a particular item for a given file_list. You need to specify the sha256 argument and the file_list_guid argument to retrieve an item.
+    description: Returns a particular item for a given file_list. You need to specify
+      the sha256 argument and the file_list_guid argument to retrieve an item.
   - name: amp_set_file_list_files_by_sha
     arguments:
     - name: file_list_guid
@@ -411,7 +428,6 @@ script:
       description: The particular group guid
     description: Returns a particular group
   - name: amp_set_group_policy
-    description: Sets a security policy to a group of endpoints.
     arguments:
     - name: group_guid
       required: true
@@ -425,6 +441,7 @@ script:
       description: The Mac policy guide.
     - name: windows_policy_guid
       description: The Windows policy guide.
+    description: Sets a security policy to a group of endpoints.
   - name: amp_get_policies
     arguments:
     - name: limit
@@ -446,8 +463,33 @@ script:
   - name: amp_get_version
     arguments: []
     description: Fetches a list of versions.
-system: true
+  - name: amp_delete_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: Performs a feature availability request on a computer. Can also be
+      used as a course-grained isolation status request.
+  - name: amp_put_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: Request Isolation for a Computer.  If a computer is already isolated
+      a 409 Conflict error status will be sent. Returns the same result of a GET request
+      on the /isolation endpoint.
+  - name: amp_get_computers_isolation
+    arguments:
+    - name: connector_guid
+      required: true
+      default: true
+      description: connector GUID.
+    description: 'Returns a fine grained isolation status for a computer.  The available
+      flag is set to true if isolation can be performed on the computer.  status will
+      be set to one of:  not_isolated pending_start isolated pending_stop'
+  runonce: false
+fromversion: 5.0.0
 tests:
 - No test - missing instace
-
-fromversion: 5.0.0

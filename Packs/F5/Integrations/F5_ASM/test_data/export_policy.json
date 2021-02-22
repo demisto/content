@@ -1,0 +1,18 @@
+{
+  "isBase64": false,
+  "inline": false,
+  "minimal": true,
+  "status": "NEW",
+  "lastUpdateMicros": 1599565838000000.0,
+  "includeVulnerabilityAssessmentConfigurationAndData": true,
+  "_kind": "tm:asm:tasks:export-policy:export-policy-taskstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/tasks/export-policy/0000?ver=15.1.0",
+  "format": "xml",
+  "filename": "exported_file.xml",
+  "policyReference": {
+    "link": "https://localhost/mgmt/tm/asm/policies/hxLoDXf8VgOcx_Q90vLdow?ver=15.1.0",
+    "fullPath": "/Common/New_Policyy"
+  },
+  "id": "0000",
+  "startTime": "2020-09-08T11:50:38Z"
+}

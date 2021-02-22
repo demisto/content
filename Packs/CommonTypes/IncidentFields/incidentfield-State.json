@@ -1,6 +1,6 @@
 {
     "associatedToAll": true,
-    "associatedTypes": null,
+	"associatedTypes": null,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "state",
@@ -25,7 +25,7 @@
     "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
+	"systemAssociatedTypes": null,
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,

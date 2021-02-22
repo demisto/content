@@ -1,0 +1,23 @@
+{
+    "response":{
+        "data": {
+        "allContents": {
+            "allContents": {
+                "rows": [
+                    {
+                        "name": "file-1",
+                        "path": "path/to/file"
+                    }
+                ],
+                "pagination": {
+                    "currentPage": 1,
+                    "totalRecords": 1,
+                    "totalPages": 1
+                },
+                "_scroll_id":"scroll id here"
+            },
+            "aggregations": {}
+        }
+    }
+}
+}

@@ -1,0 +1,20 @@
+comment: Health Check dynamic section, showing the top ten commands of the failed
+  incidents in a pie chart.
+commonfields:
+  id: IncidentsCheck-PlaybooksFailingCommands
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: IncidentsCheck-PlaybooksFailingCommands
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- failedIncidents
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

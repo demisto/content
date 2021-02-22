@@ -1,0 +1,126 @@
+category: Utilities
+commonfields:
+  id: Microsoft Graph API
+  version: -1
+configuration:
+- defaultvalue: 8922dd2d-7539-4711-b839-374f86083959
+  display: Application ID
+  name: app_id
+  required: true
+  type: 0
+- display: Application Secret (Required for using self deployed Azure app)
+  name: app_secret
+  required: false
+  type: 4
+- display: Tenant ID (Required for using self deployed Azure app)
+  name: tenant_id
+  required: false
+  type: 0
+- additionalinfo: A space-separated list of scopes that you want to consent to.
+  defaultvalue: User.Read
+  display: Scope (Required for using Cortex XSOAR Azure app)
+  hidden: false
+  name: scope
+  required: false
+  type: 12
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Microsoft Graph API integration to interact with Microsoft
+  APIs that do not have dedicated integrations in Cortex XSOAR, for example, Mail Single-User, etc.
+display: Microsoft Graph API
+name: Microsoft Graph API
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The resource in Microsoft Graph to refer.
+      isArray: false
+      name: resource
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: GET
+      description: 'The HTTP method used for the request to Microsoft Graph. Possible
+        values are: "GET", "POST", "DELETE", "PUT", or "PATCH".'
+      isArray: false
+      name: http_method
+      predefined:
+      - GET
+      - POST
+      - DELETE
+      - PUT
+      - PATCH
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: v1.0
+      description: 'The version of the Microsoft Graph API to use. Possible values
+        are: "v1.0" or "beta". Default is "v1.0.' 
+      isArray: false
+      name: api_version
+      predefined:
+      - v1.0
+      - beta
+      required: false
+      secret: false
+    - default: false
+      description: The request body (required for POST queries).
+      isArray: false
+      name: request_body
+      required: false
+      secret: false
+    - default: false
+      defaultValue: $top=10
+      description: OData system query options, e.g. $filter=startswith(givenName,
+        'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters
+      isArray: false
+      name: odata
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If "true" will populate the API response to the context data. Possible values are "true" or "false". Default is "true".
+      isArray: false
+      name: populate_context
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Run a Microsoft Graph API query.
+    execution: false
+    name: msgraph-api-request
+  - deprecated: false
+    description: Run this command to start the autorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: msgraph-api-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the msgraph-auth-start command.
+    execution: false
+    name: msgraph-api-auth-complete
+  - deprecated: false
+    description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
+    execution: false
+    name: msgraph-api-test
+  dockerimage: demisto/crypto:1.0.0.12979
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

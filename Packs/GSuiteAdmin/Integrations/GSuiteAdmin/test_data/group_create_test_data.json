@@ -1,0 +1,16 @@
+{
+  "args": {
+    "group_email": "test@email.com",
+    "group_name": "test group",
+    "group_description": "test group desc"
+  },
+  "response_data": {
+    "kind": "admin#directory#group",
+    "id": "SOME_ID",
+    "etag": "SOME_TAG",
+    "email": "test@email.com",
+    "name": "test group",
+    "description": "test group desc",
+    "adminCreated": true
+  }
+}

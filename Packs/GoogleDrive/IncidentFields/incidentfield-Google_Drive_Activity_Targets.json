@@ -1,0 +1,127 @@
+{
+ "id": "incident_googledriveactivitytargets",
+ "version": -1,
+ "modified": "2020-10-01T16:27:20.093479945+05:30",
+ "name": "Google Drive Activity Targets",
+ "ownerOnly": false,
+ "cliName": "googledriveactivitytargets",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Drive Activity"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "itemname",
+   "displayName": "Item Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 317,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "title",
+   "displayName": "Title",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "link",
+   "displayName": "Link",
+   "type": "url",
+   "required": false,
+   "script": "",
+   "width": 266,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "owner",
+   "displayName": "Owner",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "iscurrentuser",
+   "displayName": "Is Current User",
+   "type": "boolean",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "isunknownuser",
+   "displayName": "Is Unknown User",
+   "type": "boolean",
+   "required": false,
+   "script": "",
+   "width": 145,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "isdeleteduser",
+   "displayName": "Is Deleted User",
+   "type": "boolean",
+   "required": false,
+   "script": "",
+   "width": 133,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

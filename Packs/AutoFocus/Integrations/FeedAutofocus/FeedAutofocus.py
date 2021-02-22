@@ -173,7 +173,7 @@ class Client(BaseClient):
         initiate_sample_res.raise_for_status()
 
         af_cookie = initiate_sample_res.json()['af_cookie']
-        time.sleep(20)
+        time.sleep(20)  # pylint: disable=sleep-exists
 
         get_results_res = requests.request(
             method="POST",

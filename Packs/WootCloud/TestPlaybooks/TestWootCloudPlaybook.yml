@@ -1,0 +1,432 @@
+id: TestWootCloudPlaybook
+version: -1
+name: TestWootCloudPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 07943b67-bb89-4236-8fe2-3197b7ec483a
+    type: start
+    task:
+      id: 07943b67-bb89-4236-8fe2-3197b7ec483a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 10e6251b-a5c1-4a07-8110-e5bcc221b906
+    type: regular
+    task:
+      id: 10e6251b-a5c1-4a07-8110-e5bcc221b906
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3dc6198c-17e8-4cf1-8655-1ac73ea38716
+    type: regular
+    task:
+      id: 3dc6198c-17e8-4cf1-8655-1ac73ea38716
+      version: -1
+      name: wootcloud-get-pkt-alerts
+      script: '|||wootcloud-get-pkt-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      date_range:
+        simple: 30 days
+      limit:
+        simple: "1"
+      severity: {}
+      site_id: {}
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d42d1db9-9435-4c39-8b5e-a4e487956e13
+    type: condition
+    task:
+      id: d42d1db9-9435-4c39-8b5e-a4e487956e13
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.PacketAlert.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.PacketAlert.address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6a3f3cec-f450-4c27-8bc1-709e12d2f559
+    type: regular
+    task:
+      id: 6a3f3cec-f450-4c27-8bc1-709e12d2f559
+      version: -1
+      name: wootcloud-get-bt-alerts
+      script: '|||wootcloud-get-bt-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      date_range:
+        simple: 30 days
+      limit: {}
+      severity: {}
+      site_id: {}
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8698c71f-4c12-43dc-8199-32f35c453111
+    type: regular
+    task:
+      id: 8698c71f-4c12-43dc-8199-32f35c453111
+      version: -1
+      name: wootcloud-get-anomaly-alerts
+      script: '|||wootcloud-get-anomaly-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      date_range:
+        simple: 30 days
+      limit:
+        simple: "1"
+      severity: {}
+      site_id: {}
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 852b86ea-ebcb-4665-8616-ff1a1506dbd9
+    type: condition
+    task:
+      id: 852b86ea-ebcb-4665-8616-ff1a1506dbd9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: ca3586d2-d980-4d65-8559-e3fad87bc4ca
+    type: regular
+    task:
+      id: ca3586d2-d980-4d65-8559-e3fad87bc4ca
+      version: -1
+      name: wootcloud-fetch-packet-alert
+      script: '|||wootcloud-fetch-packet-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_id:
+        simple: ${WootCloud.PacketAlert.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1b7f152f-dde4-4ab2-870b-66592409237e
+    type: condition
+    task:
+      id: 1b7f152f-dde4-4ab2-870b-66592409237e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.PacketAlert.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.PacketAlert.address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: fda35a55-2dda-45b3-8cdc-e9f436f1ad6c
+    type: regular
+    task:
+      id: fda35a55-2dda-45b3-8cdc-e9f436f1ad6c
+      version: -1
+      name: wootcloud-fetch-anomaly-alert
+      script: '|||wootcloud-fetch-anomaly-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert_id:
+        simple: ${WootCloud.AnomalyAlert.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: bf097e62-eb36-447a-8770-9420a331f86f
+    type: condition
+    task:
+      id: bf097e62-eb36-447a-8770-9420a331f86f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WootCloud.AnomalyAlert.title
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 92d8aa90-8583-4f9e-bec8-8e5c60187a18
+    type: title
+    task:
+      id: 92d8aa90-8583-4f9e-bec8-8e5c60187a18
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2305,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

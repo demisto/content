@@ -1,0 +1,35 @@
+{
+ "id": "indicator_chronicleisolatedip",
+ "version": -1,
+ "modified": "2020-09-22T11:14:17.011952192+05:30",
+ "name": "Chronicle Isolated IP",
+ "ownerOnly": false,
+ "description": "Determines if the IP Address is isolated.",
+ "cliName": "chronicleisolatedip",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "No",
+  "Yes"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "ChronicleAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

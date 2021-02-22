@@ -30,7 +30,7 @@ class Client:
     """
 
     def __init__(self, params: Dict[str, str]):
-        self._cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
+        self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
         self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
         self.date_params: Dict[str, Dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
@@ -78,9 +78,6 @@ class Client:
 
         return filter_query
 
-    def check_quota_status(self) -> Dict[str, Any]:
-        return self._cs_client.check_quota_status()
-
     def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
         args: Dict[str, Any] = {
             'indicator': indicator_value,
@@ -94,19 +91,19 @@ class Client:
             args['type'] = indicator_type
 
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_actors(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/actors/v1', params=params)
 
     def cs_indicators(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
     def cs_reports(self, args: Dict[str, str]) -> Dict[str, Any]:
         params: Dict[str, Any] = self.build_request_params(args)
-        return self._cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
+        return self.cs_client.http_request(method='GET', url_suffix='intel/combined/reports/v1', params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -209,7 +206,7 @@ def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: 
         return None
 
 
-def build_indicator(indicator_value: str, indicator_type: str, title: str, client: Client) -> CommandResults:
+def build_indicator(indicator_value: str, indicator_type: str, title: str, client: Client) -> List[CommandResults]:
     """
     Builds an indicator entry
     :param indicator_value: The indicator value
@@ -220,14 +217,11 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     """
     res: Dict[str, Any] = client.get_indicator(indicator_value, indicator_type)
     resources: List[Any] = res.get('resources', [])
-    indicators: List[Union[Common.IP, Common.URL, Common.File, Common.Domain, None]] = list()
-    outputs: List[Dict[str, Any]] = list()
-    md: str = str()
+    results: List[CommandResults] = []
 
     if resources:
         for r in resources:
             output = get_indicator_outputs(r)
-            outputs.append(output)
             score = get_score_from_resource(r)
             dbot_score = Common.DBotScore(
                 indicator=indicator_value,
@@ -237,18 +231,19 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
                 score=score
             )
             indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
-            indicators.append(indicator)
-    else:
-        md = 'No indicator found.'
+            results.append(CommandResults(
+                outputs=output,
+                outputs_prefix='FalconIntel.Indicator',
+                outputs_key_field='ID',
+                indicator=indicator,
+                readable_output=tableToMarkdown(name=title, t=output, headerTransform=pascalToSpace),
+                raw_response=res
+            ))
 
-    results: CommandResults = CommandResults(
-        outputs=outputs,
-        outputs_prefix='FalconIntel.Indicator',
-        outputs_key_field='ID',
-        indicators=indicators,
-        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
-        raw_response=res
-    )
+    else:
+        results.append(CommandResults(
+            readable_output=f'No indicator found for {indicator_value}.'
+        ))
 
     return results
 
@@ -326,45 +321,40 @@ def run_test_module(client: Client) -> Union[str, Exception]:
     """
     If a client is successfully constructed then an access token was successfully created,
     therefore the username and password are valid and a connection was made.
-    On top of the above, this function checks for allocated quota and validates the http request to actors & indicators.
+    On top of the above, this function validates the http request to indicators endpoint.
     :param client: the client object with an access token
     :return: ok if got a valid access token and not all the quota is used at the moment
     """
-    output: Dict[str, Any] = client.check_quota_status()
-
-    error = output.get('errors')
-    if error and isinstance(error, list):
-        return error[0]
-
-    meta = output.get('meta')
-    if meta is not None and isinstance(meta, dict):
-        quota = meta.get('quota')
-        if quota is not None:
-            total = quota.get('total')
-            used = quota.get('used')
-            if total <= used:
-                raise Exception(f'Quota limitation has been reached: {used}')
-            else:
-                client._cs_client.http_request('GET', 'intel/combined/indicators/v1', params={'limit': 1})
-                client._cs_client.http_request('GET', 'intel/combined/actors/v1', params={'limit': 1})
-                return 'ok'
-    raise Exception('Quota limitation is unreachable')
+    client.cs_client.http_request('GET', 'intel/combined/indicators/v1', params={'limit': 1})
+    return 'ok'
 
 
-def file_command(file: str, client: Client) -> CommandResults:
-    return build_indicator(file, 'hash', 'Falcon Intel file reputation:\n', client)
+def file_command(files: List, client: Client) -> List[CommandResults]:
+    results: List[CommandResults] = []
+    for file in files:
+        results += build_indicator(file, 'hash', 'Falcon Intel file reputation:\n', client)
+    return results
 
 
-def ip_command(ip: str, client: Client) -> CommandResults:
-    return build_indicator(ip, 'ip', 'Falcon Intel IP reputation:\n', client)
+def ip_command(ips: List, client: Client) -> List[CommandResults]:
+    results: List[CommandResults] = []
+    for ip in ips:
+        results += build_indicator(ip, 'ip', 'Falcon Intel IP reputation:\n', client)
+    return results
 
 
-def url_command(url: str, client: Client) -> CommandResults:
-    return build_indicator(url, 'url', 'Falcon Intel URL reputation:\n', client)
+def url_command(urls: List, client: Client) -> List[CommandResults]:
+    results: List[CommandResults] = []
+    for url in urls:
+        results += build_indicator(url, 'url', 'Falcon Intel URL reputation:\n', client)
+    return results
 
 
-def domain_command(domain: str, client: Client) -> CommandResults:
-    return build_indicator(domain, 'domain', 'Falcon Intel domain reputation:\n', client)
+def domain_command(domains: List, client: Client) -> List[CommandResults]:
+    results: List[CommandResults] = []
+    for domain in domains:
+        results += build_indicator(domain, 'domain', 'Falcon Intel domain reputation:\n', client)
+    return results
 
 
 def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
@@ -441,20 +431,18 @@ def cs_actors_command(client: Client, args: Dict[str, str]) -> CommandResults:
     return results
 
 
-def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     res: Dict[str, Any] = client.cs_indicators(args)
     resources: List[Any] = res.get('resources', [])
-    indicators: List[Union[Common.IP, Common.URL, Common.File, Common.Domain, None]] = list()
-    outputs: List[Dict[str, Any]] = list()
-    md: str = str()
+    results: List[CommandResults] = []
     title: str = 'Falcon Intel Indicator search:'
 
     if resources:
         for r in resources:
             output = get_indicator_outputs(r)
             indicator_value = output.get('Value')
-            outputs.append(output)
             indicator_type = output.get('Type')
+            indicator: Optional[Common.Indicator] = None
 
             if indicator_type in ('hash_md5', 'hash_sha256', 'hash_sha1', 'ip_address', 'url', 'domain'):
                 if indicator_type in ('hash_md5', 'hash_sha1', 'hash_sha256'):
@@ -470,18 +458,18 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> CommandResult
                     score=score
                 )
                 indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
-                indicators.append(indicator)
+            results.append(CommandResults(
+                outputs=output,
+                outputs_prefix='FalconIntel.Indicator',
+                outputs_key_field='ID',
+                readable_output=tableToMarkdown(name=title, t=output, headerTransform=pascalToSpace),
+                raw_response=res,
+                indicator=indicator
+            ))
     else:
-        md = 'No indicators found.'
-
-    results: CommandResults = CommandResults(
-        outputs=outputs,
-        outputs_prefix='FalconIntel.Indicator',
-        outputs_key_field='ID',
-        readable_output=md if md else tableToMarkdown(name=title, t=outputs, headerTransform=pascalToSpace),
-        raw_response=res,
-        indicators=indicators
-    )
+        results.append(CommandResults(
+            readable_output='No indicators found.'
+        ))
 
     return results
 
@@ -555,6 +543,7 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
 def main():
     params: Dict[str, str] = demisto.params()
     args: Dict[str, str] = demisto.args()
+    results: Union[CommandResults, List[CommandResults]]
     try:
         command: str = demisto.command()
         LOG(f'Command being called in CrowdStrike Falcon Intel v2 is: {command}')
@@ -563,16 +552,16 @@ def main():
             result: Union[str, Exception] = run_test_module(client)
             return_results(result)
         elif command == 'file':
-            results: CommandResults = file_command(args['file'], client)
+            results = file_command(argToList(args['file']), client)
             return_results(results)
         elif command == 'ip':
-            results = ip_command(args['ip'], client)
+            results = ip_command(argToList(args['ip']), client)
             return_results(results)
         elif command == 'url':
-            results = url_command(args['url'], client)
+            results = url_command(argToList(args['url']), client)
             return_results(results)
         elif command == 'domain':
-            results = domain_command(args['domain'], client)
+            results = domain_command(argToList(args['domain']), client)
             return_results(results)
         elif command == 'cs-actors':
             results = cs_actors_command(client, args)

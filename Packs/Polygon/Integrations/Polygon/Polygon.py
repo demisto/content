@@ -4,7 +4,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import requests
 from io import StringIO
-from typing import List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -33,6 +32,7 @@ class RegistryKey(Common.Indicator):
     """
     Registry Key indicator class
     """
+
     def __init__(self, path, value, name=None):
         self.path = path
         self.name = name
@@ -51,6 +51,7 @@ class Process(Common.Indicator):
     """
     Process indicator class
     """
+
     def __init__(self, name, pid, hostname=None, md5=None, sha1=None,
                  command_line=None, path=None, start_time=None, end_time=None,
                  parent=None, sibling=None, child=None):
@@ -304,8 +305,9 @@ def get_main_indicator(report, analysis_type):
         )
 
 
-def get_packages_indicators(report):
-    ids = []
+def get_packages_indicators(res):
+    report = res['report']
+    command_results = []
     for package in report.get("packages", []):
         info = package.get('file_info', {})
         file = Common.File(
@@ -321,12 +323,18 @@ def get_packages_indicators(report):
                 score=0
             )
         )
-        ids.append(file)
-    return ids
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f"New File indicator was created {file.name}", {}),
+            indicator=file,
+            raw_response=res
+        )
+        )
+    return command_results
 
 
-def get_network_indicators(report):
-    ids: List[Common.Indicator] = []
+def get_network_indicators(res):
+    report = res['report']
+    command_results = []
     network = report.get('network', {})
     for dns in network.get('dns', []):
         domain = Common.Domain(
@@ -339,7 +347,12 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(domain)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f"New Domain indicator was created {domain.domain}", {}),
+            indicator=domain,
+            raw_response=res
+        )
+        )
     for host in network.get('hosts', []) + [h[0] for h in network.get('dead_hosts', [])]:
         ip = Common.IP(
             ip=host,
@@ -350,7 +363,12 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(ip)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f"New IP indicator was created {ip.ip}", {}),
+            indicator=ip,
+            raw_response=res
+        )
+        )
     for http in network.get('http', []):
         url = Common.URL(
             url=http.get('uri'),
@@ -361,13 +379,18 @@ def get_network_indicators(report):
                 score=0
             )
         )
-        ids.append(url)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f"New URL indicator was created {url.url}", {}),
+            indicator=url,
+            raw_response=res
+        )
+        )
+    return command_results
 
-    return ids
 
-
-def get_monitor_indicators(report):
-    ids: List[Common.Indicator] = []
+def get_monitor_indicators(res):
+    report = res['report']
+    command_results = []
     for p in report.get('goo_monitor', {}).get('processes', []):
         process = Process(
             name=p.get('basename'),
@@ -377,25 +400,47 @@ def get_monitor_indicators(report):
             end_time=p.get('exited_at'),
             path=p.get('filename'),
         )
-        ids.append(process)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f"New Process indicator was created {process.name}", {}),
+            indicator=process,
+            raw_response=res
+        )
+        )
         for regkey in p.get('regkeys', []):
             if regkey.get('action') == 'regkey_written':
                 reg = RegistryKey(
                     path=regkey.get('ioc'),
                     value=str(regkey.get('value'))
                 )
-                ids.append(reg)
+                command_results.append(CommandResults(
+                    readable_output=tableToMarkdown(f"New RegistryKey indicator was created {reg.value}", {}),
+                    indicator=reg,
+                    raw_response=res
+                )
+                )
+    return command_results
 
-    return ids
 
+def get_report_indicators(res, analysis_type):
+    report = res['report']
+    command_results = []
+    human_readable = ''
+    indicator = get_main_indicator(report, analysis_type)
+    if isinstance(indicator, Common.File):
+        human_readable = tableToMarkdown(f"New File indicator was created {indicator.name}", {})
+    elif isinstance(indicator, Common.URL):
+        human_readable = tableToMarkdown(f"New URL indicator was created {indicator.url}", {})
+    command_results.append(CommandResults(
+        readable_output=human_readable,
+        indicator=indicator,
+        raw_response=res
+    )
+    )
+    command_results.extend(get_packages_indicators(res))
+    command_results.extend(get_network_indicators(res))
+    command_results.extend(get_monitor_indicators(res))
 
-def get_report_indicators(report, analysis_type):
-    indicators = [get_main_indicator(report, analysis_type)]
-    indicators += get_packages_indicators(report)
-    indicators += get_network_indicators(report)
-    indicators += get_monitor_indicators(report)
-
-    return indicators
+    return command_results
 
 
 def analysis_info_command(client, args):
@@ -405,22 +450,21 @@ def analysis_info_command(client, args):
         analysis_type = tds_analysis_id[0]
         res = client.get_analysis_info(drop_prefix(tds_analysis_id))
         analysis_info = serialize_analysis_info(res.get('file'), analysis_type, report='report' in res)
-        indicators = []
+        command_results = []
         if 'report' in res:
             if analysis_type == URL_TYPE:
                 res['report']['target']['url'] = client.get_url(res.get('file'))
             analysis_info.update(serialize_report_info(res['report'], analysis_type))
-            indicators = get_report_indicators(res["report"], analysis_type)
+            command_results = get_report_indicators(res, analysis_type)
         human_readable = get_human_readable_analysis_info(analysis_info)
-        results = CommandResults(
+        command_results.append(CommandResults(
             readable_output=human_readable,
             outputs_prefix="Polygon.Analysis",
             outputs_key_field="ID",
             outputs=analysis_info,
-            indicators=indicators,
             raw_response=res
-        )
-        all_results.append(results)
+        ))
+        all_results.extend(command_results)
     return all_results
 
 
@@ -534,7 +578,7 @@ def file_command(client, args):
                 outputs_prefix="Polygon.Analysis",
                 outputs_key_field=hash_type.upper(),
                 outputs=analysis_info,
-                indicators=[indicator],
+                indicator=indicator,
                 raw_response=res
             )
             all_results.append(result)

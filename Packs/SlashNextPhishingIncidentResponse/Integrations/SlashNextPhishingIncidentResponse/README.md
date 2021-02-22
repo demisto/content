@@ -2766,7 +2766,16 @@ Forensics: Webpage Rendered Text for URL Scan ID = 48ae7b06-5915-4633-bc51-2cfaa
 No input parameter is required.
 <p>&nbsp;</p>
 <h5>Context Output</h5>
-There are no context output for this command.
+<pre>
+{
+    "SlashNext.Quota": {
+        "LicensedQuota": "Unlimited",
+        "RemainingQuota": "Unlimited",
+        "ExpirationDate": "2020-12-01",
+        "IsExpired": false
+    }
+}
+</pre>
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
@@ -2779,9 +2788,9 @@ There are no context output for this command.
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
-      <th><strong>Licensed Quota</strong></th>
-      <th><strong>Remaining Quota</strong></th>
-      <th><strong>Expiration Date</strong></th>
+      <th><strong>LicensedQuota</strong></th>
+      <th><strong>RemainingQuota</strong></th>
+      <th><strong>ExpirationDate</strong></th>
     </tr>
   </thead>
   <tbody>

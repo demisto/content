@@ -1,0 +1,18 @@
+commonfields:
+  id: DisplayEmailHtml
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: DisplayEmailHtml
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+comment: Displays the original email in HTML format.
+tags:
+- dynamic-section
+type: python
+tests:
+- no tests
+fromversion: 5.5.0

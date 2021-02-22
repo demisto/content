@@ -1,5 +1,5 @@
 Unit42 feed of published IOCs, which contains known malicious indicators.
-This integration was integrated and tested with version xx of Unit42 Feed
+
 ## Configure Unit42 Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

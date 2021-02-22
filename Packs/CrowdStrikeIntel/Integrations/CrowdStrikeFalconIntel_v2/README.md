@@ -1,5 +1,5 @@
 Threat intelligence service by CrowdStrike focused on delivering a technical feed to help organizations better defend themselves against adversary activity.
-This integration was integrated and tested with version xx of CrowdStrike Falcon Intel v2
+
 ## Configure CrowdStrike Falcon Intel v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,6 +8,7 @@ This integration was integrated and tested with version xx of CrowdStrike Falcon
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Server URL | The server URL to which you want to connect | True |
 | credentials | Client ID | True |
 | threshold | Indicator Threshold. Minimum malicious confidence from Falcon Intel to consider the indicator malicious.\(low, medium, high\) | False |
 | proxy | Use system proxy settings | False |
@@ -29,7 +30,7 @@ Check file reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file hash (MD5/SHA1/SHA256) to check. | Required | 
+| file | A comma-separated list of file hashes (MD5/SHA1/SHA256) to check.| Required | 
 
 
 #### Context Output
@@ -171,7 +172,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to be checked. | Required | 
+| url | A comma-separated list of URLs to check.| Required | 
 
 
 #### Context Output
@@ -292,7 +293,7 @@ Check the given URL reputation.
 >
 >|ID|Kill Chains|Labels|Malicious Confidence|Malware Families|Relations|Reports|Type|Value|
 >|---|---|---|---|---|---|---|---|---|
->| url_https://withifceale.top/treusparq.php | C2 | CSD/CSA-200342,<br/>KillChain/C2,<br/>Malware/Zloader,<br/>CSD/CSDR-20011,<br/>CSD/CSIT-20009,<br/>CSD/CSA-191551,<br/>MaliciousConfidence/High,<br/>ThreatType/Criminal,<br/>CSD/CSA-200038,<br/>ThreatType/Banking | high | Zloader | hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_md5: md5_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value | CSA-200342,<br/>CSDR-20011,<br/>CSIT-20009,<br/>CSA-191551,<br/>CSA-200038,<br/>CSIT-17112,<br/>CSA-200149 | url | https://withifceale.top/treusparq.php |
+>| `url_https://withifceale.top/treusparq.php` | C2 | CSD/CSA-200342,<br/>KillChain/C2,<br/>Malware/Zloader,<br/>CSD/CSDR-20011,<br/>CSD/CSIT-20009,<br/>CSD/CSA-191551,<br/>MaliciousConfidence/High,<br/>ThreatType/Criminal,<br/>CSD/CSA-200038,<br/>ThreatType/Banking | high | Zloader | hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_sha256: sha256_value,<br/>hash_md5: md5_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value,<br/>hash_md5: md5_value,<br/>hash_sha1: sha1_value,<br/>hash_sha1: sha1_value | CSA-200342,<br/>CSDR-20011,<br/>CSIT-20009,<br/>CSA-191551,<br/>CSA-200038,<br/>CSIT-17112,<br/>CSA-200149 | url | `https://withifceale.top/treusparq.php` |
 
 
 ### domain
@@ -307,7 +308,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to be checked. | Required | 
+| domain | A comma-seperated list of domains to check.| Required | 
 
 
 #### Context Output
@@ -427,7 +428,7 @@ Check IP reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to check. | Required | 
+| ip | A comma-separated list of IP addresses to check.| Required | 
 
 
 #### Context Output

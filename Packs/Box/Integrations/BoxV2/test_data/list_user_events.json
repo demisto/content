@@ -1,0 +1,74 @@
+{
+  "entries": [
+    {
+      "type": "event",
+      "event_id": "821c82f3cf438bf0d206aa80aac526ea1700a46b",
+      "created_by": {
+        "type": "user",
+        "id": "14342567114",
+        "name": "Andrew Shamah",
+        "login": "ashamah@paloaltonetworks.com"
+      },
+      "created_at": "2020-11-25T04:12:23-08:00",
+      "recorded_at": "2020-11-25T04:12:24-08:00",
+      "event_type": "ITEM_UPLOAD",
+      "session_id": "stw7zogl1ohiczrp",
+      "source": {
+        "type": "file",
+        "id": "745851995250",
+        "file_version": {
+          "type": "file_version",
+          "id": "794713426050",
+          "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"
+        },
+        "sequence_id": "0",
+        "etag": "0",
+        "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f",
+        "name": "image.gif",
+        "description": "",
+        "size": 26891788,
+        "path_collection": {
+          "total_count": 1,
+          "entries": [
+            {
+              "type": "folder",
+              "id": "0",
+              "name": "All Files"
+            }
+          ]
+        },
+        "created_at": "2020-11-25T04:12:23-08:00",
+        "modified_at": "2020-11-25T04:12:23-08:00",
+        "content_created_at": "2020-11-25T04:12:23-08:00",
+        "content_modified_at": "2020-11-25T04:12:23-08:00",
+        "created_by": {
+          "type": "user",
+          "id": "14342567114",
+          "name": "Andrew Shamah",
+          "login": "ashamah@paloaltonetworks.com"
+        },
+        "modified_by": {
+          "type": "user",
+          "id": "14342567114",
+          "name": "Andrew Shamah",
+          "login": "ashamah@paloaltonetworks.com"
+        },
+        "owned_by": {
+          "type": "user",
+          "id": "14342567114",
+          "name": "Andrew Shamah",
+          "login": "ashamah@paloaltonetworks.com"
+        },
+        "parent": {
+          "type": "folder",
+          "id": "0",
+          "name": "All Files"
+        },
+        "item_status": "active",
+        "synced": true
+      }
+    }
+  ],
+  "chunk_size": 49,
+  "next_stream_position": 18578956490887496
+}

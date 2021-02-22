@@ -3,7 +3,7 @@ commonfields:
   id: Cymulate
   version: -1
 configuration:
-- display: x-token
+- display: X-token
   name: x-token
   required: true
   type: 4
@@ -95,7 +95,7 @@ script:
     - contextPath: Cymulate.Incident.Attack_ID
       description: The cymulate's Attack ID of the incident
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false

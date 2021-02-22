@@ -1,0 +1,52 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "User Profile - SCIM (Incoming)",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Cost Center Code": {
+     "complex": null,
+     "simple": "urn:scim:schemas:extension:enterprise:1\\.0.costCenter"
+    },
+    "Department": {
+     "complex": null,
+     "simple": "urn:scim:schemas:extension:enterprise:1\\.0.department"
+    },
+    "Email": {
+     "complex": null,
+     "simple": "emails.[0].value"
+    },
+    "Employee ID": {
+     "complex": null,
+     "simple": "externalId"
+    },
+    "Given Name": {
+     "complex": null,
+     "simple": "name.givenName"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "phoneNumbers.[0].value"
+    },
+    "Surname": {
+     "complex": null,
+     "simple": "name.familyName"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "Username": {
+     "complex": null,
+     "simple": "userName"
+    }
+   }
+  }
+ },
+ "name": "User Profile - SCIM (Incoming)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

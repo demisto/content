@@ -1,3 +1,4 @@
+<!-- HTML_DOC -->
 This integration was integrated and tested with <a href="https://caseapi.phishlabs.com/v1/data/docs/">V1.0 of PhishLabs
     IOC DRP</a>
 

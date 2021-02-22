@@ -22,6 +22,7 @@ SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
 CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 
 
 class MicrosoftClient(BaseClient):
@@ -102,6 +103,7 @@ class MicrosoftClient(BaseClient):
             headers: Headers to add to the request.
             return_empty_response: Return the response itself if the return_code is 206.
             scope: A scope to request. Currently will work only with self-deployed app.
+            resource (str): The resource identifier for which the generated token will have access to.
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
@@ -138,7 +140,7 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def get_access_token(self, resource: str = '', scope: Optional[str] = None):
+    def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -146,12 +148,13 @@ class MicrosoftClient(BaseClient):
         integration context.
 
         Args:
-            scope: A scope to get instead of the default on the API.
+            resource (str): The resource identifier for which the generated token will have access to.
+            scope (str): A scope to get instead of the default on the API.
 
         Returns:
             str: Access token that will be added to authorization header.
         """
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         refresh_token = integration_context.get('current_refresh_token', '')
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
@@ -179,7 +182,8 @@ class MicrosoftClient(BaseClient):
                 access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
 
         else:
-            access_token, expires_in, refresh_token = self._get_self_deployed_token(refresh_token, scope=scope)
+            access_token, expires_in, refresh_token = self._get_self_deployed_token(
+                refresh_token, scope, integration_context)
         time_now = self.epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
@@ -196,7 +200,7 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
 
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
@@ -258,7 +262,11 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token', ''))
 
-    def _get_self_deployed_token(self, refresh_token: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token(self,
+                                 refresh_token: str = '',
+                                 scope: Optional[str] = None,
+                                 integration_context: Optional[dict] = None
+                                 ) -> Tuple[str, int, str]:
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
@@ -270,6 +278,8 @@ class MicrosoftClient(BaseClient):
                     self.resource_to_access_token[resource] = access_token
 
                 return '', expires_in, refresh_token
+        elif self.grant_type == DEVICE_CODE:
+            return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
             return self._get_self_deployed_token_client_credentials(scope=scope)
@@ -316,16 +326,15 @@ class MicrosoftClient(BaseClient):
             self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
-        TODO: SCOPE@!##@!@#!@#
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
-        data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'resource': self.resource if not resource else resource,
-            'redirect_uri': self.redirect_uri
-        }
+        data = assign_params(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            resource=self.resource if not resource else resource,
+            redirect_uri=self.redirect_uri
+        )
 
         if scope:
             data['scope'] = scope
@@ -337,6 +346,44 @@ class MicrosoftClient(BaseClient):
         else:
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
+
+        response_json: dict = {}
+        try:
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+
+        access_token = response_json.get('access_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
+        refresh_token = response_json.get('refresh_token', '')
+
+        return access_token, expires_in, refresh_token
+
+    def _get_token_device_code(
+            self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
+    ) -> Tuple[str, int, str]:
+        """
+        Gets a token by authorizing a self deployed Azure application.
+
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
+        data = {
+            'client_id': self.client_id,
+            'scope': scope
+        }
+
+        if refresh_token:
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            data['grant_type'] = DEVICE_CODE
+            if integration_context:
+                data['code'] = integration_context.get('device_code')
 
         response_json: dict = {}
         try:
@@ -374,6 +421,7 @@ class MicrosoftClient(BaseClient):
         """
         try:
             response = error.json()
+            demisto.error(str(response))
             inner_error = response.get('error', {})
             if isinstance(inner_error, dict):
                 err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
@@ -463,3 +511,23 @@ class MicrosoftClient(BaseClient):
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
         return headers
+
+    def device_auth_request(self) -> str:
+        response_json = {}
+        try:
+            response = requests.post(
+                url='https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode',
+                data={
+                    'client_id': self.client_id,
+                    'scope': self.scope
+                },
+                verify=self.verify
+            )
+            if not response.ok:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+        set_integration_context({'device_code': response_json.get('device_code')})
+        return response_json.get('user_code', '')

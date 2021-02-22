@@ -1,0 +1,326 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: "This playbook reassigns Active Incidents to the current users on call,\
+  \ requires shift management to be setup.   Can be run as a job a few minutes after\
+  \ the scheduled shift change time.\n\nUpdate the playbook input with a different\
+  \ search query if required.  Will also branch if there are no Incidents that match\
+  \ the query, and no users on call. \n\nSearch results are the default 100 Incidents\
+  \ returned by the query."
+id: Assign Active Incidents to Next Shift
+inputs:
+- description: 'Query for the Incidents to reassign.  Incidents need to be active
+    for this to work, it will not reassign pending Incidents. '
+  key: IncidentSearchQuery
+  playbookInputQuery:
+  required: false
+  value:
+    simple: status:Active -category:job
+name: Assign Active Incidents to Next Shift
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89f60a07-efc8-4592-8681-c557e63b9d7e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 89f60a07-efc8-4592-8681-c557e63b9d7e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      details: {}
+      extend-context:
+        simple: OpenIncidents=Contents.data.id
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      ignore-outputs:
+        simple: "true"
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: ${inputs.IncidentSearchQuery}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches Demisto incidents
+      id: b4387fb9-89da-4d8d-8f54-b4100d27a035
+      iscommand: false
+      name: Search for Incidents
+      script: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: b4387fb9-89da-4d8d-8f54-b4100d27a035
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: OpenIncidents
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: OpenIncidents
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b4016677-69df-4ca2-8857-459997ee86a4
+      iscommand: false
+      name: Are there open Incidents?
+      type: condition
+      version: -1
+      description: ""
+    taskid: b4016677-69df-4ca2-8857-459997ee86a4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        complex:
+          root: OpenIncidents
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Randomly assigns the incidents to users on call (requires shift\
+        \ management) and users on call.  \n\nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/users-and-roles/shift-management.html#idf554fd0f-f93b-40cd-9111-1393bf25ac6e\n\
+        \nIncident Ids should be passed in as a comma separated list."
+      id: d9cfc9cb-513d-4f1b-803d-98f9e396d93a
+      iscommand: false
+      name: Assign Incidents to next shift
+      script: AssignToNextShift
+      type: regular
+      version: -1
+    taskid: d9cfc9cb-513d-4f1b-803d-98f9e396d93a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      current: {}
+      incidentId: {}
+      onCall:
+        simple: "true"
+      online: {}
+      roles: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.get.users
+      id: 49dd5078-7a6a-4b3b-8fc8-72a9a18d4dd7
+      iscommand: true
+      name: Get Users on call
+      script: Builtin|||getUsers
+      type: regular
+      version: -1
+    taskid: 49dd5078-7a6a-4b3b-8fc8-72a9a18d4dd7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: DemistoUsers
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: DemistoUsers
+          operator: isNotEmpty
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a2a798d-7c83-43e2-87c5-d57c0d82db90
+      iscommand: false
+      name: Are there users on call?
+      type: condition
+      version: -1
+      description: ""
+    taskid: 9a2a798d-7c83-43e2-87c5-d57c0d82db90
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Job's done!
+      closeReason:
+        simple: Other
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0b384ada-409a-4111-88ec-d687f4a82d15
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0b384ada-409a-4111-88ec-d687f4a82d15
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

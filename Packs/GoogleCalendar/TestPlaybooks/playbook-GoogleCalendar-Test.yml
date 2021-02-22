@@ -1,0 +1,278 @@
+id: GoogleCalendar-Test
+version: -1
+name: GoogleCalendar-Test
+description: |-
+  This playbook uses the Google Calendar integration and tests the scenarios
+  of the various commands like google-calendar-acl-add and google-calendar-acl-list.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11d0a547-0982-4a12-8f45-affc60765433
+    type: start
+    task:
+      id: 11d0a547-0982-4a12-8f45-affc60765433
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8e0d5dfd-ac42-4979-87ab-e01a36eaafd8
+    type: regular
+    task:
+      id: 8e0d5dfd-ac42-4979-87ab-e01a36eaafd8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5df86188-04af-41e7-8fec-921804ab44b2
+    type: regular
+    task:
+      id: 5df86188-04af-41e7-8fec-921804ab44b2
+      version: -1
+      name: google-calendar-acl-add
+      script: '|||google-calendar-acl-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      calendar_id:
+        simple: admin@demistodev.com
+      role:
+        simple: freeBusyReader
+      scope_type:
+        simple: default
+      scope_value: {}
+      send_notifications: {}
+      user_id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 64a75d4f-95aa-4de3-872c-731acb361290
+    type: condition
+    task:
+      id: 64a75d4f-95aa-4de3-872c-731acb361290
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.calendarId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.scopeType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.scopeValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.role
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: da69df63-4df1-44a4-8e16-e3c84a6b1771
+    type: regular
+    task:
+      id: da69df63-4df1-44a4-8e16-e3c84a6b1771
+      version: -1
+      name: google-calendar-acl-list
+      script: '|||google-calendar-acl-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      calendar_id:
+        simple: admin@demistodev.com
+      max_results:
+        simple: "1"
+      page_token: {}
+      show_deleted: {}
+      sync_token: {}
+      user_id:
+        simple: admin@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: b9bb0fbb-53f4-4a59-8442-7faf18ff6ca9
+    type: condition
+    task:
+      id: b9bb0fbb-53f4-4a59-8442-7faf18ff6ca9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.calendarId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCalendar.Acl.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 95f14def-b21e-4483-8b10-fa0b9f859cbe
+    type: title
+    task:
+      id: 95f14def-b21e-4483-8b10-fa0b9f859cbe
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -32,7 +32,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.country",
+					"accessor": "Admin.Country",
 					"transformers": [
 						{
 							"operator": "uniq",
@@ -46,7 +46,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.email",
+					"accessor": "Admin.Email",
 					"transformers": [
 						{
 							"operator": "uniq",
@@ -60,7 +60,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.name",
+					"accessor": "Admin.Name",
 					"transformers": [
 						{
 							"operator": "uniq",
@@ -74,7 +74,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.phone",
+					"accessor": "Admin.Phone",
 					"transformers": [
 						{
 							"operator": "uniq",
@@ -231,7 +231,7 @@
 				"complex": {
 					"root": "Domain",
 					"filters": [],
-					"accessor": "Admin.organization",
+					"accessor": "Admin.Organization",
 					"transformers": [
 						{
 							"operator": "uniq",

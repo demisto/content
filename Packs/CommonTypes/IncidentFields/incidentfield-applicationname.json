@@ -1,0 +1,32 @@
+{
+    "id": "incident_applicationname",
+    "version": -1,
+    "modified": "2020-11-16T16:43:52.626825863Z",
+    "name": "Application Name",
+    "ownerOnly": false,
+    "description": "Application Name",
+    "cliName": "applicationname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "IAM - App Add",
+        "IAM - App Remove"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

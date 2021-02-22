@@ -1,5 +1,5 @@
 {
-    "id": "AWS Feed",
+    "id": "AWS Feed Mapper",
     "name": "AWS Feed - Incoming Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming AWS indicator fields.",

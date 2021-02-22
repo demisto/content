@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "==5.0.1"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-asyncio = "*"
+
+[packages]
+google-api-python-client = "*"
+httplib2 = "*"
+dateparser = "*"
+
+[requires]
+python_version = "3.7"

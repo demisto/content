@@ -124,10 +124,10 @@ script:
       type: date
     description: Fetches the logs that triggered a security event in Logz.io Cloud
       SIEM
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.13358
   isfetch: true
   runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - Logzio - Test
+- No Tests

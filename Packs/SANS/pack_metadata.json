@@ -1,8 +1,8 @@
 {
     "name": "SANS",
-    "description": "This SANS Content Pack helps you streamline incident response according to SANS guidelines as outlined in the SANS Incident Handler’s Handbook.",
+    "description": "This SANS Content Pack helps you streamline incident response according to SANS guidelines as outlined in the SANS Incident Handler\u2019s Handbook.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

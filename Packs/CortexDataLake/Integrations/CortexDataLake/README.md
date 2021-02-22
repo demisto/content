@@ -14,19 +14,21 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
 4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Authentication Token__  __Registration ID__ __Encryption Key__
 5. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-6. Search for Palo Alto Networks Cortex v2.
+6. Search for Cortex Data Lake.
 7. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: From the authentication process
     * __Registration ID__: From the authentication process
     * __Encryption Key__: From the authentication process
-    * __proxy__: Use system proxy settings
-    * __insecure__: Trust any certificate (not secure)
     * __Fetch incidents__: Whether to fetch incidents or not
     * __first_fetch_timestamp__: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year)
+    * __Fetch Table__: Choose the table from which incidents will be fetched.
     * __Severity of events to fetch (Firewall)__: Select from all,Critical,High,Medium,Low,Informational,Unused
     * __Subtype of events to fetch (Firewall)__: Select from all,attack,url,virus,spyware,vulnerability,file,scan,flood,packet,resource,data,url-content,wildfire,extpcap,wildfire-virus,http-hdr-insert,http-hdr,email-hdr,spyware-dns,spyware-wildfire-dns,spyware-wpc-dns,spyware-custom-dns,spyware-cloud-dns,spyware-raven,spyware-wildfire-raven,spyware-wpc-raven,wpc-virus,sctp
+    * __Fetch Fields__: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
     * __Incidents fetched per query__: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
+    * __proxy__: Use system proxy settings
+    * __insecure__: Trust any certificate (not secure)
 4. Click __Test__ to validate the URLs, token, and connection.
 
 In order for the integration to work, the following URLs need to be accessible:
@@ -40,6 +42,21 @@ In order for the integration to work, the following URLs need to be accessible:
 
 ## Fetched Incidents Data
 Fetches Firewall threat logs as incidents
+
+## CDL Server - API Calls Caching Mechanism
+The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
+When the intgeration reaches the limit of allowed calls, the following error will be shown:
+
+```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
+
+The integration will re-attempt authentication if the command was called under the following cases:
+
+1. First hour - once every minute.
+2. First 48 hours - once in 10 minutes.
+3. After that every 60 minutes.
+
+If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
+
 
 ---
 ## Commands
@@ -68,7 +85,8 @@ Runs a query on the Cortex logging service.
 | --- | --- | --- |
 | query | A free-text SQL query. For example, query="SELECT * FROM \`firewall.traffic\` limit 10". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list. | Optional |
 | limit | The number of logs to return. Default is 10 | Optional | 
- 
+| transform_results | If set to false, query results are not mapped into the standard command context. Default is "true". | Optional | 
+
 
 
 ##### Context Output
@@ -1236,6 +1254,21 @@ its standard port. |
 >| alert | web-browsing | 2.2.2.2 | 52270 | ANindV94kHC673w9zWXj8TY | Google Chrome Extension File | INTERNET | 10.10.10.101 | 2020-04-21T18:47:12 |
 
 
+### cdl-reset-authentication-timeout
+***
+Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+
+
+#### Base Command
+
+`cdl-reset-authentication-timeout`
+
+#### Command Example
+```!cdl-reset-authentication-timeout```
+
+#### Human Readable Output
+```Caching mechanism failure time counters have been successfully reset.```
+
 ## Additional Information
 
 ---
@@ -1244,4 +1277,3 @@ against. That is, log types must be fully qualified and the instance ID is a par
 `<instanceID>.firewall.traffic`
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntex supported for queries is `csql`
-

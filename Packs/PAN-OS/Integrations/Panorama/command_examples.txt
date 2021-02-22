@@ -1,0 +1,100 @@
+!panorama
+!panorama-get-predefined-threats-list
+!panorama-commit
+!panorama-push-to-device-group
+!panorama-list-addresses
+!panorama-get-address name="Demisto address"
+!panorama-create-address name="address_test_pb" description="just a desc" ip_range="10.10.10.9-10.10.10.10"
+!panorama-delete-address name="address_test_pb"
+!panorama-list-address-groups
+!panorama-get-address-group name=suspicious_address_group
+!panorama-create-address-group name=suspicious_address_group type=dynamic match=1.1.1.1 description="this ip is very bad"
+!panorama-block-vulnerability threat_id=18250 vulnerability_profile=name
+!panorama-edit-address-group name=suspicious_address_group description="maybe this ip is not so bad"
+!panorama-delete-address-group name="dynamic_address_group_test_pb3"
+!panorama-get-custom-url-category name=my_personal_url_category
+!panorama-create-custom-url-category name=suspicious_address_group sites=["thepill.com","abortion.com"] description=momo
+!panorama-edit-custom-url-category name=suspicious_address_group description=nono
+!panorama-delete-custom-url-category name=suspicious_address_group
+!panorama-get-url-category url="poker.com"
+!panorama-get-url-category-from-cloud url=google.com
+!panorama-get-url-category-from-host url=google.com
+!panorama-get-url-filter name=demisto_default_url_filter
+!panorama-create-url-filter action=block name=gambling_url url_category=gambling
+!panorama-edit-url-filter name=demisto_default_url_filter element_to_change=override_allow_list element_value="poker.com" add_remove_element=add
+!panorama-delete-url-filter name=gambling_url
+!panorama-create-rule rulename="block_bad_application" description="do not play at work" action="deny" application="fortnite"
+!panorama-custom-block-rule object_type=application object_value=fortnite
+!panorama-move-rule rulename="test_rule3" where="bottom"
+!panorama-edit-rule rulename="block_bad_application" element_to_change=action element_value=drop
+!panorama-delete-rule rulename=block_bad_application
+!panorama-list-applications
+!panorama-commit-status job_id=948
+!panorama-push-status job_id=951
+!panorama-list-services
+!panorama-get-service name=guy_ser3
+!panorama-create-service name=guy_ser3 protocol=udp destination_port=36 description=bfds
+!panorama-delete-service name=guy_ser3
+!panorama-list-service-groups
+!panorama-get-service-group name=ser_group6
+!panorama-create-service-group name=lalush_sg4 services=`["demisto_service1","demi_service_test_pb"]
+!panorama-edit-service-group name=lalush_sg4 services_to_remove=`["serice_udp_test_pb","demisto_service1"]
+!panorama-delete-service-group name=lalush_sg4
+!panorama-get-pcaps pcapType="filter-pcap" from=pcap_test
+!panorama-list-pcaps pcapType=“filter-pcap”
+!panorama-list-edls
+!panorama-get-edl name=test_pb_domain_edl_DONT_DEL
+!panorama-create-edl name=new_EDL recurring="five-minute" type=url url="gmail.com"
+!panorama-edit-edl name=test_pb_domain_edl_DONT_DEL element_to_change=description element_value="new description3"
+!panorama-delete-edl name=new_EDL
+!panorama-refresh-edl name=domain_edl66
+!panorama-register-ip-tag tag=tag02 IPs=[“10.0.0.13”,“10.0.0.14”]
+!panorama-unregister-ip-tag tag=tag02 IPs=["10.0.0.13","10.0.0.14"]
+!panorama-register-user-tag tag-tag02 Users=Username
+!panorama-unregister-user-tag tag-tag02 Users=Username
+!panorama-query-traffic-logs query="*" number_of_logs="100" direction="backward" source="" destination="" receive_time="" application="" to_port="" action="allow"
+!panorama-check-traffic-logs-status job_id="1865"
+!panorama-get-traffic-logs job_id="1865"
+!panorama-list-rules
+!panorama-query-logs log-type=data query="(addr.src in 192.168.1.12)""
+!panorama-check-logs-status job_id=657
+!panorama-get-logs job_id=678
+!panorama-security-policy-match destination=1.2.3.4 protocol=1 source=2.3.4.5
+!panorama-list-static-routes virtual_router=virtual_router_test_DONT_DELETE
+!panorama-get-static-route static_route=static_route_ip virtual_router=virtual_router_test_DONT_DELETE
+!panorama-add-static-route destination=2.3.4.5/32 nexthop_type="ip-address" nexthop_value=3.3.3.3 static_route=my_temp_route virtual_router=virtual_router_test_DONT_DELETE
+!panorama-delete-static-route route_name=my_temp_route virtual_router=virtual_router_test_DONT_DELETE
+!panorama-show-device-version
+not_running_this!panorama-download-latest-content-update
+!panorama-content-update-download-status job_id=678
+not_running_this!panorama-install-latest-content-update
+!panorama-content-update-install-status job_id=878
+!panorama-check-latest-panos-software
+not_running_this!panorama-download-panos-version target_version=1
+!panorama-download-panos-status
+not_running_this!panorama-install-panos-version target_version=1
+!panorama-install-panos-status job_id=878
+not_running_this!panorama-device-reboot
+!panorama-show-location-ip ip_address=8.8.8.8
+!panorama-get-security-profiles
+not_running_this!panorama-apply-security-profile
+not_running_this!panorama-get-ssl-decryption-rules
+!panorama-get-licences
+!panorama-get-security-profiles security_profile=spyware
+!panorama-apply-security-profile profile_name=test profile_type=spyware rule_name=rule1 pre_post="pre-rulebase"
+!panorama-get-ssl-decryption-rules pre_post="pre-rulebase"
+!panorama-get-wildfire-configuration template=WildFire
+!panorama-url-filtering-block-default-categories profile_name=test
+!panorama-get-anti-spyware-best-practice
+!panorama-get-file-blocking-best-practice
+!panorama-get-antivirus-best-practice
+!panorama-get-vulnerability-protection-best-practice
+!panorama-get-wildfire-best-practice
+!panorama-get-url-filtering-best-practice
+!panorama-enforce-wildfire-best-practice template=WildFire
+!panorama-create-antivirus-best-practice-profile profile_name=test
+!panorama-create-anti-spyware-best-practice-profile profile_name=test
+!panorama-create-vulnerability-best-practice-profile profile_name=test
+!panorama-create-url-filtering-best-practice-profile profile_name=test
+!panorama-create-file-blocking-best-practice-profile profile_name=test
+!panorama-create-wildfire-best-practice-profile profile_name=test

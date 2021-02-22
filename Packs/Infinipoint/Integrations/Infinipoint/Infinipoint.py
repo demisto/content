@@ -133,7 +133,7 @@ COMMANDS_CONFIG = {
         "pass_args": True
     },
 
-    "infinipoint-get-events": {
+    "infinipoint-get-non-compliance": {
         "args": {
             "offset": "contains",
             "limit": "contains"
@@ -353,7 +353,7 @@ def test_module(route, base_url, insecure, headers):
 
 def infinipoint_command(client: Client, args=None, optional_args=None, pagination=True):
     rules = None
-    cve = []
+    cve = None
     method = "POST"
 
     # Cancel pagination if necessary
@@ -389,18 +389,18 @@ def infinipoint_command(client: Client, args=None, optional_args=None, paginatio
 
         # CVE reputation
         if "cve_id" in res:
-            cve = [Common.CVE(
+            cve = Common.CVE(
                 id=res['cve_id'],
                 cvss=res['cve_dynamic_data']['base_metric_v2']['base_score'],
                 description=res['cve_description'],
                 published='',
                 modified=''
-            )]
+            )
 
         return CommandResults(outputs_prefix=optional_args['outputs_prefix'],
                               outputs_key_field=optional_args['outputs_key_field'],
                               outputs=res,
-                              indicators=cve)
+                              indicator=cve)
 
 
 def run_queries_command(client: Client, args: Dict, optional_args=None):

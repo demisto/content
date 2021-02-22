@@ -18,35 +18,44 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '10'
-  display: File Threshold. Minimum number of positive results from VT scanners to consider the file malicious.
+  display: File Threshold. Minimum number of positive results from VT scanners to
+    consider the file malicious.
   name: fileThreshold
   required: false
   type: 0
 - defaultvalue: '20'
-  display: IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious.
+  display: IP Threshold. Minimum number of positive results from VT scanners to consider
+    the IP malicious.
   name: ipThreshold
   required: false
   type: 0
 - defaultvalue: '10'
-  display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
+  display: URL Threshold. Minimum number of positive results from VT scanners to consider
+    the URL malicious.
   name: urlThreshold
   required: false
   type: 0
 - defaultvalue: '10'
-  display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
+  display: Domain Threshold. Minimum number of positive results from VT scanners to
+    consider the domain malicious.
   name: domainThreshold
   required: false
   type: 0
-- display: Preferred Vendors List. List of vendors which are considered more trustworthy, comma separated.
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
   name: preferredVendors
   required: false
   type: 12
-- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors needed to consider a domain, IP, URL or file as malicious.
+- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file as malicious.
   name: preferredVendorsThreshold
   required: false
   type: 0
 - defaultvalue: 'false'
-  display: Determines whether to return all results, which can number in the thousands. If "true", returns all results and overrides the _fullResponse_ argument (if set to "false") in a command. If "false", the fullResponse argument in the command determines how results are returned.
+  display: Determines whether to return all results, which can number in the thousands.
+    If "true", returns all results and overrides the _fullResponse_ argument (if set
+    to "false") in a command. If "false", the fullResponse argument in the command
+    determines how results are returned.
   name: fullResponseGlobal
   required: false
   type: 8
@@ -57,13 +66,16 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The md5/sha1/sha256 hash of the file whose dynamic behavioural report you want to retrieve.
+      description: The md5/sha1/sha256 hash of the file whose dynamic behavioural
+        report you want to retrieve.
       isArray: false
       name: resource
       required: true
       secret: false
     - default: false
-      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -71,7 +83,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -80,7 +93,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: VirusTotal runs a distributed setup of Cuckoo sandbox machines that execute the files we receive. This API allows you to retrieve the full JSON report of the file's execution as returned by the Cuckoo JSON report encoder.
+    description: VirusTotal runs a distributed setup of Cuckoo sandbox machines that
+      execute the files we receive. This API allows you to retrieve the full JSON
+      report of the file's execution as returned by the Cuckoo JSON report encoder.
     execution: false
     name: vt-private-check-file-behaviour
     outputs:
@@ -122,7 +137,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of positives is bigger than the threshold the domain will be considered malicious. If threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is bigger than the threshold the domain
+        will be considered malicious. If threshold is not specified, the default domain
+        threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -130,7 +147,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -139,7 +157,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a report on a given domain (including the information recorded by VirusTotal's passive DNS infrastructure). If the domain doesn't exist in VT's dataset you would need to use Virus Total's (Public API integration) url-scan command
+    description: Retrieves a report on a given domain (including the information recorded
+      by VirusTotal's passive DNS infrastructure). If the domain doesn't exist in
+      VT's dataset you would need to use Virus Total's (Public API integration) url-scan
+      command
     execution: false
     name: vt-private-get-domain-report
     outputs:
@@ -169,14 +190,17 @@ script:
       type: string
   - arguments:
     - default: false
-      description: An md5/sha1/sha256 hash of a file for which you want to retrieve the most recent antivirus report. You may also specify a scan_id (sha256-timestamp as returned by the scan API) to access a specific report.
+      description: An md5/sha1/sha256 hash of a file for which you want to retrieve
+        the most recent antivirus report. You may also specify a scan_id (sha256-timestamp
+        as returned by the scan API) to access a specific report.
       isArray: false
       name: resource
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'VirusTotal metadata, signature information, structural information, etc. Can be viewed with raw-response=true. '
+      description: 'VirusTotal metadata, signature information, structural information,
+        etc. Can be viewed with raw-response=true. '
       isArray: false
       name: allInfo
       predefined:
@@ -185,7 +209,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -288,21 +314,26 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of one or more URLs to retrieve the most recent report for. You can also specify a scan_id (sha-256 timestamp returned by the URL submission API) to access a specific report.
+      description: A CSV list of one or more URLs to retrieve the most recent report
+        for. You can also specify a scan_id (sha-256 timestamp returned by the URL
+        submission API) to access a specific report.
       isArray: true
       name: resource
       required: true
       secret: false
     - default: false
       defaultValue: '2'
-      description: The number of times the command will try to get the URL report, if the report was not ready on the first attempt.
+      description: The number of times the command will try to get the URL report,
+        if the report was not ready on the first attempt.
       isArray: false
       name: retries
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: This additional info includes VirusTotal related metadata (first seen date, last seen date, files downloaded from the given URL, etc.) and the output of other tools and datasets when fed with the URL.
+      description: This additional info includes VirusTotal related metadata (first
+        seen date, last seen date, files downloaded from the given URL, etc.) and
+        the output of other tools and datasets when fed with the URL.
       isArray: false
       name: allInfo
       predefined:
@@ -321,7 +352,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -329,7 +362,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -338,7 +372,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The amount of time (in seconds) that the integration will wait before trying to get a URL report for URLS whose scans have not completed.
+      description: The amount of time (in seconds) that the integration will wait
+        before trying to get a URL report for URLS whose scans have not completed.
       isArray: false
       name: retry_time
       required: false
@@ -387,15 +422,24 @@ script:
     - contextPath: URL.VirusTotal.DroppedFiles
       description: Downloaded file hashes from this URL
       type: string
+    - contextPath: URL.VirusTotal.ResponseContentSHA256
+      description: SHA256 hash of the response content
+      type: Unknown
+    - contextPath: URL.VirusTotal.ResponseHeaders
+      description: The response headers
+      type: Unknown
   - arguments:
     - default: false
-      description: A valid IPv4 address in dotted quad notation, for the time being only IPv4 addresses are supported.
+      description: A valid IPv4 address in dotted quad notation, for the time being
+        only IPv4 addresses are supported.
       isArray: false
       name: ip
       required: true
       secret: false
     - default: false
-      description: If the number of positives is bigger than the threshold the file will be considered malicious. If threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -403,7 +447,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -412,7 +457,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a report on a given IP address (including the information recorded by VirusTotal's Passive DNS infrastructure).
+    description: Retrieves a report on a given IP address (including the information
+      recorded by VirusTotal's Passive DNS infrastructure).
     execution: false
     name: vt-private-get-ip-report
     outputs:
@@ -444,13 +490,16 @@ script:
       description: The actual score
       type: number
     - contextPath: IP.VirusTotal.DownloadedHashes
-      description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address
+      description: Latest files that are detected by at least one antivirus solution
+        and were downloaded by VirusTotal from the IP address
       type: string
     - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided
+      description: Latest files that are not detected by any antivirus solution and
+        were downloaded by VirusTotal from the IP address provided
       type: string
     - contextPath: IP.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this IP address detected by at least one URL scanner
+      description: Latest URLs hosted in this IP address detected by at least one
+        URL scanner
       type: string
     - contextPath: IP.VirusTotal.CommunicatingHashes
       description: Latest detected files that communicate with this IP address
@@ -472,7 +521,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: File search query. For example, query="type:peexe size:90kb+ positives:5+ behaviour:'taskkill'"
+      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
+        behaviour:'taskkill'"
       isArray: false
       name: query
       required: true
@@ -480,7 +530,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -489,7 +540,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'This command is equivalent to VirusTotal Intelligence advanced searches. A very wide variety of search modifiers are available, including: file size, file type, first submission date to VirusTotal, last submission date to VirusTotal, number of positives, dynamic behavioural properties, binary content, submission file name, and a very long etcetera. The full list of search modifiers allowed for file search queries is documented at:  https://www.virustotal.com/intelligence/help/file-search/#search-modifiers'
+    description: 'This command is equivalent to VirusTotal Intelligence advanced searches.
+      A very wide variety of search modifiers are available, including: file size,
+      file type, first submission date to VirusTotal, last submission date to VirusTotal,
+      number of positives, dynamic behavioural properties, binary content, submission
+      file name, and a very long etcetera. The full list of search modifiers allowed
+      for file search queries is documented at:  https://www.virustotal.com/intelligence/help/file-search/#search-modifiers'
     execution: false
     name: vt-private-search-file
     outputs:
@@ -509,7 +565,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Return all of the results, note that it can be thousands of results. Prefer not to use in playbooks. The default value is "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
       isArray: false
       name: fullResponse
       predefined:
@@ -518,7 +575,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return all Domains, IPs, URLs  that a given hash of malware communicates with
+    description: Return all Domains, IPs, URLs  that a given hash of malware communicates
+      with
     execution: false
     name: vt-private-hash-communication
     outputs:
@@ -551,14 +609,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Downloads a file from VirusTotal's store given one of its hashes. This call can be used in conjuction with the file searching call in order to download samples that match a given set of criteria.
+    description: Downloads a file from VirusTotal's store given one of its hashes.
+      This call can be used in conjuction with the file searching call in order to
+      download samples that match a given set of criteria.
     execution: false
     name: vt-private-download-file
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test

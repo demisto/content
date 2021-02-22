@@ -491,10 +491,18 @@ def get_domains_by_id(domain_id, _fields=''):
 
 
 def test_module():
-    full_url = '{0}/api/ariel/databases'.format(SERVER)
-    headers = dict(AUTH_HEADERS)
-    send_request('GET', full_url, headers)
-    # If encountered error, send_request will return_error
+    try:
+        get_offenses('0-0')
+    except Exception as err:
+        demisto.info("Failed to perform an API call to the 'api/siem/offenses' endpoint. Reason:\n {}.\n "
+                     "Trying to perform an API call to 'api/ariel/databases' endpoint.".format(str(err)))
+        full_url = '{0}/api/ariel/databases'.format(SERVER)
+        headers = dict(AUTH_HEADERS)
+        send_request('GET', full_url, headers)
+    if demisto.params().get('isFetch'):
+        fetch_incidents()
+
+    # If encountered error, send_request or fetch_incidents will return error
     return 'ok'
 
 
@@ -1016,13 +1024,15 @@ def update_reference_set_value_command():
         The function creates or updates values in QRadar reference set
     """
     args = demisto.args()
+    source = args.get('source')
     values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
         values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
-    if len(values) > 1:
+    if len(values) > 1 and not source:
         raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
-    elif len(values) == 1:
-        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
+    elif len(values) >= 1:
+        for value in values:
+            raw_ref = update_reference_set_value(args.get('ref_name'), value, source)
     else:
         raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)

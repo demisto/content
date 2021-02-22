@@ -1,0 +1,461 @@
+[
+  {
+    "time": "2020-09-13 14:00:19",
+    "timems": 1600005619000,
+    "eventType": "deviceHistory",
+    "name": "removetag",
+    "value": "High Risk",
+    "reason": "Expired",
+    "device": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "deviceName": "ip-10-0-0-1"
+  },
+  {
+    "time": "2020-09-11 19:48:56",
+    "timems": 1599853736419,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CQ2IiA2afFDfBc5301",
+    "status": "failed",
+    "ddid": 1,
+    "port": 443,
+    "sourcePort": 40893,
+    "destinationPort": 443,
+    "direction": "in",
+    "applicationprotocol": "Unknown",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": -97.822,
+      "latitude": 37.751,
+      "country": "United States",
+      "countrycode": "US",
+      "asn": "AS398722 CENSYS-ARIN-03",
+      "region": "North America",
+      "ip": "167.248.133.28",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "167.248.133.28",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:44:15",
+    "timems": 1599853455327,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CJDfGwAT7fVxNJd01",
+    "status": "ongoing",
+    "ddid": 1,
+    "port": 22,
+    "sourcePort": 17815,
+    "destinationPort": 22,
+    "direction": "in",
+    "applicationprotocol": "SSH",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 113.727,
+      "latitude": 34.772,
+      "country": "China",
+      "countrycode": "CN",
+      "asn": "AS23650 AS Number for CHINANET jiangsu province backbone",
+      "region": "Asia",
+      "ip": "222.186.15.62",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "222.186.15.62",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:42:57",
+    "timems": 1599853377304,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CQ2IiA2afFDfBc5301",
+    "status": "ongoing",
+    "ddid": 1,
+    "port": 22,
+    "sourcePort": 17815,
+    "destinationPort": 22,
+    "direction": "in",
+    "applicationprotocol": "SSH",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 113.727,
+      "latitude": 34.772,
+      "country": "China",
+      "countrycode": "CN",
+      "asn": "AS23650 AS Number for CHINANET jiangsu province backbone",
+      "region": "Asia",
+      "ip": "222.186.15.62",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "222.186.15.62",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:42:23",
+    "timems": 1599853343266,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CQ2IiA2afFDfBc5301",
+    "ddid": 1,
+    "port": 22,
+    "sourcePort": 34183,
+    "destinationPort": 22,
+    "direction": "in",
+    "applicationprotocol": "Unknown",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 6.096,
+      "latitude": 49.787,
+      "city": "Roost",
+      "country": "Luxembourg",
+      "countrycode": "LU",
+      "asn": "AS53667 PONYNET",
+      "region": "Europe",
+      "ip": "104.244.78.136",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "104.244.78.136",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:42:21",
+    "timems": 1599853341264,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CJDfGwAT7fVxNJd01",
+    "ddid": 1,
+    "port": 22,
+    "sourcePort": 17815,
+    "destinationPort": 22,
+    "direction": "in",
+    "applicationprotocol": "SSH",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 113.727,
+      "latitude": 34.772,
+      "country": "China",
+      "countrycode": "CN",
+      "asn": "AS23650 AS Number for CHINANET jiangsu province backbone",
+      "region": "Asia",
+      "ip": "222.186.15.62",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "222.186.15.62",
+    "destination": "osSensor",
+    "status": "ongoing"
+  },
+  {
+    "time": "2020-09-11 19:42:14",
+    "timems": 1599853334254,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CJDfGwAT7fVxNJd01",
+    "ddid": 1,
+    "port": 22,
+    "sourcePort": 17815,
+    "destinationPort": 22,
+    "direction": "in",
+    "applicationprotocol": "SSH",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 113.727,
+      "latitude": 34.772,
+      "country": "China",
+      "countrycode": "CN",
+      "asn": "AS23650 AS Number for CHINANET jiangsu province backbone",
+      "region": "Asia",
+      "ip": "222.186.15.62",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "222.186.15.62",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:41:23",
+    "timems": 1599853283240,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CQ4hu824CoXul9KV01",
+    "status": "failed",
+    "ddid": 1,
+    "port": 443,
+    "sourcePort": 28228,
+    "destinationPort": 443,
+    "direction": "in",
+    "applicationprotocol": "Unknown",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 9.491,
+      "latitude": 51.299,
+      "country": "Germany",
+      "countrycode": "DE",
+      "asn": "AS47447 23media GmbH",
+      "region": "Europe",
+      "ip": "62.113.227.26",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "62.113.227.26",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:41:03",
+    "timems": 1599853263230,
+    "action": "connection",
+    "eventType": "connection",
+    "uid": "CWYWpz2KmHrsjNGO01",
+    "status": "failed",
+    "ddid": 1,
+    "port": 443,
+    "sourcePort": 54518,
+    "destinationPort": 443,
+    "direction": "in",
+    "applicationprotocol": "Unknown",
+    "protocol": "TCP",
+    "sourceDevice": {
+      "longitude": 9.491,
+      "latitude": 51.299,
+      "country": "Germany",
+      "countrycode": "DE",
+      "asn": "AS47447 23media GmbH",
+      "region": "Europe",
+      "ip": "62.113.227.26",
+      "ippopularity": "0",
+      "connectionippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "62.113.227.26",
+    "destination": "osSensor"
+  },
+  {
+    "time": "2020-09-11 19:40:48",
+    "timems": 1599853248000,
+    "action": "notice",
+    "eventType": "notice",
+    "nid": 35987,
+    "uid": "CMEAtvytG16vv0X01",
+    "direction": "in",
+    "mlid": 328,
+    "type": "SSH::Undetermined_Encryption_Step",
+    "msg": "Unable to determine login failure or success from encrypted traffic.",
+    "destinationPort": 22,
+    "details": "2073 bytes delivered in connection and 0 bytes undelivered.",
+    "sourceDevice": {
+      "longitude": -98.493,
+      "latitude": 29.422,
+      "city": "San Antonio",
+      "country": "United States",
+      "countrycode": "US",
+      "asn": "AS8075 MICROSOFT-CORP-MSN-AS-BLOCK",
+      "region": "North America",
+      "ip": "13.85.152.27",
+      "ippopularity": "0"
+    },
+    "destinationDevice": {
+      "id": 1,
+      "did": 1,
+      "macaddress": "00:00:00:00:00:00",
+      "ip": "10.0.0.1",
+      "ips": [
+        {
+          "ip": "10.0.0.1",
+          "timems": 1599850800000,
+          "time": "2020-09-11 19:00:00",
+          "sid": 1
+        }
+      ],
+      "sid": 1,
+      "hostname": "ip-10-0-0-1",
+      "time": "1591729370000",
+      "devicelabel": "osSensor",
+      "typename": "server",
+      "typelabel": "Server"
+    },
+    "source": "13.85.152.27",
+    "destination": "osSensor"
+  }
+]

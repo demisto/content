@@ -1,8 +1,8 @@
 {
     "kind": "edit",
     "layout": {
-        "id": "Case layout",
-        "name": "Case layout",
+        "id": "Case",
+        "name": "Case",
         "version": -1,
         "kind": "edit",
         "typeId": "Case",
@@ -67,5 +67,6 @@
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
     "typeId": "Case",
-    "version": -1
+    "version": -1,
+    "description": ""
 }

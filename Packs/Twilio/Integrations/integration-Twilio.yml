@@ -69,7 +69,7 @@ script:
         // This is the call made when pressing the integration test button.
         case 'test-module':
             // from Twilio instructions, in order to ger the list of accounts, the below curl command should be used.
-            // using this as a method to test tht the credentails and connectivity are good, without using sms buckets
+            // using this as a method to test that the credentials and connectivity are good, without using sms buckets
             // curl -G https://api.twilio.com/2010-04-01/Accounts -u '[YOUR ACCOUNT SID]:[YOUR AUTH TOKEN]'
             sendRequest('GET', params.server.replace(/[\/]+$/, ''), "");
             return 'ok';

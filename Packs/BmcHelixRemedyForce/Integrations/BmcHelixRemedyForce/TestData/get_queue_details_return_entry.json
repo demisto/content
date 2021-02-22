@@ -39,5 +39,7 @@
       }
     ]
   },
-  "IndicatorTimeline": []
+  "IndicatorTimeline": [],
+  "IgnoreAutoExtract": false,
+  "Note": false
 }

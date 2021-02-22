@@ -718,7 +718,7 @@ Retrieve Illusive's forensics analyzers on a certain event
 |---|---|
 | Summary | An attempt to browse to the deceptive URL hr (172.27.102.6) was detected from 172.27.102.12 |
 | Event Source And Destination | Event ID: 2<br/>Event time: 2020-06-29T09:16:12.673Z<br/>Event originated from 172.27.102.12<br/>Event targeted hr (172.27.102.6)<br/> |
-| Web | A GET request was made to the url http://172.27.102.6/ |
+| Web | A GET request was made to the url `http://172.27.102.6/` |
 | Forensics Failure Reason | No resolving for host 172.27.102.12 |
 
 

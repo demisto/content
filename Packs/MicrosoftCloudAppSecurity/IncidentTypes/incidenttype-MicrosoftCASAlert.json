@@ -1,0 +1,23 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#fe5253",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Microsoft CAS Alert",
+	"fromVersion": "5.0.0",
+	"locked": false,
+	"name": "Microsoft CAS Alert",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 1,
+	"sortValues": null,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

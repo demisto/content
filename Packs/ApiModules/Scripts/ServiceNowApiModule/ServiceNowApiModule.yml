@@ -1,0 +1,16 @@
+commonfields:
+  id: ServiceNowApiModule
+  version: -1
+name: ServiceNowApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common ServiceNow code that will be appended to each ServiceNow integration when it is deployed to automatically enable OAuth2 authentication.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.8.6.13358
+fromversion: 5.0.0

@@ -7,11 +7,20 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: Username/Client ID
   name: credentials
   required: false
   type: 9
-- defaultvalue: incident
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?)
+    for more information.
+  display: Use OAuth Login
+  hidden: false
+  name: use_oauth
+  required: false
+  type: 8
+- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
+    sc_task or sc_req_item.'
+  defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   required: false
@@ -62,8 +71,9 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: "Choose the direction to mirror the incident: Incoming (from
-    ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow)."
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow
+    to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to
+    XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -75,24 +85,22 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a comment in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
   defaultvalue: comments
   display: Comment Entry Tag
   hidden: false
   name: comment_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a work note in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a work note in
+    ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag
   hidden: false
   name: work_notes_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as
-    a file in ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag
   hidden: false
@@ -171,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       isArray: false
       name: custom_fields
       required: false
@@ -181,6 +189,14 @@ script:
         context.
       isArray: true
       name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -474,17 +490,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -495,12 +500,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -768,6 +767,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1039,17 +1046,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -1060,12 +1056,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation.
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -1327,6 +1317,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1378,6 +1376,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - default: false
@@ -1402,7 +1401,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1669,7 +1668,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1727,6 +1726,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1789,6 +1796,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2335,7 +2350,29 @@ script:
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.5.10845
+  - arguments:
+    - default: false
+      description: The username to use for login.
+      isArray: false
+      name: username
+      required: true
+      secret: true
+    - default: false
+      description: The password to use for login.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    deprecated: false
+    description: This function should be used once before running any command when
+      using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-login
+  - deprecated: false
+    description: Test the instance configuration when using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-test
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
@@ -2348,5 +2385,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- servicenow_test_v2
+- ServiceNow_OAuth_Test
 fromversion: 5.0.0

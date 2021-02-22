@@ -1,0 +1,26 @@
+args:
+- default: true
+  description: The IPv6 to vriefy.
+  isArray: true
+  name: input
+  required: false
+  secret: false
+comment: Verify that the address is a valid IPv6 address.
+commonfields:
+  id: VerifyIPv6Indicator
+  version: -1
+enabled: true
+name: VerifyIPv6Indicator
+script: '-'
+subtype: python3
+system: false
+tags:
+- indicator-format
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.12176
+runas: DBotWeakRole
+runonce: false
+tests:
+- No test
+fromversion: 5.5.0

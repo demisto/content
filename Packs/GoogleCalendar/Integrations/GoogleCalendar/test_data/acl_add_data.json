@@ -1,0 +1,52 @@
+{
+  "args": {
+    "scope_type": "user",
+    "role": "reader",
+    "scope_value": "demoaccount@test.com",
+    "calendar_id": "abcd@test.com",
+    "user_id": "user@test.com",
+    "send_notifications": "true"
+  },
+  "wrong_args": {
+    "scope_type": "user",
+    "role": "reader",
+    "scope_value": "demoaccount@test.com",
+    "calendar_id": "abcd@test.com",
+    "user_id": "user@test.com",
+    "send_notifications": "xyz"
+  },
+  "Contents": {
+        "etag": "\"00001598612814000000\"",
+        "id": "user:demoaccount@test.com",
+        "kind": "calendar#aclRule",
+        "role": "writer",
+        "scope": {
+            "type": "user",
+            "value": "demoaccount@test.com"
+        }
+    },
+
+    "Outputs": {
+            "calendarId": "abcd@test.com",
+            "etag": "\"00001598612814000000\"",
+            "id": "user:demoaccount@test.com",
+            "kind": "calendar#aclRule",
+            "role": "writer",
+            "scopeType": "user",
+            "scopeValue": "demoaccount@test.com",
+            "userId": "user@test.com"
+        },
+    "EntryContext": {
+        "GoogleCalendar.Acl(val.id == obj.id && val.calendarId == obj.calendarId && val.userId == obj.userId)": {
+            "calendarId": "abcd@test.com",
+            "etag": "\"00001598612814000000\"",
+            "id": "user:demoaccount@test.com",
+            "kind": "calendar#aclRule",
+            "role": "writer",
+            "scopeType": "user",
+            "scopeValue": "demoaccount@test.com"
+        }
+    },
+    "HumanReadable": "### Giving an access control rule for calendar id \"abcd@test.com\".\n|Id|Role|Scope Type|Scope Value|\n|---|---|---|---|\n| user:demoaccount@test.com | writer | user | demoaccount@test.com |\n",
+    "Type": 1
+}

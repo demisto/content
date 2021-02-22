@@ -1,12 +1,12 @@
 import pytest
-from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id,\
+from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id, \
     devices_get_last_updated, app_classification_get, file_reputation, fetch_incidents, report_get
-from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID,\
-    RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET,\
-    RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_GET_LAST_UPDATED_DEVICES, RESPONSE_REPORT_GET_ITUNES_ID,\
+from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID, \
+    RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET, \
+    RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_GET_LAST_UPDATED_DEVICES, RESPONSE_REPORT_GET_ITUNES_ID, \
     RESPONSE_MULTIPLE_EVENTS_FETCH
-from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_USERS, EXPECTED_USER_GET_BY_ID,\
-    EXPECTED_SEARCH_DEVICES, EXPECTED_DEVICE_GET_BY_ID, EXPECTED_GET_LAST_UPDATED_DEVICES,\
+from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_USERS, EXPECTED_USER_GET_BY_ID, \
+    EXPECTED_SEARCH_DEVICES, EXPECTED_DEVICE_GET_BY_ID, EXPECTED_GET_LAST_UPDATED_DEVICES, \
     EXPECTED_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_REPORT_GET_ITUNESID
 
 
@@ -60,10 +60,10 @@ def test_file_reputation(mocker):
     """
     client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
     mocker.patch.object(Client, '_http_request', return_value=RESPONSE_APP_CLASSIFICATION_GET)
-    command_results = file_reputation(client,
-                                      args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
+    command_results_list = file_reputation(client,
+                                           args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
 
-    assert command_results.indicators[0].dbot_score.score == 1
+    assert command_results_list[0].indicator.dbot_score.score == 1
 
 
 def test_file_reputation_404(mocker):
@@ -85,9 +85,9 @@ def test_file_reputation_404(mocker):
 
     mocker.patch('Zimperium.Client.app_classification_get_request', side_effect=error_404_mock)
 
-    command_results = file_reputation(client,
-                                      args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
-    assert command_results.indicators[0].dbot_score.score == 0
+    command_results_list = file_reputation(client,
+                                           args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
+    assert command_results_list[0].indicator.dbot_score.score == 0
 
 
 def test_fetch_incidents(mocker):

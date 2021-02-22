@@ -3,6 +3,13 @@ commonfields:
   id: DomainTools Iris
   version: -1
 configuration:
+- display: DomainTools API URL
+  name: base_url
+  required: true
+  defaultvalue: http://api.domaintools.com
+  additionalinfo: Change to https://api.domaintools.com in order to use DomainTool's
+    https endpoint.
+  type: 0
 - display: API Username
   name: username
   required: true
@@ -29,7 +36,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers and so on.
+description: A threat intelligence and investigation platform for domain names, IP
+  addresses, email addresses, name servers and so on.
 display: DomainTools Iris
 name: DomainTools Iris
 script:
@@ -1014,19 +1022,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fully-qualified host name of the name server. For example, ns1.domaintools.net.
+      description: The fully-qualified host name of the name server. For example,
+        ns1.domaintools.net.
       isArray: false
       name: nameserver_host
       required: false
       secret: false
     - default: false
-      description: The fully-qualified host name of the mail server. For example, mx.domaintools.net.
+      description: The fully-qualified host name of the mail server. For example,
+        mx.domaintools.net.
       isArray: false
       name: mailserver_host
       required: false
       secret: false
     deprecated: false
-    description: Returns data on domain IP addresses, Email Addresses, Name Server IP addresses, and so on.
+    description: Returns data on domain IP addresses, Email Addresses, Name Server
+      IP addresses, and so on.
     execution: false
     name: domaintoolsiris-pivot
     outputs:
@@ -1288,7 +1299,7 @@ script:
     - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.12176
   isfetch: false
   longRunning: false
   longRunningPort: false

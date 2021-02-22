@@ -1,0 +1,20 @@
+{
+  "isBase64": false,
+  "createdBy": "GUI",
+  "accessibleOnlyThroughTheHttpProtocol": false,
+  "_kind": "tm:asm:policies:cookies:cookiestate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/cookies/cookie-md5?ver=15.1.0",
+  "securedOverHttpsConnection": false,
+  "id": "cookie-md5",
+  "maskValueInLogs": false,
+  "name": "new_cookie",
+  "insertSameSiteAttribute": "none",
+  "lastUpdateMicros": 1599576956000000.0,
+  "enforcementType": "allow",
+  "attackSignaturesCheck": true,
+  "signatureOverrides": [
+    
+  ],
+  "performStaging": false,
+  "type": "explicit"
+}

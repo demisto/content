@@ -1,0 +1,445 @@
+id: IP Enrichment - XM Cyber
+version: -1
+fromversion: 6.0.0
+name: IP Enrichment - XM Cyber
+description: |-
+  Enrich IP addresses using XM Cyber integration.
+  - Resolve IP address to entity
+  - Get entity information for IP addresses regarding impact on critical assets and complexity of compromise
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    type: start
+    task:
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: Start
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    type: title
+    task:
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b964564b-4625-4707-850c-ee12304fddaa
+    type: title
+    task:
+      id: b964564b-4625-4707-850c-ee12304fddaa
+      version: -1
+      name: Enrich IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: Enrich IP addreses
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f52523d0-362f-4f1e-8c16-443889e17ff1
+    type: condition
+    task:
+      id: f52523d0-362f-4f1e-8c16-443889e17ff1
+      version: -1
+      name: Are there IP addresses?
+      description: Checks whether the playbook's input contains at least one IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 61138400-4564-43a0-8ab2-6bbf2ad98c02
+    type: regular
+    task:
+      id: 61138400-4564-43a0-8ab2-6bbf2ad98c02
+      version: -1
+      name: Enrich IP
+      description: Return data on Entity by IP from XM Cyber
+      script: 'XMCyber|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    fieldMapping:
+    - incidentfield: Entity ID
+      output:
+        simple: ${XMCyber.Entity.id}
+    - incidentfield: Entity Name
+      output:
+        simple: ${XMCyber.Entity.name}
+    - incidentfield: Is Entity Critical Asset
+      output:
+        simple: ${XMCyber.Entity.isAsset}
+    - incidentfield: Affected Entities
+      output:
+        simple: ${XMCyber.Entity.affectedEntities}
+    - incidentfield: Average Complexity
+      output:
+        simple: ${XMCyber.Entity.averageComplexity}
+    - incidentfield: Critical Assets At Risk
+      output:
+        simple: ${XMCyber.Entity.criticalAssetsAtRisk}
+    - incidentfield: Average Complexity Level
+      output:
+        simple: ${XMCyber.Entity.averageComplexityLevel}
+    - incidentfield: Entity Type
+      output:
+        simple: ${XMCyber.Entity.type}
+    - incidentfield: Entity Report
+      output:
+        simple: ${XMCyber.Entity.report}
+    - incidentfield: Compromising Techniques
+      output:
+        simple: ${XMCyber.Entity.compromisingTechniques}
+  "41":
+    id: "41"
+    taskid: 2e94e0b9-818d-470c-8fe8-9197ef6000b7
+    type: title
+    task:
+      id: 2e94e0b9-818d-470c-8fe8-9197ef6000b7
+      version: -1
+      name: No IP Address
+      description: No IP address
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 86d460d3-df69-4954-899a-ef9632cf3e75
+    type: condition
+    task:
+      id: 86d460d3-df69-4954-899a-ef9632cf3e75
+      version: -1
+      name: Is XM Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "28"
+    scriptarguments:
+      brandname:
+        simple: XMCyber
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 8b213972-c934-4ab7-80e4-fafba8126da6
+    type: title
+    task:
+      id: 8b213972-c934-4ab7-80e4-fafba8126da6
+      version: -1
+      name: XM Cyber Unavailable
+      type: title
+      description: XM Cyber unavailable
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 105e1f81-3df0-40e6-8119-a97dbddffbf4
+    type: regular
+    task:
+      id: 105e1f81-3df0-40e6-8119-a97dbddffbf4
+      version: -1
+      name: Get Critical Assets At Risk
+      description: List critical assets at risk from an entity and the complexity
+        of the attack
+      script: XMCyber|||xmcyber-affected-critical-assets-list
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      entityId:
+        simple: ${XMCyber.Entity.id}
+      timeId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    fieldMapping:
+    - incidentfield: Critical Assets At Risk List
+      output:
+        simple: ${XMCyber.Entity.criticalAssetsAtRiskList}
+  "47":
+    id: "47"
+    taskid: 775c1092-07dc-4139-8502-be92d8c8e6d9
+    type: regular
+    task:
+      id: 775c1092-07dc-4139-8502-be92d8c8e6d9
+      version: -1
+      name: Get Entities At Risk
+      description: List all entities at risk from an entity and the complexity of
+        the attack
+      script: XMCyber|||xmcyber-affected-entities-list
+      type: regular
+      iscommand: true
+      brand: XMCyber
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      entityId:
+        simple: ${XMCyber.Entity.id}
+      timeId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    fieldMapping:
+    - incidentfield: Affected Entities List
+      output:
+        simple: ${XMCyber.Entity.entitiesAtRiskList}
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_41_#default#": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP address to enrich.
+  playbookInputQuery: null
+outputs:
+- contextPath: IP
+  description: The IP objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type and Vendor
+  type: unknown
+- contextPath: Endpoint
+  description: The endpoint's object.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich.
+  type: string
+- contextPath: Endpoint.IP
+  description: A list of endpoint IP addresses.
+  type: string
+- contextPath: Endpoint.OS
+  description: OS of the device corresponding to the IP
+  type: string
+- contextPath: XMCyber.Entity.isAsset
+  description: Is Entity a Critical Asset
+  type: boolean
+- contextPath: XMCyber.Entity.affectedEntities
+  description: Number of unique entities at risk from this entity
+  type: number
+- contextPath: XMCyber.Entity.averageComplexity
+  description: Average complexity to compromise this entity
+  type: number
+- contextPath: XMCyber.Entity.criticalAssetsAtRisk
+  description: Number of unique critical assets at risk from this entity
+  type: number
+- contextPath: XMCyber.Entity.averageComplexityLevel
+  description: Level of the average complexity to compromise this entity
+  type: string
+- contextPath: XMCyber.Entity.type
+  description: Entity Type
+  type: string
+- contextPath: XMCyber.Entity.entitiesAtRiskList
+  description: Entities at risk from this entity
+  type: unknown
+- contextPath: XMCyber.Entity.criticalAssetsAtRiskList
+  description: Critical assets at risk from this entity
+  type: unknown
+tests:
+ -  No tests

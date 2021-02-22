@@ -1,0 +1,448 @@
+id: O365 - EWS - Extension - Test
+version: -1
+name: O365 - EWS - Extension - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b6180fa-0803-46d9-8c92-b6eda35e7026
+    type: start
+    task:
+      id: 4b6180fa-0803-46d9-8c92-b6eda35e7026
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e7787aa8-f58c-4e81-8704-024595e4691b
+    type: regular
+    task:
+      id: e7787aa8-f58c-4e81-8704-024595e4691b
+      version: -1
+      name: Add junk rule
+      description: Set junk rules in mailbox.
+      script: '|||ews-junk-rules-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_blocked_senders_and_domains:
+        complex:
+          root: inputs.add_conf
+      add_trusted_senders_and_domains: {}
+      contacts_trusted: {}
+      enabled: {}
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      remove_blocked_senders_and_domains: {}
+      remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      trusted_lists_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 962c28d5-9996-4318-8322-474093a9acc6
+    type: regular
+    task:
+      id: 962c28d5-9996-4318-8322-474093a9acc6
+      version: -1
+      name: Get junk rule in mailbox
+      description: Get junk rules in mailbox.
+      script: '|||ews-junk-rules-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bb30e708-e82b-4d32-88fc-1e1b76d4f24e
+    type: condition
+    task:
+      id: bb30e708-e82b-4d32-88fc-1e1b76d4f24e
+      version: -1
+      name: Validate junk rule addition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EWS.Rule.Junk
+                accessor: BlockedSendersAndDomains
+            iscontext: true
+          right:
+            value:
+              simple: test@gmail.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 20340760-f2a2-4d54-8938-9d22182b49b6
+    type: regular
+    task:
+      id: 20340760-f2a2-4d54-8938-9d22182b49b6
+      version: -1
+      name: Get message trace
+      description: |
+        You can use this cmdlet to search message data for the last 10 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned.
+        If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
+        This cmdlet returns a maximum of 1000000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using smaller start_date and end_date intervals.
+      script: '|||ews-message-trace-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      end_date: {}
+      from_ip: {}
+      message_id: {}
+      message_trace_id: {}
+      page: {}
+      page_size: {}
+      recipient_address: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      sender_address: {}
+      start_date: {}
+      status: {}
+      to_ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 37a5a5d6-e702-47cc-89f1-c0b91dd142b0
+    type: condition
+    task:
+      id: 37a5a5d6-e702-47cc-89f1-c0b91dd142b0
+      version: -1
+      name: 'Validate message trace '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EWS.MessageTrace
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e1d58fdf-0542-4d7c-8f5c-f1ca4b29cbad
+    type: title
+    task:
+      id: e1d58fdf-0542-4d7c-8f5c-f1ca4b29cbad
+      version: -1
+      name: Finished successfully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b92b88d9-c906-4965-8b79-b4c31bf42030
+    type: regular
+    task:
+      id: b92b88d9-c906-4965-8b79-b4c31bf42030
+      version: -1
+      name: Remove junk rule
+      description: Set junk rules in mailbox.
+      script: '|||ews-junk-rules-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      add_blocked_senders_and_domains: {}
+      add_trusted_senders_and_domains: {}
+      contacts_trusted: {}
+      enabled: {}
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      remove_blocked_senders_and_domains:
+        complex:
+          root: inputs.add_conf
+      remove_trusted_senders_and_domains: {}
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+      trusted_lists_only: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c161ed53-fb6a-4e29-88e4-42f360158189
+    type: regular
+    task:
+      id: c161ed53-fb6a-4e29-88e4-42f360158189
+      version: -1
+      name: Get junk rule in mailbox
+      description: Get junk rules in mailbox.
+      script: '|||ews-junk-rules-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      mailbox:
+        complex:
+          root: inputs.mailbox
+      retry-count:
+        simple: "4"
+      retry-interval:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: fd175ed1-4c2c-40ba-8f9f-2636b47c3e15
+    type: condition
+    task:
+      id: fd175ed1-4c2c-40ba-8f9f-2636b47c3e15
+      version: -1
+      name: Validate junk rule removal
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: EWS.Rule.Junk
+                accessor: BlockedSendersAndDomains
+            iscontext: true
+          right:
+            value:
+              simple: test@gmail.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 12c77f5a-85a7-46a0-86f2-cfaa88819434
+    type: regular
+    task:
+      id: 12c77f5a-85a7-46a0-86f2-cfaa88819434
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: mailbox
+  value:
+    simple: avishai@demistodev.onmicrosoft.com
+  required: true
+  description: Mail box for testing
+  playbookInputQuery: null
+- key: add_conf
+  value:
+    simple: test@gmail.com
+  required: true
+  description: Configuration to add when verifying integration.
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.0.0

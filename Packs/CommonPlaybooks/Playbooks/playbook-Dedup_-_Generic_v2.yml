@@ -1,8 +1,10 @@
 id: Dedup - Generic v2
 version: -1
 name: Dedup - Generic v2
-description: This playbook identifies duplicate incidents using one of the supported
-  methods.
+hidden: true 
+description: Deprecated. Use the Dedup Generic v3 playbook instead.
+ This playbook identifies duplicate incidents using one of the supported
+ methods.
 starttaskid: "0"
 tasks:
   "0":

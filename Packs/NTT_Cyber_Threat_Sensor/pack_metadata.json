@@ -1,8 +1,8 @@
 {
     "name": "NTT Cyber Threat Sensor",
     "description": "NTT Cyber Threat Sensor integration",
-    "support": "partner",
-    "currentVersion": "1.0.0",
+    "support": "community",
+    "currentVersion": "1.0.2",
     "author": "NTT Ltd.",
     "url": "https://www.global.ntt",
     "email": "servicedesk@global.ntt",
@@ -11,8 +11,8 @@
         "Network Security"
     ],
     "tags": [
-        "pcap",
-        "alert"
+        "Pcap",
+        "Alerts"
     ],
     "useCases": [],
     "keywords": [],

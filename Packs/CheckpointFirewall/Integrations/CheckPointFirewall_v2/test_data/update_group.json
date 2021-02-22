@@ -1,0 +1,37 @@
+{
+  "uid": "1234",
+  "name": "group_test",
+  "type": "group",
+  "domain": {
+    "uid": "9876",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "members": [
+    
+  ],
+  "groups": [
+    
+  ],
+  "comments": "",
+  "color": "black",
+  "icon": "General/group",
+  "tags": [
+    
+  ],
+  "meta-info": {
+    "lock": "locked by current session",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1598441662564,
+      "iso-8601": "2020-08-26T14:34+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1595941065537,
+      "iso-8601": "2020-07-28T15:57+0300"
+    },
+    "creator": "admin"
+  },
+  "read-only": false
+}

@@ -1,0 +1,9 @@
+{
+  "_kind": "tm:asm:policies:host-names:host-namestate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/host-names/hostname-md5?ver=15.1.0",
+  "createdBy": "GUI",
+  "name": "example.co.il",
+  "includeSubdomains": true,
+  "id": "hostname-md5",
+  "lastUpdateMicros": 1599577916000000.0
+}

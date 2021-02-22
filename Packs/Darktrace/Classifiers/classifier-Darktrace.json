@@ -1,0 +1,17 @@
+{
+ "defaultIncidentType": "Darktrace Model Breach",
+ "description": "Classifies all incidents fetched by the Darktrace integration as \"Darktrace Model Breach\" type incidents for purposes of using the Integration Playbooks.",
+ "feed": false,
+ "id": "b62e079d-a83a-4ef7-8e46-ce59037a310b",
+ "keyTypeMap": {
+
+ },
+ "name": "Darktrace Incident Classifier",
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

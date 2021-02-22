@@ -1,0 +1,43 @@
+{
+  "uid": "1234",
+  "name": "application1",
+  "type": "application-site",
+  "domain": {
+    "uid": "9876",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "application-id": 0,
+  "primary-category": "Test Category",
+  "description": "",
+  "risk": "Unknown",
+  "user-defined": true,
+  "url-list": [
+    "qmasters.co"
+  ],
+  "urls-defined-as-regular-expression": false,
+  "groups": [
+    
+  ],
+  "comments": "",
+  "color": "black",
+  "icon": "Objects/application",
+  "tags": [
+    
+  ],
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1599481624604,
+      "iso-8601": "2020-09-07T15:27+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1599481624604,
+      "iso-8601": "2020-09-07T15:27+0300"
+    },
+    "creator": "admin"
+  },
+  "read-only": true
+}

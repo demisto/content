@@ -1,0 +1,189 @@
+id: Hatching Triage - Detonate File
+version: -1
+fromversion: 5.5.0
+name: Hatching Triage - Detonate File
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06df8a87-86d5-4873-85fe-62bb3ba465f1
+    type: start
+    task:
+      id: 06df8a87-86d5-4873-85fe-62bb3ba465f1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8ad88ff1-e08b-49e8-8a49-207fcdbb8d34
+    type: regular
+    task:
+      id: 8ad88ff1-e08b-49e8-8a49-207fcdbb8d34
+      version: -1
+      name: Submit sample
+      description: Submits a file or url for analysis
+      script: Hatching Triage|||triage-submit-sample
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: https://google.com
+      interactive:
+        simple: "false"
+      kind:
+        simple: url
+      profiles: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8b5df02b-3272-40b7-85a3-aba7d66b9a1a
+    type: regular
+    task:
+      id: 8b5df02b-3272-40b7-85a3-aba7d66b9a1a
+      version: -1
+      name: Query samples
+      script: Hatching Triage|||triage-query-samples
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    scriptarguments:
+      subset:
+        simple: owned
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: af63e6b7-43e8-4232-8499-082469950698
+    type: regular
+    task:
+      id: af63e6b7-43e8-4232-8499-082469950698
+      version: -1
+      name: Get sample summary
+      description: Gets a summary report of the sample id provided
+      script: Hatching Triage|||triage-get-sample-summary
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    scriptarguments:
+      sample_id:
+        simple: ${Triage.submissions.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6c7ea75d-b8ce-431c-8d4f-51ebab96db6b
+    type: playbook
+    task:
+      id: 6c7ea75d-b8ce-431c-8d4f-51ebab96db6b
+      version: -1
+      name: Polling - Get sample summary
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Triage.submissions.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: sample_id
+      PollingCommandName:
+        simple: triage-get-sample-summary
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Triage.sample.summaries(val.status !== 'reported').status
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

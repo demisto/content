@@ -50,12 +50,17 @@ def patched_requests_mocker(requests_mock):
 
 def test_panoram_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/api/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
     r = get_pan_os_version()
     assert r == '9.0.6'
 
 
 def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/api/'
     r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
     assert r['response']['@status'] == 'success'
 

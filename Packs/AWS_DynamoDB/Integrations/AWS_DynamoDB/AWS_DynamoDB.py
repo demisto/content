@@ -93,9 +93,9 @@ def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=N
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
+        if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client(
                 'sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)

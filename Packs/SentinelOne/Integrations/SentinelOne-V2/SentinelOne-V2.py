@@ -40,16 +40,16 @@ def http_request(method, url_suffix, params={}, data=None):
         try:
             errors = ''
             for error in res.json().get('errors'):
-                errors = '\n' + errors + error.get('detail')
-            raise ValueError(
+                errors += f"\n{error.get('detail', '')}"
+            raise Exception(
                 f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
                 f'Error details: [{errors}]'
             )
-        except Exception:
-            raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
+        except Exception as error:
+            raise error
     try:
         return res.json()
-    except ValueError:
+    except Exception:
         return None
 
 
@@ -198,7 +198,7 @@ def get_groups_command():
     contents = []
     headers = ['ID', 'Name', 'Type', 'Creator', 'Creator ID', 'Created at', 'Rank']
 
-    group_type = demisto.args().get('type')
+    group_type = demisto.args().get('group_type')
     group_id = demisto.args().get('id')
     group_ids = argToList(demisto.args().get('group_ids', []))
     is_default = demisto.args().get('is_default')
@@ -371,7 +371,7 @@ def get_threats_command():
     created_until = demisto.args().get('created_until')
     created_from = demisto.args().get('created_from')
     resolved = bool(strtobool(demisto.args().get('resolved', 'false')))
-    display_name = demisto.args().get('display_name_like')
+    display_name = demisto.args().get('display_name')
     query = demisto.args().get('query', '')
     threat_ids = argToList(demisto.args().get('threat_ids', []))
     limit = int(demisto.args().get('limit', 20))

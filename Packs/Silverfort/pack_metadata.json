@@ -2,9 +2,9 @@
     "name": "Silverfort",
     "description": "Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don\u2019t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more. Use Silverfort integration to get & update Silverfort risk severity. This integration was integrated and tested with Silverfort version 2.12.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Silverfort",
-    "url": "Silverfort.com",
+    "url": "https://support.silverfort.com/",
     "email": "support@silverfort.com",
     "created": "2020-03-17T16:09:03Z",
     "categories": [
@@ -17,5 +17,6 @@
     ],
     "githubUser": [
         "liavSilverfort"
-    ]
+    ],
+    "certification": "certified"
 }
