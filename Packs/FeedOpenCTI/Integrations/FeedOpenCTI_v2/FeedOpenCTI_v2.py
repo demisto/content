@@ -708,7 +708,7 @@ def main():
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.
             and if not he immediately sends an error'''
             fetch_indicators_command(client, indicator_types, max_fetch, is_test=True)
-            return_results(CommandResults(readable_output='ok'))
+            return_results('ok')
 
         elif command == "opencti-get-indicators":
             return_results(get_indicators_command(client, args))
