@@ -560,7 +560,7 @@ tasks:
       id: 1692898c-26b1-4e71-8d6e-b3502d11ffd3
       version: -1
       name: 'Are Azure integrations enabled? '
-      descruption: Checks if the supported integrations enabled
+      description: Checks if the supported integrations enabled
       type: condition
       iscommand: false
       brand: ""

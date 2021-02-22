@@ -1,6 +1,6 @@
-id: SolarStorm and SUNBURST Hunting and Response Playbook1
+id: SolarStorm and SUNBURST Hunting and Response Playbook
 version: -1
-name: SolarStorm and SUNBURST Hunting and Response Playbook1
+name: SolarStorm and SUNBURST Hunting and Response Playbook
 description: |-
   This playbook does the following:
   Collect indicators to aid in your threat hunting process
@@ -1941,7 +1941,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "76"
+      - "19"
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -2016,34 +2016,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "76":
-    id: "76"
-    taskid: 06940fb9-0ee6-42b6-8418-b6630e0deb11
-    type: title
-    task:
-      id: 06940fb9-0ee6-42b6-8418-b6630e0deb11
-      version: -1
-      name: 'Hunt SolarStorm Behavior '
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "77"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "77":
     id: "77"
     taskid: d885d8be-db43-4a3d-868a-9ad824ab7fc4
@@ -2091,8 +2063,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1250
+          "x": -890,
+          "y": 910
         }
       }
     note: false
@@ -2137,12 +2109,12 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: 53eec36b-6401-4d12-8c17-548fa2f1c10a
+    taskid: 72cb345d-ece5-4725-8ebe-5e68c9cf8919
     type: title
     task:
-      id: 53eec36b-6401-4d12-8c17-548fa2f1c10a
+      id: 72cb345d-ece5-4725-8ebe-5e68c9cf8919
       version: -1
-      name: Azure Hunting
+      name: Hunt SolarStorm Activity
       type: title
       iscommand: false
       brand: ""
@@ -2150,6 +2122,8 @@ tasks:
     nexttasks:
       '#none#':
       - "78"
+      - "91"
+      - "77"
     separatecontext: false
     view: |-
       {
@@ -2496,6 +2470,35 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "91":
+    id: "91"
+    taskid: 30f329a4-8e66-4272-80b2-12a4bba9a6dd
+    type: playbook
+    task:
+      id: 30f329a4-8e66-4272-80b2-12a4bba9a6dd
+      version: -1
+      name: SolarStorm Activity Behavior Hunting playbook
+      playbookName: SolarStorm Activity Behavior Hunting playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -2509,8 +2512,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4455,
-        "width": 3340,
-        "x": -20,
+        "width": 4210,
+        "x": -890,
         "y": -530
       }
     }
@@ -2597,8 +2600,7 @@ inputs:
   description: Additional known IOCs relates to SUNBURST and SolarStorm.
   playbookInputQuery:
 - key: O365_AdminRolesList
-  value:
-    simple:
+  value: {}
   required: false
   description: Comma separated Service O365 admin roles
   playbookInputQuery:
