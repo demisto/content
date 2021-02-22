@@ -384,6 +384,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Entity Found?
     nexttasks:
       '#default#':
       - "49"
@@ -421,6 +422,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: No Match Found for IP
     nexttasks:
       '#none#':
       - "24"
