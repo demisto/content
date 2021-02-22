@@ -65,6 +65,7 @@ class NetscoutClient(BaseClient):
     """
 
     OPERATOR_NAME_DICTIONARY = {
+        # <parm name>: <argument operator name>
         'importance': 'importance_operator',
         'start_time': 'start_time_operator',
         'stop_time': 'stop_time_operator',
@@ -74,9 +75,12 @@ class NetscoutClient(BaseClient):
         'routers': 'router'
     }
 
-    def __init__(self, base_url, verify, headers, proxy, per_page=None, alert_class=None, alert_type=None,
+    MAX_ALERTS_FOR_FIRST_FETCH = 10000
+
+    def __init__(self, base_url, verify, headers, proxy, first_fetch, max_fetch=None, alert_class=None, alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
-        self.per_page = per_page
+        self.first_fetch = first_fetch
+        self.max_fetch = max_fetch
         self.alert_class = alert_class
         self.alert_type = alert_type
         self.classification = classification
@@ -126,7 +130,7 @@ class NetscoutClient(BaseClient):
             {'ip_version': 4}
 
         Returns:
-            (dict) Netscout relationships object
+            (dict): Netscout relationships object
         """
         relationships = {}
         for key, val in kwargs.items():
@@ -153,7 +157,7 @@ class NetscoutClient(BaseClient):
             kwargs (dict): Dict containing key values filter parameters. for example: {'importance': 1}
 
         Returns:
-            (str) Netscout data attribute filter string. For example:
+            (str): Netscout data attribute filter string. For example:
             /data/attributes/importance>1 AND /data/attributes/ongoing=true
         """
 
@@ -161,23 +165,51 @@ class NetscoutClient(BaseClient):
         operator_names = self.OPERATOR_NAME_DICTIONARY.values()
         for key, val in kwargs.items():
 
+            # We don't create a filter for operator names
             if key not in operator_names and val:
                 operator = '='
+
+                # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
+                # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
                     operator = kwargs.get(operator_name, '=')
-                param_list.append(f'/data/attributes/{key + operator + val}')
 
+                param_list.append(f'/data/attributes/{key + operator + val}')
         return ' AND '.join(param_list)
 
-    def fetch_incidents(self):
-        demisto.getLastRun()
-        data_attribute_filter = self.build_data_attribute_filter(alert_class=self.alert_class,
+    def fetch_incidents(self) -> (list, str):
+        last_run = demisto.getLastRun()
+        last_start_time = last_run.get('LastFetchTime', arg_to_datetime(self.first_fetch))
+        demisto.debug(f'Last fetch time to use is: {last_start_time}')
+        incidents: list = []
+        # Only on the first fetch we set the page size 10,0000 events, rest of the times it will be set to the max_fetch
+        # defined by the user (The amount of save incidents will be max_fetch in any case)
+        page_size = self.max_fetch if last_run.get('LastFetchTime') else self.MAX_ALERTS_FOR_FIRST_FETCH
+
+        data_attribute_filter = self.build_data_attribute_filter(start_time=last_start_time,
+                                                                 start_time_operator='>', alert_class=self.alert_class,
                                                                  alert_type=self.alert_type,
                                                                  classification=self.classification,
                                                                  importance=self.importance,
                                                                  importance_operator=self.importance_operator,
                                                                  ongoing=self.ongoing)
-        return self.list_alerts(data_attribute_filter=data_attribute_filter)
+        demisto.debug(page_size=page_size, search_filter=data_attribute_filter)
+
+        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
+        all_alerts = results.get('data')
+        short_alert_list = all_alerts[-self.max_fetch:]
+        new_last_start_time = short_alert_list[0].get('attributes').get('start_time')
+
+        for alert in short_alert_list:
+            start_time = alert.get('attributes').get('start_time')
+            incidents.append({
+                'name': alert.get('alert_title'),
+                'type': 'Netscout Arbor Sightline Alert',
+                'occurred': start_time,
+                'rawJSON': json.dumps(alert)
+            })
+
+        return incidents, new_last_start_time
 
     def list_alerts(self, page: int = None, page_size: int = None, search_filter: str = None):
 
@@ -199,10 +231,12 @@ class NetscoutClient(BaseClient):
             url_suffix=f'alerts/{alert_id}/annotations'
         )
 
-    def list_mitigations(self, mitigation_id: str):
+    def list_mitigations(self, mitigation_id: str, page: int = None, page_size: int = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations'
+            url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations',
+            params=assign_params(page=page, perPage=page_size)
+
         )
 
     def create_mitigation(self, data: dict):
@@ -224,10 +258,11 @@ class NetscoutClient(BaseClient):
             url_suffix=f'routers/'
         )
 
-    def managed_object_list(self):
+    def managed_object_list(self, page: int = None, page_size: int = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'managed_objects/'
+            url_suffix=f'managed_objects/',
+            params=assign_params(page=page, perPage=page_size)
         )
 
     def tms_group_list(self):
@@ -242,11 +277,12 @@ class NetscoutClient(BaseClient):
 
 def validate_json_arg(json_str: str, arg_name: str) -> dict:
     """
-    Parse the json data. If the format is invalid an appropriate will be raised
+    Parse the json data. If the format is invalid an appropriate exception will be raised
     Args:
         json_str (str): The data to parse
         arg_name (str): The argument name where the data eas given (for exception purposes)
-    :return:
+    Return:
+        (dict): dict representing the given json
     """
     try:
         sub_object = json.loads(json_str)
@@ -255,21 +291,22 @@ def validate_json_arg(json_str: str, arg_name: str) -> dict:
         raise DemistoException(f'The value given in the {arg_name} argument is not a valid JSON format:\n{json_str}')
 
 
-def build_human_readable(data: dict):
+def build_human_readable(data: dict) -> dict:
     """
-    Removes the relationships data from the object and extracts the  dara to the root level of the object to
-    be displayed nicely in human readable.
+    Removes the relationships and subobject data from the object and extracts the data inside attributes to the root
+    level of the object to be displayed nicely in human readable.
     Args:
         data (dict): The data to create human readable from.
-
     Return:
-        The same object without the relationships data and with the attributes extracted to the root level.
+        (dict): The same object without the relationships data and with the attributes extracted to the root level.
     """
     hr = deepcopy(data)
-    for key, val in hr.get('attributes').items():
-        hr[key] = val
-    del hr['attributes']
-    del hr['relationships']
+    if attributes := hr.get('attributes'):
+        for key, val in attributes:
+            hr[key] = val
+        del hr['attributes']
+    if hr.get('relationships'):
+        del hr['relationships']
     if hr.get('subobject'):
         del hr['subobject']
     return hr
@@ -305,8 +342,15 @@ def test_module(client: NetscoutClient) -> str:
     return message
 
 
+def fetch_incidents_command(client: NetscoutClient):
+    incidents, last_start_time = client.fetch_incidents()
+    demisto.incidents(incidents)
+    demisto.setLastRun({'LastFetchTime': last_start_time})
+
+
 def list_alerts_commands(client: NetscoutClient, args: dict):
-    page_size = arg_to_number(args.get('limit'))
+    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page'))
     alert_id = args.get('alert_id')
     alert_class = args.get('alert_class')
     alert_type = args.get('alert_type')
@@ -333,7 +377,7 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
         data_relationships_filter = f'AND /data/relationships/managed_object/data/id={managed_object_id}' if \
             managed_object_id else ''
         search_filter = data_attribute_filter + data_relationships_filter
-        raw_result = client.list_alerts(page_size=page_size, search_filter=search_filter)
+        raw_result = client.list_alerts(page=page, page_size=limit, search_filter=search_filter)
 
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
@@ -359,9 +403,10 @@ def alert_annotations_list_command(client: NetscoutClient, args: dict):
 
 
 def mitigations_list_command(client: NetscoutClient, args: dict):
-    limit = args.get('limit')
+    page = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
     mitigation_id = args.get('mitigation_id')
-    raw_result = client.list_mitigations(mitigation_id)
+    raw_result = client.list_mitigations(mitigation_id, page=page, page_size=limit)
     data = raw_result.get('data')
     data = data[:limit] if isinstance(data, list) else [data]
     hr = [build_human_readable(mitigation) for mitigation in data]
@@ -381,7 +426,7 @@ def mitigations_create_command(client: NetscoutClient, args: dict):
     name = args.get('name')
     ongoing = argToBoolean(args.get('ongoing', 'false'))
     sub_type = args.get('sub_type')
-    sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')
+    sub_object = validate_json_arg(args.get('sub_object'), {})
     alert_id = args.get('alert_id')
     managed_object_id = args.get('managed_object_id')
     mitigation_template_id = args.get('mitigation_template_id')
@@ -430,7 +475,9 @@ def router_list_command(client: NetscoutClient, args: dict):
 
 
 def managed_object_list_command(client: NetscoutClient, args: dict):
-    raw_result = client.managed_object_list()
+    page = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    raw_result = client.managed_object_list(page=page, page_size=limit)
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
     hr = [build_human_readable(managed_object) for managed_object in data]
@@ -442,7 +489,7 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def tms_group_list(client: NetscoutClient, args: dict):
+def tms_group_list(client: NetscoutClient):
     raw_result = client.tms_group_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
@@ -463,7 +510,8 @@ def main() -> None:
     base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = max(arg_to_number(params.get('max_fetch', 50)), 100)
+    first_fetch = arg_to_datetime(params.get('first_fetch', '3 days'))
+    max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
     alert_class = params.get('alert_class')
     alert_type = params.get('alert_type')
     classification = params.get('classification')
@@ -483,7 +531,8 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy,
-            per_page=max_fetch,
+            first_fetch=first_fetch,
+            max_fetch=max_fetch,
             alert_class=alert_class,
             alert_type=alert_type,
             classification=classification,

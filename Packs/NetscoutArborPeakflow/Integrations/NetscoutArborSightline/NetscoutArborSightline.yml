@@ -3,134 +3,136 @@ commonfields:
   id: NetscoutArborSightline
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- additionalinfo: The API Key to use for connection
-  display: API Key
-  name: api_token
-  required: true
-  type: 4
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  display: First fetch time
-  hidden: false
-  name: first_fetch
-  required: false
-  type: 0
-- additionalinfo: Maximum number of alerts per fetch. Default is 50. Maximum is 100.
-  defaultvalue: '50'
-  display: Fetch Limit
-  name: max_fetch
-  required: false
-  type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- additionalinfo: Alert class to filter by. Only one class can be configured at a
-    time. If none was chosen, all classes will be fetched.
-  display: Alert Class
-  hidden: false
-  name: alert_class
-  options:
-  - bgp
-  - cloudsignal
-  - data
-  - dos
-  - smart
-  - system_error
-  - system_event
-  - tms
-  - traffic
-  required: false
-  type: 15
-- additionalinfo: Alert type to filter by. Only one type can be configured at a time.
-    If none was chosen, all types will be fetched.
-  display: Alert Type
-  hidden: false
-  name: alert_type
-  options:
-  - autoclassify_restart
-  - bgp_down
-  - bgp_hijack
-  - bgp_instability
-  - bgp_trap
-  - blob_thresh
-  - cloud_mit_request
-  - cloudsignal_fault
-  - collector_down
-  - collector_start
-  - config_change
-  - device_system_error
-  - dns_baseline
-  - dos
-  - dos_host_detection
-  - dos_mo_profiled
-  - dos_profiled_network
-  - dos_profiled_router
-  - fingerprint_thresh
-  - flexible_license_error
-  - flow_down
-  - flow_missing
-  - gre_down
-  - hw_failure
-  - smart_thresh
-  - interface_usage
-  - nucleus_fault
-  - routing_failover
-  - routing_interface_failover
-  - service_thresh
-  - smart_thresh
-  - snmp_down
-  - spcomm_failure
-  - tms_fault
-  - traffic_auto_mitigation
-  required: false
-  type: 15
-- additionalinfo: Alert importance to filter by. For more complex operations use the
-    'Importance Operator' parameter. If none was chosen, all importances will be fetched.
-  display: Importance
-  hidden: false
-  name: importance
-  options:
-  - Low
-  - Medium
-  - High
-  required: false
-  type: 15
-- additionalinfo: 'The operator to apply on the ''Importance'' parameter. For example:
+  - defaultvalue: https://example.com/
+    display: Your server URL
+    name: url
+    required: true
+    type: 0
+  - additionalinfo: The API Key to use for connection
+    display: API Key
+    name: api_token
+    required: true
+    type: 4
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
+  - additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00).
+      Maximal number of past events to fetch is 10,000.
+    display: First fetch time
+    hidden: false
+    name: first_fetch
+    defaultvalue: '3 days'
+    required: false
+    type: 0
+  - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+    defaultvalue: '50'
+    display: Fetch Limit
+    name: max_fetch
+    required: false
+    type: 0
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+  - additionalinfo: Alert class to filter by. Only one class can be configured at a
+      time. If none was chosen, all classes will be fetched.
+    display: Alert Class
+    hidden: false
+    name: alert_class
+    options:
+      - bgp
+      - cloudsignal
+      - data
+      - dos
+      - smart
+      - system_error
+      - system_event
+      - tms
+      - traffic
+    required: false
+    type: 15
+  - additionalinfo: Alert type to filter by. Only one type can be configured at a time.
+      If none was chosen, all types will be fetched.
+    display: Alert Type
+    hidden: false
+    name: alert_type
+    options:
+      - autoclassify_restart
+      - bgp_down
+      - bgp_hijack
+      - bgp_instability
+      - bgp_trap
+      - blob_thresh
+      - cloud_mit_request
+      - cloudsignal_fault
+      - collector_down
+      - collector_start
+      - config_change
+      - device_system_error
+      - dns_baseline
+      - dos
+      - dos_host_detection
+      - dos_mo_profiled
+      - dos_profiled_network
+      - dos_profiled_router
+      - fingerprint_thresh
+      - flexible_license_error
+      - flow_down
+      - flow_missing
+      - gre_down
+      - hw_failure
+      - smart_thresh
+      - interface_usage
+      - nucleus_fault
+      - routing_failover
+      - routing_interface_failover
+      - service_thresh
+      - smart_thresh
+      - snmp_down
+      - spcomm_failure
+      - tms_fault
+      - traffic_auto_mitigation
+    required: false
+    type: 15
+  - additionalinfo: Alert importance to filter by. For more complex operations use the
+      'Importance Operator' parameter. If none was chosen, all importances will be fetched.
+    display: Importance
+    hidden: false
+    name: importance
+    options:
+      - Low
+      - Medium
+      - High
+    required: false
+    type: 15
+  - additionalinfo: 'The operator to apply on the ''Importance'' parameter. For example:
     if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
     with importance grater to 1 will be fetched. Default is ''=''.'
-  defaultvalue: =
-  display: Importance Operator
-  hidden: false
-  name: importance_operator
-  options:
-  - =
-  - <
-  - >
-  required: false
-  type: 15
-- additionalinfo: Alert status to filter by. If none was chosen, all statuses will
-    be fetched.
-  display: Event Status
-  hidden: false
-  name: ongoing
-  options:
-  - Ongoing
-  - Not Ongoing
-  required: false
-  type: 15
+    defaultvalue: =
+    display: Importance Operator
+    hidden: false
+    name: importance_operator
+    options:
+      - =
+      - <
+      - >
+    required: false
+    type: 15
+  - additionalinfo: Alert status to filter by. If none was chosen, all statuses will
+      be fetched.
+    display: Event Status
+    hidden: false
+    name: ongoing
+    options:
+      - Ongoing
+      - Not Ongoing
+    required: false
+    type: 15
 description: DDoS protection and network visibility.
 display: NetscoutArborSightline
 name: NetscoutArborSightline
@@ -266,9 +268,9 @@ script:
         - name: managed_object_id
           description: ID of managed object associated with the alert.
         - name: page
-          description: Maximal number of alerts to retrieve.
+          description: The page to return starting from 1.
         - name: limit
-          description: Maximal number of alerts to retrieve.
+          description: Maximal number of alerts to retrieve, will also set the size of the returned page.
       description: List all alerts, when an alert ID is given only the relevant alert
         will be fetched.
     - name: na-sightline-mitigation-list
@@ -276,8 +278,10 @@ script:
         - name: mitigation_id
           default: true
           description: The mitigation ID to get.
+        - name: page
+            description: The page to return starting from 1.
         - name: limit
-          description: Maximal number of mitigations to retrieve.
+          description: Maximal number of mitigations to retrieve, will also set the size of the returned page.
       outputs:
         - contextPath: BaseIntegration.Output
           description: NASightline.AlertAnnotations
@@ -316,10 +320,10 @@ script:
         - name: sub_object
           required: true
           description: 'JSON object that specifies the attributes specific to the mitigation
-          subtype. For example: {"bgp_announce": false}. For the full list of values
-          supported for each sub-type visit the product documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
+          subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}. List of values
+          supported for each sub-type can be found in the Netscout Arbor Sightline documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
         - name: alert_id
-          description: ' ID of the alert associated with the mitigation.'
+          description: ID of the alert associated with the mitigation.
         - name: mitigation_template_id
           description: ID of the mitigation template applied to this mitigation. To get
             a list of available templates and their IDs run the 'na-sightline-mitigation-template-list'.
@@ -344,7 +348,11 @@ script:
       arguments: []
       description: Get a list of available routers.
     - name: na-sightline-managed-object-list
-      arguments: []
+      arguments:
+        - name: page
+          description: The page to return starting from 1.
+        - name: limit
+          description: Maximal number of mitigations to retrieve, will also set the size of the returned page.
       description: Get a list of available managed objects.
     - name: na-sightline-tms-group-list
       arguments: []
@@ -357,5 +365,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 fromversion: 5.0.0
