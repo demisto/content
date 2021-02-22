@@ -502,11 +502,6 @@ def get_updated_private_packs(private_packs, index_folder_path):
                 private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
 
         private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
-        if private_pack_id == "CyrenThreatInDepthIPReputationFeed":
-            logging.debug("Looking at CyrenThreatInDepthIPReputationFeed:")
-            logging.debug(private_commit_hash_from_metadata)
-            logging.debug(private_commit_hash_from_content_repo)
-            logging.debug(private_pack_was_updated)
         if private_pack_was_updated:
             updated_private_packs.append(private_pack_id)
 
