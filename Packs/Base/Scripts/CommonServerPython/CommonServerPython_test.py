@@ -3784,13 +3784,13 @@ class TestCommonTypes:
         from CommonServerPython import Common, DBotScoreType
         mocker.patch.object(demisto, 'params', return_value={'insecure': True})
         dbot_score = Common.DBotScore(
-            indicator='a@b.com',
+            indicator='user@example.com',
             integration_name='Test',
             indicator_type=DBotScoreType.EMAIL,
             score=Common.DBotScore.GOOD
         )
         context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
                    'val.Vendor == obj.Vendor && val.Type == obj.Type)':
-                       {'Indicator': 'a@b.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+                       {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
 
         assert context == dbot_score.to_context()
