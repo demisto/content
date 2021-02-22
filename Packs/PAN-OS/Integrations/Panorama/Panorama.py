@@ -107,8 +107,9 @@ def http_request(uri: str, method: str, headers: dict = {},
 
     json_result = json.loads(xml2json(result.text))
 
-    # handle raw response that doe not contain the response key, e.g xonfiguration export
-    if 'response' not in json_result or '@code' not in json_result['response']:
+    # handle raw response that does not contain the response key, e.g xonfiguration export
+    if ('response' not in json_result or '@code' not in json_result['response']) and \
+            not json_result['response']['@status'] != 'success':
         return json_result
 
     # handle non success
