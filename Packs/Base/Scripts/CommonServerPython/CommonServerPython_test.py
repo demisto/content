@@ -3769,3 +3769,28 @@ def test_warnings_handler(mocker):
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
     assert 'python warning' in msg
+
+
+class TestCommonTypes:
+    def test_email_indicator_type(self, mocker):
+        """
+        Given:
+            - a single email indicator entry
+        When
+           - creating an Common.EMAIL object
+       Then
+           - The CommandResults.__init__() should raise an ValueError with appropriate error
+       """
+        from CommonServerPython import Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='a@b.com',
+            integration_name='Test',
+            indicator_type=DBotScoreType.EMAIL,
+            score=Common.DBotScore.GOOD
+        )
+        context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                   'val.Vendor == obj.Vendor && val.Type == obj.Type)':
+                       {'Indicator': 'a@b.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+
+        assert context == dbot_score.to_context()
