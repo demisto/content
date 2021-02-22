@@ -79,7 +79,7 @@ If MFA is enabled for your user, follow the next steps:
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
-| mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both direction. | False |
+| mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out (from XSOAR to ServiceNow), or both directions. | False |
 | comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
 | work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
 | file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
@@ -2042,6 +2042,5 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
-
 
 
