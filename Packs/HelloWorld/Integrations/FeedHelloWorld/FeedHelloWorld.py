@@ -8,8 +8,6 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
-INTEGRATION_NAME = 'FeedHelloWorld'
-
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -62,6 +60,15 @@ def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     Returns:
         Outputs.
     """
+    # INTEGRATION FEED DEVELOPER TIP
+    # Client class should raise the exceptions, but if the test fails
+    # the exception text is printed to the Cortex XSOAR UI.
+    # If you have some specific errors you want to capture (i.e. auth failure)
+    # you should catch the exception here and return a string with a more
+    # readable output (for example return 'Authentication Error, API Key
+    # invalid').
+    # Cortex XSOAR will print everything you return different than 'ok' as
+    # an error
 
     client.build_iterator()
     return 'ok', {}, {}
@@ -81,6 +88,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, limit: int
     indicators = []
     if limit > 0:
         iterator = iterator[:limit]
+
+    # extract values from iterator
     for item in iterator:
         value = item.get('value')
         type_ = item.get('type')
@@ -88,6 +97,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, limit: int
             'value': value,
             'type': type_,
         }
+
+        # create indicator object for each value
         for key, val in item.items():
             raw_data.update({key: val})
         indicator_obj = {
@@ -102,6 +113,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, limit: int
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
         indicators.append(indicator_obj)
+
     return indicators
 
 
