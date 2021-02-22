@@ -32,3 +32,5 @@ runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 dockerimage: devdemisto/xsoar-tools:1.0.0.16948
+tests:
+- ValidateContent - Test
