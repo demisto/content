@@ -33,6 +33,8 @@ To configure a long running integration to be accessed via Cortex XSOAR Server's
 You will then be able to access the long running integration via the Cortex XSOAR Server's HTTPS endpoint. The route to the integration will be available at:
 https://<server_hostname>/instance/execute/<instance_name>
 
+Use this URL to configure `Workday_IAM` integration.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
