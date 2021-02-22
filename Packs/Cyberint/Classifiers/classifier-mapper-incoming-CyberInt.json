@@ -300,7 +300,7 @@
             }
         }
     },
-    "name": "CyberInt (mapper)",
+    "name": "Cyberint (mapper)",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
