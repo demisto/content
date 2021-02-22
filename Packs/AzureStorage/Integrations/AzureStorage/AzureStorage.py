@@ -96,80 +96,70 @@ class ASClient:
 
         if 'custom_domain_name' in args:
             custom_domain = {'name': args['custom_domain_name']}
+
             if args['use_sub_domain_name']:
-                custom_domain['useSubDomainName'] = args.get('use_sub_domain_name')
-            else:
-                custom_domain['useSubDomainName'] = False
+                custom_domain['useSubDomainName'] = args.get('use_sub_domain_name') == 'true'
+
             json_data_args['properties']['customDomain'] = custom_domain
 
-        if 'enc_key_source' in args:
-            json_data_args['properties']['Encryption'] = {'keySource': args['enc_key_source'], 'keyvaultproperties': {}}
+        if 'enc_key_source' in args or 'enc_keyvault_key_name' in args or 'enc_keyvault_key_version' in args or \
+                'enc_keyvault_uri' in args or 'enc_requireInfrastructureEncryption' in args:
+            json_data_args['properties']['Encryption'] = {}
 
-        if 'enc_keyvault_key_name' in args:
-            if 'Encryption' not in json_data_args['properties']:
-                json_data_args['properties']['Encryption'] = {}
-            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
+            if 'enc_key_source' in args:
+                json_data_args['properties']['Encryption']['keySource'] = args['enc_key_source']
+
+            if 'enc_keyvault_key_name' in args or 'enc_keyvault_key_version' in args or 'enc_keyvault_uri' in args:
                 json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyname'] = \
-                args.get('enc_keyvault_key_name')
 
-        if 'enc_keyvault_key_version' in args:
-            if 'Encryption' not in json_data_args['properties']:
-                json_data_args['properties']['Encryption'] = {}
-            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
-                json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyversion'] = \
-                args.get('enc_keyvault_key_version')
+                if 'enc_keyvault_key_name' in args:
+                    json_data_args['properties']['Encryption']['keyvaultproperties']['keyname'] = \
+                        args.get('enc_keyvault_key_name')
 
-        if 'enc_keyvault_uri' in args:
-            if 'Encryption' not in json_data_args['properties']:
-                json_data_args['properties']['Encryption'] = {}
-            if 'keyvaultproperties' not in json_data_args['properties']['Encryption']:
-                json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
-            json_data_args['properties']['Encryption']['keyvaultproperties']['keyvaulturi'] = \
-                args.get('enc_keyvault_uri')
+                if 'enc_keyvault_key_version' in args:
+                    json_data_args['properties']['Encryption']['keyvaultproperties']['keyversion'] = \
+                        args.get('enc_keyvault_key_version')
 
-        if 'enc_requireInfrastructureEncryption' in args:
-            if 'Encryption' not in json_data_args['properties']:
-                json_data_args['properties']['Encryption'] = {}
-            json_data_args['properties']['Encryption']['requireInfrastructureEncryption'] = \
-                args.get('enc_requireInfrastructureEncryption')
+                if 'enc_keyvault_uri' in args:
+                    json_data_args['properties']['Encryption']['keyvaultproperties']['keyvaulturi'] = \
+                        args.get('enc_keyvault_uri')
 
-        if 'network_ruleset_bypass' in args:
-            if 'networkAcls' not in json_data_args['properties']:
-                json_data_args['properties']['networkAcls'] = {}
-            json_data_args['properties']['networkAcls']['bypass'] = args.get('network_ruleset_bypass')
+            if 'enc_requireInfrastructureEncryption' in args:
+                json_data_args['properties']['Encryption']['requireInfrastructureEncryption'] = \
+                    args.get('enc_requireInfrastructureEncryption') == 'true'
 
-        if 'network_ruleset_default_action' in args:
-            if 'networkAcls' not in json_data_args['properties']:
-                json_data_args['properties']['networkAcls'] = {}
-            json_data_args['properties']['networkAcls']['defaultAction'] = args.get('network_ruleset_default_action')
+        if 'network_ruleset_bypass' in args or 'network_ruleset_default_action' in args or \
+                'network_ruleset_ipRules' in args or 'virtual_network_rules' in args:
+            json_data_args['properties']['networkAcls'] = {}
 
-        if 'network_ruleset_ipRules' in args:
-            if 'networkAcls' not in json_data_args['properties']:
-                json_data_args['properties']['networkAcls'] = {}
-            json_data_args['properties']['networkAcls']['ipRules'] = json.loads(args['network_ruleset_ipRules'])
+            if 'network_ruleset_bypass' in args:
+                json_data_args['properties']['networkAcls']['bypass'] = args.get('network_ruleset_bypass')
 
-        if 'virtual_network_rules' in args:
-            if 'networkAcls' not in json_data_args['properties']:
-                json_data_args['properties']['networkAcls'] = {}
-            json_data_args['properties']['networkAcls']['virtualNetworkRules'] = \
-                json.loads(args['virtual_network_rules'])
+            if 'network_ruleset_default_action' in args:
+                json_data_args['properties']['networkAcls']['defaultAction'] = \
+                    args.get('network_ruleset_default_action')
+
+            if 'network_ruleset_ipRules' in args:
+                json_data_args['properties']['networkAcls']['ipRules'] = json.loads(args['network_ruleset_ipRules'])
+
+            if 'virtual_network_rules' in args:
+                json_data_args['properties']['networkAcls']['virtualNetworkRules'] = \
+                    json.loads(args['virtual_network_rules'])
 
         if 'access_tier' in args:
             json_data_args['properties']['accessTier'] = args.get('access_tier')
 
         if 'supports_https_traffic_only' in args:
-            json_data_args['properties']['supportsHttpsTrafficOnly'] = args.get('supports_https_traffic_only')
+            json_data_args['properties']['supportsHttpsTrafficOnly'] = args.get('supports_https_traffic_only') == 'true'
 
         if 'is_hns_enabled' in args:
-            json_data_args['properties']['isHnsEnabled'] = args.get('is_hns_enabled')
+            json_data_args['properties']['isHnsEnabled'] = args.get('is_hns_enabled') == 'true'
 
         if 'large_file_shares_state' in args:
             json_data_args['properties']['largeFileSharesState'] = args.get('large_file_shares_state')
 
         if 'allow_blob_public_access' in args:
-            json_data_args['properties']['allowBlobPublicAccess'] = args.get('allow_blob_public_access')
+            json_data_args['properties']['allowBlobPublicAccess'] = args.get('allow_blob_public_access') == 'true'
 
         if 'minimum_tls_version' in args:
             json_data_args['properties']['minimumTlsVersion'] = args.get('minimum_tls_version')
@@ -196,7 +186,7 @@ class ASClient:
         properties = {}
 
         if 'change_feed_enabled' in args:
-            properties['changeFeed'] = {'enabled': args['change_feed_enabled']}
+            properties['changeFeed'] = {'enabled': args['change_feed_enabled'] == 'true'}
 
         if 'change_feed_retention_days' in args:
             if 'changeFeed' not in properties:
@@ -205,7 +195,7 @@ class ASClient:
 
         if 'container_delete_rentention_policy_enabled' in args:
             properties['containerDeleteRetentionPolicy'] = \
-                {'enabled': args['container_delete_rentention_policy_enabled']}
+                {'enabled': args['container_delete_rentention_policy_enabled'] == 'true'}
 
         if 'container_delete_rentention_policy_days' in args:
             if 'containerDeleteRetentionPolicy' not in properties:
@@ -213,7 +203,7 @@ class ASClient:
             properties['containerDeleteRetentionPolicy']['days'] = args.get('container_delete_rentention_policy_days')
 
         if 'delete_rentention_policy_enabled' in args:
-            properties['deleteRetentionPolicy'] = {'enabled': args['delete_rentention_policy_enabled']}
+            properties['deleteRetentionPolicy'] = {'enabled': args['delete_rentention_policy_enabled'] == 'true'}
 
         if 'delete_rentention_policy_days' in args:
             if 'deleteRetentionPolicy' not in properties:
@@ -223,37 +213,34 @@ class ASClient:
         if 'versioning' in args:
             properties['isVersioningEnabled'] = argToBoolean(args.get('versioning'))
 
-        if 'last_access_time_tracking_policy_enabled' in args:
-            if 'lastAccessTimeTrackingPolicy' not in properties:
-                properties['lastAccessTimeTrackingPolicy'] = {}
-            properties['lastAccessTimeTrackingPolicy']['enable'] = args.get('last_access_time_tracking_policy_enabled')
+        if 'last_access_time_tracking_policy_enabled' in args or 'last_access_time_tracking_policy_blob_types' in args \
+                or 'last_access_time_tracking_policy_days' in args:
+            properties['lastAccessTimeTrackingPolicy'] = {}
 
-        if 'last_access_time_tracking_policy_blob_types' in args:
-            if 'lastAccessTimeTrackingPolicy' not in properties:
-                properties['lastAccessTimeTrackingPolicy'] = {}
-            properties['lastAccessTimeTrackingPolicy']['blobType'] = \
-                args['last_access_time_tracking_policy_blob_types'].split(',')
+            if 'last_access_time_tracking_policy_enabled' in args:
+                properties['lastAccessTimeTrackingPolicy']['enable'] = \
+                    args.get('last_access_time_tracking_policy_enabled') == 'true'
 
-        if 'last_access_time_tracking_policy_days' in args:
-            if 'lastAccessTimeTrackingPolicy' not in properties:
-                properties['lastAccessTimeTrackingPolicy'] = {}
-            properties['lastAccessTimeTrackingPolicy']['trackingGranularityInDays'] = \
-                args.get('last_access_time_tracking_policy_days')
+            if 'last_access_time_tracking_policy_blob_types' in args:
+                properties['lastAccessTimeTrackingPolicy']['blobType'] = \
+                    args['last_access_time_tracking_policy_blob_types'].split(',')
 
-        if 'restore_policy_enabled' in args:
-            if 'restorePolicy' not in properties:
-                properties['restorePolicy'] = {}
-            properties['restorePolicy']['enabled'] = args.get('restore_policy_enabled')
+            if 'last_access_time_tracking_policy_days' in args:
+                properties['lastAccessTimeTrackingPolicy']['trackingGranularityInDays'] = \
+                    args.get('last_access_time_tracking_policy_days')
 
-        if 'restore_policy_min_restore_time' in args:
-            if 'restorePolicy' not in properties:
-                properties['restorePolicy'] = {}
-            properties['restorePolicy']['minRestoreTime'] = args.get('restore_policy_min_restore_time')
+        if 'restore_policy_enabled' in args or 'restore_policy_min_restore_time' in args \
+                or 'restore_policy_days' in args:
+            properties['restorePolicy'] = {}
 
-        if 'restore_policy_days' in args:
-            if 'restorePolicy' not in properties:
-                properties['restorePolicy'] = {}
-            properties['restorePolicy']['days'] = args.get('restore_policy_days')
+            if 'restore_policy_enabled' in args:
+                properties['restorePolicy']['enabled'] = args.get('restore_policy_enabled') == 'true'
+
+            if 'restore_policy_min_restore_time' in args:
+                properties['restorePolicy']['minRestoreTime'] = args.get('restore_policy_min_restore_time')
+
+            if 'restore_policy_days' in args:
+                properties['restorePolicy']['days'] = args.get('restore_policy_days')
 
         return self.ms_client.http_request(
             method='PUT',
@@ -504,9 +491,7 @@ def main() -> None:
         demisto.debug(traceback.format_exc())
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
 
-
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
