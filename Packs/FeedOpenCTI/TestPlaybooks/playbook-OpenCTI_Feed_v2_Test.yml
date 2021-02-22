@@ -238,10 +238,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f5bc5a03-b178-460d-8c01-b9693cbc495e
+    taskid: 0a4751be-4839-41b0-8f98-7a83d9955243
     type: regular
     task:
-      id: f5bc5a03-b178-460d-8c01-b9693cbc495e
+      id: 0a4751be-4839-41b0-8f98-7a83d9955243
       version: -1
       name: opencti-indicator-create
       description: Create new indicator.
@@ -267,8 +267,7 @@ tasks:
         simple: ${OpenCTI.Label.id}
       marking:
         simple: TLP:GREEN
-      marking_id:
-        simple: ${OpenCTI.MarkingDefinition.id}
+      marking_id: {}
       score:
         simple: "70"
       type:
@@ -764,7 +763,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+      - "26"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -779,75 +778,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "24":
-    id: "24"
-    taskid: d6bc37d0-9816-4622-8fa3-6d86e713c3b1
-    type: regular
-    task:
-      id: d6bc37d0-9816-4622-8fa3-6d86e713c3b1
-      version: -1
-      name: opencti-marking-definition-create
-      description: Create marking definition.
-      script: '|||opencti-marking-definition-create'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      name:
-        simple: TLP:RED
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "25":
-    id: "25"
-    taskid: 3245e069-78e1-4885-804d-373334d13fd7
-    type: condition
-    task:
-      id: 3245e069-78e1-4885-804d-373334d13fd7
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "26"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: OpenCTI.MarkingDefinition.id
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
         }
       }
     note: false
@@ -927,10 +857,10 @@ tasks:
     isoversize: false
   "28":
     id: "28"
-    taskid: de5edc95-e378-4ef1-8fdb-6e1173203aeb
+    taskid: 6883c6f3-14f4-4b04-8949-bd85ddbd8d00
     type: playbook
     task:
-      id: de5edc95-e378-4ef1-8fdb-6e1173203aeb
+      id: 6883c6f3-14f4-4b04-8949-bd85ddbd8d00
       version: -1
       name: OpenCTI Create Indicator
       playbookName: OpenCTI Create Indicator
@@ -952,8 +882,8 @@ tasks:
         simple: www.test.com
       label_name:
         simple: test-label
-      marking_definition:
-        simple: TLP:RED
+      marking_definition_id:
+        simple: ${OpenCTI.MarkingDefinitions.id}
       score:
         simple: "90"
       type:

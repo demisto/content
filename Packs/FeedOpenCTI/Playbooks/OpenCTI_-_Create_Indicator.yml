@@ -1,5 +1,5 @@
 id: 26e00078-3084-4ba4-8296-efbdb3062401
-version: 14
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: OpenCTI Create Indicator
 starttaskid: "0"
