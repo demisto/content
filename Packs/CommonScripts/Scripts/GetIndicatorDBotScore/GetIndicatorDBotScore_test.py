@@ -1,5 +1,4 @@
 import pytest
-from CommonServerPython import *
 
 
 GetIndicatorDBotScoreFunc = 'GetIndicatorDBotScore.get_dbot_score_data'
