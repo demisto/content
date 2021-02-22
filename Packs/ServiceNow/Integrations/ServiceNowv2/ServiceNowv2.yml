@@ -1376,6 +1376,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sc_req_item
       required: false
       secret: false
     - default: false
@@ -1400,7 +1401,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false
@@ -1667,7 +1668,7 @@ script:
       secret: false
     - default: false
       description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True"'
+        For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
       isArray: false
       name: system_params
       required: false

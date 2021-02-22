@@ -249,7 +249,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     :return: stream of combined image
     """
     demisto.debug(f'Loading file at Path: {path}')
-    input_pdf = PdfFileReader(open(path, "rb"))
+    input_pdf = PdfFileReader(open(path, "rb"), strict=False)
     pages = min(max_pages, input_pdf.numPages)
 
     with tempfile.TemporaryDirectory() as output_folder:
