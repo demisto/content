@@ -10,7 +10,9 @@ class Client:
     temp = ''
     stix_cyber_observable = StixCyberObservable
     identity = Identity
-
+    label = Label
+    marking_definition = MarkingDefinition
+    external_reference = ExternalReference
 
 def test_get_indicators(mocker):
     """Tests get_indicators function
@@ -26,9 +28,8 @@ def test_get_indicators(mocker):
     """
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    new_last_id, indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
+    _, indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
     assert len(indicators) == 2
-    assert new_last_id == 'YXJyYXljb25uZWN0aW9uOjI='
 
 
 def test_fetch_indicators_command(mocker):
@@ -153,10 +154,10 @@ def test_indicator_create_command(mocker):
     assert 'id' in results.outputs
 
 
-@pytest.mark.parametrize(argnames="field, value, mock_obj_name, function_name",
-                         argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'add_marking_definition'),
-                                    ('label', 'new-label', 'Label', 'add_label')])
-def test_indicator_field_add_command(mocker, field, value, mock_obj_name, function_name):
+@pytest.mark.parametrize(argnames="field, value, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'add_marking_definition'),
+                                    ('label', 'new-label', 'add_label')])
+def test_indicator_field_add_command(mocker, field, value, function_name):
     """Tests indicator_field_add_command function
         Given
             id of indicator to add
@@ -173,20 +174,18 @@ def test_indicator_field_add_command(mocker, field, value, mock_obj_name, functi
         'field': field,
         'value': value
     }
-
-    magic_mock = mocker.MagicMock()
-    magic_mock.create.return_value = {'id': '123'}
-    mocker.patch(f'FeedOpenCTI_v2.{mock_obj_name}', return_value=magic_mock)
+    mocker.patch.object(client.label, 'create', return_value={'id': '123456'})
+    mocker.patch.object(client.marking_definition, 'create', return_value={'id': '123456'})
     mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
 
     results: CommandResults = indicator_field_add_command(client, args)
     assert "successfully" in results.readable_output
 
 
-@pytest.mark.parametrize(argnames="field, value, mock_obj_name, function_name",
-                         argvalues=[('marking', 'TLP:RED', 'MarkingDefinition', 'remove_marking_definition'),
-                                    ('label', 'new-label', 'Label', 'remove_label')])
-def test_indicator_field_remove_command(mocker, field, value, mock_obj_name, function_name):
+@pytest.mark.parametrize(argnames="field, value, function_name",
+                         argvalues=[('marking', 'TLP:RED', 'remove_marking_definition'),
+                                    ('label', 'new-label', 'remove_label')])
+def test_indicator_field_remove_command(mocker, field, value, function_name):
     """Tests indicator_field_remove_command function
     Given
         id of indicator to remove
@@ -204,9 +203,8 @@ def test_indicator_field_remove_command(mocker, field, value, mock_obj_name, fun
         'value': value
     }
 
-    magic_mock = mocker.MagicMock()
-    magic_mock.create.return_value = {'id': '123'}
-    mocker.patch(f'FeedOpenCTI_v2.{mock_obj_name}', return_value=magic_mock)
+    mocker.patch.object(client.label, 'create', return_value={'id': '123456'})
+    mocker.patch.object(client.marking_definition, 'create', return_value={'id': '123456'})
     mocker.patch.object(client.stix_cyber_observable, function_name, return_value=True)
 
     results: CommandResults = indicator_field_remove_command(client, args)
@@ -223,16 +221,20 @@ def test_organization_list_command(mocker):
         - validate the readable_output ,context
     """
     client = Client
-    mocker.patch.object(client.identity, 'list', return_value=[{'id': '1', 'name': 'test organization'}])
+    mocker.patch.object(client.identity, 'list',
+                        return_value={
+                            'entities': [{'id': '1', 'name': 'test organization'}],
+                            'pagination': {'endCursor': 'XYZ123'}
+                        })
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
-    assert [{'id': '1', 'name': 'test organization'}] == results.outputs
+    assert [{'id': '1', 'name': 'test organization'}] == results.outputs.get('Organizations')
 
 
 def test_organization_create_command(mocker):
     """Tests organization_create_command function
     Given
-
+        - name: organization name to create
     When
         - Calling `organization_create_command`
     Then
@@ -244,5 +246,104 @@ def test_organization_create_command(mocker):
     }
     mocker.patch.object(client.identity, 'create', return_value={'id': '1'})
     results: CommandResults = organization_create_command(client, args)
+    assert "was created successfully" in results.readable_output
+    assert {'id': '1'} == results.outputs
+
+
+def test_label_list_command(mocker):
+    """Tests label_list_command function
+    Given
+
+    When
+        - Calling `label_list_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    mocker.patch.object(client.label, 'list',
+                        return_value={
+                            'entities': [{'id': '1', 'value': 'test-label'}],
+                            'pagination': {'endCursor': 'XYZ123'}
+                        })
+    results: CommandResults = label_list_command(client, {})
+    assert "Labels" in results.readable_output
+    assert [{'id': '1', 'value': 'test-label'}] == results.outputs.get('Labels')
+
+
+def test_label_create_command(mocker):
+    """Tests label_create_command function
+    Given
+        - name: label name to create
+    When
+        - Calling `label_create_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    args = {
+        'name': 'test-label-1',
+    }
+    mocker.patch.object(client.label, 'create', return_value={'id': '1'})
+    results: CommandResults = label_create_command(client, args)
+    assert "was created successfully" in results.readable_output
+    assert {'id': '1'} == results.outputs
+
+
+def test_external_reference_create_command(mocker):
+    """Tests external_reference_create_command function
+    Given
+        - source_name: name of external reference source
+        - url: url of external reference
+    When
+        - Calling `external_reference_create_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    args = {
+        'source_name': 'test-label-1',
+        'url': 'testurl.com'
+    }
+    mocker.patch.object(client.external_reference, 'create', return_value={'id': '1'})
+    results: CommandResults = external_reference_create_command(client, args)
+    assert "was created successfully" in results.readable_output
+    assert {'id': '1'} == results.outputs
+
+
+def test_marking_list_command(mocker):
+    """Tests marking_list_command function
+    Given
+
+    When
+        - Calling `marking_list_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    mocker.patch.object(client.marking_definition, 'list',
+                        return_value={
+                            'entities': [{'id': '1', 'definition': 'TLP:RED'}],
+                            'pagination': {'endCursor': 'XYZ123'}
+                        })
+    results: CommandResults = marking_list_command(client, {})
+    assert "Markings" in results.readable_output
+    assert [{'id': '1', 'value': 'TLP:RED'}] == results.outputs.get('MarkingDefinitions')
+
+
+def test_marking_create_command(mocker):
+    """Tests marking_create_command function
+    Given
+        - name: marking name to create
+    When
+        - Calling `marking_create_command`
+    Then
+        - validate the readable_output ,context
+    """
+    client = Client
+    args = {
+        'name': 'TLP:GREEN',
+    }
+    mocker.patch.object(client.marking_definition, 'create', return_value={'id': '1'})
+    results: CommandResults = marking_create_command(client, args)
     assert "was created successfully" in results.readable_output
     assert {'id': '1'} == results.outputs
