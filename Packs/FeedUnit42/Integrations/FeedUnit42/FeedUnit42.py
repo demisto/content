@@ -432,8 +432,9 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
             row['name'] = course_of_action.get('name')
 
             tmp_table.append(row)
+        headers = ['name', 'title', 'description', 'impact statement', 'recommendation number', 'remediation procedure']
         md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True,
-                                   headerTransform=string_to_table_header, headers= ['name', 'title', 'description', 'impact statement', 'recommendation number', 'remediation procedure'])
+                                   headerTransform=string_to_table_header, headers=headers)
         markdown = f'{markdown}\n{md_table}'
     return markdown
 
