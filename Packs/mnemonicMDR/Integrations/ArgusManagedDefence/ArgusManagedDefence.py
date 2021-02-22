@@ -88,7 +88,7 @@ ARGUS_PRIORITY_MAPPING = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
 
 def set_argus_settings(
-        api_key: str, base_url: str = None, proxies: dict = None, verify: bool = None
+    api_key: str, base_url: str = None, proxies: dict = None, verify: bool = None
 ):
     argus_session.api_key = api_key
     argus_session.base_url = base_url
@@ -109,7 +109,7 @@ def build_argus_priority_from_min_severity(min_severity: str) -> List[str]:
     min_severity_list = []
     for severity in severities:
         if argus_priority_to_demisto_severity(
-                min_severity.lower()
+            min_severity.lower()
         ) <= argus_priority_to_demisto_severity(severity):
             min_severity_list.append(severity)
     return min_severity_list
@@ -255,14 +255,14 @@ def test_module_command() -> str:
 
 
 def fetch_incidents(
-        last_run: dict,
-        first_fetch_period: str,
-        limit: int = 25,
-        min_severity: str = "low",
-        integration_instance: str = "",
-        mirror_direction: str = "None",
-        mirror_tags: str = "argus_mirror",
-        exclude_tag: str = "",
+    last_run: dict,
+    first_fetch_period: str,
+    limit: int = 25,
+    min_severity: str = "low",
+    integration_instance: str = "",
+    mirror_direction: str = "None",
+    mirror_tags: str = "argus_mirror",
+    exclude_tag: str = "",
 ):
     start_timestamp = last_run.get("start_time", None) if last_run else None
     # Exclude closed cases
@@ -312,10 +312,10 @@ def fetch_incidents(
 
 
 def get_remote_data_command(
-        args: Dict[str, Any],
-        integration_instance: str = "",
-        mirror_direction: str = "None",
-        mirror_tags: str = "argus_mirror",
+    args: Dict[str, Any],
+    integration_instance: str = "",
+    mirror_direction: str = "None",
+    mirror_tags: str = "argus_mirror",
 ) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
     case_id = remote_args.remote_incident_id
@@ -376,22 +376,22 @@ def get_remote_data_command(
                 {
                     "Note": True,
                     "Type": entryTypes["note"],
-                    "ContentsFormat": formats["html"],
-                    "Contents": pretty_print_comment_html(comment),
+                    "ContentsFormat": formats["html"],  # type: ignore
+                    "Contents": pretty_print_comment_html(comment),  # type: ignore
                 }
             )
         # Existing comment has been updated
         elif (
-                comment.get("addedTimestamp", 0)
-                < last_update_timestamp
-                < comment.get("lastUpdatedTimestamp", "")
+            comment.get("addedTimestamp", 0)
+            < last_update_timestamp
+            < comment.get("lastUpdatedTimestamp", "")
         ):
             entries.append(
                 {
                     "Note": True,
                     "Type": entryTypes["note"],
-                    "ContentsFormat": formats["html"],
-                    "Contents": (pretty_print_comment_html(comment, "Comment updated")),
+                    "ContentsFormat": formats["html"],  # type: ignore
+                    "Contents": (pretty_print_comment_html(comment, "Comment updated")),  # type: ignore
                 }
             )
 
@@ -408,8 +408,8 @@ def get_remote_data_command(
         entries.append(
             {
                 "Type": EntryType.NOTE,
-                "ContentsFormat": EntryFormat.JSON,
-                "Contents": {
+                "ContentsFormat": EntryFormat.JSON,  # type: ignore
+                "Contents": {  # type: ignore
                     "dbotIncidentClose": True,
                     "closeReason": "Argus Case closed",
                     "closeNotes": "Argus Case was marked as closed remotely, incident closed.",
