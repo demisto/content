@@ -2,7 +2,7 @@
     "id": "incident_alertattachments",
     "version": -1,
     "modified": "2021-02-21T16:02:16.739079287+02:00",
-    "name": "Notify Attachments",
+    "name": "Alert_Attachments",
     "ownerOnly": false,
     "cliName": "alertattachments",
     "type": "grid",
@@ -24,8 +24,7 @@
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
-    "columns": [
-        {
+    "columns": [{
             "key": "id",
             "displayName": "id",
             "type": "shortText",
@@ -62,8 +61,7 @@
             "selectValues": null
         }
     ],
-    "defaultRows": [
-        {
+    "defaultRows": [{
 
         },
         {

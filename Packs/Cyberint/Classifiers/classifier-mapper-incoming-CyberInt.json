@@ -32,7 +32,7 @@
                     },
                     "simple": ""
                 },
-                "Notify Attachments": {
+                "Alert_Attachments": {
                     "complex": {
                         "accessor": "",
                         "filters": [
@@ -50,7 +50,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Notify Attachments": {
+                "Alert_Attachments": {
                     "complex": null,
                     "simple": "attachments"
                 },
@@ -242,7 +242,7 @@
                     "complex": null,
                     "simple": "threat_actor"
                 },
-                "Ticket ID": {
+                "Ticket_ID": {
                     "complex": null,
                     "simple": "ticket_id"
                 },

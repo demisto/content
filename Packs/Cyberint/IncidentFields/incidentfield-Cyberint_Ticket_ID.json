@@ -2,7 +2,7 @@
     "id": "incident_ticketid",
     "version": -1,
     "modified": "2021-02-17T14:52:31.768338963+02:00",
-    "name": "Ticket ID",
+    "name": "Ticket_ID",
     "ownerOnly": false,
     "cliName": "ticketid",
     "type": "shortText",

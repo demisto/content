@@ -92,7 +92,7 @@ List alerts according to parameters
 | Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event. | 
 | Cyberint.Alert.ioc.type | String | Type of IOC related to the alert. | 
 | Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert. | 
-| Cyberint.Alert.ticket_id | String | Ticket ID of the alert. | 
+| Cyberint.Alert.ticket_id | String | Ticket_ID of the alert. | 
 | Cyberint.Alert.threat_actor | String | Actor to the threat related to the alert. | 
 | Cyberint.Alert.modification_date | String | Date the alert was last modified. | 
 | Cyberint.Alert.closure_date | String | Date the alert was closed. | 
