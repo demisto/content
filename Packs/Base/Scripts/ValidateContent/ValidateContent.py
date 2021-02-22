@@ -27,7 +27,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 yaml = YAML()
-performed_cleanup = False
 
 
 def remove_keys(content_entity: Dict, *args: str) -> None:
@@ -123,6 +122,11 @@ def get_pack_name(zip_fp: str) -> str:
 
 
 def run_validate(file_path: str, json_output_file: str) -> None:
+    tests_dir = 'Tests'
+    if not os.path.exists(tests_dir):
+        os.makedirs(tests_dir)
+    with open(f'{tests_dir}/id_set.json', 'w') as f:
+        json.dump({}, f)
     output_capture = io.StringIO()
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
@@ -131,7 +135,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
                 print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
                 validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
                 silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-                staged=False, json_file_path=json_output_file, skip_schema_check=True)
+                staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False)
             v_manager.run_validation()
 
 
@@ -179,15 +183,11 @@ def cleanup_validation_and_lint_outputs(content_dir):
 
 
 def do_cleanup(content_dir) -> None:
-    global performed_cleanup
     cleanup_validation_and_lint_outputs(content_dir)
     packs_dir = os.path.join(content_dir, 'Packs')
-    demisto.info('starting cleanup')
     files_to_clean = wcpath(packs_dir).glob([r'*', r'!Base'], flags=NEGATE | GLOBSTAR | EXTGLOB)
     for file_to_clean in files_to_clean:
-        demisto.info(f'{file_to_clean=}')
         shutil.rmtree(file_to_clean, ignore_errors=True)
-    performed_cleanup = True
 
 
 def validate_content(filename, data, tmp_directory: str) -> List:
@@ -285,23 +285,27 @@ def get_file_name_and_contents(
 
 
 def main():
+    cwd = os.getcwd()
+    content_dir = '/home/demisto/content'
     try:
-        content_dir = '/home/demisto/content'
-        os.chdir(content_dir)
         args = demisto.args()
         filename, file_contents = get_file_name_and_contents(
             args.get('filename'),
             args.get('data'),
             args.get('entry_id'),
         )
+
+        if not os.path.exists(content_dir):
+            os.makedirs(content_dir)
+        os.chdir(content_dir)
         result = validate_content(filename, file_contents, content_dir)
-        do_cleanup(content_dir)
         return_results(CommandResults(raw_response=result))
     except Exception as e:
-        if not performed_cleanup:
-            do_cleanup(content_dir)
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
+    finally:
+        do_cleanup(content_dir)
+        os.chdir(cwd)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
