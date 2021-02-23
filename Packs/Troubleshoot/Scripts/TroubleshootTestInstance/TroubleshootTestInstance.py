@@ -36,7 +36,7 @@ def save_configuration(arguments: dict) -> List[str]:
     return get_errors(res)
 
 
-def execute_test_module_legacy(arguments: dict) -> List[str]:
+def execute_test_module(arguments: dict) -> List[str]:
     suffix = '/settings/integration/test'
     res = demisto.executeCommand(
         'demisto-api-post',
@@ -54,7 +54,7 @@ def execute_test_module_legacy(arguments: dict) -> List[str]:
     return errors
 
 
-def execute_test_module(arguments: dict) -> List[str]:
+def execute_test_module_debug_mode(arguments: dict) -> List[str]:
     suffix = '/settings/integration/testdebug'
     res = demisto.executeCommand(
         'demisto-api-post',
@@ -81,9 +81,9 @@ def main():
     instance = change_keys(instance, keys_in_instance)
     try:
         if is_demisto_version_ge('6.0.0'):
-            errors = execute_test_module(instance)
+            errors = execute_test_module_debug_mode(instance)
         else:
-            errors = execute_test_module_legacy(instance)
+            errors = execute_test_module(instance)
         context = {
             'TroubleshootTestInstance(obj.instance_name === val.instance_name and val.changed_keys === obj.changed_keys)': {
                 'instance_name': instance_name,
@@ -93,6 +93,7 @@ def main():
             }
         }
         if errors:
+            # Show only first 10 lines of the first error.
             err_str = '\n'.join(errors[0].splitlines()[:10])
             human_readable = f'Found errors in instance {instance_name} after changing the next keys: ' \
                              f'{", ".join(keys_in_instance)}\n' \
