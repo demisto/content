@@ -57,8 +57,8 @@ configuration:
   required: false
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
     to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
-    pairs. You may exclude with tag key, or key: value pairs by a comma-separated
-    string.'
+    pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a
+    comma-separated string.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
@@ -192,7 +192,7 @@ script:
     arguments:
     - name: case_id
       required: true
-      description: 'Case ID '
+      description: Case ID
     - name: limit
       description: Limit the amount of fetched tags. (Default 25)
     - name: offset
@@ -4484,7 +4484,7 @@ script:
     - contextPath: Argus.Events.data.id
       description: Event ID
       type: String
-    description: List aggraget events
+    description: List aggregated events
   - name: argus-find-aggregated-events
     arguments:
     - name: skip_future_events
@@ -5883,22 +5883,9 @@ script:
       description: Time or timestamp case was last updated.
     description: Get remote data from a remote incident. This method does not update
       the current incident, and should be used for debugging purposes.
-#  - name: get-modified-remote-data
-#    arguments:
-#    - name: id
-#      auto: PREDEFINED
-#      predefined:
-#      - Time or timestamp case was last updated.
-#      description: Argus Case ID
-#      defaultValue: last_updated
-#    description: Get updated only remote data from a remote incident. This method
-#      does not update the current incident, and should be used for debugging purposes.
   - name: update-remote-system
     arguments: []
     description: Updates the remote system with incident changes.
-#  - name: get-mapping-fields
-#    arguments: []
-#    description: Get mapping fields for mirroring
   - name: argus-download-attachment-by-filename
     arguments:
     - name: case_id
@@ -5944,6 +5931,12 @@ script:
     - name: case_id
       required: true
       description: Case ID
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+        - ascending
+        - descending
+      description: Sort ordering. Default is ascending
     description: Print case comments as notes
   - name: argus-print-case-metadata-by-id
     arguments:

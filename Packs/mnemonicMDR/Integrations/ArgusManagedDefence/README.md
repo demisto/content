@@ -96,11 +96,6 @@ Adds a key, value tag to an Argus case
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-list-case-tags
@@ -153,11 +148,6 @@ List tags attached to an Argus case
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -223,11 +213,6 @@ Add comment to an Argus case
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-list-case-comments
@@ -291,11 +276,6 @@ List the comments of an Argus case
 | Argus.Comments.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comments.data.addedTime | String | Comment Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -486,11 +466,6 @@ Returns cases matching the defined case search criteria
 | Argus.Cases.data.publishedTime | String | Case Published Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-close-case
@@ -645,11 +620,6 @@ Close an Argus case
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -818,11 +788,6 @@ Create Argus case
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-delete-case
@@ -977,11 +942,6 @@ Mark existing case as deleted
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-delete-comment
@@ -1041,11 +1001,6 @@ Mark existing comment as deleted
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1107,11 +1062,6 @@ Edit existing comment
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1268,11 +1218,6 @@ Returns the basic case descriptor for the case identified by ID
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-list-case-attachments
@@ -1328,11 +1273,6 @@ List attachments for an existing case
 | Argus.Attachments.data.addedTime | String | Attachment Added Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-remove-case-tag-by-id
@@ -1384,11 +1324,6 @@ Remove existing tag by tag ID
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1442,11 +1377,6 @@ Remove existing tag with key, value matching
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1615,11 +1545,6 @@ Request changes to basic fields of an existing case.
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-get-attachment
@@ -1674,11 +1599,6 @@ Fetch specific attachment metadata
 | Argus.Attachment.data.addedTime | String | Attachment Added Time | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-download-attachment
@@ -1713,11 +1633,6 @@ Download specific attachment contents.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1828,16 +1743,11 @@ Fetch events associated with specified case.
 | Argus.Events.data.id | String | Event ID | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-list-aggregated-events
 ***
-List aggraget events
+List aggregated events
 
 
 #### Base Command
@@ -1945,11 +1855,6 @@ List aggraget events
 | Argus.Events.data.severity | String | Event Severity | 
 | Argus.Events.data.id | String | Event ID | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2095,11 +2000,6 @@ Search for aggregated events (OSB! advanced method: look in API doc)
 | Argus.Events.data.id | String | Event ID | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-get-payload
@@ -2139,11 +2039,6 @@ Fetch specified event payload
 | Argus.Payload.data.payload | String | Payload Payload | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-get-pcap
@@ -2167,11 +2062,6 @@ Fetch specified event payload as PCAP.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2221,11 +2111,6 @@ Fetch specified event.
 | Argus.Event.data.aggregated | Boolean | Event Aggregated | 
 | Argus.Event.data.encodedFlags | String | Event Encoded Flags | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2338,11 +2223,6 @@ Simple search for NIDS events.
 | Argus.NIDS.data.flags | String | NIDS Flags | 
 | Argus.NIDS.data.id | String | NIDS ID | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2484,11 +2364,6 @@ Search for NIDS events.
 | Argus.NIDS.data.id | String | NIDS ID | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-pdns-search-records
@@ -2547,11 +2422,6 @@ Search against PassiveDNS with criteria and return matching records.
 | Argus.PDNS.data.rrtype | String | PDNS Rrtype | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-fetch-observations-for-domain
@@ -2588,11 +2458,6 @@ Look up reputation observations for the given domain
 | Argus.ObservationsDomain.data.override | Boolean | Observations Domain Override | 
 | Argus.ObservationsDomain.data.value | Number | Observations Domain Value | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2646,11 +2511,6 @@ Look up reputation observations for the given IP
 | Argus.ObservationsIP.data.address.address | String | Observations IP Address Address | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### get-remote-data
@@ -2673,11 +2533,6 @@ Get remote data from a remote incident. This method does not update the current 
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### get-modified-remote-data
@@ -2699,11 +2554,6 @@ Get updated only remote data from a remote incident. This method does not update
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### update-remote-system
@@ -2724,11 +2574,6 @@ Updates the remote system with incident changes.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### get-mapping-fields
@@ -2748,11 +2593,6 @@ Get mapping fields for mirroring
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2788,11 +2628,6 @@ Downloads case attachment by best-effort search of filename.
 | File.Extension | String | The file extension. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-print-case-comments
@@ -2813,11 +2648,6 @@ Print case comments as notes
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -2841,11 +2671,6 @@ Print case metadata as HTML. Does not add to context.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### argus-download-case-attachments
@@ -2866,10 +2691,5 @@ Download all attachments related to Argus Case.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 

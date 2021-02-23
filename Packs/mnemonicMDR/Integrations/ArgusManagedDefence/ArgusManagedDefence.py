@@ -13,8 +13,6 @@ from typing import Any, Dict, List, Union
 
 import logging
 
-# from argus_api.schema.cases.v2.case import get_case_metadata_by_id as case_schema
-
 from argus_api import session as argus_session
 from argus_api.exceptions.http import AccessDeniedException
 from argus_api.lib.currentuser.v1.user import get_current_user
@@ -264,7 +262,7 @@ def fetch_incidents(
     mirror_tags: str = "argus_mirror",
     exclude_tag: str = "",
 ):
-    start_timestamp = last_run.get("start_time", None) if last_run else None
+    start_timestamp = last_run.get("start_time") if last_run else None
     # Exclude closed cases
     sub_criteria = [{"exclude": True, "status": ["closed"]}]
     # Exclude cases with {key} or {key: value} tags
@@ -420,10 +418,6 @@ def get_remote_data_command(
     return GetRemoteDataResponse(case, entries)
 
 
-def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
-
-
 def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
@@ -458,10 +452,10 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
 
         update_case(
             id=parsed_args.remote_incident_id,
-            status=to_update.get("status", None),
-            priority=to_update.get("priority", None),
-            comment=to_update.get("comment", None),
-            internalComment=to_update.get("internal_comment", None),
+            status=to_update.get("status"),
+            priority=to_update.get("priority"),
+            comment=to_update.get("comment"),
+            internalComment=to_update.get("internal_comment"),
         )
     else:
         demisto.debug(
@@ -517,14 +511,10 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
             )
 
 
-def get_mapping_fields_command() -> GetMappingFieldsResponse:
-    raise NotImplementedError
-
-
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    key = args.get("key", None)
-    value = args.get("value", None)
+    case_id = args.get("case_id")
+    key = args.get("key")
+    value = args.get("value")
     if not case_id:
         raise ValueError("case_id not specified")
     if not key:
@@ -547,8 +537,8 @@ def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def add_comment_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    comment = args.get("comment", None)
+    case_id = args.get("case_id")
+    comment = args.get("comment")
     if not case_id:
         raise ValueError("case_id not specified")
     if not comment:
@@ -557,10 +547,10 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
     result = add_comment(
         caseID=case_id,
         comment=comment,
-        asReplyTo=args.get("as_reply_to", None),
-        internal=args.get("internal", None),
-        originEmailAddress=args.get("origin_email_address", None),
-        associatedAttachmentID=args.get("associated_attachment_id", None),
+        asReplyTo=args.get("as_reply_to"),
+        internal=args.get("internal"),
+        originEmailAddress=args.get("origin_email_address"),
+        associatedAttachmentID=args.get("associated_attachment_id"),
     )
 
     return CommandResults(
@@ -576,42 +566,42 @@ def add_comment_command(args: Dict[str, Any]) -> CommandResults:
 def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = advanced_case_search(
-        startTimestamp=args.get("start_timestamp", None),
-        endTimestamp=args.get("end_timestamp", None),
-        limit=args.get("limit", None),
-        offset=args.get("offset", None),
-        includeDeleted=args.get("include_deleted", None),
-        subCriteria=argToList(args.get("sub_criteria", None)),
-        exclude=args.get("exclude", None),
-        required=args.get("required", None),
-        customerID=argToList(args.get("customer_id", None)),
-        caseID=argToList(args.get("case_id", None)),
-        customer=argToList(args.get("customer", None)),
-        type=argToList(args.get("case_type", None)),
-        service=argToList(args.get("service", None)),
-        category=argToList(args.get("category", None)),
-        status=argToList(args.get("status", None)),
-        priority=argToList(args.get("priority", None)),
-        assetID=argToList(args.get("asset_id", None)),
-        tag=argToList(args.get("tag", None)),
-        workflow=argToList(args.get("workflow", None)),
-        field=argToList(args.get("field", None)),
-        keywords=argToList(args.get("keywords", None)),
-        timeFieldStrategy=argToList(args.get("time_field_strategy", None)),
-        timeMatchStrategy=args.get("time_match_strategy", None),
-        keywordFieldStrategy=argToList(args.get("keyword_field_strategy", None)),
-        keywordMatchStrategy=args.get("keyword_match_strategy", None),
-        user=argToList(args.get("user", None)),
-        userFieldStrategy=argToList(args.get("user_field_strategy", None)),
-        userAssigned=args.get("user_assigned", None),
-        techAssigned=args.get("tech_assigned", None),
-        includeWorkflows=args.get("include_workflows", None),
-        includeDescription=args.get("include_description", None),
-        accessMode=argToList(args.get("access_mode", None)),
-        explicitAccess=argToList(args.get("explicit_access", None)),
-        sortBy=argToList(args.get("sort_by", None)),
-        includeFlags=argToList(args.get("include_flags", None)),
-        excludeFlags=argToList(args.get("exclude_flags", None)),
+        startTimestamp=args.get("start_timestamp"),
+        endTimestamp=args.get("end_timestamp"),
+        limit=args.get("limit"),
+        offset=args.get("offset"),
+        includeDeleted=args.get("include_deleted"),
+        subCriteria=argToList(args.get("sub_criteria")),
+        exclude=args.get("exclude"),
+        required=args.get("required"),
+        customerID=argToList(args.get("customer_id")),
+        caseID=argToList(args.get("case_id")),
+        customer=argToList(args.get("customer")),
+        type=argToList(args.get("case_type")),
+        service=argToList(args.get("service")),
+        category=argToList(args.get("category")),
+        status=argToList(args.get("status")),
+        priority=argToList(args.get("priority")),
+        assetID=argToList(args.get("asset_id")),
+        tag=argToList(args.get("tag")),
+        workflow=argToList(args.get("workflow")),
+        field=argToList(args.get("field")),
+        keywords=argToList(args.get("keywords")),
+        timeFieldStrategy=argToList(args.get("time_field_strategy")),
+        timeMatchStrategy=args.get("time_match_strategy"),
+        keywordFieldStrategy=argToList(args.get("keyword_field_strategy")),
+        keywordMatchStrategy=args.get("keyword_match_strategy"),
+        user=argToList(args.get("user")),
+        userFieldStrategy=argToList(args.get("user_field_strategy")),
+        userAssigned=args.get("user_assigned"),
+        techAssigned=args.get("tech_assigned"),
+        includeWorkflows=args.get("include_workflows"),
+        includeDescription=args.get("include_description"),
+        accessMode=argToList(args.get("access_mode")),
+        explicitAccess=argToList(args.get("explicit_access")),
+        sortBy=argToList(args.get("sort_by")),
+        includeFlags=argToList(args.get("include_flags")),
+        excludeFlags=argToList(args.get("exclude_flags")),
     )
     readable_output = f"Advanced Case Search: {result['count']} result(s)\n"
     readable_output += tableToMarkdown(
@@ -626,13 +616,13 @@ def advanced_case_search_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def close_case_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
 
     result = close_case(
         caseID=case_id,
-        comment=args.get("comment", None),
+        comment=args.get("comment"),
     )
     readable_output = f"# #{case_id}: close case\n"
     readable_output += (
@@ -647,11 +637,11 @@ def close_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def create_case_command(args: Dict[str, Any]) -> CommandResults:
-    subject = args.get("subject", None)
-    description = args.get("description", None)
-    service = args.get("service", None)
-    case_type = args.get("type", None)
-    tags = args.get("tags", None)
+    subject = args.get("subject")
+    description = args.get("description")
+    service = args.get("service")
+    case_type = args.get("type")
+    tags = args.get("tags")
     if not subject:
         raise ValueError("subject not specified")
     if not description:
@@ -667,20 +657,20 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
         tags = build_tags_from_list(tags)
 
     result = create_case(
-        customer=args.get("customer", None),
+        customer=args.get("customer"),
         service=service,
-        category=args.get("category", None),
+        category=args.get("category"),
         type=case_type,
-        status=args.get("status", None),
+        status=args.get("status"),
         tags=tags,
         subject=subject,
         description=description,
-        customerReference=args.get("customer_reference", None),
-        priority=args.get("priority", None),
-        accessMode=args.get("access_mode", None),
-        originEmailAddress=args.get("origin_email_address", None),
-        publish=args.get("publish", None),
-        defaultWatchers=args.get("default_watchers", None),
+        customerReference=args.get("customer_reference"),
+        priority=args.get("priority"),
+        accessMode=args.get("access_mode"),
+        originEmailAddress=args.get("origin_email_address"),
+        publish=args.get("publish"),
+        defaultWatchers=args.get("default_watchers"),
     )
 
     return CommandResults(
@@ -692,7 +682,7 @@ def create_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_case_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
 
@@ -707,8 +697,8 @@ def delete_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    comment_id = args.get("comment_id", None)
+    case_id = args.get("case_id")
+    comment_id = args.get("comment_id")
     if not case_id:
         raise ValueError("case id not specified")
     if not comment_id:
@@ -727,8 +717,8 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def download_attachment_by_filename_command(args: Dict[str, Any]) -> dict:
-    case_id = args.get("case_id", None)
-    file_name = args.get("file_name", None)
+    case_id = args.get("case_id")
+    file_name = args.get("file_name")
     if case_id is None:
         raise ValueError("case id not specified")
     if not file_name:
@@ -749,8 +739,8 @@ def download_attachment_by_filename_command(args: Dict[str, Any]) -> dict:
 
 
 def download_attachment_command(args: Dict[str, Any]) -> dict:
-    case_id = args.get("case_id", None)
-    attachment_id = args.get("attachment_id", None)
+    case_id = args.get("case_id")
+    attachment_id = args.get("attachment_id")
     file_name = args.get("file_name", attachment_id)
     if case_id is None:
         raise ValueError("case id not specified")
@@ -763,7 +753,7 @@ def download_attachment_command(args: Dict[str, Any]) -> dict:
 
 
 def download_case_attachments_command(args: Dict[str, Any]) -> List[Dict]:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if case_id is None:
         raise ValueError("case id not specified")
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
@@ -781,9 +771,9 @@ def download_case_attachments_command(args: Dict[str, Any]) -> List[Dict]:
 
 
 def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    comment_id = args.get("comment_id", None)
-    comment = args.get("comment", None)
+    case_id = args.get("case_id")
+    comment_id = args.get("comment_id")
+    comment = args.get("comment")
     if not case_id:
         raise ValueError("case id not specified")
     if not comment_id:
@@ -804,8 +794,8 @@ def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    attachment_id = args.get("attachment_id", None)
+    case_id = args.get("case_id")
+    attachment_id = args.get("attachment_id")
     if not case_id:
         raise ValueError("case id not specified")
     if not attachment_id:
@@ -826,12 +816,12 @@ def get_attachment_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
 
     result = get_case_metadata_by_id(
-        id=case_id, skipRedirect=args.get("skip_redirect", None)
+        id=case_id, skipRedirect=args.get("skip_redirect")
     )
 
     return CommandResults(
@@ -843,12 +833,12 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
 
     result = get_case_metadata_by_id(
-        id=case_id, skipRedirect=args.get("skip_redirect", None)
+        id=case_id, skipRedirect=args.get("skip_redirect")
     )
 
     return {
@@ -860,12 +850,12 @@ def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
 
 
 def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
 
     result = list_case_attachments(
-        caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
+        caseID=case_id, limit=args.get("limit"), offset=args.get("offset")
     )
     readable_output = f"# #{case_id}: Case attachments\n"
     for attachment in result["data"]:
@@ -883,12 +873,12 @@ def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case_id not specified")
 
     result = list_case_tags(
-        caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
+        caseID=case_id, limit=args.get("limit"), offset=args.get("offset")
     )
     headers = ["key", "value", "addedTime", "id"]
     readable_output = tableToMarkdown(
@@ -904,8 +894,8 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
-    case_id = args.get("case_id", None)
-    sort_by = args.get("sort_by", None)
+    case_id = args.get("case_id")
+    sort_by = args.get("sort_by")
     if not case_id:
         raise ValueError("case_id not specified")
     if sort_by:
@@ -913,10 +903,10 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
 
     result = list_case_comments(
         caseID=case_id,
-        beforeComment=args.get("before_comment", None),
-        afterComment=args.get("after_comment", None),
-        offset=args.get("offset", None),
-        limit=args.get("limit", None),
+        beforeComment=args.get("before_comment"),
+        afterComment=args.get("after_comment"),
+        offset=args.get("offset"),
+        limit=args.get("limit"),
         sortBy=sort_by,
     )
     notes = []
@@ -933,8 +923,8 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    sort_by = args.get("sort_by", None)
+    case_id = args.get("case_id")
+    sort_by = args.get("sort_by")
     if not case_id:
         raise ValueError("case_id not specified")
     if sort_by:
@@ -942,10 +932,10 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
 
     result = list_case_comments(
         caseID=case_id,
-        beforeComment=args.get("before_comment", None),
-        afterComment=args.get("after_comment", None),
-        offset=args.get("offset", None),
-        limit=args.get("limit", None),
+        beforeComment=args.get("before_comment"),
+        afterComment=args.get("after_comment"),
+        offset=args.get("offset"),
+        limit=args.get("limit"),
         sortBy=sort_by,
     )
 
@@ -960,8 +950,8 @@ def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    tag_id = args.get("tag_id", None)
+    case_id = args.get("case_id")
+    tag_id = args.get("tag_id")
     if not case_id:
         raise ValueError("case id not specified")
     if not tag_id:
@@ -982,9 +972,9 @@ def remove_case_tag_by_id_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
-    key = args.get("key", None)
-    value = args.get("value", None)
+    case_id = args.get("case_id")
+    key = args.get("key")
+    value = args.get("value")
     if not case_id:
         raise ValueError("case id not specified")
     if not key:
@@ -1007,25 +997,25 @@ def remove_case_tag_by_key_value_command(args: Dict[str, Any]) -> CommandResults
 
 
 def update_case_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
 
     result = update_case(
         id=case_id,
-        subject=args.get("subject", None),
-        description=args.get("description", None),
-        status=args.get("status", None),
-        priority=args.get("priority", None),
-        category=args.get("category", None),
-        reporter=args.get("reporter", None),
-        assignedUser=args.get("assigned_user", None),
-        assignedTech=args.get("assigned_tech", None),
-        customerReference=args.get("customer_reference", None),
-        comment=args.get("comment", None),
-        originEmailAddress=args.get("origin_email_address", None),
-        hasEvents=args.get("has_events", None),
-        internalComment=args.get("internal_comment", None),
+        subject=args.get("subject"),
+        description=args.get("description"),
+        status=args.get("status"),
+        priority=args.get("priority"),
+        category=args.get("category"),
+        reporter=args.get("reporter"),
+        assignedUser=args.get("assigned_user"),
+        assignedTech=args.get("assigned_tech"),
+        customerReference=args.get("customer_reference"),
+        comment=args.get("comment"),
+        originEmailAddress=args.get("origin_email_address"),
+        hasEvents=args.get("has_events"),
+        internalComment=args.get("internal_comment"),
     )
 
     return CommandResults(
@@ -1037,10 +1027,10 @@ def update_case_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_event_command(args: Dict[str, Any]) -> CommandResults:
-    event_type = args.get("type", None)
-    timestamp = args.get("timestamp", None)
-    customer_id = args.get("customer_id", None)
-    event_id = args.get("event_id", None)
+    event_type = args.get("type")
+    timestamp = args.get("timestamp")
+    customer_id = args.get("customer_id")
+    event_id = args.get("event_id")
     if not event_type:
         raise ValueError("event type not specified")
     if not timestamp:
@@ -1063,12 +1053,12 @@ def get_event_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
-    case_id = args.get("case_id", None)
+    case_id = args.get("case_id")
     if not case_id:
         raise ValueError("case id not specified")
 
     result = get_events_for_case(
-        caseID=case_id, limit=args.get("limit", None), offset=args.get("offset", None)
+        caseID=case_id, limit=args.get("limit"), offset=args.get("offset")
     )
 
     return CommandResults(
@@ -1084,43 +1074,43 @@ def get_events_for_case_command(args: Dict[str, Any]) -> CommandResults:
 def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = find_aggregated_events(
-        skipFutureEvents=args.get("skip_future_events", None),
-        exclude=args.get("exclude", None),
-        locationID=argToList(args.get("location_id", None)),
-        severity=argToList(args.get("severity", None)),
-        customer=argToList(args.get("customer", None)),
-        alarmID=argToList(args.get("alarm_id", None)),
-        attackCategoryID=argToList(args.get("attack_category_id", None)),
-        sourceGeoCountry=argToList(args.get("source_geo_country", None)),
-        destinationGeoCountry=argToList(args.get("destination_geo_country", None)),
-        geoCountry=argToList(args.get("geo_country", None)),
-        properties=str_to_dict(args.get("properties", None)),
-        exactMatchProperties=args.get("exact_match_properties", None),
-        subCriteria=argToList(args.get("sub_criteria", None)),
-        signature=argToList(args.get("signature", None)),
-        lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
-        indexStartTime=args.get("index_start_time", None),
-        indexEndTime=args.get("index_end_time", None),
-        destinationIP=argToList(args.get("destination_ip", None)),
-        sourceIP=argToList(args.get("source_ip", None)),
-        ip=argToList(args.get("ip", None)),
-        destinationPort=argToList(args.get("destination_port", None)),
-        sourcePort=argToList(args.get("source_port", None)),
-        port=argToList(args.get("port", None)),
-        minSeverity=args.get("min_severity", None),
-        maxSeverity=args.get("max_severity", None),
+        skipFutureEvents=args.get("skip_future_events"),
+        exclude=args.get("exclude"),
+        locationID=argToList(args.get("location_id")),
+        severity=argToList(args.get("severity")),
+        customer=argToList(args.get("customer")),
+        alarmID=argToList(args.get("alarm_id")),
+        attackCategoryID=argToList(args.get("attack_category_id")),
+        sourceGeoCountry=argToList(args.get("source_geo_country")),
+        destinationGeoCountry=argToList(args.get("destination_geo_country")),
+        geoCountry=argToList(args.get("geo_country")),
+        properties=str_to_dict(args.get("properties")),
+        exactMatchProperties=args.get("exact_match_properties"),
+        subCriteria=argToList(args.get("sub_criteria")),
+        signature=argToList(args.get("signature")),
+        lastUpdatedTimestamp=args.get("last_updated_timestamp"),
+        indexStartTime=args.get("index_start_time"),
+        indexEndTime=args.get("index_end_time"),
+        destinationIP=argToList(args.get("destination_ip")),
+        sourceIP=argToList(args.get("source_ip")),
+        ip=argToList(args.get("ip")),
+        destinationPort=argToList(args.get("destination_port")),
+        sourcePort=argToList(args.get("source_port")),
+        port=argToList(args.get("port")),
+        minSeverity=args.get("min_severity"),
+        maxSeverity=args.get("max_severity"),
         limit=args.get("limit", 25),
-        offset=args.get("offset", None),
-        includeDeleted=args.get("include_deleted", None),
-        minCount=args.get("min_count", None),
-        associatedCaseID=argToList(args.get("associated_case_id", None)),
-        sourceIPMinBits=args.get("source_ip_min_bits", None),
-        destinationIPMinBits=args.get("destination_ip_min_bits", None),
+        offset=args.get("offset"),
+        includeDeleted=args.get("include_deleted"),
+        minCount=args.get("min_count"),
+        associatedCaseID=argToList(args.get("associated_case_id")),
+        sourceIPMinBits=args.get("source_ip_min_bits"),
+        destinationIPMinBits=args.get("destination_ip_min_bits"),
         startTimestamp=args.get("start_timestamp", "-24hours"),
         endTimestamp=args.get("end_timestamp", "now"),
-        sortBy=argToList(args.get("sort_by", None)),
-        includeFlags=argToList(args.get("include_flags", None)),
-        excludeFlags=argToList(args.get("exclude_flags", None)),
+        sortBy=argToList(args.get("sort_by")),
+        includeFlags=argToList(args.get("include_flags")),
+        excludeFlags=argToList(args.get("exclude_flags")),
     )
 
     return CommandResults(
@@ -1133,13 +1123,13 @@ def find_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
 def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
     result = list_aggregated_events(
-        customerID=args.get("customer_id", None),
-        signature=args.get("signature", None),
-        ip=args.get("ip", None),
-        startTimestamp=args.get("start_timestamp", None),
-        endTimestamp=args.get("end_timestamp", None),
-        limit=args.get("limit", None),
-        offset=args.get("offset", None),
+        customerID=args.get("customer_id"),
+        signature=args.get("signature"),
+        ip=args.get("ip"),
+        startTimestamp=args.get("start_timestamp"),
+        endTimestamp=args.get("end_timestamp"),
+        limit=args.get("limit"),
+        offset=args.get("offset"),
     )
 
     return CommandResults(
@@ -1151,10 +1141,10 @@ def list_aggregated_events_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_payload_command(args: Dict[str, Any]) -> CommandResults:
-    event_type = args.get("type", None)
-    timestamp = args.get("timestamp", None)
-    customer_id = args.get("customer_id", None)
-    event_id = args.get("event_id", None)
+    event_type = args.get("type")
+    timestamp = args.get("timestamp")
+    customer_id = args.get("customer_id")
+    event_id = args.get("event_id")
     if not event_type:
         raise ValueError("event type not specified")
     if not timestamp:
@@ -1179,10 +1169,10 @@ def get_payload_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def get_pcap_command(args: Dict[str, Any]) -> Any:
-    event_type = args.get("type", None)
-    timestamp = args.get("timestamp", None)
-    customer_id = args.get("customer_id", None)
-    event_id = args.get("event_id", None)
+    event_type = args.get("type")
+    timestamp = args.get("timestamp")
+    customer_id = args.get("customer_id")
+    event_id = args.get("event_id")
     if not event_type:
         raise ValueError("event type not specified")
     if not timestamp:
@@ -1201,41 +1191,41 @@ def get_pcap_command(args: Dict[str, Any]) -> Any:
 def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     # noinspection PyTypeChecker
     result = find_n_i_d_s_events(
-        skipFutureEvents=args.get("skip_future_events", None),
-        exclude=args.get("exclude", None),
-        eventIdentifier=argToList(args.get("event_identifier", None)),
-        locationID=argToList(args.get("location_id", None)),
-        severity=argToList(args.get("severity", None)),
-        customer=argToList(args.get("customer", None)),
-        alarmID=argToList(args.get("alarm_id", None)),
-        attackCategoryID=argToList(args.get("attack_category_id", None)),
-        sourceGeoCountry=argToList(args.get("source_geo_country", None)),
-        destinationGeoCountry=argToList(args.get("destination_geo_country", None)),
-        geoCountry=argToList(args.get("geo_country", None)),
-        properties=str_to_dict(args.get("properties", None)),
-        exactMatchProperties=args.get("exact_match_properties", None),
-        sensorID=argToList(args.get("sensor_id", None)),
-        subCriteria=argToList(args.get("sub_criteria", None)),
-        signature=argToList(args.get("signature", None)),
-        lastUpdatedTimestamp=args.get("last_updated_timestamp", None),
-        indexStartTime=args.get("index_start_time", None),
-        indexEndTime=args.get("index_end_time", None),
-        destinationIP=argToList(args.get("destination_ip", None)),
-        sourceIP=argToList(args.get("source_ip", None)),
-        ip=argToList(args.get("ip", None)),
-        destinationPort=argToList(args.get("destination_port", None)),
-        sourcePort=argToList(args.get("source_port", None)),
-        port=argToList(args.get("port", None)),
-        minSeverity=args.get("min_severity", None),
-        maxSeverity=args.get("max_severity", None),
+        skipFutureEvents=args.get("skip_future_events"),
+        exclude=args.get("exclude"),
+        eventIdentifier=argToList(args.get("event_identifier")),
+        locationID=argToList(args.get("location_id")),
+        severity=argToList(args.get("severity")),
+        customer=argToList(args.get("customer")),
+        alarmID=argToList(args.get("alarm_id")),
+        attackCategoryID=argToList(args.get("attack_category_id")),
+        sourceGeoCountry=argToList(args.get("source_geo_country")),
+        destinationGeoCountry=argToList(args.get("destination_geo_country")),
+        geoCountry=argToList(args.get("geo_country")),
+        properties=str_to_dict(args.get("properties")),
+        exactMatchProperties=args.get("exact_match_properties"),
+        sensorID=argToList(args.get("sensor_id")),
+        subCriteria=argToList(args.get("sub_criteria")),
+        signature=argToList(args.get("signature")),
+        lastUpdatedTimestamp=args.get("last_updated_timestamp"),
+        indexStartTime=args.get("index_start_time"),
+        indexEndTime=args.get("index_end_time"),
+        destinationIP=argToList(args.get("destination_ip")),
+        sourceIP=argToList(args.get("source_ip")),
+        ip=argToList(args.get("ip")),
+        destinationPort=argToList(args.get("destination_port")),
+        sourcePort=argToList(args.get("source_port")),
+        port=argToList(args.get("port")),
+        minSeverity=args.get("min_severity"),
+        maxSeverity=args.get("max_severity"),
         limit=args.get("limit", 25),
-        offset=args.get("offset", None),
-        includeDeleted=args.get("include_deleted", None),
+        offset=args.get("offset"),
+        includeDeleted=args.get("include_deleted"),
         startTimestamp=args.get("start_timestamp", "-24hours"),
         endTimestamp=args.get("end_timestamp", "now"),
-        sortBy=argToList(args.get("sort_by", None)),
-        includeFlags=argToList(args.get("include_flags", None)),
-        excludeFlags=argToList(args.get("exclude_flags", None)),
+        sortBy=argToList(args.get("sort_by")),
+        includeFlags=argToList(args.get("include_flags")),
+        excludeFlags=argToList(args.get("exclude_flags")),
     )
 
     return CommandResults(
@@ -1248,13 +1238,13 @@ def find_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
 def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
     result = list_n_i_d_s_events(
-        customerID=args.get("customer_id", None),
-        signature=args.get("signature", None),
-        ip=args.get("ip", None),
-        startTimestamp=args.get("start_timestamp", None),
-        endTimestamp=args.get("end_timestamp", None),
-        limit=args.get("limit", None),
-        offset=args.get("offset", None),
+        customerID=args.get("customer_id"),
+        signature=args.get("signature"),
+        ip=args.get("ip"),
+        startTimestamp=args.get("start_timestamp"),
+        endTimestamp=args.get("end_timestamp"),
+        limit=args.get("limit"),
+        offset=args.get("offset"),
     )
 
     return CommandResults(
@@ -1266,20 +1256,20 @@ def list_nids_events_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def search_records_command(args: Dict[str, Any]) -> CommandResults:
-    query = args.get("query", None)
+    query = args.get("query")
     if not query:
         raise ValueError("query not specified")
     # noinspection PyTypeChecker
     result = search_records(
         query=query,
-        aggregateResult=args.get("aggregate_result", None),
-        includeAnonymousResults=args.get("include_anonymous_results", None),
-        rrClass=argToList(args.get("rr_class", None)),
-        rrType=argToList(args.get("rr_type", None)),
-        customerID=argToList(args.get("customer_id", None)),
-        tlp=argToList((args.get("tlp", None))),
+        aggregateResult=args.get("aggregate_result"),
+        includeAnonymousResults=args.get("include_anonymous_results"),
+        rrClass=argToList(args.get("rr_class")),
+        rrType=argToList(args.get("rr_type")),
+        customerID=argToList(args.get("customer_id")),
+        tlp=argToList((args.get("tlp"))),
         limit=args.get("limit", 25),
-        offset=args.get("offset", None),
+        offset=args.get("offset"),
     )
     return CommandResults(
         readable_output=tableToMarkdown("PDNS records", result["data"]),
@@ -1290,7 +1280,7 @@ def search_records_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResults:
-    fqdn = args.get("fqdn", None)
+    fqdn = args.get("fqdn")
     if not fqdn:
         raise ValueError("fqdn not specified")
 
@@ -1306,7 +1296,7 @@ def fetch_observations_for_domain_command(args: Dict[str, Any]) -> CommandResult
 
 
 def fetch_observations_for_i_p_command(args: Dict[str, Any]) -> CommandResults:
-    ip = args.get("ip", None)
+    ip = args.get("ip")
     if not ip:
         raise ValueError("ip not specified")
 
@@ -1333,7 +1323,7 @@ def main() -> None:
         demisto.params().get("api_key"),
         demisto.params().get("api_url"),
         handle_proxy(),
-        demisto.params().get("insecure", None),
+        demisto.params().get("insecure"),
     )
 
     demisto.debug(f"Command being called is {demisto.command()}")
@@ -1368,14 +1358,8 @@ def main() -> None:
                 )
             )
 
-        # elif demisto.command() == "get-modified-remote-data":
-        #     return_results(get_modified_remote_data_command(demisto.args()))
-
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(demisto.args()))
-
-        # elif demisto.command() == "get-mapping-fields":
-        #     return_results(get_mapping_fields_command())
 
         elif demisto.command() == "argus-add-case-tag":
             return_results(add_case_tag_command(demisto.args()))
