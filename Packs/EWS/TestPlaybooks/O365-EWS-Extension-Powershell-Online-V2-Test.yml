@@ -176,40 +176,6 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-  "5":
-    id: "5"
-    taskid: eb85020d-a35a-43b9-89db-f60ca4e268a1
-    type: regular
-    task:
-      id: eb85020d-a35a-43b9-89db-f60ca4e268a1
-      version: -1
-      name: ews-recipient-permission-get
-      description: View information about SendAs permissions that are configured for
-        users.
-      script: EWS Extension Online Powershell v2|||ews-recipient-permission-get
-      type: regular
-      iscommand: true
-      brand: EWS Extension Online Powershell v2
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      identity: {}
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
   "6":
     id: "6"
     taskid: ba2ae7a5-ee9a-467d-848d-ce94219875ab
@@ -337,7 +303,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -354,44 +320,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "10":
-    id: "10"
-    taskid: 98e3860a-0433-480d-839a-cb5112ab4883
-    type: condition
-    task:
-      id: 98e3860a-0433-480d-839a-cb5112ab4883
-      version: -1
-      name: Validate Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: EWS.RecipientPermission
-                accessor: Identity
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
         }
       }
     note: false
@@ -453,39 +381,6 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-  "13":
-    id: "13"
-    taskid: 39d94ef2-f0c9-4957-8918-1fa2c8107b22
-    type: regular
-    task:
-      id: 39d94ef2-f0c9-4957-8918-1fa2c8107b22
-      version: -1
-      name: sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      seconds:
-        simple: "15"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 1770
         }
       }
@@ -500,7 +395,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 1785,
         "width": 380,
         "x": 50,
         "y": 50

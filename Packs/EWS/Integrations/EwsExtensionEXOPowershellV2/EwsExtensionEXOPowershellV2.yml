@@ -311,7 +311,7 @@ script:
     description: Displays information about SendAs permissions that are configured
       for users.
     execution: false
-    name: ews-recipient-permission-get
+    name: ews-recipient-permission-list
   - arguments:
     - default: false
       description: The identity of the mailbox you want to view.

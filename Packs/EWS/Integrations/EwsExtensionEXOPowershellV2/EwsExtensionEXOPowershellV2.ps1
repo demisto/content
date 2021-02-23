@@ -453,7 +453,7 @@ function Main
             "$script:COMMAND_PREFIX-mailbox-permission-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxPermissionCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-recipient-permission-get" {
+            "$script:COMMAND_PREFIX-recipient-permission-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXORecipientPermissionCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-recipient-list" {
