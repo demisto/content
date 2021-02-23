@@ -574,7 +574,7 @@ def test_get_remote_data_command(requests_mock):
 
 
 def test_update_remote_system_command(mocker, requests_mock):
-    from RespondAnalyst import update_remote_system_comman
+    from RespondAnalyst import update_remote_system_command
     args = {
         "data": "tons of data",
         "entries": "entries val",
