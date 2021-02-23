@@ -641,7 +641,6 @@ def marking_list_command(client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output='No markings')
 
 
-
 def main():
     params = demisto.params()
     args = demisto.args()

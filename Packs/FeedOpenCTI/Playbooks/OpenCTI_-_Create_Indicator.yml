@@ -1,6 +1,5 @@
-id: 26e00078-3084-4ba4-8296-efbdb3062401
+id: OpenCTI Create Indicator
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: OpenCTI Create Indicator
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,7 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "1":
     id: "1"
     taskid: ef8501f6-a2ff-4a30-88b8-28139e8566aa
@@ -42,6 +41,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Check if label provided?'
     nexttasks:
       '#default#':
       - "7"
@@ -68,7 +68,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "2":
     id: "2"
     taskid: 1ba7eb11-e1ea-41ea-812f-74c233ccf2c1
@@ -101,7 +100,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "4":
     id: "4"
     taskid: 2317fbed-8bfb-4bc9-83cb-bc7e2ac77e12
@@ -113,6 +111,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Verify Output'
     nexttasks:
       "yes":
       - "7"
@@ -137,7 +136,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "7":
     id: "7"
     taskid: 8fe0a73f-f9b6-417b-809d-86a4083ef96e
@@ -149,6 +147,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Check if external reference provided?"
     nexttasks:
       '#default#':
       - "10"
@@ -180,7 +179,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "8":
     id: "8"
     taskid: b019e6c7-31ec-468d-8d45-3d2ea8324c5f
@@ -215,7 +213,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "9":
     id: "9"
     taskid: 5b6f679f-8931-4d43-8ab6-c13ab3f5f8b4
@@ -227,6 +224,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Verify Output"
     nexttasks:
       "yes":
       - "10"
@@ -251,7 +249,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "10":
     id: "10"
     taskid: 296a0d14-77b1-4fc3-8a39-483983b45ae6
@@ -298,7 +295,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "11":
     id: "11"
     taskid: a50a3d95-af54-4b06-86f6-10dfb831a548
@@ -310,6 +306,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: 'Check if indicator created? '
     nexttasks:
       "yes":
       - "12"
@@ -334,7 +331,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
   "12":
     id: "12"
     taskid: 4bddfa64-a958-476c-85b0-ef00f470ecd8
@@ -346,6 +342,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -359,7 +356,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -377,49 +373,49 @@ inputs:
   value: {}
   required: false
   description: Label name to add to new indicator.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: type
   value: {}
   required: true
   description: 'The indicator type to create. Possible values:  "Account", "Domain",
     "Email", "File-md5", "File-sha1", "File-sha256", "Host", "IP", "IPV6", "Registry
     Key" and "URL".'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: marking_definition_id
   value: {}
   required: false
   description: 'Marking definition id to add to new indicator. Use opencti-marking-definition-list
     to get marking id. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: created_by_id
   value: {}
   required: false
   description: Creator of the new indicator. Use opencti-organization-list to find
     all organizations id at opencti, or use  opencti-organization-create to create
     new organization id.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: external_reference_source_name
   value: {}
   required: false
   description: External References Source Name. In order to use external references,
     external_reference_url and external_reference_source_name are mandatory.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: external_reference_url
   value: {}
   required: false
   description: External References URL. In order to use external references, external_reference_url
     and external_reference_source_name are mandatory.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: New indicator description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: score
   value: {}
   required: false
   description: 'New indicator score. Valid value: number between 0 to 100.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: data
   value: {}
   required: false
@@ -428,7 +424,7 @@ inputs:
     URL, Host. For file-md5, file-sha1, file-sha256 data argument should contain hash.
     For Account type data should contain account_login. Registry Key data json should
     contain key "key".'
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: OpenCTI.Indicator.id
   description: New indicator id.
@@ -438,3 +434,4 @@ outputs:
 fromversion: 5.5.0
 tests:
 - OpenCTI Feed v2 Test
+description: Create indicator at OpenCTI.
