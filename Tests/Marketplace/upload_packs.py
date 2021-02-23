@@ -909,6 +909,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    packs_list = []
 
     # taking care of private packs
     should_upload_private_packs, private_packs, updated_private_packs_ids = are_there_private_packs_to_upload(
