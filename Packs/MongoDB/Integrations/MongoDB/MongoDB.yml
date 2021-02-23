@@ -239,7 +239,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset of the result returned from MongoDB. Default value - 0.
+      description: Offset of the result returned from MongoDB.
       isArray: false
       name: offset
       required: false
