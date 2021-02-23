@@ -1,0 +1,62 @@
+args:
+- default: false
+  description: Update the canvas to the incident ID. If not specified - update the
+    current incident.
+  isArray: false
+  name: incidentID
+  required: false
+  secret: false
+- default: false
+  description: Incident IDs to draw in the canvas and relate to the main incident.
+    List of IDs or comman separate.
+  isArray: true
+  name: relatedIncidentsIDs
+  required: false
+  secret: false
+- default: false
+  description: Indicators to draw in the canvas. The format is a list of indicator
+    objecs.
+  isArray: true
+  name: indicators
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: multipartite
+  description: The canvas layout
+  isArray: false
+  name: layout
+  predefined:
+  - multipartite.shell
+  - spring
+  - kamada_kawai
+  - circular
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Override canvas if exists
+  isArray: false
+  name: overrideUserCanvas
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Draw incidents and indicators on canvas to visualize their connections.
+commonfields:
+  id: DrawRelatedIncidentsCanvas
+  version: -1
+enabled: true
+name: DrawRelatedIncidentsCanvas
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/localcanvas:latest
+runas: DBotWeakRole
+runonce: false
+pswd: ''
+fromversion: 6.0.1
