@@ -1,6 +1,6 @@
 {
     "defaultIncidentType": "Cyberint Incident",
-    "description": "",
+    "description": "Cyberint Classifier",
     "feed": false,
     "id": "Cyberint - Classifier",
     "keyTypeMap": {
