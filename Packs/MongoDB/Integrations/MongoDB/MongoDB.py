@@ -461,11 +461,9 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
             t=[entry.get('_id') for entry in raw_response],
             headers=['_id'],
         )
-        outputs_objects = list()
         for item in raw_response:
             item.update({'collection': collection})
-            outputs_objects.append(item)
-        outputs = {CONTEXT_KEY: outputs_objects}
+        outputs = {CONTEXT_KEY: raw_response}
         return readable_outputs, outputs, raw_response
     else:
         return 'MongoDB: No results found', {}, raw_response

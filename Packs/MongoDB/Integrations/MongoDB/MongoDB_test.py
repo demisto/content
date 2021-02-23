@@ -252,10 +252,10 @@ def test_pipeline_query_command(mocker):
         pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"
     )
 
-    outputs_objects = list()
+    expected_context = list()
     for item in copy.deepcopy(raw_response):
         item.update({'collection': 'test_collection'})
-        outputs_objects.append(item)
+        expected_context.append(item)
 
     assert 'Total of 2 entries were found in MongoDB collection' in readable_outputs
-    assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == outputs_objects
+    assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == expected_context
