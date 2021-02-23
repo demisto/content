@@ -1,10 +1,10 @@
 {
-    "id": "Cyberint Incident",
+    "id": "CyberInt Incident",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Cyberint Incident",
-    "prevName": "Cyberint Incident",
+    "name": "CyberInt Incident",
+    "prevName": "CyberInt Incident",
     "color": "#80DEEA",
     "hours": 0,
     "days": 0,
@@ -18,5 +18,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "Cyberint Incident - Layout"
+    "layout": "Cyberint Incident - Layout",
+    "fromVersion": "6.0.0"
 }

@@ -18,14 +18,13 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Cyberint Incident"
+        "CyberInt Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
-    "columns": [
-        {
+    "columns": [{
             "key": "id",
             "displayName": "id",
             "type": "shortText",
@@ -62,8 +61,7 @@
             "selectValues": null
         }
     ],
-    "defaultRows": [
-        {
+    "defaultRows": [{
 
         },
         {

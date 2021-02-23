@@ -662,7 +662,7 @@
     "detailsV2": {
         "tabs": [{
                 "id": "caseinfoid",
-                "name": "Cyberint Incident",
+                "name": "CyberInt Incident",
                 "sections": [{
                         "displayType": "ROW",
                         "h": 4,

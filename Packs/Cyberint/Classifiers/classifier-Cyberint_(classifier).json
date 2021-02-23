@@ -1,12 +1,12 @@
 {
-    "defaultIncidentType": "Cyberint Incident",
+    "defaultIncidentType": "CyberInt Incident",
     "description": "",
     "feed": false,
     "id": "Cyberint - Classifier",
     "keyTypeMap": {
-        "acknowledged": "Cyberint Incident",
-        "closed": "Cyberint Incident",
-        "open": "Cyberint Incident"
+        "acknowledged": "CyberInt Incident",
+        "closed": "CyberInt Incident",
+        "open": "CyberInt Incident"
     },
     "name": "Cyberint - Classifier",
     "propagationLabels": [
