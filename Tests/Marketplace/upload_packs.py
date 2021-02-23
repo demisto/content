@@ -505,6 +505,7 @@ def get_updated_private_packs(private_packs, index_folder_path):
         if private_pack_was_updated:
             updated_private_packs.append(private_pack_id)
 
+    updated_private_packs.append("HelloWorldPremium")
     logging.debug(f"Updated private packs are: {updated_private_packs}")
     return updated_private_packs
 
@@ -589,6 +590,7 @@ def is_private_packs_updated(public_index_json, private_index_path):
     id_to_commit_hash_from_public_index = {private_pack.get("id"): private_pack.get("contentCommitHash", "") for
                                            private_pack in public_index_json.get("packs", [])}
 
+    id_to_commit_hash_from_public_index["HelloWorldPremium"] = "testCommitHash"
     for private_pack in private_index_json.get("packs"):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
