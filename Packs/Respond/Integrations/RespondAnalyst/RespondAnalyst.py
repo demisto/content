@@ -130,7 +130,7 @@ class RestClient(BaseClient):
             if len(tenant_mappings) == 0:
                 raise Exception('no tenants found for user')
             return tenant_mappings
-        except ValueError as e:
+        except ValueError:
             if 'login' in res.text.lower():
                 raise Exception(f'invalid API token for {BASE_URL}')
 
