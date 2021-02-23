@@ -174,7 +174,7 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
             'actor': resource.get('actors'),
             'reports': resource.get('reports'),
             'malwarefamily': resource.get('malware_families'),
-            'killchains': resource.get('kill_chains'),
+            'stixkillchainphases': resource.get('kill_chains'),
             'ipaddress': resource.get('ip_address_types'),
             'domainname': resource.get('domain_types'),
             'targets': resource.get('targets'),
