@@ -22,11 +22,12 @@ class Client(BaseClient):
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-
-        self._login()
+        if self.username and self.password:
+            self._login()
 
     def __del__(self):
-        self._logout()
+        if self.username and self.password:
+            self._logout()
 
     def _login(self):
         """
@@ -787,19 +788,23 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, username: Optional[str], password: Optional[str], cluster_auth_token: Optional[str]):
     """test function
 
     Args:
-        client:
-        *_:
+        client: Client
+        username: Username parameter
+        password: Password parameter
+        cluster_auth_token: Cluster Authentication Token
 
     Returns:
         ok if successful
     """
+    if not cluster_auth_token:
+        if not username or not password:
+            raise ValueError('You must provide both username and password when using credentials.')
     client.test_module_request()
-    demisto.results('ok')
-    return '', None, None
+    return 'ok'
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1457,13 +1462,15 @@ def main():
     """
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
+    cluster_auth_token = demisto.params().get('cluster_auth_token')
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
-    headers = {'Accept': 'application/json'}
     proxy = demisto.params().get('proxy', False)
+    headers = {'Accept': 'application/json'}
+    if cluster_auth_token and not username and not password:
+        headers['ExaAuthToken'] = cluster_auth_token
 
     commands = {
-        'test-module': test_module,
         'get-notable-users': get_notable_users,
         'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
@@ -1504,7 +1511,9 @@ def main():
                         password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
-        if command in commands:
+        if command == 'test-module':
+            return_outputs(test_module(client, username, password, cluster_auth_token))
+        elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

@@ -9,8 +9,15 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: Use this token to authenticate in Exabeam Cloud platform. See detailed
+    instructions (?) for further information.
+  display: Cluster Authentication Token
+  hidden: false
+  name: cluster_auth_token
+  required: false
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1207,10 +1214,10 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '30'
       description: Number of days until asset is automatically removed from the watchlist.
       isArray: false
       name: watch_until_days
-      defaultValue: '30'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1504,7 +1511,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of context table session. If not specified, a new session is created
+      description: The ID of context table session. If not specified, a new session
+        is created
       isArray: false
       name: session_id
       required: false
@@ -1527,14 +1535,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: append
       description: Whether to replace or append the records from the CSV file.
       isArray: false
-      defaultValue: append
       name: append_or_replace
-      required: false
       predefined:
-      - 'append'
-      - 'replace'
+      - append
+      - replace
+      required: false
       secret: false
     deprecated: false
     description: Add context table records from CSV file in a specific modification
@@ -1555,7 +1563,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of update session. If not specified, a new session is created
+      description: The ID of update session. If not specified, a new session is created.
       isArray: false
       name: session_id
       required: false
