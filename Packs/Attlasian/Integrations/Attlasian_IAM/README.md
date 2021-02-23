@@ -1,4 +1,6 @@
-Integrate with Atlassian's services to execute CRUD operations for employee lifecycle processes.
+Note: This integration should be used as part of our IAM premium pack. For further details, visit our IAM pack documentation.
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+Integrate with Atlassian's services to execute generic ILM management operations such as create, update, delete, etc, for employee lifecycle processes.
 
 ## Configure Atlassian IAM on Cortex XSOAR
 
@@ -17,8 +19,11 @@ Integrate with Atlassian's services to execute CRUD operations for employee life
     | Enabled The Command iam-update-user |  | False |
     | Enabled The Command iam-disable-user |  | False |
     | Automatically create user if not found in update command |  | False |
-    | Incoming Mapper |  | True |
-    | Outgoing Mapper |  | True |
+    | Incoming Mapper | Incoming Mapper | True |
+    | Outgoing Mapper | Outgoing Mapper | True |
+    
+    * To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and not in the "Mapper (outgoing)" dropdown list selector.
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
