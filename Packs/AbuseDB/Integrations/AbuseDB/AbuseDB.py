@@ -256,9 +256,10 @@ def report_ip_command(ip, categories):
     return analysis
 
 
-def get_blacklist_command(limit, days, saveToContext):
+def get_blacklist_command(limit, days, confidence, saveToContext):
     params = {
         'maxAgeInDays': days,
+        'confidenceMinimum': confidence,
         "limit": limit
     }
     analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params)
