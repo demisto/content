@@ -153,7 +153,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/session/{session_id}/info')
         return response
 
-    def list_top_domains(self, sequence_id: str = None, sequence_type: str = None) -> Dict:
+    def list_top_domains_request(self, sequence_id: str = None, sequence_type: str = None) -> Dict:
         """
 
             Args:
@@ -201,14 +201,14 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=f'/uba/api/asset/{asset_id}/info', params=params)
         return response
 
-    def list_asset_next_events(self, asset_id: str = None,
-                               event_time: int = None,
-                               number_of_events: int = None,
-                               anomaly_only: str = None,
-                               event_categories: list = None,
-                               event_types: list = None,
-                               event_type_include: str = None,
-                               sequence_types: list = None) -> Dict:
+    def list_asset_next_events_request(self, asset_id: str = None,
+                                       event_time: int = None,
+                                       number_of_events: int = None,
+                                       anomaly_only: str = None,
+                                       event_categories: list = None,
+                                       event_types: list = None,
+                                       event_type_include: str = None,
+                                       sequence_types: list = None) -> Dict:
         """
 
             Args:
@@ -243,8 +243,8 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def list_security_alerts(self, asset_id: str = None, sort_by: str = None,
-                             sort_order: int = None, limit: int = None) -> Dict:
+    def list_security_alerts_request(self, asset_id: str = None, sort_by: str = None,
+                                     sort_order: int = None, limit: int = None) -> Dict:
         """
             Args:
                 asset_id: ID of the asset to fetch info for
@@ -266,7 +266,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def search_rules(self, keyword: str = None, filter_exp: str = None) -> Union[List, Dict]:
+    def search_rules_request(self, keyword: str = None, filter_exp: str = None) -> Union[List, Dict]:
         """
             Args:
                 keyword: The search keyword
@@ -285,7 +285,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def get_rule_string(self, rule_id: str = None) -> str:
+    def get_rule_string_request(self, rule_id: str = None) -> str:
         """
             Args:
                 rule_id: The rule ID.
@@ -299,7 +299,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, resp_type='text')
         return response
 
-    def fetch_rules(self, filter_by: str = None) -> Union[List, Dict]:
+    def fetch_rules_request(self, filter_by: str = None) -> Union[List, Dict]:
         """
             Args:
                 filter_by: rules to retrieve (default/custom/all).
@@ -314,7 +314,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def get_model_definition(self, model_name: str = None) -> Dict:
+    def get_model_definition_request(self, model_name: str = None) -> Dict:
         """
             Args:
                 model_name: The model name.
@@ -329,8 +329,8 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def add_watchlist_items_from_csv(self, watchlist_id: str = None, watch_until_days: int = None,
-                                     csv_file: str = None, category: str = None) -> Dict:
+    def add_watchlist_items_from_csv_request(self, watchlist_id: str = None, watch_until_days: int = None,
+                                             csv_file: str = None, category: str = None) -> Dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to search assets for
@@ -351,7 +351,6 @@ class Client(BaseClient):
                 'watchUntilDays': watch_until_days,
                 'category': category
             }
-            demisto.results(str(form_data))
             url_suffix = f'/uba/api/watchlist/{watchlist_id}/addFromCsv'
 
             response = self._http_request('PUT', url_suffix=url_suffix, data=form_data, files=files)
@@ -359,8 +358,8 @@ class Client(BaseClient):
         else:
             raise ValueError('Invalid entry_id argument.')
 
-    def search_asset_in_watchlist(self, keyword: str = None, watchlist_id: str = None, limit: int = None,
-                                  is_exclusive: str = None, search_by_ip: str = None) -> Dict:
+    def search_asset_in_watchlist_request(self, keyword: str = None, watchlist_id: str = None, limit: int = None,
+                                          is_exclusive: str = None, search_by_ip: str = None) -> Dict:
         """
             Args:
                 keyword: A keyword to search
@@ -385,7 +384,7 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def remove_watchlist_item(self, watchlist_id: str = None, item: str = None, category: str = None) -> Dict:
+    def remove_watchlist_item_request(self, watchlist_id: str = None, item: str = None, category: str = None) -> Dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to remove an item from
@@ -406,8 +405,8 @@ class Client(BaseClient):
         response = self._http_request('PUT', url_suffix=url_suffix, data=form_data)
         return response
 
-    def list_context_table_records(self, context_table_name: str = None,
-                                   page_size: int = None, page_number: int = None) -> Dict:
+    def list_context_table_records_request(self, context_table_name: str = None,
+                                           page_size: int = None, page_number: int = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -441,14 +440,12 @@ class Client(BaseClient):
             payload = {'sessionId': session_id, 'replace': replace}
 
             self._http_request('PUT', url_suffix=url_suffix, json_data=payload)
-        except Exception:  # as e:
-            pass
+        except Exception:
             # the context table should be updated so we proceed and don't raise an exception.
-            # return_error('Warning: returned an error response while applying the context table updates. '
-            #              'Please make sure the updates were applied. Error is:\n' + str(e))
+            pass
 
-    def add_context_table_records(self, context_table_name: str, records_list: List[str],
-                                  key_only: bool, session_id: str = None) -> Dict:
+    def add_context_table_records_request(self, context_table_name: str, records_list: List[str],
+                                          key_only: bool, session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -481,8 +478,8 @@ class Client(BaseClient):
             self.update_session_id_of_context_table(context_table_name, session_id=response.get('sessionId'))
         return response
 
-    def update_context_table_records(self, context_table_name: str, records_list: List[str],
-                                     key_only: bool, session_id: str = None) -> Dict:
+    def update_context_table_records_request(self, context_table_name: str, records_list: List[str],
+                                             key_only: bool, session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -499,6 +496,7 @@ class Client(BaseClient):
         try:
             records = []
             for record_item in records_list:
+                # an example for a record structure in the argument: id:key:val1;val2
                 record = record_item.split(':')
                 records.append({
                     'id': record[0],
@@ -518,7 +516,8 @@ class Client(BaseClient):
 
         return response
 
-    def delete_context_table_records(self, context_table_name: str, records: List[str], session_id: str = None) -> Dict:
+    def delete_context_table_records_request(self, context_table_name: str, records: List[str],
+                                             session_id: str = None) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -548,9 +547,9 @@ class Client(BaseClient):
 
         return response
 
-    def add_context_table_records_from_csv(self, context_table_name: str = None,
-                                           csv_file: str = None, has_header: bool = False,
-                                           session_id: str = None, replace: bool = False) -> Dict:
+    def add_context_table_records_from_csv_request(self, context_table_name: str = None,
+                                                   csv_file: str = None, has_header: bool = False,
+                                                   session_id: str = None, replace: bool = False) -> Dict:
         """
             Args:
                 context_table_name: The context table name.
@@ -583,7 +582,7 @@ class Client(BaseClient):
         else:
             raise ValueError('Invalid entry_id argument.')
 
-    def get_context_table_csv(self, context_table_name: str = None) -> Tuple[str, str]:
+    def get_context_table_csv_request(self, context_table_name: str = None) -> Tuple[str, str]:
         """
             Args:
                 context_table_name: The context table name.
@@ -611,6 +610,9 @@ def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work
         because their keys must be equal which is not possible in python dictionaries, thus we will
         eventually pass the parameters in the URL itself.
+
+        Example: Because we can't pass {"a": "0", "a": "1"} as a dict to the params argument of the request function,
+        we will pass the parameters as a part of the URL suffix: ?a=0&a=1.
 
             Args:
                 params: string/integer parameters
@@ -736,6 +738,15 @@ def contents_asset_data(asset_data) -> Dict:
 
 
 def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, to_idx: int) -> Tuple[List[Any], str]:
+    """ Converts rules raw data to XSOAR format.
+
+    Args:
+        rules_raw_data: rules raw data
+        from_idx: from index (used for slicing)
+        to_idx: to index (used for slicing)
+    Returns:
+        (tuple) Rules in XSOAR format and the human readable.
+    """
     outputs = []
 
     for category in rules_raw_data:
@@ -753,6 +764,14 @@ def get_rules_in_xsoar_format(rules_raw_data: Union[List, Dict], from_idx: int, 
 
 
 def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple[List[Any], str]:
+    """ Converts an asset aggregated events raw data to XSOAR format.
+
+    Args:
+        asset_id: The Asset ID
+        events: events raw data
+    Returns:
+        (tuple) Events in XSOAR format and the human readable.
+    """
     outputs = []
     aggregated_events_data = [{
         'start_time': convert_unix_to_date(event.get('ts'), sep=' '),
@@ -783,6 +802,25 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
             outputs.extend(activity_events)
 
     return outputs, human_readable
+
+
+def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple[Any, Dict[str, Any]]:
+    # flatten results
+    outputs = [{
+        'contextTableName': name,
+        'sessionId': raw_response.get('sessionId'),
+        'changeType': record.get('changeType'),
+        'changeId': record.get('changeId'),
+        'record': record.get('record')
+    } for record in raw_response.get('recordChanges', [])]
+
+    entry_context = {'Exabeam.ContextTableUpdate(val.changeId && val.changeId === obj.changeId)': outputs}
+
+    metadata_str = ', '.join([f'{k}: {v}' for k, v in raw_response.get('metadata', {}).items()])
+    human_readable = tableToMarkdown(f'Context Table {name} Update Details', outputs,
+                                     headerTransform=pascalToSpace, removeNull=True, metadata=metadata_str)
+
+    return human_readable, entry_context
 
 
 ''' COMMANDS '''
@@ -1050,7 +1088,7 @@ def list_top_domains(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[An
     """
     sequence_id = args.get('sequence_id')
     sequence_type = args.get('sequence_type')
-    top_domains_raw_data = client.list_top_domains(sequence_id, sequence_type)
+    top_domains_raw_data = client.list_top_domains_request(sequence_id, sequence_type)
 
     top_domains = top_domains_raw_data.get('topDomains', [])
 
@@ -1125,14 +1163,14 @@ def list_asset_next_events(client: Client, args: Dict[str, str]) -> Tuple[Any, D
     event_type_include = 'true' if args.get('event_types_operator') == 'include' else 'false'
     sequence_types = argToList(args.get('sequence_types'))
 
-    events_raw_data = client.list_asset_next_events(asset_id,
-                                                    event_time,
-                                                    number_of_events,
-                                                    anomaly_only,
-                                                    event_categories,
-                                                    event_types,
-                                                    event_type_include,
-                                                    sequence_types)
+    events_raw_data = client.list_asset_next_events_request(asset_id,
+                                                            event_time,
+                                                            number_of_events,
+                                                            anomaly_only,
+                                                            event_categories,
+                                                            event_types,
+                                                            event_type_include,
+                                                            sequence_types)
 
     aggregated_events = events_raw_data.get('aggregatedEvents', [])
     aggregated_events, human_readable = aggregated_events_to_xsoar_format(asset_id, aggregated_events)
@@ -1156,7 +1194,7 @@ def list_security_alerts_by_asset(client: Client,
     sort_order = 1 if args.get('sort_order') == 'asc' else -1
     limit = int(args['limit'])
 
-    security_alerts_raw_data = client.list_security_alerts(asset_id, sort_by, sort_order, limit)
+    security_alerts_raw_data = client.list_security_alerts_request(asset_id, sort_by, sort_order, limit)
 
     security_alerts = []
     for security_alert in security_alerts_raw_data.get('events', []):
@@ -1189,7 +1227,7 @@ def search_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, L
     from_idx = page * limit
     to_idx = (page + 1) * limit
 
-    rules_raw_data = client.search_rules(keyword, filter_exp)
+    rules_raw_data = client.search_rules_request(keyword, filter_exp)
     rules, human_readable = get_rules_in_xsoar_format(rules_raw_data, from_idx, to_idx)
 
     entry_context = {'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': rules}
@@ -1207,7 +1245,7 @@ def get_rule_string(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str
     """
     rule_id = args.get('rule_id')
 
-    rule_string_raw_data = client.get_rule_string(rule_id)
+    rule_string_raw_data = client.get_rule_string_request(rule_id)
     outputs = {}
     entry_context = {}
     if rule_string_raw_data:
@@ -1233,7 +1271,7 @@ def fetch_rules(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, An
     from_idx = page * limit
     to_idx = (page + 1) * limit
 
-    rules_raw_data = client.fetch_rules(filter_by)
+    rules_raw_data = client.fetch_rules_request(filter_by)
     rules, human_readable = get_rules_in_xsoar_format(rules_raw_data, from_idx, to_idx)
     entry_context = {'Exabeam.Rule(val.ruleId && val.ruleId === obj.ruleId)': rules}
 
@@ -1250,7 +1288,7 @@ def get_rules_model_definition(client: Client, args: Dict[str, str]) -> Tuple[An
     """
     model_name = args.get('model_name')
 
-    model = client.get_model_definition(model_name)
+    model = client.get_model_definition_request(model_name)
     entry_context = {'Exabeam.Model(val.name && val.name === obj.name)': model}
     human_readable = tableToMarkdown(f'Model {model_name} Definition', model,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -1271,7 +1309,7 @@ def add_watchlist_item_from_csv(client: Client, args: Dict[str, str]) -> Tuple[s
     category = args.get('category')
     watch_until_days = int(args['watch_until_days'])
 
-    raw_response = client.add_watchlist_items_from_csv(watchlist_id, watch_until_days, csv_entry_id, category)
+    raw_response = client.add_watchlist_items_from_csv_request(watchlist_id, watch_until_days, csv_entry_id, category)
     added_count = raw_response.get('addedCount')
     human_readable = f'Successfully added {added_count} items to watchlist {watchlist_id}.'
 
@@ -1292,7 +1330,7 @@ def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any
     is_exclusive = args.get('is_exclusive')
     search_by_ip = args.get('search_by_ip')
 
-    assets_raw_data = client.search_asset_in_watchlist(keyword, watchlist_id, limit, is_exclusive, search_by_ip)
+    assets_raw_data = client.search_asset_in_watchlist_request(keyword, watchlist_id, limit, is_exclusive, search_by_ip)
     assets = assets_raw_data.get('assets', [])
     entry_context = {'Exabeam.AssetInfo((val.ipAddress && val.ipAddress === obj.ipAddress) ||'
                      '(val.hostName && val.hostName === obj.hostName))': assets}
@@ -1315,7 +1353,7 @@ def remove_watchlist_item(client: Client, args: Dict[str, str]) -> Tuple[str, Op
     category = args.get('category')
 
     for item in items:
-        client.remove_watchlist_item(watchlist_id, item, category)
+        client.remove_watchlist_item_request(watchlist_id, item, category)
 
     human_readable = f'Successfully removed {len(items)} items from watchlist {watchlist_id}.'
 
@@ -1331,10 +1369,10 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
 
     """
     context_table_name = args.get('context_table_name')
-    page_size = int(args['page_size'])
-    page_number = int(args['page_number'])
+    page_size = int(args['limit'])
+    page_number = int(args['offset'])
 
-    records_raw_data = client.list_context_table_records(context_table_name, page_size, page_number)
+    records_raw_data = client.list_context_table_records_request(context_table_name, page_size, page_number)
     records = records_raw_data.get('records', [])
 
     entry_context = {
@@ -1364,7 +1402,8 @@ def add_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any
     key_only = True if args.get('context_table_type') == 'key_only' else False
     records_list = argToList(args.get('records'))
 
-    record_updates_raw_data = client.add_context_table_records(context_table_name, records_list, key_only, session_id)
+    record_updates_raw_data = client.add_context_table_records_request(context_table_name, records_list,
+                                                                       key_only, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
@@ -1382,7 +1421,8 @@ def update_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[
     records = argToList(args.get('records'))
     key_only = True if args.get('context_table_type') == 'key_only' else False
 
-    record_updates_raw_data = client.update_context_table_records(context_table_name, records, key_only, session_id)
+    record_updates_raw_data = client.update_context_table_records_request(context_table_name, records,
+                                                                          key_only, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
@@ -1399,7 +1439,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
 
-    record_updates_raw_data = client.delete_context_table_records(context_table_name, records, session_id)
+    record_updates_raw_data = client.delete_context_table_records_request(context_table_name, records, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
@@ -1419,29 +1459,10 @@ def add_context_table_records_from_csv(client: Client,
     has_header = True if args.get('has_header') == 'true' else False
     replace = True if args.get('append_or_replace') == 'replace' else False
 
-    record_updates_raw_data = client.add_context_table_records_from_csv(context_table_name, file_entry_id,
-                                                                        has_header, session_id, replace)
+    record_updates_raw_data = client.add_context_table_records_from_csv_request(context_table_name, file_entry_id,
+                                                                                has_header, session_id, replace)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
-
-
-def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple[Any, Dict[str, Any]]:
-    # flatten results
-    outputs = [{
-        'contextTableName': name,
-        'sessionId': raw_response.get('sessionId'),
-        'changeType': record.get('changeType'),
-        'changeId': record.get('changeId'),
-        'record': record.get('record')
-    } for record in raw_response.get('recordChanges', [])]
-
-    entry_context = {'Exabeam.ContextTableUpdate(val.changeId && val.changeId === obj.changeId)': outputs}
-
-    metadata_str = ', '.join([f'{k}: {v}' for k, v in raw_response.get('metadata', {}).items()])
-    human_readable = tableToMarkdown(f'Context Table {name} Update Details', outputs,
-                                     headerTransform=pascalToSpace, removeNull=True, metadata=metadata_str)
-
-    return human_readable, entry_context
 
 
 def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
@@ -1454,7 +1475,7 @@ def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Di
     """
     context_table_name = args['context_table_name']
 
-    filename, content = client.get_context_table_csv(context_table_name)
+    filename, content = client.get_context_table_csv_request(context_table_name)
 
     demisto.results(fileResult(filename, content))
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None

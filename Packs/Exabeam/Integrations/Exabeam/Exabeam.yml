@@ -1214,7 +1214,7 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '30'
+      defaultValue: '50'
       description: Number of days until asset is automatically removed from the watchlist.
       isArray: false
       name: watch_until_days
@@ -1347,16 +1347,16 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The page size.
+      description: Maximum number of results to return.
       isArray: false
-      name: page_size
+      name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: The page number (starts from 1).
+      description: The offset number to begin (starts from 1).
       isArray: false
-      name: page_number
+      name: offset
       required: false
       secret: false
     deprecated: false
