@@ -443,8 +443,8 @@ def drop_collection_command(
 
 def pipeline_query_command(client: Client, collection: str, pipeline: str, limit: str = '50', offset: str = '0',
                            **kwargs) -> Tuple[str, dict, list]:
-    limit = int(limit)
-    offset = int(offset)
+    limit = arg_to_number(limit)
+    offset = arg_to_number(offset)
     try:
         json_pipeline = validate_json_objects(json.loads(pipeline))
         raw_response = client.pipeline_query(
@@ -457,7 +457,7 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
     if raw_response:
         raw_response = raw_response if len(raw_response) <= limit else raw_response[offset:(offset + limit)]
         readable_outputs = tableToMarkdown(
-            f'Total of {len(raw_response)} entries were found in MongoDB collection `{collection}` '
+            f'Total of {len(raw_response)} entries were found in MongoDB collection: `{collection}` '
             f'with pipeline: {pipeline}:',
             t=[entry.get('_id') for entry in raw_response],
             headers=['_id'],

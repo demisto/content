@@ -64,7 +64,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex supported too. For more details refer Integration documentation.'
+      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more details refer to the Integration documentation.'
       isArray: false
       name: query
       required: true
@@ -90,7 +90,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for items by the specified JSON query. Search by regex supported.
+    description: Searches for items by the specified JSON query.
     execution: false
     name: mongodb-query
     outputs:
@@ -232,7 +232,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limits the result returned from MongoDB. Default value - 50.
+      description: Limits the result returned from MongoDB.
       isArray: false
       name: limit
       required: false
