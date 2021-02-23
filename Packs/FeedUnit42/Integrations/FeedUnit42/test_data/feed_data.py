@@ -215,7 +215,9 @@ MATCHED_RELATIONSHIPS = {
         'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'}
 }
 
-ID_TO_OBJECT = {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {'external_references': '8.8.8.8'},
+ID_TO_OBJECT = {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {'external_references': '8.8.8.8',
+                                                                         'description': 'description',
+                                                                         'name': 'T111: Software Discovery'},
                 'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {'name': 'Deploy XSOAR Playbook',
-                                                                           'description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
-                                                                           'title': 'Deploy XSOAR Playbook'}}
+                                                                           'x_panw_coa_bp_description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
+                                                                           'x_panw_coa_bp_title': 'Deploy XSOAR Playbook'}}

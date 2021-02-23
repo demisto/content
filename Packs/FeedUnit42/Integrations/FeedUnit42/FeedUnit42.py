@@ -386,11 +386,13 @@ def create_mitre_indicator(indicator_val: str, relation_object: Dict, matched_re
                     courses_of_action[relationship_product] = []
                 courses_of_action[relationship_product].append(id_to_object[source])
 
+    name = relation_object.get('name')
+    name = name.partition(':')[2] if name else ''
     return {
         "value": indicator_val,
         "type": 'MITRE ATT&CK',
         "fields": {
-            "mitrename": relation_object.get('name').partition(':')[2],
+            "mitrename": name.strip(),
             "mitredescription": relation_object.get('description'),
             "firstseenbysource": relation_object.get('created'),
             "indicatoridentification": relation_object.get('id'),

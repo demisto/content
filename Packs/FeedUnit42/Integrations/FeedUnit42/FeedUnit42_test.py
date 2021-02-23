@@ -263,6 +263,8 @@ def test_parse_related_indicators():
     assert len(indicators) == 1
     assert indicators[0]['value'] == '8.8.8.8'
     assert indicators[0]['fields']['mitrecourseofaction'] == 'No courses of action found.'
+    assert indicators[0]['fields']['mitredescription'] == 'description'
+    assert indicators[0]['fields']['mitrename'] == 'Software Discovery'
 
 
 def test_create_mitre_indicator():
@@ -290,6 +292,6 @@ def test_create_mitre_indicator():
 
     assert indicator['value'] == '8.8.8.8'
     assert indicator['type'] == 'MITRE ATT&CK'
-    assert indicator['fields']['mitrecourseofaction'] == '\n### NGFW\n|Description|Name|\n|---|---|\n| Deploy ' \
-                                                         'XSOAR Playbook - Phishing Investigation - Generic V2 |' \
-                                                         ' Deploy XSOAR Playbook |\n'
+    assert indicator['fields']['mitrecourseofaction'] == '\n### NGFW\n|Name|Title|Description|\n|---|---|---|' \
+                                                         '\n| Deploy XSOAR Playbook | Deploy XSOAR Playbook |' \
+                                                         ' Deploy XSOAR Playbook - Phishing Investigation - Generic V2 |\n'
