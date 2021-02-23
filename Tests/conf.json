@@ -87,7 +87,8 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9"
         },
         {
             "integrations": "Majestic Million",
