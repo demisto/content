@@ -1,5 +1,4 @@
-import datetime
-import json
+# import datetime
 import sys
 from datetime import datetime, timedelta
 
@@ -28,15 +27,13 @@ if not demisto.params().get('proxy', False):
 
 def test_module() -> str:
     try:
-        url = demisto.params().get('url')
         base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
         headers = {'Accept': 'application/json'}
         req = requests.get(base_url, headers=headers, verify=VERIFY_SSL)
-        """print(req.status_code)
         if req.status_code != 200:
             return_results(req.status_code)
-            sys.exit(1)"""
-    except DemistoException as e:
+            sys.exit(1)
+    except Exception as e:
         if ('Forbidden' in str(e)):
             return_results("Network Error: HTTP ", req.status_code)
         else:
@@ -45,9 +42,7 @@ def test_module() -> str:
 
 
 def connection(url, additional_parameters):
-    server = url
-    # If your goal is to retrieve vulnerabilities where CPE names changed during the time period, use includeMatchStringChange=true.
-    # This returns vulnerabilities where either the vulnerabilities or the associated product names were modified
+
     headers = {'Accept': 'application/json'}
     endpoint = url + additional_parameters
     req = requests.get(endpoint, headers=headers, verify=VERIFY_SSL)
@@ -121,8 +116,8 @@ def extractVulnDetails(requestfromconnection):
 
 def generalSearch():
 
-    url = demisto.params().get('url')
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -147,8 +142,9 @@ def generalSearch():
 
 
 def keywordSearch():
-    url = demisto.params().get('url')
+
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    
     keyword = demisto.args().get('keyword')
     isExactMatch = demisto.args().get('isExactMatch')
     time = int(demisto.args().get('time'))
@@ -176,7 +172,7 @@ def keywordSearch():
 
 
 def cvssSearch():
-    url = demisto.params().get('url')
+
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
 
     time = int(demisto.args().get('time'))
@@ -210,7 +206,7 @@ def cvssSearch():
 
 
 def cweSearch():
-    url = demisto.params().get('url')
+
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
 
     time = int(demisto.args().get('time'))
@@ -240,9 +236,9 @@ def cweSearch():
 
 
 def cpeSearch():
-    url = demisto.params().get('url')
-    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
 
+    base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
+    
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -270,7 +266,7 @@ def cpeSearch():
 
 
 def cveSearch():
-    url = demisto.params().get('url')
+
     base_url = urljoin(demisto.params()['url'], '/rest/json/cve/1.0/')
     cve = demisto.args().get('cve')
 
@@ -279,7 +275,7 @@ def cveSearch():
     demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References', 'CVSSv3 Base Score', 'CVSSv3 Base Severity',
-               'Exploitability Score''Impact Score', 'CVSSv3 Version', 'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
+               'Exploitability Score', 'Impact Score', 'CVSSv3 Version', 'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
                'CVSSv3 Privileges Required', 'CVSSv3 User Interaction', 'CVSSv3 Scope', 'CVSSv3 Confidentiality Impact', 'CVSSv3 Integrity Impact', 'CVSSv3 Availability Impact']
     hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
 
