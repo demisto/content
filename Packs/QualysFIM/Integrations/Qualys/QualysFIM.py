@@ -545,11 +545,11 @@ def list_assets_command(client: Client, args: dict):
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
                     max_fetch: str, fetch_filter: str,
-                    first_fetch_time: str) -> Tuple[Dict[str, int], List[dict]]:
+                    first_fetch_time: str) -> Tuple[Dict, List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
-        client (Client): Sophos Central Client.
+        client (Client): QualysFIM Client.
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
         max_fetch (str): Max number of alerts to fetch.
