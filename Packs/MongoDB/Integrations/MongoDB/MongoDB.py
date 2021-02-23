@@ -1,4 +1,3 @@
-
 from CommonServerPython import *
 
 from json import JSONDecodeError
@@ -61,7 +60,7 @@ class Client:
         entries = self.datetime_to_str(entries)
         return entries
 
-    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None)\
+    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None) \
             -> List[dict]:
         collection_obj = self.get_collection(collection)
         if fields:
@@ -268,7 +267,7 @@ def get_entry_by_id_command(
 
 
 def search_query(client: Client, collection: str, query: str, limit: str, sort: str = '', fields: str = None,
-                 **kwargs)\
+                 **kwargs) \
         -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
@@ -462,7 +461,11 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
             t=[entry.get('_id') for entry in raw_response],
             headers=['_id'],
         )
-        outputs = {CONTEXT_KEY: [item.update({'collection': collection}) for item in raw_response]}
+        outputs_objects = list()
+        for item in raw_response:
+            item.update({'collection': collection})
+            outputs_objects.append(item)
+        outputs = {CONTEXT_KEY: outputs_objects}
         return readable_outputs, outputs, raw_response
     else:
         return 'MongoDB: No results found', {}, raw_response

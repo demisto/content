@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 
 import pytest
@@ -252,7 +253,7 @@ def test_pipeline_query_command(mocker):
     )
 
     outputs_objects = list()
-    for item in raw_response:
+    for item in copy.deepcopy(raw_response):
         item.update({'collection': 'test_collection'})
         outputs_objects.append(item)
 
