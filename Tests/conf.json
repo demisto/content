@@ -87,7 +87,6 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "timeout": 600,
             "fromversion": "5.5.0"
         },
         {
@@ -3232,10 +3231,16 @@
         {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test"
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v2",
+            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
         }
     ],
     "skipped_tests": {
-        "EwsExtension": "Connection problem under powershell and gcp",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
@@ -3422,7 +3427,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "EwsExtension": "PWSH Not supporting proxy",
+        "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
