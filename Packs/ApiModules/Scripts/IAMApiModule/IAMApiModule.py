@@ -298,7 +298,7 @@ class IAMCommand:
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
-        :param attr: (str) An attribute to pass to get_user() function that identifies with what field to get the user.
+        :param attr: (str) The name of the identifier attribute of users in the application.
         """
         self.is_create_enabled = is_create_enabled
         self.is_disable_enabled = is_disable_enabled
@@ -313,7 +313,6 @@ class IAMCommand:
             If not found, the error details will be resulted instead.
         :param client: (Client) The integration Client object that implements a get_user() method
         :param args: (dict) The `iam-get-user` command arguments
-        :param identifier: (str) The attribute name to search by.
         :return: (IAMUserProfile) The user profile object.
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
