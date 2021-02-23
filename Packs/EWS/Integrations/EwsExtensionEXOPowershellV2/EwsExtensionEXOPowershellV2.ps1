@@ -343,7 +343,7 @@ function GetEXORecipientPermissionCommand
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Identity === val.Identity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxPermissionCommand
