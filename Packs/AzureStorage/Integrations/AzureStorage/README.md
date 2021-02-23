@@ -166,10 +166,10 @@ Run this command to get the all or spesific account storage details
     "AzureStorage": {
         "StorageAccount": [
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/cs20f907ea4bc8bx4c11x9d7",
+                "id": "/subscriptions/subsciption_id/resourceGroups/esource_group_name/providers/Microsoft.Storage/storageAccounts/account_name",
                 "kind": "Storage",
                 "location": "eastus",
-                "name": "cs20f907ea4bc8bx4c11x9d7",
+                "name": "account_name",
                 "properties": {
                     "creationTime": "2018-10-22T22:38:38.8180662Z",
                     "encryption": {
@@ -218,10 +218,10 @@ Run this command to get the all or spesific account storage details
                 "type": "Microsoft.Storage/storageAccounts"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/demistotestdonotdelete",
+                "id": "/subscriptions/subsciption_id/resourceGroups/esource_group_name/providers/Microsoft.Storage/storageAccounts/account_name",
                 "kind": "BlobStorage",
                 "location": "eastus",
-                "name": "demistotestdonotdelete",
+                "name": "account_name",
                 "properties": {
                     "accessTier": "Cool",
                     "creationTime": "2021-02-22T13:15:19.2816113Z",
@@ -248,9 +248,9 @@ Run this command to get the all or spesific account storage details
                         "virtualNetworkRules": []
                     },
                     "primaryEndpoints": {
-                        "blob": "https://demistotestdonotdelete.blob.core.windows.net/",
-                        "dfs": "https://demistotestdonotdelete.dfs.core.windows.net/",
-                        "table": "https://demistotestdonotdelete.table.core.windows.net/"
+                        "blob": "",
+                        "dfs": "",
+                        "table": ""
                     },
                     "primaryLocation": "eastus",
                     "privateEndpointConnections": [],
@@ -268,10 +268,10 @@ Run this command to get the all or spesific account storage details
                 "type": "Microsoft.Storage/storageAccounts"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/demistodevops",
+                "id": "/subscriptions/subsciption_id/resourceGroups/esource_group_name/providers/Microsoft.Storage/storageAccounts/account_name",
                 "kind": "Storage",
                 "location": "westeurope",
-                "name": "demistodevops",
+                "name": "account_name",
                 "properties": {
                     "creationTime": "2019-01-21T12:45:40.8058360Z",
                     "encryption": {
@@ -297,10 +297,10 @@ Run this command to get the all or spesific account storage details
                         "virtualNetworkRules": []
                     },
                     "primaryEndpoints": {
-                        "blob": "https://demistodevops.blob.core.windows.net/",
-                        "file": "https://demistodevops.file.core.windows.net/",
-                        "queue": "https://demistodevops.queue.core.windows.net/",
-                        "table": "https://demistodevops.table.core.windows.net/"
+                        "blob": "",
+                        "file": "",
+                        "queue": "",
+                        "table": ""
                     },
                     "primaryLocation": "westeurope",
                     "privateEndpointConnections": [],
@@ -325,9 +325,9 @@ Run this command to get the all or spesific account storage details
 >### Azure Storage Account List
 >|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|
 >|---|---|---|---|---|---|---|
->| cs20f907ea4bc8bx4c11x9d7 | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus | Storage | available | available | eastus |
->| demistotestdonotdelete | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus | BlobStorage | available | available | eastus |
->| demistodevops | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus | Storage | available |  | westeurope |
+>| acount_name1 | subscription_id1 | resource_group_name1 | Storage | available | available | eastus |
+>| acount_name2 | subscription_id2 | resource_group_name2 | BlobStorage | available | available | eastus |
+>| acount_name3 | subscription_id3 | resource_group_name3| Storage | available |  | westeurope |
 
 
 ### azure-storage-account-create-update
@@ -420,17 +420,17 @@ account storage
 
 
 #### Command Example
-```!azure-storage-account-create-update account_name=demistotestdonotdelete kind=BlobStorage location=eastus sku=Standard_GRS```
+```!azure-storage-account-create-update account_name=account_name1 kind=BlobStorage location=eastus sku=Standard_GRS```
 
 #### Context Example
 ```json
 {
     "AzureStorage": {
         "StorageAccount": {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/demistotestdonotdelete",
+            "id": "/subscriptions/sub_id/resourceGroups/resource_g_name/providers/Microsoft.Storage/storageAccounts/account_name",
             "kind": "BlobStorage",
             "location": "eastus",
-            "name": "demistotestdonotdelete",
+            "name": "account_name",
             "properties": {
                 "accessTier": "Cool",
                 "creationTime": "2021-02-22T13:15:19.2816113Z",
@@ -457,9 +457,9 @@ account storage
                     "virtualNetworkRules": []
                 },
                 "primaryEndpoints": {
-                    "blob": "https://demistotestdonotdelete.blob.core.windows.net/",
-                    "dfs": "https://demistotestdonotdelete.dfs.core.windows.net/",
-                    "table": "https://demistotestdonotdelete.table.core.windows.net/"
+                    "blob": "",
+                    "dfs": "",
+                    "table": ""
                 },
                 "primaryLocation": "eastus",
                 "privateEndpointConnections": [],
@@ -485,7 +485,7 @@ account storage
 >### Azure Storage Account
 >|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|
 >|---|---|---|---|---|---|---|
->| demistotestdonotdelete | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus | BlobStorage | available | available | eastus |
+>| acount_name1 | subscription_id1 | resource_group_name1 | BlobStorage | available | available | eastus |
 
 
 ### azure-storage-blob-service-properties-get
@@ -517,14 +517,14 @@ Run this command to get the blob service properties of a spesific account storag
 
 
 #### Command Example
-```!azure-storage-blob-service-properties-get account_name=demistotestdonotdelete```
+```!azure-storage-blob-service-properties-get account_name=account_name1```
 
 #### Context Example
 ```json
 {
     "AzureStorage": {
         "BlobServiceProperties": {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/demistotestdonotdelete/blobServices/default",
+        "id": "/subscriptions/sub_id/resourceGroups/resource_g_name/providers/Microsoft.Storage/storageAccounts/account_name/blobServices/default",
             "name": "default",
             "properties": {
                 "changeFeed": {
@@ -553,7 +553,7 @@ Run this command to get the blob service properties of a spesific account storag
 >### Azure Storage Blob Service Properties
 >|Name|Subscription ID|Resource Group|
 >|---|---|---|
->| default | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus |
+>| default | sub_id | resource_g_name |
 
 
 ### azure-storage-blob-service-properties-set
@@ -608,14 +608,14 @@ the blob service in a spesific account storage
 
 
 #### Command Example
-```!azure-storage-blob-service-properties-set account_name=demistotestdonotdelete delete_rentention_policy_enabled=false```
+```!azure-storage-blob-service-properties-set account_name=account_name1 delete_rentention_policy_enabled=false```
 
 #### Context Example
 ```json
 {
     "AzureStorage": {
         "BlobServiceProperties": {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Storage/storageAccounts/demistotestdonotdelete/blobServices/default",
+            "id": "/subscriptions/sub_id/resourceGroups/resource_g_name/providers/Microsoft.Storage/storageAccounts/account_name/blobServices/default",
             "name": "default",
             "properties": {
                 "deleteRetentionPolicy": {
@@ -633,5 +633,5 @@ the blob service in a spesific account storage
 >### Azure Storage Blob Service Properties
 >|Name|Subscription ID|Resource Group|
 >|---|---|---|
->| default | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | cloud-shell-storage-eastus |
+>| default | sub_id | resource_g_name |
 
