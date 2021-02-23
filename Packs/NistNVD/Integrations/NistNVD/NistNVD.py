@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -35,7 +34,7 @@ def test_module() -> str:
             sys.exit(1)
     except Exception as e:
         if ('Forbidden' in str(e)):
-            return_results("Network Error: HTTP ", req.status_code)
+            return_results(req.status_code)
         else:
             raise e
     return 'ok'
@@ -302,8 +301,6 @@ def main() -> None:
     try:
         if demisto.command() == 'test-module':
             demisto.results(test_module())
-            result = demisto.results(test_module())
-            return_results(result)
         elif demisto.command() == 'nvd-get-vulnerability':
             demisto.results(generalSearch())
         elif demisto.command() == 'nvd-search-keyword':
