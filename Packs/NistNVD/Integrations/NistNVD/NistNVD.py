@@ -5,12 +5,13 @@ from datetime import datetime, timedelta
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
+# from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
