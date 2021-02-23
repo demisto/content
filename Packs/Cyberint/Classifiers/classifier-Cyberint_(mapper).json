@@ -3,7 +3,7 @@
     "feed": false,
     "id": "ac904a90-0668-4e4a-80f9-e62e3f18a1d3",
     "mapping": {
-        "CyberInt Incident": {
+        "Cyberint Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "CyberInt Alert ID": {
