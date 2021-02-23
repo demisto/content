@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.8.12",
+    "currentVersion": "1.8.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -107,10 +107,6 @@
         "CortexXDR": {
             "mandatory": false,
             "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
         },
         "D2": {
             "mandatory": false,
@@ -235,10 +231,6 @@
         "Recorded_Future": {
             "mandatory": false,
             "display_name": "Recorded Future"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "PolySwarm": {
             "mandatory": false,
