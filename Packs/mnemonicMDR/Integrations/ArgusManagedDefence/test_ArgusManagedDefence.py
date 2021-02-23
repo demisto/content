@@ -270,14 +270,6 @@ def test_get_remote_data_command_no_updates(requests_mock):
     assert not result.entries
 
 
-def test_get_modified_remote_data_command(requests_mock):
-    from ArgusManagedDefence import get_modified_remote_data_command
-
-    with pytest.raises(NotImplementedError) as no_implement:
-        get_modified_remote_data_command({})
-    assert no_implement.type == NotImplementedError
-
-
 def test_update_remote_system_command(requests_mock):
     from ArgusManagedDefence import update_remote_system_command
 
@@ -326,14 +318,6 @@ def test_update_remote_system_command_no_change(requests_mock):
         "incidentChanged": False
     }
     assert update_remote_system_command(args) == str(CASE_ID)
-
-
-def test_get_mapping_fields_command(requests_mock):
-    from ArgusManagedDefence import get_mapping_fields_command
-
-    with pytest.raises(NotImplementedError) as no_implement:
-        get_mapping_fields_command()
-    assert no_implement.type == NotImplementedError
 
 
 def test_add_case_tag_command(requests_mock):
