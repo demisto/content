@@ -735,7 +735,7 @@ script:
             headers.Authorization = ['Bearer ' + token];
         }
         console.log('Sending logout request: ' + server + url);
-        http(server + url,
+        res = http(server + url,
             {
                 Method: method,
                 Headers: headers,
