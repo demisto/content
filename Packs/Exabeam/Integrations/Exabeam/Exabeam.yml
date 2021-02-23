@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Use this token to authenticate in Exabeam Cloud platform. See detailed
-    instructions (?) for further information.
+    instructions for further information.
   display: Cluster Authentication Token
   hidden: false
   name: cluster_auth_token

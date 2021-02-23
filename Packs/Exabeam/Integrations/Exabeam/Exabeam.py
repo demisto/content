@@ -801,8 +801,12 @@ def test_module(client: Client, username: Optional[str], password: Optional[str]
         ok if successful
     """
     if not cluster_auth_token:
-        if not username or not password:
-            raise ValueError('You must provide both username and password when using credentials.')
+        if not username and not password:
+            raise DemistoException('You must provide either user credentials or a cluster authentication token '
+                                   'to authenticate.')
+        elif not username or not password:
+            raise DemistoException('You must provide both username and password '
+                                   'when using credentials to authenticate.')
     client.test_module_request()
     return 'ok'
 
@@ -1460,13 +1464,16 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    if demisto.params().get('credentials'):
+        username = demisto.params().get('credentials').get('identifier')
+        password = demisto.params().get('credentials').get('password')
+    else:
+        username = password = None
     cluster_auth_token = demisto.params().get('cluster_auth_token')
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-    headers = {'Accept': 'application/json'}
+    headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
     if cluster_auth_token and not username and not password:
         headers['ExaAuthToken'] = cluster_auth_token
 

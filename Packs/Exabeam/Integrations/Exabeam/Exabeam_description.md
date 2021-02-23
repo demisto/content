@@ -12,7 +12,7 @@ This integration allows two methods for authentication:
 For the User Credentials Authentication, insert your credentials in the Username and Password parameters. 
 
 
-### Authenticate with User Credentials
+### Authenticate with a Cluster Authentication Token
 
 The cluster authentication token is used to verify identities between clusters that have been deployed in phases as well as HTTP-based log collectors. Each peer cluster in a query pool must have its own token. You can set expiration dates during token creation or manually revoke tokens at any time.
 
