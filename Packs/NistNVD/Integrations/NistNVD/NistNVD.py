@@ -7,7 +7,7 @@ import requests
 from CommonServerPython import *  # noqa: F401
 # from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # disable insecure warnings
@@ -57,7 +57,7 @@ def connection(url, additional_parameters):
 def extractVulnDetails(requestfromconnection):
     req = requestfromconnection
     pretty_list = []  # list()
-    if (not ('vulns') in req):  # and req.status_code==200 is unnecessary  #vulns added for vulnerability existing control with CPE
+    if (not ('vulns') in req):
         for i in req['result']['CVE_Items']:
             pretty_dict = {}
             pretty_dict['CVE ID'] = i['cve']['CVE_data_meta']['ID']
@@ -117,7 +117,6 @@ def extractVulnDetails(requestfromconnection):
 def generalSearch():
 
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
-    
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -144,7 +143,6 @@ def generalSearch():
 def keywordSearch():
 
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
-    
     keyword = demisto.args().get('keyword')
     isExactMatch = demisto.args().get('isExactMatch')
     time = int(demisto.args().get('time'))
@@ -174,7 +172,6 @@ def keywordSearch():
 def cvssSearch():
 
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
-
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -208,7 +205,6 @@ def cvssSearch():
 def cweSearch():
 
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
-
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -238,7 +234,6 @@ def cweSearch():
 def cpeSearch():
 
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/1.0')
-    
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(hours=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
@@ -274,9 +269,12 @@ def cveSearch():
     generalSearchRequest = connection(base_url, additional_parameters)
     demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
-    headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References', 'CVSSv3 Base Score', 'CVSSv3 Base Severity',
-               'Exploitability Score', 'Impact Score', 'CVSSv3 Version', 'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
-               'CVSSv3 Privileges Required', 'CVSSv3 User Interaction', 'CVSSv3 Scope', 'CVSSv3 Confidentiality Impact', 'CVSSv3 Integrity Impact', 'CVSSv3 Availability Impact']
+    headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date',
+               'References', 'CVSSv3 Base Score', 'CVSSv3 Base Severity',
+               'Exploitability Score', 'Impact Score', 'CVSSv3 Version',
+               'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
+               'CVSSv3 Privileges Required', 'CVSSv3 User Interaction', 'CVSSv3 Scope',
+               'CVSSv3 Confidentiality Impact', 'CVSSv3 Integrity Impact', 'CVSSv3 Availability Impact']
     hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
 
     return {
