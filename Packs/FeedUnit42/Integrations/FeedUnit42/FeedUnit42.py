@@ -22,7 +22,8 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
 
 COURSE_OF_ACTION_U42 = ['Cortex XDR Prevent', 'DNS Security', 'XSOAR']
 COURSE_OF_ACTION_BP = ['URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention']
-
+COURSE_OF_ACTION_HEADERS = ['name', 'title', 'description', 'impact statement', 'recommendation number',
+                            'remediation procedure']
 
 class Client(BaseClient):
 
@@ -432,9 +433,9 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
             row['name'] = course_of_action.get('name')
 
             tmp_table.append(row)
-        headers = ['name', 'title', 'description', 'impact statement', 'recommendation number', 'remediation procedure']
+
         md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True,
-                                   headerTransform=string_to_table_header, headers=headers)
+                                   headerTransform=string_to_table_header, headers=COURSE_OF_ACTION_HEADERS[:])
         markdown = f'{markdown}\n{md_table}'
     return markdown
 
