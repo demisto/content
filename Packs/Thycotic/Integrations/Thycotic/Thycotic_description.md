@@ -1,9 +1,17 @@
 Thycotic Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. This integration was integrated and tested with version 6.0 of Thycotic.
 
 To use this integration, you must have an account on your Thycotic server.
+
 As required parameters, you must specify:
-URL Thycotic server, for example https://example.com/SecretServer
+
+**Server URL** - URL Thycotic server, for example https://example.com/SecretServer.
+
 Credentials for logging into Thycotic server.
+
+**Username** - username to authenticate to Secret Server
+
+**Password** - password to authenticate to Secret Server
+
 You can pre-add them to the Credential or usage input Username and Password.
 
 Use check box **Trust any certificate (not secure)** for insecure connections.
@@ -16,40 +24,40 @@ This integration performs some REST API transfers to the Thycotic server, the fu
 
 The following commands are implemented:
 
-- **thycotic-folder-create** Create a new Secret folder
+- thycotic-folder-create Create a new Secret folder
 
-- **thycotic-folder-delete** Delete a folder by folder ID
+- thycotic-folder-delete Delete a folder by folder ID
 
-- **thycotic-folder-search** Search folder by folder name
+- thycotic-folder-search Search folder by folder name
 
-- **thycotic-folder-update** Update a single secret folder by ID
+- thycotic-folder-update Update a single secret folder by ID
 
-- **thycotic-secret-checkin** Check In a secret
+- thycotic-secret-checkin Check In a secret
 
-- **thycotic-secret-checkout** Check Out a Secret
+- thycotic-secret-checkout Check Out a Secret
 
-- **thycotic-secret-create** Create a new Secret
+- thycotic-secret-create Create a new Secret
 
-- **thycotic-secret-delete** Delete secret
+- thycotic-secret-delete Delete secret
 
-- **thycotic-secret-get** Get secret object by ID secret
+- thycotic-secret-get Get secret object by ID secret
 
-- **thycotic-secret-password-get** Retrieved password from secret
+- thycotic-secret-password-get Retrieved password from secret
 
-- **thycotic-secret-password-update** Update password for a secret by ID
+- thycotic-secret-password-update Update password for a secret by ID
 
-- **thycotic-secret-rpc-changepassword** Change a secret's password
+- thycotic-secret-rpc-changepassword Change a secret's password
 
-- **thycotic-secret-search** Search secret ID by multiply parameters
+- thycotic-secret-search Search secret ID by multiply parameters
 
-- **thycotic-secret-search-name** Search ID secret by Name
+- thycotic-secret-search-name Search ID secret by Name
 
-- **thycotic-secret-username-get** Retrieved username from secret
+- thycotic-secret-username-get Retrieved username from secret
 
-- **thycotic-user-create** Create a new user
+- thycotic-user-create Create a new user
 
-- **thycotic-user-delete** Delete user by ID
+- thycotic-user-delete Delete user by ID
 
-- **thycotic-user-search** Search, filter, sort, and page users
+- thycotic-user-search Search, filter, sort, and page users
 
-- **thycotic-user-update** Update a single user by ID
+- thycotic-user-update Update a single user by ID
