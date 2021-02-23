@@ -184,13 +184,15 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         readable_output = tableToMarkdown('Indicators', indicators,
                                           headers=["type", "value", "id"],
                                           removeNull=True)
+
+        # TODO: change context
         outputs = {
             'lastRunID': last_run_id,
-            'Indicators': indicators
+            'IndicatorsList': indicators
         }
         return CommandResults(
-            outputs_prefix='OpenCTI',
-            outputs_key_field='Indicators.id',
+            outputs_prefix='OpenCTI.Indicators',
+            outputs_key_field='lastRunID',
             outputs=outputs,
             readable_output=readable_output,
             raw_response=indicators_list
