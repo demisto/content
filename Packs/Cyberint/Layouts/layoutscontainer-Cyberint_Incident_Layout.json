@@ -683,26 +683,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "createddate",
-                                "height": 22,
-                                "id": "85e7dd70-7136-11eb-b319-fb2580fa3636",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "createdby",
-                                "height": 22,
-                                "id": "4ac61c60-7128-11eb-9439-354a158abf78",
-                                "index": 2,
-                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "owner",
                                 "height": 22,
                                 "id": "incident-owner-field",

@@ -280,19 +280,6 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert Attachments": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "attachments",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
                 "Alert ID": {
                     "complex": null,
                     "simple": "ref_id"
@@ -300,31 +287,6 @@
                 "Alert Name": {
                     "complex": null,
                     "simple": "title"
-                },
-                "Closure Reason": {
-                    "complex": null,
-                    "simple": "closure_reason"
-                },
-                "Confidence": {
-                    "complex": null,
-                    "simple": "confidence"
-                },
-                "Created By": {
-                    "complex": null,
-                    "simple": "created_by.email"
-                },
-                "Created Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "created_date",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
                 },
                 "CyberInt Alert ID": {
                     "complex": null,
@@ -351,7 +313,7 @@
                     "complex": null,
                     "simple": "confidence"
                 },
-                "CyberInt Created by�": {
+                "CyberInt Created by": {
                     "complex": null,
                     "simple": "created_by.email"
                 },
@@ -529,73 +491,6 @@
                     "complex": null,
                     "simple": "type"
                 },
-                "Expert Analysis": {
-                    "complex": null,
-                    "simple": "analysis_report.name"
-                },
-                "IOC": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "iocs",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Impacts": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "impacts",
-                        "transformers": [{
-                                "args": {
-
-                                },
-                                "operator": "Stringify"
-                            },
-                            {
-                                "args": {
-                                    "delimiter": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "splitAndTrim"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Recommandation": {
-                    "complex": null,
-                    "simple": "recommendation"
-                },
-                "Related Entities": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "related_entities",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Source Category": {
-                    "complex": null,
-                    "simple": "source_category"
-                },
                 "Source Username": {
                     "complex": {
                         "accessor": "username",
@@ -630,41 +525,11 @@
                     },
                     "simple": ""
                 },
-                "Target Brand": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "targeted_brands",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Target vector": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "targeted_vectors",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
                 "Threat Actor": {
                     "complex": null,
                     "simple": "threat_actor"
                 },
-                "Ticket ID": {
-                    "complex": null,
-                    "simple": "ticket_id"
-                },
-                "Vulnerable CName Record": {
+                "CyberInt Vulnerable CName Record": {
                     "complex": null,
                     "simple": "alert_data.vulnerable_cname_record"
                 },
