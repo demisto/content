@@ -34,7 +34,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
     2. In the top bar, select **CREATE SERVICE ACCOUNT**:
         ![Setup Account](./../../doc_files/service-account-create-1.png)
     
-    3. Under the main menu, select **Identity** > **Service Accounts** and open the account you just created.
+    3. Under the main menu, select **IAM & Admin** > **Service Accounts** and open the account you just created.
     
     4. Generate new credentials:
     
@@ -160,7 +160,7 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 | GSuiteSecurityAlert.Alert.data.title | String | A one-line incident description. | 
 | GSuiteSecurityAlert.Alert.data.description | String | Description of the associated alert type. | 
 | GSuiteSecurityAlert.Alert.data.affectedUserEmails | Unknown | The list of emails that correspond to the users directly affected by the incident. | 
-| GSuiteSecurityAlert.Alert.data.attachmentData.csv.headers | Unknown | The list of headers for data columns in a CSV file. | 
+| GSuiteSecurityAlert.Alert.data.attachmentData.csv.headers | Unknown | The list of headers for the data columns in a CSV file. | 
 | GSuiteSecurityAlert.Alert.data.attachmentData.csv.dataRows.entries | Unknown | The data entries in a CSV file row, as a string array rather than a single comma-separated string. | 
 | GSuiteSecurityAlert.Alert.data.events.deviceId | String | The device ID. | 
 | GSuiteSecurityAlert.Alert.data.events.serialNumber | String | The serial number of the device. | 
@@ -192,7 +192,7 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 | GSuiteSecurityAlert.Alert.data.displayName | String | Alert display name. | 
 | GSuiteSecurityAlert.Alert.data.windowSize | String | Rule window size. Possible values are 1 hour or 24 hours. | 
 | GSuiteSecurityAlert.Alert.data.threshold | String | Alert threshold, for example "COUNT > 5". | 
-| GSuiteSecurityAlert.Alert.data.createTime | Date |The timestamp indicating when the rule was created. | 
+| GSuiteSecurityAlert.Alert.data.createTime | Date | The timestamp indicating when the rule was created. | 
 | GSuiteSecurityAlert.Alert.data.updateTime | Date | The timestamp indicating when the rule was last updated. | 
 | GSuiteSecurityAlert.Alert.data.triggerSource | String | The trigger sources for the rule. | 
 | GSuiteSecurityAlert.Alert.data.supersededAlerts | Unknown | List of alert IDs superseded by the alert. | 
@@ -319,7 +319,6 @@ Note: The alerts that have been marked for deletion in the past 30 days will sti
 
 #### Human Readable Output
 
->### Next Page Token: dummy_next_page_token
 >### Alerts
 >|Alert Id|Alert Type|Source|Severity|Status|Create Time|Update Time|
 >|---|---|---|---|---|---|---|
@@ -360,7 +359,7 @@ Note: To get the alert_id, execute the gsac-alert-list command.
 | GSuiteSecurityAlert.Alert.updateTime | Date | The time the alert was last updated. | 
 | GSuiteSecurityAlert.Alert.etag | String | ETag is used for optimistic concurrency control as a way to help prevent simultaneous updates of an alert from overwriting each other. | 
 | GSuiteSecurityAlert.Alert.metadata.customerId | String | The unique identifier of the Google account of the customer. | 
-| GSuiteSecurityAlert.Alert.metadata.alertId | String | The alert identifier. | 
+| GSuiteSecurityAlert.Alert.metadata.alertId | String | The unique identifier of the alert. | 
 | GSuiteSecurityAlert.Alert.metadata.status | String | The current status of the alert. | 
 | GSuiteSecurityAlert.Alert.metadata.assignee | String | The email address of the user assigned to the alert. | 
 | GSuiteSecurityAlert.Alert.metadata.updateTime | String | The time the metadata was last updated. | 
@@ -368,7 +367,7 @@ Note: To get the alert_id, execute the gsac-alert-list command.
 | GSuiteSecurityAlert.Alert.metadata.etag | String | ETag is used for optimistic concurrency control as a way to help prevent simultaneous updates of an alert metadata from overwriting each other. | 
 | GSuiteSecurityAlert.Alert.data.@type | String | Alert data of the alert types. | 
 | GSuiteSecurityAlert.Alert.data.takeoutRequestId | String | The takeout request ID. | 
-| GSuiteSecurityAlert.Alert.data.email | String | The email of the associated event. Domain wide takeout initiated applies to the email of the admin who initiated the takeout. Google identity applies to the email of the user that the event belongs to. Mobile device management/State Sponsored Attack applies to the email of the user the alert was created for. | 
+| GSuiteSecurityAlert.Alert.data.email | String | The email of the associated event. Domain wide takeout initiated applies to the email of the admin who initiated the takeout. Google identity applies to the email of the user who the event belongs to. Mobile device management/State Sponsored Attack applies to the email of the user the alert was created for. | 
 | GSuiteSecurityAlert.Alert.data.domainId.customerPrimaryDomain | String | The primary domain for the customer. | 
 | GSuiteSecurityAlert.Alert.data.maliciousEntity.entity.emailAddress | String | Email address of the user. | 
 | GSuiteSecurityAlert.Alert.data.maliciousEntity.entity.displayName | String | Display name of the user. | 
@@ -557,7 +556,7 @@ Lists all the feedback for an alert.
 | GSuiteSecurityAlert.Feedback.feedbackId | String | The unique identifier for the feedback. | 
 | GSuiteSecurityAlert.Feedback.createTime | String | The time the feedback was created. | 
 | GSuiteSecurityAlert.Feedback.type | String | The type of the feedback. | 
-| GSuiteSecurityAlert.Feedback.email | String | The email of the user that provided the feedback. | 
+| GSuiteSecurityAlert.Feedback.email | String | The email of the user who provided the feedback. | 
 
 
 #### Command Example

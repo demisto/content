@@ -17,7 +17,8 @@ configuration:
   name: user_service_account_json
   required: true
   type: 4
-- additionalinfo: G Suite domain administrator's email ID that acts on behalf of the end-user.
+- additionalinfo: G Suite domain administrator's email ID that acts on behalf of the
+    end-user
   display: Admin Email
   hidden: false
   name: admin_email
@@ -124,7 +125,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The sort order of the list results. Possible values: "createTime asc", "createTime desc", "updateTime asc", and "updateTime desc".'
+      description: 'The sort order of the list results. Possible values: "createTime
+        asc", "createTime desc", "updateTime asc", and "updateTime desc".'
       isArray: false
       name: order_by
       predefined:
@@ -136,8 +138,8 @@ script:
       secret: false
     deprecated: false
     description: |-
-        Lists the alerts. Use the filter to filter the list by various alert types.
-        Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
+      Lists the alerts. Use the filter to filter the list by various alert types.
+      Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
     execution: false
     name: gsac-alert-list
     outputs:
@@ -242,13 +244,15 @@ script:
         emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.md5HashSubject
-      description: The MD5 hash of the email's subject (only available for reported emails).
+      description: The MD5 hash of the email's subject (only available for reported
+        emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.subjectText
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The list of SHA256 hashes of the email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of the email's attachment and all MIME
+        parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -411,8 +415,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Gets the specified alert. \nNote: To get the alert_id, execute the gsac-alert-list\
-      \  command."
+    description: "Gets the specified alert. \nNote: To get the alert_id, execute the\
+      \ gsac-alert-list  command."
     execution: false
     name: gsac-alert-get
     outputs:
@@ -469,7 +473,7 @@ script:
       description: The severity value of the alert.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.metadata.etag
-      description: Etag is used for optimistic concurrency control as a way to help
+      description: ETag is used for optimistic concurrency control as a way to help
         prevent simultaneous updates of an alert metadata from overwriting each other.
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.@type
@@ -511,13 +515,15 @@ script:
         emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.md5HashSubject
-      description: The MD5 hash of the email's subject (only available for reported emails).
+      description: The MD5 hash of the email's subject (only available for reported
+        emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.subjectText
       description: The email subject text (only available for reported emails).
       type: String
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.attachmentsSha256Hash
-      description: The list of SHA256 hashes of the email's attachment and all MIME parts.
+      description: The list of SHA256 hashes of the email's attachment and all MIME
+        parts.
       type: Unknown
     - contextPath: GSuiteSecurityAlert.Alert.data.messages.recipient
       description: The recipient of the email.
@@ -681,7 +687,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of alert feedback. Possible values: "ALERT_FEEDBACK_TYPE_UNSPECIFIED", "NOT_USEFUL", "SOMEWHAT_USEFUL", and "VERY_USEFUL".'
+      description: 'The type of alert feedback. Possible values: "ALERT_FEEDBACK_TYPE_UNSPECIFIED",
+        "NOT_USEFUL", "SOMEWHAT_USEFUL", and "VERY_USEFUL".'
       isArray: false
       name: feedback_type
       predefined:
@@ -732,7 +739,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The requested page size.
+      description: The requested page size. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -801,7 +808,7 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Performs recover operation on alerts.
+      Performs a recover operation on alerts.
       Note: Recovers the alerts that were marked for deletion within the past 30 days.
     execution: false
     name: gsac-alert-recover
