@@ -25,6 +25,7 @@ COURSE_OF_ACTION_BP = ['URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention']
 COURSE_OF_ACTION_HEADERS = ['name', 'title', 'description', 'impact statement', 'recommendation number',
                             'remediation procedure']
 
+
 class Client(BaseClient):
 
     def __init__(self, api_key, verify):
