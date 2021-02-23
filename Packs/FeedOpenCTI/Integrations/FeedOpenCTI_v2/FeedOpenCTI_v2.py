@@ -48,7 +48,7 @@ FILE_TYPES = {
 }
 
 
-def label_create(client, label_name: Optional[str]):
+def label_create(client: OpenCTIApiClient, label_name: Optional[str]):
     """ Create label at opencti
 
         Args:
@@ -91,8 +91,8 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client, indicator_types: List[str], limit: Optional[int] = 500, last_run_id: Optional[str] = None,
-                   tlp_color: Optional[str] = None) -> Tuple[str, list]:
+def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: Optional[int] = 500,
+                   last_run_id: Optional[str] = None, tlp_color: Optional[str] = None) -> Tuple[str, list]:
     """ Retrieving indicators from the API
 
     Args:
@@ -129,7 +129,8 @@ def get_indicators(client, indicator_types: List[str], limit: Optional[int] = 50
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client, indicator_types: list, max_fetch: int, tlp_color=None, is_test=False) -> list:
+def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, tlp_color=None,
+                             is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
     Args:
@@ -155,7 +156,7 @@ def fetch_indicators_command(client, indicator_types: list, max_fetch: int, tlp_
     return indicators_list
 
 
-def get_indicators_command(client, args: dict) -> CommandResults:
+def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets indicator from opencti to readable output
 
     Args:
@@ -198,7 +199,7 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         return CommandResults(readable_output='No indicators')
 
 
-def indicator_delete_command(client, args: dict) -> CommandResults:
+def indicator_delete_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Delete indicator from opencti
 
         Args:
@@ -217,7 +218,7 @@ def indicator_delete_command(client, args: dict) -> CommandResults:
     return CommandResults(readable_output='Indicator deleted.')
 
 
-def indicator_field_update_command(client, args: dict) -> CommandResults:
+def indicator_field_update_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Update indicator field at opencti
 
         Args:
@@ -246,7 +247,7 @@ def indicator_field_update_command(client, args: dict) -> CommandResults:
     )
 
 
-def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
+def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Create indicator at opencti
 
         Args:
@@ -312,7 +313,7 @@ def indicator_create_command(client, args: Dict[str, str]) -> CommandResults:
     )
 
 
-def indicator_add_marking(client, id: Optional[str], value: Optional[str]):
+def indicator_add_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
     """ Add indicator marking to opencti
         Args:
             client: OpenCTI Client object
@@ -330,7 +331,7 @@ def indicator_add_marking(client, id: Optional[str], value: Optional[str]):
     return result
 
 
-def indicator_add_label(client, id: Optional[str], value: Optional[str]):
+def indicator_add_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
     """ Add indicator label to opencti
         Args:
             client: OpenCTI Client object
@@ -348,7 +349,7 @@ def indicator_add_label(client, id: Optional[str], value: Optional[str]):
     return result
 
 
-def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
+def indicator_field_add_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Add indicator marking or label to opencti
 
         Args:
@@ -375,7 +376,7 @@ def indicator_field_add_command(client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output=f'Cant add {key} to indicator.')
 
 
-def indicator_remove_label(client, id: Optional[str], value: Optional[str]):
+def indicator_remove_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
     """ Remove indicator label from opencti
         Args:
             client: OpenCTI Client object
@@ -393,7 +394,7 @@ def indicator_remove_label(client, id: Optional[str], value: Optional[str]):
     return result
 
 
-def indicator_remove_marking(client, id: Optional[str], value: Optional[str]):
+def indicator_remove_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
     """ Remove indicator marking from opencti
         Args:
             client: OpenCTI Client object
@@ -412,7 +413,7 @@ def indicator_remove_marking(client, id: Optional[str], value: Optional[str]):
     return result
 
 
-def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResults:
+def indicator_field_remove_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Remove indicator marking or label from opencti
 
         Args:
@@ -441,7 +442,7 @@ def indicator_field_remove_command(client, args: Dict[str, str]) -> CommandResul
     return CommandResults(readable_output=readable_output)
 
 
-def organization_list_command(client, args: Dict[str, str]) -> CommandResults:
+def organization_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get organizations list from opencti
 
         Args:
@@ -475,7 +476,7 @@ def organization_list_command(client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output='No organizations')
 
 
-def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
+def organization_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Create organization at opencti
 
         Args:
@@ -507,7 +508,7 @@ def organization_create_command(client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException("Can't create organization.")
 
 
-def label_list_command(client, args: Dict[str, str]) -> CommandResults:
+def label_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get label list from opencti
 
         Args:
@@ -542,7 +543,7 @@ def label_list_command(client, args: Dict[str, str]) -> CommandResults:
         return CommandResults(readable_output='No labels')
 
 
-def label_create_command(client, args: Dict[str, str]) -> CommandResults:
+def label_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Create label at opencti
 
         Args:
@@ -566,7 +567,7 @@ def label_create_command(client, args: Dict[str, str]) -> CommandResults:
         raise DemistoException("Can't create label.")
 
 
-def external_reference_create_command(client, args: Dict[str, str]) -> CommandResults:
+def external_reference_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Create external reference at opencti
 
         Args:
@@ -596,7 +597,7 @@ def external_reference_create_command(client, args: Dict[str, str]) -> CommandRe
         raise DemistoException("Can't create external reference.")
 
 
-def marking_list_command(client, args: Dict[str, str]) -> CommandResults:
+def marking_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
     """ Get marking list from opencti
 
         Args:
