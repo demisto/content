@@ -1,0 +1,22 @@
+{
+    "defaultIncidentType": "Cyberint Incident",
+    "description": "",
+    "feed": false,
+    "id": "c102e197-3851-4c76-8348-3dd8caed798c",
+    "keyTypeMap": {
+        "acknowledged": "Cyberint Incident",
+        "closed": "Cyberint Incident",
+        "open": "Cyberint Incident"
+    },
+    "name": "Cyberint - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "status"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
