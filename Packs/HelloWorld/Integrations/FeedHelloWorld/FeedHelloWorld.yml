@@ -98,7 +98,7 @@ script:
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: FeedHelloWorld-get-indicators
+    name: helloworld-get-indicators
   dockerimage: demisto/python3:3.8.5.10845
   feed: true
   isfetch: false
