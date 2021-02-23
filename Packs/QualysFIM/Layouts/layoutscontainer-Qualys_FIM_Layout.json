@@ -524,5 +524,6 @@
 	"sortValues": null,
 	"system": false,
 	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
