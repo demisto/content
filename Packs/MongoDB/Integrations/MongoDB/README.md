@@ -30,6 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. mongodb-list-collections
 7. mongodb-create-collection
 8. mongodb-drop-collection
+9. mongodb-pipeline-query
 ### 1. mongodb-get-entry-by-id
 ---
 Get an entry from database by ID
@@ -64,7 +65,7 @@ Get an entry from database by ID
         {
             "test": true, 
             "_id": "5e444002d661d4fc62442f39"
-        }, 
+        } 
     ]
 }
 ```
@@ -76,7 +77,7 @@ Get an entry from database by ID
 
 ### 2. mongodb-query
 ---
-Searches items by query
+Searches for items by the specified JSON query. Search by regex supported.
 ##### Required Permissions
 `find` permission.
 ##### Base Command
@@ -87,7 +88,7 @@ Searches items by query
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | collection | Name of the collection do query from. | Required | 
-| query | A JSON query to search in collection. | Required | 
+| query | A JSON query to search in collection. A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Supports search by regex using following query=`"{ "field": { "$regex": "search_option" } }"`.  For example: query=`"{ "year": { "$regex": "2.*" } }"` - will find all entries, that their "year" field contains 2, query=`"{ "color": { "$regex": "Re.*", "$options": "i" } }"`: case insensitive search - will find all entries at the collection, where field "color" contains string "Re", case insensitive.| Required |
 | sort | Sorting order for the query results. Use the format "field1:asc,field2:desc". | Optional|
 
 
@@ -326,13 +327,6 @@ There is no context output for this command.
 ##### Human Readable Output
 ### MongoDB: Collection 'collectionToDelete` has been dropped.
 
-## Additional Information
----
-* a guide on how to use the `filter` and `query` argument can be found [here](https://docs.mongodb.com/manual/reference/operator/aggregation/filter/)
-* a guide on how to use the `update` argument can be found [here](https://docs.mongodb.com/manual/reference/operator/update/)
-## Known Limitations
----
-The `test` button is trying to list collections. If the user has no `find` permission it will fail.
 ### mongodb-pipeline-query
 ***
 Searches for items by the specified JSON pipleline query.
@@ -402,3 +396,11 @@ Searches for items by the specified JSON pipleline query.
 >| 602e62598be6cb93eb795697 |
 >| 602e62698be6cb93eb795699 |
 
+
+## Additional Information
+---
+* a guide on how to use the `filter` and `query` argument can be found [here](https://docs.mongodb.com/manual/reference/operator/aggregation/filter/)
+* a guide on how to use the `update` argument can be found [here](https://docs.mongodb.com/manual/reference/operator/update/)
+## Known Limitations
+---
+The `test` button is trying to list collections. If the user has no `find` permission it will fail.
