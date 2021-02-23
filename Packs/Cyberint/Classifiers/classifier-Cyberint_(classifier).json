@@ -2,7 +2,7 @@
     "defaultIncidentType": "Cyberint Incident",
     "description": "",
     "feed": false,
-    "id": "c102e197-3851-4c76-8348-3dd8caed798c",
+    "id": "Cyberint - Classifier",
     "keyTypeMap": {
         "acknowledged": "Cyberint Incident",
         "closed": "Cyberint Incident",

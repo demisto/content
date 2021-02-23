@@ -18,6 +18,5 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "layout": "Cyberint Incident - Layout",
-    "fromVersion": "6.0.0"
+    "layout": "Cyberint Incident - Layout"
 }

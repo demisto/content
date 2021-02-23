@@ -2,7 +2,7 @@
     "id": "incident_cyberintcreatedby",
     "version": -1,
     "modified": "2021-02-22T21:51:34.355968999+02:00",
-    "name": "CyberInt Created by ",
+    "name": "CyberInt Created by",
     "ownerOnly": false,
     "cliName": "cyberintcreatedby",
     "type": "shortText",
