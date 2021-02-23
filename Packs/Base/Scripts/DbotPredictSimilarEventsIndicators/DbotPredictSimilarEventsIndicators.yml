@@ -1,52 +1,63 @@
 args:
-  - auto: PREDEFINED
-    default: false
-    description: Incident id to get prediction, if empty - using the current incident
-      id
-    isArray: false
-    name: incidentId
-    predefined:
-      - comma separated optional values
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '150'
-    isArray: false
-    name: maxIncidentsInIndicatorsForWhiteList
-    required: false
-    secret: false
-  - auto: PREDEFINED
-    default: false
-    defaultValue: 'True'
-    description: Aggregate duplicate incidents within diffrerent dates
-    isArray: false
-    name: aggreagateIncidents
-    predefined:
-      - 'True'
-      - 'False'
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '2'
-    description: 'Minimun number of indicators '
-    isArray: false
-    name: minNumberOfIndicators
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '0.1'
-    description: Threshold to similarity value which is between 0 and 1
-    isArray: false
-    name: threshold
-    required: false
-    secret: false
-  - default: false
-    defaultValue: File,  URL, IP, Domain, IPv6
-    description: Type of indicators we want to take into account
-    isArray: false
-    name: indicatorsTypes
-    required: false
-    secret: false
+- auto: PREDEFINED
+  default: false
+  description: Incident id to get prediction, if empty - using the current incident
+    id
+  isArray: false
+  name: incidentId
+  predefined:
+    - comma separated optional values
+  required: false
+  secret: false
+- default: false
+  defaultValue: '150'
+  isArray: false
+  name: maxIncidentsInIndicatorsForWhiteList
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Aggregate duplicate incidents within diffrerent dates
+  isArray: false
+  name: aggreagateIncidents
+  predefined:
+    - 'True'
+    - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '2'
+  description: 'Minimun number of indicators '
+  isArray: false
+  name: minNumberOfIndicators
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.1'
+  description: Threshold to similarity value which is between 0 and 1
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: File,  URL, IP, Domain, IPv6
+  description: Type of indicators we want to take into account
+  isArray: false
+  name: indicatorsTypes
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Show the incident you are investigating
+  isArray: false
+  name: showActualIncident
+  predefined:
+    - 'True'
+    - ' False'
+  required: false
+  secret: false
 commonfields:
   id: 824f077d-49e9-4378-86a4-aa6603890c44
   version: -1
