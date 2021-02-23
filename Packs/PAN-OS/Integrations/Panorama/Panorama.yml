@@ -4437,6 +4437,14 @@ script:
       name: template_stack
       required: false
       secret: false
+    - default: false
+      defaultValue: vsys1
+      description: The name of the virtual system to be configured. Will use the configured
+        Vsys if exists.
+      isArray: false
+      name: vsys
+      required: false
+      secret: false
     deprecated: false
     description: Shows the user ID interface configuration
     execution: false
@@ -4463,6 +4471,14 @@ script:
       description: The template stack to use when running the command.
       isArray: false
       name: template_stack
+      required: false
+      secret: false
+    - default: false
+      defaultValue: vsys1
+      description: The name of the virtual system to be configured. Will use the configured
+        Vsys if exists.
+      isArray: false
+      name: vsys
       required: false
       secret: false
     deprecated: false

@@ -6614,10 +6614,12 @@ def prettify_user_interface_config(interface_config: List) -> List:
 def show_user_id_interface_config_request(args):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
-    vsys = demisto.params().get('vsys')
+    vsys = demisto.args().get('vsys')
+    vsys = vsys if not VSYS or (VSYS and vsys != VSYS) else VSYS
+
     # firewall instance xpath
     if VSYS:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + "\']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
 
     # panorama instance xpath
     elif not template_stack:
@@ -6640,7 +6642,8 @@ def show_user_id_interface_config_request(args):
         'GET',
         params=params,
     )
-    return result.get('response', {}).get('result', {}).get('zone', {}).get('entry')
+
+    return dict_safe_get(result, keys=['response', 'result', 'zone', 'entry'])
 
 
 def show_user_id_interface_config_command(args: dict):
@@ -6659,6 +6662,7 @@ def show_user_id_interface_config_command(args: dict):
                 raw_response=raw_response
             )
         )
+
     else:
         return_results("No results found")
 
@@ -6666,31 +6670,33 @@ def show_user_id_interface_config_command(args: dict):
 def list_configured_user_id_agents_request(args, version):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
+    vsys = demisto.args().get('vsys')
+    vsys = vsys if not VSYS or (VSYS and vsys != VSYS) else VSYS
     if VSYS:
         if version < 10:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                    "vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
+                    "vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
         else:
             xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
+                    "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
 
     elif template_stack:
         if version < 10:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                                                         "/vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
+                                                         "/vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
         else:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                                                         "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
+                                                         "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
     else:
         if version < 10:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
+                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
                     "\']/user-id-agent"
         else:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
+                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
                     "\']/redistribution-agent"
 
     params = {
@@ -6704,7 +6710,12 @@ def list_configured_user_id_agents_request(args, version):
         'GET',
         params=params,
     )
-    return dict_safe_get(result, keys=['response', 'result', 'user-id-agent', 'entry'])
+
+    if version < 10:
+        return dict_safe_get(result, keys=['response', 'result', 'user-id-agent', 'entry'])
+
+    else:
+        return dict_safe_get(result, keys=['response', 'result', 'redistribution-agent', 'entry'])
 
 
 def prettify_configured_user_id_agents(user_id_agents: List, version) -> List:
