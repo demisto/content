@@ -87,8 +87,7 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "fromversion": "6.0.0",
-            "toversion": "6.0.9"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Majestic Million",
@@ -3428,7 +3427,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
+        "EWSExtension": "Powershell does not support proxy",
+        "EWS Extension Online Powershell v2": "Powershell does not support proxy",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
