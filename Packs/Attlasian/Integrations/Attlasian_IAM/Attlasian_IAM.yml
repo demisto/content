@@ -1,24 +1,20 @@
 category: Identity and Access Management
 commonfields:
-  id: Salesforce IAM
+  id: Atlassian IAM
   version: -1
 configuration:
-- display: 'Salesforce url (Eg: https://<domain>.salesforce.com/)'
+- display: Atlassian URL
   name: url
   required: true
   type: 0
-- display: User name
-  name: credentials
-  required: true
-  type: 9
-- display: Consumer Key
-  name: consumer_key
+- display: Access Token
+  name: access_token
   required: true
   type: 4
-- display: Consumer Secret
-  name: consumer_secret
+- display: Directory ID
+  name: directory_id
   required: true
-  type: 4
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -27,61 +23,42 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Create User Command Enabled
+- additionalinfo: If set to false, iam-create-user command will be skipped, and user
+    will not be created.
+  defaultvalue: 'true'
+  display: Enabled The Command iam-create-user
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Update User Command Enabled
+  display: Enabled The Command iam-update-user
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Disable User Commands Enabled
+  display: Enabled The Command iam-disable-user
   name: disable_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Automatically create user if not found in update and enable commands
+  display: Automatically create user if not found in update command
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - Salesforce (Incoming)
+- defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - Salesforce (Outgoing)
+- defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-- additionalinfo: Used when creating a new user.
-  defaultvalue: en_US
-  display: Default Local Sid Key
-  hidden: false
-  name: localesidkey
-  required: true
-  type: 0
-- additionalinfo: Used when creating a new user.
-  defaultvalue: ISO-8859-1
-  display: Default Email Encoding Key
-  hidden: false
-  name: emailencodingkey
-  required: true
-  type: 0
-- additionalinfo: Used when creating a new user.
-  defaultvalue: en_US
-  display: Default Language Locale Key
-  hidden: false
-  name: languagelocalekey
-  required: true
-  type: 0
-description: Integrate with Salesforce's services to perform Identity Lifecycle Management
-  operations.
-display: Salesforce IAM
-name: Salesforce IAM
+description: Integrate with Atlassian's services to execute CRUD operations for employee
+  lifecycle processes.
+display: Atlassian IAM
+name: Atlassian IAM
 script:
   commands:
   - arguments:
@@ -109,14 +86,14 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -134,7 +111,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -165,14 +142,14 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -190,7 +167,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -208,14 +185,14 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -233,7 +210,7 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
@@ -251,14 +228,14 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: If true the employee's status is active, otherwise false.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
       type: String
     - contextPath: IAM.Vendor.details
-      description: Gives the user information if the API was successful, otherwise
-        error information.
+      description: Provides the raw data from the 3rd-party integration.
       type: string
     - contextPath: IAM.Vendor.email
       description: The employee's email address.
@@ -276,13 +253,13 @@ script:
       description: Name of the integration instance.
       type: string
     - contextPath: IAM.Vendor.success
-      description: If true, the command was executed successfully, otherwise false.
+      description: When true, indicates that the command was executed successfully.
       type: Boolean
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields
+    description: Retrieves a User Profile schema, which holds all of the user fields
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
@@ -291,12 +268,12 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  ismappable: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0
