@@ -90,11 +90,17 @@ def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> T
     try:
         logging.info(f"Calculating {pack} pack dependencies.")
         subgraph = PackDependencies.get_dependencies_subgraph_by_dfs(dependency_graph, pack)
+        if pack == 'CommonPlaybooks':
+            logging.info(f"graph {str(subgraph)}")
         for dependency_pack, additional_data in subgraph.nodes(data=True):
+            if pack == 'CommonPlaybooks':
+                logging.info(f'Iterating dependency {dependency_pack} for pack {pack} with {str(additional_data)}')
             logging.debug(f'Iterating dependency {dependency_pack} for pack {pack}')
             additional_data['mandatory'] = pack in additional_data['mandatory_for_packs']
             del additional_data['mandatory_for_packs']
             first_level_dependencies, all_level_dependencies = parse_for_pack_metadata(subgraph, pack)
+            if pack == 'CommonPlaybooks':
+                logging.info(f'first_level_dependencies: {str(first_level_dependencies)}')
     except Exception:
         logging.exception(f"Failed calculating {pack} pack dependencies")
         raise
