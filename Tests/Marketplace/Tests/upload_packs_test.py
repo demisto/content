@@ -570,8 +570,8 @@ class TestUpdatedPrivatePacks:
 
          When
          - first check - there is no private pack that changed.
-         - second check - one commit hash was changed.
-         - third check - private pack was deleted
+         - second check - private pack was deleted
+         - third check - one commit hash was changed.
          - forth check - private pack was added
 
          Then
