@@ -185,6 +185,7 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
             'creationdate': resource.get('published_date'),
             'rawJSON': resource,
             'tagstype': [label.get('name') for label in resource.get('labels')]  # type: ignore
+            'fields': {}
         }
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
