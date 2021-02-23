@@ -559,7 +559,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     Returns:
         Tuple of next_run (millisecond timestamp) and the incidents list
     """
-
     last_fetch_timestamp = last_run.get('last_fetch', None)
     if last_fetch_timestamp:
         next_run = datetime.fromtimestamp(last_fetch_timestamp)
@@ -582,9 +581,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
               'sort': '[{"createdBy.date":"asc"}]'}
     raw_response = client.incidents_list(params)
     incidents = []
+    last_incident_id = last_run.get('last_fetched_id')
+
     for incident in raw_response:
         incident = incident.get('data', None)
         incident_id = incident.get('id', None)
+        if incident_id == last_incident_id:
+            continue
         incident_name = incident.get('name', None)
         created_date = dict_safe_get(incident, ['createdBy', 'date'])
         incident_created_time = datetime.fromtimestamp(created_date / 1000)
@@ -592,15 +595,17 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         incident = {
             'name': f'QualysFIM Incident {incident_name}: {incident_id}',
             'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'rawJSON': json.dumps(incident)
+            'rawJSON': json.dumps(incident),
+            'incident_id': incident_id
         }
         incidents.append(incident)
         if incident_created_time > next_run:
             next_run = incident_created_time
 
-    next_run += timedelta(seconds=1)
+    if len(incidents) > 0:
+        last_incident_id = incidents[-1].get('incident_id')
     next_run_timestamp = int(datetime.timestamp(next_run))
-    return {'last_fetch': next_run_timestamp}, incidents
+    return {'last_fetch': next_run_timestamp, 'last_fetched_id': last_incident_id}, incidents
 
 
 def test_module(client: Client):
