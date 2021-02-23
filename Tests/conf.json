@@ -3422,6 +3422,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "EwsExtension": "PWSH Not supporting proxy",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
