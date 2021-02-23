@@ -427,5 +427,4 @@ script:
 tests:
 - Wildfire Test
 - Detonate File - WildFire - Test
-- Detonate URL - WildFire v2.1 - Test
 fromversion: 5.0.0
