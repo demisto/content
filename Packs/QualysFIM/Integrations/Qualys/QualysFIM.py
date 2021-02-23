@@ -552,12 +552,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         client (Client): QualysFIM Client.
         last_run (dict): Dict with last_fetch object,
                                   saving the last fetch time(in millisecond timestamp).
-        max_fetch (str): Max number of alerts to fetch :qw.
+        max_fetch (str): Max number of alerts to fetch.
         fetch_filter (str): filter incidents with Qualys syntax.
         first_fetch_time (str): Dict with first fetch time in str (ex: 3 days ago).
 
     Returns:
-        Tuple of next_run (millisecond timestamp) and the incidents list
+        Tuple of next_run (millisecond timestamp) and the incidents list.
     """
     last_fetch_timestamp = last_run.get('last_fetch', None)
     if last_fetch_timestamp:
