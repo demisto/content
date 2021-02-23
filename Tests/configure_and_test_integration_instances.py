@@ -42,6 +42,7 @@ NO_PROXY = ','.join([
     'oproxy-dev.demisto.ninja',
     'login.microsoftonline.com'
 ])
+NO_PROXY_FOR_5_0_0 = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
@@ -883,6 +884,7 @@ def configure_servers_and_restart(build):
         if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
             configure_types.append('ignore docker image validation')
             configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+            configurations.update(NO_PROXY_FOR_5_0_0)
         if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
