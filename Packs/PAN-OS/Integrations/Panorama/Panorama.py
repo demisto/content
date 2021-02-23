@@ -6621,13 +6621,13 @@ def show_user_id_interface_config_request(args):
 
     # panorama instance xpath
     elif not template_stack:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
-                "/config/devices/entry[@name='localhost.localdomain']/" \
-                "vsys/entry[@name=\'" + vsys + "\']/zone"
+        xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
+                "template/entry[@name=\'" + template + "\']/config/devices/entry[@name='localhost.localdomain']/" \
+                                                       "vsys/entry[@name=\'" + vsys + "\']/zone"
     else:
         xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                "/template-stack/entry[@name=\'" + template_stack + "\']" \
-                "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
+                "/template-stack/entry[@name=\'" + template_stack + \
+                "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
 
     params = {
         'action': 'show',
@@ -6648,18 +6648,17 @@ def show_user_id_interface_config_command(args: dict):
 
     if raw_response:
         formatted_results = prettify_user_interface_config(raw_response)
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': raw_response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('User Interface Configuration:', formatted_results,
-                                             ['Name', 'Network'],
-                                             removeNull=True),
-            'EntryContext': {
-                "Panorama.UserInterfaces(val.Name == obj.Name)": formatted_results
-            }
-        })
+        return_results(
+            CommandResults(
+                outputs_prefix="Panorama.UserInterfaces",
+                outputs_key_field='Name',
+                outputs=formatted_results,
+                readable_output=tableToMarkdown('User Interface Configuration:', formatted_results,
+                                                ['Name', 'Network'],
+                                                removeNull=True),
+                raw_response=raw_response
+            )
+        )
     else:
         return_results("No results found")
 
@@ -6679,20 +6678,20 @@ def list_configured_user_id_agents_request(args, version):
         if version < 10:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
+                                                         "/vsys/entry[@name=\'" + VSYS + "\']/user-id-agent"
         else:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
                     "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
+                                                         "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
     else:
         if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
-                    "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
+                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
                     "\']/user-id-agent"
         else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + "\']" \
-                    "/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + VSYS + "\']/redistribution-agent"
+            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
+                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + VSYS + \
+                    "\']/redistribution-agent"
 
     params = {
         'action': 'show',
@@ -6705,8 +6704,7 @@ def list_configured_user_id_agents_request(args, version):
         'GET',
         params=params,
     )
-
-    return result.get('response', {}).get('result', {}).get('user-id-agent', {}).get('entry')
+    return dict_safe_get(result, keys=['response', 'result', 'user-id-agent', 'entry'])
 
 
 def prettify_configured_user_id_agents(user_id_agents: List, version) -> List:
@@ -6744,18 +6742,16 @@ def list_configured_user_id_agents_command(args):
 
         else:
             headers = ['Name', 'Host', 'Port', 'LdapProxy', 'IpUserMapping']
-
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': raw_response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('User ID Agents:', formatted_results,
-                                             headers, removeNull=True),
-            'EntryContext': {
-                "Panorama.UserIDAgents(val.Name == obj.Name)": formatted_results
-            }
-        })
+        return_results(
+            CommandResults(
+                outputs_prefix='Panorama.UserIDAgents',
+                outputs_key_field='Name',
+                outputs=formatted_results,
+                readable_output=tableToMarkdown('User ID Agents:', formatted_results,
+                                                headers, removeNull=True),
+                raw_response=raw_response
+            )
+        )
     else:
         return_results("No results found")
 

@@ -1287,7 +1287,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a URL category from URL filtering. This command is only available on Firewall devices.
+    description: Gets a URL category from URL filtering. This command is only available
+      on Firewall devices.
     execution: false
     name: panorama-get-url-category
     outputs:
@@ -1359,7 +1360,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL filtering. This command is only available on Firewall devices.
+    description: Returns a URL category from URL filtering. This command is only available
+      on Firewall devices.
     execution: false
     name: panorama-get-url-category-from-cloud
     outputs:
@@ -1377,7 +1379,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL filtering. This command is only available on Firewall devices.
+    description: Returns a URL category from URL filtering. This command is only available
+      on Firewall devices.
     execution: false
     name: panorama-get-url-category-from-host
     outputs:
@@ -4435,7 +4438,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Show the user ID interface configuration
+    description: Shows the user ID interface configuration
     execution: false
     name: panorama-show-user-id-interfaces-config
     outputs:
@@ -4443,7 +4446,7 @@ script:
       description: The name of the user interface.
       type: String
     - contextPath: Panorama.UserInterfaces.Network.layer3.member
-      description: The interface network layer3 member
+      description: The interface network layer3 member.
       type: String
     - contextPath: Panorama.UserInterfaces.Network.log-setting
       description: The interface network log settings.
@@ -4480,7 +4483,7 @@ script:
       description: Whther LDAP proxy is used in the user ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.NtlmAuth
-      description: 'Whether NLTM authentication is used in the user ID agent. '
+      description: Whether NLTM authentication is used in the user ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.EnableHipCollection
       description: Whether HIP collection is enabled in the user ID agent.
