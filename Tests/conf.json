@@ -3221,7 +3221,6 @@
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
         }
-
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
