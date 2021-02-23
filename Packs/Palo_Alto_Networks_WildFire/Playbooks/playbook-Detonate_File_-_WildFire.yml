@@ -578,3 +578,5 @@ outputs:
   type: number
 tests:
 - Wildfire Test
+- Detonate URL - WildFire v2.1 - Test
+- Detonate File - WildFire - Test
