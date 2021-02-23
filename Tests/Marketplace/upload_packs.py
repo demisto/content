@@ -593,8 +593,7 @@ def is_private_packs_updated(public_index_json, private_index_path):
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
         if id_to_commit_hash_from_public_index.get(pack_id) != content_commit_hash:
-            logging.debug(
-                f"There is at least one private pack that was updated, upload should not be skipped: {pack_id}")
+            logging.debug("There is at least one private pack that was updated, upload should not be skipped.")
             return True
 
     logging.debug("No private packs were changed")
@@ -907,7 +906,6 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
-    packs_list = []
 
     # taking care of private packs
     should_upload_private_packs, private_packs, updated_private_packs_ids = are_there_private_packs_to_upload(
