@@ -454,7 +454,7 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
         raise DemistoException('The `pipeline` argument is not a valid json.')
 
     if raw_response:
-        raw_response = raw_response[offset:(offset + limit)]
+        raw_response = raw_response[offset:(offset + limit)]  # type: ignore
         readable_outputs = tableToMarkdown(
             f'Total of {len(raw_response)} entries were found in MongoDB collection: `{collection}` '
             f'with pipeline: {pipeline}:',
