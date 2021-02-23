@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import dateparser
 import typing
 
@@ -120,8 +120,7 @@ class RestClient(BaseClient):
         normally requests using the BaseClient assume resp_type=json and return a parsed json object from the body
         for this request we specifically use a resp_type that will return the entire response and allow us to attempt
         to parse the json. if parsing fails, try to parse as text, and then search the text for 'login'
-        if we find that, it is sufficient to say we have a bad token, and can return a more helpful error.
-        
+        if we find that, it is sufficient to say we have a bad token, and can return a more helpful error.        
         this isn't ideal. this is also, at the time of this writing, the first REST request made by all of our commands
         because we need to get the internal tenant id before doing anything else. that's why we only do this hack on 
         this request.
@@ -878,7 +877,8 @@ def get_escalations_command(rest_client, args):
                 more_data = False
     except Exception as e:
         demisto.debug(
-            f'Error while getting escalation data in Respond incoming mirror for incident {args["incident_id"]} Error message: {str(e)}')
+            f'Error while getting escalation data in Respond incoming mirror for incident '
+            f'{args["incident_id"]} Error message: {str(e)}')
         raise e
     if len(entries) == 0:
         entries.append({

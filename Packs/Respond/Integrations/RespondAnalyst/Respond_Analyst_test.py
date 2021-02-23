@@ -39,8 +39,7 @@ def mock_rest_client():
 
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
-    from RespondAnalyst import fetch_incidents, \
-        RestClient
+    from RespondAnalyst import fetch_incidents
 
     get_ids_response = []
     get_full_incidents_response = []
@@ -70,8 +69,7 @@ def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_m
 
 
 def test_get_incident_command(requests_mock):
-    from RespondAnalyst import get_incident_command, \
-        RestClient
+    from RespondAnalyst import get_incident_command
 
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
@@ -101,8 +99,7 @@ def test_get_incident_command(requests_mock):
 
 
 def test_fetch_incidents_no_new(mocker, requests_mock):
-    from RespondAnalyst import fetch_incidents, \
-        RestClient
+    from RespondAnalyst import fetch_incidents
 
     get_ids_response = []
     get_full_incidents_response = []
@@ -132,8 +129,7 @@ def test_fetch_incidents_no_new(mocker, requests_mock):
 
 
 def test_fetch_incidents(mocker, requests_mock):
-    from RespondAnalyst import fetch_incidents, \
-        RestClient
+    from RespondAnalyst import fetch_incidents
 
     get_ids_response = [{
         'id': '8'}, {
@@ -160,8 +156,7 @@ def test_fetch_incidents(mocker, requests_mock):
 
 
 def test_remove_user(mocker, requests_mock):
-    from RespondAnalyst import remove_user_command, \
-        RestClient
+    from RespondAnalyst import remove_user_command
 
     rest_client = mock_rest_client()
     get_all_users_response = load_test_data('test_data/users.json')
@@ -207,8 +202,7 @@ def test_remove_user(mocker, requests_mock):
 
 
 def test_assign_user(mocker, requests_mock):
-    from RespondAnalyst import assign_user_command, \
-        RestClient
+    from RespondAnalyst import assign_user_command
 
     assign_user_response = {
         'data': {
@@ -263,8 +257,7 @@ def test_assign_user(mocker, requests_mock):
 
 
 def test_close_incident(mocker, requests_mock):
-    from RespondAnalyst import close_incident_command, \
-        RestClient
+    from RespondAnalyst import close_incident_command
 
     rest_client = mock_rest_client()
     # test
@@ -341,8 +334,7 @@ def test_close_incident(mocker, requests_mock):
 
 
 def test_assign_user_raise_exception(mocker, requests_mock):
-    from RespondAnalyst import assign_user_command, \
-        RestClient
+    from RespondAnalyst import assign_user_command
 
     rest_client = mock_rest_client()
 
@@ -381,8 +373,7 @@ def test_assign_user_raise_exception(mocker, requests_mock):
 
 
 def test_remove_user_raises_exception(mocker, requests_mock):
-    from RespondAnalyst import remove_user_command, \
-        RestClient
+    from RespondAnalyst import remove_user_command
 
     rest_client = mock_rest_client()
 
@@ -422,8 +413,7 @@ def test_remove_user_raises_exception(mocker, requests_mock):
 
 
 def test_close_incident_with_bad_responses(mocker, requests_mock):
-    from RespondAnalyst import close_incident_command, \
-        RestClient
+    from RespondAnalyst import close_incident_command
 
     rest_client = mock_rest_client()
     mocker.patch.object(demisto, 'error')
@@ -475,8 +465,7 @@ def test_close_incident_with_bad_responses(mocker, requests_mock):
 
 
 def test_get_remote_data_command(requests_mock):
-    from RespondAnalyst import get_remote_data_command, \
-        RestClient
+    from RespondAnalyst import get_remote_data_command
     full_incidents_response = load_test_data(
         'test_data/full_incidents_response_single_full_incident.json')
 
@@ -585,8 +574,7 @@ def test_get_remote_data_command(requests_mock):
 
 
 def test_update_remote_system_command(mocker, requests_mock):
-    from RespondAnalyst import update_remote_system_command, \
-        RestClient
+    from RespondAnalyst import update_remote_system_comman
     args = {
         "data": "tons of data",
         "entries": "entries val",
@@ -642,8 +630,7 @@ def test_get_mapping_fields_command():
 
 
 def test_get_escalations_no_new(requests_mock, mocker):
-    from RespondAnalyst import get_escalations_command, \
-        RestClient
+    from RespondAnalyst import get_escalations_command
     escalation_query_response = {
         'data': {
             'newEscalations': []}}
@@ -669,8 +656,7 @@ def test_get_escalations_no_new(requests_mock, mocker):
 
 
 def test_get_escalations_throws_exception(requests_mock, mocker):
-    from RespondAnalyst import get_escalations_command, \
-        RestClient
+    from RespondAnalyst import get_escalations_command
     args = {
         'tenant_id': 'Tenant 1',
         'incident_id': '1'}
