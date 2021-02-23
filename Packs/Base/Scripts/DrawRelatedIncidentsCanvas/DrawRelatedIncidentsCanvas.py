@@ -24,7 +24,7 @@ def generate_layout(current_incident_id, incident_ids, indicator_ids, connection
     G = nx.Graph()
     graph_incidents = ["incident-" + x for x in incident_ids]
     graph_indicators = ["indicator-" + x for x in indicator_ids]
-    G.add_nodes_from(graph_incidents, layer=0)
+    G.add_nodes_from(graph_incidents, layer=0)   # type: ignore
     n_indicators = len(indicator_ids)
     n_indicators_lines = int(n_indicators / (len(incident_ids) + 1)) + 1
     indicators_per_line = math.ceil(n_indicators / n_indicators_lines)
@@ -37,7 +37,7 @@ def generate_layout(current_incident_id, incident_ids, indicator_ids, connection
         src = "%s-%s" % (connection['srcEntityType'], connection['srcEntityId'])
         dest = "%s-%s" % (connection['targetEntityType'], connection['targetEntityId'])
         G.add_edge(src, dest)
-    pos = layout_to_functions.get(LAYOUT)(G)
+    pos = layout_to_functions.get(LAYOUT)(G)  # type: ignore
     layout = {}
     for k, v in pos.items():
         _type = k.split("-")[0]

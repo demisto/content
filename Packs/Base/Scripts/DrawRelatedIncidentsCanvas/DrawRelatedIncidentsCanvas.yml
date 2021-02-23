@@ -55,8 +55,9 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/localcanvas:latest
+dockerimage: demisto/sklearn:1.0.0.16697
 runas: DBotWeakRole
 runonce: false
-pswd: ''
 fromversion: 6.0.1
+tests:
+- No tests (auto formatted)
