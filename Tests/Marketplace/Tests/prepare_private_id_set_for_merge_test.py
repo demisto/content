@@ -44,7 +44,16 @@ PRIVATE_ID_SET = {
         },
         "ActiveMQ": {
             "name": "ActiveMQ"
-        }
+        },
+        "Access data": {
+            "id": "Accessdata"
+        },
+        "WORKDAY": {
+            "id": "Workday"
+        },
+        "Active MQ": {
+            "id": "ActiveMQ"
+        },
     }
 }
 
@@ -67,11 +76,14 @@ def test_remove_old_pack_from_private_id_set():
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, 'Workday')
     assert WORKDAY_INTEGRATION not in private_id_set['integrations']
     assert 'Workday' not in list(private_id_set.get('Packs').keys())
+    assert "WORKDAY" not in list(private_id_set.get('Packs').keys())
 
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, 'Accessdata')
     assert ACCESSDATA_INTEGRATION not in private_id_set['integrations']
     assert "Accessdata" not in list(private_id_set.get('Packs').keys())
+    assert "Access data" not in list(private_id_set.get('Packs').keys())
 
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, '')
     assert ACTIVEMQ_INTEGRATION in private_id_set['integrations']
     assert "ActiveMQ" in list(private_id_set.get('Packs').keys())
+    assert "Active MQ" in list(private_id_set.get('Packs').keys())

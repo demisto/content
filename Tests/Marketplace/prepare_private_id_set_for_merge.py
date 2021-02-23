@@ -23,7 +23,16 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
             private_id_set[content_entity] = entity_value_list
 
         else:
-            packs_list = {k: v for k, v in content_entity_value_list.items() if k != new_pack_name}
+            packs_list = {}
+            for pack_name, pack_value in content_entity_value_list.items():
+                if pack_value.get('id'):
+                    if pack_value.get('id') != new_pack_name:
+                        packs_list[pack_name] = pack_value
+
+                else:
+                    if pack_name != new_pack_name:
+                        packs_list[pack_name] = pack_value
+
             private_id_set[content_entity] = packs_list
 
     return private_id_set
