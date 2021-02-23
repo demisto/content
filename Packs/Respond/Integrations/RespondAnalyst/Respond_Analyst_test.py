@@ -404,7 +404,7 @@ def test_get_remote_data_command(requests_mock):
     rest_client = mock_rest_client()
     requests_mock.get(
         f'{BASE_URL}/session/tenantIdMapping?tempId={API_TOKEN}',
-        json={'dev1': 'Tenant 1', 'dev1_tenant2': 'Tenant 2'}
+        json={'dev1': 'Tenant 1'}
     )
     requests_mock.post(
         f'{BASE_URL}/graphql?tempId={API_TOKEN}&tenantId=dev1',
@@ -426,7 +426,7 @@ def test_get_remote_data_command(requests_mock):
          "status": "Closed", "severity": "Critical", "probability": "VeryHigh",
          "attackStage": "LateralMovement", "attackTactic": None,
          "assetCriticality": "Critical", "assetCount": 1,
-         "assets": [{"hostname": "host1", "ipAddress": "10.150.0.11", "isInternal": True}],
+         "assets": [{"hostname": "host1", "ipaddress": "10.150.0.11", "isinternal": True}],
          "escalationReasons": [
              {"label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"}],
          "assignedUsers": ["cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"],
@@ -437,8 +437,8 @@ def test_get_remote_data_command(requests_mock):
          "respondRemoteId": "Tenant 1:6", "dbotMirrorDirection": "Both",
          "dbotMirrorInstance": "respond_test", "owner": "user1",
          'externalSystems': [{'hostname': 'host2',
-                              'ipAddress': '10.150.0.22',
-                              'isInternal': False}],
+                              'ipaddress': '10.150.0.22',
+                              'isinternal': False}],
          'malware': [{'name': 'Ransom.Win32.CRYSIS.SM',
                       'type': 'Ransomware',
                       'vendor': 'McAfee'},

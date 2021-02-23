@@ -14,7 +14,7 @@ configuration:
   - Both
   required: false
   type: 15
-- display: base url
+- display: Base Url
   name: base_url
   required: true
   type: 0
@@ -34,6 +34,16 @@ configuration:
   name: token
   required: true
   type: 4
+- defaultvalue: '500'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+
 description: Respond Software Integration - fetches incidents with mirroring api enabled
 display: Respond Analyst
 name: Respond_Analyst
@@ -146,19 +156,20 @@ script:
       name: incident_id
       required: true
       secret: false
+      description: incident_id
     - default: false
       isArray: false
       name: tenant_id
       required: false
       secret: false
+      description: tenant id
     deprecated: false
     description: Get escalation data associated with incident
     execution: false
     name: respond-get-escalations
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
-  ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   longRunning: false

@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import json
 from datetime import datetime, timedelta
 import dateparser
+import typing
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -542,19 +543,16 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     # separate internal and external systems. internal system = asset
     assets = []
     external_systems = []
+    lc_assets = []
+    lc_external_systems: typing.List[typing.Dict[str,str]] = []
     if raw_incident.get('allSystems'):
         assets = list(
             filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
-        #asset keys need to be lowercase
-        lc_assets = []
         for asset in assets:
            lc_assets.append(dict((k.lower(), v) for k,v in asset.items()))
-
         external_systems = list(
             filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
-
-        lc_external_systems = []
-        for es in lc_external_systems:
+        for es in external_systems:
             lc_external_systems.append(dict((k.lower(), v) for k,v in es.items()))
 
     # aggregate accounts
@@ -896,8 +894,8 @@ def get_escalations_command(rest_client, args):
 def get_remote_data_command(rest_client, args):
     full_id = args.get('id')
     last_index = full_id.rfind(':')
-    args['respond_tenant_id'] = id[0:last_index]
-    args['incident_id'] = id[last_index + 1:]
+    args['respond_tenant_id'] = full_id[0:last_index]
+    args['incident_id'] = full_id[last_index + 1:]
     entries = []
     try:
         updated_incident = get_formatted_incident(rest_client, args)
@@ -1126,12 +1124,7 @@ def main():
             return_results(get_escalations_command(rest_client, demisto.args()))
 
     except Exception as err:
-        demisto.debug(f'Error caught at top level: {str(err)}')
-        if demisto.command() == 'fetch-incidents':
-            LOG(str(err))
-            raise
-        raise
-        # return_error(str(err))
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
