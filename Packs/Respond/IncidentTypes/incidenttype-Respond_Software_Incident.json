@@ -6,7 +6,7 @@
 	"daysR": 0,
 	"default": false,
 	"disabled": false,
-	"fromServerVersion": "",
+	"fromServerVersion": "5.0.0",
 	"hours": 0,
 	"hoursR": 0,
 	"id": "Respond Software Incident",
