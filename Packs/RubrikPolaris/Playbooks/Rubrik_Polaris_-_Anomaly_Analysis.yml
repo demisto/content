@@ -1,0 +1,655 @@
+id: Rubrik Polaris - Anomaly Analysis
+inputs: []
+name: Rubrik Polaris - Anomaly Analysis
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4eae6e36-17d4-4330-8955-9f68eb639018
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4eae6e36-17d4-4330-8955-9f68eb639018
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": -80
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activitySeriesId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Gather the final Rubrik Radar analysis results and update the incident
+        context.
+      id: efc7318c-2b6f-4464-802f-a65ed6616603
+      iscommand: true
+      name: Gather the final Radar Analysis results
+      script: RubrikPolaris|||rubrik-radar-analysis-status
+      type: regular
+      version: -1
+    taskid: efc7318c-2b6f-4464-802f-a65ed6616603
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 855
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${incident.rubrikpolarisactivityseriesid}
+      Interval:
+        simple: "5"
+      PollingCommandArgName:
+        simple: activitySeriesId
+      PollingCommandName:
+        simple: rubrik-radar-analysis-status
+      Timeout:
+        simple: "1440"
+      dt:
+        simple: Rubrik.Radar(val.EventComplete ==  'False').ActivitySeriesId
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 20277297-b3bb-4c07-82d4-f68d8c3eb0af
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 20277297-b3bb-4c07-82d4-f68d8c3eb0af
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 470
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bbdc0ff1-5727-463d-8a3b-641337f7aa7a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: bbdc0ff1-5727-463d-8a3b-641337f7aa7a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1230
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: subplaybook-4
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remove the context created by the "Wait for the Radar Analysis
+        process to complete" step. This information is duplicate information and is
+        not needed.
+      id: 957f88a2-928e-45d0-8b45-4d88b895a241
+      iscommand: false
+      name: Clean up the incident context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 957f88a2-928e-45d0-8b45-4d88b895a241
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 660
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activitySeriesId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Complete an initial query of the Rubrik Radar analysis process
+        and save the results to the incident context.
+      id: a802219b-4f4c-4985-8166-542ad03ccb0a
+      iscommand: true
+      name: Determine the status of the Rubrik Radar analysis process
+      script: RubrikPolaris|||rubrik-radar-analysis-status
+      type: regular
+      version: -1
+    taskid: a802219b-4f4c-4985-8166-542ad03ccb0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 280
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5afe9c0b-e882-4721-8d17-4b89f12c0b22
+      iscommand: false
+      name: Radar Ransomware Status
+      type: title
+      version: -1
+      description: ''
+    taskid: 5afe9c0b-e882-4721-8d17-4b89f12c0b22
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 130
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 49e169b0-1214-4723-8129-6b31b8a1db9d
+      iscommand: false
+      name: Sonar Data Classification
+      type: title
+      version: -1
+      description: ''
+    taskid: 49e169b0-1214-4723-8129-6b31b8a1db9d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 140
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      objectName: {}
+      searchTimePeriod: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Find data classification hits on an object.
+      id: d37864c0-6bd3-4755-84d5-38065cf1a869
+      iscommand: true
+      name: rubrik-sonar-sensitive-hits
+      script: RubrikPolaris|||rubrik-sonar-sensitive-hits
+      type: regular
+      version: -1
+    taskid: d37864c0-6bd3-4755-84d5-38065cf1a869
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 320
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      activityseriesid: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      analysisprogress: {}
+      app: {}
+      appendMultiSelect: {}
+      applicationid: {}
+      applicationname: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      cdmclusterid: {}
+      cdmclustername: {}
+      cdmclusttername: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventcompleted: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastactivitystatus: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdated: {}
+      lastupdatetime: {}
+      leadership: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      message:
+        simple: ${Rubrik.Radar.Message}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberoflogsources: {}
+      objectid: {}
+      objectname: {}
+      objecttype: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      polariseventid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rubrikpolarisactivityseriesid: {}
+      rubrikpolarisanalysisprogress: {}
+      rubrikpolariscdmclusterid: {}
+      rubrikpolariscdmclustername: {}
+      rubrikpolariseventcompleted: {}
+      rubrikpolariseventid: {}
+      rubrikpolarislastactivitystatus: {}
+      rubrikpolarislastupdated: {}
+      rubrikpolarismessage:
+        simple: ${Rubrik.Radar.Message}
+      rubrikpolarisobjectid: {}
+      rubrikpolarisobjectname: {}
+      rubrikpolarisobjecttype: {}
+      samaccountname: {}
+      severity: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      targetfirewallversion: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: d6c49f49-eedd-4c06-84c1-7a21da145993
+      iscommand: true
+      name: Update the Incident Dashboard
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d6c49f49-eedd-4c06-84c1-7a21da145993
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 970,
+        "x": 60,
+        "y": -80
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+description: Monitor the progress of a Rubrik Radar anamoly event and use Rubrik Sonar
+  to check for data classification hits.
