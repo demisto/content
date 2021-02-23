@@ -4,51 +4,146 @@ import asana
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-ASANA_ACCESS_TOKEN = demisto.getParams('accesstoken')
-
-
-def get_asana_client():
+""" Helper Functions """
+def get_asana_client(token: str):
     try:
-        client = asana.Client.access_token(ASANA_ACCESS_TOKEN)
+        client = asana.Client.access_token(token)
         me = client.users.me()
 
     except Exception as err:
         return_error(str(err))
     return client
 
+def get_projects_in_workspace(wid: str, client) -> list:
+    res = []
+    projects = client.projects.get_projects({'workspace': wid}, opt_pretty=True)
 
-def get_project(pid: str):
-    client = get_asana_client()
-    project = client.projects.find_by_id(pid)
-    return json.dumps(project)
-
-
-def create_task_in_project(pid: str, name: str):
-    client = get_asana_client()
-    task = client.tasks.create({'projects': pid,
-                                'name': name
-                                })
+    for project in projects:
+        res.append(project)
+    return res
+""" Helper Functions """
 
 
-def test_module() -> str:
-    req_client = get_asana_client()
+def get_all_projects(token: str):
+    """Gets all projects of the user in Asana'
+
+    :type token: ``str``
+    :param token: PAT of the account used in this integration
+
+    :return: list of the projects on Asana
+    :rtype: ``list``
+    """
+    res = []
+    try:
+        client = get_asana_client(token)
+        workspaces = client.workspaces.find_all()
+        for workspace in workspaces:
+            projects = get_projects_in_workspace(workspace['gid'],client)
+            res.extend(projects)
+        return CommandResults(
+            outputs_prefix='asana',
+            outputs_key_field='projects',
+            outputs=res
+        )
+    except e:
+        demisto.results("Request failed")
+
+def get_project(pid: str, token: str):
+    """Retrieves metadata of the particular project'
+
+    :type id: ``str``
+    :param id: project id in Asana
+
+    :type name: ``str``
+    :param name: name for the task to be created
+
+    :type token: ``str``
+    :param token: PAT of the account used in this integration
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    project = {}
+    try:
+        client = get_asana_client(token)
+        project = client.projects.find_by_id(pid)
+        return CommandResults(
+            outputs_prefix='asana',
+            outputs_key_field='project',
+            outputs=project
+        )
+    except e:
+        demisto.results("Request failed")
+
+
+def create_task_in_project(pid: str, name: str, token: str):
+    """Creates a task in the specific Asana project'
+
+    :type id: ``str``
+    :param id: project id in Asana
+
+    :type name: ``str``
+    :param name: name for the task to be created
+
+    :type token: ``str``
+    :param token: PAT of the account used in this integration
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    try:
+        client = get_asana_client(token)
+        task = client.tasks.create({'projects': pid,
+            'name': name
+        })
+        demisto.results(f'Task {name} successfully added to project')
+    except e:
+        demisto.results(f'Task creation failed')
+
+
+def test_module(token: str) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Shows the http error 'No Authorization' if it fails.
+
+    :type token: ``str``
+    :param token: PAT of the Asana account used in this integration
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    req_client = get_asana_client(token)
 
     return 'ok'
 
+def main() -> None:
+    """main function, parses params and runs command functions
 
-def main():
+    :return:
+    :rtype:
+    """
+
+    params = demisto.params()
+    access_token = params.get('accesstoken')
     try:
         if demisto.command() == 'test-module':
-            demisto.results(test_module())
+            demisto.results(test_module(access_token))
 
         elif demisto.command() == 'asana-get-project':
             pid = demisto.args()['project_id']
-            res = get_project(pid)
-            demisto.results(res)
+            res = get_project(pid,access_token)
+            return_results(res)
+
         elif demisto.command() == 'asana-create-task':
             pid = demisto.args()['project_id']
             name = demisto.args()['name']
-            res = create_task_in_project(pid, name)
+            create_task_in_project(pid,name,access_token)
+
+        elif demisto.command() == 'asana-get-all-projects':
+            res = get_all_projects(access_token)
+            return_results(res)
     except Exception as err:
         if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
             raise
@@ -56,7 +151,6 @@ def main():
 
     finally:
         LOG.print_log()
-
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
