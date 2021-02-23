@@ -251,14 +251,14 @@ Retrieves permissions on a mailbox.
 >| --- | --- | --- | --- | --- | ---
 >| \["FullAccess","ReadPermission"\] | \{"IsPresent":false\} | "user" | "All" | false | "NT AUTHORITY\\SELF"
 
-### ews-recipient-permission-get
+### ews-recipient-permission-list
 ***
 Displays information about SendAs permissions that are configured for users.
 
 
 #### Base Command
 
-`ews-recipient-permission-get`
+`ews-recipient-permission-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -280,7 +280,7 @@ Displays information about SendAs permissions that are configured for users.
 
 
 #### Command Example
-```!ews-recipient-permission-get identity=<Guid>```
+```!ews-recipient-permission-list identity=<Guid>```
 
 #### Context Example
 ```json
