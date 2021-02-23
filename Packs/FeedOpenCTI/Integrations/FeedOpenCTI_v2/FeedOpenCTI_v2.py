@@ -185,7 +185,6 @@ def get_indicators_command(client, args: dict) -> CommandResults:
                                           headers=["type", "value", "id"],
                                           removeNull=True)
 
-        # TODO: change context
         outputs = {
             'OpenCTI.Indicators(val.lastRunID)': {'lastRunID': last_run_id},
             'OpenCTI.Indicators.IndicatorsList(val.id === obj.id)': indicators
@@ -464,12 +463,10 @@ def organization_list_command(client, args: Dict[str, str]) -> CommandResults:
         readable_output = tableToMarkdown('Organizations', organizations, headers=['name', 'id'],
                                           headerTransform=pascalToSpace)
         outputs = {
-            'organizationsLastRun': new_last_run,
-            'Organizations': organizations
+            'OpenCTI.Organizations(val.organizationsLastRun)': {'organizationsLastRun': new_last_run},
+            'OpenCTI.Organizations.OrganizationsList(val.id === obj.id)': organizations
         }
         return CommandResults(
-            outputs_prefix='OpenCTI',
-            outputs_key_field='Organizations.id',
             outputs=outputs,
             readable_output=readable_output,
             raw_response=organizations_list
@@ -531,13 +528,12 @@ def label_list_command(client, args: Dict[str, str]) -> CommandResults:
             for label in label_list.get('entities')]
         readable_output = tableToMarkdown('Labels', labels, headers=['value', 'id'],
                                           headerTransform=pascalToSpace)
+
         outputs = {
-            'labelsLastRun': new_last_run,
-            'Labels': labels
+            'OpenCTI.Labels(val.labelsLastRun)': {'labelsLastRun': new_last_run},
+            'OpenCTI.Labels.LabelsList(val.id === obj.id)': labels
         }
         return CommandResults(
-            outputs_prefix='OpenCTI',
-            outputs_key_field='Labels.id',
             outputs=outputs,
             readable_output=readable_output,
             raw_response=label_list
@@ -622,15 +618,12 @@ def marking_list_command(client, args: Dict[str, str]) -> CommandResults:
 
         readable_output = tableToMarkdown('Markings', markings, headers=['value', 'id'],
                                           headerTransform=pascalToSpace)
-
         outputs = {
-            'markingsLastRun': new_last_run,
-            'MarkingDefinitions': markings
+            'OpenCTI.MarkingDefinitions(val.markingsLastRun)': {'markingsLastRun': new_last_run},
+            'OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)': markings
         }
 
         return CommandResults(
-            outputs_prefix='OpenCTI',
-            outputs_key_field='MarkingDefinitions.id',
             outputs=outputs,
             readable_output=readable_output,
             raw_response=marking_list

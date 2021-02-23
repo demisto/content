@@ -5,7 +5,6 @@
 !opencti-indicator-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
 !opencti-indicator-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100
 !opencti-external-reference-create source_name=source_name url=www.url.com
-!opencti-marking-definition-create name="TLP:RED"
 !opencti-label-create name=docsTest
 !opencti-marking-definition-list limit=2
 !opencti-organization-list limit=2

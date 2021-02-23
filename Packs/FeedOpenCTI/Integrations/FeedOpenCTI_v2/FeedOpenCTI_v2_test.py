@@ -229,7 +229,8 @@ def test_organization_list_command(mocker):
                         })
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
-    assert [{'id': '1', 'name': 'test organization'}] == results.outputs.get('Organizations')
+    assert [{'id': '1', 'name': 'test organization'}] == \
+           results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
 
 
 def test_organization_create_command(mocker):
@@ -268,7 +269,7 @@ def test_label_list_command(mocker):
                         })
     results: CommandResults = label_list_command(client, {})
     assert "Labels" in results.readable_output
-    assert [{'id': '1', 'value': 'test-label'}] == results.outputs.get('Labels')
+    assert [{'id': '1', 'value': 'test-label'}] == results.outputs.get('OpenCTI.Labels.LabelsList(val.id === obj.id)')
 
 
 def test_label_create_command(mocker):
@@ -328,4 +329,5 @@ def test_marking_list_command(mocker):
                         })
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
-    assert [{'id': '1', 'value': 'TLP:RED'}] == results.outputs.get('MarkingDefinitions')
+    assert [{'id': '1', 'value': 'TLP:RED'}] \
+           == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
