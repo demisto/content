@@ -792,7 +792,7 @@ def close_incident_command(rest_client, args):
 
     feedback_status = args['incident_feedback']
     feedback_selected_options = args.get('feedback_selected_options')
-    feedback_optional_text = args.get('incident_comments')
+    feedback_optional_text = args.get('feedback_optional_text')
     try:
         incident = \
             rest_client.construct_and_send_full_incidents_query(internal_tenant_id, [incident_id])[
