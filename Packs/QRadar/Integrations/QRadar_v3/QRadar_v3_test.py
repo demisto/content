@@ -4,17 +4,18 @@
 import io
 import json
 from datetime import datetime
-
+import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-
-# from CommonServerPython import CommandResults
-from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, Client
+from CommonServerPython import DemistoException, set_integration_context
+from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
+    Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
-    get_offense_addresses, get_minimum_id_to_fetch
+    get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events_with_retry, sanitize_outputs, \
+    create_search_with_retry, enrich_offense_with_events, fetch_incidents_command
 
-# from typing import *
+from typing import Dict
 
 # , qradar_offenses_list_command, \
 # qradar_offense_update_command, qradar_closing_reasons_list_command, qradar_offense_notes_list_command, \
@@ -44,8 +45,7 @@ def util_load_json(path):
 
 asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
-
-# command_test_data = util_load_json('./test_data/command_test_data.json')
+command_test_data = util_load_json('./test_data/command_test_data.json')
 
 
 @pytest.mark.parametrize('arg, iso_format, epoch_format, expected',
@@ -179,6 +179,233 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
     assert get_minimum_id_to_fetch(last_run_offense_id, user_query) == expected
 
 
+@pytest.mark.parametrize('outputs, key_replace_dict, expected',
+                         [({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
+                           REFERENCE_SETS_OLD_NEW_MAP,
+                           [{'NumberOfElements': 3, 'CreationTime': '2020-09-13T12:26:40+00:00'}]),
+                          ({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
+                           None,
+                           [{'a': 2, 'number_of_elements': 3, 'creation_time': '2020-09-13T12:26:40+00:00'}])
+                          ])
+def test_sanitize_outputs(outputs, key_replace_dict, expected):
+    assert sanitize_outputs(outputs, key_replace_dict) == expected
+
+
+# def test_create_incidents_from_offenses(offenses, incident_type, expected):
+#     create_incidents_from_offenses
+@pytest.mark.parametrize('status_exception, status_response, results_response, search_id, expected',
+                         [(None,
+                           command_test_data['search_status_get']['response'],
+                           command_test_data['search_results_get']['response'],
+                           '19e90792-1a17-403b-ae5b-d0e60740b95e',
+                           sanitize_outputs(command_test_data['search_results_get']['response']['events'])),
+                          (DemistoException('error occurred'),
+                           None,
+                           None,
+                           None,
+                           [])
+                          ])
+def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
+                                        expected):
+    """
+    Given:
+     - Client to perform API calls.
+     - Search ID of the query to enrich events.
+
+    When:
+     - Case a: QRadar returns a valid and terminated results to the search.
+     - Case b: Error occurred in request to QRadar during poll.
+
+    Then:
+     - Case a: Ensure that expected events are returned.
+     - Case b: Ensure that None is returned.
+    """
+    if status_exception:
+        requests_mock.get(
+            f'{client.server}/ariel/searches/{search_id}',
+            exc=status_exception
+        )
+    else:
+        requests_mock.get(
+            f'{client.server}/ariel/searches/{search_id}',
+            json=status_response
+        )
+    requests_mock.get(
+        f'{client.server}/ariel/searches/{search_id}/results',
+        json=results_response
+    )
+    assert poll_offense_events_with_retry(client, search_id, 1, 1) == expected
+
+
+@pytest.mark.parametrize('search_exception, search_response',
+                         [(None,
+                           command_test_data['search_create']['response']),
+                          (DemistoException('error occurred'),
+                           None)])
+def test_create_search_with_retry(requests_mock, search_exception, search_response):
+    """
+    Given:
+     - Client to perform API calls.
+     - Query for creating search in QRadar service.
+    When:
+     - Case a: QRadar manages to create search.
+     - Case b: Error occurred in request to QRadar search creation.
+
+    Then:
+     - Case a: Ensure that QRadar service response is returned.
+     - Case b: Ensure that None is returned.
+    """
+    query_expression = 'SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
+                       'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
+                       'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
+                       'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
+                       'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, ' \
+                       'severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
+                       'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
+                       'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE ' \
+                       'INOFFENSE(2)  limit 20 START 1605046453426 '
+    if search_exception:
+        requests_mock.post(
+            f'{client.server}/ariel/searches?query_expression={query_expression}',
+            exc=search_exception
+        )
+    else:
+        requests_mock.post(
+            f'{client.server}/ariel/searches?query_expression={query_expression}',
+            json=search_response
+        )
+    assert create_search_with_retry(client, query_expression, max_retries=1) == search_response
+
+
+@pytest.mark.parametrize(
+    'offense, fetch_mode, mock_search_response, poll_events_response, events_limit',
+    [
+        # success cases
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         1
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         1
+         ),
+
+        # failure cases
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         None,
+         None,
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         None,
+         None,
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         3
+         ),
+    ])
+def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_search_response: Dict,
+                                    poll_events_response, events_limit):
+    """
+    Given:
+     - Offense to enrich with events.
+     - Fetch modes of the events.
+
+    When:
+    Success cases:
+     - Case a: Fetch mode is 'correlations_events_only', number of events returned equals to event count, lower than
+               'events_limit'.
+     - Case b: Fetch mode is 'correlations_events_only', number of events returned is lower than event count, but equals
+               to 'events_limit'.
+     - Case c: Fetch mode is 'all_events', number of events returned equals to event count, lower than 'events_limit'.
+     - Case d: Fetch mode is 'all_events', number of events returned is lower than event count, but equals
+               to 'events_limit'.
+     Failure cases:
+     - Case a: Fetch mode is 'correlations_events_only', fails to enrich offense (fails to create search).
+     - Case b: Fetch mode is 'correlations_events_only', fails to enrich offense (not enough events).
+     - Case c: Fetch mode is 'all_events', fails to enrich offense (fails to create search).
+     - Case d: Fetch mode is 'all_events', fails to enrich offense (not enough events).
+
+
+    Then:
+        For success cases:
+        - Ensure additional where clause is added to the query if fetch mode is 'correlations_events_only'.
+        - Ensure expected events are returned.
+        - Ensure expected count of events are returned.
+        - Ensure poll events is queried with the expected search ID.
+        For failure cases:
+        - Ensure additional where clause is added to the query if fetch mode is 'correlations_events_only'.
+        - Ensure empty list of events are returned.
+        - Ensure poll events is queried with the expected search ID, if search ID succeeded.
+    """
+    if poll_events_response and len(poll_events_response) >= min(events_limit, offense.get('event_count')):
+        events = poll_events_response[:min(events_limit, len(poll_events_response))] if poll_events_response else []
+        expected_offense = dict(offense, events=events)
+    else:
+        expected_offense = offense
+
+    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
+        if fetch_mode == FetchMode.correlations_events_only.value else ''
+    expected_query_expression = (
+        f'''SELECT {EVENT_COLUMNS_DEFAULT_VALUE} FROM events WHERE INOFFENSE({offense['id']}) {additional_where}'''
+        f''' limit {events_limit} START {offense['start_time'] - 60 * 1000}'''
+    )
+
+    create_search_mock = mocker.patch.object(QRadar_v3, "create_search_with_retry", return_value=mock_search_response)
+    poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
+                                           return_value=poll_events_response)
+
+    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, EVENT_COLUMNS_DEFAULT_VALUE,
+                                                  events_limit=events_limit, max_retries=1)
+
+    assert create_search_mock.call_args[0][1] == expected_query_expression
+    if mock_search_response:
+        assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
+    assert enriched_offense == expected_offense
+
+
+@pytest.mark.parametrize('func, args, expected',
+                         [(create_search_with_retry, {'client': client, 'query_expression': ''}, None),
+                          (poll_offense_events_with_retry, {'client': client, 'search_id': '', 'offense_id': 0}, []),
+                          (enrich_offense_with_events,
+                           {'client': client, 'offense': command_test_data['offenses_list']['response'][0],
+                            'fetch_mode': '', 'events_columns': '', 'events_limit': 0},
+                           command_test_data['offenses_list']['response'][0])
+                          ])
+def test_reset_triggered_stops_enrichment_test(func, args, expected):
+    set_integration_context({RESET_KEY: True})
+    assert func(**args) == expected
+    set_integration_context({})
+
+
 @pytest.mark.parametrize('enrich_func, mock_func_name, args, mock_response, expected',
                          [
                              (get_offense_types,
@@ -249,8 +476,9 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
                               'get_addresses',
                               {
                                   'client': client,
-                                  'offenses': [{'local_destination_address_ids': [1, 2], 'offense_name': 'offense1'},
-                                               {'local_destination_address_ids': [3, 4], 'offense_name': 'offense2'}],
+                                  'offenses': [
+                                      {'local_destination_address_ids': [1, 2], 'offense_name': 'offense1'},
+                                      {'local_destination_address_ids': [3, 4], 'offense_name': 'offense2'}],
                                   'is_destination_addresses': True
                               },
                               [{'id': 1, 'local_destination_ip': '1.2.3.4'},
@@ -382,6 +610,13 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
     assert (enrich_func(**args)) == expected
 
+# def test_fetch_incidents_command():
+#     set_integration_context({'samples': []})
+#     assert fetch_incidents_command() == []
+#     set_integration_context({'samples': [
+#         #     TODO ADD DATA
+#     ]})
+#     assert fetch_incidents_command() == inserted data
 # @pytest.mark.parametrize('command_func, command_name',
 #                          [(qradar_offenses_list_command, 'offenses_list'),
 #                           (qradar_offense_update_command, 'offense_update'),

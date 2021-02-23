@@ -3,11 +3,16 @@ commonfields:
   version: -1
 name: QRadar_v3
 display: QRadar_v3
-category: Utilities
+category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize
   threats across the enterprise, and it provides intelligent insights that enable
   teams to respond quickly to reduce the impact of incidents.
 configuration:
+- display: Long Running Instance
+  name: long_running
+  required: false
+  type: 8
+  additionalinfo: set to
 - display: Server URL
   name: server
   type: 0
@@ -18,12 +23,12 @@ configuration:
   type: 9
   required: true
 - display: QRadar API Version
-  additionalinfo: (e.g. '12.0'). Minimum API version is 10.1.
+  additionalinfo: API version of QRadar (e.g. '12.0'). Minimum API version is 10.1.
   name: api_version
   type: 0
   required: true
-- display: Incident type
-  name: incidentType
+- display: Incident Type
+  name: incident_type
   required: false
   type: 13
 - defaultvalue: '20'
@@ -52,7 +57,8 @@ configuration:
   name: ip_enrich
   required: false
   type: 8
-  additionalinfo: Set to true if you want to transform IDs of the IPs of the offense into IP values.
+  additionalinfo: Set to true if you want to transform IDs of the IPs of the offense
+    into IP values.
 - defaultvalue: 'true'
   display: Incident Asset Enrichment
   hidden: false
@@ -60,8 +66,17 @@ configuration:
   required: false
   type: 8
   additionalinfo: Enable this to fetch assets that correlate to the fetched offenses.
-- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
-  display: Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping).
+- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+    CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+    destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+    sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+    destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+    eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+    postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload),
+    starttime, devicetime'
+  display: Event fields to return from the events query (CAUTION this parameter is
+    correlated to the incoming mapper, and changing the values may adversely affect
+    mapping).
   name: events_columns
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
@@ -392,26 +407,27 @@ script:
         full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
       isArray: true
   - name: qradar-reference-set-delete
-    description: Removes a reference set or purges its contents.
-      or not
+    description: Removes a reference set or purges its contents. or not
     arguments:
     - name: ref_name
       required: true
       description: The name of the reference set to be deleted.
     - name: purge_only
-      description:  Indicates if the reference set should have its contents purged (true), keeping the reference set structure. If the value is 'false', or not specified the reference set is removed completely.
+      description: Indicates if the reference set should have its contents purged
+        (true), keeping the reference set structure. If the value is 'false', or not
+        specified the reference set is removed completely.
       defaultValue: "false"
       auto: PREDEFINED
       required: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
-          Use this parameter to specify which fields you would like to get back in the
-          response. Fields that are not explicitly named are excluded. Specify subfields
-          in brackets and multiple fields in the same object separated by commas. For
-          full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-DELETE.html'
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-DELETE.html'
       isArray: true
   - name: qradar-reference-set-value-upsert
     description: Add or update an element in a reference set.
@@ -421,8 +437,9 @@ script:
       description: The name of the reference set to add or update an element in.
     - name: value
       required: true
-      description: "Comma separated list. The values to add or update in the reference set. If values chosen are date,
-       supported date formats are: epoch, ISO, and time range (<number> <time unit>', e.g., 12 hours, 7 days.)."
+      description: "Comma separated list. The values to add or update in the reference\
+        \ set. If values chosen are date, supported date formats are: epoch, ISO,\
+        \ and time range (<number> <time unit>', e.g., 12 hours, 7 days.)."
       isArray: true
     - name: source
       required: false
@@ -496,7 +513,8 @@ script:
     description: Uploads indicators from Demisto to Qradar.
     arguments:
     - name: ref_name
-      description: The name of map to add or update data in. TODO add get ref maps command
+      description: The name of map to add or update data in. TODO add get ref maps
+        command
       required: true
     - name: query
       description: The query for getting indicators from Demisto.
@@ -507,10 +525,10 @@ script:
       description: The page from which to get the indicators.
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
-      Use this parameter to specify which fields you would like to get back in the
-      response. Fields that are not explicitly named are excluded. Specify subfields
-      in brackets and multiple fields in the same object separated by commas. For
-      full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
       isArray: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind geoip data for the given IP address.
@@ -555,17 +573,18 @@ script:
         in brackets and multiple fields in the same object separated by commas. For
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html'
       isArray: true
-
   - name: qradar-get-custom-properties
     description: Retrieves a list of event regex properties.
     arguments:
     - name: field_name
-      description: A comma-separated list of names of an exact properties to search for.
+      description: A comma-separated list of names of an exact properties to search
+        for.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query to filter regex properties. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter regex properties. For reference please consult:
+        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
@@ -573,12 +592,25 @@ script:
         in brackets and multiple fields in the same object separated by commas. For
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html'
       isArray: true
-
+  - name: qradar-reset-last-run
+    description: Reset fetch incidents last run value, which resets the fetch to its
+      initial fetch state (will try to fetch first available offense).
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. This command should
+      be used for debugging purposes.
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: false
+  isFetchSamples: true
+  ismappable: true
 fromversion: 5.0.0
+defaultmapperin: QRadar-mapper
+defaultclassifier: QRadar
 tests:
 - No tests (auto formatted)

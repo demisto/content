@@ -35,18 +35,20 @@ DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
 TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
-EVENT_COLUMNS_DEFAULT_VALUE = 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
-                              'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, '\
-                              'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
-                              'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
-                              'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
-                              'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
-                              'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
-                              'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
+EVENT_COLUMNS_DEFAULT_VALUE = \
+    'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
+    'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
+    'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
+    'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
+    'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
+    'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
+    'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
+    'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
-ASCENDING_ID_ORDER = '%2Bid'
+ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
+lock = Lock()
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -154,7 +156,8 @@ USECS_ENTRIES = {'last_persisted_time',
                  'modification_date',
                  'last_seen',
                  'first_seen',
-                 'starttime'}
+                 'starttime',
+                 'devicetime'}
 
 ''' ENRICHMENT MAPS '''
 
@@ -203,7 +206,6 @@ class Client(BaseClient):
         self.base_headers = {
             'Version': api_version,
         }
-        self.lock = Lock()
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None, data: Optional[Dict] = None,
                      additional_headers: Optional[Dict] = None):
@@ -422,7 +424,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_custom_properties(self, range_: str, filter_: Optional[str], fields: Optional[str]):
+    def get_custom_properties(self, range_: Optional[str], filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/config/event_sources/custom_properties/regex_properties',
@@ -443,6 +445,13 @@ class Client(BaseClient):
             url_suffix=f'/siem/{address_suffix}',
             params=assign_params(filter=filter_, fields=fields)
         )
+
+    def test_connection(self):
+        """
+        Test connection with databases (should always be up)
+        """
+        self.http_request(method='GET', url_suffix='/ariel/databases')
+        return "ok"
 
 
 ''' HELPER FUNCTIONS '''
@@ -488,7 +497,6 @@ def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
 
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> List[Dict]:
-    # TODO add tests
     """
     Gets a list of all the outputs, and sanitizes outputs.
     - Removes empty elements.
@@ -505,7 +513,7 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> L
     if not isinstance(outputs, list):
         outputs = [outputs]
     outputs = [remove_empty_elements(output) for output in outputs]
-    add_iso_entries_to_dict(outputs)
+    outputs = add_iso_entries_to_dict(outputs)
     return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
 
@@ -539,7 +547,7 @@ def get_time_parameter(arg: Optional[str], iso_format: bool = False, epoch_forma
     return aware_time_date
 
 
-def build_final_outputs(outputs: Union[List[Dict], Dict], old_new_dict: Dict) -> List[Dict]:
+def build_final_outputs(outputs: List[Dict], old_new_dict: Dict) -> List[Dict]:
     """
     Receives outputs, or a single output, and a dict containing mapping of old key names to new key names.
     Returns a list of outputs containing the new names contained in old_new_dict.
@@ -550,8 +558,6 @@ def build_final_outputs(outputs: Union[List[Dict], Dict], old_new_dict: Dict) ->
     Returns:
         (Dict): The dictionary with the transformed keys and their values.
     """
-    if isinstance(outputs, Dict):
-        outputs = [outputs]
     return [{old_new_dict.get(k): v for k, v in output.items() if k in old_new_dict} for output in outputs]
 
 
@@ -733,8 +739,9 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
         } if enrich_ip_addresses else dict()
 
         destination_addresses_enrich = {
-            'source_address_ids': [destination_addresses_id_ip_dict.get(destination_address_id) for
-                                   destination_address_id in offense.get('local_destination_address_ids', [])]
+            'local_destination_address_ids': [destination_addresses_id_ip_dict.get(destination_address_id) for
+                                              destination_address_id in
+                                              offense.get('local_destination_address_ids', [])]
         } if enrich_ip_addresses else dict()
 
         return dict(offense, **basic_enriches, **domain_enrich, **rules_enrich, **source_addresses_enrich,
@@ -842,28 +849,24 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
     return highest_offense_id
 
 
-def print_debug_msg(msg: str, lock: Lock = None):
+def print_debug_msg(msg: str):
     """
     Prints a message to debug with QRadarMsg prefix.
     Uses lock because calls can be concurrent.
     If lock cannot be acquired until timeout, will skip writing message to log.
     Args:
         msg (str): Message to be logged.
-        lock (Lock): Lock used to avoid race conditions during logging.
 
     Returns:
 
     """
     debug_msg = f"QRadarMsg - {msg}"
-    if lock:
-        if lock.acquire(timeout=LOCK_WAIT_TIME):
-            demisto.debug(debug_msg)
-            lock.release()
-    else:
+    if lock.acquire(timeout=LOCK_WAIT_TIME):
         demisto.debug(debug_msg)
+        lock.release()
 
 
-def is_reset_triggered(lock, handle_reset=False):
+def is_reset_triggered(handle_reset: bool = False):
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
@@ -871,7 +874,6 @@ def is_reset_triggered(lock, handle_reset=False):
     context.
     Using lock because calls to this function concurrent
     Args:
-        lock (Lock): The lock for avoiding race conditions.
         handle_reset (bool): Whether the reset should be handled by the caller.
 
     Returns:
@@ -895,7 +897,7 @@ def is_reset_triggered(lock, handle_reset=False):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client) -> str:
+def test_module_command(client: Client, params: Dict) -> str:
     """
     Tests API connectivity and authentication'
 
@@ -904,17 +906,32 @@ def test_module_command(client: Client) -> str:
     Raises exceptions if something goes wrong.
     Args:
         client (Client): Client to perform the API calls.
+        params (Dict): Demisto params.
 
     Returns:
         - 'ok' if test passed
         - DemistoException if something had failed the test.
     """
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
+        client.test_connection()
+        is_long_running = params.get("long_running")
+        if is_long_running:
+            get_incidents_long_running_execution(
+                client=client,
+                offenses_per_fetch=int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH)),
+                user_query=params.get('query', ''),
+                fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
+                events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
+                events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
+                ip_enrich=argToBoolean(params.get('ip_enrich', True)),
+                asset_enrich=argToBoolean(params.get('asset_enrich', True)),
+                last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
+                incident_type=params.get('incident_type')
+            )
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'You are unauthorized to access the requested resource' in str(e):
+            message = 'Authorization Error: make sure credentials are correct.'
         else:
             raise e
     return message
@@ -929,91 +946,91 @@ def fetch_incidents_command() -> List[Dict]:
     Returns:
         (List[Dict]): List of incidents samples.
     """
-    # TODO ADD TESTS
     return get_integration_context().get('samples', [])
 
 
-def create_search_with_retry(client: Client, query_expression: str) -> Optional[Dict]:
-    # TODO ADD TESTS
+def create_search_with_retry(client: Client, query_expression: str,
+                             max_retries: int = EVENTS_FAILURE_LIMIT) -> Optional[Dict]:
     """
     Creates a search to retrieve events for an offense.
     Has retry mechanism, because QRadar service tends to return random errors when
     it is loaded.
-    Therefore, 'EVENTS_FAILURE_LIMIT' retries will be made, to try avoid such cases as much as possible.
+    Therefore, 'max_retries' retries will be made, to try avoid such cases as much as possible.
     Args:
         client (Client): Client to perform the API calls.
         query_expression (str): The query to retrieve events.
+        max_retries (int): Number of retries.
 
     Returns:
         (Dict): If search was created successfully.
         None: If reset was triggered or number of retries exceeded limit.
     """
     num_of_failures = 0
-    while num_of_failures <= EVENTS_FAILURE_LIMIT:
-        if is_reset_triggered(client.lock):
+    while num_of_failures <= max_retries:
+        if is_reset_triggered():
             return None
         try:
             return client.search_create(query_expression, None)
         except Exception as e:
             err = str(e)
             num_of_failures += 1
-            if num_of_failures == EVENTS_FAILURE_LIMIT:
-                print_debug_msg(f'Unable to create search for offense. Error: {err}', client.lock)
+            if num_of_failures == max_retries:
+                print_debug_msg(f'Unable to create search for offense. Error: {err}')
                 break
             time.sleep(FAILURE_SLEEP)
     return None
 
 
-def poll_offense_events_with_retry(client, search_id: str, offense_id: int) -> List[Dict]:
-    # TODO ADD TESTS
+def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
+                                   max_retries: int = EVENTS_FAILURE_LIMIT) -> List[Dict]:
     """
     Polls QRadar service for search ID given until status returned is within 'TERMINATING_SEARCH_STATUSES'.
     Afterwards, performs a call to retrieve the events returned by the search.
     Has retry mechanism, because QRadar service tends to return random errors when
     it is loaded.
-    Therefore, 'EVENTS_FAILURE_LIMIT' retries will be made, to try avoid such cases as much as possible.
+    Therefore, 'max_retries' retries will be made, to try avoid such cases as much as possible.
 
     Args:
         client (Client): Client to perform the API calls.
         search_id (str): ID of the search to poll for its status.
         offense_id (int): ID of the offense to enrich with events returned by search. Used for logging purposes here.
+        max_retries (int): Number of retries.
 
     Returns:
         (List[Dict]): List of events returned by query. Returns empty list if number of retries exceeded limit.
     """
     num_of_failures = 0
     start_time = time.time()
-    while num_of_failures <= EVENTS_FAILURE_LIMIT:
+    while num_of_failures <= max_retries:
         try:
-            if is_reset_triggered(client.lock):
+            if is_reset_triggered():
                 return []
             search_status_response = client.search_status_get(search_id)
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
             num_of_failures = 0
             if query_status in TERMINATING_SEARCH_STATUSES:
-                search_results_response = client.search_results_get(search_id)
+                search_results_response = client.search_results_get(search_id, None)
                 events = search_results_response.get('events', [])
                 sanitized_events = sanitize_outputs(events)
-                print_debug_msg(f'Events fetched for offense {offense_id}.', client.lock)
+                print_debug_msg(f'Events fetched for offense {offense_id}.')
                 return sanitized_events
             elapsed = time.time() - start_time
             if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
-                print_debug_msg(f'Still fetching offense {offense_id} events, search_id: {search_id}.', client.lock)
+                print_debug_msg(f'Still fetching offense {offense_id} events, search_id: {search_id}.')
                 start_time = time.time()
             time.sleep(EVENTS_INTERVAL_SECS)
         except Exception as e:
-            # TODO - QRadar v2 no lock? check
             print_debug_msg(
-                f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)}',
-                client.lock)
+                f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)}')
             num_of_failures += 1
-            if num_of_failures < EVENTS_FAILURE_LIMIT:
+            if num_of_failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
     return []
 
 
-def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int):
+def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int,
+                               max_retries: int = MAX_FETCH_EVENT_RETIRES):
     """
     Enriches offense given with events.
     Has retry mechanism for events returned by query to QRadar. This is needed because events might not be
@@ -1026,47 +1043,44 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                           Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
         events_columns (str): Columns of the events to be extracted from query.
         events_limit (int): Maximum number of events to enrich the offense.
+        max_retries (int): Number of retries.
 
     Returns:
         (Dict): Enriched offense with events.
     """
-    # TODO ADD TESTS
-    if is_reset_triggered(client.lock):
+    if is_reset_triggered():
         return offense
 
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
-    # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
-    # end_time is equal
+    # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
     offense_start_time = offense['start_time'] - 60 * 1000
     offense_id = offense['id']
     query_expression = (
         f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
         f'START {offense_start_time}'
     )
-    for i in range(MAX_FETCH_EVENT_RETIRES):
-        # retry to check if we got all the event (its not an error retry) this is needed because events might not be
-        # indexed when performing the search, and we will get less events than expected, so we will retry and create
-        # a new search
+    for i in range(max_retries):
+        # retry to check if we got all the event (its not an error retry), see docstring
         search_response = create_search_with_retry(client, query_expression)
-        if not search_response or is_reset_triggered(client.lock):
-            return dict()
+        if not search_response:
+            return offense
 
         events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
-        offense['events'] = events
-        if len(events) >= min(offense.get('event_count', 0), events_limit) or i == MAX_FETCH_EVENT_RETIRES:
-            offense['events'] = events[:min(offense.get('event_count', 0), events_limit)]
+        if len(events) >= min(offense.get('event_count', 0), events_limit):
+            offense = dict(offense, events=events)
             break
-        time.sleep(SLEEP_FETCH_EVENT_RETIRES)
+        if i < max_retries - 1:
+            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
     return offense
 
 
-def get_offenses_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
-                                        events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
-                                        last_highest_id: int):
+def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
+                                         events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
+                                         last_highest_id: int, incident_type: Optional[str]):
     """
-    Gets offenses from QRadar service in a long running execution.
+    Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
     Args:
         client (Client): Client to perform the API calls.
         offenses_per_fetch (int): Maximum number of offenses to be fetched.
@@ -1080,16 +1094,18 @@ def get_offenses_long_running_execution(client: Client, offenses_per_fetch: int,
         ip_enrich (bool): Whether to enrich offense by changing IP IDs of each offense to its IP value.
         asset_enrich (bool): Whether to enrich offense with assets
         last_highest_id (int): The highest ID of all the offenses that have been fetched from QRadar service.
+        incident_type (Optional[str]): Incident type.
 
     Returns:
-        (List[Dict], int): List of the enriched offenses, and the new highest ID for next fetch.
+        (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
     """
-    # TODO ADD TESTS
     offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
 
-    filter_fetch_query = f'id>{offense_highest_id} AND {user_query}'
-    range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH
-    range_ = f'0-{range_max - 1}'
+    user_query = f' AND {user_query}' if user_query else ''
+
+    filter_fetch_query = f'id>{offense_highest_id}{user_query}'
+    range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
+    range_ = f'items=0-{range_max}'
 
     offenses = client.offenses_list(None, range_, filter_fetch_query, None, ASCENDING_ID_ORDER)
     new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
@@ -1107,12 +1123,13 @@ def get_offenses_long_running_execution(client: Client, offenses_per_fetch: int,
             ))
         offenses = [future.result() for future in futures]
 
-    if is_reset_triggered(client.lock, handle_reset=True):
+    if is_reset_triggered(handle_reset=True):
         return None, None
 
     enriched_offenses = enrich_offenses_result(client, offenses, ip_enrich, asset_enrich)
     final_offenses = sanitize_outputs(enriched_offenses)
-    return final_offenses, new_highest_offense_id
+    incidents = create_incidents_from_offenses(final_offenses, incident_type)
+    return incidents, new_highest_offense_id
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
@@ -1137,7 +1154,6 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
 
 
 def long_running_execution_command(client: Client, params: Dict):
-    # TODO ADD TESTS
     """
     Long running execution of fetching incidents from QRadar service.
     Will continue to fetch in an infinite loop offenses from QRadar,
@@ -1152,36 +1168,28 @@ def long_running_execution_command(client: Client, params: Dict):
     Returns:
 
     """
-    incident_type = params.get('incidentType')
-    offenses_per_fetch = arg_to_number(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
-    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
-    user_query = params.get('query', '')
-    ip_enrich = argToBoolean(params.get('ip_enrich', True))
-    asset_enrich = argToBoolean(params.get('asset_enrich', True))
-    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
-    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
-
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        is_reset_triggered(handle_reset=True)
         ctx = get_integration_context()
+        fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
         print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
 
-        offenses, new_highest_id = get_offenses_long_running_execution(
+        incidents, new_highest_id = get_incidents_long_running_execution(
             client=client,
-            offenses_per_fetch=offenses_per_fetch,
-            user_query=user_query,
+            offenses_per_fetch=int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH)),
+            user_query=params.get('query', ''),
             fetch_mode=fetch_mode,
-            events_columns=events_columns,
-            events_limit=events_limit,
-            ip_enrich=ip_enrich,
-            asset_enrich=asset_enrich,
-            last_highest_id=ctx.get(LAST_FETCH_KEY, 0)
+            events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
+            events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
+            ip_enrich=argToBoolean(params.get('ip_enrich', True)),
+            asset_enrich=argToBoolean(params.get('asset_enrich', True)),
+            last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
+            incident_type=params.get('incident_type')
         )
         # Reset was called during execution, skip creating incidents.
-        if not offenses and not new_highest_id:
+        if not incidents and not new_highest_id:
             continue
 
-        incidents = create_incidents_from_offenses(offenses, incident_type)
         incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
         set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
         demisto.createIncidents(incidents)
@@ -1649,14 +1657,14 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
 
     response = client.search_results_get(search_id, range_)
-    outputs = sanitize_outputs(response)
-    # TODO figure result key
+    result_key = list(response.keys())[0]
+    outputs = sanitize_outputs(response.get(result_key))
     # TODO add file naming (shown in integration design)
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
         outputs_prefix=output_path if output_path else 'QRadar.SearchStatus',
-        outputs_key_field='search_id',
+        outputs_key_field=result_key,
         outputs=outputs,
         raw_response=response
     )
@@ -2046,6 +2054,153 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     )
 
 
+def qradar_reset_last_run_command() -> str:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    ctx = get_integration_context()
+    ctx[RESET_KEY] = True
+    set_integration_context(ctx)
+    return 'fetch-incidents was reset successfully.'
+
+
+def qradar_get_mapping_fields_command(client: Client) -> Dict:
+    """
+    Returns the list of fields for an incident type. This command should be used for debugging purposes.
+    Args:
+        client (Client): Client to perform API calls.
+
+    Returns:
+
+    """
+    offense = {
+        'username_count': 'int',
+        'description': 'str',
+        'rules': {
+            'id': 'int',
+            'type': 'str',
+            'name': 'str'
+        },
+        'event_count': 'int',
+        'flow_count': 'int',
+        'assigned_to': 'NoneType',
+        'security_category_count': 'int',
+        'follow_up': 'bool',
+        'source_address_ids': 'str',
+        'source_count': 'int',
+        'inactive': 'bool',
+        'protected': 'bool',
+        'closing_user': 'str',
+        'destination_networks': 'str',
+        'source_network': 'str',
+        'category_count': 'int',
+        'close_time': 'str',
+        'remote_destination_count': 'int',
+        'start_time': 'str',
+        'magnitude': 'int',
+        'last_updated_time': 'str',
+        'credibility': 'int',
+        'id': 'int',
+        'categories': 'str',
+        'severity': 'int',
+        'policy_category_count': 'int',
+        'closing_reason_id': 'str',
+        'device_count': 'int',
+        'offense_type': 'str',
+        'relevance': 'int',
+        'domain_id': 'int',
+        'offense_source': 'str',
+        'local_destination_address_ids': 'int',
+        'local_destination_count': 'int',
+        'status': 'str',
+        'domain_name': 'str'
+    }
+    events = {
+        'events': {
+            'qidname_qid': 'str',
+            'logsourcename_logsourceid': 'str',
+            'categoryname_highlevelcategory': 'str',
+            'categoryname_category': 'str',
+            'protocolname_protocolid': 'str',
+            'sourceip': 'str',
+            'sourceport': 'int',
+            'destinationip': 'str',
+            'destinationport': 'int',
+            'qiddescription_qid': 'str',
+            'username': 'NoneType',
+            'rulename_creeventlist': 'str',
+            'sourcegeographiclocation': 'str',
+            'sourceMAC': 'str',
+            'sourcev6': 'str',
+            'destinationgeographiclocation': 'str',
+            'destinationv6': 'str',
+            'logsourcetypename_devicetype': 'str',
+            'credibility': 'int',
+            'severity': 'int',
+            'magnitude': 'int',
+            'eventcount': 'int',
+            'eventDirection': 'str',
+            'postNatDestinationIP': 'str',
+            'postNatDestinationPort': 'int',
+            'postNatSourceIP': 'str',
+            'postNatSourcePort': 'int',
+            'preNatDestinationPort': 'int',
+            'preNatSourceIP': 'str',
+            'preNatSourcePort': 'int',
+            'utf8_payload': 'str',
+            'starttime': 'str',
+            'devicetime': 'int'
+        }
+    }
+    assets = {
+        'assets': {
+            'interfaces': {
+                'mac_address': 'str',
+                'ip_addresses': {
+                    'type': 'str',
+                    'value': 'str'
+                },
+                'id': 'int',
+                'Unified Name': 'str',
+                'Technical User': 'str',
+                'Switch ID': 'str',
+                'Business Contact': 'str',
+                'CVSS Availability Requirement': 'str',
+                'Compliance Notes': 'str',
+                'Primary OS ID': 'str',
+                'Compliance Plan': 'str',
+                'Switch Port ID': 'str',
+                'Weight': 'str',
+                'Location': 'str',
+                'CVSS Confidentiality Requirement': 'str',
+                'Technical Contact': 'str',
+                'Technical Owner': 'str',
+                'CVSS Collateral Damage Potential': 'str',
+                'Description': 'str',
+                'Business Owner': 'str',
+                'CVSS Integrity Requirement': 'str'
+            },
+            'id': 'int',
+            'domain_id': 'int',
+            'domain_name': 'str'
+        }
+    }
+    custom_fields = {
+        'events': {field.get('name'): field.get('property_type')
+                   for field in client.get_custom_properties(None, None, None)
+                   if field.get('name') and field.get('property_type')}
+    }
+    fields = {
+        'Offense': offense,
+        'Events: Builtin Fields': events,
+        'Events: Custom Fields': custom_fields,
+        'Assets': assets,
+    }
+    return fields
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2059,7 +2214,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')
     if float(api_version) < MINIMUM_API_VERSION:
-        raise DemistoException('Minimum API version is {MINIMUM_API_VERSION}')
+        raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -2073,7 +2228,7 @@ def main() -> None:
             credentials=credentials)
 
         if command == 'test-module':
-            return_results(test_module_command(client))
+            return_results(test_module_command(client, params))
 
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command())
@@ -2149,6 +2304,12 @@ def main() -> None:
 
         elif command == 'qradar-get-custom-properties':
             return_results(qradar_get_custom_properties_command(client, args))
+
+        elif command == 'qradar-reset-last-run':
+            return_results(qradar_reset_last_run_command())
+
+        elif command == 'get-mapping-fields':
+            demisto.results(qradar_get_mapping_fields_command(client))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
