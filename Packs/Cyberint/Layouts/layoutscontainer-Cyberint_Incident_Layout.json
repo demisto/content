@@ -172,10 +172,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_createdby",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_cyberintcategory",
                         "isVisible": true
                     },
@@ -683,6 +679,24 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "cyberintcreateddate",
+                                "height": 22,
+                                "id": "001a88a0-75c8-11eb-a3b6-997d18f4b17c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberintcreatedby",
+                                "height": 22,
+                                "id": "053069e0-75c8-11eb-a3b6-997d18f4b17c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "owner",
                                 "height": 22,
                                 "id": "incident-owner-field",
@@ -710,19 +724,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cyberinttags",
-                                "height": 22,
-                                "id": "62826cc0-7545-11eb-abd1-d3793bf04866",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "cyberintticketid",
                                 "height": 22,
                                 "id": "65b2c520-7545-11eb-abd1-d3793bf04866",
-                                "index": 7,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -731,7 +736,7 @@
                                 "fieldId": "cyberintsource",
                                 "height": 22,
                                 "id": "691fd860-7545-11eb-abd1-d3793bf04866",
-                                "index": 8,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -740,7 +745,25 @@
                                 "fieldId": "cyberintimpact",
                                 "height": 22,
                                 "id": "6c91f4b0-7545-11eb-abd1-d3793bf04866",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberinttags",
+                                "height": 22,
+                                "id": "62826cc0-7545-11eb-abd1-d3793bf04866",
                                 "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyberintclosurereason",
+                                "height": 22,
+                                "id": "125e6fe0-75c8-11eb-a3b6-997d18f4b17c",
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -938,26 +961,14 @@
                         "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [{
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "closurereason",
-                                "height": 22,
-                                "id": "8e0b4010-7126-11eb-9439-354a158abf78",
-                                "index": 0,
-                                "listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "closenotes",
-                                "height": 44,
-                                "id": "incident-closeNotes-field",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                            "endCol": 2,
+                            "fieldId": "closenotes",
+                            "height": 44,
+                            "id": "incident-closeNotes-field",
+                            "index": 1,
+                            "sectionItemType": "field",
+                            "startCol": 0
+                        }],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
