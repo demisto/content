@@ -520,6 +520,7 @@ def test_get_mapping_fields_command():
     expected = [{'Respond Software Incident': {
         'feedback comments': 'the user assigned outcome of a closed incident',
         'title': 'incident title', 'feedback outcome': 'the outcome of the incident close'}}]
+    print(res.extract_mapping())
     assert res.extract_mapping() == expected
 
 
