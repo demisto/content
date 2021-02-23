@@ -75,10 +75,10 @@ def return_outputs_custom(readable_output, outputs=None, tag=None):
 
 
 def add_context_key(entry_context):
-    context = {
-        'EmailCampaign': entry_context
-    }
-    return context
+    new_context = {}
+    for k, v in entry_context.items():
+        new_context['{}.{}'.format('EmailCampaign', k)] = v
+    return new_context
 
 
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
