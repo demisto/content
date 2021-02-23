@@ -517,10 +517,9 @@ def test_update_remote_system_command(mocker, requests_mock):
 def test_get_mapping_fields_command():
     from RespondAnalyst import get_mapping_fields_command
     res = get_mapping_fields_command()
-    expected = [{'Respond Software Incident': {
+    expected = {'Respond Software Incident': {
         'feedback comments': 'the user assigned outcome of a closed incident',
-        'title': 'incident title', 'feedback outcome': 'the outcome of the incident close'}}]
-    print(res.extract_mapping())
+        'title': 'incident title', 'feedback outcome': 'the outcome of the incident close'}}
     assert res.extract_mapping() == expected
 
 
