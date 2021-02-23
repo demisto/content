@@ -92,14 +92,6 @@ Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
             "Name": "WIN-MLK71Q10559",
             "ParentDN": "\\VED\\Policy\\Venafi Operational Certificates",
             "SchemaClass": "X509 Server Certificate"
-        },
-        "Certificats": {
-            "CreatedOn": "2018-07-16T16:35:35.9468326Z",
-            "DN": "\\VED\\Policy\\Venafi Operational Certificates\\WIN-MLK71Q10559",
-            "ID": "2a25573b-745c-4018-806a-e5c73f424675",
-            "Name": "WIN-MLK71Q10559",
-            "ParentDN": "\\VED\\Policy\\Venafi Operational Certificates",
-            "SchemaClass": "X509 Server Certificate"
         }
     }
 }
