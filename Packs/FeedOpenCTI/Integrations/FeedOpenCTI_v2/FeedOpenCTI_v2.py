@@ -187,12 +187,10 @@ def get_indicators_command(client, args: dict) -> CommandResults:
 
         # TODO: change context
         outputs = {
-            'lastRunID': last_run_id,
-            'IndicatorsList': indicators
+            'OpenCTI.lastRunID(val != obj)': last_run_id,
+            'OpenCTI.Indicators(val.id === obj.id)': indicators
         }
         return CommandResults(
-            outputs_prefix='OpenCTI.Indicators',
-            outputs_key_field='lastRunID',
             outputs=outputs,
             readable_output=readable_output,
             raw_response=indicators_list
