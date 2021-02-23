@@ -114,10 +114,18 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
 
     similar_keys_list = []
     for key, value in similar_incident_keys.items():
-        value = value.encode('utf-8')
-        compare_str = '{}:={}' if str(value).isdigit() else '{}="{}"'
-        similar_key = compare_str.format(key, str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r"))
-        similar_keys_list.append(similar_key.decode('utf-8'))
+        if isinstance(value, str):
+            value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+            value = value.encode('utf-8')
+            compare_str = '{}="{}"'
+            similar_key = compare_str.format(key, value)
+            similar_keys_list.append(similar_key.decode('utf-8'))
+
+        if isinstance(value, int):
+            value = str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+            compare_str = '{}:="{}"'
+            similar_key = compare_str.format(key, value)
+            similar_keys_list.append(similar_key)
 
     similar_keys_query = condition_string.join(similar_keys_list)
     incident_time = parse_datetime(incident_time)
