@@ -1,6 +1,6 @@
-Manage certificates using Venafi
+Retrieves information about certificates stored in Venafi.
 
-This integration was integrated and tested with version 20.3.2.5263 of Venafi
+This integration was integrated and tested with version 20.3.2.5263 of Venafi.
 
 ## Configure Venafi on Cortex XSOAR
 
@@ -10,7 +10,7 @@ This integration was integrated and tested with version 20.3.2.5263 of Venafi
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
+    | Server URL (e.g., https://192.168.0.1) | True |
     | Credentials | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### venafi-get-certificates
 ***
-Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z format. Additional fields can be used in the query by adding them in a key=value manner
+Gets Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z format. Additional fields can be used in the query by adding them in a key=value format.
 
 
 #### Base Command
@@ -32,37 +32,37 @@ Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | CreatedOn | Exact date and time on which the certificate object was created. | Optional | 
-| CreatedOnGreater | Certificate objects created after this date and time. | Optional | 
-| CreatedOnLess | Certificate objects created before this date and time. | Optional | 
-| Disabled | Include only certificates that are disabled (1) or enabled (0). | Optional | 
-| InError | Include only certificates that are in an error state (1) or not in an error state (0). | Optional | 
-| ValidationState | Validation state of Blank, Success, or Failure. Possible values are: Blank, Success, Failure. | Optional | 
-| ManagementType | Management type of Unassigned, Monitoring, Enrollment, or Provisioning. Possible values are: Unassigned, Monitoring, Enrollment, Provisioning. | Optional | 
+| CreatedOnGreater | Date and time after which certificate objects were created. | Optional | 
+| CreatedOnLess | Date and time before which certificate objects were created. | Optional | 
+| Disabled | Whether to include only certificates that are disabled (1) or enabled (0). | Optional | 
+| InError | Whether to include only certificates that are in an error state (1) or not in an error state (0). | Optional | 
+| ValidationState | Validation state. Possible values are: Blank, Success, Failure. | Optional | 
+| ManagementType | Management type. Possible values are: Unassigned, Monitoring, Enrollment, Provisioning. | Optional | 
 | Name | Name of the certificate object. | Optional | 
-| NetworkValidationDisabled | Include only certificates with network validation disabled (1) or enabled (0). | Optional | 
-| ParentDn | ParentDn One or more folders in which to search for certificates (e.g., \VED\Policy\Engineering,\VED\Policy\HR). | Optional | 
-| ParentDnRecursive | Certificates within a specific folder and its subfolders. Accepts a single value. | Optional | 
-| PendingWorkflow | Include only certificates that are pending workflow resolution (have an outstanding workflow ticket). This parameter does not require a value to be specified. | Optional | 
-| Stage | Certificates at one or more stages in the certificate lifecycle. Accepts multiple comma separated values. | Optional | 
-| StageGreater | Certificates with a stage greater than the specified stage (does not include specified stage). | Optional | 
-| StageLess | Certificates a stage less than the specified stage. | Optional | 
-| ValidationDisabled | Include only certificates with validation disabled (1) or enabled (0). | Optional | 
-| C | Country attribute of Subject DN. | Optional | 
-| CN | Common name attribute of Subject DN. | Optional | 
+| NetworkValidationDisabled | Whether to include only certificates with network validation disabled (1) or enabled (0). | Optional | 
+| ParentDn | The full path to the parent of the object in Trust Protection Platform (e.g., \VED\Policy\Engineering,\VED\Policy\HR). | Optional | 
+| ParentDnRecursive | The specific folder from which to retrieve certificates. (The subfolders will also be scanned.) Accepts a single value.  | Optional | 
+| PendingWorkflow |Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). This parameter does not require a value to be specified. | Optional | 
+| Stage | Comma-separated list of stages in the certificate lifecycle. Will retrieve certificates at one or more of the stages. | Optional | 
+| StageGreater | Stage after which to retrieve certificates. Does not include the specified stage. | Optional | 
+| StageLess | Stage before which to retrieve certificates. | Optional | 
+| ValidationDisabled | Whether to include only certificates with validation disabled (1) or enabled (0). | Optional | 
+| C | Country attribute of the Subject Distinguished Name (DN). | Optional | 
+| CN | Common name attribute of the Subject Distinguished Name (DN). | Optional | 
 | Issuer | Issuer DN. Note, since most Issuer DNs include commas between DN components, it is important to surround the complete Issuer DN within double quotes (“). In addition, if the Issuer DN includes double quotes, each double quote should be prefixed by another double quote. | Optional | 
 | KeyAlgorithm | Algorithm for the public key in the certificate (e.g., RSA, DSA). | Optional | 
-| KeySize | Size of the public key in the certificate (e.g., 2048). Accepts multiple comma separated values. | Optional | 
-| KeySizeGreater | Key size greater than the specified value. | Optional | 
-| KeySizeLess | Key size less than the specified value. | Optional | 
-| L | Locality/City attribute of Subject DN in certificates. | Optional | 
-| O | Organization attribute of Subject DN in certificates. | Optional | 
-| S | State/Province attribute of Subject DN in certificates. | Optional | 
+| KeySize | Comma-separated list of the bit size of the public key in the certificate (e.g., 2048).  | Optional | 
+| KeySizeGreater | The size for which the public key size is greater than.  | Optional | 
+| KeySizeLess | The size for which the public key size is less than. | Optional | 
+| L | Locality/City attribute of the Subject DN in the certificates. | Optional | 
+| O |Organization attribute of the Subject DN in the certificates. | Optional | 
+| S | State/Province attribute of the Subject DN in certificates. | Optional | 
 | Serial | Serial number of the certificate. | Optional | 
 | SignatureAlgorithm | The algorithm used to sign the certificate (e.g. SHA1RSA). | Optional | 
 | ValidFrom | Date on which the certificate was issued (e.g., 2015- 10-08T19:15:35.6431456Z or 2015-10-08). | Optional | 
 | ValidTo | Date on which the certificate expires (e.g., 2015-10- 08T19:15:35.6431456Z or 2015-10-08). | Optional | 
-| ValidToGreater | Certificates that expire after the specified date. | Optional | 
-| ValidToLess | Certificates that expire before the specified date. | Optional | 
+| ValidToGreater | Date after which the certificates expire. | Optional | 
+| ValidToLess | Date before which the certificates expire. | Optional | 
 | Limit | The maximum number of certificates to return. | Optional | 
 
 
@@ -70,12 +70,12 @@ Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Venafi.Certificate.CreatedOn | date | Certificate creation date | 
-| Venafi.Certificate.DN | string | Certificate DN | 
-| Venafi.Certificate.Name | string | Certificate name | 
-| Venafi.Certificate.ParentDN | string | Certificate parent DN | 
-| Venafi.Certificate.SchemaClass | string | Certificate schema | 
-| Venafi.Certificate.ID | string | Certificate ID \(GUID\) | 
+| Venafi.Certificate.CreatedOn | date | The exact date and time when the certificate object was created. | 
+| Venafi.Certificate.DN | string | The DN of the certificate. | 
+| Venafi.Certificate.Name | string | The name of the certificate. | 
+| Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
+| Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
+| Venafi.Certificate.ID | string | The certificate object GUID. | 
 
 
 #### Command Example
@@ -107,7 +107,7 @@ Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
 
 ### venafi-get-certificate-details
 ***
-Use a certificate guid to extract more details from the cert store.
+Uses a certificate GUID to extract more details from the cert store.
 
 
 #### Base Command
@@ -117,32 +117,32 @@ Use a certificate guid to extract more details from the cert store.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| guid | Certificate GUID to get details of. | Required | 
+| guid | GUID of the certificate of which to get details. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Venafi.Certificate.ID | string | Certificate ID \(GUID\) | 
-| Venafi.Certificate.ParentDN | string | Certificate parent DN | 
-| Venafi.Certificate.CreatedOn | date | Certificate creation date | 
-| Venafi.Certificate.DN | string | Certificate DN | 
-| Venafi.Certificate.Name | string | Certificate name | 
-| Venafi.Certificate.SchemaClass | string | Certificate schema | 
-| Venafi.Certificate.Approver | string | Certificate approver | 
-| Venafi.Certificate.CertificateAuthorityDN | string | Certificate authority DN | 
-| Venafi.Certificate.Contact | string | Certificate contacts | 
-| Venafi.Certificate.Description | string | Certificate description | 
-| Venafi.Certificate.ManagedBy | string | Certificate manager | 
-| Venafi.Certificate.ManagementType | string | Certificate management type | 
-| Venafi.Certificate.CertificateDetails.AIAKeyIdentifier | string | Certificate AIA key identifier | 
-| Venafi.Certificate.CertificateDetails.Issuer | string | Certificate issuer | 
-| Venafi.Certificate.CertificateDetails.Serial | string | Certificate serial | 
-| Venafi.Certificate.CertificateDetails.Subject | string | Certificate subject | 
-| Venafi.Certificate.CertificateDetails.Thumbprint | string | Certificate thumbprint | 
-| Venafi.Certificate.CertificateDetails.ValidFrom | string | Certificate validation start date | 
-| Venafi.Certificate.CertificateDetails.ValidTo | string | Certificate validation end time | 
+| Venafi.Certificate.ID | string | The certificate object GUID. | 
+| Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
+| Venafi.Certificate.CreatedOn | date | The exact date and time when the Certificate object was created. | 
+| Venafi.Certificate.DN | string | The DN of the certificate. | 
+| Venafi.Certificate.Name | string |The name of the certificate. | 
+| Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
+| Venafi.Certificate.Approver | string | An array of one or more users or groups who are certificate approvers. | 
+| Venafi.Certificate.CertificateAuthorityDN | string | The CA template that is required for certificate renewal. | 
+| Venafi.Certificate.Contact | string | An array of one or more users or groups who receive event notifications. The events notify people about certificate expiration and validation failures. | 
+| Venafi.Certificate.Description | string | Certificate description. | 
+| Venafi.Certificate.ManagedBy | string | Certificate manager. | 
+| Venafi.Certificate.ManagementType | string | The level of management that the Trust Protection Platform applies to the certificate. | 
+| Venafi.Certificate.CertificateDetails.AIAKeyIdentifier | string |Authority key identifier. | 
+| Venafi.Certificate.CertificateDetails.Issuer | string | The CN, O, L, S, and C values from the certificate request. | 
+| Venafi.Certificate.CertificateDetails.Serial | string | The unique serial number that the CA assigned to the certificate. | 
+| Venafi.Certificate.CertificateDetails.Subject | string | The CN, O, L, S, and C values from the certificate request. | 
+| Venafi.Certificate.CertificateDetails.Thumbprint | string | The SHA1 thumbprint hash of the certificate. | 
+| Venafi.Certificate.CertificateDetails.ValidFrom | string | Certificate validation start date. | 
+| Venafi.Certificate.CertificateDetails.ValidTo | string | Certificate validation end time. | 
 
 
 #### Command Example
