@@ -1090,3 +1090,14 @@ def internalHttpRequest(method, uri, body=None):
             ]
         },
     }
+
+
+def parentEntry():
+    """
+    Retrieves information regarding the war room entry in which ran in
+
+    Returns:
+      dict: information regarding the current war room entry
+
+    """
+    return {}
