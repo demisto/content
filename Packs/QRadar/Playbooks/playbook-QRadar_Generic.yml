@@ -1857,10 +1857,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- test_Qradar
-- QRadar Indicator Hunting Test
-- test playbook - QRadarCorrelations For V2
-- test playbook - QRadarCorrelations
-- test_Qradar
-- test_Qradar_v2
+- No test
 fromversion: 6.0.0
