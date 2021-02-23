@@ -585,11 +585,17 @@ def is_private_packs_updated(public_index_json, private_index_path):
 
     private_index_file_path = os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")
     private_index_json = load_json(private_index_file_path)
+    private_packs_from_private_index = private_index_json.get("packs")
+
+    if len(private_packs_from_private_index) != len(public_index_json.get("packs")):
+        # private pack was added or deleted
+        logging.debug("There is at least one private pack that was added/deleted, upload should not be skipped.")
+        return True
 
     id_to_commit_hash_from_public_index = {private_pack.get("id"): private_pack.get("contentCommitHash", "") for
                                            private_pack in public_index_json.get("packs", [])}
 
-    for private_pack in private_index_json.get("packs"):
+    for private_pack in private_packs_from_private_index:
         pack_id = private_pack.get("id")
         content_commit_hash = private_pack.get("contentCommitHash", "")
         if id_to_commit_hash_from_public_index.get(pack_id) != content_commit_hash:

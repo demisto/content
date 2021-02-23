@@ -571,6 +571,8 @@ class TestUpdatedPrivatePacks:
          When
          - first check - there is no private pack that changed.
          - second check - one commit hash was changed.
+         - third check - private pack was deleted
+         - forth check - private pack was added
 
          Then
          - Ensure that the function recognises successfully the updated private pack.
@@ -584,8 +586,17 @@ class TestUpdatedPrivatePacks:
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert not is_private_packs_updated(public_index_json, index_file_path)
 
-        # changed content commit hash of one private pack
+        # private pack was deleted
         del (private_index_json.get("packs")[0])
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)
+
+        # changed content commit hash of one private pack
         private_index_json.get("packs").append({"id": "first_non_updated_pack", "contentCommitHash": "111"})
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)
+
+        # private pack was added
+        private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
