@@ -970,10 +970,8 @@ def update_remote_system_command(rest_client, args):
                     'tenant_id': tenant_id,
                     'incident_id': incident_id,
                     'incident_feedback': 'Inconclusive',
-                    'incident_comments': remote_args.delta.get('closeNotes')
+                    'feedback_optional_text': remote_args.delta.get('closeNotes')
                 }
-                demisto.debug(
-                    f'feedback args for {remote_args.remote_incident_id}: {feedback_args}')
                 close_incident_command(rest_client, feedback_args)
             if remote_args.delta.get('owner'):
                 # todo support unassign
@@ -985,7 +983,6 @@ def update_remote_system_command(rest_client, args):
                     'incident_id': incident_id,
                     'username': user_email
                 }
-                demisto.debug(f'assigned user args {assigned_user_args}')
                 assign_user_command(rest_client, assigned_user_args)
 
     except Exception as e:
