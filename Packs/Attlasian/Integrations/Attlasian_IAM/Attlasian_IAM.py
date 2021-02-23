@@ -40,6 +40,8 @@ class Client(BaseClient):
         return None
 
     def create_user(self, user_data):
+        if isinstance(user_data.get('emails'), dict):
+            user_data['emails'] = [user_data['emails']]
         uri = f'/scim/directory/{self.directory_id}/Users'
         res = self._http_request(
             method='POST',
@@ -177,7 +179,7 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, attr='username')
 
     headers = {
         'Content-Type': 'application/json',
@@ -197,7 +199,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args, 'username')
+        user_profile = iam_command.get_user(client, args)
 
     elif command == 'iam-create-user':
         user_profile = iam_command.create_user(client, args)

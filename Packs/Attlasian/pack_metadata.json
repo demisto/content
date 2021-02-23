@@ -1,6 +1,6 @@
 {
-    "name": "Atlassian Cloud IT Admin",
-    "description": "Atlassian Cloud IT Admin Integration consists of set of endpoints that allows the customers to do the CRUD operation.",
+    "name": "Atlassian IAM",
+    "description": "Atlassian IAM Integration allows the customers to do the generic ILM management operations such as create, update, delete, etc.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
