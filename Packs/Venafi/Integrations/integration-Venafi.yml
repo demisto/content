@@ -97,7 +97,7 @@ script:
                 ContentsFormat: formats.json,
                 ReadableContentsFormat: formats.markdown,
                 EntryContext: ec,
-                HumanReadable: tableToMarkdown('Venafi certificats query response', certs),
+                HumanReadable: tableToMarkdown('Venafi certificates query response', certs),
             };
             return entry;
         case 'venafi-get-certificate-details':
@@ -115,7 +115,7 @@ script:
                 ContentsFormat: formats.json,
                 ReadableContentsFormat: formats.markdown,
                 EntryContext: ec,
-                HumanReadable: tableToMarkdown('Venafi certificats details', raw),
+                HumanReadable: tableToMarkdown('Venafi certificates details', raw),
             };
             return entry;
         default:
