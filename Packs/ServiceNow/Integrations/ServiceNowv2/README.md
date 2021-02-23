@@ -79,10 +79,12 @@ If MFA is enabled for your user, follow the next steps:
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
-| mirror_direction | Chose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both direction. | None |
-| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | comments |
-| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | work_notes |
-| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | ForServiceNow |
+| mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out (from XSOAR to ServiceNow), or both directions. | False |
+| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
+| mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
@@ -162,8 +164,12 @@ match.
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
 
 
-* The final **source of truth** for the incident for Cortex XSOAR are the **values in Cortex XSOAR**. 
-Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+**Notes**
+- The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
+  Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+- The integration queries ServiceNow for modified records based on the timestamp field set in the *update_timestamp_field* integration parameter and the limit set in the *mirror_limit* integration parameter.
+      If more records are modified in the timeframe when they are queried than are configured in the *limit* parameter, the extra records won't be mirrored in and the incidents in Cortex XSOAR will not be updated.  
+
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -2036,6 +2042,5 @@ Get remote data from a remote incident. This method does not update the current 
 #### Context Output
 
 There is no context output for this command.
-
 
 
