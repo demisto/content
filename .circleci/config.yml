@@ -174,9 +174,6 @@ references:
       name: Prepare Environment
       when: always
       command: |
-        echo 'Bucket Name is: $GCS_MARKET_BUCKET'
-        echo 'Slack channel is: $SLACK_CHANNEL'
-
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV

@@ -46,7 +46,6 @@ else
   echo "Finished copying successfully."
   # ====== UPDATING TESTING BUCKET ======
 fi
-echo "source path: $SOURCE_PATH bucket name = $GCS_MARKET_BUCKET"
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$CONTENT_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1

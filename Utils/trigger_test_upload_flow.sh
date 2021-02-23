@@ -2,7 +2,16 @@
 
 if [ "$#" -lt "1" ]; then
 #  TODO: add all parameters and usage
-  echo "Usage: $0 <circle token>, <branch name>, <csv list of pack IDs>"
+  echo "Usage:
+  $0 -ct <token>
+
+  -ct, --circle-token         The circleci token.
+  [-b, --branch]              The branch name. Default is the current branch.
+  [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
+  [-f, --force]               Whether to trigger the force upload flow.
+  [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
+  [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
+  "
   exit 1
 fi
 
@@ -55,6 +64,13 @@ if [ -z "$_circle_token" ]; then
     echo "You must provide a circle token."
     exit 1
 fi
+
+if [ -n "$_force" ] && [ -z "$_packs" ]; then
+    echo "You must provide a csv list of packs to force upload."
+    exit 1
+fi
+
+
 trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
 post_data=$(cat <<-EOF
@@ -70,7 +86,6 @@ post_data=$(cat <<-EOF
 }
 EOF
 )
-echo $post_data
 
 curl \
 --header "Accept: application/json" \

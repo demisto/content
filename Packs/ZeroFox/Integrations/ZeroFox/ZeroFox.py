@@ -12,7 +12,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 USE_SSL: bool = not demisto.params().get('insecure', False)
