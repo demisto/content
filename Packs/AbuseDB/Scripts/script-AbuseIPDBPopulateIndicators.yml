@@ -7,7 +7,7 @@ script: >-
 
   res = demisto.executeCommand("abuseipdb-get-blacklist", {
       "days" : demisto.args().get("days"),
-      "limit" : demisto.args().get("limit")
+      "limit" : demisto.args().get("limit"),
       "confidence" : demisto.args().get("confidence")
   })
 
