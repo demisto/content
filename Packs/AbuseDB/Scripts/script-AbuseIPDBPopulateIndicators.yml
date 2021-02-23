@@ -8,6 +8,7 @@ script: >-
   res = demisto.executeCommand("abuseipdb-get-blacklist", {
       "days" : demisto.args().get("days"),
       "limit" : demisto.args().get("limit")
+      "confidence" : demisto.args().get("confidence")
   })
 
   ips = res[0]['Contents']
@@ -41,6 +42,9 @@ args:
 - name: limit
   description: 'Maximum number of IPs to retrieve, default is 50 '
   defaultValue: "200"
+- name: confidence
+  description: 'Minimum confidence required in IP retrieved, default is 100'
+  defaultValue: "100"
 scripttarget: 0
 dependson:
   must:
