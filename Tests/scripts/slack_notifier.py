@@ -22,7 +22,7 @@ SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
-SDK_CONTENT_CHANNEL = 'dmst-content-team'
+CONTENT_CHANNEL = 'dmst-content-team'
 
 
 def get_faild_steps_list():
@@ -282,12 +282,12 @@ def get_fields():
 
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
-                   job_name="", slack_channel=None):
+                   job_name="", slack_channel=CONTENT_CHANNEL):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master' or slack_channel.lower() != SDK_CONTENT_CHANNEL:
+    if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
@@ -333,7 +333,7 @@ def main():
     bucket_upload = options.bucket_upload
     circle_artifacts_path = options.circle_artifacts
     job_name = options.job_name
-    slack_channel = options.slack_channel or SDK_CONTENT_CHANNEL
+    slack_channel = options.slack_channel or CONTENT_CHANNEL
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:

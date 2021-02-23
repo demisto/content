@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 if [ "$#" -lt "1" ]; then
-#  TODO: add all parameters and usage
   echo "Usage:
   $0 -ct <token>
 
