@@ -1,5 +1,7 @@
 Unit42 feed of published IOCs, which contains known malicious indicators.
 
+Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.
+
 ## Configure Unit42 Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
