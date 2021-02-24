@@ -115,7 +115,7 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: if true, replace path not found with empty string, otherwise leave as is
+  description: If true, replace path not found with empty string, otherwise leave as is
   defaultValue: "no"
 outputs:
 - contextPath: htmlBody

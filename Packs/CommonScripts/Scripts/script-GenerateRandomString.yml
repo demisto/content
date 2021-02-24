@@ -103,7 +103,7 @@ args:
   - "False"
   description: If the string will include letters.
 - name: Uppercase
-  description: if uppercase should be included
+  description: If uppercase should be included
   required: true
   auto: PREDEFINED
   predefined:

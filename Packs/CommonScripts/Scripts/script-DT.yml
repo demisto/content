@@ -21,7 +21,7 @@ enabled: true
 args:
 - name: value
   required: true
-  description: value to perfom the transformation on
+  description: Value to perfom the transformation on
 - name: dt
   required: true
   description: DT expression

@@ -103,10 +103,10 @@ args:
 - name: lh
   required: true
   default: true
-  description: left hand parameter
+  description: Left hand parameter
 - name: rh
   required: true
-  description: right hand parameter
+  description: Right hand parameter
 - name: action
   required: true
   description: Math expression (+, -, >, <, ==, *, /, %)

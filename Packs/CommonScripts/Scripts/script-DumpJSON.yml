@@ -24,7 +24,7 @@ args:
 - name: key
   required: true
   default: true
-  description: context path to the json object
+  description: The context path to the json object
 outputs:
 - contextPath: JsonStr
   description: The JSON object as string

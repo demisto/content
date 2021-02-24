@@ -50,10 +50,10 @@ enabled: true
 args:
 - name: left
   required: true
-  description: value to check if in range (e.g. 4)
+  description: Value to check if in range (e.g. 4)
 - name: right
   required: true
-  description: range to check against with the form of from,to (e.g. 2,8)
+  description: Range to check against with the form of from,to (e.g. 2,8)
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0

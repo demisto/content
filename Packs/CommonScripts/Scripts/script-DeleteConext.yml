@@ -151,7 +151,7 @@ args:
 - name: keysToKeep
   description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
 - name: index
-  description: index to delete in case 'key' argument was specified
+  description: Index to delete in case 'key' argument was specified
 scripttarget: 0
 runas: DBotRole
 runonce: false

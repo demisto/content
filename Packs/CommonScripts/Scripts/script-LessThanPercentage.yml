@@ -37,11 +37,11 @@ outputs:
   description: if firstPercentage >= secondPercentage
 args:
 - name: firstPercentage
-  description: first percentage
+  description: First percentage
   required: true
   default: true
 - name: secondPercentage
-  description: second percentage
+  description: Second percentage
   required: true
 scripttarget: 0
 fromversion: 5.0.0
