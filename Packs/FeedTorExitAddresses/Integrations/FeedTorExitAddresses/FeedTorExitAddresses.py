@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import requests
-from dateutil.parser import parse
 from typing import Dict, List, Optional
 
 # Disable insecure warnings

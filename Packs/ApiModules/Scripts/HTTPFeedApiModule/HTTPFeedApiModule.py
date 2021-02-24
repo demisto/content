@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
