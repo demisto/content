@@ -707,6 +707,8 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
     assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 10000000, ' \
                                                     '"folder_id": "100"}'
 
+    assert b'"parent": {"id": "100"}' in requests_mock.request_history[0]._request.body
+
     assert len(requests_mock.request_history) == 1
 
     assert response.outputs_prefix == 'Box.File'
