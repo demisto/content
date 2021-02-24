@@ -1,7 +1,7 @@
 {
-    "description": "",
+    "description": "The mapper for the CCTV incident type",
     "feed": false,
-    "id": "7f5f3cad-4be6-41ae-847c-0e1c2b1e9da6_custom-mapper",
+    "id": "UnifiVideo-mapper",
     "mapping": {
         "CCTV": {
             "dontMapEventToLabels": false,
@@ -54,7 +54,7 @@
             }
         }
     },
-    "name": "UnifiVideo_instance_1 (custom) (mapper)",
+    "name": "UnifiVideo_mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

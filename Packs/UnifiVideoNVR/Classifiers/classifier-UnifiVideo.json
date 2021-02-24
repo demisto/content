@@ -1,12 +1,12 @@
 {
-    "description": "",
+    "description": "The suggested classifier for the CCTV incident type",
     "feed": false,
-    "id": "7f5f3cad-4be6-41ae-847c-0e1c2b1e9da6_custom",
+    "id": "UnifiVideo_classifier",
     "keyTypeMap": {
         "fullTimeRecording": "CCTV",
         "motionRecording": "CCTV"
     },
-    "name": "UnifiVideo_instance_1 (custom) (classifier)",
+    "name": "UnifiVideo_classifier",
     "transformer": {
         "complex": null,
         "simple": "event"
