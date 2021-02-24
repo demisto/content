@@ -185,7 +185,9 @@ def create_event_or_incident_output(item: Dict,
         profiles = item.get('profiles', [])
         profiles_list = []
         for profile in profiles:
-            profiles_list.append(profile.get('name'))
+            name = profile.get('name')
+            if name is not None:
+                profiles_list.append(name)
         alert_data['profiles'] = profiles_list
 
     return remove_empty_elements(alert_data)
@@ -221,9 +223,10 @@ def list_events_command(client: Client, args: dict):
             raw_outputs.append(data)
 
             item_dictionary = create_event_or_incident_output(data, table_headers)
-            item_dictionary['dateTime'] = datetime.strptime(
-                str(item_dictionary.get('dateTime')),
-                DATETIME_FORMAT).strftime(TABLE_DATETIME_FORMAT)
+            date_time = item_dictionary.get('dateTime')
+            if date_time:
+                item_dictionary['dateTime'] = datetime.strptime(date_time, DATETIME_FORMAT)\
+                    .strftime(TABLE_DATETIME_FORMAT)
 
             outputs.append(item_dictionary)
 
@@ -403,8 +406,12 @@ def create_incident_command(client: Client, args: dict):
 
     output = create_event_or_incident_output(raw_response, table_headers)
 
-    output.update({'username': dict_safe_get(raw_response, ['userInfo', 'user', 'name'])})
-    output.update({'occurred': epochToTimestamp(dict_safe_get(raw_response, ['userInfo', 'date']))})
+    username = dict_safe_get(raw_response, ['userInfo', 'user', 'name'])
+    if username:
+        output.update({'username': username})
+    occurred = dict_safe_get(raw_response, ['userInfo', 'date'])
+    if occurred:
+        output.update({'occurred': epochToTimestamp(occurred)})
 
     readable_output = tableToMarkdown(name=f'Created New Incident: {raw_response.get("name")}',
                                       t=output,
@@ -589,7 +596,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         if incident_id == last_incident_id:
             continue
         incident_name = incident.get('name', None)
+
         created_date = dict_safe_get(incident, ['createdBy', 'date'])
+        if not created_date:
+            continue
         incident_created_time = datetime.fromtimestamp(created_date / 1000)
 
         incident = {
