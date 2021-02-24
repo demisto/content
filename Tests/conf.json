@@ -87,7 +87,7 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.2"
         },
         {
             "integrations": "Majestic Million",
@@ -99,7 +99,8 @@
         {
             "integrations": "Anomali Enterprise",
             "playbookID": "Anomali Match Forensic Search - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 500
         },
         {
             "integrations": [
