@@ -227,7 +227,7 @@ def main():
 
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
-    is_incremental_feed = params.get('feedIncremental')
+    is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
 
