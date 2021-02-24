@@ -1811,7 +1811,7 @@ class Pack(object):
             return task_status, exists_in_index
 
     @staticmethod
-    def remove_contrib_suffix_from_name(display_name: str):
+    def remove_contrib_suffix_from_name(display_name: str) -> str:
         """ Removes the contribution details suffix from the integration's display name
         Args:
             display_name (str): The integration display name.
