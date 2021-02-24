@@ -42,7 +42,7 @@ else
   # ====== UPDATING TESTING BUCKET ======
   SOURCE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content"
   echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
-  gsutil -m cp -r "gs://marketplace-dist/content" "gs://marketplace-dist-dev/$SOURCE_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+  gsutil -m cp -r "gs://marketplace-dist/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
   echo "Finished copying successfully."
   # ====== UPDATING TESTING BUCKET ======
 fi
