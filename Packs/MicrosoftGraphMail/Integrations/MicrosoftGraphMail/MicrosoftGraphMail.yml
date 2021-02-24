@@ -98,7 +98,7 @@ script:
       name: timeout
       required: false
       secret: false
-    - default: false
+    - defaultValue: 20
       description: 'Limit emails to fetch in one request'
       isArray: false
       name: page_size

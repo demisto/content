@@ -110,7 +110,7 @@ class MsGraphClient:
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
         user_timeout = float(demisto.args().get('timeout', 300))
-        page_size = demisto.args().get('page_size', 10)
+        page_size = demisto.args().get('page_size', 20)
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
