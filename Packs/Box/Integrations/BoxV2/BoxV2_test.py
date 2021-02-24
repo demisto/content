@@ -686,17 +686,10 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
     mock_obj.st_size = 10000000  # i.e smaller than 20000000
     mocker.patch('os.stat', return_value=mock_obj)
 
-    # The response given when a session is committed.
-    session_commit_response = {
-        'entities': {
-            'name': 'some_file',
-            'file_type': 'jpg',
-            'id': 123
-        }
-    }
+    session_response = {'entities': {"name": "test_user.png", "parent": {"id": "100"}}}
 
     # Mock for the request to open an upload session.
-    requests_mock.post('https://upload.box.com/api/2.0/files/content', json=session_commit_response)
+    requests_mock.post('https://upload.box.com/api/2.0/files/content', json=session_response)
 
     client = TestBox(mocker).client
 
@@ -716,7 +709,7 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
 
     assert response.outputs_prefix == 'Box.File'
     assert response.outputs_key_field == 'id'
-    assert response.outputs == session_commit_response.get('entities')
+    assert response.outputs == session_response.get('entities')
 
 
 def test_get_current_user_command(requests_mock, mocker):

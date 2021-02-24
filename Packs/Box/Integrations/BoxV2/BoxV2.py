@@ -717,7 +717,7 @@ class Client(BaseClient):
                 upload_url_suffix = '/files/content'
                 attributes = {
                     'name': file_name,
-                    'parent': {'id': folder_id}
+                    'parent': {'id': '0'}
                 }
                 data = {'attributes': json.dumps(attributes)}
                 files = {'file': ('unused', file)}
