@@ -3222,10 +3222,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "ServiceDeskPlus (On-Premise)",
-            "playbookID": "Service Desk Plus (On-Premise) Test"
-        },
-        {
             "integrations": "MicrosoftGraphIdentityandAccess",
             "playbookID": "Identity & Access test playbook"
         },
