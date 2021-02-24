@@ -42,7 +42,10 @@ class Client(BaseClient):
         """
         Logout from the session
         """
-        self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
+        try:
+            self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
+        except Exception as err:
+            demisto.debug(f'An error occurred during the logout.\n{str(err)}')
 
     def test_module_request(self):
         """
