@@ -19,10 +19,11 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VERIFY_SSL = not demisto.params().get('insecure', False)
 
 if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    handle_proxy()
+    # del os.environ['HTTP_PROXY']
+    # del os.environ['HTTPS_PROXY']
+    # del os.environ['http_proxy']
+    # del os.environ['https_proxy']
 
 
 def test_module() -> str:
@@ -31,13 +32,10 @@ def test_module() -> str:
         headers = {'Accept': 'application/json'}
         req = requests.get(base_url, headers=headers, verify=VERIFY_SSL)
         if req.status_code != 200:
-            return_results(req.status_code)
-            sys.exit(1)
+            http_status= 'HTTP status is' + str(req.status_code)
+            return_error(http_status)
     except Exception as e:
-        if ('Forbidden' in str(e)):
-            return_results(req.status_code)
-        else:
-            raise e
+        return_error(e)
     return 'ok'
 
 
