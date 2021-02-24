@@ -34,6 +34,11 @@ class Client(BaseClient):
         return res.text
 
     def datestring_formatter(self, date_string):
+        """
+        formats a datestring to ISO-8601
+        :param date_string: Date represented as a tring
+        :return: ISO-8601cdate string
+        """
         parsed_date = dateparser.parse(date_string)
         return parsed_date.strftime(DATE_FORMAT)
 
