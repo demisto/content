@@ -474,7 +474,8 @@ def test_tbl_keep_headers_list():
     data = {
         'header_1': 'foo'
     }
-    tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+    table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+    assert 'header_2' not in table
     assert headers == ['header_1', 'header_2']
 
 
@@ -482,6 +483,7 @@ def test_tbl_keep_headers_list():
 def test_url_to_clickable_markdown(data, expected_data):
     table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
     assert table == expected_data
+
 
 def test_flatten_cell():
     # sanity

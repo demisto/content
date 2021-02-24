@@ -1554,7 +1554,6 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :rtype: ``str``
     """
     # Turning the urls in the table to clickable
-    headers = headers[:]
     if url_keys:
         t = url_to_clickable_markdown(t, url_keys)
 
@@ -1572,6 +1571,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not isinstance(t, list):
         t = [t]
 
+    headers = headers[:]
     if headers and isinstance(headers, STRING_TYPES):
         headers = [headers]
 
