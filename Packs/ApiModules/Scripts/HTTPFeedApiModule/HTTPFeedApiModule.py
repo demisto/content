@@ -284,7 +284,7 @@ def datestring_formatter(date_string: str) -> str:
     """
     formats a datestring to ISO-8601
     :param date_string: Date represented as a tring
-    :return: ISO-8601cdate string
+    :return: ISO-8601 date string
     """
     parsed_date = dateparser.parse(date_string)
     return parsed_date.strftime(DATE_FORMAT)
