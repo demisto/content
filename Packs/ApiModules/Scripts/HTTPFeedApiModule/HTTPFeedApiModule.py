@@ -286,7 +286,7 @@ def datestring_formatter(date_string: str) -> str:
     :param date_string: Date represented as a tring
     :return: ISO-8601 date string
     """
-    parsed_date = dateparser.parse(date_string)
+    parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'}s)
     return parsed_date.strftime(DATE_FORMAT)
 
 

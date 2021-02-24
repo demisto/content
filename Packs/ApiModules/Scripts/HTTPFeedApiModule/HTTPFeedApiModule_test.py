@@ -143,11 +143,13 @@ def test_datestring_formatter():
     datestring3 = "2020-02-10 13:39:14.123"
     datestring4 = "2020-02-10T13:39:14.123"
     datestring5 = "2020-02-10T13:39:14Z"
+    datestring6 = "2020-11-01T04:16:13-04:00"
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring1)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring2)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring3)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring4)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring5)
+    assert '2020-11-01T08:16:13Z' == datestring_formatter(datestring6)
 
 
 def test_get_feed_config():
