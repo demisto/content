@@ -12,7 +12,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 
-
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -129,9 +128,9 @@ def is_number_of_incidents_too_low(res, incidents):
 
 
 def is_number_of_unique_recipients_is_too_low(incidents):
-    unique_recipients = Counter([str(i.get(EMAIL_TO_FIELD, 'None')) for i in incidents]) + \
-                        Counter([str(i[EMAIL_CC_FIELD]) for i in incidents if EMAIL_CC_FIELD in i]) + \
-                        Counter([str(i[EMAIL_BCC_FIELD]) for i in incidents if EMAIL_BCC_FIELD in i])
+    unique_recipients = Counter([str(i.get(EMAIL_TO_FIELD, 'None')) for i in incidents])
+    unique_recipients += Counter([str(i[EMAIL_CC_FIELD]) for i in incidents if EMAIL_CC_FIELD in i])
+    unique_recipients += Counter([str(i[EMAIL_BCC_FIELD]) for i in incidents if EMAIL_BCC_FIELD in i])
     missing_recipients = unique_recipients['None']
     unique_recipients.pop('None', None)
     if (len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients == 0) or \
