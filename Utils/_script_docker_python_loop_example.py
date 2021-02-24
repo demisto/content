@@ -1,3 +1,17 @@
+"""
+This is a simplified example script which demonstrates the concept of how the XSOAR Server executes python integrations/scripts.
+
+The XSOAR Server will run the docker container with a python script which it will use to execute the integration/script.
+The communication with the script is done over stdin/stdout/stderr using a json based protocol. You can use this script
+to experiment with simple scenarios to see how the exection is performed.
+
+For example to run a simple script which sends a log entry to the server via calling: `demisto.log(...)` run the following:
+
+echo '{"script": "demisto.log(\"this is an example entry log\")", "integration": false, "native": false}' | \
+docker run --rm -i -v `pwd`:/work -w /work demisto/python3:3.8.6.12176 python Utils/_script_docker_python_loop_example.py
+
+"""
+
 import os
 import threading
 import sys
@@ -396,23 +410,23 @@ print = demisto_print
 # and the process is ready to execute the next script
 def send_script_completed():
     json.dump({'type': 'completed'}, sys.stdout)
-    sys.stdout.write('\\n')
+    sys.stdout.write('\n')
     sys.stdout.flush()
 
 
 def send_script_exception(exc_type, exc_value, exc_traceback):
     ex_string = traceback.format_exception(exc_type, exc_value, exc_traceback)
     if ex_string == 'None\n':
-        ex_string = str(ex)
+        ex_string = str(exc_value)
 
     json.dump({'type': 'exception', 'args': {'exception': ex_string}}, sys.stdout)
-    sys.stdout.write('\\n')
+    sys.stdout.write('\n')
     sys.stdout.flush()
 
 
 def send_pong():
     json.dump({'type': 'pong'}, sys.stdout)
-    sys.stdout.write('\\n')
+    sys.stdout.write('\n')
     sys.stdout.flush()
 
 
@@ -467,7 +481,7 @@ while True:
 
         exec(code, sub_globals, sub_globals)  # guardrails-disable-line
 
-    except Exception as ex:
+    except Exception:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         send_script_exception(exc_type, exc_value, exc_traceback)
     except SystemExit:
