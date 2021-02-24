@@ -1,5 +1,5 @@
 Use the HostIo integration to enrich Domains using the Host.io API.
-This integration was integrated and tested with version 1.0.0 of HostIo
+This integration was integrated and tested with version 1.0 of HostIo
 ## Configure HostIo on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

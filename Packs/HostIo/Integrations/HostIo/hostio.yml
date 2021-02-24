@@ -26,6 +26,7 @@ script:
     arguments:
     - name: field
       required: true
+      auto: PREDEFINED
       predefined:
       - "ip"
       - "ns"
@@ -43,7 +44,7 @@ script:
       description: Field name to search a Domain according to it
     - name: value
       required: true
-      description: The value of the given field
+      description: The Value of the given field
     - name: limit
       required: false
       description: The maximum number of domains to display, must be one of 0, 1, 5, 10, 25, 100, 250, or 1000, The default value is 25.
