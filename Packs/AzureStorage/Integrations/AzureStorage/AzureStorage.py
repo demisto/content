@@ -107,7 +107,7 @@ class ASClient:
             json_data_args['properties']['Encryption'] = {}
 
             if 'enc_key_source' in args:
-                json_data_args['properties']['Encryption']['keySource'] = args['enc_key_source']
+                json_data_args['properties']['Encryption']['keySource'] = args.get('enc_key_source')
 
             if 'enc_keyvault_key_name' in args or 'enc_keyvault_key_version' in args or 'enc_keyvault_uri' in args:
                 json_data_args['properties']['Encryption']['keyvaultproperties'] = {}
@@ -303,7 +303,7 @@ def storage_account_list(client: ASClient, args: Dict) -> CommandResults:
     )
 
 
-def storage_account_create_update(client: ASClient, args: Dict) -> CommandResults:
+def storage_account_create_update(client: ASClient, args: Dict) -> Union[CommandResults, str]:
     """
         Creates or updates a given storage account.
     Args:
@@ -316,6 +316,9 @@ def storage_account_create_update(client: ASClient, args: Dict) -> CommandResult
 
     response = client.storage_account_create_update_request(args)
 
+    if not isinstance(response, dict):
+        return f"The request was accepted - the account {args.get('account_name')} will be created shortly"
+
     if subscription_id := re.search('subscriptions/(.+?)/resourceGroups', response.get('id', '')):
         subscription_id = subscription_id.group(1)
 
@@ -327,8 +330,8 @@ def storage_account_create_update(client: ASClient, args: Dict) -> CommandResult
         'Subscription ID': subscription_id,
         'Resource Group': resource_group,
         'Kind': response.get('kind'),
-        'Status Primary': response.get('properties').get('statusOfPrimary'),
-        'Status Secondary': response.get('properties').get('statusOfSecondary'),
+        'Status Primary': response.get('properties', '').get('statusOfPrimary'),
+        'Status Secondary': response.get('properties', '').get('statusOfSecondary'),
         'Location': response.get('location')
     }
 
@@ -369,10 +372,19 @@ def storage_blob_service_properties_get(client: ASClient, args: Dict) -> Command
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
         resource_group = resource_group.group(1)
 
+    if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
+        account_name = account_name.group(1)
+
     readable_output = {
         'Name': response.get('name'),
+        'Account Name': account_name,
         'Subscription ID': subscription_id,
         'Resource Group': resource_group,
+        'Change Feed': response.get('properties').get('changeFeed').get('enabled')
+        if response.get('properties').get('changeFeed') else '',
+        'Delete Retention Policy': response.get('properties').get('deleteRetentionPolicy').get('enabled')
+        if response.get('properties').get('deleteRetentionPolicy') else '',
+        'Versioning': response.get('properties').get('isVersioningEnabled')
     }
 
     return CommandResults(
@@ -382,7 +394,8 @@ def storage_blob_service_properties_get(client: ASClient, args: Dict) -> Command
         readable_output=tableToMarkdown(
             'Azure Storage Blob Service Properties',
             readable_output,
-            ['Name', 'Subscription ID', 'Resource Group'],
+            ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Change Feed', 'Delete Retention Policy',
+             'Versioning'],
         ),
         raw_response=response
     )
@@ -407,10 +420,19 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
     if resource_group := re.search('resourceGroups/(.+?)/providers', response.get('id', '')):
         resource_group = resource_group.group(1)
 
+    if account_name := re.search('storageAccounts/(.+?)/blobServices', response.get('id', '')):
+        account_name = account_name.group(1)
+
     readable_output = {
         'Name': response.get('name'),
+        'Account Name': account_name,
         'Subscription ID': subscription_id,
         'Resource Group': resource_group,
+        'Change Feed': response.get('properties', '').get('changeFeed').get('enabled')
+        if response.get('properties', '').get('changeFeed') else '',
+        'Delete Retention Policy': response.get('properties', '').get('deleteRetentionPolicy').get('enabled')
+        if response.get('properties', '').get('deleteRetentionPolicy') else '',
+        'Versioning': response.get('properties', '').get('isVersioningEnabled')
     }
 
     return CommandResults(
@@ -420,7 +442,8 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
         readable_output=tableToMarkdown(
             'Azure Storage Blob Service Properties',
             readable_output,
-            ['Name', 'Subscription ID', 'Resource Group'],
+            ['Name', 'Account Name', 'Subscription ID', 'Resource Group', 'Change Feed', 'Delete Retention Policy',
+             'Versioning'],
         ),
         raw_response=response
     )

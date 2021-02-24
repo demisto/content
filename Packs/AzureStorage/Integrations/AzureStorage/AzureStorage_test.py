@@ -115,9 +115,10 @@ def test_storage_blob_service_properties_get(client, mocker):
     mocker.patch.object(ASClient, "storage_blob_service_properties_get_request", return_value=api_response)
     result = storage_blob_service_properties_get(client=client, args={'account_name': 'account_name'})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
-                  '|Name|Subscription ID|Resource Group|\n' \
-                  '|---|---|---|\n' \
-                  '| default | subscription_id | resource_group_name |\n'
+                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n'\
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| default | account_name | subscription_id | resource_group_name |  | false ' \
+                  '|  |\n'
     assert result.outputs == api_response
     assert result.readable_output == expected_hr
 
@@ -139,8 +140,9 @@ def test_storage_blob_service_properties_set(client, mocker):
     mocker.patch.object(ASClient, "storage_blob_service_properties_set_request", return_value=api_response)
     result = storage_blob_service_properties_set(client=client, args={'account_name': 'yaakov'})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
-                  '|Name|Subscription ID|Resource Group|\n' \
-                  '|---|---|---|\n' \
-                  '| default | subscription_id | resource_group_name |\n'
+                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| default | account_name | subscription_id | resource_group_name |  |  |  ' \
+                  '|\n'
     assert result.outputs == api_response
     assert result.readable_output == expected_hr

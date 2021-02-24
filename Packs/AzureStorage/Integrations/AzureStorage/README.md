@@ -1,6 +1,29 @@
 Deploy and manage storage accounts and blob services.
 This integration was integrated and tested with version 2019-06-01 of Azure Storage
-## Permissions
+## Authorization
+In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
+
+In order to connect to the Azure Storage Accounts and the Blob Service using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
+1. Fill in the required parameters.
+2. Run the ***!azure-storage-auth-start*** command. 
+3. Follow the instructions that appear.
+4. Run the ***!azure-storage-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (55f9764e-300a-474a-a2bb-549cece85439).
+
+You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+
+#### Self-Deployed Azure App
+
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+
+The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+
 
 ## Configure Azure Storage on Cortex XSOAR
 
@@ -17,6 +40,7 @@ This integration was integrated and tested with version 2019-06-01 of Azure Stor
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -215,104 +239,6 @@ Run this command to get the all or spesific account storage details
                 "tags": {
                     "ms-resource-usage": "azure-cloud-shell"
                 },
-                "type": "Microsoft.Storage/storageAccounts"
-            },
-            {
-                "id": "/subscriptions/subsciption_id/resourceGroups/esource_group_name/providers/Microsoft.Storage/storageAccounts/account_name",
-                "kind": "BlobStorage",
-                "location": "eastus",
-                "name": "account_name",
-                "properties": {
-                    "accessTier": "Cool",
-                    "creationTime": "2021-02-22T13:15:19.2816113Z",
-                    "encryption": {
-                        "keySource": "Microsoft.Storage",
-                        "services": {
-                            "blob": {
-                                "enabled": true,
-                                "keyType": "Account",
-                                "lastEnabledTime": "2021-02-22T13:15:19.3910225Z"
-                            },
-                            "file": {
-                                "enabled": true,
-                                "keyType": "Account",
-                                "lastEnabledTime": "2021-02-22T13:15:19.3910225Z"
-                            }
-                        }
-                    },
-                    "minimumTlsVersion": "TLS1_1",
-                    "networkAcls": {
-                        "bypass": "AzureServices",
-                        "defaultAction": "Allow",
-                        "ipRules": [],
-                        "virtualNetworkRules": []
-                    },
-                    "primaryEndpoints": {
-                        "blob": "",
-                        "dfs": "",
-                        "table": ""
-                    },
-                    "primaryLocation": "eastus",
-                    "privateEndpointConnections": [],
-                    "provisioningState": "Succeeded",
-                    "secondaryLocation": "westus",
-                    "statusOfPrimary": "available",
-                    "statusOfSecondary": "available",
-                    "supportsHttpsTrafficOnly": false
-                },
-                "sku": {
-                    "name": "Standard_GRS",
-                    "tier": "Standard"
-                },
-                "tags": {},
-                "type": "Microsoft.Storage/storageAccounts"
-            },
-            {
-                "id": "/subscriptions/subsciption_id/resourceGroups/esource_group_name/providers/Microsoft.Storage/storageAccounts/account_name",
-                "kind": "Storage",
-                "location": "westeurope",
-                "name": "account_name",
-                "properties": {
-                    "creationTime": "2019-01-21T12:45:40.8058360Z",
-                    "encryption": {
-                        "keySource": "Microsoft.Storage",
-                        "services": {
-                            "blob": {
-                                "enabled": true,
-                                "keyType": "Account",
-                                "lastEnabledTime": "2019-01-21T12:45:40.8995992Z"
-                            },
-                            "file": {
-                                "enabled": true,
-                                "keyType": "Account",
-                                "lastEnabledTime": "2019-01-21T12:45:40.8995992Z"
-                            }
-                        }
-                    },
-                    "minimumTlsVersion": "TLS1_1",
-                    "networkAcls": {
-                        "bypass": "AzureServices",
-                        "defaultAction": "Allow",
-                        "ipRules": [],
-                        "virtualNetworkRules": []
-                    },
-                    "primaryEndpoints": {
-                        "blob": "",
-                        "file": "",
-                        "queue": "",
-                        "table": ""
-                    },
-                    "primaryLocation": "westeurope",
-                    "privateEndpointConnections": [],
-                    "provisioningState": "Succeeded",
-                    "statusOfPrimary": "available",
-                    "supportsHttpsTrafficOnly": false
-                },
-                "sku": {
-                    "name": "Standard_LRS",
-                    "tier": "Standard"
-                },
-                "tags": {},
                 "type": "Microsoft.Storage/storageAccounts"
             }
         ]
@@ -551,9 +477,9 @@ Run this command to get the blob service properties of a spesific account storag
 #### Human Readable Output
 
 >### Azure Storage Blob Service Properties
->|Name|Subscription ID|Resource Group|
->|---|---|---|
->| default | sub_id | resource_g_name |
+>|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|
+>|---|---|---|---|---|---|---|
+>| default | account_name | subscription_id | resource_group_name | change_feed_enabled | delete_retention_policy_enabled | is_versioning_enabled |
 
 
 ### azure-storage-blob-service-properties-set
@@ -631,7 +557,8 @@ the blob service in a spesific account storage
 #### Human Readable Output
 
 >### Azure Storage Blob Service Properties
->|Name|Subscription ID|Resource Group|
->|---|---|---|
->| default | sub_id | resource_g_name |
+>|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|
+>|---|---|---|---|---|---|---|
+>| default | account_name | subscription_id | resource_group_name | change_feed_enabled | delete_retention_policy_enabled | is_versioning_enabled |
+
 
