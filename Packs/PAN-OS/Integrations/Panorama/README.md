@@ -4431,3 +4431,146 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The profile test was created successfully.
+
+### panorama-show-user-id-interfaces-config
+***
+Shows the user ID interface configuration
+
+
+#### Base Command
+
+`panorama-show-user-id-interfaces-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration paramater. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS paramater if exists, if given a value, will override the VSYS parametmer. If neither the VSYS parameter and this argument are enterd, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserInterfaces.Name | String | The name of the user interface. | 
+| Panorama.UserInterfaces.Network.layer3.member | String | The interface network layer3 member. | 
+| Panorama.UserInterfaces.Network.log-setting | String | The interface network log settings. | 
+| Panorama.UserInterfaces.tap.member | String | The interface network tap member. | 
+
+
+#### Command Example
+```!panorama-show-user-id-interfaces-config```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserInterfaces": [
+            {
+                "Name": "internal",
+                "Network": {
+                    "layer3": {
+                        "member": "ethernet1/2"
+                    },
+                    "log-setting": "ToLoggingService"
+                }
+            },
+            {
+                "Name": "External",
+                "Network": {
+                    "layer3": {
+                        "member": "ethernet1/1"
+                    },
+                    "log-setting": "ToLoggingService"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User Interface Configuration:
+>|Name|Network|
+>|---|---|
+>| internal | layer3: {"member": "ethernet1/2"}<br/>log-setting: ToLoggingService |
+>| External | layer3: {"member": "ethernet1/1"}<br/>log-setting: ToLoggingService |
+
+
+### panorama-list-configured-user-id-agents
+***
+Retrieves list of user-ID agents configured in the system.
+
+
+#### Base Command
+
+`panorama-list-configured-user-id-agents`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration paramater. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS paramater if exists, if given a value, will override the VSYS parametmer. If neither the VSYS parameter and this argument are enterd, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserIDAgents.Name | String | The user-ID Agent name. | 
+| Panorama.UserIDAgents.Host | String | The user-ID Agent host. | 
+| Panorama.UserIDAgents.Port | Number | The user-ID Agent port. | 
+| Panorama.UserIDAgents.LdapProxy | String | Whther LDAP proxy is used in the user-ID agent. | 
+| Panorama.UserIDAgents.NtlmAuth | String | Whether NLTM authentication is used in the user-ID agent. | 
+| Panorama.UserIDAgents.EnableHipCollection | String | Whether HIP collection is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.IpUserMapping | String | Whether IP user mapping is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.SerialNumber | Unknown | The serial number associated with the user-ID agent. | 
+| Panorama.UserIDAgents.CollectorName | String | The user-ID agent collector name. | 
+| Panorama.UserIDAgents.Secret | String | The user-ID agent secret. | 
+
+
+#### Command Example
+```!panorama-list-configured-user-id-agents```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserIDAgents": [
+            {
+                "CollectorName": null,
+                "EnableHipCollection": null,
+                "Host": null,
+                "LdapProxy": null,
+                "Name": "testing2",
+                "NtlmAuth": null,
+                "Port": null,
+                "Secret": null,
+                "SerialNumber": "serial"
+            },
+            {
+                "CollectorName": "demisto",
+                "EnableHipCollection": null,
+                "Host": "what",
+                "LdapProxy": "yes",
+                "Name": "fullinfo",
+                "NtlmAuth": "yes",
+                "Port": "67",
+                "Secret": "secret",
+                "SerialNumber": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User ID Agents:
+>|Name|SerialNumber|Host|Port|CollectorName|LdapProxy|NtlmAuth|
+>|---|---|---|---|---|---|---|
+>| testing2 | panorama2 |  |  |  |  |  |
+>| fullinfo |  | what | 67 | demisto | yes | yes |

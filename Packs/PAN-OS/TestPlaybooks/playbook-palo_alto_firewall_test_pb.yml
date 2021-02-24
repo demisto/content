@@ -2332,19 +2332,24 @@ tasks:
     isoversize: false
   "116":
     id: "116"
-    taskid: ac4a2d56-6553-4e73-8bbf-b51a55b5453b
+    taskid: d7df5b13-deed-4c85-814a-bcbfe7174555
     type: regular
     task:
-      id: ac4a2d56-6553-4e73-8bbf-b51a55b5453b
+      id: d7df5b13-deed-4c85-814a-bcbfe7174555
       version: -1
       name: panorama-show-user-id-interfaces-config
       description: Shows the user ID interface configuration
+      script: '|||panorama-show-user-id-interfaces-config'
       type: regular
-      iscommand: false
-      brand: Panorama
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "50"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
     separatecontext: false
     view: |-
       {
@@ -2361,19 +2366,24 @@ tasks:
     isoversize: false
   "117":
     id: "117"
-    taskid: 4e180432-4cb1-448f-8ff8-106704c8e598
+    taskid: d8b3b52b-a237-4b59-8805-c80aba15cac2
     type: regular
     task:
-      id: 4e180432-4cb1-448f-8ff8-106704c8e598
+      id: d8b3b52b-a237-4b59-8805-c80aba15cac2
       version: -1
       name: panorama-list-configured-user-id-agents
       description: Retrieves list of user-ID agents configured in the system.
+      script: '|||panorama-list-configured-user-id-agents'
       type: regular
-      iscommand: false
-      brand: Panorama
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "50"
+    scriptarguments:
+      template: {}
+      template_stack: {}
+      vsys: {}
     separatecontext: false
     view: |-
       {
