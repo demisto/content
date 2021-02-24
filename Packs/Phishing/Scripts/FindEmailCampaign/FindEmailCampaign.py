@@ -82,19 +82,21 @@ def add_context_key(entry_context):
 
 
 def create_context_for_campaign_details(campaign_found=False, incidents_df=None):
-    if incidents_df is None:
-        incidents_context = []
+    if not campaign_found:
+        return {
+            'isCampaignFound': campaign_found,
+        }
     else:
         incident_id = demisto.incident()['id']
         incident_df = incidents_df[['id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD]]
         incident_df = incident_df[incident_df['id'] != incident_id]
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
-    return {
-        'isCampaignFound': campaign_found,
-        'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
-        'incidents': incidents_context
-    }
+        return {
+            'isCampaignFound': campaign_found,
+            'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
+            'incidents': incidents_context
+        }
 
 
 def create_context_for_indicators(indicators_df=None):
@@ -107,13 +109,8 @@ def create_context_for_indicators(indicators_df=None):
     return {'indicators': indicators_context}
 
 
-CONTEXT_FUNCTIONS = [create_context_for_campaign_details, create_context_for_indicators, ]
-
-
 def create_empty_context():
-    context = {}  # type: ignore
-    for f in CONTEXT_FUNCTIONS:
-        context = {**context, **f()}  # type: ignore
+    context = create_context_for_campaign_details(campaign_found=False)
     context = add_context_key(context)
     return context
 
