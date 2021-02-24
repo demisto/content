@@ -704,6 +704,8 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
+    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 10000000, ' \
+                                                    '"folder_id": "100"}'
 
     assert len(requests_mock.request_history) == 1
 
