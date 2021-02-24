@@ -1724,17 +1724,20 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
         },
         {
             "integrations": "Tanium",
@@ -3487,15 +3490,8 @@
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
-        "Microsoft Graph": "Test direct access to oproxy",
-        "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Azure Security Center v2": "Test direct access to oproxy",
-        "Microsoft Graph Calendar": "Test direct access to oproxy",
-        "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - Athena - Beta": "Issue 24926",
