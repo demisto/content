@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 ''' GLOBALS '''
 TAGS = 'feedTags'
 TLP_COLOR = 'trafficlightprotocol'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -280,9 +281,9 @@ class Client(BaseClient):
         return created_custom_fields
 
 
-def datestring_to_millisecond_timestamp(datestring):
-    date = parse(str(datestring))
-    return int(date.timestamp() * 1000)
+def datestring_formatter(self, date_string):
+    parsed_date = dateparser.parse(date_string)
+    return parsed_date.strftime(DATE_FORMAT)
 
 
 def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
@@ -365,12 +366,10 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, *
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_formatter(attributes['lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
-                        attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['firstseenbysource'])
+                        attributes['firstseenbysource'] = datestring_formatter(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {

@@ -1,4 +1,4 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp, feed_main
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_formatter, feed_main
 import requests_mock
 import demistomock as demisto
 
@@ -127,17 +127,32 @@ def test_custom_fields_creator():
     assert "old_filed2" not in custom_fields.keys()
 
 
-def test_datestring_to_millisecond_timestamp():
+def test_datestring_formatter():
+    """
+    Given
+    - A string represting a date.
+
+    When
+    - running datestring_formatter on the date.
+
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
     datesting1 = "2020-02-10 13:39:14"
     datesting2 = "2020-02-10T13:39:14"
     datesting3 = "2020-02-10 13:39:14.123"
     datesting4 = "2020-02-10T13:39:14.123"
     datesting5 = "2020-02-10T13:39:14Z"
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting1)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting2)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting5)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting3)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting4)
+    print(datestring_formatter(datesting1))
+    print(datestring_formatter(datesting2))
+    print(datestring_formatter(datesting5))
+    print(datestring_formatter(datesting3))
+    print(datestring_formatter(datesting4))
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting1)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting2)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting3)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting4)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting5)
 
 
 def test_get_feed_config():
