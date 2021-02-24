@@ -3007,7 +3007,7 @@ script:
     - contextPath: Tidy.Install.AdditionalInfo
       description: Additinal information about the installed software
       type: String
-  dockerimage: galrabin/tidy:1.0
+  dockerimage: demisto/tidy:1.0.0.16979
   runonce: false
   script: ''
   subtype: python3
