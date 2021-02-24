@@ -5,7 +5,6 @@ import traceback
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-# from requests.exceptions import ConnectionError, HTTPError
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -58,7 +57,6 @@ def getAccessToken():
         else demisto.params().get('server')
     ''' GLOBAL VARS '''
     CREDENTIALS = demisto.params().get('apikey')
-    # AUTH_HEADERS = {'Content-Type': 'application/json'}
 
     params = "Bearer " + CREDENTIALS
     headers = {"X-Refresh-Token": params}
@@ -74,9 +72,6 @@ def getAccessToken():
     parsed = json.loads(req.content)
     data = parsed['data']
     accessToken = data['access_token']
-    # expirydate = data['expire_at']
-    # print("Access Token Expiry Date : ", expirydate)
-    # results = parsed['data']
 
     return accessToken
 
@@ -101,7 +96,6 @@ def vectorCompare(requestContent):
             'untrusted': untrusted,
             }
 
-    # cookies = {'X-Api-Token': accessToken}
     req = requests.post(url, headers=headers, data=json.dumps(data), verify=VERIFY_SSL)
     parsed = json.loads(req.content)
     result = parsed['data']['variants'][0]
