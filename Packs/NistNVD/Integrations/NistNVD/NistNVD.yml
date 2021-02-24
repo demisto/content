@@ -18,10 +18,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 description: National Vulnerability Database
 display: Nist NVD
 name: Nist NVD
