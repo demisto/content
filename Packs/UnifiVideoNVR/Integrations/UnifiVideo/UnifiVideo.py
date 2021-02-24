@@ -94,7 +94,6 @@ if demisto.command() == 'unifivideo-get-recording':
     f = open("/tmp/recording.mp4", "rb")
     output = f.read()
     filename = recording_file_name
-    file = fileResult(filename=filename, data=output)
     file =  fileResult(filename=filename, data=output, file_type=EntryType.ENTRY_INFO_FILE)
     demisto.results(file)
 
