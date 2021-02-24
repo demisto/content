@@ -93,7 +93,8 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
         'indicator_type': indicator_type,
         'limit': 1
     }
-    mocker.patch('FeedRecordedFuture.Client.build_iterator', return_value=build_iterator_answer)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
     hr, _, entry_result = get_indicators_command(client, args)
     assert entry_result[0]['Value'] == value
     assert entry_result[0]['Type'] == type
@@ -147,9 +148,7 @@ def test_feed_tags(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
-    mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[[{'Name': '192.168.1.1'}]]
-    )
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
     indicators = next(fetch_indicators_command(client, 'ip'))
     assert tags == indicators[0]['fields']['tags']

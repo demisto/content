@@ -111,12 +111,11 @@ class Client(BaseClient):
             raise DemistoException(f'Service unknown: {service}')
         return response.prepare()
 
-    def build_iterator(self, service, indicator_type, limit):
+    def build_iterator(self, service, indicator_type):
         """Retrieves all entries from the feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
-            limit (int): Optional. The number of the indicators to fetch
 
         Returns:
             list of feed dictionaries.
@@ -155,6 +154,8 @@ class Client(BaseClient):
         else:
             with open("response.txt", "w") as f:
                 f.write(response.text)
+
+    def get_batches_from_file(self, limit):
 
         file_stream = open("response.txt", 'rt')
 
@@ -329,7 +330,9 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
 
     for service in client.services:
 
-        feed_batches = client.build_iterator(service, indicator_type, limit)
+        client.build_iterator(service, indicator_type)
+        feed_batches = client.get_batches_from_file(limit)
+
         for feed_dicts in feed_batches:
 
             indicators = []
