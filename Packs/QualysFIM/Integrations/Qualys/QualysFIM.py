@@ -339,7 +339,7 @@ def list_incident_events_command(client: Client, args: dict):
                                     'pageSize': args.get('limit'),
                                     'attributes': args.get('attributes')})
 
-    raw_response = client.get_incident_events(str(args['incident_id']), params)
+    raw_response = client.get_incident_events(str(args.get('incident_id')), params)
     table_headers = ['id', 'name', 'severity', 'action', 'type', 'dateTime']
 
     outputs = []
