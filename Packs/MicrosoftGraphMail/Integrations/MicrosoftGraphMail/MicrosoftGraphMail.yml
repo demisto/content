@@ -98,6 +98,12 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: 'Limit emails to fetch in one request'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per

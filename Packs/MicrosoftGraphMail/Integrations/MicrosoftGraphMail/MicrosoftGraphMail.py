@@ -110,12 +110,15 @@ class MsGraphClient:
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
         user_timeout = float(demisto.args().get('timeout', 300))
+        page_size = demisto.args().get('page_size', 10)
+        odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
+            odata = f'{odata}&$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
+
         try:
             response = self.ms_client.http_request('GET', suffix, timeout=user_timeout)
         except DemistoException as e:
