@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import dot
 from numpy.linalg import norm
 
+
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -20,6 +21,10 @@ FROM_DOMAIN_FIELD = 'fromdomain'
 PREPROCESSED_EMAIL_BODY = 'preprocessedemailbody'
 PREPROCESSED_EMAIL_SUBJECT = 'preprocessedemailsubject'
 MERGED_TEXT_FIELD = 'mereged_text'
+EMAIL_TO_FIELD = 'emailto'
+EMAIL_CC_FIELD = 'emailcc'
+EMAIL_BCC_FIELD = 'emailbcc'
+
 MIN_CAMPAIGN_SIZE = int(demisto.args().get("minIncidentsForCampaign", 3))
 MIN_UNIQUE_RECIPIENTS = int(demisto.args().get("minUniqueRecipients", 2))
 DUPLICATE_SENTENCE_THRESHOLD = 0.95
@@ -124,7 +129,9 @@ def is_number_of_incidents_too_low(res, incidents):
 
 
 def is_number_of_unique_recipients_is_too_low(incidents):
-    unique_recipients = Counter([str(i.get('emailto', 'None')) for i in incidents])
+    unique_recipients = Counter([str(i.get(EMAIL_TO_FIELD, 'None')) for i in incidents]) + \
+                        Counter([str(i[EMAIL_CC_FIELD]) for i in incidents if EMAIL_CC_FIELD in i]) + \
+                        Counter([str(i[EMAIL_BCC_FIELD]) for i in incidents if EMAIL_BCC_FIELD in i])
     missing_recipients = unique_recipients['None']
     unique_recipients.pop('None', None)
     if (len(unique_recipients) < MIN_UNIQUE_RECIPIENTS and missing_recipients == 0) or \
@@ -183,7 +190,11 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
     domains_counter = Counter(senders_domain).most_common()  # type: ignore
-    recipients = incidents_df['emailto'].replace('', np.nan).dropna().tolist()
+    recipients = incidents_df[EMAIL_TO_FIELD].replace('', np.nan).dropna().tolist()
+    if EMAIL_CC_FIELD in incidents_df.columns:
+        recipients += incidents_df[EMAIL_CC_FIELD].replace('', np.nan).dropna().tolist()
+    if EMAIL_BCC_FIELD in incidents_df.columns:
+        recipients += incidents_df[EMAIL_BCC_FIELD].replace('', np.nan).dropna().tolist()
     recipients_counter = Counter(recipients).most_common()  # type: ignore
     if len(senders_counter) == 1:
         domain_header = "Sender domain"
