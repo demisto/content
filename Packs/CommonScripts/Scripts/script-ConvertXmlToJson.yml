@@ -34,7 +34,7 @@ args:
   predefined:
   - "True"
   - "False"
-  description: Print json result to warrom
+  description: Print json result to warrom.
   defaultValue: "True"
 scripttarget: 0
 dependson: {}

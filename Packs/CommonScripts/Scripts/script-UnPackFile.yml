@@ -130,11 +130,11 @@ enabled: true
 args:
 - name: fileName
   default: true
-  description: Name of the file to unpack
+  description: Name of the file to unpack.
 - name: entryID
-  description: The entry id of the attached packed file in the warroom
+  description: The entry id of the attached packed file in the warroom.
 - name: lastPackedFileInWarroom
-  description: Set to package file extension to look for the last of its kind in the war room
+  description: Set to package file extension to look for the last of its kind in the war room.
 outputs:
 - contextPath: ExtractedFiles
   description: list of file names which extracted from package
