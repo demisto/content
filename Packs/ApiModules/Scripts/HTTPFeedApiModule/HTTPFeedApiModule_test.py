@@ -138,16 +138,16 @@ def test_datestring_formatter():
     Then
     - Ensure the datestring is converted to the ISO-8601 format.
     """
-    datesting1 = "2020-02-10 13:39:14"
-    datesting2 = "2020-02-10T13:39:14"
-    datesting3 = "2020-02-10 13:39:14.123"
-    datesting4 = "2020-02-10T13:39:14.123"
-    datesting5 = "2020-02-10T13:39:14Z"
-    print(datestring_formatter(datestring1))
-    print(datestring_formatter(datestring2))
-    print(datestring_formatter(datestring3))
-    print(datestring_formatter(datestring4))
-    print(datestring_formatter(datestring5))
+    datestring1 = "2020-02-10 13:39:14"
+    datestring2 = "2020-02-10T13:39:14"
+    datestring3 = "2020-02-10 13:39:14.123"
+    datestring4 = "2020-02-10T13:39:14.123"
+    datestring5 = "2020-02-10T13:39:14Z"
+    # print(datestring_formatter(datestring1))
+    # print(datestring_formatter(datestring2))
+    # print(datestring_formatter(datestring3))
+    # print(datestring_formatter(datestring4))
+    # print(datestring_formatter(datestring5))
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring1)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring2)
     assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring3)
