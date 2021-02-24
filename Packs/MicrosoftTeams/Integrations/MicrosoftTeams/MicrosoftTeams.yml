@@ -83,7 +83,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Display name or email address of the team member to send the message to.
+      description: Display name or email address of the team member to send the message
+        to.
       isArray: false
       name: team_member
       required: false
@@ -296,19 +297,24 @@ script:
       description: The meeting start time.
       isArray: false
       name: start_date_time
-      required: true
+      required: false
       secret: false
     - default: false
       description: The meeting end time.
       isArray: false
       name: end_date_time
-      required: true
+      required: false
       secret: false
     - default: false
       description: The meeting subject.
       isArray: false
       name: subject
       required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: member
+      required: false
       secret: false
     deprecated: false
     description: Creates a new meeting in a Microsoft Teams.
@@ -331,10 +337,10 @@ script:
       description: The URL to join the meeting
       type: String
     - contextPath: MicrosoftTeams.CreateMeeting.participants
-      description: 'The meeting participants '
+      description: The meeting participants
       type: String
     - contextPath: MicrosoftTeams.CreateMeeting.displayName
-      description: 'The display Name of the participants  '
+      description: The display name of the participants
       type: String
   dockerimage: demisto/teams:1.0.0.13080
   feed: false

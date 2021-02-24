@@ -868,20 +868,24 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     return channel_id
 
 
-def create_meeting(subject: str, start_date_time: str, end_date_time: str) -> dict:
+def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_time: str) -> dict:
     """
     Creates a Microsoft Teams meeting
+    :param user_id: The User's ID
     :param subject: The meeting's subject
     :param start_date_time: The meeting's start time
     :param end_date_time: The meeting's end time
     :return: ID of created meeting
     """
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/me/onlineMeetings'
+    url: str = f'{GRAPH_BASE_URL}/v1.0/users/{user_id}/onlineMeetings'
     request_json: dict = {
-        'startDateTime': start_date_time,
-        'endDateTime': end_date_time,
         'subject': subject
     }
+    if start_date_time:
+        request_json['startDateTime'] = start_date_time
+    if end_date_time:
+        request_json['endDateTime'] = end_date_time
+
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     return channel_data
 
@@ -901,52 +905,54 @@ def create_meeting_command():
     subject: str = demisto.args().get('subject', '')
     start_date_time: str = demisto.args().get('start_date_time', '')
     end_date_time: str = demisto.args().get('end_date_time', '')
+    member = demisto.args().get('member', '')
 
-    meeting_data: dict = create_meeting(subject, start_date_time, end_date_time)
+    user: list = get_user(member)
+    if not (user and user[0].get('id')):
+        raise ValueError(f'User {member} was not found')
+    meeting_data: dict = create_meeting(user[0].get('id'), subject, start_date_time, end_date_time)
+
     thread_id = ''
     message_id = ''
-    chat_info = meeting_data.get('chatInfo', {})
-    if chat_info:
+    if chat_info := meeting_data.get('chatInfo', {}):
         thread_id = chat_info.get('threadId', '')
         message_id = chat_info.get('threadId', '')
 
     participant_id, participant_display_name = get_participant_info(meeting_data.get('participants', {}))
 
     outputs = {
-        'creationDateTime': meeting_data.get('creationDateTime', ""),
+        'creationDateTime': meeting_data.get('creationDateTime', ''),
         'threadId': thread_id,
         'messageId': message_id,
-        'id': meeting_data.get('id', ""),
-        'joinWebUrl': meeting_data.get('joinWebUrl', ""),
+        'id': meeting_data.get('id', ''),
+        'joinWebUrl': meeting_data.get('joinWebUrl', ''),
         'participantId': participant_id,
         'participantDisplayName': participant_display_name
     }
-    return CommandResults(
+    result = CommandResults(
         readable_output=f'The meeting "{subject}" was created successfully',
         outputs_prefix='MicrosoftTeams.CreateMeeting',
         outputs_key_field='id',
         outputs=outputs
     )
+    return_results(result)
 
 
-def get_participant_info(participants: dict):
+def get_participant_info(participants: dict) -> (str, str):
     """
     Retrieves the participant id and name
     :param participants: The participants in the Team meeting
     :return: he participant id and name
     """
-    participant_id = ""
-    participant_display_name = ""
+    participant_id = ''
+    participant_display_name = ''
 
     if participants:
-        organizer = participants.get('organizer', {})
-        if organizer:
-            identity = organizer.get('identity', {})
-            if identity:
-                user = identity.get('user', {})
-                if user:
-                    participant_id = user.get('id')
-                    participant_display_name = user.get('displayName')
+        user = participants.get('organizer', {}).get('identity', {}).get('user', {})
+        if user:
+            participant_id = user.get('id')
+            participant_display_name = user.get('displayName')
+
     return participant_id, participant_display_name
 
 
@@ -1730,7 +1736,6 @@ def test_module():
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
-
     commands: dict = {
         'test-module': test_module,
         'long-running-execution': long_running_loop,
