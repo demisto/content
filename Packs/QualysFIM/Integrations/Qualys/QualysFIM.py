@@ -603,7 +603,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         incident_created_time = datetime.fromtimestamp(created_date / 1000)
 
         incident = {
-            'name': f'QualysFIM Incident {incident_name}: {incident_id}',
+            'name': incident_name,
             'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(incident),
             'incident_id': incident_id

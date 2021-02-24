@@ -165,9 +165,31 @@
                     "simple": "status"
                 },
                 "name": {
-                    "complex": null,
-                    "simple": "name"
-                }
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "name",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Qualys FIM - "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
             }
         }
     },
