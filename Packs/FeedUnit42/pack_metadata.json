@@ -17,6 +17,11 @@
     "deprecated": false,
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
+    "dependencies": {
+        "FeedMitreAttack": {
+            "mandatory": false,
+            "display_name": "MITRE ATT&CK"
+        }
+    },
     "displayedImages": []
 }

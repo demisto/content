@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "MITRE ATT\u0026CK"
+        "MITRE ATT&CK"
     ],
     "breachScript": "",
     "caseInsensitive": true,
