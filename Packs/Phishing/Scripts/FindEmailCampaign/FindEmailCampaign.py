@@ -251,18 +251,15 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
         if word in word_frequency:
             word_frequency[word] *= keywords_weight
 
-    sentence_rank = {}
+    sentence_rank = [0] * len(corpus)
     for i, sent in enumerate(corpus):
         if i in duplicate_sentences:
             continue
-        sentence_rank[i] = 0
         for word in word_tokenize(sent):
             if word.lower() in word_frequency.keys():
-                if i in sentence_rank.keys():
-                    sentence_rank[i] += word_frequency[word.lower()]
+                sentence_rank[i] += word_frequency[word.lower()]
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
-    sorted_sentence_rank = sorted(sentence_rank.items(), key=lambda item: item[1], reverse=True)
-    top_sentences_indices = [sent_i for sent_i, _ in sorted_sentence_rank[:nb_sentences]]
+    top_sentences_indices = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()
     summary = []
     for sent_i in sorted(top_sentences_indices):
         sent = corpus[sent_i].strip().replace('\n', ' ')
