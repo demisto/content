@@ -122,7 +122,7 @@ def generalSearch():
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-05:00' + \
+    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + \
         '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
     demisto.results(generalSearchRequest)
@@ -150,7 +150,7 @@ def keywordSearch():
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S:000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-05:00' + '&keyword=' + keyword + \
+    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&keyword=' + keyword + \
         '&isExactMatch=' + isExactMatch + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     # additional_parameters = '?keyword=' + keyword + '&isExactMatch=' + isExactMatch
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -184,7 +184,7 @@ def cvssSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-05:00' + '&' + searchParameters + \
+    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&' + searchParameters + \
         '=' + value + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
     # demisto.results(generalSearchRequest)
@@ -213,7 +213,7 @@ def cweSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-05:00' + '&cweId=' + \
+    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cweId=' + \
         cweId + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
     # demisto.results(generalSearchRequest)
@@ -242,7 +242,7 @@ def cpeSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = '?modStartDate=' + start_date + ' UTC-05:00' + '&cpeMatchString=' + \
+    additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cpeMatchString=' + \
         cpeMatchString + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
     # demisto.results(generalSearchRequest)
