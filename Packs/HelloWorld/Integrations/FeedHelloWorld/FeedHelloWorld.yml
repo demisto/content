@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedHelloWorld
+  id: HelloWorld Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -83,8 +83,32 @@ configuration:
   name: proxy
   required: false
   type: 8
-display: FeedHelloWorld
-name: FeedHelloWorld
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+display: HelloWorld Feed
+name: HelloWorld Feed
 script:
   commands:
   - arguments:
@@ -99,7 +123,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: helloworld-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false
@@ -109,3 +133,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+description: ''
+tests:
+- No tests (auto formatted)

@@ -16,7 +16,6 @@ that allows you to capture Use Cases, Requirements and Inputs/Outputs.
 Example Design document for the this Integration (HelloWorld):
 https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0
 
-################check if sufficiant as integrations
 
 The API
 --------------
@@ -208,7 +207,7 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 """
 
-from typing import Any, Callable, Dict, List, Tuple, Optional
+from typing import Dict, List, Optional
 
 import urllib3
 
@@ -284,12 +283,13 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, limit: int = -1) \
+def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
         -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
+        feed_tags (list): tags to assign fetched indicators
         limit (int): limit the results
     Returns:
         Indicators.
@@ -319,6 +319,9 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, limit: int
             'rawJSON': raw_data
         }
 
+        if feed_tags:
+            indicator_obj['fields']['tags'] = feed_tags
+
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
@@ -341,7 +344,8 @@ def get_indicators_command(client: Client,
     """
     limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, tlp_color, limit)
+    feed_tags = argToList(params.get('feedTags', ''))
+    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
     return CommandResults(
@@ -361,8 +365,9 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     Returns:
         Indicators.
     """
+    feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, tlp_color)
+    indicators = fetch_indicators(client, tlp_color, feed_tags)
     return indicators
 
 
