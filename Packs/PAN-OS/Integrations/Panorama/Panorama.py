@@ -6620,7 +6620,7 @@ def prettify_user_interface_config(interface_config: Union[List, Dict]) -> Union
 def show_user_id_interface_config_request(args):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
-    vsys = demisto.args().get('vsys')
+    vsys = args.get('vsys')
 
     if VSYS and not vsys:
         vsys = VSYS
@@ -6680,7 +6680,7 @@ def show_user_id_interface_config_command(args: dict):
 def list_configured_user_id_agents_request(args, version):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
-    vsys = demisto.args().get('vsys')
+    vsys = args.get('vsys')
 
     if VSYS and not vsys:
         vsys = VSYS
