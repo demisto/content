@@ -1571,7 +1571,6 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not isinstance(t, list):
         t = [t]
 
-    headers = headers[:]
     if headers and isinstance(headers, STRING_TYPES):
         headers = [headers]
 
@@ -1589,6 +1588,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = list(t[0].keys())
         headers.sort()
 
+    headers = headers[:]
     if removeNull:
         headers_aux = headers[:]
         for header in headers_aux:
