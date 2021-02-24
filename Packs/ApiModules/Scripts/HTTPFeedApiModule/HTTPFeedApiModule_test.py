@@ -143,16 +143,16 @@ def test_datestring_formatter():
     datesting3 = "2020-02-10 13:39:14.123"
     datesting4 = "2020-02-10T13:39:14.123"
     datesting5 = "2020-02-10T13:39:14Z"
-    print(datestring_formatter(datesting1))
-    print(datestring_formatter(datesting2))
-    print(datestring_formatter(datesting5))
-    print(datestring_formatter(datesting3))
-    print(datestring_formatter(datesting4))
-    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting1)
-    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting2)
-    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting3)
-    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting4)
-    assert '2020-02-10T13:39:14Z' == datestring_formatter(datesting5)
+    print(datestring_formatter(datestring1))
+    print(datestring_formatter(datestring2))
+    print(datestring_formatter(datestring3))
+    print(datestring_formatter(datestring4))
+    print(datestring_formatter(datestring5))
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring1)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring2)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring3)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring4)
+    assert '2020-02-10T13:39:14Z' == datestring_formatter(datestring5)
 
 
 def test_get_feed_config():
