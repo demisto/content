@@ -1,4 +1,5 @@
 # type: ignore
+
 from CommonServerPython import *
 import collections
 from dateutil import parser
@@ -108,24 +109,30 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
-def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
-                          max_number_of_results, extra_query, applied_condition):
-    condition_string = ' %s ' % applied_condition.lower()
-
+def build_similar_keys_list(similar_incident_keys):
     similar_keys_list = []
     for key, value in similar_incident_keys.items():
-        if isinstance(value, str):
-            value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
-            value = value.encode('utf-8')
-            compare_str = '{}="{}"'
-            similar_key = compare_str.format(key, value)
-            similar_keys_list.append(similar_key.decode('utf-8'))
-
         if isinstance(value, int):
             value = str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
             compare_str = '{}:="{}"'
             similar_key = compare_str.format(key, value)
             similar_keys_list.append(similar_key)
+
+        else:
+            value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+            value = value.encode('utf-8')
+            compare_str = '{}="{}"'
+            similar_key = compare_str.format(key, value)
+            similar_keys_list.append(str(similar_key).decode('utf-8'))  # type: ignore
+
+    return similar_keys_list
+
+
+def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
+                          max_number_of_results, extra_query, applied_condition):
+    condition_string = ' %s ' % applied_condition.lower()
+
+    similar_keys_list = build_similar_keys_list(similar_incident_keys)
 
     similar_keys_query = condition_string.join(similar_keys_list)
     incident_time = parse_datetime(incident_time)
