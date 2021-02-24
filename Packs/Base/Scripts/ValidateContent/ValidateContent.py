@@ -1,6 +1,5 @@
 import concurrent.futures
 import io
-import shutil
 import traceback
 import types
 import zipfile
@@ -25,8 +24,6 @@ from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split_yml.extractor import Extractor
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
-from wcmatch.pathlib import EXTGLOB, GLOBSTAR, NEGATE
-from wcmatch.pathlib import Path as wcpath
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -311,7 +308,7 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
         except Exception as e:
             fallback_path = f'/home/demisto/{module["file"]}'
             demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
-                         f'Copying from {fallback_path}')
+                          f'Copying from {fallback_path}')
             copy(fallback_path, content_tmp_dir)
 
 
