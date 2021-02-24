@@ -156,6 +156,9 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational
         demisto.info("not first run, exporting reminder of alerts")
         incidents_queue = demisto.getLastRun().get('incidents_for_next_run')
         incidents_to_export = incidents_queue[:max_fetch]
+        if not fetch_informational:
+            incidents_to_export = [alert for alert in incidents_to_export if alert.get("state", {}).get("score", 1) < 4]
+
         incidents_for_next_run = incidents_queue[max_fetch:]
 
         if not incidents_to_export:
