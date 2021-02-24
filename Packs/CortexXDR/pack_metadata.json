@@ -1,6 +1,6 @@
 {
     "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
-    "description": "Automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
+    "description": "This is a test",
     "support": "xsoar",
     "currentVersion": "2.9.0",
     "author": "Cortex XSOAR",
