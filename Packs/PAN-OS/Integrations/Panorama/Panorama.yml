@@ -4438,9 +4438,10 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: vsys1
-      description: The name of the virtual system to be configured. Will use the configured
-        Vsys if exists.
+      description: 'The name of the virtual system to be configured. Will use the
+        configured VSYS paramater if exists, if given a value, will override the VSYS
+        parametmer. If neither the VSYS parameter and this argument are enterd, will
+        default to ''vsys1''. '
       isArray: false
       name: vsys
       required: false
@@ -4459,6 +4460,9 @@ script:
     - contextPath: Panorama.UserInterfaces.Network.log-setting
       description: The interface network log settings.
       type: String
+    - contextPath: Panorama.UserInterfaces.tap.member
+      description: The interface network tap member.
+      type: String
   - arguments:
     - default: false
       description: The template to use when running the command. Overrides the template
@@ -4474,38 +4478,48 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: vsys1
-      description: The name of the virtual system to be configured. Will use the configured
-        Vsys if exists.
+      description: 'The name of the virtual system to be configured. Will use the
+        configured VSYS paramater if exists, if given a value, will override the VSYS
+        parametmer. If neither the VSYS parameter and this argument are enterd, will
+        default to ''vsys1''. '
       isArray: false
       name: vsys
       required: false
       secret: false
     deprecated: false
-    description: Retrieves list of user-id agents configured in the system.
+    description: Retrieves list of user-ID agents configured in the system.
     execution: false
     name: panorama-list-configured-user-id-agents
     outputs:
     - contextPath: Panorama.UserIDAgents.Name
-      description: The user ID Agent name.
+      description: The user-ID Agent name.
       type: String
     - contextPath: Panorama.UserIDAgents.Host
-      description: The user ID Agent host.
-      type: Unknown
+      description: The user-ID Agent host.
+      type: String
     - contextPath: Panorama.UserIDAgents.Port
-      description: The user ID Agent port.
+      description: The user-ID Agent port.
       type: Number
     - contextPath: Panorama.UserIDAgents.LdapProxy
-      description: Whther LDAP proxy is used in the user ID agent.
+      description: Whther LDAP proxy is used in the user-ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.NtlmAuth
-      description: Whether NLTM authentication is used in the user ID agent.
+      description: Whether NLTM authentication is used in the user-ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.EnableHipCollection
-      description: Whether HIP collection is enabled in the user ID agent.
+      description: Whether HIP collection is enabled in the user-ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.IpUserMapping
-      description: Whether IP user mapping is enabled in the user ID agent.
+      description: Whether IP user mapping is enabled in the user-ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.SerialNumber
+      description: The serial number associated with the user-ID agent.
+      type: Unknown
+    - contextPath: Panorama.UserIDAgents.CollectorName
+      description: The user-ID agent collector name.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Secret
+      description: The user-ID agent secret.
       type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false

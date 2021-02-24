@@ -107,7 +107,7 @@ def http_request(uri: str, method: str, headers: dict = {},
 
     json_result = json.loads(xml2json(result.text))
 
-    # handle raw response that does not contain the response key, e.g xonfiguration export
+    # handle raw response that does not contain the response key, e.g configuration export
     if ('response' not in json_result or '@code' not in json_result['response']) and \
             not json_result['response']['@status'] != 'success':
         return json_result
@@ -6600,8 +6600,14 @@ def create_wildfire_best_practice_profile_command(profile_name: str):
     return_results(f'The profile {profile_name} was created successfully.')
 
 
-def prettify_user_interface_config(interface_config: List) -> List:
+def prettify_user_interface_config(interface_config: Union[List, Dict]) -> Union[List, Dict]:
     pretty_interface_config = []
+    if isinstance(interface_config, dict):
+        return {
+            'Name': interface_config['@name'],
+            'Network': interface_config['network']
+        }
+
     for interface in interface_config:
         pretty_interface_config.append({
             'Name': interface['@name'],
@@ -6615,7 +6621,11 @@ def show_user_id_interface_config_request(args):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
     vsys = demisto.args().get('vsys')
-    vsys = vsys if not VSYS or (VSYS and vsys != VSYS) else VSYS
+
+    if VSYS and not vsys:
+        vsys = VSYS
+    elif not vsys:
+        vsys = 'vsys1'
 
     # firewall instance xpath
     if VSYS:
@@ -6671,7 +6681,12 @@ def list_configured_user_id_agents_request(args, version):
     template = args.get('template') if args.get('template') else TEMPLATE
     template_stack = args.get('template_stack')
     vsys = demisto.args().get('vsys')
-    vsys = vsys if not VSYS or (VSYS and vsys != VSYS) else VSYS
+
+    if VSYS and not vsys:
+        vsys = VSYS
+    elif not vsys:
+        vsys = 'vsys1'
+
     if VSYS:
         if version < 10:
             xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
@@ -6718,26 +6733,57 @@ def list_configured_user_id_agents_request(args, version):
         return dict_safe_get(result, keys=['response', 'result', 'redistribution-agent', 'entry'])
 
 
-def prettify_configured_user_id_agents(user_id_agents: List, version) -> List:
+def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict], version) -> Union[List, Dict]:
     pretty_user_id_agents = []
     if version < 10:
+        if isinstance(user_id_agents, dict):
+            return {
+                'Name': user_id_agents['@name'],
+                'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
+                'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
+                'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth']),
+                'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
+                'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
+                'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
+                'EnableHipCollection': user_id_agents.get('enable-hip-collection'),
+                'SerialNumber': user_id_agents.get('serial-number')
+            }
+
         for agent in user_id_agents:
             pretty_user_id_agents.append({
                 'Name': agent['@name'],
-                'Host': agent['host-port']['host'],
-                'Port': agent['host-port']['port'],
-                'NtlmAuth': agent['host-port']['ntlm-auth'],
-                'LdapProxy': agent['host-port']['ldap-proxy'],
-                'EnableHipCollection': agent['enable-hip-collection']
+                'Host': dict_safe_get(agent, keys=['host-port', 'host']),
+                'Port': dict_safe_get(agent, keys=['host-port', 'port']),
+                'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth']),
+                'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
+                'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
+                'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
+                'EnableHipCollection': agent.get('enable-hip-collection'),
+                'SerialNumber': agent.get('serial-number')
             })
     else:
+        if isinstance(user_id_agents, dict):
+            return {
+                'Name': user_id_agents['@name'],
+                'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
+                'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
+                'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
+                'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
+                'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
+                'IpUserMapping': user_id_agents.get('ip-user-mappings'),
+                'SerialNumber': user_id_agents.get('serial-number')
+            }
+
         for agent in user_id_agents:
             pretty_user_id_agents.append({
                 'Name': agent['@name'],
-                'Host': agent['host-port']['host'],
-                'Port': agent['host-port']['port'],
-                'LdapProxy': agent['host-port']['ldap-proxy'],
-                'IpUserMapping': agent['ip-user-mappings']
+                'Host': dict_safe_get(agent, keys=['host-port', 'host']),
+                'Port': dict_safe_get(agent, keys=['host-port', 'port']),
+                'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
+                'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
+                'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
+                'IpUserMapping': agent.get('ip-user-mappings'),
+                'SerialNumber': agent.get('serial-number')
             })
 
     return pretty_user_id_agents
@@ -6749,10 +6795,10 @@ def list_configured_user_id_agents_command(args):
     if raw_response:
         formatted_results = prettify_configured_user_id_agents(raw_response, version)
         if version < 10:
-            headers = ['Name', 'Host', 'Port', 'LdapProxy', 'NtlmAuth', 'EnableHipCollection']
+            headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth']
 
         else:
-            headers = ['Name', 'Host', 'Port', 'LdapProxy', 'IpUserMapping']
+            headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'IpUserMapping']
         return_results(
             CommandResults(
                 outputs_prefix='Panorama.UserIDAgents',
