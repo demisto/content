@@ -577,7 +577,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     if int(max_fetch) > 200:
         raise ValueError('Max Fetch is limited to 200 incidents per fetch, '
-                         'please choose lower number than 200')
+                         'please choose lower number than 200.')
 
     if fetch_filter != '':
         fetch_filter = f"and {fetch_filter}"
