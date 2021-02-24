@@ -43,7 +43,7 @@ script:
       name: keyword
       required: true
     - auto: PREDEFINED
-      defaultValue: "True"
+      defaultValue: "true"
       description: If the keyword is a phrase, i.e., contains more than one term,
         then the isExactMatch parameter may be used to influence the response. Use
         isExactMatch=true to retrieve records matching the exact phrase. Otherwise,
