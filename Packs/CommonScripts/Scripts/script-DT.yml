@@ -21,10 +21,10 @@ enabled: true
 args:
 - name: value
   required: true
-  description: Value to perfom the transformation on
+  description: Value to perform the transformation on.
 - name: dt
   required: true
-  description: DT expression
+  description: DT expression.
 scripttarget: 0
 runonce: false
 tests:

@@ -87,7 +87,7 @@ enabled: true
 args:
 - name: Length
   required: true
-  description: Length of the string
+  description: Length of the string.
 - name: Punctuation
   required: true
   auto: PREDEFINED
@@ -103,7 +103,7 @@ args:
   - "False"
   description: If the string will include letters.
 - name: Uppercase
-  description: If uppercase should be included
+  description: If uppercase should be included.
   required: true
   auto: PREDEFINED
   predefined:
@@ -111,7 +111,7 @@ args:
   - "False"
 - name: Digits
   required: true
-  description: If digits should be included
+  description: If digits should be included.
   auto: PREDEFINED
   predefined:
   - "True"
