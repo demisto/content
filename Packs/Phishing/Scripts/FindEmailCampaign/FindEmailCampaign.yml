@@ -42,7 +42,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: emailsubject
-  description: Subject of the email.
+  description: The name of the field which contains the subject of the email.
   isArray: false
   name: emailSubject
   predefined:
@@ -51,7 +51,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailbody
-  description: Body of the email.
+  description: The name of the field which contains the body of the email.
   isArray: false
   name: emailBody
   predefined:
@@ -60,14 +60,14 @@ args:
   secret: false
 - default: false
   defaultValue: emailbodyhtml
-  description: HTML body of the email.
+  description: The name of the field which contains the the HTML body of the email.
   isArray: false
   name: emailBodyHTML
   required: false
   secret: false
 - default: false
   defaultValue: emailfrom
-  description: 'Incident fields contains the email from value. '
+  description: 'The name of the field which contains the email from value. '
   isArray: false
   name: emailFrom
   required: false
