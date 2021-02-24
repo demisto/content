@@ -571,6 +571,7 @@ class ExchangeOnlineClient {
     }
 
     [psobject]GetJunkRules([string]$mailbox) {
+        $response = ''
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -580,13 +581,12 @@ class ExchangeOnlineClient {
                 "Identity" = $mailbox
             }
             $response = Get-MailboxJunkEmailConfiguration @cmd_params
-
-            return $response
         }
         finally {
             # Close session to remote
             $this.CloseSession()
         }
+        return $response
         <#
             .DESCRIPTION
             Get junk rules in mailbox.
@@ -732,6 +732,7 @@ class ExchangeOnlineClient {
 
     [PSObject]GetMessageTrace([string[]]$sender_address, [string[]]$recipient_address, [string[]]$from_ip, [string[]]$to_ip, [string[]]$message_id,
         [string]$message_trace_id, [int32]$page, [int32]$page_size, [String]$start_date, [String]$end_date, [string]$status) {
+        $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -768,13 +769,12 @@ class ExchangeOnlineClient {
                 $cmd_params.MessageTraceId = $message_trace_id
             }
             $response = Get-MessageTrace @cmd_params
-
-            return $response
         }
         finally {
             # Close session to remote
             $this.CloseSession()
         }
+        return $response
         <#
             .DESCRIPTION
             Search message data for the last 10 days.
@@ -850,6 +850,7 @@ class ExchangeOnlineClient {
             [string]$identity
     )
     {
+        $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -862,11 +863,12 @@ class ExchangeOnlineClient {
             if ($domain_controller) {
                 $cmd_params.DomainController = $domain_controller
             }
-            return Get-FederationTrust @cmd_params
+            $response = Get-FederationTrust @cmd_params
         }
         finally {
             $this.CloseSession()
         }
+        return $response
         <#
         .DESCRIPTION
         Use the Get-FederationTrust cmdlet to view the federation trust configured for the Exchange organization.
@@ -899,6 +901,7 @@ class ExchangeOnlineClient {
         [string]$identity,
         [bool]$include_extended_domain_info
     ) {
+        $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -914,11 +917,12 @@ class ExchangeOnlineClient {
             if ($include_extended_domain_info) {
                 $cmd_params.IncludeExtendedDomainInfo = $include_extended_domain_info
             }
-            return Get-FederatedOrganizationIdentifier @cmd_params
+            $response = Get-FederatedOrganizationIdentifier @cmd_params
         }
         finally {
             $this.CloseSession()
         }
+        return $response
         <#
         .DESCRIPTION
         Use the Get-FederatedOrganizationIdentifier cmdlet to retrieve the Exchange organization's federated
@@ -954,6 +958,7 @@ class ExchangeOnlineClient {
         [string]$organizational_unit,
         [int]$limit
     ) {
+        $response = ""
         try
         {
             # Establish session to remote
@@ -971,15 +976,16 @@ class ExchangeOnlineClient {
             }
             if ($limit -gt 0)
             {
-                return Get-User @cmd_params -ResultSize $limit -WarningAction:SilentlyContinue
+                $response = Get-User @cmd_params -ResultSize $limit -WarningAction:SilentlyContinue
             }
             else
             {
-                return Get-User @cmd_params -ResultSize Unlimited
+                $response = Get-User @cmd_params -ResultSize Unlimited
             }
         } finally {
             $this.CloseSession()
         }
+        return $response
         <#
         .DESCRIPTION
         Use the Get-User command to view existing user objects in your organization.
@@ -1005,6 +1011,7 @@ class ExchangeOnlineClient {
         [int]$limit
     )
     {
+        $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -1020,10 +1027,11 @@ class ExchangeOnlineClient {
             if ($limit -gt 0){
                 $cmd_params.ResultSize = $limit
             }
-            return Get-MailboxAuditBypassAssociation @cmd_params -WarningAction:SilentlyContinue
+            $response = Get-MailboxAuditBypassAssociation @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.CloseSession()
         }
+        return $response
         <#
         .DESCRIPTION
         Retrieve information about the AuditBypassEnabled property value for user accounts
@@ -1050,6 +1058,7 @@ class ExchangeOnlineClient {
         [string]$domain_controller,
         [string]$identity
     ) {
+        $response = ""
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -1068,6 +1077,7 @@ class ExchangeOnlineClient {
         finally {
             $this.CloseSession()
         }
+        return $response
         <#
         .DESCRIPTION
         Use the Get-RemoteDomain cmdlet to view the configuration information for the remote domains configured in
