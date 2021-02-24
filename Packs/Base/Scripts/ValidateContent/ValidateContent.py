@@ -259,23 +259,23 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
             'file': 'CommonServerPython.py',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
                           '/CommonServerPython/CommonServerPython.py',
-            'content_path': '/Packs/Base/Scripts/CommonServerPython',
+            'content_path': 'Packs/Base/Scripts/CommonServerPython',
         },
         {
             'file': 'CommonServerPowerShell.ps1',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
                           '/CommonServerPowerShell/CommonServerPowerShell.ps1',
-            'content_path': '/Packs/Base/Scripts/CommonServerPowerShell',
+            'content_path': 'Packs/Base/Scripts/CommonServerPowerShell',
         },
         {
             'file': 'demistomock.py',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.py',
-            'content_path': '/Test/demistomock',
+            'content_path': 'Test/demistomock',
         },
         {
             'file': 'demistomock.ps1',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.ps1',
-            'content_path': '/Test/demistomock',
+            'content_path': 'Test/demistomock',
         },
         {
             'file': 'tox.ini',
@@ -286,11 +286,13 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
             'file': 'conftest.py',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest'
                           '/conftest.py',
-            'content_path': '/Tests/scripts/dev_envs/pytest'
+            'content_path': 'Tests/scripts/dev_envs/pytest'
         },
 
     ]
     for module in modules:
+        content_path = os.path.join(content_tmp_dir, module['content_path'])
+        os.makedirs(content_path, exist_ok=True)
         try:
             cached_module_path = os.path.join(CACHED_MODULES_DIR, module['file'])
             fname = Path(cached_module_path)
@@ -302,14 +304,13 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
                 res.raise_for_status()
                 with open(cached_module_path, 'wb') as f:
                     f.write(res.content)
-            content_path = os.path.join(content_tmp_dir, module['content_path'])
-            os.makedirs(content_path, exist_ok=True)
+            demisto.debug(f'Copying from {cached_module_path} to {content_path}')
             copy(cached_module_path, content_path)
         except Exception as e:
             fallback_path = f'/home/demisto/{module["file"]}'
             demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
                           f'Copying from {fallback_path}')
-            copy(fallback_path, content_tmp_dir)
+            copy(fallback_path, content_path)
 
 
 def get_file_name_and_contents(
