@@ -6,8 +6,13 @@ import types
 import zipfile
 from base64 import b64decode
 from contextlib import redirect_stderr, redirect_stdout
+from datetime import datetime
+from pathlib import Path
+from shutil import copy
+from tempfile import TemporaryDirectory
 from typing import Callable, List, Tuple
 
+import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.content.objects.pack_objects.pack import Pack
@@ -26,12 +31,8 @@ from wcmatch.pathlib import Path as wcpath
 import demistomock as demisto
 from CommonServerPython import *
 
+CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
-
-
-def remove_keys(content_entity: Dict, *args: str) -> None:
-    for arg in args:
-        content_entity.pop(arg, None)
 
 
 def _create_pack_base_files(self):
@@ -107,7 +108,8 @@ def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> No
     for pack_subdir in get_child_directories(contrib_converter.pack_dir_path):
         basename = os.path.basename(pack_subdir)
         if basename in {SCRIPTS_DIR, INTEGRATIONS_DIR}:
-            contrib_converter.content_item_to_package_format = types.MethodType(content_item_to_package_format, contrib_converter)
+            contrib_converter.content_item_to_package_format = types.MethodType(content_item_to_package_format,
+                                                                                contrib_converter)
             contrib_converter.content_item_to_package_format(
                 pack_subdir, del_unified=True, source_mapping=None
             )
@@ -140,7 +142,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 
 def run_lint(file_path: str, json_output_file: str) -> None:
-    lint_log_dir = os.path.normpath(os.path.join(json_output_file, '..'))
+    lint_log_dir = os.path.dirname(json_output_file)
     output_capture = io.StringIO()
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
@@ -171,30 +173,11 @@ def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
             raise
 
 
-def cleanup_validation_and_lint_outputs(content_dir):
-    content_parent = os.path.normpath(os.path.join(content_dir, '..'))
-    content_pp = wcpath(os.path.abspath(content_parent))
-    output_files = content_pp.glob(
-        [r'*(lint|valid)*.txt', r'*(lint|valid)*.json', r'*(lint|valid)*.log'], flags=EXTGLOB
-    )
-    for output_file in output_files:
-        output_file.unlink(missing_ok=True)
-
-
-def do_cleanup(content_dir) -> None:
-    cleanup_validation_and_lint_outputs(content_dir)
-    packs_dir = os.path.join(content_dir, 'Packs')
-    files_to_clean = wcpath(packs_dir).glob([r'*', r'!Base'], flags=NEGATE | GLOBSTAR | EXTGLOB)
-    for file_to_clean in files_to_clean:
-        shutil.rmtree(file_to_clean, ignore_errors=True)
-
-
 def validate_content(filename, data, tmp_directory: str) -> List:
-    keys_to_remove = ['contentitemexportablefields', 'pswd', 'sourcemoduleid']
     # case when a pack zip file has been passed
     content = Content(tmp_directory)
-    json_output_path = os.path.join(os.path.normpath(content.path / '..'), 'validation_res.json')
-    lint_output_path = os.path.join(os.path.normpath(content.path / '..'), 'lint_res.json')
+    json_output_path = os.path.join(tmp_directory, 'validation_res.json')
+    lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     if filename.endswith('.zip'):
         # write zip file data to file system
         zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
@@ -210,7 +193,6 @@ def validate_content(filename, data, tmp_directory: str) -> List:
         pack_entity = Pack(pack_path)
         for content_entities in pack_entity.scripts, pack_entity.integrations:
             for content_entity in content_entities:
-                remove_keys(content_entity.to_dict(), *keys_to_remove)
                 buff = io.StringIO()
                 yaml.dump(content_entity.to_dict(), buff)
                 content_entity.path.write_text(buff.getvalue())
@@ -227,7 +209,6 @@ def validate_content(filename, data, tmp_directory: str) -> List:
         containing_dir.mkdir(exist_ok=True)
         data_as_string = data.decode()
         loaded_data = yaml.load(data_as_string)
-        remove_keys(loaded_data, *keys_to_remove)
         buff = io.StringIO()
         yaml.dump(loaded_data, buff)
         data_as_string = buff.getvalue()
@@ -268,6 +249,72 @@ def validate_content(filename, data, tmp_directory: str) -> List:
     return all_outputs
 
 
+def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
+    """Copies the required content modules for linting from the cached dir
+    The cached dir is updated once a day
+
+    Args:
+         content_tmp_dir (str): The content tmp dir to copy the content modules to
+         verify_ssl (bool): Whether to verify SSL
+    """
+    modules = [
+        {
+            'file': 'CommonServerPython.py',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
+                          '/CommonServerPython/CommonServerPython.py',
+            'content_path': '/Packs/Base/Scripts/CommonServerPython',
+        },
+        {
+            'file': 'CommonServerPowerShell.ps1',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
+                          '/CommonServerPowerShell/CommonServerPowerShell.ps1',
+            'content_path': '/Packs/Base/Scripts/CommonServerPowerShell',
+        },
+        {
+            'file': 'demistomock.py',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.py',
+            'content_path': '/Test/demistomock',
+        },
+        {
+            'file': 'demistomock.ps1',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.ps1',
+            'content_path': '/Test/demistomock',
+        },
+        {
+            'file': 'tox.ini',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/tox.ini',
+            'content_path': '.'
+        },
+        {
+            'file': 'conftest.py',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest'
+                          '/conftest.py',
+            'content_path': '/Tests/scripts/dev_envs/pytest'
+        },
+
+    ]
+    for module in modules:
+        try:
+            cached_module_path = os.path.join(CACHED_MODULES_DIR, module['file'])
+            fname = Path(cached_module_path)
+            modified_time = datetime.fromtimestamp(fname.stat().st_mtime) if os.path.isfile(cached_module_path) \
+                else datetime(1970, 1, 1)
+            if modified_time + timedelta(days=1) < datetime.utcnow():
+                demisto.debug(f'Downloading {module["file"]} from git')
+                res = requests.get(module['github_url'], verify=verify_ssl, timeout=10)
+                res.raise_for_status()
+                with open(cached_module_path, 'wb') as f:
+                    f.write(res.content)
+            content_path = os.path.join(content_tmp_dir, module['content_path'])
+            os.makedirs(content_path, exist_ok=True)
+            copy(cached_module_path, content_path)
+        except Exception as e:
+            fallback_path = f'/home/demisto/{module["file"]}'
+            demisto.debug(f'Failed downloading content module {module["github_url"]} - {e}. '
+                         f'Copying from {fallback_path}')
+            copy(fallback_path, content_tmp_dir)
+
+
 def get_file_name_and_contents(
         filename: Optional[str] = None,
         data: Optional[str] = None,
@@ -285,25 +332,38 @@ def get_file_name_and_contents(
 
 def main():
     cwd = os.getcwd()
-    content_dir = '/home/demisto/content'
+    content_tmp_dir = TemporaryDirectory()
     try:
         args = demisto.args()
+        if args.get('use_system_proxy') == 'no':
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+        verify_ssl = args.get('trust_any_certificate') != 'yes'
+
+        content_repo = git.Repo.init(content_tmp_dir.name)
+        content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
+        os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
+
+        get_content_modules(content_tmp_dir.name, verify_ssl)
+
         filename, file_contents = get_file_name_and_contents(
             args.get('filename'),
             args.get('data'),
             args.get('entry_id'),
         )
 
-        if not os.path.exists(content_dir):
-            os.makedirs(content_dir)
-        os.chdir(content_dir)
-        result = validate_content(filename, file_contents, content_dir)
+        os.makedirs(content_tmp_dir.name, exist_ok=True)
+        os.chdir(content_tmp_dir.name)
+
+        result = validate_content(filename, file_contents, content_tmp_dir.name)
         return_results(CommandResults(raw_response=result))
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
     finally:
-        do_cleanup(content_dir)
+        content_tmp_dir.cleanup()
         os.chdir(cwd)
 
 

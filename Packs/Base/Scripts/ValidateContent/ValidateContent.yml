@@ -27,10 +27,24 @@ args:
   name: entry_id
   required: false
   secret: false
+- name: use_system_proxy
+  auto: PREDEFINED
+  predefined:
+    - "yes"
+    - "no"
+  description: Use system proxy settings
+  defaultValue: "yes"
+- name: trust_any_certificate
+  auto: PREDEFINED
+  predefined:
+    - "yes"
+    - "no"
+  description: Trust any certificate (not secure)
+  defaultValue: "no"
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: devdemisto/xsoar-tools:1.0.0.16948
+dockerimage: devdemisto/xsoar-tools:1.0.0.16997
 tests:
 - ValidateContent - Test
