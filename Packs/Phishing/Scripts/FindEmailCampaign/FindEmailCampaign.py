@@ -230,13 +230,13 @@ def cosine_sim(a, b):
     return dot(a, b) / (norm(a) * norm(b))
 
 
-def summarize_email_body(body, subject, nb_sentences=3):
+def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keywords_weight=1.5):
     corpus = sent_tokenize(body)
     cv = CountVectorizer(stop_words=list(stopwords.words('english')))
     body_arr = cv.fit_transform(corpus).toarray()
     subject_arr = cv.transform(sent_tokenize(subject)).toarray()
     word_list = cv.get_feature_names()
-    count_list = body_arr.sum(axis=0) + subject_arr.sum(axis=0) * 1.5
+    count_list = body_arr.sum(axis=0) + subject_arr.sum(axis=0) * subject_weight
     duplicate_sentences = [i for i, arr in enumerate(body_arr) if
                            any(cosine_sim(arr, arr2) > DUPLICATE_SENTENCE_THRESHOLD
                                for arr2 in body_arr[:i])]
@@ -249,7 +249,7 @@ def summarize_email_body(body, subject, nb_sentences=3):
         word_frequency[word] = (word_frequency[word] / max_frequency)
     for word in KEYWORDS:
         if word in word_frequency:
-            word_frequency[word] *= 1.5
+            word_frequency[word] *= keywords_weight
 
     sentence_rank = {}
     for i, sent in enumerate(corpus):
