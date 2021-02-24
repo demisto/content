@@ -1,0 +1,111 @@
+import json
+from datetime import date, datetime
+
+import demistomock as demisto  # noqa: F401
+import requests
+from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
+
+TABLE = []
+
+
+def scrape_kos():
+    articles = []
+    links = []
+    dates = []
+    response = requests.get("https://krebsonsecurity.com/", verify=False)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for article in soup.select(".post-title"):
+        title = article.get_text().strip()
+        articles.append(title)
+        link = article.find('a').attrs['href']
+        links.append(link)
+
+    for date in soup.select(".post-smallerfont"):
+        date_got = date.get_text().split("\n")[2]  # 19Feb 21
+        ts = datetime.strptime(date_got[:8], "%d%b %y")
+        dates.append(ts.strftime("%B %d, %Y"))  # 19 February, 2021
+
+    return list(zip(articles, list(zip(links, dates))))
+
+
+def scrape_thn():
+    articles = []
+    links = []
+    dates = []
+    response = requests.get("https://thehackernews.com/", verify=False)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for article in soup.select(".home-title"):
+        articles.append(article.get_text().strip())
+
+    for link in soup.select(".story-link"):
+        links.append(link["href"])
+
+    for date in soup.select(".item-label"):
+        date_got = date.get_text().split(",")[0][1:]  # February 23
+        dates.append(date_got)
+
+    return list(zip(articles, list(zip(links, dates))))
+
+
+def scrape_tp():
+    articles = []
+    links = []
+    dates = []
+    response = requests.get("https://threatpost.com/", verify=False)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    for article in soup.select('.c-card__title'):
+        articles.append(article.get_text().strip())
+        links.append(article.find('a').attrs['href'])
+
+    for date in soup.select('.c-card__time'):
+        dates.append(date.get_text().strip())
+
+    return list(zip(articles, list(zip(links, dates))))
+
+
+def aggregate(feed, source):
+    for elem in feed:
+        TABLE.append({"Article": elem[0], "Link": elem[1][0], "Date": elem[1][1], "Source": source})
+
+
+if demisto.command() == 'get-news-KrebsOnSecurity':
+    kos = scrape_kos()
+    aggregate(kos, "Krebs on Security")
+
+elif demisto.command() == 'get-news-Threatpost':
+    tp = scrape_tp()
+    aggregate(tp, "Threatpost")
+
+elif demisto.command() == 'get-news-TheHackerNews':
+    thn = scrape_thn()
+    aggregate(thn, "The Hacker News")
+    # # The command demisto.command() holds the command sent from the user.
+
+elif demisto.command() == 'test-module':
+    # This is the call made when pressing the integration test button.
+    test_response = requests.get("https://thehackernews.com/", verify=False)
+    if str(test_response.status_code) == "200":
+        demisto.results('ok')
+    else:
+        demisto.results(test_response)
+
+
+elif demisto.command() == 'get-news-generic-all':
+    tp = scrape_tp()
+    thn = scrape_thn()
+    kos = scrape_kos()
+    aggregate(kos, "Krebs on Security")
+    aggregate(thn, "The Hacker News")
+    aggregate(tp, "Threatpost")
+
+demisto.results({
+    'ContentsFormat': formats['table'],
+    'Type': entryTypes['note'],
+    'Contents': TABLE,
+    'EntryContext': {"News": TABLE},
+    'IgnoreAutoExtract': True
+})

@@ -1,0 +1,26 @@
+category: Utilities
+commonfields:
+  id: Popular News
+  version: -1
+configuration: []
+description: This is the Hello World integration for getting started.
+display: Popular News
+name: Popular News
+script:
+  commands:
+  - arguments: []
+    name: get-news-KrebsOnSecurity
+  - arguments: []
+    name: get-news-Threatpost
+  - arguments: []
+    name: get-news-TheHackerNews
+  - arguments: []
+    name: get-news-generic-all
+  dockerimage: demisto/bs4:1.0.0.14027
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
