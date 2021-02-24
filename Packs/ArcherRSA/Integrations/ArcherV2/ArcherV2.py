@@ -122,6 +122,20 @@ def search_records_by_report_soap_request(token, report_guid):
            '</soap:Envelope>'
 
 
+
+def search_users(token):
+    return '<?xml version="1.0" encoding="utf-8"?>' + \
+           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+           '    <soap:Body>' + \
+           '        <GetUserList xmlns="http://archer-tech.com/webservices/">' + \
+           f'            <sessionToken>{token}</sessionToken>' + \
+           '            <pageNumber>1</pageNumber>' + \
+           '        </GetUserList>' + \
+           '    </soap:Body>' + \
+           '</soap:Envelope>'
+
+
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
         numeric_operator='', max_results=10
@@ -218,7 +232,14 @@ SOAP_COMMANDS = {
         'urlSuffix': 'ws/search.asmx',
         'soapBody': search_records_by_report_soap_request,
         'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'
+    },
+    'archer-search-users': {
+        'soapAction': 'http://archer-tech.com/webservices/GetUserList',
+        'urlSuffix': 'ws/accesscontrol.asmx',
+        'soapBody': search_users,
+        'outputPath': 'Envelope.Body.GetUserListResponse.GetUserListResult'
     }
+
 }
 
 
@@ -890,6 +911,27 @@ def execute_statistics_command(client: Client, args: Dict[str, str]):
         res = json.loads(xml2json(res))
     return_outputs(res, {}, {})
 
+def list_users_soap_command(client: Client, args: Dict[str, str]):
+    users = []
+    res, raw_res = client.do_soap_request('archer-search-users')
+    if res:
+        res = json.loads(xml2json(res))
+        res = res.get("Return").get("User")
+    for user_obj in res:
+        users.append({'Id': user_obj.get('ID'),
+                      'DisplayName': user_obj.get('DistinguishedName'),
+                      'FirstName': user_obj.get('FirstName'),
+                      'MiddleName': user_obj.get('MiddleName'),
+                      'LastName': user_obj.get('LastName'),
+                      'AccountStatus': user_obj.get('AccountStatus'),
+                      'UserName': user_obj.get('username')})
+
+    markdown = tableToMarkdown('Users list', users)
+    context: dict = {
+        'Archer.User(val.Id && val.Id == obj.Id)':
+            users
+    }
+    return_outputs(markdown, context, res)
 
 def get_reports_command(client: Client, args: Dict[str, str]):
     res, raw_res = client.do_soap_request('archer-get-reports')
@@ -1257,6 +1299,7 @@ def main():
         'archer-upload-file': upload_and_associate_command,
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
+        'archer-list-users-soap': list_users_soap_command,
         'archer-search-records': search_records_command,
         'archer-search-records-by-report': search_records_by_report_command,
         'archer-print-cache': print_cache_command,
