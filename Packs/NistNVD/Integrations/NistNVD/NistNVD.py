@@ -32,7 +32,7 @@ def test_module() -> str:
         headers = {'Accept': 'application/json'}
         req = requests.get(base_url, headers=headers, verify=VERIFY_SSL)
         if req.status_code != 200:
-            http_status= 'HTTP status is' + str(req.status_code)
+            http_status = 'HTTP status is' + str(req.status_code)
             return_error(http_status)
     except Exception as e:
         return_error(e)
