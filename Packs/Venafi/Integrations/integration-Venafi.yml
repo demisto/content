@@ -287,5 +287,5 @@ script:
       type: string
     description: Uses a certificate GUID to extract more details from the cert store.
 tests:
-- No test - no instance
+- Venafi - Test
 fromversion: 5.0.0
