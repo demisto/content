@@ -20,7 +20,7 @@ args:
 - name: input
   required: true
   default: true
-  description: The input to encode in Base64 format
+  description: The input to encode in Base64 format.
 outputs:
 - contextPath: Base64.encoded
   description: input encoded as Base64 format
