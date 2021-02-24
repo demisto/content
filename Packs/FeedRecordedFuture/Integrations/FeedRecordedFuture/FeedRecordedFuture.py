@@ -243,7 +243,8 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
-        client.build_iterator(service, client.indicator_type, limit=1)
+        client.build_iterator(service, client.indicator_type)
+        client.get_batches_from_file(limit=1)
     return 'ok', {}, {}
 
 
