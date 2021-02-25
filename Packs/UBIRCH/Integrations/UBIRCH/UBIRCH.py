@@ -17,70 +17,70 @@ LOW_SEVERITY = 1
 UNKNOWN_SEVERITY = 0
 
 INCIDENT_SEVERITY_MAP = {
-  "niomon-auth": {
-    "1000": {
-      "meaning": "Authentication Error: Missing header/param",
-      "severity": LOW_SEVERITY
+    "niomon-auth": {
+        "1000": {
+            "meaning": "Authentication Error: Missing header/param",
+            "severity": LOW_SEVERITY
+        },
+        "2000": {
+            "meaning": "Authentication Error: Missing header/param",
+            "severity": MEDIUM_SEVERITY
+        },
+        "3000": {
+            "meaning": "Authentication Error (Cumulocity): Error processing authentication request",
+            "severity": MEDIUM_SEVERITY
+        },
+        "4000": {
+            "meaning": "Athentication Error: Failed Request",
+            "severity": MEDIUM_SEVERITY
+        }
     },
-    "2000": {
-      "meaning": "Authentication Error: Missing header/param",
-      "severity": MEDIUM_SEVERITY
+    "niomon-decoder": {
+        "1100": {
+            "meaning": "Authentication Error: Missing header/param",
+            "severity": MEDIUM_SEVERITY
+        },
+        "1200": {
+            "meaning": "Invalid Verification: Invalid Parts",
+            "severity": LOW_SEVERITY
+        },
+        "1300": {
+            "meaning": "Invalid Verification",
+            "severity": HIGH_SEVERITY
+        },
+        "2100": {
+            "meaning": "Decoding Error: Missing header/param",
+            "severity": LOW_SEVERITY
+        },
+        "2200": {
+            "meaning": "Decoding Error: Invalid Match",
+            "severity": MEDIUM_SEVERITY
+        },
+        "2300": {
+            "meaning": "Decoding Error: Decoding Error/Null Payload",
+            "severity": LOW_SEVERITY
+        }
     },
-    "3000": {
-      "meaning": "Authentication Error (Cumulocity): Error processing authentication request",
-      "severity": MEDIUM_SEVERITY
+    "niomon-enricher": {
+        "1000": {
+            "meaning": "Enriching Error: Missing header/param/body",
+            "severity": LOW_SEVERITY
+        },
+        "2000": {
+            "meaning": "Enriching Error: Error processing enrichment request",
+            "severity": HIGH_SEVERITY
+        },
+        "0000": {
+            "meaning": "Enriching Error: Not found (Cumulocity)",
+            "severity": HIGH_SEVERITY
+        }
     },
-    "4000": {
-      "meaning": "Athentication Error: Failed Request",
-      "severity": MEDIUM_SEVERITY
+    "filter-service": {
+        "": {
+            "meaning": "Integrity Error: Duplicate Hash",
+            "severity": HIGH_SEVERITY
+        }
     }
-  },
-  "niomon-decoder": {
-    "1100": {
-      "meaning": "Authentication Error: Missing header/param",
-      "severity": MEDIUM_SEVERITY
-    },
-    "1200": {
-      "meaning": "Invalid Verification: Invalid Parts",
-      "severity": LOW_SEVERITY
-    },
-    "1300": {
-      "meaning": "Invalid Verification",
-      "severity": HIGH_SEVERITY
-    },
-    "2100": {
-      "meaning": "Decoding Error: Missing header/param",
-      "severity": LOW_SEVERITY
-    },
-    "2200": {
-      "meaning": "Decoding Error: Invalid Match",
-      "severity": MEDIUM_SEVERITY
-    },
-    "2300": {
-      "meaning": "Decoding Error: Decoding Error/Null Payload",
-      "severity": LOW_SEVERITY
-    }
-  },
-  "niomon-enricher": {
-    "1000": {
-      "meaning": "Enriching Error: Missing header/param/body",
-      "severity": LOW_SEVERITY
-    },
-    "2000": {
-      "meaning": "Enriching Error: Error processing enrichment request",
-      "severity": HIGH_SEVERITY
-    },
-    "0000": {
-      "meaning": "Enriching Error: Not found (Cumulocity)",
-      "severity": HIGH_SEVERITY
-    }
-  },
-  "filter-service": {
-    "": {
-      "meaning": "Integrity Error: Duplicate Hash",
-      "severity": HIGH_SEVERITY
-    }
-  }
 }
 
 AUTHENTICATION_TYPE = 'Authentication'
@@ -213,7 +213,8 @@ def long_running_execution(client: Client) -> None:
             demisto.info(mqtt.connack_string(rc))
             raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
         else:
-            demisto.info(f"connection was succeeded for a long-running container. host: {client.mqtt_host}, port: {client.mqtt_port}")
+            demisto.info(f"connection was succeeded for a long-running container. host: {client.mqtt_host}, port: "
+                         f"{client.mqtt_port}")
 
     def on_message(_client: mqtt.Client, _userdata: dict, message: mqtt.MQTTMessage) -> None:
         """

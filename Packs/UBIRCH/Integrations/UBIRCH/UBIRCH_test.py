@@ -46,7 +46,7 @@ def test_get_severity() -> None:
     }
     error_definition_decoder_1300 = {
         "meaning": "Invalid Verification",
-        "severity":HIGH_SEVERITY
+        "severity": HIGH_SEVERITY
     }
     incident_enricher_0000 = {
         "errorCode": "0000",
@@ -54,14 +54,14 @@ def test_get_severity() -> None:
     }
     error_definition_enricher_0000 = {
         "meaning": "Enriching Error: Not found (Cumulocity)",
-        "severity":HIGH_SEVERITY
+        "severity": HIGH_SEVERITY
     }
     incident_filter_0000 = {
         "microservice": "filter-service"
     }
     error_definition_filter_0000 = {
         "meaning": "Integrity Error: Duplicate Hash",
-        "severity":HIGH_SEVERITY
+        "severity": HIGH_SEVERITY
     }
     error_definition_unknown = {}
     incident_unknown1 = {}
