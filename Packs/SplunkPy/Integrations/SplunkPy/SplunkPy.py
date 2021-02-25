@@ -37,25 +37,21 @@ ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
 DRILLDOWN_ENRICHMENT = 'Drilldown'
 ASSET_ENRICHMENT = 'Asset'
 IDENTITY_ENRICHMENT = 'Identity'
-ENRICHMENTS = 'enrichments'
+SUBMITTED_NOTABLES = 'submitted_notables'
 EVENT_ID = 'event_id'
-JOB_CREATION_TIME_FORAMT = '%Y-%m-%dT%H:%M:%S.%f'
+JOB_CREATION_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 LAST_RUN_OVER_FETCH = 'last_run_over_fetch'
 LAST_RUN_REGULAR_FETCH = 'last_run_regular_fetch'
 NUM_FETCHED_NOTABLES = 'num_fetched_notables'
-SUCCESSFUL_ENRICHMENT = 'successful_enrichment'
-NOT_YET_ENRICHED_NOTABLES = 'not_yet_enriched_notables'
+NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
-SUCCESSFUL_DRILLDOWN_ENRICHMENT = 'successful_drilldown_enrichment'
-SUCCESSFUL_ASSET_ENRICHMENT = 'successful_asset_enrichment'
-SUCCESSFUL_IDENTITY_ENRICHMENT = 'successful_identity_enrichment'
 INCIDENTS = 'incidents'
 DUMMY = 'dummy'
 NOTABLE = 'notable'
-JOBS = 'jobs'
-MAX_HANDLE_ENRICHMENTS = 20
-MAX_SUBMIT_ENRICHMENTS = 30
+ENRICHMENTS = 'enrichments'
+MAX_HANDLE_NOTABLES = 20
+MAX_SUBMIT_NOTABLES = 30
 CACHE = 'cache'
 STATUS = 'status'
 DATA = 'data'
@@ -65,54 +61,34 @@ CREATION_TIME = 'creation_time'
 
 DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
 
-JOB_TYPE_TO_ENRICHMENT_STATUS = {
-    DRILLDOWN_ENRICHMENT: SUCCESSFUL_DRILLDOWN_ENRICHMENT,
-    ASSET_ENRICHMENT: SUCCESSFUL_ASSET_ENRICHMENT,
-    IDENTITY_ENRICHMENT: SUCCESSFUL_IDENTITY_ENRICHMENT
+ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
+    DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
+    ASSET_ENRICHMENT: 'successful_asset_enrichment',
+    IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
 }
 
 
-class JobStatus(object):
-    """ Contains all job's possible status during the enrichment process """
-    FAILED = 'Job failed'
-    IN_PROGRESS = 'Job is in progress'
-    SUCCESSFUL = 'Job successfully handled'
-
-
-class Job:
-    """ A class to represent a Job. Each enrichment has 3 possible jobs: Drilldown, Asset & Identity
-
-    Args:
-        job_type (str): The job type. Possible values are: Drilldown, Asset & Identity.
+class Enrichment:
+    """ A class to represent an Enrichment. Each notable has 3 possible enrichments: Drilldown, Asset & Identity
 
     Attributes:
-        type (str): The job type. Possible values are: Drilldown, Asset & Identity.
-        status (JobStatus): The job's status.
-        id (str): The job's id in Splunk server.
-        creation_time (str): The job's creation time in ISO format.
+        type (str): The enrichment type. Possible values are: Drilldown, Asset & Identity.
+        id (str): The enrichment's job id in Splunk server.
+        data (list): The enrichment's data list (events retrieved from the job's search)
+        creation_time (str): The enrichment's creation time in ISO format.
+        status (str): The enrichment's status.
 
     """
-    def __init__(self, job_type, status=None, job_id=None, creation_time=None):
-        self.type = job_type
-        self.id = job_id
-        self.creation_time = creation_time
-        self.status = status if status else JobStatus.IN_PROGRESS
+    FAILED = 'Enrichment failed'
+    IN_PROGRESS = 'Enrichment is in progress'
+    SUCCESSFUL = 'Enrichment successfully handled'
 
-    @property
-    def id(self):
-        return self.id
-
-    @id.setter
-    def id(self, job_id):
-        self.id = job_id
-
-    @property
-    def creation_time(self):
-        return self.creation_time
-
-    @creation_time.setter
-    def creation_time(self, creation_time):
-        self.creation_time = creation_time
+    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None):
+        self.type = enrichment_type
+        self.id = enrichment_id
+        self.data = data if data else []
+        self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
+        self.status = status if status else Enrichment.IN_PROGRESS
 
     @property
     def status(self):
@@ -122,52 +98,39 @@ class Job:
     def status(self, status):
         self.status = status
 
-    def init_creation_time(self):
-        self.creation_time = datetime.utcnow().isoformat()
-
     @classmethod
-    def from_json(cls, job_dict):
+    def from_json(cls, enrichment_dict):
         """ Deserialization method.
 
         Args:
-            job_dict: The job dict in JSON format.
+            enrichment_dict (dict): The enrichment dict in JSON format.
 
         Returns:
-            An instance of the Job class constructed from JSON representation.
+            An instance of the Enrichment class constructed from JSON representation.
 
         """
         return cls(
-            job_type=job_dict.get(TYPE),
-            status=job_dict.get(STATUS),
-            job_id=job_dict.get(ID),
-            creation_time=job_dict.get(CREATION_TIME)
+            enrichment_type=enrichment_dict.get(TYPE),
+            data=enrichment_dict.get(DATA),
+            status=enrichment_dict.get(STATUS),
+            enrichment_id=enrichment_dict.get(ID),
+            creation_time=enrichment_dict.get(CREATION_TIME)
         )
 
 
-class NotableStatus(object):
-    """ Contains all notable's possible status during the enrichment process """
-    ENRICHED = 'Notable has enriched'
-    NOT_YET_ENRICHED = 'Notable has not yet enriched'
-    CREATED_INCIDENT_ENRICH_FAILURE = 'Incident was created from the raw notable'
-
-
 class Notable:
-    """ A class to represent a Notable.
-
-    Args:
-        data (dict): The notable's data.
-        notable_id (str): The notable's ID.
-        status (str): The notable's status.
+    """ A class to represent a notable.
 
     Attributes:
-        data (dict): The notable's data.
-        id (str): The notable's id in Splunk server.
-        status (NotableStatus): The notable's status.
+        data (dict): The notable data.
+        id (str): The notable's id.
+        enrichments (list): The list of all enrichments that needs to handle.
 
     """
-    def __init__(self, data, notable_id=None, status=None):
+
+    def __init__(self, data, enrichments=None, notable_id=None):
         self.data = data
-        self.status = status if status else NotableStatus.NOT_YET_ENRICHED
+        self.enrichments = enrichments if enrichments else []
         if notable_id:
             self.id = notable_id
         else:
@@ -195,13 +158,11 @@ class Notable:
     def data(self, data):
         self.data = data
 
-    @property
-    def status(self):
-        return self.status
-
-    @status.setter
-    def status(self, status):
-        self.status = status
+    def to_incident(self):
+        for e in self.enrichments:
+            self.data[e.type] = e.data
+            self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
+        return notable_to_incident(self.data)
 
     @classmethod
     def from_json(cls, notable_dict):
@@ -211,132 +172,50 @@ class Notable:
             notable_dict: The notable dict in JSON format.
 
         Returns:
-            An instance of the Notable class constructed from JSON representation.
+            An instance of the Enrichment class constructed from JSON representation.
 
         """
         return cls(
             data=notable_dict.get(DATA),
-            notable_id=notable_dict.get(DATA).get(EVENT_ID),
-            status=notable_dict.get(STATUS)
-        )
-
-
-class EnrichmentStatus(object):
-    """ Contains all enrichment's possible status during the enrichment process """
-    NOT_YET_ENRICHED = 'Notable not yet enriched'
-    DONE_ENRICHING = 'Enrichment has been submitted to Splunk'
-    DONE_HANDLING = 'Enrichment has been handled successfully'
-    CREATED_INCIDENT_ENRICH_FAILURE = 'Created an incident from the raw notable as enrichment failed'
-    EXCEEDED_TIMEOUT = 'Enrichment has exceeded timeout'
-    HANDLED_STATUS = (DONE_HANDLING, EXCEEDED_TIMEOUT)
-
-
-class Enrichment:
-    """ A class to represent an enrichment.
-
-    Args:
-        notable (Notable): The notable to be enriched.
-        Possible values are: Drilldown, Asset & Identity.
-        jobs (list[Job]): The list of jobs.
-        enrichment_id (str): The enrichment ID.
-        status (str): The enrichment's status.
-
-    Attributes:
-        notable (Notable): The notable to be enriched.
-        id (str): The enrichment's id (notable's id in Splunk server).
-        status (str): The enrichment's status.
-        jobs (list): The list of all jobs that the enrichment needs to handle.
-
-    """
-    def __init__(self, notable, jobs=None, enrichment_id=None, status=None):
-        self.notable = notable
-        self.id = enrichment_id if enrichment_id else notable.id
-        self.status = status if status else EnrichmentStatus.NOT_YET_ENRICHED
-        if jobs:
-            self.jobs = jobs
-        else:
-            self.jobs = []
-            if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS:
-                self.drilldown_job = Job(job_type=DRILLDOWN_ENRICHMENT)
-                self.jobs.append(self.drilldown_job)
-            if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS:
-                self.asset_job = Job(job_type=ASSET_ENRICHMENT)
-                self.jobs.append(self.asset_job)
-            if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS:
-                self.identity_job = Job(job_type=IDENTITY_ENRICHMENT)
-                self.jobs.append(self.identity_job)
-
-    @property
-    def id(self):
-        return self.id
-
-    @id.setter
-    def id(self, eid):
-        self.id = eid
-
-    @property
-    def status(self):
-        return self.status
-
-    @status.setter
-    def status(self, status):
-        self.status = status
-
-    @classmethod
-    def from_json(cls, enrichment_dict):
-        """ Deserialization method.
-
-        Args:
-            enrichment_dict: The enrichment dict in JSON format.
-
-        Returns:
-            An instance of the Enrichment class constructed from JSON representation.
-
-        """
-        notable = Notable.from_json(enrichment_dict.get(NOTABLE))
-        jobs = list(map(Job.from_json, enrichment_dict.get(JOBS)))
-        return cls(
-            notable=notable,
-            jobs=jobs,
-            enrichment_id=notable.id,
-            status=enrichment_dict.get(STATUS)
+            enrichments=list(map(Enrichment.from_json, notable_dict.get(ENRICHMENTS))),
+            notable_id=notable_dict.get(ID)
         )
 
 
 class Cache:
     """ A class to represent the cache for the enriching fetch mechanism.
 
-    Args:
-        not_yet_enriched_notables (list): The list of all notables that were fetched but not yet enriched.
-        enrichments (list): The list of all open enrichments that needs to be handled.
+    Attributes:
+        not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
+        submitted_notables (list): The list of all submitted notables that needs to be handled.
         last_run_regular_fetch (dict): The last run object to set in case of regular fetch (num_incidents < FETCH_LIMIT)
         last_run_over_fetch (dict): The last run object to set in case of over fetch (num_incidents >= FETCH_LIMIT)
         num_fetched_notables (int): The number of fetched notables from Splunk.
 
     """
-    def __init__(self, not_yet_enriched_notables=None, enrichments=None, last_run_regular_fetch=None,
+    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, last_run_regular_fetch=None,
                  last_run_over_fetch=None, num_fetched_notables=0):
-        self.not_yet_enriched_notables = not_yet_enriched_notables if not_yet_enriched_notables else []
-        self.enrichments = enrichments if enrichments else []
+        self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
+        self.submitted_notables = submitted_notables if submitted_notables else []
         self.last_run_regular_fetch = last_run_regular_fetch if last_run_regular_fetch else {}
         self.last_run_over_fetch = last_run_over_fetch if last_run_over_fetch else {}
         self.num_fetched_notables = num_fetched_notables
 
     @property
-    def not_yet_enriched_notables(self):
-        return self.not_yet_enriched_notables
+    def not_yet_submitted_notables(self):
+        return self.not_yet_submitted_notables
 
-    @not_yet_enriched_notables.setter
-    def not_yet_enriched_notables(self, not_yet_enriched_notables):
-        self.not_yet_enriched_notables = not_yet_enriched_notables
+    @not_yet_submitted_notables.setter
+    def not_yet_submitted_notables(self, not_yet_enriched_notables):
+        self.not_yet_submitted_notables = not_yet_enriched_notables
 
     @property
-    def enrichments(self):
-        return self.enrichments
+    def submitted_notables(self):
+        return self.submitted_notables
 
-    @enrichments.setter
-    def enrichments(self, enrichments):
-        self.enrichments = enrichments
+    @submitted_notables.setter
+    def submitted_notables(self, submitted_notables):
+        self.submitted_notables = submitted_notables
 
     @property
     def last_run_regular_fetch(self):
@@ -373,18 +252,21 @@ class Cache:
             An instance of the Cache class constructed from JSON representation.
 
         """
-        not_yet_enriched_notables = list(map(Notable.from_json, cache_dict.get(NOT_YET_ENRICHED_NOTABLES, [])))
-        enrichments = list(map(Enrichment.from_json, cache_dict.get(ENRICHMENTS, [])))
-        last_run_regular_fetch = cache_dict.get(LAST_RUN_REGULAR_FETCH, {})
-        last_run_over_fetch = cache_dict.get(LAST_RUN_OVER_FETCH, {})
-        num_fetched_notables = cache_dict.get(NUM_FETCHED_NOTABLES, 0)
         return cls(
-            not_yet_enriched_notables=not_yet_enriched_notables,
-            enrichments=enrichments,
-            last_run_regular_fetch=last_run_regular_fetch,
-            last_run_over_fetch=last_run_over_fetch,
-            num_fetched_notables=num_fetched_notables
+            not_yet_submitted_notables=list(map(Notable.from_json, cache_dict.get(NOT_YET_SUBMITTED_NOTABLES, []))),
+            submitted_notables=list(map(Notable.from_json, cache_dict.get(SUBMITTED_NOTABLES, []))),
+            last_run_regular_fetch=cache_dict.get(LAST_RUN_REGULAR_FETCH, {}),
+            last_run_over_fetch=cache_dict.get(LAST_RUN_OVER_FETCH, {}),
+            num_fetched_notables=cache_dict.get(NUM_FETCHED_NOTABLES, 0)
         )
+
+    @classmethod
+    def load_from_integration_context(cls, integration_context):
+        return Cache.from_json(json.loads(integration_context.get(CACHE, "{}")))
+
+    def dump_to_integration_context(self, integration_context):
+        integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
+        set_integration_context(integration_context)
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -816,16 +698,14 @@ def handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch, c
         last_run.update({DUMMY: DUMMY})
         demisto.setLastRun(last_run)
 
-    not_yet_enriched_notables = cache_object.not_yet_enriched_notables
     for item in reader:
-        not_yet_enriched_notables.append(Notable(item))
-    cache_object.not_yet_enriched_notables = not_yet_enriched_notables  # assignment for fetch fetch
-    cache_object.num_fetched_notables = len(not_yet_enriched_notables)
+        cache_object.not_yet_submitted_notables.append(Notable(data=item))
+        cache_object.num_fetched_notables += 1
 
-    # maintaining last run metadata for handling open enrichments later on
+    # maintaining last run metadata to be set when we finish handling all notables
     cache_object.last_run_regular_fetch = last_run_regular_fetch
     cache_object.last_run_over_fetch = last_run_over_fetch
-    demisto.info("Fetched {} notables.".format(len(not_yet_enriched_notables)))
+    demisto.info("Fetched {} notables.".format(cache_object.num_fetched_notables))
 
 
 def splunk_search_command(service):
@@ -1473,134 +1353,87 @@ def get_cim_mapping_field_command():
     demisto.results(fields)
 
 
-def enrich_fetched_notables(service, incidents, num_enrichment_events, cache_object):
-    """ Enriches fetched notables.
+def submit_notables(service, incidents, num_enrichment_events, cache_object):
+    """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
         service (splunklib.client.Service): Splunk service object
-        Possible values are: Drilldown, Asset & Identity.
         incidents (list): The incident to be submitted at the end of the run.
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
         cache_object (Cache): The enrichment mechanism cache object
 
     """
-    not_yet_enriched_notables = cache_object.not_yet_enriched_notables
-    demisto.info('Enriching {} fetched notables'.format(len(not_yet_enriched_notables[:MAX_SUBMIT_ENRICHMENTS])))
+    failed_notables, submitted_notables = [], []
+    notables = cache_object.not_yet_submitted_notables
+    if notables:
+        demisto.info('Enriching {} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES])))
 
-    for notable in not_yet_enriched_notables[:MAX_SUBMIT_ENRICHMENTS]:
-        enrich_fetched_notable(service, notable, num_enrichment_events, incidents, cache_object)
-
-    # Collect metadata and remove notables that were handled
-    enriched_notables, not_yet_enriched_notables, failed_notables = differentiate_notables(not_yet_enriched_notables)
-    cache_object.not_yet_enriched_notables = not_yet_enriched_notables
-
-    if enriched_notables:
-        if not_yet_enriched_notables:
-            demisto.info('Enriched {} notables successfully. {} left to enrich.'.format(
-                len(enriched_notables), len(not_yet_enriched_notables)))
+    for notable in notables[:MAX_SUBMIT_NOTABLES]:
+        task_status = submit_notable(service, notable, num_enrichment_events)
+        if task_status:
+            cache_object.submitted_notables.append(notable)
+            submitted_notables.append(notable)
+            demisto.info('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
         else:
-            demisto.info('Enriched {} notables successfully. No notables left to enrich.'.format(
-                len(enriched_notables)))
+            incidents.append(notable.to_incident())
+            failed_notables.append(notable)
+            demisto.info('Created incident from notable {} as enrichment submission failed'.format(notable.id))
+
+    cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
+
+    if submitted_notables:
+        demisto.info('Submitted {} notables successfully.'.format(len(submitted_notables)))
+
+    if cache_object.not_yet_submitted_notables:
+        demisto.info('{} notables left to submit.'.format(len(cache_object.not_yet_submitted_notables)))
 
     if failed_notables:
         demisto.info('The following {} notables failed the enrichment process: {}, creating incidents without '
                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
-def differentiate_notables(notables):
-    """ Differentiates the notables list by their status
-
-    Args:
-        notables (list): The list of notables
-
-    Returns:
-        enriched_notables (list): The list of notables that were enriched
-        not_yet_enriched_notables (list): The list of notables that were not yet enriched
-        failed_notables (list): The list of notables that failed to enrich
-
-    """
-    enriched_notables, not_yet_enriched_notables, failed_notables = [], [], []
-
-    for notable in notables:
-        if notable.status == NotableStatus.ENRICHED:
-            enriched_notables.append(notable)
-        elif notable.status == NotableStatus.NOT_YET_ENRICHED:
-            not_yet_enriched_notables.append(notable)
-        elif notable.status == NotableStatus.CREATED_INCIDENT_ENRICH_FAILURE:
-            failed_notables.append(notable)
-
-    return enriched_notables, not_yet_enriched_notables, failed_notables
-
-
-def enrich_fetched_notable(service, notable, num_enrichment_events, incidents, cache_object):
-    """ Enriches fetched notable. Three enrichments possible: Drilldown, Asset & Identity.
-    If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
-    integration context for the next fetch to handle the open enrichment.
+def submit_notable(service, notable, num_enrichment_events):
+    """ Submits fetched notable to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
+     If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
+     integration context for the next fetch to handle the submitted notable.
 
     Args:
         service (splunklib.client.Service): Splunk service object
-        Possible values are: Drilldown, Asset & Identity.
-        incidents (list): The incident to be submitted at the end of the run.
-        num_enrichment_events (int): The maximal number of events to return per enrichment type.
         notable (Notable): The notable.
-        cache_object (Cache): The enrichment mechanism cache object
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns:
+        task_status (bool): True if any of the enrichment's succeeded to be submitted to Splunk, False otherwise
 
     """
-    notable.data.update({enrichment_type: [] for enrichment_type in ENABLED_ENRICHMENTS})
-    enrichment = Enrichment(notable)
-
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS:
-        splunk_job = drilldown_enrichment(service, enrichment.notable.data, num_enrichment_events)
-        maintain_enrichment_metadata(enrichment, splunk_job, DRILLDOWN_ENRICHMENT)
+        job = drilldown_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(DRILLDOWN_ENRICHMENT, job))
     if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS:
-        splunk_job = asset_enrichment(service, enrichment.notable.data, num_enrichment_events)
-        maintain_enrichment_metadata(enrichment, splunk_job, ASSET_ENRICHMENT)
+        job = asset_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(ASSET_ENRICHMENT, job))
     if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS:
-        splunk_job = identity_enrichment(service, enrichment.notable.data, num_enrichment_events)
-        maintain_enrichment_metadata(enrichment, splunk_job, IDENTITY_ENRICHMENT)
+        job = identity_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(IDENTITY_ENRICHMENT, job))
 
-    if any(job.status == JobStatus.IN_PROGRESS for job in enrichment.jobs):
-        enrichment.status = EnrichmentStatus.DONE_ENRICHING
-        notable.status = NotableStatus.ENRICHED
-        cache_object.enrichments.append(enrichment)
-        demisto.info('Submitted enrichment request to Splunk for enrichment {}'.format(enrichment.id))
-    else:
-        enrichment.status = EnrichmentStatus.CREATED_INCIDENT_ENRICH_FAILURE
-        notable.status = NotableStatus.CREATED_INCIDENT_ENRICH_FAILURE
-        notable.data[SUCCESSFUL_ENRICHMENT] = False
-        incidents.append(notable_to_incident(notable.data))
+    return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in notable.enrichments)
 
 
-def maintain_enrichment_metadata(enrichment, splunk_job, job_type):
-    """ Updates the enrichment metadata
+def create_enrichment_from_job(enrichment_type, job):
+    """ Creates an Enrichment object from Splunk Job object
 
     Args:
-        enrichment (Enrichment): The enrichment
-        splunk_job (client.splunklib.Job): The Splunk Job
-        job_type: The job type
+        enrichment_type (str): The enrichment type
+        job (splunklib.client.Job): The corresponding Splunk Job
+
+    Returns:
+        The created enrichment (Enrichment)
 
     """
-    if job_type == DRILLDOWN_ENRICHMENT:
-        if splunk_job:
-            enrichment.drilldown_job.init_creation_time()
-            enrichment.drilldown_job.id = splunk_job["sid"]
-        else:
-            enrichment.drilldown_job.status = JobStatus.FAILED
-            enrichment.notable.data[SUCCESSFUL_DRILLDOWN_ENRICHMENT] = False
-    elif job_type == ASSET_ENRICHMENT:
-        if splunk_job:
-            enrichment.asset_job.init_creation_time()
-            enrichment.asset_job.id = splunk_job["sid"]
-        else:
-            enrichment.asset_job.status = JobStatus.FAILED
-            enrichment.notable.data[SUCCESSFUL_ASSET_ENRICHMENT] = False
-    elif job_type == IDENTITY_ENRICHMENT:
-        if splunk_job:
-            enrichment.identity_job.init_creation_time()
-            enrichment.identity_job.id = splunk_job["sid"]
-        else:
-            enrichment.identity_job.status = JobStatus.FAILED
-            enrichment.notable.data[SUCCESSFUL_IDENTITY_ENRICHMENT] = False
+    if job:
+        return Enrichment(enrichment_type, enrichment_id=job["sid"])
+    else:
+        return Enrichment(enrichment_type, status=Enrichment.FAILED)
 
 
 def get_fields_query_part(notable_data, prefix, fields, raw_dict=None):
@@ -1610,7 +1443,7 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None):
 
     Args:
         notable_data (dict): The notable.
-        prefix (str): The prefix to attach to each value retruned in the query.
+        prefix (str): The prefix to attach to each value returned in the query.
         fields (list): The fields to search in the notable for.
         raw_dict (dict): The raw dict
 
@@ -1621,6 +1454,7 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None):
         raw_dict = rawToDict(notable_data.get('_raw', ''))
     raw_list = []  # type: list
     for field in fields:
+        raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
         raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
     raw_list = ['{}="{}"'.format(prefix, item.strip('"')) for item in raw_list]
 
@@ -1640,10 +1474,10 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         notable_data (dict): The notable data
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
-    Returns (bool): True if the drill-down enrichment was successful, False otherwise
+    Returns: The Splunk Job
 
     """
-    splunk_job = None
+    job = None
     search = notable_data.get("drilldown_search", "")
 
     if search:
@@ -1656,7 +1490,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
             query = build_search_query({"query": search})
             demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
             try:
-                splunk_job = service.jobs.create(query, **kwargs)
+                job = service.jobs.create(query, **kwargs)
             except Exception as e:
                 err = str(e)
                 demisto.error("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(err))
@@ -1666,7 +1500,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
     else:
         demisto.error("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
 
-    return splunk_job
+    return job
 
 
 def build_drilldown_search(notable_data, search, raw_dict):
@@ -1765,10 +1599,10 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         notable_data (dict): The notable data
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
-    Returns: True if the identity enrichment was successful, False otherwise
+    Returns: The Splunk Job
 
     """
-    splunk_job = None
+    job = None
     error_msg = "Failed submitting identity enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
     users = get_fields_query_part(notable_data=notable_data, prefix="identity", fields=["user", "src_user"])
 
@@ -1777,14 +1611,14 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         query = '| inputlookup identity_lookup_expanded where {}'.format(users)
         demisto.debug("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
-            splunk_job = service.jobs.create(query, **kwargs)
+            job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(str(e)))
             raise e
     else:
         demisto.error('No users were found in notable. {}'.format(error_msg))
 
-    return splunk_job
+    return job
 
 
 def asset_enrichment(service, notable_data, num_enrichment_events):
@@ -1795,10 +1629,10 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
         notable_data (dict): The notable data
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
-    Returns: True if the asset enrichment was successful, False otherwise
+    Returns: The Splunk Job
 
     """
-    splunk_job = None
+    job = None
     error_msg = "Failed submitting asset enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
     assets = get_fields_query_part(
         notable_data=notable_data, prefix="asset", fields=["src", "dest", "src_ip", "dst_ip"]
@@ -1810,74 +1644,51 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
                 'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
         demisto.debug("Asset query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
-            splunk_job = service.jobs.create(query, **kwargs)
+            job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error("Caught an exception in asset_enrichment function. Additional Info: {}".format(str(e)))
             raise e
     else:
         demisto.error('No assets were found in notable. {}'.format(error_msg))
 
-    return splunk_job
+    return job
 
 
-def handle_open_enrichments(service, enrichment_timeout, incidents, cache_object):
-    """ Handles open enrichments. For each open enrichment, tries to retrieve its results, if results aren't ready,
-    it moves to the next open enrichment.
+def handle_submitted_notables(service, enrichment_timeout, incidents, cache_object):
+    """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
+     it moves to the next submitted notable.
 
     Args:
         service (splunklib.client.Service): Splunk service object.
         enrichment_timeout (int): The timeout for the enrichment process.
         incidents (list): The incident to be submitted at the end of the run.
-        Possible values are: Drilldown, Asset & Identity.
         cache_object (Cache): The enrichment mechanism cache object
 
     Returns (bool): True if we finished handling all open enrichments, False otherwise
 
     """
     done_handling = False
-    open_enrichments = cache_object.enrichments
-    demisto.info("Trying to handle {} open enrichments".format(len(open_enrichments[:MAX_HANDLE_ENRICHMENTS])))
+    handled_notables = []
+    notables = cache_object.submitted_notables
+    demisto.info("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
 
-    for open_enrichment in open_enrichments[:MAX_HANDLE_ENRICHMENTS]:
-        enrichment_status = handle_open_enrichment(service, open_enrichment, enrichment_timeout)
-        if enrichment_status in EnrichmentStatus.HANDLED_STATUS:
-            incident = notable_to_incident(open_enrichment.notable.data)
-            incidents.append(incident)
+    for notable in notables[:MAX_HANDLE_NOTABLES]:
+        task_status = handle_submitted_notable(service, notable, enrichment_timeout)
+        if task_status:
+            incidents.append(notable.to_incident())
+            handled_notables.append(notable)
 
-    handled_enrichments, open_enrichments = differentiate_enrichments(open_enrichments)
-    cache_object.enrichments = open_enrichments
+    cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
 
-    if not open_enrichments:
-        demisto.info("Handled {} enrichments. No open enrichments left to handle.".format(len(handled_enrichments)))
-        handle_last_run(cache_object)
-        done_handling = True
+    if handled_notables:
+        demisto.info("Handled {} notables.".format(len(handled_notables)))
+
+    if cache_object.submitted_notables:
+        demisto.info("{} notables left to handle.".format(len(cache_object.submitted_notables)))
     else:
-        demisto.info("Handled {} enrichments. {} left to handle.".format(
-            len(handled_enrichments), len(open_enrichments)))
+        done_handling = True
 
     return done_handling
-
-
-def differentiate_enrichments(enrichments):
-    """ Differentiates the enrichments list by their status
-
-    Args:
-        enrichments (list): The list of enrichments
-
-    Returns:
-        handled_enrichments (list): The list of handled enrichments
-        open_enrichments (list): The list of open enrichments not yet handled
-
-    """
-    handled_enrichments, open_enrichments = [], []
-
-    for enrichment in enrichments:
-        if enrichment.status in EnrichmentStatus.HANDLED_STATUS:
-            handled_enrichments.append(enrichment)
-        else:
-            open_enrichments.append(enrichment)
-
-    return handled_enrichments, open_enrichments
 
 
 def store_incidents_for_mapping(incidents, integration_context):
@@ -1894,14 +1705,14 @@ def store_incidents_for_mapping(incidents, integration_context):
 
 
 def handle_last_run(cache_object):
-    """ Handles the last run by the same logic as in regular fetch
+    """ Handles the last run by the same logic as in regular fetch (no enrichment)
 
     Args:
         cache_object (Cache): The enrichment mechanism cache object
 
     """
 
-    # first handle check (happens in first fetch)
+    # first fetch check
     if all([
         cache_object.last_run_over_fetch,
         cache_object.last_run_regular_fetch,
@@ -1915,81 +1726,63 @@ def handle_last_run(cache_object):
         demisto.setLastRun(last_run)
 
 
-def handle_open_enrichment(service, open_enrichment, enrichment_timeout):
-    """ Handles open enrichment. If enrichment timeout has reached, creates an incident.
+def handle_submitted_notable(service, notable, enrichment_timeout):
+    """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
 
     Args:
         service (splunklib.client.Service): Splunk service object
-        open_enrichment (Enrichment): The open enrichment
+        notable (Notable): The notable
         enrichment_timeout (int): The timeout for the enrichment process
-        Possible values are: Drilldown, Asset & Identity.
 
     Returns:
-        enrichment_status (str): The status of the enrichment
+        notable_status (str): The status of the notable
 
     """
-    eid = open_enrichment.id
+    task_status = False
 
-    if not is_enrichment_exceeding_timeout(open_enrichment, enrichment_timeout):
-        demisto.info("Trying to handle open enrichment {}".format(eid))
-        notable_data = open_enrichment.notable.data
-        for job in open_enrichment.jobs:
-            if job.status == JobStatus.IN_PROGRESS:
-                splunk_job = client.Job(service=service, sid=job.id)
-                if splunk_job.is_ready():
-                    demisto.debug('Handling open {} job for enrichment {}'.format(job.type, eid))
-                    handle_ready_enrichment_results(job.type, splunk_job, notable_data, eid)
-                    job.status = JobStatus.SUCCESSFUL
+    if not is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
+        demisto.info("Trying to handle open enrichment {}".format(notable.id))
+        for enrichment in notable.enrichments:
+            if enrichment.status == Enrichment.IN_PROGRESS:
+                job = client.Job(service=service, sid=enrichment.id)
+                if job.is_ready():
+                    demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
+                    for item in results.ResultsReader(job.results()):
+                        enrichment.data.append(item)
+                    enrichment.status = Enrichment.SUCCESSFUL
 
-        if all(job.status != JobStatus.IN_PROGRESS for job in open_enrichment.jobs):
-            open_enrichment.status = EnrichmentStatus.DONE_HANDLING
-            notable_data[SUCCESSFUL_ENRICHMENT] = all(j.status == JobStatus.SUCCESSFUL for j in open_enrichment.jobs)
-            if notable_data[SUCCESSFUL_ENRICHMENT]:
-                demisto.info("Handled open enrichment {} successfully.".format(eid))
+        if all(enrichment.status in (Enrichment.SUCCESSFUL, Enrichment.FAILED) for enrichment in notable.enrichments):
+            task_status = True
+            demisto.info("Handled open enrichment for notable {}.".format(notable.id))
         else:
-            demisto.info("Did not finish handling open enrichment {}".format(eid))
+            demisto.info("Did not finish handling open enrichment for notable {}".format(notable.id))
+
     else:
-        open_enrichment.status = EnrichmentStatus.EXCEEDED_TIMEOUT
-        open_enrichment.notable.data[SUCCESSFUL_ENRICHMENT] = False
+        task_status = True
         demisto.info("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
-                     "the enrichment.".format(eid, enrichment_timeout))
+                     "the enrichment.".format(notable.id, enrichment_timeout))
 
-    return open_enrichment.status
-
-
-def handle_ready_enrichment_results(job_type, splunk_job, notable_data, eid):
-    """ Handles the retrieval of results from a Splunk Job
-
-    Args:
-        job_type (str): The type of the job
-        splunk_job (splunklib.client.Job): The Splunk Job corresponding object
-        notable_data (dict): The notable to enrich
-        eid (str): The enrichment ID
-
-    """
-    results_reader = results.ResultsReader(splunk_job.results())
-    notable_data[job_type] = []
-    for item in results_reader:
-        notable_data[job_type].append(item)
-    notable_data[JOB_TYPE_TO_ENRICHMENT_STATUS[job_type]] = True
-    demisto.debug("{} results for {} enrichment {}".format(len(notable_data[job_type]), job_type, eid))
+    return task_status
 
 
-def is_enrichment_exceeding_timeout(enrichment, enrichment_timeout):
-    """ Checks whether an enrichment has exceeded timeout or not
+def is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
+    """ Checks whether an enrichment process has exceeded timeout or not
 
     Args:
-        enrichment (Enrichment): The enrichment
+        notable (Notable): The enrichment
         enrichment_timeout (int): The timeout for the enrichment process
 
-    Returns (bool): True if the enrichment exceeded the given timeout, False otherwise
+    Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
 
     """
-    earliest_job_datetime = min(
-        datetime.strptime(job.creation_time, JOB_CREATION_TIME_FORAMT)
-        for job in enrichment.jobs if job.status == JobStatus.IN_PROGRESS
-    )
-    return datetime.utcnow() - earliest_job_datetime > timedelta(minutes=enrichment_timeout)
+    enrichments = [enrichment for enrichment in notable.enrichments if enrichment.status == Enrichment.IN_PROGRESS]
+    if enrichments:
+        earliest_enrichment_datetime = min(
+            datetime.strptime(enrichment.creation_time, JOB_CREATION_TIME_FORMAT)
+            for enrichment in enrichments
+        )
+        return datetime.utcnow() - earliest_enrichment_datetime > timedelta(minutes=enrichment_timeout)
+    return False
 
 
 def reset_enriching_fetch_mechanism():
@@ -2020,24 +1813,29 @@ def fetch_incidents(service, enrichment_timeout, num_enrichment_events):
 
 def run_enrichment_mechanism(service, enrichment_timeout, integration_context, num_enrichment_events):
     """ Execute the enriching fetch mechanism
+    1. We first handle submitted notables that have not been handled in the last fetch run
+    2. If we finished handling and submitting all fetched notables, we fetch new notables
+    3. After we finish to fetch new notables or if we have left notables that have not been submitted, we submit
+       them for an enrichment to Splunk
+    4. Finally and in case of an Exception, we store the current cache object state in the integration context
 
     Args:
         service (splunklib.client.Service): Splunk service object.
         enrichment_timeout (int): The timeout for the enrichment process.
-        Possible values are: Drilldown, Asset & Identity.
         integration_context (dict): The integration context
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     """
     incidents = []  # type: list
-    cache_object = Cache.from_json(json.loads(integration_context.get(CACHE, "{}")))  # Cache deserialization
+    cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        done_handling = handle_open_enrichments(service, enrichment_timeout, incidents, cache_object)
-        done_enriching = is_done_enriching(cache_object)
-        if done_handling and done_enriching:
+        done_handling = handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
+        done_submitting = is_done_submitting(cache_object)
+        if done_handling and done_submitting:
+            handle_last_run(cache_object)
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
-        enrich_fetched_notables(service, incidents, num_enrichment_events, cache_object)
+        submit_notables(service, incidents, num_enrichment_events, cache_object)
 
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
@@ -2046,12 +1844,11 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
 
     finally:
         store_incidents_for_mapping(incidents, integration_context)
-        integration_context[CACHE] = json.dumps(cache_object, default=lambda obj: obj.__dict__)  # Cache serialization
-        set_integration_context(integration_context)  # Saving the integration context for the next run
+        cache_object.dump_to_integration_context(integration_context)
         demisto.incidents(incidents)
 
 
-def is_done_enriching(cache_object):
+def is_done_submitting(cache_object):
     """ Indicates whether we've finished to submit all fetched notables to enrichment or not
 
     Args:
@@ -2060,7 +1857,7 @@ def is_done_enriching(cache_object):
     Returns (bool): True if we finished, False otherwise
 
     """
-    return not cache_object.not_yet_enriched_notables
+    return not cache_object.not_yet_submitted_notables
 
 
 def fetch_incidents_for_mapping(integration_context):
@@ -2123,9 +1920,9 @@ def main():
     if demisto.command() == 'splunk-results':
         splunk_results_command(service)
     if demisto.command() == 'fetch-incidents':
-        demisto_params = demisto.params()
-        enrichment_timeout = arg_to_number(str(demisto_params.get('enrichment_timeout')))
-        num_enrichment_events = arg_to_number(str(demisto_params.get('num_enrichment_events')))
+        params = demisto.params()
+        enrichment_timeout = arg_to_number(str(params.get('enrichment_timeout')))
+        num_enrichment_events = arg_to_number(str(params.get('num_enrichment_events')))
         fetch_incidents(service, enrichment_timeout, num_enrichment_events)
     if demisto.command() == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
