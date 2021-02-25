@@ -4,7 +4,6 @@ from CommonServerUserPython import *  # noqa
 import paho.mqtt.client as mqtt
 import paho
 from typing import Callable
-
 import traceback
 import json
 
@@ -16,32 +15,77 @@ HIGH_SEVERITY = 3
 MEDIUM_SEVERITY = 2
 LOW_SEVERITY = 1
 UNKNOWN_SEVERITY = 0
-AUTHENTICATION_TYPE = 'Authentication'
 
 INCIDENT_SEVERITY_MAP = {
-    "niomon-auth": {
-        "1000": LOW_SEVERITY,
-        "2000": MEDIUM_SEVERITY,
-        "3000": MEDIUM_SEVERITY,
-        "4000": MEDIUM_SEVERITY
+  "niomon-auth": {
+    "1000": {
+      "meaning": "Authentication Error: Missing header/param",
+      "severity": LOW_SEVERITY
     },
-    "niomon-decoder": {
-        "1100": MEDIUM_SEVERITY,
-        "1200": LOW_SEVERITY,
-        "1300": HIGH_SEVERITY,
-        "2100": LOW_SEVERITY,
-        "2200": MEDIUM_SEVERITY,
-        "2300": LOW_SEVERITY
+    "2000": {
+      "meaning": "Authentication Error: Missing header/param",
+      "severity": MEDIUM_SEVERITY
     },
-    "niomon-enricher": {
-        "1000": LOW_SEVERITY,
-        "2000": HIGH_SEVERITY,
-        "0000": HIGH_SEVERITY
+    "3000": {
+      "meaning": "Authentication Error (Cumulocity): Error processing authentication request",
+      "severity": MEDIUM_SEVERITY
     },
-    "filter-service": {
-        "0000": HIGH_SEVERITY
+    "4000": {
+      "meaning": "Athentication Error: Failed Request",
+      "severity": MEDIUM_SEVERITY
     }
+  },
+  "niomon-decoder": {
+    "1100": {
+      "meaning": "Authentication Error: Missing header/param",
+      "severity": MEDIUM_SEVERITY
+    },
+    "1200": {
+      "meaning": "Invalid Verification: Invalid Parts",
+      "severity": LOW_SEVERITY
+    },
+    "1300": {
+      "meaning": "Invalid Verification",
+      "severity": HIGH_SEVERITY
+    },
+    "2100": {
+      "meaning": "Decoding Error: Missing header/param",
+      "severity": LOW_SEVERITY
+    },
+    "2200": {
+      "meaning": "Decoding Error: Invalid Match",
+      "severity": MEDIUM_SEVERITY
+    },
+    "2300": {
+      "meaning": "Decoding Error: Decoding Error/Null Payload",
+      "severity": LOW_SEVERITY
+    }
+  },
+  "niomon-enricher": {
+    "1000": {
+      "meaning": "Enriching Error: Missing header/param/body",
+      "severity": LOW_SEVERITY
+    },
+    "2000": {
+      "meaning": "Enriching Error: Error processing enrichment request",
+      "severity": HIGH_SEVERITY
+    },
+    "0000": {
+      "meaning": "Enriching Error: Not found (Cumulocity)",
+      "severity": HIGH_SEVERITY
+    }
+  },
+  "filter-service": {
+    "": {
+      "meaning": "Integrity Error: Duplicate Hash",
+      "severity": HIGH_SEVERITY
+    }
+  }
 }
+
+AUTHENTICATION_TYPE = 'Authentication'
+SEVERITY_FIELD = "severity"
+MEANING_FIELD = "meaning"
 
 ''' CLIENT CLASS '''
 
@@ -106,7 +150,7 @@ def get_incident_type(incident: Dict) -> str:
         return ""
 
 
-def get_severity(incident: Dict) -> int:
+def get_error_definition(incident: Dict) -> Dict:
     """Return severity from the incident
 
     Args:
@@ -117,9 +161,10 @@ def get_severity(incident: Dict) -> int:
     """
     microservice: str = incident.get("microservice", "")
     error_code: str = incident.get("errorCode", "")
+    # ex. { "1000": { ... }, "1100": { ... } }
     error_codes: Dict = INCIDENT_SEVERITY_MAP.get(microservice, {})
-    severity: int = error_codes.get(error_code, UNKNOWN_SEVERITY)
-    return severity
+    # ex. { "meaning": "xxx", "severity": 1 }
+    return error_codes.get(error_code, {})
 
 
 def create_incidents(error_message: str) -> list:
@@ -132,14 +177,15 @@ def create_incidents(error_message: str) -> list:
         list: list of incidents
     """
     incident_dict = json.loads(error_message)
+    error_definition = get_error_definition(incident_dict)
     return [{
-        'name': incident_dict.get("error"),
+        'name': error_definition.get(MEANING_FIELD, incident_dict.get("error")),
         'type': get_incident_type(incident_dict),
         'labels': [{'type': "requestId", 'value': incident_dict.get("requestId")},
                    {'type': "hwDeviceId", 'value': incident_dict.get("hwDeviceId")}],
         'rawJSON': json.dumps(incident_dict),
         'details': json.dumps(incident_dict),
-        'severity': get_severity(incident_dict),
+        'severity': error_definition.get(SEVERITY_FIELD, UNKNOWN_SEVERITY),
     }]
 
 
@@ -167,7 +213,7 @@ def long_running_execution(client: Client) -> None:
             demisto.info(mqtt.connack_string(rc))
             raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
         else:
-            demisto.info("connection was succeeded for a long-running container")
+            demisto.info(f"connection was succeeded for a long-running container. host: {client.mqtt_host}, port: {client.mqtt_port}")
 
     def on_message(_client: mqtt.Client, _userdata: dict, message: mqtt.MQTTMessage) -> None:
         """
@@ -175,6 +221,7 @@ def long_running_execution(client: Client) -> None:
 
         Create incidents, when the client subscribes to an error from the mqtt server.
         """
+        demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")
         incidents = create_incidents(message.payload.decode("utf-8"))  # the message payload is binary.
         demisto.info(f"catch an incident. {incidents}")
         demisto.createIncidents(incidents)

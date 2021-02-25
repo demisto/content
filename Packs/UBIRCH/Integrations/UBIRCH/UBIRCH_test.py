@@ -1,6 +1,5 @@
 import io
-from UBIRCH import get_incident_type, get_severity, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, HIGH_SEVERITY,\
-    UNKNOWN_SEVERITY
+from UBIRCH import get_incident_type, get_error_definition, create_incidents, AUTHENTICATION_TYPE, LOW_SEVERITY, HIGH_SEVERITY
 
 
 def util_load_json(path: str) -> str:
@@ -37,18 +36,34 @@ def test_get_severity() -> None:
         "errorCode": "1000",
         "microservice": "niomon-auth"
     }
+    error_definition_auth_1000 = {
+        "meaning": "Authentication Error: Missing header/param",
+        "severity": LOW_SEVERITY,
+    }
     incident_decoder_1300 = {
         "errorCode": "1300",
         "microservice": "niomon-decoder"
+    }
+    error_definition_decoder_1300 = {
+        "meaning": "Invalid Verification",
+        "severity":HIGH_SEVERITY
     }
     incident_enricher_0000 = {
         "errorCode": "0000",
         "microservice": "niomon-enricher"
     }
+    error_definition_enricher_0000 = {
+        "meaning": "Enriching Error: Not found (Cumulocity)",
+        "severity":HIGH_SEVERITY
+    }
     incident_filter_0000 = {
-        "errorCode": "0000",
         "microservice": "filter-service"
     }
+    error_definition_filter_0000 = {
+        "meaning": "Integrity Error: Duplicate Hash",
+        "severity":HIGH_SEVERITY
+    }
+    error_definition_unknown = {}
     incident_unknown1 = {}
     incident_unknown2 = {
         "errorCode": "1000",
@@ -59,13 +74,13 @@ def test_get_severity() -> None:
         "microservice": "niomon-auth"
     }
 
-    assert get_severity(incident_auth_1000) == LOW_SEVERITY
-    assert get_severity(incident_decoder_1300) == HIGH_SEVERITY
-    assert get_severity(incident_enricher_0000) == HIGH_SEVERITY
-    assert get_severity(incident_filter_0000) == HIGH_SEVERITY
-    assert get_severity(incident_unknown1) == UNKNOWN_SEVERITY
-    assert get_severity(incident_unknown2) == UNKNOWN_SEVERITY
-    assert get_severity(incident_unknown3) == UNKNOWN_SEVERITY
+    assert get_error_definition(incident_auth_1000) == error_definition_auth_1000
+    assert get_error_definition(incident_decoder_1300) == error_definition_decoder_1300
+    assert get_error_definition(incident_enricher_0000) == error_definition_enricher_0000
+    assert get_error_definition(incident_filter_0000) == error_definition_filter_0000
+    assert get_error_definition(incident_unknown1) == error_definition_unknown
+    assert get_error_definition(incident_unknown2) == error_definition_unknown
+    assert get_error_definition(incident_unknown3) == error_definition_unknown
 
 
 def test_create_incidents() -> None:
@@ -81,7 +96,7 @@ def test_create_incidents() -> None:
 
 
 INCIDENT_RESPONSE = [{
-    'name': "SignatureException: Invalid signature",
+    'name': "Invalid Verification",
     'type': "",
     'labels': [
         {'type': "requestId", 'value': "ec15d266-5822-4fa5-ba82-64f1653d46a4"},
