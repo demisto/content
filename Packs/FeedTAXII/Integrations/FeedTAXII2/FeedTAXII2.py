@@ -234,9 +234,7 @@ def main():
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
     try:
-        if is_incremental_feed is not None:
-            # skip assertion for instances that were configured before feedIncremental was introduced
-            assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+        assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
         client = Taxii2FeedClient(
             url=url,
             collection_to_fetch=collection_to_fetch,
