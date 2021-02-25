@@ -900,6 +900,10 @@ def main():
     if storage_base_path:
         GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
+    # Relevant when triggering test upload flow
+    if storage_bucket_name:
+        GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
+
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
