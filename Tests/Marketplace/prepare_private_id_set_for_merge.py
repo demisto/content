@@ -2,6 +2,10 @@ import json
 import argparse
 
 
+def get_pack_id(pack_name, pack_value):
+    return pack_value.get('id') if pack_value.get('id') else pack_name
+
+
 def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
     """Removes the old data of the new pack from the private id set.
 
@@ -25,13 +29,9 @@ def remove_old_pack_from_private_id_set(private_id_set, new_pack_name):
         else:
             packs_list = {}
             for pack_name, pack_value in content_entity_value_list.items():
-                if pack_value.get('id'):
-                    if pack_value.get('id') != new_pack_name:
-                        packs_list[pack_name] = pack_value
-
-                else:
-                    if pack_name != new_pack_name:
-                        packs_list[pack_name] = pack_value
+                pack_id = get_pack_id(pack_name, pack_value)
+                if pack_id != new_pack_name:
+                    packs_list[pack_name] = pack_value
 
             private_id_set[content_entity] = packs_list
 
