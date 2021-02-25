@@ -95,7 +95,8 @@ Adds a key, value tag to an Argus case
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
+#### Command Example
+``` !argus-add-case-tag case_id=123 key=foo value=bar ```
 
 
 ### argus-list-case-tags
@@ -148,7 +149,8 @@ List tags attached to an Argus case
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
+#### Command Example
+``` !argus-list-case-tags case_id=123 ```
 
 
 ### argus-add-comment
@@ -212,7 +214,8 @@ Add comment to an Argus case
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
-
+#### Command Example
+``` !argus-add-comment case_id=123 comment="this is a comment" ```
 
 
 ### argus-list-case-comments
@@ -276,7 +279,8 @@ List the comments of an Argus case
 | Argus.Comments.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comments.data.addedTime | String | Comment Added Time | 
 
-
+#### Command Example
+``` !argus_list_case_comments case_id=123 ```
 
 
 ### argus-advanced-case-search
@@ -465,7 +469,8 @@ Returns cases matching the defined case search criteria
 | Argus.Cases.data.closedTime | String | Case Closed Time | 
 | Argus.Cases.data.publishedTime | String | Case Published Time | 
 
-
+#### Command Example
+``` !argus-advanced-case-search ```
 
 
 ### argus-close-case
@@ -620,7 +625,8 @@ Close an Argus case
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
+#### Command Example
+``` !argus-close-case case_id=123 ```
 
 
 ### argus-create-case
@@ -787,7 +793,7 @@ Create Argus case
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
+``` !argus-create-case subject="test case title" description="test case details" service=administrative type=informational ```
 
 
 ### argus-delete-case
@@ -941,7 +947,8 @@ Mark existing case as deleted
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
+#### Command Example
+``` !argus-delete-case case_id=123 ```
 
 
 ### argus-delete-comment
@@ -1001,7 +1008,8 @@ Mark existing comment as deleted
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
-
+#### Command Example
+``` !argus-delete-comment case_id=123 comment_id=123456 ```
 
 
 ### argus-edit-comment
@@ -1062,7 +1070,8 @@ Edit existing comment
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time | 
 | Argus.Comment.data.addedTime | String | Comment Added Time | 
 
-
+#### Command Example
+``` !argus-edit-comment case_id=123 comment_id=123456 comment="comment content" ```
 
 
 ### argus-get-case-metadata-by-id
@@ -1217,7 +1226,8 @@ Returns the basic case descriptor for the case identified by ID
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
+#### Command Example
+``` !argus-get-case_metadata_by_id case_id=123 ```
 
 
 ### argus-list-case-attachments
@@ -1272,7 +1282,8 @@ List attachments for an existing case
 | Argus.Attachments.data.originEmailAddress | String | Attachment Origin Email Address | 
 | Argus.Attachments.data.addedTime | String | Attachment Added Time | 
 
-
+#### Command Example
+``` !argus-list-case-attachments case_id=123 ```
 
 
 ### argus-remove-case-tag-by-id
@@ -1325,7 +1336,8 @@ Remove existing tag by tag ID
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
 
-
+#### Command Example
+``` !argus-remove-case-tag-by-id case_id=123 tag_id=123456 ```
 
 ### argus-remove-case-tag-by-key-value
 ***
@@ -1377,7 +1389,8 @@ Remove existing tag with key, value matching
 | Argus.Tags.data.flags | String | Tag Flags | 
 | Argus.Tags.data.addedTime | String | Tag Added Time | 
 
-
+#### Command Example
+``` !argus-remove-case-tag-by-key-value case_id=123 key=foo value=bar ```
 
 
 ### argus-update-case
@@ -1544,7 +1557,8 @@ Request changes to basic fields of an existing case.
 | Argus.Case.data.closedTime | String | Case Closed Time | 
 | Argus.Case.data.publishedTime | String | Case Published Time | 
 
-
+#### Command Example
+``` !argus-update-case case_id=123 ```
 
 
 ### argus-get-attachment
@@ -1598,7 +1612,8 @@ Fetch specific attachment metadata
 | Argus.Attachment.data.originEmailAddress | String | Attachment Origin Email Address | 
 | Argus.Attachment.data.addedTime | String | Attachment Added Time | 
 
-
+#### Command Example
+``` !argus-get-attachment case_id=123 attachment_id=123456 ```
 
 
 ### argus-download-attachment
@@ -1633,7 +1648,8 @@ Download specific attachment contents.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
 
-
+#### Command Example
+``` !argus-download-attachment case_id=123 attachment_id=123456 ```
 
 
 ### argus-get-events-for-case
@@ -1742,7 +1758,8 @@ Fetch events associated with specified case.
 | Argus.Events.data.severity | String | Event Severity | 
 | Argus.Events.data.id | String | Event ID | 
 
-
+#### Command Example
+``` !argus_get_events_for_case case_id=123 ```
 
 
 ### argus-list-aggregated-events
@@ -1856,7 +1873,8 @@ List aggregated events
 | Argus.Events.data.id | String | Event ID | 
 
 
-
+#### Command Example
+``` !argus_list_aggregated_events  ```
 
 ### argus-find-aggregated-events
 ***
@@ -2000,7 +2018,8 @@ Search for aggregated events (OSB! advanced method: look in API doc)
 | Argus.Events.data.id | String | Event ID | 
 
 
-
+#### Command Example
+``` !argus-find-aggregated-events ```
 
 ### argus-get-payload
 ***
@@ -2038,7 +2057,8 @@ Fetch specified event payload
 | Argus.Payload.data.type | String | Payload Type | 
 | Argus.Payload.data.payload | String | Payload Payload | 
 
-
+#### Command Example
+``` !argus-get-payload customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
 
 
 ### argus-get-pcap
@@ -2063,7 +2083,8 @@ Fetch specified event payload as PCAP.
 
 There is no context output for this command.
 
-
+#### Command Example
+``` !argus-get-pcap customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
 
 ### argus-get-event
 ***
@@ -2111,7 +2132,8 @@ Fetch specified event.
 | Argus.Event.data.aggregated | Boolean | Event Aggregated | 
 | Argus.Event.data.encodedFlags | String | Event Encoded Flags | 
 
-
+#### Command Example
+``` !argus-get-event customer_id=123 event_id=123456 timestamp=123456789 type=NIDS ```
 
 
 ### argus-list-nids-events
@@ -2223,7 +2245,8 @@ Simple search for NIDS events.
 | Argus.NIDS.data.flags | String | NIDS Flags | 
 | Argus.NIDS.data.id | String | NIDS ID | 
 
-
+#### Command Example
+``` !argus-list-nids-events  ```
 
 
 ### argus-find-nids-events
@@ -2363,7 +2386,8 @@ Search for NIDS events.
 | Argus.NIDS.data.flags | String | NIDS Flags | 
 | Argus.NIDS.data.id | String | NIDS ID | 
 
-
+#### Command Example
+``` !argus-find-nids-events ```
 
 
 ### argus-pdns-search-records
@@ -2422,7 +2446,8 @@ Search against PassiveDNS with criteria and return matching records.
 | Argus.PDNS.data.rrtype | String | PDNS Rrtype | 
 
 
-
+#### Command Example
+``` !argus-pdns-search-records query=mnemonic.no ```
 
 ### argus-fetch-observations-for-domain
 ***
@@ -2459,7 +2484,8 @@ Look up reputation observations for the given domain
 | Argus.ObservationsDomain.data.value | Number | Observations Domain Value | 
 
 
-
+#### Command Example
+``` !argus-fetch-observations-for-domain fqdn=mnemonic.no ```
 
 ### argus-fetch-observations-for-ip
 ***
@@ -2510,7 +2536,8 @@ Look up reputation observations for the given IP
 | Argus.ObservationsIP.data.address.public | Boolean | Observations IP Address Public | 
 | Argus.ObservationsIP.data.address.address | String | Observations IP Address Address | 
 
-
+#### Command Example
+``` !argus-fetch-observations-for-ip ip=94.127.56.170 ```
 
 
 ### get-remote-data
@@ -2533,27 +2560,8 @@ Get remote data from a remote incident. This method does not update the current 
 
 There is no context output for this command.
 
-
-
-### get-modified-remote-data
-***
-Get updated only remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-
-
-#### Base Command
-
-`get-modified-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Argus Case ID. Possible values are: Time or timestamp case was last updated.. Default is last_updated. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
+#### Command Example
+``` !get-remote-data case_id=123 ```
 
 
 ### update-remote-system
@@ -2574,26 +2582,8 @@ Updates the remote system with incident changes.
 
 There is no context output for this command.
 
-
-
-### get-mapping-fields
-***
-Get mapping fields for mirroring
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-
+#### Command Example
+``` !update-remote-system ```
 
 
 ### argus-download-attachment-by-filename
@@ -2627,7 +2617,8 @@ Downloads case attachment by best-effort search of filename.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
 
-
+#### Command Example
+``` !argus-download-attachment-by-filename case_id=123 file_name=file.name ```
 
 
 ### argus-print-case-comments
@@ -2649,7 +2640,8 @@ Print case comments as notes
 
 There is no context output for this command.
 
-
+#### Command Example
+``` !argus_print_case_comments case_id=123 ```
 
 ### argus-print-case-metadata-by-id
 ***
@@ -2671,7 +2663,8 @@ Print case metadata as HTML. Does not add to context.
 
 There is no context output for this command.
 
-
+#### Command Example
+``` !argus-print-case_metadata_by_id case_id=123 ```
 
 ### argus-download-case-attachments
 ***
@@ -2692,4 +2685,5 @@ Download all attachments related to Argus Case.
 
 There is no context output for this command.
 
-
+#### Command Example
+``` !argus-download-case-attachments case_id=123 ```
