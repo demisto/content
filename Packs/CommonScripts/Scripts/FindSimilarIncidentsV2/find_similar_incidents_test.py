@@ -182,12 +182,12 @@ def test_get_incidents_by_keys():
 
 
 def test_build_similar_keys_list():
-    from FindSimilarIncidentsV2 import build_similar_keys_list
+    from FindSimilarIncidentsV2 import build_incident_fields_query
 
-    int_res = build_similar_keys_list({u'sla': 0})
+    int_res = build_incident_fields_query({u'sla': 0})
     assert int_res == ['sla:="0"']
 
-    str_res = build_similar_keys_list({u'employeeid': u'1111'})
+    str_res = build_incident_fields_query({u'employeeid': u'1111'})
     assert str_res == [u'employeeid="1111"']
 
 
