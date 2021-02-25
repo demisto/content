@@ -50,3 +50,5 @@ args:
 scripttarget: 0
 timeout: 900ns
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

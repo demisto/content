@@ -47,3 +47,5 @@ args:
   description: The key to place result array in context, by default will be "array".
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
