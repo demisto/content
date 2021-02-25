@@ -834,7 +834,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
                            public_pack_names) -> Tuple[bool, list, list]:
     """
     Checks if there are private packs that were added/deleted/updated.
-    Update public index.json with private packs if needed.
+    Update public index.json with private packs.
 
     Args:
         public_index_folder_path: extracted public index folder full path.
