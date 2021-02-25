@@ -18,6 +18,9 @@ INFRASTRUCTURE_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
+WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
+
+PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 
 def get_changed_files():
@@ -98,7 +101,7 @@ def main():
         if workflow_id:
             workflow_id = workflow_id[0]
             print(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
-                         f' https://github.com/demisto/content-private/actions/runs/{workflow_id}')
+                  f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
             with open("PRIVATE_REPO_WORKFLOW_ID.txt", "w") as f:
                 f.write(str(workflow_id))
