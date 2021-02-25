@@ -4466,7 +4466,7 @@ script:
   - arguments:
     - default: false
       description: The template to use when running the command. Overrides the template
-        parameter (Panorama instances). If not given, will use the integration paramater.
+        parameter (Panorama instances). If not given, will use the integration parameter.
       isArray: false
       name: template
       required: false
