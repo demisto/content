@@ -1,7 +1,8 @@
 from splunklib.binding import HTTPError, namespace
-
 import demistomock as demisto
 from CommonServerPython import *
+
+
 import splunklib.client as client
 import splunklib.results as results
 import json
@@ -504,9 +505,7 @@ def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
     incident_custom_id = incident_occurred + incident_raw_data
-    incident_custom_id_hash = hashlib.sha256()
-    incident_custom_id_hash.update(incident_custom_id)
-    incident_custom_id_hash.digest()
+    incident_custom_id_hash = hashlib.md5(incident_custom_id).hexdigest()
     demisto.debug('length of incident new custom ID is: {}'.format(len(incident_custom_id)))
     return incident_custom_id_hash
 
@@ -598,6 +597,7 @@ def fetch_incidents(service):
 
     demisto.incidents(incidents)
     extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
+
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, False)
         extensive_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
