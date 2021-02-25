@@ -144,7 +144,8 @@ def test_jarm_fingerprint(mocker):
     mock_response = {
         "FQDN": MOCK_HOST,
         "Port": int(MOCK_PORT),
-        "Fingerprint": MOCK_FINGERPRINT
+        "Fingerprint": MOCK_FINGERPRINT,
+        "Target": f'{MOCK_HOST}:{int(MOCK_PORT)}'
     }
 
-    assert response[0].outputs == mock_response
+    assert response.outputs == mock_response

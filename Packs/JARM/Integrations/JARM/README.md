@@ -36,7 +36,8 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 | --- | --- | --- |
 | JARM.FQDN | String | FQDN of the host. | 
 | JARM.IP | String | IP Address of the host. | 
-| JARM.Port | Number | TCP port | 
+| JARM.Port | Number | TCP port |
+| JARM.Target | String | The host in the format [IP or FQDN]:Port | 
 | JARM.Fingerprint | String | JARM fingerprint of the host. | 
 
 
@@ -62,7 +63,8 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
     "JARM": {
         "FQDN": "google.com",
         "Fingerprint": "27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d",
-        "Port": 443
+        "Port": 443,
+        "Target": "google.com:443"
     }
 }
 ```

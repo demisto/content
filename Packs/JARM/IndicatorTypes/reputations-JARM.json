@@ -16,11 +16,11 @@
         "jarmhosts": {
             "simple": "",
             "complex": {
-                "root": "DBotScore",
+                "root": "JARM",
                 "filters": [
 
                 ],
-                "accessor": "JARMHost",
+                "accessor": "Target",
                 "transformers": [
 
                 ]

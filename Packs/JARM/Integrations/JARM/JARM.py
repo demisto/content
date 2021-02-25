@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
+import asyncio
 import requests
 import traceback
 from urllib.parse import urlparse
@@ -19,7 +19,7 @@ DEFAULT_PORT = 443
 
 class Client:
     def jarm_fingerprint(self, host: str, port: int) -> Tuple[str, str, int]:
-        return Scanner.scan(host, port)
+        return asyncio.run(Scanner.scan_async(host, port, suppress=True))
 
 
 """ HELPER FUNCTIONS """
@@ -61,14 +61,10 @@ def test_module(client: Client) -> str:
 
 def jarm_fingerprint_command(
     client: Client, args: Dict[str, Any]
-) -> List[CommandResults]:
+) -> CommandResults:
     class JARMDBotScore(Common.Indicator):
         def __init__(self, output: Dict[str, Any]):
             self._jarm = output.get('Fingerprint')
-            if output.get('IP'):
-                self._host = f'{output.get("IP")}:{output.get("Port")}'
-            else:
-                self._host = f'{output.get("FQDN")}:{output.get("Port")}'
 
         def to_context(self) -> Dict[str, Any]:
             return {
@@ -76,8 +72,7 @@ def jarm_fingerprint_command(
                     "Indicator": self._jarm,
                     "Type": "jarm",
                     "Vendor": "JARM",
-                    "Score": Common.DBotScore.NONE,
-                    "JARMHost": self._host
+                    "Score": Common.DBotScore.NONE
                 }
             }
 
@@ -104,20 +99,18 @@ def jarm_fingerprint_command(
     result = client.jarm_fingerprint(target_host, port)
 
     output = {}
+    output['Fingerprint'] = result[0]
+    output['Target'] = f'{target_host}:{port}'
+    output['Port'] = port
     if target_type == 'ip':
-        output = {"IP": target_host, "Port": port, "Fingerprint": result[0]}
+        output['IP'] = target_host
     elif target_type == 'fqdn':
-        output = {"FQDN": target_host, "Port": port, "Fingerprint": result[0]}
+        output['FQDN'] = target_host
 
-    return [
-        CommandResults(
-            outputs_prefix="JARM", outputs_key_field=['FQDN', 'IP', 'Port'], outputs=output
-        ),
-        CommandResults(
-            readable_output=f"New JARM indicator was found: {result[0]}",
-            indicator=JARMDBotScore(output=output)
-        )
-    ]
+    return CommandResults(
+        outputs_prefix="JARM", outputs_key_field=['FQDN', 'IP', 'Port'], outputs=output,
+        indicator=JARMDBotScore(output=output)
+    )
 
 
 """ MAIN FUNCTION """
@@ -133,8 +126,7 @@ def main() -> None:
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == "jarm-fingerprint":
             return_results(jarm_fingerprint_command(client, demisto.args()))
