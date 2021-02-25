@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '1883'
-  display: port
+  display: Port
   name: port
   required: true
   type: 0
