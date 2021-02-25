@@ -4513,7 +4513,7 @@ Retrieves list of user-ID agents configured in the system.
 | --- | --- | --- |
 | template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
 | template_stack | The template stack to use when running the command. | Optional | 
-| vsys | The name of the virtual system to be configured. Will use the configured VSYS paramater if exists, if given a value, will override the VSYS parametmer. If neither the VSYS parameter and this argument are enterd, will default to 'vsys1'. . | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists, if given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
 
 
 #### Context Output
