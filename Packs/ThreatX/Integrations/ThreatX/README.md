@@ -71,7 +71,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the block list.</td>
+<td style="width: 511px;">The description of the IP record in the block list. The default value is: "Added by ThreatX Demisto Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -214,7 +214,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the blacklist.</td>
+<td style="width: 511px;">The description of the IP record in the blacklist. The default value is: "Added by ThreatX Demisto Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -356,7 +356,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the whitelist.</td>
+<td style="width: 511px;">The description of the IP record in the whitelist. The default value is: "Added by ThreatX Demisto Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
