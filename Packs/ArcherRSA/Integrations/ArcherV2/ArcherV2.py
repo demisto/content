@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 FETCH_PARAM_ID_KEY = 'field_time_id'
 LAST_FETCH_TIME_KEY = 'last_fetch'
-OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 REQUEST_HEADERS = {
     'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
@@ -1137,7 +1137,7 @@ def fetch_incidents(
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
     # API Call
-    records, raw_res = client.search_records(
+    records, _ = client.search_records(
         app_id, fields_to_display, date_field,
         from_time.strftime(OCCURRED_FORMAT),
         date_operator='GreaterThan',
