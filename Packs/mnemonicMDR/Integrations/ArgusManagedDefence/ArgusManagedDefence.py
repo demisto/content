@@ -354,8 +354,7 @@ def get_remote_data_command(
                 f"Ignoring file {attachment['name']} "
                 f"since it contains {ATTACHMENT_SUBSTRING}"
             )
-            pass
-        if last_update_timestamp < attachment.get("addedTimestamp", 0):
+        elif last_update_timestamp < attachment.get("addedTimestamp", 0):
             entries.append(
                 fileResult(
                     attachment["name"],
@@ -501,6 +500,10 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> N
         file_name, file_extension = os.path.splitext(full_file_name)
         file_name = f"{file_name}{ATTACHMENT_SUBSTRING}{file_extension}"
         mime_type = mimetypes.guess_type(full_file_name)
+        if not mime_type[0]:
+            error = f"File {full_file_name} unknown, not sending. Zipping should be implemented."
+            demisto.debug(error)
+            return
         with open(path_res.get("path"), "rb") as file_to_send:
             # noinspection PyTypeChecker
             add_attachment(
@@ -820,9 +823,7 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
     if not case_id:
         raise ValueError("case id not specified")
 
-    result = get_case_metadata_by_id(
-        id=case_id, skipRedirect=args.get("skip_redirect")
-    )
+    result = get_case_metadata_by_id(id=case_id, skipRedirect=args.get("skip_redirect"))
 
     return CommandResults(
         readable_output=pretty_print_case_metadata(result),
@@ -837,9 +838,7 @@ def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
     if not case_id:
         raise ValueError("case id not specified")
 
-    result = get_case_metadata_by_id(
-        id=case_id, skipRedirect=args.get("skip_redirect")
-    )
+    result = get_case_metadata_by_id(id=case_id, skipRedirect=args.get("skip_redirect"))
 
     return {
         "ContentsFormat": formats["html"],
