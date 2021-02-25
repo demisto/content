@@ -172,7 +172,7 @@ script:
       name: signature_id
       required: true
     - defaultValue: "50"
-      description: "\t integer <int64> - Default: 50 Requested data size"
+      description: "integer <int64> - Default: 50 Requested data size"
       name: size
     - description: integer <int64> -  PID of the threat
       name: threat_id
