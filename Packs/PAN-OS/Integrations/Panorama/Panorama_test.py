@@ -61,7 +61,8 @@ def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
-    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'], 'reset-both')
+    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'],
+                                        'reset-both')
     assert r['response']['@status'] == 'success'
 
 
@@ -250,3 +251,33 @@ def test_validate_search_time():
     with pytest.raises(Exception):
         assert validate_search_time('219/12/26 00:00:00')
         assert validate_search_time('219/10/35')
+
+
+def test_prettify_user_interface_config():
+    from Panorama import prettify_user_interface_config
+    raw_response = [{'@name': 'internal', 'network': {'layer3': {'member': 'ethernet1/2'},
+                                                      'log-setting': 'ToLoggingService'}},
+                    {'@name': 'External', 'network': {'layer3': {'member': 'ethernet1/1'},
+                                                      'log-setting': 'ToLoggingService'}}]
+    response = prettify_user_interface_config(raw_response)
+    expected = [{'Name': 'internal', 'Network': {'layer3': {'member': 'ethernet1/2'},
+                                                 'log-setting': 'ToLoggingService'}},
+                {'Name': 'External', 'Network': {'layer3': {'member': 'ethernet1/1'},
+                                                 'log-setting': 'ToLoggingService'}}]
+    assert response == expected
+
+
+def test_prettify_configured_user_id_agents():
+    from Panorama import prettify_configured_user_id_agents
+    raw_response = [{'@name': 'testing2', 'serial-number': 'panorama2'},
+                    {'@name': 'fullinfo', 'host-port': {'port': '67', 'ntlm-auth': 'yes',
+                                                        'ldap-proxy': 'yes', 'collectorname': 'demisto',
+                                                        'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}]
+    response = prettify_configured_user_id_agents(raw_response)
+    expected = [{'Name': 'testing2', 'Host': None, 'Port': None, 'NtlmAuth': None, 'LdapProxy': None,
+                 'CollectorName': None, 'Secret': None, 'EnableHipCollection': None, 'SerialNumber': 'panorama2',
+                 'IpUserMapping': None},
+                {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
+                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
+                 'IpUserMapping': 'yes'}]
+    assert response == expected

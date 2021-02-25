@@ -6733,58 +6733,35 @@ def list_configured_user_id_agents_request(args, version):
         return dict_safe_get(result, keys=['response', 'result', 'redistribution-agent', 'entry'])
 
 
-def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict], version) -> Union[List, Dict]:
+def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Union[List, Dict]:
     pretty_user_id_agents = []
-    if version < 10:
-        if isinstance(user_id_agents, dict):
-            return {
-                'Name': user_id_agents['@name'],
-                'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
-                'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
-                'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth']),
-                'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
-                'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
-                'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
-                'EnableHipCollection': user_id_agents.get('enable-hip-collection'),
-                'SerialNumber': user_id_agents.get('serial-number')
-            }
+    if isinstance(user_id_agents, dict):
+        return {
+            'Name': user_id_agents['@name'],
+            'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
+            'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
+            'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth']),
+            'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
+            'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
+            'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
+            'EnableHipCollection': user_id_agents.get('enable-hip-collection'),
+            'IpUserMapping': user_id_agents.get('ip-user-mappings'),
+            'SerialNumber': user_id_agents.get('serial-number')
+        }
 
-        for agent in user_id_agents:
-            pretty_user_id_agents.append({
-                'Name': agent['@name'],
-                'Host': dict_safe_get(agent, keys=['host-port', 'host']),
-                'Port': dict_safe_get(agent, keys=['host-port', 'port']),
-                'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth']),
-                'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
-                'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
-                'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
-                'EnableHipCollection': agent.get('enable-hip-collection'),
-                'SerialNumber': agent.get('serial-number')
-            })
-    else:
-        if isinstance(user_id_agents, dict):
-            return {
-                'Name': user_id_agents['@name'],
-                'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
-                'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
-                'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
-                'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
-                'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
-                'IpUserMapping': user_id_agents.get('ip-user-mappings'),
-                'SerialNumber': user_id_agents.get('serial-number')
-            }
-
-        for agent in user_id_agents:
-            pretty_user_id_agents.append({
-                'Name': agent['@name'],
-                'Host': dict_safe_get(agent, keys=['host-port', 'host']),
-                'Port': dict_safe_get(agent, keys=['host-port', 'port']),
-                'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
-                'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
-                'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
-                'IpUserMapping': agent.get('ip-user-mappings'),
-                'SerialNumber': agent.get('serial-number')
-            })
+    for agent in user_id_agents:
+        pretty_user_id_agents.append({
+            'Name': agent['@name'],
+            'Host': dict_safe_get(agent, keys=['host-port', 'host']),
+            'Port': dict_safe_get(agent, keys=['host-port', 'port']),
+            'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth']),
+            'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
+            'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
+            'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
+            'EnableHipCollection': agent.get('enable-hip-collection'),
+            'IpUserMapping': agent.get('ip-user-mappings'),
+            'SerialNumber': agent.get('serial-number')
+        })
 
     return pretty_user_id_agents
 
@@ -6793,12 +6770,9 @@ def list_configured_user_id_agents_command(args):
     version = get_pan_os_major_version()
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
-        formatted_results = prettify_configured_user_id_agents(raw_response, version)
-        if version < 10:
-            headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth']
+        formatted_results = prettify_configured_user_id_agents(raw_response)
+        headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth', 'IpUserMapping']
 
-        else:
-            headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'IpUserMapping']
         return_results(
             CommandResults(
                 outputs_prefix='Panorama.UserIDAgents',
