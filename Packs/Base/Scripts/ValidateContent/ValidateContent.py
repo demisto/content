@@ -356,7 +356,22 @@ def main():
         os.chdir(content_tmp_dir.name)
 
         result = validate_content(filename, file_contents, content_tmp_dir.name)
-        return_results(CommandResults(raw_response=result))
+        outputs = []
+        for validation in result:
+            for item in validation.values():
+                for error in item.get('outputs', []):
+                    if error.get('ui') or item.get('file-type') in {'py', 'ps1'}:
+                        outputs.append({
+                            'Name': item.get('display-name'),
+                            'Error': error.get('message'),
+                            'Line': error.get('line-number'),
+                        })
+        return_results(CommandResults(
+            readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
+            outputs_prefix='ValidationResult',
+            outputs=outputs,
+            raw_response=result,
+        ))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
