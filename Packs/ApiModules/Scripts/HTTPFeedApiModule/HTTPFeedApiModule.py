@@ -280,9 +280,9 @@ class Client(BaseClient):
         return created_custom_fields
 
 
-def datestring_formatter(date_string: str) -> str:
+def datestring_to_server_format(date_string: str) -> str:
     """
-    formats a datestring to ISO-8601
+    formats a datestring to the ISO-8601 format which the server expects to recieve
     :param date_string: Date represented as a tring
     :return: ISO-8601 date string
     """
@@ -370,10 +370,10 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, *
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_formatter(attributes['lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
-                        attributes['firstseenbysource'] = datestring_formatter(attributes['firstseenbysource'])
+                        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {

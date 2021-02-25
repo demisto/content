@@ -33,9 +33,9 @@ class Client(BaseClient):
 
         return res.text
 
-    def datestring_formatter(self, date_string):
+    def datestring_to_server_format(self, date_string):
         """
-        formats a datestring to ISO-8601
+        formats a datestring to the ISO-8601 format which the server expects to recieve
         :param date_string: Date represented as a tring
         :return: ISO-8601 date string
         """
@@ -57,11 +57,11 @@ class Client(BaseClient):
 
             elif line.startswith('Published'):
                 date = line.split(' ', 1)[1]
-                indicator['firstseenbysource'] = self.datestring_formatter(date)
+                indicator['firstseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('LastStatus'):
                 date = line.split(' ', 1)[1]
-                indicator['lastseenbysource'] = self.datestring_formatter(date)
+                indicator['lastseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('ExitAddress'):
                 indicator['value'] = line.split()[1]
