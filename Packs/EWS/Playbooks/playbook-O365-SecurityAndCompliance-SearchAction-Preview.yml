@@ -86,7 +86,7 @@ outputs:
   type: String
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
   description: Security and compliance search action results.
-  type: String
+  type: unknown
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
   description: Whether to retry if the search action failed.
   type: Boolean
