@@ -415,6 +415,27 @@ script:
     description: Retrieves a sample.
     execution: false
     name: wildfire-get-sample
+  - arguments:
+    - default: false
+      description: URL of the webpage.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to download screenshots or as downloaded files.
+      isArray: false
+      name: types
+      required: false
+      predefined:
+      - 'download_files'
+      - 'screenshot'
+      secret: false
+    deprecated: false
+    description: Get web artifacts for a URL webpage.
+    execution: false
+    name: wildfire-get-web-artifacts
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
