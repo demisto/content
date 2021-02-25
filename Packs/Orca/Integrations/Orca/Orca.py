@@ -1,3 +1,5 @@
+import dateutil
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -6,6 +8,7 @@ from typing import Any, Dict, Union, Optional
 ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DEMISTO_INFORMATIONAL = 0.5
 
 
 class OrcaClient:
@@ -25,7 +28,8 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
+        # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -51,11 +55,20 @@ class OrcaClient:
 
         return alerts
 
-    def get_all_alerts(self, fetch_informational: bool = False) -> List[Dict[str, Any]]:
+    def get_all_alerts(self, first_fetch: Optional[str],  fetch_informational: bool = False) -> List[Dict[str, Any]]:
         demisto.info("get_all_alerts, enter")
 
         alerts: List[Dict[str, Any]] = []
         params: Dict[str, Any] = {"show_informational_alerts": True} if fetch_informational else {}
+        if first_fetch:
+            params["dsl_filter"] = json.dumps({
+                "filter": [
+                    {
+                        "field": "state.created_at",
+                        "range": {"gte": first_fetch}
+                    }
+                ]
+            })
         next_page_token = None
 
         while True:
@@ -125,25 +138,29 @@ def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # py
 def get_incident_from_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
     if alert is None:
         return {}
+
+    last_seen_time = dateutil.parser.parse(alert.get('state', {}).get('last_seen')).isoformat()
     return {
         'name': alert.get('state', {}).get('alert_id'),
-        'occurred': datetime_to_string(
-            datetime.strptime(alert.get('state', {}).get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
+        'occurred': last_seen_time,
         'rawJSON': json.dumps(alert),
         'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('score'))
     }
 
 
 def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    demisto.info("get_incidents_from_alerts enter")
     incidents = []
     for alert in alerts:
         alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("score", 1))
         incident = get_incident_from_alert(alert=alert)
         incidents.append(incident)
+
+    demisto.info("get_incidents_from_alerts done")
     return incidents
 
 
-def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational: bool = False,
+def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: Optional[str], fetch_informational: bool = False,
                     pull_existing_alerts: bool = False, fetch_type="XSOAR-Pull") -> List[Dict[str, Any]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
 
@@ -157,7 +174,8 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational
         incidents_queue = demisto.getLastRun().get('incidents_for_next_run')
         incidents_to_export = incidents_queue[:max_fetch]
         if not fetch_informational:
-            incidents_to_export = [alert for alert in incidents_to_export if alert.get("state", {}).get("score", 1) < 4]
+            incidents_to_export = [incident for incident in incidents_to_export if
+                                   incident.get("severity") > DEMISTO_INFORMATIONAL]
 
         incidents_for_next_run = incidents_queue[max_fetch:]
 
@@ -167,6 +185,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational
             if fetch_type == "XSOAR-Pull":
                 updated_alerts = orca_client.get_updated_alerts()
                 incidents = get_incidents_from_alerts(updated_alerts)
+                incidents = [incident for incident in incidents if incident.get("severity") > DEMISTO_INFORMATIONAL]
 
             demisto.incidents(incidents)
             demisto.setLastRun(
@@ -184,7 +203,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational
 
     else:
         # this is the first run
-        alerts = orca_client.get_all_alerts(fetch_informational=fetch_informational)
+        alerts = orca_client.get_all_alerts(fetch_informational=fetch_informational, first_fetch=first_fetch_time)
         if not alerts:
             demisto.incidents([])
             return []
@@ -211,6 +230,12 @@ def main() -> None:
         max_fetch = int(demisto.params().get('max_fetch'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
         fetch_type = demisto.params().get('fetch_type')
+
+        # How much time before the first fetch to retrieve incidents
+        first_fetch_time = None
+        if arg := demisto.params().get('first_fetch'):
+            first_fetch_time_stamp = dateparser.parse(arg)
+            first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(
             base_url=ORCA_API_DNS_NAME,
@@ -242,7 +267,7 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             fetch_incidents(orca_client, max_fetch=max_fetch, fetch_informational=fetch_informational,
-                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type)
+                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type, first_fetch_time=first_fetch_time)
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
@@ -257,3 +282,24 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 # In commands not fail if no alerts (because command fails it fails the playbook)
+
+
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
+        return arg
