@@ -1,6 +1,6 @@
 {
     "name": "Manage Engine Service Desk Plus",
-    "description": "IT service management.",
+    "description": "ServiceDesk Plus is a IT service management software that provides visibility and central control to deal with IT issues. This version of the integration is for the on premise version of the software.",
     "support": "xsoar",
     "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
