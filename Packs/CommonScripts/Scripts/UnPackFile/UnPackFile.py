@@ -47,6 +47,7 @@ if 'entryID' in demisto.args():
 if not fileEntryID:
     demisto.results({
         'Type': entryTypes['error'],
+
         'ContentsFormat': formats['text'],
         'Contents': 'You must set entryID or fileName or lastPackedFileInWarroom=i.e.(zip) when executing Unpack script'
     })
