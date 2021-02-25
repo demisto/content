@@ -1,14 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import boto3
 import json
 import re
-from datetime import datetime, date
+from datetime import date, datetime
+
+import boto3
+import demistomock as demisto  # noqa: F401
+import urllib3.util
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
-
-import urllib3.util
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -58,9 +57,9 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
+    if kwargs and AWS_ACCESS_KEY_ID is None:
 
-        if not AWS_ACCESS_KEY_ID:
+        if AWS_ACCESS_KEY_ID is None:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -1650,6 +1649,89 @@ def revoke_security_group_ingress_command(args):
         demisto.results("The Security Group ingress rule was revoked")
 
 
+def revoke_security_group_egress_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'GroupId': args.get('groupId')}
+    IpPermissions = []
+    IpPermissions_dict = {}
+    UserIdGroupPairs = []
+    UserIdGroupPairs_dict = {}
+
+    if args.get('IpPermissionsfromPort') is not None:
+        IpPermissions_dict.update({'FromPort': int(args.get('IpPermissionsfromPort'))})
+    if args.get('IpPermissionsIpProtocol') is not None:
+        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})  # type: ignore
+    if args.get('IpPermissionsToPort') is not None:
+        IpPermissions_dict.update({'ToPort': int(args.get('IpPermissionsToPort'))})
+
+    if args.get('IpRangesCidrIp') is not None:
+        IpRanges = [{
+            'CidrIp': args.get('IpRangesCidrIp')  # ,
+            # 'Description': args.get('IpRangesDesc', None)
+        }]
+        IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
+    if args.get('Ipv6RangesCidrIp') is not None:
+        Ipv6Ranges = [{
+            'CidrIp': args.get('Ipv6RangesCidrIp'),
+            'Description': args.get('Ipv6RangesDesc', None)
+        }]
+        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
+    if args.get('PrefixListId') is not None:
+        PrefixListIds = [{
+            'PrefixListId': args.get('PrefixListId'),
+            'Description': args.get('PrefixListIdDesc', None)
+        }]
+        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
+
+    if args.get('UserIdGroupPairsDescription') is not None:
+        UserIdGroupPairs_dict.update({'Description': args.get('UserIdGroupPairsDescription')})
+    if args.get('UserIdGroupPairsGroupId') is not None:
+        UserIdGroupPairs_dict.update({'GroupId': args.get('UserIdGroupPairsGroupId')})
+    if args.get('UserIdGroupPairsGroupName') is not None:
+        UserIdGroupPairs_dict.update({'GroupName': args.get('UserIdGroupPairsGroupName')})
+    if args.get('UserIdGroupPairsPeeringStatus') is not None:
+        UserIdGroupPairs_dict.update({'PeeringStatus': args.get('UserIdGroupPairsPeeringStatus')})
+    if args.get('UserIdGroupPairsUserId') is not None:
+        UserIdGroupPairs_dict.update({'UserId': args.get('UserIdGroupPairsUserId')})
+    if args.get('UserIdGroupPairsVpcId') is not None:
+        UserIdGroupPairs_dict.update({'VpcId': args.get('UserIdGroupPairsVpcId')})
+    if args.get('UserIdGroupPairsVpcPeeringConnectionId') is not None:
+        UserIdGroupPairs_dict.update({'VpcPeeringConnectionId': args.get('UserIdGroupPairsVpcPeeringConnectionId')})
+
+    if args.get('fromPort') is not None:
+        kwargs.update({'FromPort': int(args.get('fromPort'))})
+    if args.get('cidrIp') is not None:
+        kwargs.update({'CidrIp': args.get('cidrIp')})
+    if args.get('toPort') is not None:
+        kwargs.update({'ToPort': int(args.get('toPort'))})
+    if args.get('ipProtocol') is not None:
+        kwargs.update({'IpProtocol': args.get('ipProtocol')})
+    if args.get('sourceSecurityGroupName') is not None:
+        kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
+    if args.get('SourceSecurityGroupOwnerId') is not None:
+        kwargs.update({'SourceSecurityGroupOwnerId': args.get('SourceSecurityGroupOwnerId')})
+
+    if UserIdGroupPairs_dict is not None:
+        UserIdGroupPairs.append(UserIdGroupPairs_dict)
+        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+
+    if IpPermissions_dict is not None:
+        IpPermissions.append(IpPermissions_dict)
+        kwargs.update({'IpPermissions': IpPermissions})
+
+    response = client.revoke_security_group_egress(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results("The Security Group egress rule was revoked")
+    else:
+        return_error("An error has occurred: {error}".format(error=response))
+        LOG(response.message)
+
+
 def copy_image_command(args):
     client = aws_session(
         region=args.get('region'),
@@ -3005,6 +3087,9 @@ try:
 
     elif demisto.command() == 'aws-ec2-revoke-security-group-ingress-rule':
         revoke_security_group_ingress_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-revoke-security-group-egress-rule':
+        revoke_security_group_egress_command(demisto.args())
 
     elif demisto.command() == 'aws-ec2-copy-image':
         copy_image_command(demisto.args())

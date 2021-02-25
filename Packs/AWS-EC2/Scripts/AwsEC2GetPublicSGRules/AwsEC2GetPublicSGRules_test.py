@@ -33,7 +33,7 @@ def test_get_ec2_sg_public_rules():
     expected4 = [{"cidrIp": "::/0", "groupId": "sg-12345", "ipProtocol": "-1", "region": "us-east-1"}]
 
     expected5 = [{"groupId": "sg-12345", "ipProtocol": "tcp", "region": "us-east-1", "fromPort": 22, "toPort": 22,
-                 "cidrIp": "0.0.0.0/0"}]
+                  "cidrIp": "0.0.0.0/0"}]
 
     result1 = get_ec2_sg_public_rules(group_id='sg-12345', ip_permissions=IPPERM, checked_protocol='tcp',
                                       checked_from_port=22, checked_to_port=22, region='us-east-1', include_ipv6='no'
