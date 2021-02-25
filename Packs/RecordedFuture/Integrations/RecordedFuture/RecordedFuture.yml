@@ -292,6 +292,18 @@ script:
       isArray: true
       description: CVE for which to get the reputation.
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
     - contextPath: CVE.ID
       description: Vulnerability name
       type: string
