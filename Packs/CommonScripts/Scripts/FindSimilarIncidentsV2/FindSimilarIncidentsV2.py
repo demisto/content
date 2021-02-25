@@ -109,9 +109,9 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
-def build_similar_keys_list(similar_incident_keys):
+def build_incident_fields_query(incident_data):
     similar_keys_list = []
-    for key, value in similar_incident_keys.items():
+    for key, value in incident_data.items():
         if isinstance(value, int):
             value = str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
             similar_key = '{}:="{}"'.format(key, value)
@@ -130,9 +130,9 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
 
-    similar_keys_list = build_similar_keys_list(similar_incident_keys)
+    incident_fields_query = build_incident_fields_query(similar_incident_keys)
 
-    similar_keys_query = condition_string.join(similar_keys_list)
+    similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
