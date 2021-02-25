@@ -117,7 +117,7 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-        demisto.debug(f"Headers are:{headers}")
+        demisto.debug(f"Headers are:{default_headers}")
 
         demisto.debug(f"Sending request with suffix: {args}")
 
