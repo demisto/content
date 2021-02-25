@@ -114,15 +114,13 @@ def build_similar_keys_list(similar_incident_keys):
     for key, value in similar_incident_keys.items():
         if isinstance(value, int):
             value = str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
-            compare_str = '{}:="{}"'
-            similar_key = compare_str.format(key, value)
+            similar_key = '{}:="{}"'.format(key, value)
             similar_keys_list.append(similar_key)
 
         else:
             value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
             value = value.encode('utf-8')
-            compare_str = '{}="{}"'
-            similar_key = compare_str.format(key, value)
+            similar_key = '{}="{}"'.format(key, value)
             similar_keys_list.append(str(similar_key).decode('utf-8'))  # type: ignore
 
     return similar_keys_list
