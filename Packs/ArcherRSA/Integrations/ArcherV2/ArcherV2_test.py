@@ -593,4 +593,3 @@ class TestArcherV2:
         incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
         assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
         assert not incidents
-
