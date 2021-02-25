@@ -1,4 +1,4 @@
-from Tests.Marketplace.prepare_private_id_set_for_merge import remove_old_pack_from_private_id_set
+from Tests.Marketplace.remove_pack_from_private_id_set import remove_old_pack_from_private_id_set
 
 
 PRIVATE_ID_SET = {
