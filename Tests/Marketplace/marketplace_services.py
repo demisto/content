@@ -555,6 +555,50 @@ class Pack(object):
         else:
             return ""
 
+    @staticmethod
+    def _get_search_rank(tags, certification, content_items):
+        """ Returns pack search rank.
+
+        The initial value is 0
+        In case the pack has the tag Featured, its search rank will increase by 10
+        In case the pack was released in the last 30 days, its search rank will increase by 10
+        In case the pack is certified, its search rank will increase by 10
+        In case all the pack's integration are deprecated and there is at least 1 integration in the pack,
+        the pack's search rank will decrease by 50
+
+        Args:
+            tags (str): the pack's tags.
+            certification (str): certification value from pack_metadata, if exists.
+            content_items (dict): all the pack's content items, including integrations info
+
+        Returns:
+            str: certification value
+        """
+        search_rank = 0
+        all_deprecated = False
+
+        if 'Featured' in tags:
+            search_rank += 10
+        if 'New' in tags:
+            search_rank += 10
+        if certification == Metadata.CERTIFIED:
+            search_rank += 10
+
+        if content_items:
+            integrations = content_items.get("integration")
+            if isinstance(integrations, list):
+                for integration in integrations:
+                    if 'deprecated' in integration.get('name').lower():
+                        all_deprecated = True
+                    else:
+                        all_deprecated = False
+                        break
+
+        if all_deprecated:
+            search_rank -= 50
+
+        return search_rank
+
     def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
                              is_feed_pack=False):
@@ -618,6 +662,10 @@ class Pack(object):
                 pack_metadata['tags'].remove('New')
         pack_metadata['categories'] = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
         pack_metadata['contentItems'] = pack_content_items
+        pack_metadata['searchRank'] = Pack._get_search_rank(tags=pack_metadata['tags'],
+                                                            certification=pack_metadata['certification'],
+                                                            content_items=pack_content_items)
+
         pack_metadata['integrations'] = Pack._get_all_pack_images(integration_images,
                                                                   user_metadata.get('displayedImages', []),
                                                                   dependencies_data)
@@ -1762,6 +1810,24 @@ class Pack(object):
         finally:
             return task_status, exists_in_index
 
+    @staticmethod
+    def remove_contrib_suffix_from_name(display_name: str) -> str:
+        """ Removes the contribution details suffix from the integration's display name
+        Args:
+            display_name (str): The integration display name.
+
+        Returns:
+            str: The display name without the contrib details suffix
+
+        """
+        contribution_suffixes = ('(Partner Contribution)', '(Developer Contribution)', '(Community Contribution)')
+        for suffix in contribution_suffixes:
+            index = display_name.find(suffix)
+            if index != -1:
+                display_name = display_name[:index].rstrip(' ')
+                break
+        return display_name
+
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
 
@@ -1805,8 +1871,13 @@ class Pack(object):
                 else:
                     image_gcs_path = pack_image_blob.public_url
 
+                integration_name = image_data.get('display_name', '')
+
+                if self.support_type != Metadata.XSOAR_SUPPORT:
+                    integration_name = self.remove_contrib_suffix_from_name(integration_name)
+
                 uploaded_integration_images.append({
-                    'name': image_data.get('display_name', ''),
+                    'name': integration_name,
                     'imagePath': image_gcs_path
                 })
 
