@@ -428,9 +428,9 @@ def storage_blob_service_properties_set(client: ASClient, args: Dict):
         'Account Name': account_name,
         'Subscription ID': subscription_id,
         'Resource Group': resource_group,
-        'Change Feed': response.get('properties', '').get('changeFeed').get('enabled')
+        'Change Feed': str(response.get('properties', '').get('changeFeed').get('enabled'))
         if response.get('properties', '').get('changeFeed') else '',
-        'Delete Retention Policy': response.get('properties', '').get('deleteRetentionPolicy').get('enabled')
+        'Delete Retention Policy': str(response.get('properties', '').get('deleteRetentionPolicy').get('enabled'))
         if response.get('properties', '').get('deleteRetentionPolicy') else '',
         'Versioning': response.get('properties', '').get('isVersioningEnabled')
     }
