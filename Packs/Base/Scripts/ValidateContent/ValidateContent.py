@@ -166,7 +166,6 @@ def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
                 executor.shutdown(wait=False)
             except Exception as e:
                 demisto.debug(f'Failed shutting down executor - {e}')
-                pass
             raise
 
 
