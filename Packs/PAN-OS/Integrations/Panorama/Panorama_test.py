@@ -267,7 +267,7 @@ def test_prettify_user_interface_config():
     assert response == expected
 
 
-def test_prettify_configured_user_id_agents():
+def test_prettify_configured_user_id_agents__multi_result():
     from Panorama import prettify_configured_user_id_agents
     raw_response = [{'@name': 'testing2', 'serial-number': 'panorama2'},
                     {'@name': 'fullinfo', 'host-port': {'port': '67', 'ntlm-auth': 'yes',
@@ -280,4 +280,16 @@ def test_prettify_configured_user_id_agents():
                 {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
                  'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
                  'IpUserMapping': 'yes'}]
+    assert response == expected
+
+
+def test_prettify_configured_user_id_agents__single_result():
+    from Panorama import prettify_configured_user_id_agents
+    raw_response = {'@name': 'fullinfo', 'host-port': {'port': '67', 'ntlm-auth': 'yes',
+                                                       'ldap-proxy': 'yes', 'collectorname': 'demisto',
+                                                       'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}
+    response = prettify_configured_user_id_agents(raw_response)
+    expected = {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
+                'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
+                'IpUserMapping': 'yes'}
     assert response == expected
