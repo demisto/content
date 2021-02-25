@@ -878,7 +878,7 @@
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "5.5.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "Panorama",
