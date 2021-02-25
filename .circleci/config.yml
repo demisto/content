@@ -291,7 +291,7 @@ references:
       name: Get private build   status
       when: always
       command: |
-        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --github-token $GITHUB_TOKEN --WORKFLOW_ID 123
+        python3 Utils/get_private_build_status.py
 
   create_artifact: &create_artifact
     run:
