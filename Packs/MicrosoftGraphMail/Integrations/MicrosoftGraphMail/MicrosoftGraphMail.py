@@ -118,10 +118,12 @@ class MsGraphClient:
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
+        demisto.debug(f"URL suffix is {suffix}")
 
         try:
             response = self.ms_client.http_request('GET', suffix, timeout=user_timeout)
         except DemistoException as e:
+            demisto.debug(f"Response exception {e.message}")
             if 'requests.exceptions.ConnectionError' in e.message:
                 raise DemistoException("Connection timeout error. You can set timeout as an argument while running this "
                                        "command, try to increase the value.", e)
