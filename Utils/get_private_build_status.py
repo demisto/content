@@ -30,7 +30,10 @@ def get_workflow_status(bearer_token, workflow_id):
 
 
 def main():
-    logging.info(os.environ["PRIVATE_REPO_WORKFLOW_ID"])
+    workflow_id = ''
+    with open("PRIVATE_REPO_WORKFLOW_ID.txt", "r") as f:
+        workflow_id = f.read()
+    print(workflow_id)
     # arg_parser = argparse.ArgumentParser()
     # arg_parser.add_argument('--github-token', help='Github token')
     # arg_parser.add_argument('--workflow-id', help='Workflow ID')

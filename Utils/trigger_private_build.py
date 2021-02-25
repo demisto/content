@@ -97,13 +97,15 @@ def main():
         workflow_id = [x for x in workflow_ids_new if x not in workflow_ids]
         if workflow_id:
             workflow_id = workflow_id[0]
-            logging.info(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
+            print(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
                          f' https://github.com/demisto/content-private/actions/runs/{workflow_id}')
-            os.environ["PRIVATE_REPO_WORKFLOW_ID"] = str(workflow_id)
+
+            with open("PRIVATE_REPO_WORKFLOW_ID.txt", "w") as f:
+                f.write(str(workflow_id))
             sys.exit(0)
 
     else:
-        logging.info('Build private repo skipped')
+        print('Build private repo skipped')
         sys.exit(0)
 
 
