@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 import time
@@ -161,9 +160,6 @@ def flatten(d):
             r.update(flatten(v))
     d.update(r)
     return d
-
-
-
 
 
 def filter_dict_null(d):
@@ -401,8 +397,6 @@ def get_report_command():
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
     results = []
     scan_details = send_scan_request(scan_id)
-    demisto.results(ACCESS_KEY)
-    demisto.results(SECRET_KEY)
     if info == 'yes':
         scan_details['info']['id'] = scan_id
         scan_details['info'] = replace_keys(scan_details['info'])
@@ -495,39 +489,24 @@ def get_scan_status_command():
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
 
 
+def is_valid_scan_id(scan_id):
+    if scan_id == "" or scan_id.isalpha():
+        return False
+    return True
+
+
 def pause_scan_command():
-    scan_ids = str(demisto.getArg('scanIds')).split(",")
+    scan_ids = str(demisto.getArg('scanId')).split(",")
 
     results = []
-    count = 1
 
     for i in scan_ids:
         scan_id = i.strip()
-        if scan_id == "":
+        if not is_valid_scan_id(scan_id):
             results.append(
-                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' was blank.".format(count, scan_id))
-            count += 1
-            continue
-        if scan_id.isalpha():
-            results.append(
-                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' contains alpha-numeric characters.".format(count, scan_id))
-            count += 1
-            continue
-        if len(scan_id) > 3:
-            results.append(
-                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
-            count += 1
-            continue
-        if scan_id.isdigit():
-            pass
-        else:
-            results.append(
-                "Command 'tenable-io-pause-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
-            count += 1
-            continue
-        count += 1
+                "Command 'tenable-io-pause-scan' cannot be called cause scan ID '{}' was blank or "
+                "invalid.".format(scan_id))
 
-        demisto.results(scan_id)
         scan_details = send_scan_request(scan_id)
         scan_status = {
             'Id': scan_id,
@@ -545,93 +524,45 @@ def pause_scan_command():
 
         else:
             results.append(
-                "Command 'tenable-io-pause-scan' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
+                "Command 'tenable-io-pause-scan' cannot be called while scan status is {} for scanID"
+                " {}".format(scan_status["Status"], scan_id))
 
     return results
 
 
 def resume_scan_command():
-    scan_ids = str(demisto.getArg('scanIds')).split(",")
+    scan_ids = str(demisto.getArg('scanId')).split(",")
 
     results = []
-    count = 1
 
     for i in scan_ids:
         scan_id = i.strip()
-        if scan_id == "":
+        if not is_valid_scan_id(scan_id):
             results.append(
-                "Command 'tenable-io-resume-scan' cannot be called. Item number {} with a scan ID of '{}' was blank.".format(count, scan_id))
-            count += 1
-            continue
-        if scan_id.isalpha():
-            results.append(
-                "Command 'tenable-io-resume-scan' cannot be called. Item number {} with a scan ID of '{}' contains alpha-numeric characters.".format(count, scan_id))
-            count += 1
-            continue
-        if len(scan_id) > 3:
-            results.append(
-                "Command 'tenable-io-resume-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
-            count += 1
-            continue
-        if scan_id.isdigit():
-            pass
-        else:
-            results.append(
-                "Command 'tenable-io-resume-scan' cannot be called. Item number {} with a scan ID of '{}' is an invalid scan ID.".format(count, scan_id))
-            count += 1
-            continue
-        count += 1
+                "Command 'tenable-io-resume-scan' cannot be called cause scan ID '{}' was blank or "
+                "invalid.".format(scan_id))
 
-        demisto.results(scan_id)
         scan_details = send_scan_request(scan_id)
         scan_status = {
             'Id': scan_id,
             'Status': scan_details['info']['status']
         }
 
-        if scan_status["Status"].lower() == "running":
+        if scan_status["Status"].lower() == "paused":
             send_scan_request(scan_id, "resume", "POST")
             resumed_scan = {
                 "Id": scan_id,
-                "Status": "resuming"
+                "Status": "Resuming"
             }
             results.append(get_entry_for_object("The requested scan was resumed successfully",
                                                 "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
 
         else:
             results.append(
-                "Command 'tenable-io-resume-scan' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
+                "Command 'tenable-io-resume-scan' cannot be called while scan status is {} for scanID "
+                "{}".format(scan_status["Status"], scan_id))
 
     return results
-
-
-def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignore_license_error=False, **kwargs):
-
-    if endpoint and (len(endpoint_base) > 0):
-        endpoint = '/' + endpoint
-    full_url = "{0}{1}{2}".format(BASE_URL, endpoint_base, endpoint)
-    print(full_url)
-
-    for i in range(5):
-        try:
-            res = requests.request(method, full_url, data=payload, headers=NEW_HEADERS, verify=USE_SSL, params=kwargs)
-            res.raise_for_status()
-            break
-        except HTTPError:
-            if i < 4:
-                time.sleep(60)
-            else:
-                if ignore_license_error and res.status_code in (403, 500):
-                    return "Status code error: {}".format(res.status_code)
-                else:
-                    return "Status code error: {}".format(res.status_code)
-
-                demisto.error(traceback.format_exc())
-
-    try:
-        return res.json()
-    except ValueError:
-        return "No JSON to decode."
 
 
 if demisto.command() == 'test-module':
