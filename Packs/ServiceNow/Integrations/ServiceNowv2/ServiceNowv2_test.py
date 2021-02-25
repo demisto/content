@@ -929,15 +929,15 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
 def test_get_ticket_attachments(mocker, sys_created_on, expected):
     """
     Given:
-        - Case A: sys_created_on argument was not provided
-        - Case B: sys_created_on argument was provided
+        - Cases A+B: sys_created_on argument was not provided
+        - Case C: sys_created_on argument was provided
 
     When:
         - Getting a ticket attachments.
 
     Then:
-        - Case A: Ensure that the query parameters do not include ^sys_created_on>
-        - Case B: Ensure that the query parameters include ^sys_created_on>
+        - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
+        - Case C: Ensure that the query parameters include ^sys_created_on>
     """
     client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
