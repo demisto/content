@@ -28,8 +28,7 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
-        # pylint: disable=E1136 # noqa: E501
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -175,7 +174,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: O
         incidents_to_export = incidents_queue[:max_fetch]
         if not fetch_informational:
             incidents_to_export = [incident for incident in incidents_to_export if
-                                   incident.get("severity") > DEMISTO_INFORMATIONAL]
+                                   incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
 
         incidents_for_next_run = incidents_queue[max_fetch:]
 
@@ -185,7 +184,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: O
             if fetch_type == "XSOAR-Pull":
                 updated_alerts = orca_client.get_updated_alerts()
                 incidents = get_incidents_from_alerts(updated_alerts)
-                incidents = [incident for incident in incidents if incident.get("severity") > DEMISTO_INFORMATIONAL]
+                incidents = [incident for incident in incidents if incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
 
             demisto.incidents(incidents)
             demisto.setLastRun(
@@ -281,25 +280,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-# In commands not fail if no alerts (because command fails it fails the playbook)
-
-
-def arg_to_timestamp(arg, arg_name: str, required: bool = False):
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp that str - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp() * 1000)
-    if isinstance(arg, (int, float)):
-        return arg
