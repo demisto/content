@@ -158,7 +158,7 @@ script:
       name: end_date
       required: true
     - defaultValue: "1"
-      description: "\t integer <int64> Default: 1 Requested page number"
+      description: "integer <int64> Default: 1 Requested page number"
       name: page
     - auto: PREDEFINED
       description: Array of strings - Products info of the mitigation
