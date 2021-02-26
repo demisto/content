@@ -1,0 +1,19 @@
+{
+    "name": "ThycoticDSV",
+    "description": "Thycotic\u2019s DevOps Secrets Vault is a high velocity vault that centralizes secrets management, enforces access, and provides automated logging trails. This cloud-based solution is platform agnostic and designed to replace hard-coded credentials in applications, micro-services, DevOps tools, and robotic process automation. This vault ensures IT, DevOps and Security teams the speed and agility needed to stay competitive without sacrificing security.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Thycotic Inc",
+    "url": "/home/andy/Desktop/Demisto/content/Packs/Thycotic/pack_metadata.json",
+    "email": "support@thycotic.com",
+    "created": "2020-12-17T08:04:48Z",
+    "categories": [
+        "Authentication"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "AndyNikolaev"
+    ]
+}

@@ -1,0 +1,67 @@
+category: Authentication
+commonfields:
+  id: ThycoticDSV
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Client id for client_credentials grant type
+  hidden: false
+  name: client_id
+  required: true
+  type: 0
+- display: Client secret for client_credentials grant type
+  hidden: false
+  name: client_secret
+  required: true
+  type: 0
+description: Thycotic DevOps Secrets Vault is a high velocity vault that centralizes
+  secrets management, enforces access, and provides automated logging trails. This
+  cloud-based solution is platform agnostic and designed to replace hard-coded credentials
+  in applications, micro-services, DevOps tools, and robotic process automation. This
+  vault ensures IT, DevOps and Security teams the speed and agility needed to stay
+  competitive without sacrificing security.
+display: ThycoticDSV
+name: ThycoticDSV
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Name secret for operation Get
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get secret for client
+    execution: false
+    name: dsv-secret-get
+    outputs:
+    - contextPath: secret
+      description: JSON object secret
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
