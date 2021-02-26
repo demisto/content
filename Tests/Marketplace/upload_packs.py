@@ -441,7 +441,7 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
 
 def add_private_content_to_index(private_index_path: str, extract_destination_path: str, index_folder_path: str,
                                  pack_names: set) -> Tuple[Union[list, list], list]:
-    """ Adds a list of priced packs data-structures to the public index.json file.
+    """ Adds a list of priced packs data-structures to the public index.json file. This step should not be skipped even if there are no new or updated private packs.
 
     Args:
         private_index_path: path to where the private index is located.

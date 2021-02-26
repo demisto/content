@@ -9,7 +9,7 @@ import requests
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs, PackStatus
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
