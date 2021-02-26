@@ -1,0 +1,24 @@
+comment: When your SOC team close incidents on QRadar, you can sync XSOAR and QRadar
+  using this automation.
+commonfields:
+  id: QRadarXSOARIncidentConcurrency
+  version: -1
+dependson:
+  must:
+  - QRadar|||qradar-offenses
+  - Builtin|||closeInvestigation
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: QRadarXSOARIncidentConcurrency
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- QRadar
+timeout: 300ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
