@@ -5,7 +5,7 @@ commonfields:
   version: -1
 dependson:
   must:
-  - QRadar|||qradar-offenses
+  - QRadar_v2|||qradar-offenses
   - Builtin|||closeInvestigation
 dockerimage: demisto/python3:3.9.1.15759
 enabled: true
