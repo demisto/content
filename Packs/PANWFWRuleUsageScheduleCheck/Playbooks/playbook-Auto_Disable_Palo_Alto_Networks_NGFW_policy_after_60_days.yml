@@ -1,0 +1,597 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c4a54710-b1a1-4795-8280-aa8651094016
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: c6d379cc-6ba2-444b-851e-adf36c1bd22f
+inputs: []
+name: Auto Disable Palo Alto Networks NGFW policy after 60 days
+outputs:
+- contextPath: TimeStampCompare.Result
+  description: Whether the tested time was before, after, or equal to the comapred
+    time.
+  type: String
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0a630b8-e449-4189-8dfb-11f97c8623c2
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: a0a630b8-e449-4189-8dfb-11f97c8623c2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Sam Version
+      description: custom rule count command by Sam Soon for demo purpose
+      id: 1a334afb-ea54-43c9-8059-1e1b2bc680b0
+      iscommand: true
+      name: Get Policy Last Hit Date
+      script: Palo Alto Sam Version|||panorama-show-rule-hit-count
+      type: regular
+      version: -1
+    taskid: 1a334afb-ea54-43c9-8059-1e1b2bc680b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat:
+        simple: Year
+      daysAgo: {}
+      hoursAgo: {}
+      ignore-outputs:
+        simple: "false"
+      minutesAgo: {}
+      monthsAgo:
+        simple: "2"
+      yearsAgo: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 44415437-fa47-4fbf-894a-c32d9b4869b8
+      iscommand: false
+      name: Get Date minus 2 month
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: 44415437-fa47-4fbf-894a-c32d9b4869b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Time
+      stringify: {}
+      value:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - args:
+              by:
+                value:
+                  simple: "1000"
+            operator: division
+          - args:
+              by: {}
+            operator: precision
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bbda4c01-5815-4289-8cd7-0282ad1d1b3f
+      iscommand: false
+      name: Set Today Date Value
+      script: Set
+      type: regular
+      version: -1
+    taskid: bbda4c01-5815-4289-8cd7-0282ad1d1b3f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Time
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: e80416d1-de30-4574-8661-7e1e96e2f644
+      iscommand: false
+      name: Remove Previous Date Value
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e80416d1-de30-4574-8661-7e1e96e2f644
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalOptions: {}
+      channel:
+        simple: soc
+      defaultResponse: {}
+      lifetime: {}
+      message:
+        simple: |-
+          The following security rules are not been use more than _*60 days*_
+          ${RuleToBeDelete}
+          Do you want to disable them?
+      option1: {}
+      option2: {}
+      persistent: {}
+      reply: {}
+      replyEntriesTag: {}
+      responseType:
+        simple: thread
+      task:
+        simple: "18"
+      user: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message (question) to either user (in a direct message)
+        or to a channel. The message includes predefined reply options. The response
+        can also close a task (might be conditional) in a playbook.
+      id: 064259c8-80ba-4198-85cf-9667e986ca0b
+      iscommand: false
+      name: Ask Admin in Slack
+      script: SlackAsk
+      type: regular
+      version: -1
+    taskid: 064259c8-80ba-4198-85cf-9667e986ca0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2c4dce83-07fe-407c-823c-f5a85a94b2df
+      iscommand: false
+      name: Disable Policy?
+      type: condition
+      version: -1
+    taskid: 2c4dce83-07fe-407c-823c-f5a85a94b2df
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: RuleToBeDelete
+      stringify: {}
+      value:
+        complex:
+          accessor: Name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Panorama.SecurityRule.LastHitTimestamp
+              operator: lessThanOrEqual
+              right:
+                iscontext: true
+                value:
+                  simple: Time
+          root: Panorama.SecurityRule
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 51bc1613-87b4-4757-8fb6-f4dfaefe5f26
+      iscommand: false
+      name: Set Rule Value
+      script: Set
+      type: regular
+      version: -1
+    taskid: 51bc1613-87b4-4757-8fb6-f4dfaefe5f26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Sam Version
+      description: Commits a configuration to Palo Alto Firewall or Panorama, but
+        does not validate if the commit was successful. Committing to Panorama does
+        not push the configuration to the Firewalls. To push the configuration, run
+        the panorama-push-to-device-group command.
+      id: 0b699a2b-8936-4fae-8b45-1da10ce64b1a
+      iscommand: true
+      name: panorama-commit
+      script: Palo Alto Sam Version|||panorama-commit
+      type: regular
+      version: -1
+    taskid: 0b699a2b-8936-4fae-8b45-1da10ce64b1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Panorama.Commit.JobID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Sam Version
+      description: Returns commit status for a configuration.
+      id: 51f70b4c-a78e-4100-84af-9878f17b6c61
+      iscommand: true
+      name: panorama-commit-status
+      script: Palo Alto Sam Version|||panorama-commit-status
+      type: regular
+      version: -1
+    taskid: 51f70b4c-a78e-4100-84af-9878f17b6c61
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: a9c3fd3d-55ce-492f-82ef-8da007440bab
+      iscommand: false
+      name: Sleep
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: a9c3fd3d-55ce-492f-82ef-8da007440bab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aab1492a-4272-412d-8f1f-3eb41cbcb0dd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: aab1492a-4272-412d-8f1f-3eb41cbcb0dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: RuleToBeDelete
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: c1af57e5-b08d-4deb-8ce2-7d6b746644b5
+      iscommand: false
+      name: Remove Previous Rule Value
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: c1af57e5-b08d-4deb-8ce2-7d6b746644b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Panorama
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 49a3e948-5b79-439c-8ecd-b0e88e2c9357
+      iscommand: false
+      name: Remove Previous Panorama Value
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 49a3e948-5b79-439c-8ecd-b0e88e2c9357
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: a91dde9f-8d0b-4dee-8b3d-4bfda104cd6a
+      iscommand: true
+      name: Close incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a91dde9f-8d0b-4dee-8b3d-4bfda104cd6a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group: {}
+      pre_post: {}
+      rulename:
+        simple: ${RuleToBeDelete}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Sam Version
+      description: Disable a policy rule.
+      id: f5a64ecf-cc08-4602-820a-95d35e76901c
+      iscommand: true
+      name: panorama-disable-rule
+      script: Palo Alto Sam Version|||panorama-disable-rule
+      type: regular
+      version: -1
+    taskid: f5a64ecf-cc08-4602-820a-95d35e76901c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2165,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

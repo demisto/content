@@ -1,0 +1,17 @@
+{
+    "name": "PANW FW rule usage schedule check",
+    "description": "add in command in PANW FW to disable rule and display last rule hit date, administrator can use in Job for schedule check, to disable potential unused rule for long period and delete them eventually. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Sam Soon",
+    "url": "",
+    "email": "",
+    "created": "2021-02-26T05:52:49Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "sam99my"
+    ]
+}
