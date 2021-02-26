@@ -1,0 +1,22 @@
+comment: Shows feed relationship data in a table with the ability to navigate
+commonfields:
+  id: CyrenThreatInDepthRenderRelated
+  version: -1
+enabled: true
+name: CyrenThreatInDepthRenderRelated
+script: '-'
+subtype: python3
+system: false
+tags:
+- cyren
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 6.0.0
+args:
+- description: The indicator that holds the relationships. As JSON representation.
+  name: indicator
+  required: true
+- description: The columns to render (uses full list of supported columns, if not provided). As comma-separated list, like `Value,Indicator Type`.
+  name: columns
+  required: false
