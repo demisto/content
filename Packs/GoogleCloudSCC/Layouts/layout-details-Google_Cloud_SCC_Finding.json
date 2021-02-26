@@ -427,19 +427,10 @@
        },
        {
         "endCol": 2,
-        "fieldId": "detectedby",
-        "height": 53,
-        "id": "aa345660-51d6-11eb-8a8f-7d8a1ff77baf",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "googlecloudsccfindingurl",
         "height": 53,
         "id": "eba4d2c0-5be8-11eb-9413-47d322525c0d",
-        "index": 5,
+        "index": 4,
         "sectionItemType": "field",
         "startCol": 0
        }
@@ -490,31 +481,11 @@
       "i": "plk0ymivm5-f95f5dc0-51d6-11eb-8a8f-7d8a1ff77baf",
       "items": [
        {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "remediation",
-        "height": 53,
-        "id": "b335d440-51d7-11eb-8a8f-7d8a1ff77baf",
-        "index": 0,
-        "listId": "plk0ymivm5-f95f5dc0-51d6-11eb-8a8f-7d8a1ff77baf",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "recommendation",
-        "height": 53,
-        "id": "289f0e70-5c25-11eb-beb4-25edcb0036fb",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
         "endCol": 2,
         "fieldId": "googlecloudsccrecommendation",
         "height": 106,
         "id": "a3a63d10-5c97-11eb-ad7c-f91f6c442086",
-        "index": 1,
+        "index": 0,
         "sectionItemType": "field",
         "startCol": 0
        }
@@ -596,7 +567,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "googlecloudsccparentresourceparentdisplayname",
+        "fieldId": "googlecloudsccresourceparentdisplayname",
         "height": 53,
         "id": "74bc2230-5585-11eb-8d73-ab5dbe2c181c",
         "index": 6,
@@ -627,15 +598,6 @@
         "height": 53,
         "id": "c419b420-5439-11eb-9895-433ad3f802cd",
         "index": 9,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourcefolder",
-        "height": 53,
-        "id": "b3fb6c00-5439-11eb-9895-433ad3f802cd",
-        "index": 10,
         "sectionItemType": "field",
         "startCol": 0
        },

@@ -28,26 +28,9 @@
      },
      "simple": ""
     },
-    "Detected By": {
-     "complex": null,
-     "simple": "source_name"
-    },
     "Event Type": {
      "complex": null,
      "simple": "finding.sourceProperties.event_type"
-    },
-    "First Discovered ": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "finding.createTime",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
     },
     "GoogleCloudSCC Asset DisplayName": {
      "complex": null,
@@ -596,11 +579,7 @@
      "complex": null,
      "simple": "finding.sourceProperties.Explanation"
     },
-    "GoogleCloudSCC Parent DisplayName": {
-     "complex": null,
-     "simple": "resource.parentDisplayName"
-    },
-    "GoogleCloudSCC Parent Resource ParentDisplayName": {
+    "GoogleCloudSCC Resource ParentDisplayName": {
      "complex": null,
      "simple": "resource.parentDisplayName"
     },
@@ -655,19 +634,6 @@
      },
      "simple": ""
     },
-    "Most recently seen": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "finding.eventTime",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
-    },
     "OS": {
      "complex": {
       "accessor": "os",
@@ -684,14 +650,6 @@
     "OS Version": {
      "complex": null,
      "simple": "finding.sourceProperties.os_version"
-    },
-    "Recommendation": {
-     "complex": null,
-     "simple": "finding.sourceProperties.Recommendation"
-    },
-    "Remediation": {
-     "complex": null,
-     "simple": "finding.sourceProperties.Recommendation"
     },
     "Source IP": {
      "complex": {
@@ -744,19 +702,6 @@
       ]
      },
      "simple": ""
-    }
-   }
-  },
-  "dbot_classification_incident_type_all": {
-   "dontMapEventToLabels": false,
-   "internalMapping": {
-    "Most recently seen": {
-     "complex": null,
-     "simple": "finding.eventTime"
-    },
-    "Remediation": {
-     "complex": null,
-     "simple": "finding.sourceProperties.Recommendation"
     }
    }
   }

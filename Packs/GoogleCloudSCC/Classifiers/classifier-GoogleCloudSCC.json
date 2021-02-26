@@ -1,6 +1,6 @@
 {
  "defaultIncidentType": "Google Cloud SCC Finding",
- "description": "Classifies Google Cloud SCC  incidents",
+ "description": "Classifies Google Cloud SCC incidents",
  "feed": false,
  "id": "GoogleCloudSCC",
  "keyTypeMap": {
