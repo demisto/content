@@ -632,7 +632,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
             return
 
         if is_private_content_updated:
-            logging.debug("Skipping index update ad Private Content has updated.")
+            logging.debug("Skipping index update as Private Content has updated.")
             return
 
         if not os.path.exists(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")):
