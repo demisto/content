@@ -1,0 +1,17 @@
+{
+    "name": "Generic SQL BugFix",
+    "description": "Bug Fix: added Optional class import from typing",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Clay Curtis",
+    "url": "",
+    "email": "",
+    "created": "2021-02-26T21:02:37Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "clay584"
+    ]
+}
