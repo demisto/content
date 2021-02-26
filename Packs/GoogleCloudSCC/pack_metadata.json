@@ -1,0 +1,17 @@
+{
+    "name": "GoogleCloudSCC",
+    "description": "Security Command Center is a security and risk management platform for Google Cloud. Security Command Center enables you to understand your security and data attack surface by providing asset inventory and discovery, identifying vulnerabilities and threats, and helping you mitigate and remediate risks across an organization. This integration helps you to perform tasks related to findings and assets.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "GoogleCloudSCC",
+    "url": "https://cloud.google.com/security-command-center",
+    "email": "",
+    "created": "2020-12-17T10:49:54Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": ["Threat Intelligence"],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
