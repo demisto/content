@@ -127,15 +127,17 @@ def generalSearch():
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'General Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.GeneralSearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def keywordSearch():
@@ -156,15 +158,17 @@ def keywordSearch():
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'Keyword Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.KeywordSearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def cvssSearch():
@@ -189,15 +193,17 @@ def cvssSearch():
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'CVSS Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.CVSSSearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def cweSearch():
@@ -218,15 +224,17 @@ def cweSearch():
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'CWE Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.CWESearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def cpeSearch():
@@ -247,15 +255,17 @@ def cpeSearch():
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'CPE Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.CPESearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def cveSearch():
@@ -273,15 +283,17 @@ def cveSearch():
                'CVSSv3 Vector String', 'CVSSv3 Attack Vector', 'CVSSv3 Attack Complexity',
                'CVSSv3 Privileges Required', 'CVSSv3 User Interaction', 'CVSSv3 Scope',
                'CVSSv3 Confidentiality Impact', 'CVSSv3 Integrity Impact', 'CVSSv3 Availability Impact']
-    hr = tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers, removeNull=True)
+    markdown = 'CVE Search\n'
+    markdown += tableToMarkdown('Vulnerabilities', generalVulnerabilityList, headers=headers, removeNull=True)
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': generalVulnerabilityList,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr
-    }
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='NistNVD.CVESearch',
+        outputs_key_field='CVE ID',
+        outputs=generalVulnerabilityList
+    )
+
+    return_results(results)
 
 
 def main() -> None:
@@ -299,17 +311,17 @@ def main() -> None:
         if demisto.command() == 'test-module':
             demisto.results(test_module())
         elif demisto.command() == 'nvd-get-vulnerability':
-            demisto.results(generalSearch())
+            generalSearch()
         elif demisto.command() == 'nvd-search-keyword':
-            demisto.results(keywordSearch())
+            keywordSearch()
         elif demisto.command() == 'nvd-search-cvss':
-            demisto.results(cvssSearch())
+            cvssSearch()
         elif demisto.command() == 'nvd-search-cwe':
-            demisto.results(cweSearch())
+            cweSearch()
         elif demisto.command() == 'nvd-search-cpe':
-            demisto.results(cpeSearch())
+            cpeSearch()
         elif demisto.command() == 'nvd-search-cve':
-            demisto.results(cveSearch())
+            cveSearch()
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
