@@ -53,7 +53,7 @@ def main():
         status = get_workflow_status(bearer_token, workflow_id)
 
         start = time.time()
-        time.clock()
+        time.process_time()
         elapsed = 0
 
         # polling the workflow status while is in progress
