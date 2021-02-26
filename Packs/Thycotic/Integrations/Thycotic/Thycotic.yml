@@ -53,7 +53,7 @@ script:
     name: thycotic-secret-password-get
     outputs:
     - contextPath: Thycotic.Secret.Password
-      description: Current password from secret
+      description: Password from secret
       type: String
   - arguments:
     - default: false
@@ -68,7 +68,7 @@ script:
     name: thycotic-secret-username-get
     outputs:
     - contextPath: Thycotic.Secret.Username
-      description: Retrieves username from secret.
+      description: Username from secret
       type: String
   - arguments:
     - default: false
@@ -83,7 +83,7 @@ script:
     name: thycotic-secret-search-name
     outputs:
     - contextPath: Thycotic.Secret.Id
-      description: Retrieves list of Secret IDs.
+      description: List of Secret IDs.
       type: String
   - arguments:
     - default: false
@@ -134,7 +134,7 @@ script:
     name: thycotic-secret-checkin
     outputs:
     - contextPath: Thycotic.Secret.Checkin
-      description: Object Secret summary
+      description: Secret object
       type: String
   - arguments:
     - default: false
@@ -195,7 +195,7 @@ script:
     outputs:
     - contextPath: Thycotic.Folder.Create
       description: New object folder
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: Folder name
@@ -209,7 +209,7 @@ script:
     name: thycotic-folder-search
     outputs:
     - contextPath: Thycotic.Folder.Id
-      description: Retrieved folder ID from search query
+      description: List of Folder IDs
       type: String
   - arguments:
     - default: false
@@ -224,7 +224,7 @@ script:
     name: thycotic-folder-delete
     outputs:
     - contextPath: Thycotic.Folder.Delete
-      description: Deleted folder by ID
+      description: Folder ID
       type: String
   - arguments:
     - default: false
@@ -465,7 +465,7 @@ script:
     name: thycotic-secret-search
     outputs:
     - contextPath: Thycotic.Secret.Secret
-      description: Search secret object
+      description: List of Folder IDs
       type: String
   - arguments:
     - default: false
@@ -524,7 +524,7 @@ script:
     name: thycotic-folder-update
     outputs:
     - contextPath: Thycotic.Folder.Update
-      description: Retrieved return operation update folder
+      description: Folder object
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -699,7 +699,7 @@ script:
     name: thycotic-secret-create
     outputs:
     - contextPath: Thycotic.Secret.Create
-      description: Secret Model
+      description: Secret object
       type: String
   - arguments:
     - default: false
@@ -714,7 +714,7 @@ script:
     name: thycotic-secret-delete
     outputs:
     - contextPath: Thycotic.Secret.Delete
-      description: Information about an object that was deleted
+      description: Secret object
       type: String
   - arguments:
     - default: false
@@ -836,7 +836,7 @@ script:
     name: thycotic-user-create
     outputs:
     - contextPath: Thycotic.User.Create
-      description: User Model
+      description: User object
       type: String
   - arguments:
     - default: false
@@ -903,8 +903,7 @@ script:
     name: thycotic-user-search
     outputs:
     - contextPath: Thycotic.User.Search
-      description: Specify paging and sorting options for querying records and returning
-        results
+      description: List of User IDs
       type: String
   - arguments:
     - default: false
@@ -1057,7 +1056,7 @@ script:
     name: thycotic-user-update
     outputs:
     - contextPath: Thycotic.User.Update
-      description: User Model
+      description: User object
       type: String
   - arguments:
     - default: false
@@ -1072,7 +1071,7 @@ script:
     name: thycotic-user-delete
     outputs:
     - contextPath: Thycotic.User.Delete
-      description: Information about an object that was deleted
+      description: User object
       type: String
   - arguments:
     - default: false
@@ -1093,7 +1092,7 @@ script:
     name: thycotic-secret-rpc-changepassword
     outputs:
     - contextPath: Thycotic.Secret.ChangePassword
-      description: Secret summary object
+      description: Secret  object
       type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
