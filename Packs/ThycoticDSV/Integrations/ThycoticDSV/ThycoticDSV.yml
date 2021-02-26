@@ -3,8 +3,7 @@ commonfields:
   id: ThycoticDSV
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- display: Server URL (e.g. https://example.com)
   name: url
   required: true
   type: 0
@@ -16,12 +15,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Client id for client_credentials grant type
+- display: Client id for grant type
   hidden: false
   name: client_id
   required: true
   type: 0
-- display: Client secret for client_credentials grant type
+- display: Client secret for grant type
   hidden: false
   name: client_secret
   required: true
@@ -60,8 +59,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)
 defaultmapperin: HelloWorld-mapper
 defaultclassifier: HelloWorld
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

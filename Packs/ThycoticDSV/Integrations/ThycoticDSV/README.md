@@ -10,7 +10,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(e.g. https://soar.monstersofhack.com\) | True |
+    | url | Server URL \(e.g. https://example.com\) | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
     | client_id | Client id for client_credentials grant type | True |
