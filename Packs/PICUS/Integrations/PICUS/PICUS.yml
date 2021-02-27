@@ -43,8 +43,7 @@ script:
     - description: Attacker Peer
       name: untrusted
       required: true
-    description: 'Attack Result - Makes a comparison of the given vector''s results.
-      Example Command: !picus-vector-compare begin_date=2020-01-20 end_date=2021-01-20
+    description: 'Attack Result - Makes a comparison of the given vector''s results. Example Command: !picus-vector-compare begin_date=2020-01-20 end_date=2021-01-20
       trusted=Trusted_Peer1 untrusted=Untrusted_Peer1'
     name: picus-vector-compare
   - arguments:
@@ -90,8 +89,7 @@ script:
     - description: ' Array of objects (PeerPairParams) Vectors.(Untrusted Peer)'
       name: vector2
       required: true
-    description: Returns the list of the attack results. Have optional parameters
-      for pagination and filtration. Example Command: !picus-attack-result-list
+    description: Returns the list of the attack results. Have optional parameters for pagination and filtration. Example Command: !picus-attack-result-list
       attack_result=insecure begin_date=2020-01-01 end_date=2020-09-05  vector1=Trusted-Peer1
       vector2=Untrusted-Peer1
     name: picus-attack-result-list
@@ -111,8 +109,7 @@ script:
     - description: integer <int64> PID of the threat
       name: threat_id
       required: true
-    description: 'Returns the list of the attack results of a single threat\nhave
-      optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results
+    description: 'Returns the list of the attack results of a single threat have optional parameters for pagination and filtration. Example Command: !picus-specific-threats-results
       threat_id=666059'
     name: picus-specific-threats-results
   - arguments: []
@@ -177,13 +174,11 @@ script:
     - description: integer <int64> -  PID of the threat
       name: threat_id
       required: true
-    description: 'Returns the list of the mitigations of threats have optional parameters
-      for pagination and filtration, this route may not be used associated with your
-      license. Example Command: !picus-mitigation-list begin_date=2021-01-01 end_date=2021-02-01
+    description: 'Returns the list of the mitigations of threats have optional parameters for pagination and filtration, this route may not be used associated with your license. Example Command: !picus-mitigation-list begin_date=2021-01-01 end_date=2021-02-01
       threat_id=528370 products="McAfee IPS" signature_id=0x40208a00'
     name: picus-mitigation-list
   - arguments: []
-    description: Returns the mitre matrix metadata\ntakes no parameters
+    description: Returns the mitre matrix metadata takes no parameters
     name: picus-mitre-matrix
   - arguments:
     - defaultValue: "100"
@@ -193,7 +188,7 @@ script:
       defaultValue: "1"
       description: Page of Displayed Rule
       name: page
-    description: Returns the list of the sigma rules of scenario actions\nhave optional
+    description: Returns the list of the sigma rules of scenario actions have optional
       parameters for pagination and filtration, this route may not be used associated
       with your license
     name: picus-sigma-rules-list
@@ -207,7 +202,7 @@ script:
     - defaultValue: "50"
       description: 'Default: 50 Requested data size'
       name: size
-    description: Returns the list of the vectors all disabled and enabled ones\nhave
+    description: Returns the list of the vectors all disabled and enabled ones have
       optional parameters for pagination
     name: picus-vector-list
   dockerimage: demisto/python3:3.9.1.15759
