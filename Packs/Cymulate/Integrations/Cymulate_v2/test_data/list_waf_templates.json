@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "12345",
+      "name": "free assessment"
+    },
+    {
+      "_id": "34",
+      "name": "Cymulate Best Practice"
+    },
+    {
+      "_id": "56",
+      "name": "File Inclusion"
+    },
+    {
+      "_id": "78",
+      "name": "XSS"
+    },
+    {
+      "_id": "90",
+      "name": "SSRF"
+    },
+    {
+      "_id": "11-12",
+      "name": "SQL Injection"
+    },
+    {
+      "_id": "13-14",
+      "name": "Command Injection"
+    }
+  ]
+}

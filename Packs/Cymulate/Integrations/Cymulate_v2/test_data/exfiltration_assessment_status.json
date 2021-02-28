@@ -1,0 +1,8 @@
+{
+  "_id": "id_12345",
+  "inProgress": false,
+  "progress": 0,
+  "categories": [
+    "dns-tunneling"
+  ]
+}

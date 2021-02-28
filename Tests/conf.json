@@ -3243,7 +3243,13 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
-        }
+        },
+		{
+			"integrations": "cymulate_v2",
+			"playbookID": "Cymulate V2 Test",
+            "fromversion": "6.0.0"
+		}
+		
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
