@@ -7,10 +7,9 @@ import copy
 from collections import defaultdict
 from typing import Callable
 
-from CommonServerPython import *
 import demistomock as demisto
+from CommonServerPython import *
 
-DBOT_SCORE = (Common.DBotScore.GOOD, Common.DBotScore.SUSPICIOUS, Common.DBotScore.BAD, Common.DBotScore.NONE)
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
@@ -203,7 +202,7 @@ class Client(BaseClient):
             f'/files/{file_hash}/analyse'
         )
 
-    def file_scan(self, file_path: str, /, upload_url: str) -> dict:
+    def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#files-scan
@@ -264,6 +263,7 @@ class Client(BaseClient):
             f'/analyses/{analysis_id}'
         )
 
+    # region Premium commands
     def get_relationship(self, indicator: str, indicator_type: str, relationship: str) -> dict:
         """
         Args:
@@ -273,6 +273,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#urls-relationships
             https://developers.virustotal.com/v3.0/reference#domains-relationships
+            https://developers.virustotal.com/v3.0/reference#ip-relationships
         """
 
         return self._http_request(
@@ -283,12 +284,18 @@ class Client(BaseClient):
     def get_domain_relationships(self, domain: str, relationship: str) -> dict:
         """
         Wrapper of get_relationship
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
         return self.get_relationship(domain, 'domains', relationship)
 
     def get_domain_communicating_files(self, domain: str) -> dict:
         """
         Wrapper of get_domain_relationships
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -298,6 +305,9 @@ class Client(BaseClient):
     def get_domain_downloaded_files(self, domain: str) -> dict:
         """
         Wrapper of get_domain_relationships
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -307,6 +317,9 @@ class Client(BaseClient):
     def get_domain_referrer_files(self, domain: str) -> dict:
         """
         Wrapper of get_domain_relationships
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -316,12 +329,18 @@ class Client(BaseClient):
     def get_url_relationships(self, url: str, relationship: str) -> dict:
         """
         Wrapper of get_relationship
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
         return self.get_relationship(encode_url_to_base64(url), 'urls', relationship)
 
     def get_url_communicating_files(self, url: str) -> dict:
         """
         Wrapper of url_relationships
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -331,6 +350,9 @@ class Client(BaseClient):
     def get_url_downloaded_files(self, url: str) -> dict:
         """
         Wrapper of url_relationships
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -340,11 +362,60 @@ class Client(BaseClient):
     def get_url_referrer_files(self, url: str) -> dict:
         """
         Wrapper of url_relationships
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
         """
         return self.get_url_relationships(
             url,
             'referrer_files'
         )
+
+    def get_ip_relationships(self, ip: str, relationship: str) -> dict:
+        """
+        Wrapper of get_relationship
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
+        """
+        return self.get_relationship(ip, 'ip_addresses', relationship)
+
+    def get_ip_communicating_files(self, ip: str) -> dict:
+        """
+        Wrapper of get_ip_relationships
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#urls-relationships
+        """
+        return self.get_ip_relationships(
+            ip,
+            'communicating_files'
+        )
+
+    def get_ip_downloaded_files(self, ip: str) -> dict:
+        """
+        Wrapper of get_ip_relationships
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#urls-relationships
+        """
+        return self.get_ip_relationships(
+            ip,
+            'downloaded_files'
+        )
+
+    def get_ip_referrer_files(self, ip: str) -> dict:
+        """
+        Wrapper of get_ip_relationships
+
+        See Also:
+                https://developers.virustotal.com/v3.0/reference#urls-relationships
+        """
+        return self.get_ip_relationships(
+            ip,
+            'referrer_files'
+        )
+    # endregion
 
 
 class ScoreCalculator:
@@ -419,8 +490,7 @@ class ScoreCalculator:
                 return False
         return None
 
-
-    def is_malicious_by_rules(self, file_response: dict) -> bool:
+    def is_suspicious_by_rules(self, file_response: dict) -> bool:
         data = file_response['data']
         if self.crowdsourced_yara_rules_enabled:
             self.logs.append(
@@ -509,14 +579,27 @@ class ScoreCalculator:
         self.logs.append(f'Not found malicious by threshold: {total_malicious=} >= {threshold=}. ')
         return False
 
-    def is_malicious_or_suspicious_by_threshold(self, analysis_stats: dict, threshold: int) -> DBOT_SCORE:
+    def score_by_threshold(self, analysis_stats: dict, threshold: int) -> int:
         if self.is_malicious_by_threshold(analysis_stats, threshold):
             return Common.DBotScore.BAD
         if self.is_suspicious_by_threshold(analysis_stats, threshold):
             return Common.DBotScore.SUSPICIOUS
         return Common.DBotScore.GOOD
 
-    def file_score(self, given_hash: str, file_response: dict) -> DBOT_SCORE:
+    def score_by_results_and_stats(self, indicator: str, raw_response: dict, threshold: int) -> int:
+        self.logs.append(f'Basic analyzing of "{indicator}"')
+        data = raw_response['data']
+        attributes = data['attributes']
+        popularity_ranks = attributes.get('popularity_ranks')
+        last_analysis_results = attributes['last_analysis_results']
+        last_analysis_stats = attributes['last_analysis_stats']
+        if self.is_good_by_popularity_ranks(popularity_ranks):
+            return Common.DBotScore.GOOD
+        if self.is_preferred_vendors_pass_malicious(last_analysis_results):
+            return Common.DBotScore.BAD
+        return self.score_by_threshold(last_analysis_stats, threshold)
+
+    def file_score(self, given_hash: str, file_response: dict) -> int:
         self.logs.append(f'Analysing file hash {given_hash}. ')
         data = file_response['data']
         attributes = data['attributes']
@@ -527,12 +610,11 @@ class ScoreCalculator:
         if self.is_preferred_vendors_pass_malicious(analysis_results):
             return Common.DBotScore.BAD
 
-        score = self.is_malicious_or_suspicious_by_threshold(analysis_stats, self.file_threshold)
+        score = self.score_by_threshold(analysis_stats, self.file_threshold)
         if score == Common.DBotScore.BAD:
             return Common.DBotScore.BAD
 
-        # Malicious by stats
-        suspicious_by_rules = self.is_malicious_by_rules(file_response)
+        suspicious_by_rules = self.is_suspicious_by_rules(file_response)
         if score == Common.DBotScore.SUSPICIOUS and suspicious_by_rules:
             self.logs.append(
                 f'Hash: "{given_hash}" was found malicious as the hash is suspicious both by threshold and rules '
@@ -554,32 +636,19 @@ class ScoreCalculator:
         )
         return Common.DBotScore.GOOD  # Nothing caught
 
-    def ip_score(self, communicating_files: dict) -> DBOT_SCORE:
-        pass
+    def ip_score(self, ip: str, raw_response: dict) -> int:
+        return self.score_by_results_and_stats(
+            ip, raw_response, self.ip_threshold
+        )
 
-    def domain_url_score(self, indicator: str, raw_response: dict, threshold: int) -> DBOT_SCORE:
-        self.logs.append(f'Basic analyzing of "{indicator}"')
-        data = raw_response['data']
-        attributes = data['attributes']
-        popularity_ranks = attributes.get('popularity_ranks')
-        last_analysis_results = attributes['last_analysis_results']
-        last_analysis_stats = attributes['last_analysis_stats']
-        if self.is_good_by_popularity_ranks(popularity_ranks):
-            return Common.DBotScore.GOOD
-        if self.is_preferred_vendors_pass_malicious(last_analysis_results):
-            return Common.DBotScore.BAD
-        if self.is_malicious_by_threshold(last_analysis_stats, threshold):
-            return Common.DBotScore.BAD
-        return self.is_malicious_or_suspicious_by_threshold(last_analysis_stats, threshold)
+    def url_score(self, indicator: str, raw_response: dict) -> int:
+        return self.score_by_results_and_stats(indicator, raw_response, self.url_threshold)
 
-    def url_score(self, indicator: str, raw_response: dict) -> DBOT_SCORE:
-        return self.domain_url_score(indicator, raw_response, self.url_threshold)
-
-    def domain_score(self, indicator: str, raw_response: dict) -> DBOT_SCORE:
-        return self.domain_url_score(indicator, raw_response, self.domain_threshold)
+    def domain_score(self, indicator: str, raw_response: dict) -> int:
+        return self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
 
     # region Premium analysis
-    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict) -> bool:
+    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict) -> int:
         files = relationship_files_response['data'][:20]
         total_malicious = sum(
             self.file_score(file['sha256'], files) for file in files
@@ -599,12 +668,12 @@ class ScoreCalculator:
         )
         return Common.DBotScore.GOOD
 
-    def analyze_premium_url_domain_score(
+    def analyze_premium_scores(
             self,
             indicator: str,
-            base_score: DBOT_SCORE,
-            relationship_functions: List[callable]
-    ) -> DBOT_SCORE:
+            base_score: int,
+            relationship_functions: List[Callable[[str], dict]]
+    ) -> int:
         """Analyzing with premium subscription.
 
         Args:
@@ -619,8 +688,6 @@ class ScoreCalculator:
             If one of the relationship files is suspicious and base_score is not, returns Suspicious
             else return GOOD
         """
-        self.logs.append(f'Premium analyzing of "{indicator}"')
-        # Premium analyzing
         is_suspicious = False
         for func in relationship_functions:
             self.logs.append(f'Analyzing by {func.__name__}')
@@ -640,8 +707,19 @@ class ScoreCalculator:
             return Common.DBotScore.SUSPICIOUS
         return Common.DBotScore.GOOD
 
-    def analyze_premium_url_score(self, client: Client, url: str, base_score: DBOT_SCORE) -> DBOT_SCORE:
-        return self.analyze_premium_url_domain_score(
+    def analyze_premium_url_score(self, client: Client, url: str, base_score: int) -> int:
+        """Analyzing premium subscription.
+
+        Args:
+            client: a client with relationship commands.
+            url: the url to check
+            base_score: the base score from basic analysis
+
+        Returns:
+            score calculated by relationship.
+
+        """
+        return self.analyze_premium_scores(
             url,
             base_score,
             [
@@ -651,8 +729,19 @@ class ScoreCalculator:
             ]
         )
 
-    def analyze_premium_domain_score(self, client: Client, domain: str, base_score: DBOT_SCORE) -> DBOT_SCORE:
-        return self.analyze_premium_url_domain_score(
+    def analyze_premium_domain_score(self, client: Client, domain: str, base_score: int) -> int:
+        """Analyzing premium subscription.
+
+        Args:
+            client: a client with relationship commands.
+            domain: the domain to check
+            base_score: the base score from basic analysis
+
+        Returns:
+            score calculated by relationship.
+
+        """
+        return self.analyze_premium_scores(
             domain,
             base_score,
             [
@@ -662,6 +751,27 @@ class ScoreCalculator:
             ]
         )
 
+    def analyze_premium_ip_score(self, client: Client, ip: str, base_score: int) -> int:
+        """Analyzing premium subscription.
+
+        Args:
+            client: a client with relationship commands.
+            ip: the ip to check
+            base_score: the base score from basic analysis
+
+        Returns:
+            score calculated by relationship.
+
+        """
+        return self.analyze_premium_scores(
+            ip,
+            base_score,
+            [
+                client.get_ip_communicating_files,
+                client.get_ip_downloaded_files,
+                client.get_ip_referrer_files
+            ]
+        )
     # endregion
 
 
@@ -679,7 +789,7 @@ def get_whois(whois_string: str) -> defaultdict:
         >>> get_whois('key1:value\\nkey2:value2')
         defaultdict({'key1': 'value', 'key2': 'value2'})
     """
-    whois = defaultdict(lambda: None)
+    whois: defaultdict = defaultdict(lambda: None)
     for line in whois_string.splitlines():
         key, value = line.split(sep=':', maxsplit=1)
         if key in whois:
@@ -790,49 +900,73 @@ def remove_links(data: List[dict]) -> list:
 
 def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
     """
-    1 API Call
+    1 API Call for regular
+    1-4 API Calls for premium subscriptions
     """
     ip = args['ip']
     raise_if_ip_not_valid(ip)
     raw_response = client.ip(ip)
-    # TODO: scores
-    data = raw_response.get('data', {})['attributes']
-    context = {
+    score = score_calculator.ip_score(ip, raw_response)
+    if score != Common.DBotScore.BAD and client.is_premium:
+        score = score_calculator.analyze_premium_ip_score(client, ip, score)
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+    data = raw_response['data']
+    attributes = data['attributes']
+    ip_standard = {
         'Address': ip,
-        'ASN': data.get('asn'),
+        'ASN': attributes.get('asn'),
         'Geo': {'Country': data.get('country')},
         'Vendor': 'VirusTotal'
     }
+    if score == Common.DBotScore.BAD:
+        ip_standard['Malicious'] = {
+            'Vendor': INTEGRATION_NAME,
+            'Description': logs
+        }
+    outputs = {
+        f'{INTEGRATION_ENTRY_CONTEXT}.IP(val.id && val.id === obj.id)': data,
+        **Common.DBotScore(
+            ip,
+            DBotScoreType.IP,
+            INTEGRATION_NAME,
+            score
+        ).to_context(),
+        **ip_standard
+    }
+    last_analysis_stats = data['attributes']["last_analysis_stats"]
+    malicious = last_analysis_stats['malicious']
+    total = sum(last_analysis_stats.values())
     return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.IP',
-        'id',
-        context,
+        readable_output=tableToMarkdown(
+            'IP reputation:',
+            {
+                **data,
+                **attributes,
+                'last_modified': timestamp_to_datestring(attributes['last_modification_date']),
+                'positives': f'{malicious}/{total}'
+            },
+            headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
+        ),
+        outputs=outputs,
         raw_response=raw_response
     )
 
 
-def bang_file(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
-    """
-    1 API Call
-    """
-    file_hash = args['file']
-    raise_if_hash_not_valid(file_hash)
-    raw_response = client.file(file_hash)
+def build_file_output(score_calculator, file_hash, raw_response) -> CommandResults:
     data = raw_response['data']
     score = score_calculator.file_score(file_hash, raw_response)
     logs = score_calculator.get_logs()
     demisto.debug(logs)
-    dbot_entry = Common.DBotScore(
-        file_hash,
-        DBotScoreType.FILE,
-        integration_name=INTEGRATION_NAME,
-        score=score,
-        malicious_description=logs
-    ).to_context()
-    data.update(dbot_entry)
     outputs = {
         f'{INTEGRATION_ENTRY_CONTEXT}.File(val.id && val.id === obj.id)': data,
-        **dbot_entry
+        **Common.DBotScore(
+            file_hash,
+            DBotScoreType.FILE,
+            integration_name=INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs
+        ).to_context()
     }
     last_analysis_stats = data['attributes']["last_analysis_stats"]
     malicious = last_analysis_stats['malicious']
@@ -857,15 +991,17 @@ def bang_file(client: Client, score_calculator: ScoreCalculator, args: dict) -> 
     )
 
 
-def bang_url(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+def bang_file(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
     """
-    1 API Call for regular
-    1-4 API Calls for premium subscriptions
+    1 API Call
     """
-    url = args['url']
-    raw_response = client.url(
-        url
-    )
+    file_hash = args['file']
+    raise_if_hash_not_valid(file_hash)
+    raw_response = client.file(file_hash)
+    return build_file_output(score_calculator, file_hash, raw_response)
+
+
+def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str, raw_response: dict) -> CommandResults:
     data = raw_response['data']
 
     score = score_calculator.url_score(url, raw_response)
@@ -925,6 +1061,18 @@ def bang_url(client: Client, score_calculator: ScoreCalculator, args: dict) -> C
     )
 
 
+def bang_url(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
+    """
+    1 API Call for regular
+    1-4 API Calls for premium subscriptions
+    """
+    url = args['url']
+    raw_response = client.url(
+        url
+    )
+    return build_url_output(client, score_calculator, url, raw_response)
+
+
 def bang_domain(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
     """
     1 API Call for regular
@@ -979,14 +1127,15 @@ def bang_domain(client: Client, score_calculator: ScoreCalculator, args: dict) -
         f'{INTEGRATION_ENTRY_CONTEXT}.Domain(val.id && val.id === obj.id) ': data,
         Common.Domain.CONTEXT_PATH: domain_standard
     }
-    context.update(Common.DBotScore(
-        domain,
-        DBotScoreType.DOMAIN,
-        INTEGRATION_NAME,
-        score,
-        malicious_description=logs
-    ).to_context()
-                   )
+    context.update(
+        Common.DBotScore(
+            domain,
+            DBotScoreType.DOMAIN,
+            INTEGRATION_NAME,
+            score,
+            malicious_description=logs
+        ).to_context()
+    )
 
     attributes = data['attributes']
     return CommandResults(
@@ -1166,6 +1315,7 @@ def file_scan(client: Client, args: dict) -> CommandResults:
     upload_url = args.get('uploadURL')
     file_obj = demisto.getFilePath(entry_id)
     file_path = file_obj['path']
+    assert file_path, 'File path does not exists. it the entry id is right?'
     raw_response = client.file_scan(file_path, upload_url=upload_url)
     data = raw_response['data']
     data.update(
@@ -1281,19 +1431,31 @@ def check_module(client: Client) -> str:
 
 
 def get_analysis_command(client: Client, args: dict) -> CommandResults:
-    analysis_id = args['analysis_id']
+    analysis_id = args['id']
     raw_response = client.get_analysis(analysis_id)
-    data = raw_response['data']
-    meta = raw_response['meta']
-    if url_info := meta.get('url_info'):
-        if client.score_calculator.url_score(data):
-            pass
+    attributes = raw_response['data']['attributes']
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.Analysis',
+        'id',
+        readable_output=tableToMarkdown(
+            'Analysis results:',
+            {
+                **attributes,
+                'id': analysis_id
 
-    if file_info := meta.get('file_info'):
-        pass
+            },
+            headers=['id', 'stats']
+        ),
+        outputs={
+            **raw_response,
+            'id': analysis_id
+        },
+        raw_response=raw_response
+    )
 
 
 def main(params: dict, args: dict, command: str):
+    results: Union[CommandResults, str, List[CommandResults]]
     client = Client(params)
     score_calculator = ScoreCalculator(params)
     demisto.debug(f'Command called {command}')
@@ -1319,7 +1481,7 @@ def main(params: dict, args: dict, command: str):
         results = get_comments_by_id_command(client, args)
     elif command in (f'{COMMAND_PREFIX}-file-rescan', 'file-rescan'):
         results = file_rescan_command(client, args)
-    elif command in (f'{COMMAND_PREFIX}-file-scan', f'file-scan'):
+    elif command in (f'{COMMAND_PREFIX}-file-scan', 'file-scan'):
         results = file_scan(client, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-upload-url':
         results = get_upload_url(client)

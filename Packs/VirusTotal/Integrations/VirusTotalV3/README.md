@@ -4,10 +4,12 @@ Changes by commands:
 ### reputation commands: (ip, url, domain and file)
 - Will only get the information from vt, will not analyze the indicator if
 not exists.
+- Added output path: For each command, outputs will be under VirusTotal.:INDICATOR-TYPE:.
 - Removed output path: all outputs except for basic (ip, url, domain and file)
+- Each reputation command will be use at least 1 api call. For advanced reputation commands, use the premium api.
 
 ### vt-comments-get:
-- Added argument: resource_type to distinguish between resourced type.
+- Added argument: resource_type to distinguish between resources type.
 - Added argument: limit - gets the latest comments with the given limit.
 - Removed argument: before use 'limit' argument instead (breaks bc)
 - New output path: According to the given resource_type:
@@ -47,3 +49,4 @@ new commands:
 - vt-ip-passive-dns-data
 - vt-file-sandbox-report
 - vt-comments-get-by-id
+- vt-analysis-get

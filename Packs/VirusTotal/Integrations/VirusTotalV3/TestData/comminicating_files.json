@@ -2,7 +2,7 @@
   "data": [
     {
       "attributes": {
-        "authentihash": "b23ba545c53f5a1a67e568b3b28db62df74feb86896c5aea6ac3852827b43e2a",
+        "authentihash": ":hash:",
         "creation_date": 1488326400,
         "downloadable": true,
         "exiftool": {
@@ -23,8 +23,8 @@
           "InitializedDataSize": "8889344",
           "InternalName": "bitcoind",
           "LanguageCode": "English (U.S.)",
-          "LegalCopyright": "2009-2017 The Bitcoin Core Developers",
-          "LegalTrademarks1": "Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.",
+          "LegalCopyright": "",
+          "LegalTrademarks1": "",
           "LinkerVersion": "2.23",
           "MIMEType": "application/octet-stream",
           "MachineType": "AMD AMD64",
@@ -82,12 +82,12 @@
       "last_modification_date": 1612855184,
       "last_submission_date": 1492547503,
       "magic": "PE32+ executable for MS Windows (console) Mono/.Net assembly",
-      "md5": "2b680c384add574115ea24e54802aad8",
+      "md5": ":md5:",
       "meaningful_name": "bitcoind.exe",
       "names": [
         "bitcoind",
         "bitcoind.exe",
-        "2b680c384add574115ea24e54802aad8.virus"
+        ":md5:.virus"
       ],
       "pe_info": {
         "entry_point": 5328,
@@ -95,7 +95,7 @@
           "secp256k1_nonce_function_default",
           "secp256k1_nonce_function_rfc6979"
         ],
-        "imphash": "563ed682b34beca9cb8a7b2a76f317e3",
+        "imphash": ":imphash:",
         "import_list": [
           {
             "imported_functions": [
@@ -120,7 +120,7 @@
             "entropy": 3.453192949295044,
             "filetype": "Data",
             "lang": "ENGLISH US",
-            "sha256": "21e9e3e001e4b415d525165048deda8ba171daaec30a6beb3f47ff62bbf215f3",
+            "sha256": ":sha256:",
             "type": "RT_VERSION"
           }
         ],
@@ -135,7 +135,7 @@
             "chi2": 82273200.0,
             "entropy": 5.97,
             "flags": "rx",
-            "md5": "e97c67f33a06a5a18faa323fad947fe6",
+            "md5": ":md5:",
             "name": ".text",
             "raw_size": 7248896,
             "virtual_address": 4096,
@@ -154,8 +154,8 @@
           "sandbox_name": "C2AE"
         }
       },
-      "sha1": "c775dfd4d1bf36b38e546b55b8f0ab1d8fe015c3",
-      "sha256": "e1eaf1c7c843e74f658f73fa0f8a440d3b49ac87c5041fe0d804926161df0d68",
+      "sha1": ":sha1:",
+      "sha256": ":sha256:",
       "signature_info": {
         "copyright": "2009-2017 The Bitcoin Core Developers",
         "description": "bitcoind (Bitcoin node with a JSON-RPC server)",
@@ -165,14 +165,14 @@
         "product": "bitcoind"
       },
       "size": 8890368,
-      "ssdeep": "49152:Q+WILyZlsz0/88wRgLaA+yaqk9l21cdko0TuIvdLAeJz7M2ijGP799n5V7FMMqkG:LXcic99DpMMqS/42Y8k8Cu+TStrt2L4",
+      "ssdeep": ":ssdeep:",
       "tags": [
         "64bits",
         "peexe",
         "assembly"
       ],
       "times_submitted": 1,
-      "tlsh": "T15B96F847E2A350ECC9BBC1748367B632797178588434BF2A9F54CB222F75F60A52EB14",
+      "tlsh": ":tlsh:",
       "total_votes": {
         "harmless": 0,
         "malicious": 0
@@ -187,7 +187,7 @@
       "type_extension": "exe",
       "type_tag": "peexe",
       "unique_sources": 1,
-      "vhash": "0860c75d1555651c055d5095za009998fz1011z44z275z1d"
+      "vhash": ":vhash:"
     }
   ]
 }

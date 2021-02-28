@@ -5,7 +5,7 @@
       "asn": 396507,
       "continent": "NA",
       "country": "US",
-      "jarm": "2ad2ad16d2ad2ad22c42d42d000000d342d5966a57139eeaff9f8bc4841b25",
+      "jarm": ":jarm:",
       "last_analysis_results": {
         "ADMINUSLabs": {
           "category": "harmless",
@@ -34,7 +34,7 @@
         "undetected": 8
       },
       "last_modification_date": 1613300914,
-      "network": "23.129.64.0/24",
+      "network": ":cidr:",
       "regional_internet_registry": "ARIN",
       "reputation": -4,
       "tags": [],
@@ -42,12 +42,12 @@
         "harmless": 0,
         "malicious": 1
       },
-      "whois": "NetRange: 23.129.64.0 - 23.129.64.255\nCIDR: 23.129.64.0/24\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: NET-23-129-64-0-1\nParent: NET23 (NET-23-0-0-0-0)\nNetType: Direct Allocation\nOriginAS: AS396507\nOrganization: Emerald Onion (EO-95)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: https://emeraldonion.org/\nRef: https://rdap.arin.net/registry/ip/23.129.64.0\nOrgName: Emerald Onion\nOrgId: EO-95\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: 98104-1404\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: https://rdap.arin.net/registry/entity/EO-95\nOrgTechHandle: TECHN1592-ARIN\nOrgTechName: Technical Support\nOrgTechPhone: +1-206-739-3390 \nOrgTechEmail: tech@emeraldonion.org\nOrgTechRef: https://rdap.arin.net/registry/entity/TECHN1592-ARIN\nOrgAbuseHandle: ABUSE7315-ARIN\nOrgAbuseName: Abuse Management\nOrgAbusePhone: +1-206-739-3390 \nOrgAbuseEmail: abuse@emeraldonion.org\nOrgAbuseRef: https://rdap.arin.net/registry/entity/ABUSE7315-ARIN\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: +1-206-739-3390 \nOrgNOCEmail: noc@emeraldonion.org\nOrgNOCRef: https://rdap.arin.net/registry/entity/NETWO8737-ARIN\n",
+      "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: https://rdap.arin.net/registry/ip/23.129.64.0\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
       "whois_date": 1611870274
     },
-    "id": "23.129.64.215",
+    "id": ":ip:",
     "links": {
-      "self": "https://www.virustotal.com/api/v3/ip_addresses/23.129.64.215"
+      "self": "https://www.virustotal.com/api/v3/ip_addresses/:ip:"
     },
     "type": "ip_address"
   }

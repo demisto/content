@@ -1,10 +1,9 @@
 import json
-from unittest.mock import patch
 
 import pytest
 
 from VirusTotalV3 import remove_links, encode_url_to_base64, raise_if_hash_not_valid, \
-    raise_if_ip_not_valid, bang_domain, Client, bang_file, ScoreCalculator
+    raise_if_ip_not_valid, ScoreCalculator
 
 
 class TestScoreCalculator:
@@ -24,32 +23,22 @@ class TestScoreCalculator:
                 'crowdsourced_yara_rules_enabled': True,
                 'yaraRulesThreshold': 1,
                 'SigmaIDSThreshold': 1,
-                'domain_popularity_ranking': 1
+                'domain_popularity_ranking': 1,
+                'relashionship_threshold': 1
             }
         )
 
-    def test_file(self):
-        self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
-        print('\n'.join(self.score_calculator.logs))
-
-
-class TestReputation:
-    @patch.object(Client, 'domain')
-    def test_domain(self, client):
-        client.domain = lambda item: json.load(open('./TestData/domain.json'))
-        bang_domain(client, args={'domain': 'domain'})
-
-    @patch.object(Client, 'file')
-    def test_file(self, client):
-        client.file = lambda item: json.load(open('./TestData/file.json'))
-        bang_file(client, args={'file': 'a1b6400a21ddee090e93d8882ffa629963132785bfa41b0abbea199d278121e9'})
+    def test_file(self, capfd):
+        with capfd.disabled():
+            self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
+            print('\n'.join(self.score_calculator.logs))
 
 
 class TestHelpers:
     @pytest.mark.parametrize('lists_with_links', (
-            [],
-            [{'links': 'a link'}],
-            [{'links': 'a link'}, {'links': 'a link'}]
+        [],
+        [{'links': 'a link'}],
+        [{'links': 'a link'}, {'links': 'a link'}]
     ))
     def test_remove_links(self, lists_with_links):
         assert not any('links' in item for item in remove_links(lists_with_links))

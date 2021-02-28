@@ -82,7 +82,7 @@ configuration:
   defaultvalue: '10000'
   type: 0
   required: false
-- display: (Premium Only) Relationship files threshold.
+- display: 'Premium Subscription Only: Relationship Files Threshold.'
   name: relashionship_threshold
   defaultvalue: '3'
   type: 0
@@ -97,8 +97,7 @@ script:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1,
-        and SHA256.
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: false
     - name: long
       auto: PREDEFINED
@@ -424,30 +423,30 @@ script:
   - name: url-scan
     deprecated: true
     arguments:
-      - name: url
-        required: true
-        default: true
-        description: The URL to scan.
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
     outputs:
-      - contextPath: vtScanID
-        description: Scan IDs of the submitted URLs.
+    - contextPath: vtScanID
+      description: Scan IDs of the submitted URLs.
     description: Scans a specified URL.
   - name: vt-comments-add
     arguments:
     - name: resource
       required: true
-      default: true
+      default: false
       description: The file hash, url, ip or domain you're commenting on.
     - name: resource_type
       required: true
-      default: true
+      default: false
       description: The type of the resource you're commenting one.
       auto: PREDEFINED
       predefined:
-        - ip
-        - url
-        - domain
-        - hash
+      - ip
+      - url
+      - domain
+      - hash
     - name: comment
       required: true
       description: 'The actual review, which you can tag by using the "#" twitter-like
@@ -464,31 +463,32 @@ script:
     arguments:
     - name: resource
       required: true
-      default: true
+      default: false
       description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving
         comments.
     - name: resource_type
       required: true
-      default: true
+      default: false
       description: The type of the resource you're commenting one.
       auto: PREDEFINED
       predefined:
-        - ip
-        - url
-        - domain
-        - hash
+      - ip
+      - url
+      - domain
+      - hash
     - name: limit
       description: Maximum comments to fetch
       defaultValue: 10
     description: Retrieves comments for a given resource.
   - name: vt-comments-get-by-id
     arguments:
-      - name: id
-        required: true
-        default: true
-        description: The comment's id. Can be retrieved from vt-comments-get.
+    - name: id
+      required: true
+      default: true
+      description: The comment's id. Can be retrieved from vt-comments-get.
     description: Retrieves a comment by comment ID.
   - name: vt-search
+    description: Search for an indicator in Virus Total.
     arguments:
     - name: query
       required: true
@@ -497,24 +497,30 @@ script:
         A domain, A IP address, Tag comments.'
   - name: vt-file-sandbox-report
     arguments:
-      - name: file
-        required: true
-        default: true
-        description: Hash of the file to query. Supports MD5, SHA1,
-          and SHA256.
-      - name: limit
-        description: Maximum results to fetch.
-        defaultValue: 10
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+    - name: limit
+      description: Maximum results to fetch.
+      defaultValue: 10
     description: Retrives a behavioural relationship of the given file hash.
   - name: vt-ip-passive-dns-data
+    description: Returns passive DNS records by indicator.
     arguments:
-      - name: ip
-        required: true
-        default: true
-        description: IP to get its DNS data.
-      - name: limit
-        description: Maximum results to fetch.
-        defaultValue: 10
+    - name: ip
+      required: true
+      default: true
+      description: IP to get its DNS data.
+    - name: limit
+      description: Maximum results to fetch.
+      defaultValue: 10
+  - name: vt-analysis-get
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of the analysis (from vt-file-scan, vt-file-rescan or vt-url-scan)
     description: Retrives resolutions of the given ip.
   runonce: false
   dockerimage: demisto/python3:3.9.1.15759
