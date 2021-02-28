@@ -89,7 +89,7 @@ def test_get_failed_tasks(mocker):
     assert entry_context.get('GetFailedTasks', [])[1] == {'Command Description': 'RunPollingCommand',
                                                           'Command Name': 'RunPollingCommand',
                                                           'Error Entry ID': ['4@7', '5@7'],
-                                                          'Incident Created Date': '2020-09-29 14:02:45.82647067Z',
+                                                          'Incident Created Date': '2020-09-29T14:02:45.82647067Z',
                                                           'Incident ID': '3',
                                                           'Incident Owner': 'admin',
                                                           'Number of Errors': 2,
