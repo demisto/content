@@ -1,0 +1,36 @@
+args:
+- description: The end date for fetching incidents in ISO format. Incidents will be
+    fetched until the last day of the specified month. For example, if you specify
+    2020-08-14, incidents created on the specified "from" date until  2020-08-31 will
+    be returned.
+  name: to
+- description: The start date for fetching incidents in ISO format. Incidents will
+    be fetched starting from the first day of the specified month. For example, if
+    you specify 2020-08-14, incidents created on 2020-08-01 will be returned.
+  name: from
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Change to true to return a result suitable for a table widget. By default
+    the return will be in Markdown.
+  name: table_result
+  predefined:
+  - "true"
+  - "false"
+comment: 'Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations
+  in the last 6 months '
+commonfields:
+  id: HealthCheckGetLargestInputsAndOuputsInIncidents
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: HealthCheckGetLargestInputsAndOuputsInIncidents
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,933 @@
+description: Main playbook for Health Check process
+id: Health Check
+inputs: []
+name: Health Check
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb75fa65-1c60-4d73-8b21-7038f1677ffd
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: eb75fa65-1c60-4d73-8b21-7038f1677ffd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6f2fe093-f79b-4bd8-885e-c3dba8f79a09
+      iscommand: false
+      name: Playbooks analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 6f2fe093-f79b-4bd8-885e-c3dba8f79a09
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Parsing playbooks
+      id: 31ca6222-4a05-4e16-88bf-63e8a0619002
+      iscommand: false
+      name: Playbook analysis
+      script: d31a96f1-0922-4e5a-81c3-78884e18e0d7
+      type: regular
+      version: -1
+    taskid: 31ca6222-4a05-4e16-88bf-63e8a0619002
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Find common indicators
+      id: 76c75e87-9604-45a6-840f-49741c2a9e03
+      iscommand: false
+      name: Common indicators
+      script: c5ce9e4b-24c5-41b4-8f40-dab54507062d
+      type: regular
+      version: -1
+    taskid: 76c75e87-9604-45a6-840f-49741c2a9e03
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1a80576-e088-4897-862d-9a495bb24dfb
+      iscommand: false
+      name: Indicators analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: c1a80576-e088-4897-862d-9a495bb24dfb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2124b76a-7297-4145-84ab-a843b23ceead
+      iscommand: false
+      name: System Resource Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 2124b76a-7297-4145-84ab-a843b23ceead
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6fcd610a-0816-46a7-8d4b-b5ce3a04f9c2
+      iscommand: false
+      name: DB analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 6fcd610a-0816-46a7-8d4b-b5ce3a04f9c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1475
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isWidget:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyze CPU usage stats
+      id: 92976e92-fc64-4932-81f3-eff3a40238fe
+      iscommand: false
+      name: CPU stats
+      script: 953f8e43-4637-40a4-8400-69fd0523b32b
+      type: regular
+      version: -1
+    taskid: 92976e92-fc64-4932-81f3-eff3a40238fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2115
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isWidget:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyze workers
+      id: c61c1635-a824-4386-8ca2-0842f6b8df68
+      iscommand: false
+      name: Workers Status
+      script: 987e2a33-3a5b-4060-8835-f36f0f23e115
+      type: regular
+      version: -1
+    taskid: c61c1635-a824-4386-8ca2-0842f6b8df68
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2465
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isWidget:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyze disk usage
+      id: 237cd3d7-fbd9-44b9-80ed-e33fef803b0e
+      iscommand: false
+      name: Storage Stats
+      script: c0dd41af-2321-49d7-8b81-7ac49c9c9bfe
+      type: regular
+      version: -1
+    taskid: 237cd3d7-fbd9-44b9-80ed-e33fef803b0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2640
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f95aa63-ba74-4ca3-8783-f448e0c5ee6c
+      iscommand: false
+      name: General System Data Collection
+      type: title
+      version: -1
+      description: ''
+    taskid: 0f95aa63-ba74-4ca3-8783-f448e0c5ee6c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ceb9caab-f684-4df2-801f-dfdfad9854f5
+      iscommand: false
+      name: 5608cf65-f9a7-4274-8adc-4a7875a42528
+      playbookId: 5608cf65-f9a7-4274-8adc-4a7875a42528
+      type: playbook
+      version: -1
+      description: ''
+    taskid: ceb9caab-f684-4df2-801f-dfdfad9854f5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isWidget:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyze Memory usage stats
+      id: 9d98ecb0-c04c-4530-867c-2ce9d21d6cd4
+      iscommand: false
+      name: Memory Stats
+      script: 908544b9-f9b0-4f42-8b18-12aa6f90a4bb
+      type: regular
+      version: -1
+    taskid: 9d98ecb0-c04c-4530-867c-2ce9d21d6cd4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2280
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b71d185d-f437-499c-833b-cad6d3651ddc
+      iscommand: false
+      name: Incidents Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: b71d185d-f437-499c-833b-cad6d3651ddc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      isWidget:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Analyze  number of dropped incidents
+      id: 7bf2b63a-63a2-4ba7-8dbb-52abd6709d82
+      iscommand: false
+      name: Number of dropped incidents in the last 30 days
+      script: ef9aefdd-58ba-4e76-81ca-4744d6984166
+      type: regular
+      version: -1
+    taskid: 7bf2b63a-63a2-4ba7-8dbb-52abd6709d82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      actionableitems:
+        complex:
+          root: actionableitems
+          transformers:
+          - operator: Stringify
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: '['
+              suffix:
+                value:
+                  simple: ']'
+            operator: concat
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appchannelname: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage: {}
+      architecture: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      confgrid: {}
+      contentversion: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      customername: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      devprod: {}
+      devprodmode: {}
+      displayname: {}
+      dnsname: {}
+      dockercontainers: {}
+      dockerpaused: {}
+      dockerrunning: {}
+      dockerstop: {}
+      dockerversion: {}
+      dr: {}
+      dstports: {}
+      duration: {}
+      elasticsearch: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      enabledmodules: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      incidentsbiggerthan10mb: {}
+      incidentsbiggerthan1mb: {}
+      incidentsinputoutputbiggerthan10mb: {}
+      incidentsinputoutputbiggerthan1mb: {}
+      incidentswithmorethan500entries: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      installedpacks: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      license: {}
+      licensevalidtill: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      logsince: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      loguntil: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      multirepo: {}
+      multitenant: {}
+      name:
+        simple: Health Check
+      numberofdbpartitions: {}
+      numberofincidentsbiggerthan10mb: {}
+      numberofincidentsbiggerthan1mb: {}
+      numberofincidentsinputoutputbiggerthan10mb: {}
+      numberofincidentsinputoutputbiggerthan1mb: {}
+      numberofincidentswithmorethan500entries: {}
+      numberoflogsources: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      packsneedupdate: {}
+      parentprocessid: {}
+      permittedusers: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      restartcount: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signature: {}
+      similarincidents: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      teamname: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      telemetrystatus: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      totalpacksinstalled: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      usedusers: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workersbusy: {}
+      workerstotal: {}
+      workphone: {}
+      xsoarReadOnlyRoles: {}
+      xsoarbuild: {}
+      xsoarcpu: {}
+      xsoarmemory: {}
+      xsoaros: {}
+      xsoarversion: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f01dcfd5-7266-4d75-8c13-5e93c6911176
+      iscommand: true
+      name: Set actionable items
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f01dcfd5-7266-4d75-8c13-5e93c6911176
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2960
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6a54f33-272e-4282-8a6e-0c3a1a41cd49
+      iscommand: false
+      name: Conclusions
+      type: title
+      version: -1
+      description: ''
+    taskid: c6a54f33-272e-4282-8a6e-0c3a1a41cd49
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2815
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      from: {}
+      table_result:
+        simple: "true"
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR
+        investigations.
+      id: 1e029b70-d1c8-473c-83b3-650a2152fae1
+      iscommand: false
+      name: Largest Incidents Input and Outputs
+      script: fbd6c321-ec57-4f5f-83ae-40e1817b0c40
+      type: regular
+      version: -1
+    taskid: 1e029b70-d1c8-473c-83b3-650a2152fae1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1610
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Find and analyze Large investigations
+      id: 7b90e6e5-48ec-4a52-8325-759fad71e6ba
+      iscommand: false
+      name: Large Investigations
+      script: c3322e41-6cc6-4222-8af8-bb57d686112a
+      type: regular
+      version: -1
+    taskid: 7b90e6e5-48ec-4a52-8325-759fad71e6ba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1795
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3005,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
