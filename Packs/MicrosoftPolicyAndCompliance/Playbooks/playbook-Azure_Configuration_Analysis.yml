@@ -1,7 +1,7 @@
 id: Azure Configuration Analysis
 version: -1
 name: Azure Configuration Analysis
-description: This playbook helps you collect, review and find misconfigurations with
+description: This playbook helps you collect, review, and find misconfigurations with
   the Azure environment.
 starttaskid: "0"
 tasks:
@@ -66,11 +66,11 @@ tasks:
       version: -1
       name: Delegation on MailBoxes
       description: |-
-        Attackers may be exploit the following mailboxes delegations.
+        Attackers may exploit the following mailboxes delegations.
         Search for mailboxes that delegated:
-        -  'Full Access' Permission Granted
-        -  'Any' Permissions Granted
-        - 'Send As' or 'SendOnBehalf' Permissions
+        -  'Full Access' Permission Granted.
+        -  'Any' Permissions Granted.
+        - 'Send As' or 'SendOnBehalf' Permissions.
       type: regular
       iscommand: false
       brand: ""
@@ -98,7 +98,7 @@ tasks:
       id: b1b431ae-cd59-476b-8af4-67ea4eace243
       version: -1
       name: Azure AD Key Credentials
-      description: Get and review key credentials for all  service principal.
+      description: Get and review key credentials for all service principals.
       type: title
       iscommand: false
       brand: ""
@@ -242,7 +242,7 @@ tasks:
     task:
       id: d07d378f-2714-4e25-87ae-74115d0885c0
       version: -1
-      name: Mailbox SMTP forwarding for All Mailboxes
+      name: Mailbox SMTP Forwarding for All Mailboxes
       description: Displays mailbox objects and attributes, populate property pages,
         or supplies mailbox information to other tasks.
       script: '|||ews-mailbox-list'
@@ -516,7 +516,7 @@ tasks:
       id: 71974047-a66c-4d1a-8b4f-3d70c9278d2e
       version: -1
       name: Set admin roles input to context
-      description: Set admin roles input to context
+      description: Set admin roles input to context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -560,7 +560,7 @@ tasks:
       id: 1692898c-26b1-4e71-8d6e-b3502d11ffd3
       version: -1
       name: 'Are Azure integrations enabled? '
-      description: Checks if the supported integrations enabled
+      description: Checks if the supported integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -684,7 +684,7 @@ inputs:
 - key: O365_AdminRolesList
   value: {}
   required: false
-  description: Comma separated Service O365 admin roles
+  description: Comma-separated list of Service O365 admin roles.
   playbookInputQuery:
 - key: Limit
   value: {}
