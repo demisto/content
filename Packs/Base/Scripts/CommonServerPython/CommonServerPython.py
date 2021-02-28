@@ -1588,12 +1588,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = list(t[0].keys())
         headers.sort()
 
-    headers = headers[:]
     if removeNull:
         headers_aux = headers[:]
-        for header in headers_aux:
+        for header in headers:
             if all(obj.get(header) in ('', None, [], {}) for obj in t):
-                headers.remove(header)
+                headers_aux.remove(header)
+        headers = headers_aux
 
     if t and len(headers) > 0:
         newHeaders = []
