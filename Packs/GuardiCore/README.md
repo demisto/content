@@ -1,5 +1,5 @@
 Data center breach detection
-This integration was integrated with version v3.0 of GuardiCore
+This integration was integrated and tested with version v3.0 of GuardiCore
 ## Configure GuardiCore on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -31,6 +31,8 @@ Display information about incidents (with filters).
 | --- | --- | --- |
 | severity | Filter by severity. Possible values are: High, Low, Medium. | Optional | 
 | tag | Filter by tag. | Optional | 
+| from_time | From which date to fetch incidents, format is YYYY-MM-DD. | Optional | 
+| to_time | Until which date to fetch incidents, format is YYYY-MM-DD. | Optional | 
 | incident_type | Filter by type of incidents, e.g. Deception, Lateral Movement. | Optional | 
 | source | Filter by source (hostname or IP address). | Optional | 
 | destination | Filter by destination (hostname or IP address). | Optional | 
