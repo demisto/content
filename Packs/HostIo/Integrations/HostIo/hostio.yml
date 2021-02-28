@@ -6,6 +6,11 @@ display: HostIo
 category: Data Enrichment & Threat Intelligence
 description: Use the HostIo integration to enrich Domains using the Host.io API.
 configuration:
+- defaultvalue: https://host.io
+  display: Server URL (e.g. https://host.io)
+  name: url
+  required: true
+  type: 0
 - display: API Key
   name: token
   type: 4

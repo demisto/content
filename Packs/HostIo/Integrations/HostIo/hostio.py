@@ -63,7 +63,7 @@ def test_module_command(client: Client) -> str:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-            raise e
+            raise
     return 'ok'
 
 
@@ -100,7 +100,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             indicator=domain,
             integration_name='HostIo',
             indicator_type=DBotScoreType.DOMAIN,
-            score=score
+            score=score,
         )
 
         domain_standard_context = Common.Domain(
@@ -135,12 +135,14 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     data = client.get_search_data(field, value, limit, 0)
 
     domains = data.get('domains', [])
-    total = data.get('total')
+    total: int = data.get('total')
+    read = tableToMarkdown(f'Domains associated with {field}: {value}', data)
 
     if total == 0:
-        domains = f'No Domains associated with {field}'
+        read = f'No Domains associated with {field}'
     elif int(str(total)) > int(str(limit)):
-        pages = ceil((int(str(total)) - len(domains)) / len(domains))  # i set it as len domains since in trial its always 5
+        # set it as len domains since in trial its always 5
+        pages = ceil((int(str(total)) - len(domains)) / len(domains))
         page = 1
         while page <= pages:
             data = client.get_search_data(field, value, limit, page)
@@ -148,8 +150,6 @@ def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             page += 1
 
         data['domains'] = domains
-
-    read = tableToMarkdown(f'Domains associated with {field}: {value}', data)
 
     context = {
         'Field': field,
@@ -177,7 +177,7 @@ def main() -> None:
     """
     params = demisto.params()
     api_key = params.get('token')
-    base_url = 'https://host.io/api'
+    base_url = urljoin(params['url'], '/api')
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -191,7 +191,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,)
+            proxy=proxy,
+        )
 
         if demisto.command() == 'test-module':
             return_results(test_module_command(client))
