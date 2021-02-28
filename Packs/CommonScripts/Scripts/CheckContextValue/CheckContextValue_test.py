@@ -35,7 +35,7 @@ def test_poll_context_field_from_root(mocker):
     """
     mocker.patch.object(demisto, 'context', return_value=context)
     args = {
-        'key': 'foo'
+        'key': 'foo',
     }
 
     result = poll_field(args)
