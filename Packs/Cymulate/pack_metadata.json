@@ -2,7 +2,7 @@
     "name": "Cymulate",
     "description": "Multi-Vector Cyber Attack, Breach and Attack Simulation",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "2.0.0",
     "author": "Cymulate",
     "url": "",
     "email": "support@cymulate.com",
@@ -14,7 +14,8 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "maor-b"
+        "maor-b",
+		"GillSamia"
     ],
     "certification": "certified"
 }

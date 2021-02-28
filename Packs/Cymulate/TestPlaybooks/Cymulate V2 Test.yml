@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '21f77703-3c0a-4907-9399-82db999b92d9'
     type: start
     task:
-      id: '0'
+      id: '21f77703-3c0a-4907-9399-82db999b92d9'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '8b5bf8ec-ed64-4c00-9f1e-d107ac6ee74b'
     type: regular
     task:
-      id: '1'
+      id: '8b5bf8ec-ed64-4c00-9f1e-d107ac6ee74b'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '12ebdc8c-38d9-4bd2-9b16-5659232ab6ac'
     type: regular
     task:
-      id: '2'
+      id: '12ebdc8c-38d9-4bd2-9b16-5659232ab6ac'
       version: -1
       name: cymulate-exfiltration-template-list
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'b4026d5e-c6e5-42e6-ac87-4d8a92fcdfee'
     type: condition
     task:
-      id: '3'
+      id: 'b4026d5e-c6e5-42e6-ac87-4d8a92fcdfee'
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,10 +107,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: '1e232ce1-438a-4002-996d-9f4ac5c47363'
     type: regular
     task:
-      id: '4'
+      id: '1e232ce1-438a-4002-996d-9f4ac5c47363'
       version: -1
       name: cymulate-exfiltration-start
       description: ''
@@ -130,10 +130,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '1811acb9-c595-4a53-9b33-cdea3420fbf3'
     type: condition
     task:
-      id: '5'
+      id: '1811acb9-c595-4a53-9b33-cdea3420fbf3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,10 +164,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: '5bd9a9d7-4443-4ce5-9e49-d2f1c3147c0c'
     type: regular
     task:
-      id: '6'
+      id: '5bd9a9d7-4443-4ce5-9e49-d2f1c3147c0c'
       version: -1
       name: cymulate-exfiltration-stop
       description: ''
@@ -187,10 +187,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'a8d93af8-47c3-4fb7-bf28-672bbfc63101'
     type: condition
     task:
-      id: '7'
+      id: 'a8d93af8-47c3-4fb7-bf28-672bbfc63101'
       version: -1
       name: Verify Outputs
       type: condition
@@ -221,10 +221,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: '121a1237-cf81-41cd-a940-e2b715e2e539'
     type: regular
     task:
-      id: '8'
+      id: '121a1237-cf81-41cd-a940-e2b715e2e539'
       version: -1
       name: cymulate-exfiltration-status
       description: ''
@@ -244,10 +244,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '6927a91f-1544-4a85-b8ea-bf318a84c11e'
     type: condition
     task:
-      id: '9'
+      id: '6927a91f-1544-4a85-b8ea-bf318a84c11e'
       version: -1
       name: Verify Outputs
       type: condition
@@ -288,10 +288,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: '90967f43-9f2f-40b1-8617-f2c7d6436118'
     type: regular
     task:
-      id: '10'
+      id: '90967f43-9f2f-40b1-8617-f2c7d6436118'
       version: -1
       name: cymulate-email-gateway-template-list
       description: ''
@@ -311,10 +311,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 'cac99f1c-d8f8-43fb-98e8-08197e1b6a02'
     type: condition
     task:
-      id: '11'
+      id: 'cac99f1c-d8f8-43fb-98e8-08197e1b6a02'
       version: -1
       name: Verify Outputs
       type: condition
@@ -345,10 +345,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: 'da0cc2e9-b549-4ca9-9ddf-a00c03829e25'
     type: regular
     task:
-      id: '12'
+      id: 'da0cc2e9-b549-4ca9-9ddf-a00c03829e25'
       version: -1
       name: cymulate-email-gateway-start
       description: ''
@@ -368,10 +368,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: '6fc2f817-ba38-4d0d-b03f-798d6c54f1b0'
     type: condition
     task:
-      id: '13'
+      id: '6fc2f817-ba38-4d0d-b03f-798d6c54f1b0'
       version: -1
       name: Verify Outputs
       type: condition
@@ -402,10 +402,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: '7a4ea8f9-cca5-4a87-b4ea-3a5fd8dad56c'
     type: regular
     task:
-      id: '14'
+      id: '7a4ea8f9-cca5-4a87-b4ea-3a5fd8dad56c'
       version: -1
       name: cymulate-email-gateway-stop
       description: ''
@@ -425,10 +425,10 @@ tasks:
     skipunavailable: false
   '15':
     id: '15'
-    taskid: '15'
+    taskid: '65866592-1bde-4b00-bbde-a01c0a3eb91d'
     type: condition
     task:
-      id: '15'
+      id: '65866592-1bde-4b00-bbde-a01c0a3eb91d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -459,10 +459,10 @@ tasks:
     skipunavailable: false
   '16':
     id: 16
-    taskid: '16'
+    taskid: '9ee3910b-8b75-438e-b266-e036080aff87'
     type: regular
     task:
-      id: '16'
+      id: '9ee3910b-8b75-438e-b266-e036080aff87'
       version: -1
       name: cymulate-email-gateway-status
       description: ''
@@ -482,10 +482,10 @@ tasks:
     skipunavailable: false
   '17':
     id: '17'
-    taskid: '17'
+    taskid: '5b05cfec-e31d-49a9-a2c2-bd50413780f4'
     type: condition
     task:
-      id: '17'
+      id: '5b05cfec-e31d-49a9-a2c2-bd50413780f4'
       version: -1
       name: Verify Outputs
       type: condition
@@ -531,10 +531,10 @@ tasks:
     skipunavailable: false
   '18':
     id: 18
-    taskid: '18'
+    taskid: '25d50d80-faf4-473f-af7f-ee504a57e3b1'
     type: regular
     task:
-      id: '18'
+      id: '25d50d80-faf4-473f-af7f-ee504a57e3b1'
       version: -1
       name: cymulate-endpoint-security-template-list
       description: ''
@@ -554,10 +554,10 @@ tasks:
     skipunavailable: false
   '19':
     id: '19'
-    taskid: '19'
+    taskid: '56ef3eb0-fabd-44ae-91ae-891663d95a57'
     type: condition
     task:
-      id: '19'
+      id: '56ef3eb0-fabd-44ae-91ae-891663d95a57'
       version: -1
       name: Verify Outputs
       type: condition
@@ -588,10 +588,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: 'e10d709c-64c6-4427-8fe3-2d1ed9cda553'
     type: regular
     task:
-      id: '20'
+      id: 'e10d709c-64c6-4427-8fe3-2d1ed9cda553'
       version: -1
       name: cymulate-endpoint-security-start
       description: ''
@@ -611,10 +611,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: 'b17b56c8-6b4a-466e-801b-7df8f965d276'
     type: condition
     task:
-      id: '21'
+      id: 'b17b56c8-6b4a-466e-801b-7df8f965d276'
       version: -1
       name: Verify Outputs
       type: condition
@@ -645,10 +645,10 @@ tasks:
     skipunavailable: false
   '22':
     id: 22
-    taskid: '22'
+    taskid: '85ac8f5d-027e-4ec0-a5c1-ee486ed71f43'
     type: regular
     task:
-      id: '22'
+      id: '85ac8f5d-027e-4ec0-a5c1-ee486ed71f43'
       version: -1
       name: cymulate-endpoint-security-stop
       description: ''
@@ -668,10 +668,10 @@ tasks:
     skipunavailable: false
   '23':
     id: '23'
-    taskid: '23'
+    taskid: 'a989f3e1-f095-476c-bfa3-91c37508ebcd'
     type: condition
     task:
-      id: '23'
+      id: 'a989f3e1-f095-476c-bfa3-91c37508ebcd'
       version: -1
       name: Verify Outputs
       type: condition
@@ -702,10 +702,10 @@ tasks:
     skipunavailable: false
   '24':
     id: 24
-    taskid: '24'
+    taskid: '458163ec-b378-4d06-801e-9e25c3f9a824'
     type: regular
     task:
-      id: '24'
+      id: '458163ec-b378-4d06-801e-9e25c3f9a824'
       version: -1
       name: cymulate-endpoint-security-status
       description: ''
@@ -725,10 +725,10 @@ tasks:
     skipunavailable: false
   '25':
     id: '25'
-    taskid: '25'
+    taskid: '1b2410d7-161a-469b-9d4a-b0e0e7121449'
     type: condition
     task:
-      id: '25'
+      id: '1b2410d7-161a-469b-9d4a-b0e0e7121449'
       version: -1
       name: Verify Outputs
       type: condition
@@ -774,10 +774,10 @@ tasks:
     skipunavailable: false
   '26':
     id: 26
-    taskid: '26'
+    taskid: '6b9e071b-4d8e-4cdb-b666-2cc4fe8f4cbf'
     type: regular
     task:
-      id: '26'
+      id: '6b9e071b-4d8e-4cdb-b666-2cc4fe8f4cbf'
       version: -1
       name: cymulate-waf-template-list
       description: ''
@@ -797,10 +797,10 @@ tasks:
     skipunavailable: false
   '27':
     id: '27'
-    taskid: '27'
+    taskid: 'a0fd699d-1606-4733-8c66-6e12ffedadc3'
     type: condition
     task:
-      id: '27'
+      id: 'a0fd699d-1606-4733-8c66-6e12ffedadc3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -831,10 +831,10 @@ tasks:
     skipunavailable: false
   '28':
     id: 28
-    taskid: '28'
+    taskid: 'e7ba8460-956e-420c-ba49-8f32212c4df8'
     type: regular
     task:
-      id: '28'
+      id: 'e7ba8460-956e-420c-ba49-8f32212c4df8'
       version: -1
       name: cymulate-waf-start
       description: ''
@@ -854,10 +854,10 @@ tasks:
     skipunavailable: false
   '29':
     id: '29'
-    taskid: '29'
+    taskid: '6885f8e1-fae2-42ce-a127-310bc0fab52c'
     type: condition
     task:
-      id: '29'
+      id: '6885f8e1-fae2-42ce-a127-310bc0fab52c'
       version: -1
       name: Verify Outputs
       type: condition
@@ -888,10 +888,10 @@ tasks:
     skipunavailable: false
   '30':
     id: 30
-    taskid: '30'
+    taskid: '10895ec4-5438-4933-98b3-7a59ba1322be'
     type: regular
     task:
-      id: '30'
+      id: '10895ec4-5438-4933-98b3-7a59ba1322be'
       version: -1
       name: cymulate-waf-stop
       description: ''
@@ -911,10 +911,10 @@ tasks:
     skipunavailable: false
   '31':
     id: '31'
-    taskid: '31'
+    taskid: '57b333cc-a365-4f9a-8015-9be5de566c0e'
     type: condition
     task:
-      id: '31'
+      id: '57b333cc-a365-4f9a-8015-9be5de566c0e'
       version: -1
       name: Verify Outputs
       type: condition
@@ -945,10 +945,10 @@ tasks:
     skipunavailable: false
   '32':
     id: 32
-    taskid: '32'
+    taskid: '7fc321f7-e668-4822-88bb-3c0e87355b9f'
     type: regular
     task:
-      id: '32'
+      id: '7fc321f7-e668-4822-88bb-3c0e87355b9f'
       version: -1
       name: cymulate-waf-status
       description: ''
@@ -968,10 +968,10 @@ tasks:
     skipunavailable: false
   '33':
     id: '33'
-    taskid: '33'
+    taskid: '16b4d5e2-56be-44c2-b655-834826d9cee2'
     type: condition
     task:
-      id: '33'
+      id: '16b4d5e2-56be-44c2-b655-834826d9cee2'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1017,10 +1017,10 @@ tasks:
     skipunavailable: false
   '34':
     id: 34
-    taskid: '34'
+    taskid: '3e42255e-70c0-4f29-a490-e31f8fd0003f'
     type: regular
     task:
-      id: '34'
+      id: '3e42255e-70c0-4f29-a490-e31f8fd0003f'
       version: -1
       name: cymulate-immediate-threat-start
       description: ''
@@ -1040,10 +1040,10 @@ tasks:
     skipunavailable: false
   '35':
     id: '35'
-    taskid: '35'
+    taskid: '8bfea1be-812d-46a6-90e9-bec8b1f07201'
     type: condition
     task:
-      id: '35'
+      id: '8bfea1be-812d-46a6-90e9-bec8b1f07201'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1069,10 +1069,10 @@ tasks:
     skipunavailable: false
   '36':
     id: 36
-    taskid: '36'
+    taskid: '0779d01f-f566-4af7-be8e-9265d798b510'
     type: regular
     task:
-      id: '36'
+      id: '0779d01f-f566-4af7-be8e-9265d798b510'
       version: -1
       name: cymulate-immediate-threat-stop
       description: ''
@@ -1092,10 +1092,10 @@ tasks:
     skipunavailable: false
   '37':
     id: '37'
-    taskid: '37'
+    taskid: '9b83eac8-691a-406b-8d7b-9dca397f5d29'
     type: condition
     task:
-      id: '37'
+      id: '9b83eac8-691a-406b-8d7b-9dca397f5d29'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1121,10 +1121,10 @@ tasks:
     skipunavailable: false
   '38':
     id: 38
-    taskid: '38'
+    taskid: '3e9f88e4-1e8c-4234-a11a-8b7e650daee3'
     type: regular
     task:
-      id: '38'
+      id: '3e9f88e4-1e8c-4234-a11a-8b7e650daee3'
       version: -1
       name: cymulate-immediate-threat-status
       description: ''
@@ -1144,10 +1144,10 @@ tasks:
     skipunavailable: false
   '39':
     id: '39'
-    taskid: '39'
+    taskid: '2ad7517f-90fe-4c97-9553-d29b3e01350c'
     type: condition
     task:
-      id: '39'
+      id: '2ad7517f-90fe-4c97-9553-d29b3e01350c'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1173,10 +1173,10 @@ tasks:
     skipunavailable: false
   '40':
     id: 40
-    taskid: '40'
+    taskid: '9c50212b-7c83-43a2-a502-f007aa8167df'
     type: regular
     task:
-      id: '40'
+      id: '9c50212b-7c83-43a2-a502-f007aa8167df'
       version: -1
       name: cymulate-phishing-awareness-contacts-group-list
       description: ''
@@ -1196,10 +1196,10 @@ tasks:
     skipunavailable: false
   '41':
     id: '41'
-    taskid: '41'
+    taskid: 'd0d74c33-bf53-44f4-844f-da4f9620739f'
     type: condition
     task:
-      id: '41'
+      id: 'd0d74c33-bf53-44f4-844f-da4f9620739f'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1240,10 +1240,10 @@ tasks:
     skipunavailable: false
   '42':
     id: 42
-    taskid: '42'
+    taskid: '3a1d13de-c025-4d72-be4f-84d16c29969f'
     type: regular
     task:
-      id: '42'
+      id: '3a1d13de-c025-4d72-be4f-84d16c29969f'
       version: -1
       name: cymulate-phishing-awareness-contacts-group-create
       description: ''
@@ -1263,10 +1263,10 @@ tasks:
     skipunavailable: false
   '43':
     id: '43'
-    taskid: '43'
+    taskid: 'f70a269c-a79e-4295-a145-7fb8ae0a3a18'
     type: condition
     task:
-      id: '43'
+      id: 'f70a269c-a79e-4295-a145-7fb8ae0a3a18'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1297,10 +1297,10 @@ tasks:
     skipunavailable: false
   '44':
     id: 44
-    taskid: '44'
+    taskid: '1ecdf721-1a4a-40bc-ac89-9c4c32148d66'
     type: regular
     task:
-      id: '44'
+      id: '1ecdf721-1a4a-40bc-ac89-9c4c32148d66'
       version: -1
       name: cymulate-phishing-awareness-contacts-get
       description: ''
@@ -1320,10 +1320,10 @@ tasks:
     skipunavailable: false
   '45':
     id: '45'
-    taskid: '45'
+    taskid: 'a947bef4-2007-4543-868a-935ff21d7401'
     type: condition
     task:
-      id: '45'
+      id: 'a947bef4-2007-4543-868a-935ff21d7401'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1364,10 +1364,10 @@ tasks:
     skipunavailable: false
   '46':
     id: 46
-    taskid: '46'
+    taskid: 'ecb86a3a-daed-4f17-aae0-d2650c4513ce'
     type: regular
     task:
-      id: '46'
+      id: 'ecb86a3a-daed-4f17-aae0-d2650c4513ce'
       version: -1
       name: cymulate-lateral-movement-template-list
       description: ''
@@ -1387,10 +1387,10 @@ tasks:
     skipunavailable: false
   '47':
     id: '47'
-    taskid: '47'
+    taskid: '4fe0f936-e230-4367-9ce8-a55adb05679a'
     type: condition
     task:
-      id: '47'
+      id: '4fe0f936-e230-4367-9ce8-a55adb05679a'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1416,10 +1416,10 @@ tasks:
     skipunavailable: false
   '48':
     id: 48
-    taskid: '48'
+    taskid: '73f090b0-fe7d-4bdc-b451-02ead090643b'
     type: regular
     task:
-      id: '48'
+      id: '73f090b0-fe7d-4bdc-b451-02ead090643b'
       version: -1
       name: cymulate-lateral-movement-start
       description: ''
@@ -1439,10 +1439,10 @@ tasks:
     skipunavailable: false
   '49':
     id: '49'
-    taskid: '49'
+    taskid: 'a0d61b2c-eb21-4e04-afc0-3dcde95d5097'
     type: condition
     task:
-      id: '49'
+      id: 'a0d61b2c-eb21-4e04-afc0-3dcde95d5097'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1468,10 +1468,10 @@ tasks:
     skipunavailable: false
   '50':
     id: 50
-    taskid: '50'
+    taskid: '4bd3cc58-5554-4c0f-979e-a5a3899fee13'
     type: regular
     task:
-      id: '50'
+      id: '4bd3cc58-5554-4c0f-979e-a5a3899fee13'
       version: -1
       name: cymulate-lateral-movement-stop
       description: ''
@@ -1491,10 +1491,10 @@ tasks:
     skipunavailable: false
   '51':
     id: '51'
-    taskid: '51'
+    taskid: '6efd8708-d6d7-41a5-90d0-0d425780a477'
     type: condition
     task:
-      id: '51'
+      id: '6efd8708-d6d7-41a5-90d0-0d425780a477'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1525,10 +1525,10 @@ tasks:
     skipunavailable: false
   '52':
     id: 52
-    taskid: '52'
+    taskid: 'bc757c89-6969-469b-b724-d9c6d9acd972'
     type: regular
     task:
-      id: '52'
+      id: 'bc757c89-6969-469b-b724-d9c6d9acd972'
       version: -1
       name: cymulate-lateral-movement-status
       description: ''
@@ -1548,10 +1548,10 @@ tasks:
     skipunavailable: false
   '53':
     id: '53'
-    taskid: '53'
+    taskid: '4fdabaaa-b9ab-46e0-9985-c59c4b638a12'
     type: condition
     task:
-      id: '53'
+      id: '4fdabaaa-b9ab-46e0-9985-c59c4b638a12'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1577,10 +1577,10 @@ tasks:
     skipunavailable: false
   '54':
     id: 54
-    taskid: '54'
+    taskid: '0a7bc632-4d3d-44f1-9154-032f6bf6f32e'
     type: regular
     task:
-      id: '54'
+      id: '0a7bc632-4d3d-44f1-9154-032f6bf6f32e'
       version: -1
       name: cymulate-agent-list
       description: ''
@@ -1600,10 +1600,10 @@ tasks:
     skipunavailable: false
   '55':
     id: '55'
-    taskid: '55'
+    taskid: '9edce85c-395d-4f13-89f0-b0e610628e2c'
     type: condition
     task:
-      id: '55'
+      id: '9edce85c-395d-4f13-89f0-b0e610628e2c'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1634,10 +1634,10 @@ tasks:
     skipunavailable: false
   '56':
     id: '56'
-    taskid: '56'
+    taskid: '670fbef9-48b9-489d-9b64-53a66a9ea1a0'
     type: title
     task:
-      id: '56'
+      id: '670fbef9-48b9-489d-9b64-53a66a9ea1a0'
       version: -1
       name: Test Done
       type: title
@@ -1654,3 +1654,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+description: ''

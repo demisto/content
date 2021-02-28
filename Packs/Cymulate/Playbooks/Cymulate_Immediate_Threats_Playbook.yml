@@ -3,7 +3,6 @@ version: -1
 name: Cymulate Immediate Threats
 description: Cymulate official playbook.
 fromversion: 6.0.0
-vcShouldKeepItemLegacyProdMachine: false
 starttaskid: "0"
 tasks:
   "0":
@@ -11,6 +10,7 @@ tasks:
     taskid: a7c00c0a-5181-48d8-8bd4-cd133bf0d87e
     type: start
     task:
+      description: First task.
       id: a7c00c0a-5181-48d8-8bd4-cd133bf0d87e
       version: -1
       name: ""
@@ -37,6 +37,7 @@ tasks:
     taskid: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
     type: regular
     task:
+      description: Push malicious hashes to Endpoint Security blocklist.
       id: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
       version: -1
       name: Push malicious hashes to Endpoint Security blocklist
@@ -64,6 +65,7 @@ tasks:
     taskid: f4c78891-3865-41d2-8694-f5d2a7f17208
     type: regular
     task:
+      description: Push malicious Emails to Email Gateway blocklist
       id: f4c78891-3865-41d2-8694-f5d2a7f17208
       version: -1
       name: Push malicious Emails to Email Gateway blocklist
@@ -91,6 +93,7 @@ tasks:
     taskid: a407f347-50e5-41e2-8e7c-fcf8abf06f49
     type: regular
     task:
+      description: Push malicious URL's to Web Gateway blocklist.
       id: a407f347-50e5-41e2-8e7c-fcf8abf06f49
       version: -1
       name: Push malicious URL's to Web Gateway blocklist
@@ -152,8 +155,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -170,9 +173,9 @@ tasks:
       id: 75e37490-4ad6-4f31-8628-8053c3748bbf
       version: -1
       name: Any payloads penetrated?
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -210,6 +213,7 @@ tasks:
     taskid: 0b0698d5-d440-44dd-8a36-2d457d99628a
     type: condition
     task:
+      description: Check if any IOC is related to Endpoint Security.
       id: 0b0698d5-d440-44dd-8a36-2d457d99628a
       version: -1
       name: Any IOC's related to Endpoint Security?
@@ -234,6 +238,7 @@ tasks:
           left:
             value:
               simple: incident.sha256
+            iscontext: false
         - operator: isNotEmpty
           left:
             value:
@@ -264,6 +269,7 @@ tasks:
     taskid: adecd058-bc4f-47b5-8790-12228ef79271
     type: condition
     task:
+      description: Check if any IOC is related to Web Gateway.
       id: adecd058-bc4f-47b5-8790-12228ef79271
       version: -1
       name: Any IOC's related to Web Gateway?
@@ -319,6 +325,7 @@ tasks:
     taskid: 7f8dbf5c-0580-4bb2-801e-ff5efc8bfdb8
     type: condition
     task:
+      description: Check if any IOC is related to Email Gateway.
       id: 7f8dbf5c-0580-4bb2-801e-ff5efc8bfdb8
       version: -1
       name: Any IOC's related to Email Gateway?
@@ -374,6 +381,7 @@ tasks:
     taskid: 2b810e64-ad01-4ebc-8c85-367511eb1e3a
     type: title
     task:
+      description: ''
       id: 2b810e64-ad01-4ebc-8c85-367511eb1e3a
       version: -1
       name: Done
@@ -398,6 +406,7 @@ tasks:
     taskid: 48d4ac7d-b04b-4892-846a-6504e52732ec
     type: condition
     task:
+      description: Get immediate threats intelligence.
       id: 48d4ac7d-b04b-4892-846a-6504e52732ec
       version: -1
       name: Get immediate threats intelligence
@@ -455,4 +464,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 75f5e4a9-49ea-4cd1-855b-8f8ba0c46e37
+tests:
+- Cymulate V2 Test
+- Cymulate Immediate Threats

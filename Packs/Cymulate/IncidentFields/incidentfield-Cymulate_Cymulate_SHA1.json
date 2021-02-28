@@ -1,1 +1,30 @@
-{"id": "incident_cymulatesha1", "version": 1, "modified": "2021-02-22T22:24:24.731246002+02:00", "sortValues": null, "packID": "", "itemVersion": "", "fromServerVersion": "", "toServerVersion": "", "vcShouldIgnore": false, "vcShouldKeepItemLegacyProdMachine": false, "commitMessage": "", "shouldCommit": false, "name": "Cymulate SHA1", "prevName": "Cymulate SHA1", "ownerOnly": false, "placeholder": "", "description": "", "cliName": "cymulatesha1", "type": "shortText", "closeForm": false, "editForm": true, "required": false, "script": "", "fieldCalcScript": "", "neverSetAsRequired": false, "isReadOnly": false, "selectValues": null, "validationRegex": "", "useAsKpi": false, "locked": false, "system": false, "content": false, "group": 0, "mergeStrategy": "", "hidden": false, "associatedTypes": ["Cymulate"], "systemAssociatedTypes": null, "associatedToAll": false, "unmapped": false, "unsearchable": false, "caseInsensitive": true, "columns": null, "defaultRows": null, "sla": 0, "threshold": 72, "breachScript": "", "validatedError": "", "fromVersion": "6.0.0"}
+{
+ "id": "incident_cymulatesha1",
+ "version": -1,
+ "modified": "2021-02-22T22:24:24.731246002+02:00",
+ "name": "Cymulate SHA1",
+ "ownerOnly": false,
+ "cliName": "cymulatesha1",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Cymulate"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}
