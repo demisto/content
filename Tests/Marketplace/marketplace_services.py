@@ -1810,6 +1810,24 @@ class Pack(object):
         finally:
             return task_status, exists_in_index
 
+    @staticmethod
+    def remove_contrib_suffix_from_name(display_name: str) -> str:
+        """ Removes the contribution details suffix from the integration's display name
+        Args:
+            display_name (str): The integration display name.
+
+        Returns:
+            str: The display name without the contrib details suffix
+
+        """
+        contribution_suffixes = ('(Partner Contribution)', '(Developer Contribution)', '(Community Contribution)')
+        for suffix in contribution_suffixes:
+            index = display_name.find(suffix)
+            if index != -1:
+                display_name = display_name[:index].rstrip(' ')
+                break
+        return display_name
+
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
 
@@ -1853,8 +1871,13 @@ class Pack(object):
                 else:
                     image_gcs_path = pack_image_blob.public_url
 
+                integration_name = image_data.get('display_name', '')
+
+                if self.support_type != Metadata.XSOAR_SUPPORT:
+                    integration_name = self.remove_contrib_suffix_from_name(integration_name)
+
                 uploaded_integration_images.append({
-                    'name': image_data.get('display_name', ''),
+                    'name': integration_name,
                     'imagePath': image_gcs_path
                 })
 
