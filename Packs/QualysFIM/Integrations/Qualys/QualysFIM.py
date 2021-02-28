@@ -204,7 +204,7 @@ def list_events_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
+    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args['sort']))}])
     params = remove_empty_elements({'filter': args.get('filter'),
                                     'pageNumber': args.get('page_number', '0'),
                                     'pageSize': args.get('limit', '10'),
@@ -253,7 +253,7 @@ def get_event_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    raw_response = client.get_event(str(args.get('event_id')))
+    raw_response = client.get_event(str(args['event_id']))
     table_headers = ['name', 'action', 'id', 'severity', 'action', 'incidentId',
                      'profiles', 'type', 'dateTime', 'fullPath']
 
@@ -285,7 +285,7 @@ def list_incidents_command(client: Client, args: dict):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args.get('sort')))}])
+    sort = json.dumps([{'dateTime': SORT_DICTIONARY.get(str(args['sort']))}])
     params = remove_empty_elements({'filter': args.get('filter'),
                                     'pageNumber': args.get('page_number', '0'),
                                     'pageSize': args.get('limit', '10'),
@@ -336,7 +336,7 @@ def list_incident_events_command(client: Client, args: dict):
     """
     params = remove_empty_elements({'filter': args.get('filter'),
                                     'pageNumber': args.get('page_number', '0'),
-                                    'pageSize': args.get('limit'),
+                                    'pageSize': args['limit'],
                                     'attributes': args.get('attributes')})
 
     raw_response = client.get_incident_events(str(args.get('incident_id')), params)
@@ -396,7 +396,8 @@ def create_incident_command(client: Client, args: dict):
             today = datetime.today().strftime(DATETIME_FORMAT)
             filters = f"dateTime: ['{yesterday}'..'{today}']"
 
-    data = remove_empty_elements({'name': args.get('name'), 'type': 'DEFAULT',
+    data = remove_empty_elements({'name': args['name'],
+                                  'type': 'DEFAULT',
                                   'filters': [filters],
                                   'comment': args.get('comment'),
                                   'reviewers': argToList(args.get('reviewers'))})
@@ -436,10 +437,10 @@ def approve_incident_command(client: Client, args: dict):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    data = {'approvalStatus': args.get('approval_status'),
-            'changeType': args.get('change_type'),
-            'comment': args.get('comment'),
-            'dispositionCategory': args.get('disposition_category')}
+    data = {'approvalStatus': args['approval_status'],
+            'changeType': args['change_type'],
+            'comment': args['comment'],
+            'dispositionCategory': args['disposition_category']}
 
     raw_response = client.approve_incident(str(args.get('incident_id')),
                                            remove_empty_elements(data))

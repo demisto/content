@@ -9,7 +9,6 @@ configuration:
   type: 9
 - additionalinfo: |-
     The Qualys API server URL that you should use for API requests depends on the platform where your account is located.
-
     Platforms and URLS:
     Qualys US Platform 1: https://gateway.qg1.apps.qualys.com
     Qualys US Platform 2: https://gateway.qg2.apps.qualys.com
@@ -47,7 +46,6 @@ configuration:
 - additionalinfo: |-
     Filter the incidents fetching by providing a query using Qualys syntax.
     i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
-
     Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
     https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
   display: Fetch Filter
@@ -73,7 +71,6 @@ script:
       description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
-
         Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
       isArray: false
@@ -174,7 +171,6 @@ script:
       description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
-
         Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
       isArray: false
@@ -250,7 +246,6 @@ script:
       description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
-
         Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
       isArray: false
@@ -335,7 +330,6 @@ script:
         i.e: "dateTime : ['2021-01-01'..'2021-03-29']
         When you use this argument it will overwrite "from_date" & "to_date" arguments.
         If you don't use filter, Query will be last 24 hours events.
-
         Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
       isArray: false
@@ -488,7 +482,6 @@ script:
       description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e: "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
-
         Please refer to "how to search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
       isArray: false
