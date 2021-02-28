@@ -6,11 +6,12 @@ args:
   isArray: false
   name: incidentId
   predefined:
-    - comma separated optional values
+  - comma separated optional values
   required: false
   secret: false
 - default: false
   defaultValue: '150'
+  description: 'Number to filter out indicators that appear in many incidents '
   isArray: false
   name: maxIncidentsInIndicatorsForWhiteList
   required: false
@@ -58,6 +59,32 @@ args:
     - ' False'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: 'Print additional content for debugging '
+  isArray: false
+  name: debug
+  predefined:
+    - 'True'
+    - ' False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '50'
+  description: Maximun number of incidents to display
+  isArray: false
+  name: maxIncidentsToDisplay
+  required: false
+  secret: false
+- default: false
+  defaultValue: status, type, created, name
+  description: Fields to add in the table of incident
+  isArray: false
+  name: fieldsIncidentToDisplay
+  required: false
+  secret: false
+comment: Find similar incidents based on indicators similarity
 commonfields:
   id: 824f077d-49e9-4378-86a4-aa6603890c44
   version: -1
