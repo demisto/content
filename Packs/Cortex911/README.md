@@ -28,4 +28,3 @@ This content pack contains integrations, playbooks, layouts for Cortex XDR, Auto
 
     - Crypsis Emergency Response Team - Optional 
 
-- ##### Duration: 30 days
