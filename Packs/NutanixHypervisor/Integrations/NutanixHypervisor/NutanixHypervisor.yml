@@ -328,9 +328,8 @@ script:
       type: Boolean
   - arguments:
     - description: "Retrieve virtual machines that matches the filters given. . Nutanix
-         filters can be one of the field returned in the response by nutanix [GET
-         VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/)
-         API call. Some of the fields in the response are not supported. Known filters
+         filters can be one of the fields returned in the response by nutanix GET
+         VMs API call as described at https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/. Some of the fields in the response are not supported. Known filters
          Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,
          *uefi_boot*. You can try to enter your own filter,  but if Nutanix does
          not support the filter, an error will be thrown specifying the filter is
