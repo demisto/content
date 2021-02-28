@@ -44,7 +44,7 @@
         {
           "ttl": 3599,
           "type": "A",
-          "value": "134.209.227.14"
+          "value": ":ip:"
         }
       ],
       "last_dns_records_date": 1612828461,
