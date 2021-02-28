@@ -19,15 +19,6 @@
                         "i": "ri0krhke9o-7c658f80-4482-11eb-a19e-6d7d0ab0bb4e",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "qssalertid",
-                                "height": 22,
-                                "id": "9fc028a0-4482-11eb-a19e-6d7d0ab0bb4e",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "qsscaseid",
