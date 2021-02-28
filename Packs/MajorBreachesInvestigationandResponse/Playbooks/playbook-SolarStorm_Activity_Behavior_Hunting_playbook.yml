@@ -1,7 +1,7 @@
 id: SolarStorm Activity Behavior Hunting playbook
 version: -1
 name: SolarStorm Activity Behavior Hunting playbook
-description: "This manual playbook helps you to discover SolarStorm activity behavior\
+description: "This manual playbook helps you to discover SolarStorm activity behavior.\
   \ \n\nSources:\n- https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html\n\
   - https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/\n- https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html"
 starttaskid: "0"
@@ -71,10 +71,10 @@ tasks:
       version: -1
       name: Search SUNBURST DNS queries
       description: The malicious DLL will be loaded by the legitimate SolarWinds.BusinessLayerHost.exe
-        or SolarWinds.BusinessLayerHostx64.exe (depending on system configuration)
+        or SolarWinds.BusinessLayerHostx64.exe files (depending on system configuration)
         and the malware will attempt to resolve a subdomain of avsvmcloud[.]com. The
         DNS response will return a CNAME record that points to a Command and Control
-        (C2) domain
+        (C2) domain.
       type: regular
       iscommand: false
       brand: ""
@@ -103,7 +103,7 @@ tasks:
       version: -1
       name: Search the malicious DLL
       description: |-
-        Search for the malicious DLL **SolarWinds.Orion.Core.BusinessLayer.dll**
+        Search for the malicious DLL **SolarWinds.Orion.Core.BusinessLayer.dll**.
         The DLL is a SolarWinds digitally-signed component of the Orion software framework that contains a backdoor that communicates via HTTP to third party servers.
       type: regular
       iscommand: false
@@ -132,9 +132,9 @@ tasks:
       id: 9b57152c-17f7-4c70-813f-dabd9cc66693
       version: -1
       name: Search for Cobalt Strike Alerts
-      description: Look at alerts and incidents that have any SolarWinds binary attached
+      description: Look at alerts and incidents that have a SolarWinds binary attached
         to them or any alerts related to Cobalt Strike, as these attackers have been
-        seen using the framework
+        seen using the framework.
       type: regular
       iscommand: false
       brand: ""
@@ -189,7 +189,7 @@ tasks:
     task:
       id: c0048ab6-752a-4e17-8707-13900e51778a
       version: -1
-      name: 'Search for files dropped from the infected SolarWinds process '
+      name: 'Search for files dropped from the infected SolarWinds process'
       description: |-
         Example XDR Query:
         lowercase(actor_process_image_name) = “solarwinds.businesslayerhost*.exe” and
@@ -334,9 +334,9 @@ tasks:
     task:
       id: 3e5b5cf7-32bb-4928-8a0e-3d8e902de79e
       version: -1
-      name: 'Search backdoored DLLs which initiated network connections '
+      name: 'Search backdoor DLLs which initiated network connections '
       description: |-
-        We can hunt down backdoored DLLs which initiated network connections and look for any suspicious connection that involves DGA domains.
+       Hunt for backdoor DLLs that initiated network connections and look for any suspicious connection that involves DGA domains.
         XDR example query:
         dataset = xdr_data
         | filter (event_type = NETWORK or event_type = STORY) and
@@ -390,7 +390,7 @@ tasks:
     task:
       id: 1244240b-1d33-4714-84b9-7f78c31266c6
       version: -1
-      name: Search for  known backdoor named pipe
+      name: Search for known backdoor named pipe
       description: "Hunt based on the known backdoor named pipe.\n - XDR example query:\n\
         dataset = xdr_data\n| filter action_file_device_type = 1 and action_file_name\
         \ != null and\nlowercase(actor_process_image_name) contains \"solarwinds.businesslayerhost\"\
