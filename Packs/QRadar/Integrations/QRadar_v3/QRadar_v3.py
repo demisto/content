@@ -1,6 +1,7 @@
 import concurrent.futures
 from enum import Enum
 from threading import Lock
+from typing import Tuple
 
 import pytz
 import urllib3
@@ -20,12 +21,13 @@ BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 LOCK_WAIT_TIME = 0.5  # time to wait for lock.acquire
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
-DOMAIN_ENRCH_FLG = "True"  # when set to true, will try to enrich offense and assets with domain names
-RULES_ENRCH_FLG = "True"  # when set to true, will try to enrich offense with rule names
+DOMAIN_ENRCH_FLG = 'True'  # when set to true, will try to enrich offense and assets with domain names
+RULES_ENRCH_FLG = 'True'  # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 
 ''' CONSTANTS '''
+API_USERNAME = '_api_token_key'
 RESET_KEY = 'reset'
 LAST_FETCH_KEY = 'id'
 MINIMUM_API_VERSION = 10.1
@@ -52,97 +54,170 @@ lock = Lock()
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
-    "credibility": "Credibility",
-    "relevance": "Relevance",
-    "severity": "Severity",
-    "assigned_to": "AssignedTo",
-    "destination_networks": "DestinationHostname",
-    "status": "Status",
-    "closing_user": "ClosingUser",
-    "closing_reason_id": "ClosingReason",
-    "close_time": "CloseTime",
-    "categories": "Categories",
-    "follow_up": "Followup",
-    "id": "ID",
-    "description": "Description",
-    "source_address_ids": "SourceAddress",
-    "local_destination_address_ids": "DestinationAddress",
-    "remote_destination_count": "RemoteDestinationCount",
-    "start_time": "StartTime",
-    "event_count": "EventCount",
-    "flow_count": "FlowCount",
-    "offense_source": "OffenseSource",
-    "magnitude": "Magnitude",
-    "last_updated_time": "LastUpdatedTime",
-    "offense_type": "OffenseType",
-    "protected": "Protected",
+    'credibility': 'Credibility',
+    'relevance': 'Relevance',
+    'severity': 'Severity',
+    'assigned_to': 'AssignedTo',
+    'destination_networks': 'DestinationHostname',
+    'status': 'Status',
+    'closing_user': 'ClosingUser',
+    'closing_reason_id': 'ClosingReason',
+    'close_time': 'CloseTime',
+    'categories': 'Categories',
+    'follow_up': 'Followup',
+    'id': 'ID',
+    'description': 'Description',
+    'source_address_ids': 'SourceAddress',
+    'local_destination_address_ids': 'DestinationAddress',
+    'remote_destination_count': 'RemoteDestinationCount',
+    'start_time': 'StartTime',
+    'event_count': 'EventCount',
+    'flow_count': 'FlowCount',
+    'offense_source': 'OffenseSource',
+    'magnitude': 'Magnitude',
+    'last_updated_time': 'LastUpdatedTime',
+    'offense_type': 'OffenseType',
+    'protected': 'Protected',
+    'LinkToOffense': 'LinkToOffense',
+    'rules': 'Rules',
+    'domain_name': 'DomainName'
 }
 
 CLOSING_REASONS_OLD_NEW_MAP = {
-    "id": "ID",
-    "text": "Name",
-    "is_reserved": "IsReserved",
-    "is_deleted": "IsDeleted",
+    'id': 'ID',
+    'text': 'Name',
+    'is_reserved': 'IsReserved',
+    'is_deleted': 'IsDeleted'
 }
 
 NOTES_OLD_NEW_MAP = {
-    "id": "ID",
-    "note_text": "Text",
-    "create_time": "CreateTime",
-    "username": "CreatedBy",
+    'id': 'ID',
+    'note_text': 'Text',
+    'create_time': 'CreateTime',
+    'username': 'CreatedBy'
 }
 
 RULES_OLD_NEW_MAP = {
-    "owner": "Owner",
-    "identifier": "Identifier",
-    "base_host_id": "BaseHostID",
-    "capacity_timestamp": "CapacityTimestamp",
-    "origin": "Origin",
-    "creation_date": "CreationDate",
-    "type": "Type",
-    "enabled": "Enabled",
-    "modification_date": "ModificationDate",
-    "linked_rule_identifier": "LinkedRuleIdentifier",
-    "name": "Name",
-    "average_capacity": "AverageCapacity",
-    "id": "ID",
-    "base_capacity": "BaseCapacity"
+    'owner': 'Owner',
+    'base_host_id': 'BaseHostID',
+    'capacity_timestamp': 'CapacityTimestamp',
+    'origin': 'Origin',
+    'creation_date': 'CreationDate',
+    'type': 'Type',
+    'enabled': 'Enabled',
+    'modification_date': 'ModificationDate',
+    'name': 'Name',
+    'average_capacity': 'AverageCapacity',
+    'id': 'ID',
+    'base_capacity': 'BaseCapacity'
 }
 
 RULES_GROUP_OLD_NEW_MAP = {
-    'TODO': 'TODO'
+    'owner': 'Owner',
+    'modified_time': 'ModifiedTime',
+    'level': 'Level',
+    'name': 'Name',
+    'description': 'Description',
+    'id': 'ID',
+    'child_groups': 'ChildGroups',
+    'child_items': 'ChildItems',
+    'type': 'Type',
+    'parent_id': 'ParentID'
 }
 
-SEARCH_OLD_NEW_MAP = {"search_id": "ID", "status": "Status"}
+ASSET_OLD_NEW_MAP = {
+    'vulnerability_count': 'VulnerabilityCount',
+    'interfaces': 'Interfaces',
+    'risk_score_sum': 'RiskScoreSum',
+    'hostnames': 'Hostnames',
+    'id': 'ID',
+    'users': 'Users',
+    'domain_id': 'DomainID',
+    'properties': 'Properties',
+    'products': 'Products'
+}
+
+SEARCH_OLD_NEW_MAP = {'search_id': 'ID', 'status': 'Status'}
 
 REFERENCE_SETS_OLD_NEW_MAP = {
-    "number_of_elements": "NumberOfElements",
-    "name": "Name",
-    "creation_time": "CreationTime",
-    "element_type": "ElementType",
-    "time_to_live": "TimeToLive",
-    "timeout_type": "TimeoutType",
-    "data": "Data",
-    "last_seen": "LastSeen",
-    "source": "Source",
-    "value": "Value",
-    "first_seen": "FirstSeen",
+    'number_of_elements': 'NumberOfElements',
+    'name': 'Name',
+    'creation_time': 'CreationTime',
+    'element_type': 'ElementType',
+    'time_to_live': 'TimeToLive',
+    'timeout_type': 'TimeoutType',
+    'data': 'Data',
+}
+REFERENCE_SET_DATA_OLD_NEW_MAP = {
+    'last_seen': 'LastSeen',
+    'source': 'Source',
+    'value': 'Value',
+    'first_seen': 'FirstSeen'
 }
 
 DOMAIN_OLD_NEW_MAP = {
-    "asset_scanner_ids": "AssetScannerIDs",
-    "custom_properties": "CustomProperties",
-    "deleted": "Deleted",
-    "description": "Description",
-    "event_collector_ids": "EventCollectorIDs",
-    "flow_collector_ids": "FlowCollectorIDs",
-    "flow_source_ids": "FlowSourceIDs",
-    "id": "ID",
-    "log_source_ids": "LogSourceIDs",
-    "log_source_group_ids": "LogSourceGroupIDs",
-    "name": "Name",
-    "qvm_scanner_ids": "QVMScannerIDs",
-    "tenant_id": "TenantID",
+    'asset_scanner_ids': 'AssetScannerIDs',
+    'custom_properties': 'CustomProperties',
+    'deleted': 'Deleted',
+    'description': 'Description',
+    'event_collector_ids': 'EventCollectorIDs',
+    'flow_collector_ids': 'FlowCollectorIDs',
+    'flow_source_ids': 'FlowSourceIDs',
+    'id': 'ID',
+    'log_source_ids': 'LogSourceIDs',
+    'log_source_group_ids': 'LogSourceGroupIDs',
+    'name': 'Name',
+    'qvm_scanner_ids': 'QVMScannerIDs',
+    'tenant_id': 'TenantID'
+}
+
+SAVED_SEARCH_OLD_NEW_MAP = {
+    'owner': 'Owner',
+    'description': 'Description',
+    'creation_date': 'CreationDate',
+    'uid': 'UID',
+    'database': 'Database',
+    'is_quick_search': 'QuickSearch',
+    'name': 'Name',
+    'modified_date': 'ModifiedDate',
+    'id': 'ID',
+    'aql': 'AQL',
+    'is_shared': 'IsShared'
+}
+
+IP_GEOLOCATION_OLD_NEW_MAP = {
+    'continent': 'Continent',
+    'traits': 'Traits',
+    'geo_json': 'Geolocation',
+    'city': 'City',
+    'ip_address': 'IPAddress',
+    'represented_country': 'RepresentedCountry',
+    'registered_country': 'RegisteredCountry',
+    'is_local': 'IsLocalCountry',
+    'location': 'Location',
+    'postal': 'Postal',
+    'physical_country': 'PhysicalCountry',
+    'subdivisions': 'SubDivisions'
+}
+
+LOG_SOURCES_OLD_NEW_MAP = {
+    'sending_ip': 'SendingIP',
+    'internal': 'Internal',
+    'protocol_parameters': 'ProtocolParameters',
+    'description': 'Description',
+    'enabled': 'Enabled',
+    'group_ids': 'GroupIDs',
+    'credibility': 'Credibility',
+    'id': 'ID',
+    'protocol_type_id': 'ProtocolTypeID',
+    'creation_date': 'CreationDate',
+    'name': 'Name',
+    'modified_date': 'ModifiedDate',
+    'auto_discovered': 'AutoDiscovered',
+    'type_id': 'TypeID',
+    'last_event_time': 'LastEventTime',
+    'gateway': 'Gateway',
+    'status': 'Status'
 }
 
 USECS_ENTRIES = {'last_persisted_time',
@@ -157,25 +232,32 @@ USECS_ENTRIES = {'last_persisted_time',
                  'last_seen',
                  'first_seen',
                  'starttime',
-                 'devicetime'}
-
+                 'devicetime',
+                 'last_reported',
+                 'created',
+                 'last_seen_profiler',
+                 'last_seen_scanner',
+                 'first_seen_scanner',
+                 'first_seen_profiler',
+                 'modified_time',
+                 'last_event_time',
+                 'modified_date'}
 ''' ENRICHMENT MAPS '''
 
 ASSET_PROPERTIES_NAME_MAP = {
-    "Unified Name": "Name",
-    "CVSS Collateral Damage Potential": "AggregatedCVSSScore",
-    "Weight": "Weight",
+    'Unified Name': 'Name',
+    'CVSS Collateral Damage Potential': 'AggregatedCVSSScore',
+    'Weight': 'Weight'
 }
 
 FULL_ASSET_PROPERTIES_NAMES_MAP = {
-    "Compliance Notes": "ComplianceNotes",
-    "Compliance Plan": "CompliancePlan",
-    "CVSS Collateral Damage Potential": "CollateralDamagePotential",
-    "Location": "Location",
-    "Switch ID": "SwitchID",
-    "Switch Port ID": "SwitchPort",
-    "Group Name": "GroupName",
-    "Vulnerabilities": "Vulnerabilities",
+    'Compliance Notes': 'ComplianceNotes',
+    'Compliance Plan': 'CompliancePlan',
+    'Location': 'Location',
+    'Switch ID': 'SwitchID',
+    'Switch Port ID': 'SwitchPort',
+    'Group Name': 'GroupName',
+    'Vulnerabilities': 'Vulnerabilities',
 }
 
 ''' ENUMS '''
@@ -200,12 +282,15 @@ class Client(BaseClient):
     def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: Dict):
         username = credentials.get('identifier')
         password = credentials.get('password')
-        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=(username, password))
+        if username == API_USERNAME:
+            self.base_headers = {'Version': api_version, 'SEC': password}
+            auth = None
+        else:
+            auth = (username, password)
+            self.base_headers = {'Version': api_version}
+        super().__init__(base_url=server, verify=verify, proxy=proxy, auth=auth)
         self.password = password
         self.server = server
-        self.base_headers = {
-            'Version': api_version,
-        }
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None, data: Optional[Dict] = None,
                      additional_headers: Optional[Dict] = None):
@@ -216,7 +301,8 @@ class Client(BaseClient):
             params=params,
             data=data,
             headers=headers,
-            error_handler=qradar_error_handler
+            error_handler=qradar_error_handler,
+            timeout=50
         )
 
     def offenses_list(self, offense_id: Optional[int], range_: str, filter_: Optional[str],
@@ -293,7 +379,7 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def assets_list(self, range_: str, filter_: Optional[str], fields: Optional[str]):
+    def assets_list(self, range_: Optional[str], filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/asset_model/assets',
@@ -396,7 +482,7 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def indicators_upload(self, ref_name: Optional[str], indicators: Optional[Any], fields: Optional[str]):
+    def indicators_upload(self, ref_name: Optional[str], indicators: Optional[List[Any]], fields: Optional[str]):
         return self.http_request(
             method='POST',
             url_suffix=f'/reference_data/maps/bulk_load/{ref_name}',
@@ -424,7 +510,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_custom_properties(self, range_: Optional[str], filter_: Optional[str], fields: Optional[str]):
+    def custom_properties(self, range_: Optional[str], filter_: Optional[str], fields: Optional[str]):
         return self.http_request(
             method='GET',
             url_suffix='/config/event_sources/custom_properties/regex_properties',
@@ -451,7 +537,7 @@ class Client(BaseClient):
         Test connection with databases (should always be up)
         """
         self.http_request(method='GET', url_suffix='/ariel/databases')
-        return "ok"
+        return 'ok'
 
 
 ''' HELPER FUNCTIONS '''
@@ -517,7 +603,7 @@ def sanitize_outputs(outputs: Any, key_replace_dict: Optional[Dict] = None) -> L
     return build_final_outputs(outputs, key_replace_dict) if key_replace_dict else outputs
 
 
-def get_time_parameter(arg: Optional[str], iso_format: bool = False, epoch_format: bool = False):
+def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: bool = False, epoch_format: bool = False):
     """
     parses arg into date time object with aware time zone if 'arg' exists.
     If no time zone is given, sets timezone to UTC.
@@ -585,7 +671,7 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {offense_type_id: offense_type_name}
     """
-    offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type')}
+    offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
     if not offense_types_ids:
         return dict()
     offense_types = client.offense_types(f'''id in ({','.join(map(str, offense_types_ids))})''',
@@ -604,7 +690,8 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {closing_reason_id: closing_reason_name}
     """
-    closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses if offense.get('closing_reason_id')}
+    closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses
+                          if offense.get('closing_reason_id') is not None}
     if not closing_reason_ids:
         return dict()
     closing_reasons = client.closing_reasons_list(None, None, None, None,
@@ -624,7 +711,7 @@ def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {domain_id: domain_name}
     """
-    domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id')}
+    domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id') is not None}
     if not domain_ids:
         return dict()
     domains_info = client.domains_list(None, None, f'''id in ({','.join(map(str, domain_ids))})''', 'id,name')
@@ -681,9 +768,53 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
             for address_data in addresses_batch}
 
 
-def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool = False,
-                           enrich_assets: bool = False) -> List[Dict]:
-    # TODO add enrich assets
+def create_single_asset_for_offense_enrichment(asset: Dict) -> Dict:
+    """
+    Recieves one asset, and returns the expected asset values for enriching offense.
+    Args:
+        asset (Dict): Asset to enrich the offense with
+
+    Returns:
+        (Dict): The enriched asset.
+    """
+    interfaces = {'interfaces': [{
+        'mac_address': interface.get('mac_address'),
+        'id': interface.get('id'),
+        'ip_addresses': [{
+            'type': ip_address.get('type'),
+            'value': ip_address.get('value')
+        } for ip_address in interface.get('ip_addresses', [])]
+    } for interface in asset.get('interfaces', [])]}
+    properties = {prop.get('name'): prop.get('value') for prop in asset.get('properties', [])
+                  if 'name' in prop and 'value' in prop}
+    offense_without_properties = {k: v for k, v in asset.items() if k != 'properties'}
+    return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
+
+
+def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[Dict]:
+    """
+    Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
+    Args:
+        client (Client): Client to perform the API request to QRadar.
+        offense_ips (List[str]): List of all of the offense's IPs.
+
+    Returns:
+        (List[Dict]): List of all the correlated assets.
+    """
+
+    def get_assets_for_ips_batch(b: List):
+        filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
+        return client.assets_list(None, filter_query, None)
+
+    # Submit addresses in batches to avoid overloading QRadar service
+    assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
+              for asset in get_assets_for_ips_batch(b)]
+
+    return [create_single_asset_for_offense_enrichment(asset) for asset in assets]
+
+
+def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool,
+                           enrich_assets: bool) -> List[Dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -702,7 +833,10 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     Returns:
         (List[Dict]): The enriched offenses.
     """
-    print_debug_msg("Enriching offenses")
+    if not isinstance(offenses, list):
+        offenses = [offenses]
+
+    print_debug_msg('Enriching offenses')
     offense_types_id_name_dict = get_offense_types(client, offenses)
     closing_reasons_id_name_dict = get_offense_closing_reasons(client, offenses)
     domain_id_name_dict = get_domain_names(client, offenses) if DOMAIN_ENRCH_FLG == 'True' else dict()
@@ -720,17 +854,14 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
 
         domain_enrich = {
             'domain_name': domain_id_name_dict.get(offense.get('domain_id'))
-        } if DOMAIN_ENRCH_FLG == 'True' else dict()
+        } if DOMAIN_ENRCH_FLG == 'True' and domain_id_name_dict.get(offense.get('domain_id')) else dict()
 
         rules_enrich = {
-            'rules': [
-                {
-                    'id': rule.get('id'),
-                    'type': rule.get('type'),
-                    'name': rules_id_name_dict.get(rule.get('id'))
-
-                } for rule in offense.get('rules', [])
-            ] if RULES_ENRCH_FLG == 'True' else dict()
+            'rules': [{
+                'id': rule.get('id'),
+                'type': rule.get('type'),
+                'name': rules_id_name_dict.get(rule.get('id'))
+            } for rule in offense.get('rules', [])] if RULES_ENRCH_FLG == 'True' else dict()
         }
 
         source_addresses_enrich = {
@@ -744,32 +875,69 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
                                               offense.get('local_destination_address_ids', [])]
         } if enrich_ip_addresses else dict()
 
+        if enrich_assets:
+            source_ips = source_addresses_enrich.get('source_address_ids', [])
+            destination_ips = destination_addresses_enrich.get('local_destination_address_ids', [])
+            all_ips = source_ips + destination_ips
+            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
+        else:
+            asset_enrich = dict()
+
         return dict(offense, **basic_enriches, **domain_enrich, **rules_enrich, **source_addresses_enrich,
-                    **destination_addresses_enrich)
+                    **destination_addresses_enrich, **asset_enrich)
 
     result = [create_enriched_offense(offense) for offense in offenses]
-    print_debug_msg("Enriched offenses successfully.")
+    print_debug_msg('Enriched offenses successfully.')
     return result
 
 
-def enrich_asset_properties(interfaces: List, property_old_new_dict: Dict) -> Dict:
+def enrich_asset_properties(properties: List, properties_to_enrich_dict: Dict) -> Dict:
     """
-    Receives list of interfaces of an asset, and properties to enrich, and returns a dict containing the enrichment
+    Receives list of properties of an asset, and properties to enrich, and returns a dict containing the enrichment
     Args:
-        interfaces (List): List of interfaces of an asset.
-        property_old_new_dict (Dict): Properties to be enriched.
+        properties (List): List of properties of an asset.
+        properties_to_enrich_dict (Dict): Properties to be enriched.
 
     Returns:
         (List[Dict]) List of new assets with enrichment.
     """
     return {
-        property_old_new_dict.get(prop.get('name')): {
+        properties_to_enrich_dict.get(prop.get('name')): {
             'Value': prop.get('value'),
             'LastUser': prop.get('last_reported_by')
-        }
-        for interface in interfaces for prop in interface.get('properties', [])
-        if prop.get('name') in property_old_new_dict
+        } for prop in properties if prop.get('name') in properties_to_enrich_dict
     }
+
+
+def add_iso_entries_to_asset(asset: Dict) -> Dict:
+    """
+    Transforms epoch entries to ISO entries in an asset.
+    Requires a special treatment, because some of the usec entries are nested.
+    Args:
+        asset (Dict): Asset to transform its epoch entries to ISO.
+
+    Returns:
+        (Dict): Asset transformed.
+    """
+
+    def get_asset_entry(k: str, v: Any):
+        if k == 'interfaces':
+            return [{
+                k: (get_time_parameter(v, iso_format=True) if k in USECS_ENTRIES
+                    else add_iso_entries_to_dict(v) if k == 'ip_addresses' else v)
+                for k, v in interface.items()
+            } for interface in v]
+
+        elif k == 'properties':
+            return add_iso_entries_to_dict(v)
+
+        elif k in USECS_ENTRIES:
+            return get_time_parameter(v, iso_format=True)
+
+        else:
+            return v
+
+    return {k: get_asset_entry(k, v) for k, v in asset.items()}
 
 
 def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) -> List[Dict]:
@@ -792,34 +960,36 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
     domain_id_name_dict = get_domain_names(client, assets) if full_enrichment else dict()
 
     def enrich_single_asset(asset: Dict) -> Dict:
-        interfaces = asset.get('interfaces', [])
-        domain_id = asset.get('domain_id')
-        os_name = next(
-            (prop.get('value') for interface in interfaces for prop in interface.get('properties', [])
-             if prop.get('name') == 'Primary OS ID'), None)
+        updated_asset = add_iso_entries_to_asset(asset)
+        interfaces = updated_asset.get('interfaces', [])
+        properties = updated_asset.get('properties', [])
+        domain_id = updated_asset.get('domain_id')
+        os_name = next((prop.get('value') for prop in properties if prop.get('name') == 'Primary OS ID'), None)
 
         ip_enrichment = {
             'IPAddress': [ip_address.get('value') for interface in interfaces
-                          for ip_address in interface.get("ip_addresses", [])
+                          for ip_address in interface.get('ip_addresses', [])
                           if ip_address.get('value')]
         }
 
         os_enrichment = {'OS': os_name} if os_name else dict()
 
         mac_enrichment = {
-            'MACAddress': [interface.get("mac_address") for interface in interfaces if
-                           interface.get('mac_address')]} if full_enrichment else dict()
+            'MACAddress': [interface.get('mac_address') for interface in interfaces if
+                           interface.get('mac_address')]
+        } if full_enrichment else dict()
 
         domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id)} if full_enrichment and domain_id else dict()
 
         endpoint_dict = {'Endpoint': dict(ip_enrichment, **os_enrichment, **mac_enrichment, **domains_enrichment)}
 
-        basic_properties_enrichment = enrich_asset_properties(interfaces, ASSET_PROPERTIES_NAME_MAP)
-        full_properties_enrichment = enrich_asset_properties(interfaces,
+        basic_properties_enrichment = enrich_asset_properties(properties, ASSET_PROPERTIES_NAME_MAP)
+        full_properties_enrichment = enrich_asset_properties(properties,
                                                              FULL_ASSET_PROPERTIES_NAMES_MAP) \
             if full_enrichment else dict()
 
-        return dict(asset, **endpoint_dict, **basic_properties_enrichment, **full_properties_enrichment)
+        enriched_asset = dict(asset, **endpoint_dict, **basic_properties_enrichment, **full_properties_enrichment)
+        return add_iso_entries_to_asset(enriched_asset)
 
     return [enrich_single_asset(asset) for asset in assets]
 
@@ -849,6 +1019,22 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) 
     return highest_offense_id
 
 
+def get_offense_enrichment(enrichment: str) -> Tuple[bool, bool]:
+    """
+    Receives enrichment asked by the user, returns true or false values indicating which enrichment should be done.
+    Args:
+        enrichment (Optional[str]): Enrichment argument.
+
+    Returns:
+        (bool, bool): Tuple of (ip_enrich, asset_enrich).
+    """
+    if enrichment == 'IPs And Assets':
+        return True, True
+    if enrichment == 'IPs':
+        return True, False
+    return False, False
+
+
 def print_debug_msg(msg: str):
     """
     Prints a message to debug with QRadarMsg prefix.
@@ -860,7 +1046,7 @@ def print_debug_msg(msg: str):
     Returns:
 
     """
-    debug_msg = f"QRadarMsg - {msg}"
+    debug_msg = f'QRadarMsg - {msg}'
     if lock.acquire(timeout=LOCK_WAIT_TIME):
         demisto.debug(debug_msg)
         lock.release()
@@ -886,8 +1072,8 @@ def is_reset_triggered(handle_reset: bool = False):
         ctx = get_integration_context()
         if ctx and RESET_KEY in ctx:
             if handle_reset:
-                print_debug_msg("Reset fetch-incidents.")
-                set_integration_context({"samples": ctx.get("samples", [])})
+                print_debug_msg('Reset fetch-incidents.')
+                set_integration_context({'samples': ctx.get('samples', [])})
             lock.release()
             return True
         lock.release()
@@ -914,8 +1100,9 @@ def test_module_command(client: Client, params: Dict) -> str:
     """
     try:
         client.test_connection()
-        is_long_running = params.get("long_running")
+        is_long_running = params.get('long_running')
         if is_long_running:
+            ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
             get_incidents_long_running_execution(
                 client=client,
                 offenses_per_fetch=int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH)),
@@ -923,8 +1110,8 @@ def test_module_command(client: Client, params: Dict) -> str:
                 fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
                 events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
                 events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
-                ip_enrich=argToBoolean(params.get('ip_enrich', True)),
-                asset_enrich=argToBoolean(params.get('asset_enrich', True)),
+                ip_enrich=ip_enrich,
+                asset_enrich=asset_enrich,
                 last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
                 incident_type=params.get('incident_type')
             )
@@ -1133,7 +1320,6 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
-    # TODO ADD TESTS
     """
     Transforms list of offenses given into incidents for Demisto.
     Args:
@@ -1146,7 +1332,6 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
     print_debug_msg(f'Creating {len(offenses)} incidents')
     return [{
         'name': f'''{offense.get('id')} {offense.get('description', '')}''',
-        'labels': 'TODO',
         'rawJSON': json.dumps(offense),
         'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
         'type': incident_type
@@ -1168,23 +1353,28 @@ def long_running_execution_command(client: Client, params: Dict):
     Returns:
 
     """
+    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
+    offenses_per_fetch = int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
+    user_query = params.get('query', '')
+    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+    incident_type = params.get('incident_type')
     while True:
         is_reset_triggered(handle_reset=True)
         ctx = get_integration_context()
-        fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
         print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
-
         incidents, new_highest_id = get_incidents_long_running_execution(
             client=client,
-            offenses_per_fetch=int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH)),
-            user_query=params.get('query', ''),
+            offenses_per_fetch=offenses_per_fetch,
+            user_query=user_query,
             fetch_mode=fetch_mode,
-            events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
-            events_limit=int(params.get('events_limit', DEFAULT_EVENTS_LIMIT)),
-            ip_enrich=argToBoolean(params.get('ip_enrich', True)),
-            asset_enrich=argToBoolean(params.get('asset_enrich', True)),
+            events_columns=events_columns,
+            events_limit=events_limit,
+            ip_enrich=ip_enrich,
+            asset_enrich=asset_enrich,
             last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
-            incident_type=params.get('incident_type')
+            incident_type=incident_type
         )
         # Reset was called during execution, skip creating incidents.
         if not incidents and not new_highest_id:
@@ -1220,16 +1410,17 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
+    ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
     response = client.offenses_list(offense_id, range_, filter_, fields, sort=None)
-    enriched_outputs = enrich_offenses_result(client, response)
-    final_outputs = sanitize_outputs(response, OFFENSE_OLD_NEW_NAMES_MAP)
+    enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
+    final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
     headers = build_headers(['ID', 'Description'], set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Offenses List', enriched_outputs, headers=headers),
+        readable_output=tableToMarkdown('Offenses List', final_outputs, headers=headers),
         outputs_prefix='QRadar.Offense',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=final_outputs,
         raw_response=response
     )
@@ -1270,16 +1461,18 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
 
     assigned_to = args.get('assigned_to')
     fields = args.get('fields')
+    ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
     response = client.offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
                                      fields)
-    enriched_outputs = enrich_offenses_result(client, response, enrich_ip_addresses=True)
+
+    enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('offense Update', final_outputs),
-        outputs_prefix='QRadar.offense',
-        outputs_key_field='id',
+        outputs_prefix='QRadar.Offense',
+        outputs_key_field='ID',
         outputs=final_outputs,
         raw_response=response
     )
@@ -1319,7 +1512,7 @@ def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandRe
     return CommandResults(
         readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers),
         outputs_prefix='QRadar.ClosingReason',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1357,7 +1550,7 @@ def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResu
     return CommandResults(
         readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs),
         outputs_prefix='QRadar.Note',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1390,13 +1583,12 @@ def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandRe
     return CommandResults(
         readable_output=tableToMarkdown('Create Note', outputs),
         outputs_prefix='QRadar.Note',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
 
 
-#
 def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
     """
     Retrieves list of rules from QRadar service.
@@ -1419,7 +1611,7 @@ def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
     """
     rule_id = args.get('rule_id')
     rule_type = args.get('rule_type')
-    range_ = args.get('range')
+    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
 
@@ -1433,7 +1625,7 @@ def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown('Rules List', outputs, headers=headers),
         outputs_prefix='QRadar.Rule',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1469,7 +1661,7 @@ def qradar_rule_groups_list_command(client: Client, args: Dict) -> CommandResult
     return CommandResults(
         readable_output=tableToMarkdown('Rules Group List', outputs),
         outputs_prefix='QRadar.RuleGroup',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1499,7 +1691,7 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
     filter_ = args.get('filter')
     fields = args.get('fields')
 
-    # If asset ID was given, override filter if both were given
+    # If asset ID was given, override filter if both filter and asset ID were given.
     if asset_id:
         filter_ = f'id={asset_id}'
 
@@ -1507,12 +1699,17 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.assets_list(range_, filter_, fields)
     enriched_outputs = enrich_assets_results(client, response, full_enrichment)
-    final_outputs = sanitize_outputs(enriched_outputs)
+    for output in enriched_outputs:
+        output['hostnames'] = add_iso_entries_to_dict(output.get('hostnames', []))
+        output['users'] = add_iso_entries_to_dict(output.get('users', []))
+        output['products'] = add_iso_entries_to_dict(output.get('products', []))
+
+    final_outputs = sanitize_outputs(enriched_outputs, ASSET_OLD_NEW_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('Assets List', final_outputs),
         outputs_prefix='QRadar.Asset',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=final_outputs,
         raw_response=response
     )
@@ -1543,12 +1740,12 @@ def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandRes
     fields = args.get('fields')
 
     response = client.saved_searches_list(saved_search_id, range_, filter_, fields)
-    outputs = sanitize_outputs(response)
+    outputs = sanitize_outputs(response, SAVED_SEARCH_OLD_NEW_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('Saved Searches List', outputs),
         outputs_prefix='QRadar.SavedSearch',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1573,12 +1770,12 @@ def qradar_searches_list_command(client: Client, args: Dict) -> CommandResults:
     filter_ = args.get('filter')
 
     response = client.searches_list(range_, filter_)
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    outputs = [{'SearchID': search_id} for search_id in response]
 
     return CommandResults(
         readable_output=tableToMarkdown('Search ID List', outputs),
         outputs_prefix='QRadar.SearchID',
-        outputs_key_field='id',
+        outputs_key_field='SearchID',
         outputs=outputs,
         raw_response=response
     )
@@ -1606,7 +1803,7 @@ def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
-        outputs_key_field='search_id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1632,7 +1829,7 @@ def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResul
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
         outputs_prefix='QRadar.Search',
-        outputs_key_field='search_id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1695,20 +1892,19 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
     fields = args.get('fields')
 
     response = client.reference_sets_list(ref_name, range_, filter_, fields)
-    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
-
     if ref_name:
-        for output in outputs:
-            output['data'] = add_iso_entries_to_dict(output.get('data', []))
-            if output['ElementType'] == 'DATE':
-                for indicator in output.get('data', []):
-                    indicator['value'] = get_time_parameter(indicator['value'], iso_format=True)
+        outputs = dict(response)
+        outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_OLD_NEW_MAP)
+    else:
+        outputs = response
+
+    final_outputs = sanitize_outputs(outputs, REFERENCE_SETS_OLD_NEW_MAP)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Reference Sets List', outputs),
+        readable_output=tableToMarkdown('Reference Sets List', final_outputs),
         outputs_prefix='QRadar.Reference',
-        outputs_key_field='name',
-        outputs=outputs,
+        outputs_key_field='Name',
+        outputs=final_outputs,
         raw_response=response
     )
 
@@ -1746,7 +1942,7 @@ def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandRe
     return CommandResults(
         readable_output=tableToMarkdown('Reference Set Create', outputs),
         outputs_prefix='QRadar.Reference',
-        outputs_key_field='name',
+        outputs_key_field='Name',
         outputs=outputs,
         raw_response=response
     )
@@ -1803,6 +1999,8 @@ def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> Com
     """
     ref_name = args.get('ref_name')
     values = argToList(args.get('value'))
+    if not values:
+        raise DemistoException('Value to insert must be given.')
     source = args.get('source')
     date_value = argToBoolean(args.get('date_value', False))
     fields = args.get('fields')
@@ -1821,7 +2019,7 @@ def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> Com
     return CommandResults(
         readable_output=tableToMarkdown('Reference Update Create', outputs),
         outputs_prefix='QRadar.Reference',
-        outputs_key_field='name',
+        outputs_key_field='Name',
         outputs=outputs,
         raw_response=response
     )
@@ -1891,7 +2089,7 @@ def qradar_domains_list_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown('Domains List', outputs),
         outputs_prefix='QRadar.Domains',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -1917,25 +2115,27 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     """
     ref_name = args.get('ref_name')
     query = args.get('query')
-    limit = args.get('limit', DEFAULT_LIMIT_VALUE)
-    page = args.get('page')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+    page = arg_to_number(args.get('page', 0))
     fields = args.get('fields')
 
     indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
-    # TODO see how iocs are returned
-    indicators_values = [indicator.get('value') for indicator in indicators if indicator.get('value')]
-    if not indicators_values:
+    indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                       for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+    indicator_values = [indicator.get('Indicator Value') for indicator in indicators_data]
+    if not indicators_data:
         return CommandResults(
             readable_output=f'### No Indicators Were Found For Reference Set {ref_name}'
         )
-    # indicators_data = [{'Value': indicator.get('value'), 'Type': indicator.get('indicator_type')}
-    #                    for indicator in indicators if indicator.get('value')]
 
-    response = client.indicators_upload(ref_name, indicators_values, fields)
+    response = client.indicators_upload(ref_name, indicator_values, fields)
     outputs = sanitize_outputs(response)
 
+    reference_set_hr = tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs)
+    indicators_uploaded_hr = tableToMarkdown('Indicators Uploaded', indicators_data)
+
     return CommandResults(
-        readable_output=tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs),
+        readable_output=f'{reference_set_hr}\n{indicators_uploaded_hr}',
         outputs_prefix='QRadar.Reference',
         outputs_key_field='name',
         outputs=outputs,
@@ -1961,16 +2161,17 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandRes
     ips = argToList(args.get('ips'))
     if not ips:
         raise DemistoException('''IPs list cannot be empty for command 'qradar-geolocations-for-ip-get'.''')
-    filter_ = f'''ip_address IN ({','.join(map(str, ips))})'''
+    filter_ = f'''ip_address IN ({','.join(map(lambda ip: f'"{str(ip)}"', ips))})'''
     fields = args.get('fields')
 
     response = client.geolocations_for_ip(filter_, fields)
-    outputs = sanitize_outputs(response)
+
+    outputs = sanitize_outputs(response, IP_GEOLOCATION_OLD_NEW_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('Geolocation For IP', outputs),
         outputs_prefix='QRadar.GeoForIP',
-        outputs_key_field='ip_address',
+        outputs_key_field='IPAddress',
         outputs=outputs,
         raw_response=response
     )
@@ -2005,12 +2206,12 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     fields = args.get('fields')
 
     response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
-    outputs = sanitize_outputs(response)
+    outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
 
     return CommandResults(
         readable_output=tableToMarkdown('Log Sources List', outputs),
         outputs_prefix='QRadar.LogSource',
-        outputs_key_field='id',
+        outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
     )
@@ -2042,7 +2243,7 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     if not filter_ and field_names:
         filter_ = f'''name IN ({','.join(map(lambda name: f'"{str(name)}"', field_names))})'''
 
-    response = client.get_custom_properties(range_, filter_, fields)
+    response = client.custom_properties(range_, filter_, fields)
     outputs = sanitize_outputs(response)
 
     return CommandResults(
@@ -2073,7 +2274,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
         client (Client): Client to perform API calls.
 
     Returns:
-
+        Dict which contains all the mapping.
     """
     offense = {
         'username_count': 'int',
@@ -2189,7 +2390,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     }
     custom_fields = {
         'events': {field.get('name'): field.get('property_type')
-                   for field in client.get_custom_properties(None, None, None)
+                   for field in client.custom_properties(None, None, None)
                    if field.get('name') and field.get('property_type')}
     }
     fields = {
@@ -2233,7 +2434,7 @@ def main() -> None:
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command())
 
-        elif command == "long-running-execution":
+        elif command == 'long-running-execution':
             long_running_execution_command(client, params)
 
         elif command == 'qradar-offenses-list':
@@ -2268,7 +2469,7 @@ def main() -> None:
 
         elif command == 'qradar-search-create':
             return_results(qradar_search_create_command(client, args))
-        #
+
         elif command == 'qradar-search-status-get':
             return_results(qradar_search_status_get_command(client, args))
 
@@ -2312,7 +2513,7 @@ def main() -> None:
             demisto.results(qradar_get_mapping_fields_command(client))
 
         else:
-            raise NotImplementedError(f'Command "{command}" is not implemented.')
+            raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
     # Log exceptions and return errors
     except Exception as e:

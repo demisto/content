@@ -7,24 +7,27 @@ from datetime import datetime
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from CommonServerPython import DemistoException, set_integration_context
+from CommonServerPython import DemistoException, set_integration_context, CommandResults
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode
+    Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode, ASSET_PROPERTIES_NAME_MAP, \
+    FULL_ASSET_PROPERTIES_NAMES_MAP
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events_with_retry, sanitize_outputs, \
-    create_search_with_retry, enrich_offense_with_events, fetch_incidents_command
+    create_search_with_retry, enrich_offense_with_events, enrich_offense_with_assets, get_offense_enrichment, \
+    add_iso_entries_to_asset, create_single_asset_for_offense_enrichment, create_incidents_from_offenses, \
+    qradar_offenses_list_command, qradar_offense_update_command, qradar_closing_reasons_list_command, \
+    qradar_offense_notes_list_command, qradar_offense_notes_create_command, qradar_rules_list_command, \
+    qradar_rule_groups_list_command, qradar_assets_list_command, qradar_saved_searches_list_command, \
+    qradar_searches_list_command, qradar_search_create_command, qradar_search_status_get_command, \
+    qradar_search_results_get_command, qradar_reference_sets_list_command, qradar_reference_set_create_command, \
+    qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
+    qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
+    qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties
 
-from typing import Dict
+from typing import Dict, Callable
 
-# , qradar_offenses_list_command, \
-# qradar_offense_update_command, qradar_closing_reasons_list_command, qradar_offense_notes_list_command, \
-# qradar_offense_notes_create_command, qradar_rules_list_command, qradar_rule_groups_list_command, \
-# qradar_assets_list_command, qradar_saved_searches_list_command, qradar_searches_list_command, \
-# qradar_search_create_command, qradar_search_status_get_command, qradar_search_results_get_command, \
-# qradar_reference_sets_list_command, qradar_reference_set_create_command, qradar_reference_set_delete_command, \
-# qradar_reference_set_value_upsert_command, qradar_reference_set_value_delete_command, qradar_domains_list_command, \
-# qradar_indicators_upload_command, qradar_geolocations_for_ip_command, qradar_log_sources_list_command
+# qradar_indicators_upload_command
 
 client = Client(
     server='https://192.168.0.1',
@@ -83,6 +86,52 @@ def test_get_optional_time_parameter_valid_time_argument(arg, iso_format, epoch_
     assert (get_time_parameter(arg, iso_format=iso_format, epoch_format=epoch_format)) == expected
 
 
+@pytest.mark.parametrize('properties, properties_to_enrich_dict, expected',
+                         [(asset_enrich_data['assets'][0]['properties'], ASSET_PROPERTIES_NAME_MAP,
+                           {'Name': {'Value': '192.168.0.1', 'LastUser': 'admin'}}),
+                          (asset_enrich_data['assets'][0]['properties'], FULL_ASSET_PROPERTIES_NAMES_MAP,
+                           {'ComplianceNotes': {'Value': 'note', 'LastUser': 'Adam'}}),
+                          ([], FULL_ASSET_PROPERTIES_NAMES_MAP, dict())
+                          ])
+def test_enrich_asset_properties(properties, properties_to_enrich_dict: Dict, expected):
+    """
+    Given:
+     - Properties of an asset.
+     - Dict containing properties keys to enrich, and the new names of the enrichment as corresponding values.
+
+    When:
+     - Case a: Basic enrichment of properties have been asked.
+     - Case b: Full enrichment of properties have been asked.
+     - Case c: Full enrichment of properties have been asked, properties are empty.
+
+    Then:
+     - Case a: Ensure that only properties keys that are contained in basic enrichment are enriched.
+     - Case b: Ensure that only properties keys that are contained in full enrichment are enriched.
+     - Case c: Ensure that empty dict is returned
+    """
+    assert enrich_asset_properties(properties, properties_to_enrich_dict) == expected
+
+
+@pytest.mark.parametrize('enrichment, expected',
+                         [('None', (False, False)), ('IPs', (True, False)), ('IPs And Assets', (True, True))])
+def test_get_offense_enrichment(enrichment, expected):
+    """
+    Given:
+     - Enrichment asked by the user.
+
+    When:
+     - Case a: Enrichment was not asked (None).
+     - Case b: Enrichment asked was for IPs only.
+     - Case c: Enrichment asked was for IPs and assets.
+
+    Then:
+     - Case a: Ensure False, False is returned.
+     - Case b: Ensure True, False is returned.
+     - Case c: Ensure True, True is returned.
+    """
+    return get_offense_enrichment(enrichment) == expected
+
+
 def test_add_iso_entries_to_dict():
     """
     Given:
@@ -96,16 +145,31 @@ def test_add_iso_entries_to_dict():
      - The dict is cloned and its values are not changed, and a new one is created
     """
     tested_dict = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
-    tested_dict['host_name'] = 'Nutanix Host'
+    tested_dict['host_name'] = 'QRadar Host'
     output_dict = add_iso_entries_to_dict([tested_dict])[0]
-    assert tested_dict['host_name'] == 'Nutanix Host'
-    assert output_dict['host_name'] == 'Nutanix Host'
+    assert tested_dict['host_name'] == 'QRadar Host'
+    assert output_dict['host_name'] == 'QRadar Host'
     assert all(
         tested_dict.get(iso_entry) == 1600000000000 for iso_entry in USECS_ENTRIES)
     assert all(
         output_dict.get(iso_entry) == '2020-09-13T12:26:40+00:00' for iso_entry in USECS_ENTRIES)
     assert len(tested_dict) == (1 + len(USECS_ENTRIES))
     assert len(output_dict) == (1 + len(USECS_ENTRIES))
+
+
+def test_add_iso_entries_to_asset():
+    """
+    Given:
+     - Asset.
+
+    When:
+     - Replacing epoch values with ISO values
+
+    Then:
+     - Ensure epoch values are replaced with the expected ISO values.
+    """
+    assets = asset_enrich_data['assets']
+    assert [add_iso_entries_to_asset(asset) for asset in assets] == asset_enrich_data['iso_transform']
 
 
 @pytest.mark.parametrize('output, old_new_dict, expected',
@@ -188,11 +252,38 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected):
                            [{'a': 2, 'number_of_elements': 3, 'creation_time': '2020-09-13T12:26:40+00:00'}])
                           ])
 def test_sanitize_outputs(outputs, key_replace_dict, expected):
+    """
+    Given:
+     - Outputs.
+     - Dict, containing old names as keys, and new names as values.
+
+    When:
+     - Case a: Sanitizing outputs, 'key_replace_dict' exists.
+     - Case b: Sanitizng outputs, 'key_replace_dict' does not exist.
+
+    Then:
+     - Case a: Ensure that outputs keys not included in 'key_replace_dict' are dismissed, and key names are changed.
+     - Case b: Ensure that outputs are sanitized, but keys remains the same.
+    """
     assert sanitize_outputs(outputs, key_replace_dict) == expected
 
 
-# def test_create_incidents_from_offenses(offenses, incident_type, expected):
-#     create_incidents_from_offenses
+def test_create_single_asset_for_offense_enrichment():
+    """
+    Given:
+     - Asset to enrich
+
+    When:
+     - Enriching offense with asset values.
+
+    Then:
+     - Ensure enrichment asset object returned is as expected.
+    """
+    assets = asset_enrich_data['assets']
+    enriched_assets = [create_single_asset_for_offense_enrichment(asset) for asset in assets]
+    assert enriched_assets == asset_enrich_data['offense_enrich']
+
+
 @pytest.mark.parametrize('status_exception, status_response, results_response, search_id, expected',
                          [(None,
                            command_test_data['search_status_get']['response'],
@@ -401,9 +492,40 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
                            command_test_data['offenses_list']['response'][0])
                           ])
 def test_reset_triggered_stops_enrichment_test(func, args, expected):
+    """
+    Given:
+     - Reset last run command was triggered.
+
+    When:
+     - Function given is executed.
+
+    Then:
+     - Ensure that function notices reset flag and stops its run.
+    """
     set_integration_context({RESET_KEY: True})
     assert func(**args) == expected
     set_integration_context({})
+
+
+def test_create_incidents_from_offenses():
+    """
+    Given:
+     - List of offenses.
+     - Incident type.
+
+    When:
+     - Creating incidents by the offenses with the corresponding incident type.
+
+    Then:
+     - Ensure expected incidents are created.
+    """
+    offenses = command_test_data['offenses_list']['enrich_offenses_result']
+    assert create_incidents_from_offenses(offenses, 'QRadar Incident') == [{
+        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+        'rawJSON': json.dumps(offense),
+        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+        'type': 'QRadar Incident'
+    } for offense in offenses]
 
 
 @pytest.mark.parametrize('enrich_func, mock_func_name, args, mock_response, expected',
@@ -489,6 +611,15 @@ def test_reset_triggered_stops_enrichment_test(func, args, expected):
                                2: '1.2.3.5',
                                3: '1.2.3.6',
                                4: '192.168.0.2'}
+                              ),
+                             (enrich_offense_with_assets,
+                              'assets_list',
+                              {
+                                  'client': client,
+                                  'offense_ips': ['8.8.8.8', '1.1.1.1', '2.2.2.2']
+                              },
+                              asset_enrich_data['assets'],
+                              asset_enrich_data['offense_enrich']
                               ),
                              (enrich_assets_results,
                               'domains_list',
@@ -610,62 +741,96 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
     assert (enrich_func(**args)) == expected
 
-# def test_fetch_incidents_command():
-#     set_integration_context({'samples': []})
-#     assert fetch_incidents_command() == []
-#     set_integration_context({'samples': [
-#         #     TODO ADD DATA
-#     ]})
-#     assert fetch_incidents_command() == inserted data
-# @pytest.mark.parametrize('command_func, command_name',
-#                          [(qradar_offenses_list_command, 'offenses_list'),
-#                           (qradar_offense_update_command, 'offense_update'),
-#                           (qradar_closing_reasons_list_command, 'closing_reasons_list'),
-#                           (qradar_offense_notes_list_command, 'offense_notes_list'),
-#                           (qradar_offense_notes_create_command, 'offense_notes_create'),
-#                           (qradar_rules_list_command, 'rules_list'),
-#                           (qradar_rule_groups_list_command, 'rule_groups_list'),
-#                           (qradar_assets_list_command, 'assets_list'),
-#                           (qradar_saved_searches_list_command, 'saved_searches_list'),
-#                           (qradar_searches_list_command, 'searches_list'),
-#                           (qradar_search_create_command, 'search_create'),
-#                           (qradar_search_status_get_command, 'search_status_get'),
-#                           (qradar_search_results_get_command, 'search_results_get'),
-#                           (qradar_reference_sets_list_command, 'reference_sets_list'),
-#                           (qradar_reference_set_create_command, 'reference_set_create'),
-#                           (qradar_reference_set_delete_command, 'reference_set_delete'),
-#                           (qradar_reference_set_value_upsert_command, 'reference_set_value_upsert'),
-#                           (qradar_reference_set_value_delete_command, 'reference_set_value_delete'),
-#                           (qradar_domains_list_command, 'domains_list'),
-#                           (qradar_indicators_upload_command, 'indicators_upload'),
-#                           (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
-#                           (qradar_log_sources_list_command, 'log_sources_list')])
-# def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
-#     """
-#     Given:
-#      - command function.
-#      - Demisto arguments.
-#
-#     When:
-#      - Executing a command
-#
-#     Then:
-#      - Ensure that the expected CommandResults object is returned by the command function.
-#     """
-#     args = command_test_data[command_name]['args']
-#     response = command_test_data[command_name]['response']
-#     expected = command_test_data[command_name]['expected']
-#     expected_command_results = CommandResults(
-#         outputs_prefix=expected.get('outputs_prefix'),
-#         outputs_key_field=expected.get('outputs_key_field'),
-#         outputs=expected.get('outputs'),
-#         raw_response=response
-#     )
-#     mocker.patch.object(client, command_name, return_value=response)
-#
-#     results = command_func(client, args)
-#
-#     assert results.outputs_prefix == expected_command_results.outputs_prefix
-#     assert results.outputs_key_field == expected_command_results.outputs_key_field
-#     assert results.outputs == expected_command_results.outputs
-#     assert results.raw_response == expected_command_results.raw_response
+
+@pytest.mark.parametrize('command_func, command_name',
+                         [
+                             (qradar_closing_reasons_list_command, 'closing_reasons_list'),
+                             (qradar_offense_notes_list_command, 'offense_notes_list'),
+                             (qradar_offense_notes_create_command, 'offense_notes_create'),
+                             (qradar_rules_list_command, 'rules_list'),
+                             (qradar_rule_groups_list_command, 'rule_groups_list'),
+                             (qradar_saved_searches_list_command, 'saved_searches_list'),
+                             (qradar_searches_list_command, 'searches_list'),
+                             (qradar_search_create_command, 'search_create'),
+                             (qradar_search_status_get_command, 'search_status_get'),
+                             (qradar_search_results_get_command, 'search_results_get'),
+                             (qradar_reference_sets_list_command, 'reference_sets_list'),
+                             (qradar_reference_set_create_command, 'reference_set_create'),
+                             (qradar_reference_set_delete_command, 'reference_set_delete'),
+                             (qradar_reference_set_value_upsert_command, 'reference_set_value_upsert'),
+                             (qradar_reference_set_value_delete_command, 'reference_set_value_delete'),
+                             (qradar_domains_list_command, 'domains_list'),
+                             #                           (qradar_indicators_upload_command, 'indicators_upload'),
+                             (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
+                             (qradar_log_sources_list_command, 'log_sources_list'),
+                             (qradar_get_custom_properties_command, 'custom_properties')
+                         ])
+def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+    """
+    Given:
+     - Command function.
+     - Demisto arguments.
+
+    When:
+     - Executing a command
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
+    args = command_test_data[command_name].get('args', dict())
+    response = command_test_data[command_name]['response']
+    expected = command_test_data[command_name]['expected']
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=expected.get('outputs'),
+        raw_response=response
+    )
+    mocker.patch.object(client, command_name, return_value=response)
+
+    results = command_func(client, args)
+
+    assert results.outputs_prefix == expected_command_results.outputs_prefix
+    assert results.outputs_key_field == expected_command_results.outputs_key_field
+    assert results.outputs == expected_command_results.outputs
+    assert results.raw_response == expected_command_results.raw_response
+
+
+@pytest.mark.parametrize('command_func, command_name, enrichment_func_name',
+                         [(qradar_offenses_list_command, 'offenses_list', 'enrich_offenses_result'),
+                          (qradar_offense_update_command, 'offense_update', 'enrich_offenses_result'),
+                          (qradar_assets_list_command, 'assets_list', 'enrich_assets_results')
+                          ])
+def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str,
+                                  enrichment_func_name: str):
+    """
+    Given:
+     - Command function that requires another API calls for enrichment.
+     - Demisto arguments.
+
+    When:
+     - Executing a command.
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
+    response = command_test_data[command_name]['response']
+    expected = command_test_data[command_name]['expected']
+    enriched_response = command_test_data[command_name][enrichment_func_name]
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=expected.get('outputs'),
+        raw_response=response
+    )
+    mocker.patch.object(client, command_name, return_value=response)
+    mocked_enrich = mocker.patch.object(QRadar_v3, enrichment_func_name, return_value=enriched_response)
+
+    results = command_func(client, dict())
+
+    assert mocked_enrich.call_args[0][1] == response
+
+    assert results.outputs_prefix == expected_command_results.outputs_prefix
+    assert results.outputs_key_field == expected_command_results.outputs_key_field
+    assert results.outputs == expected_command_results.outputs
+    assert results.raw_response == expected_command_results.raw_response
