@@ -1664,84 +1664,42 @@
       "outputs_key_field": "IPAddress",
       "outputs": [
         {
-          "Continent": {
-            "code": "NA",
-            "geo_id": 6255149,
-            "name": "NorthAmerica"
-          },
-          "Geolocation": {
-            "coordinates": [
-              47.913,
-              -122.3042
-            ],
-            "type": "Point"
-          },
-          "City": {
-            "geo_id": 5804306,
-            "name": "Mukilteo"
-          },
+          "CityName": "Mukilteo",
+          "ContinentName": "NorthAmerica",
+          "LocationAccuracyRadius": 1000,
+          "LocationLatitude": 47.913,
+          "LocationLongitude": -122.3042,
+          "LocationMetroCode": 819,
+          "LocationTimezone": "America/Los_Angeles",
+          "PhysicalCountryIsoCode": "US",
+          "PhysicalCountryName": "United States",
+          "RegisteredCountryIsoCode": "US",
+          "RegisteredCountryName": "United States",
           "IPAddress": "1.2.3.4",
-          "RegisteredCountry": {
-            "iso_code": "US",
-            "geo_id": 6252001,
-            "name": "United States"
-          },
-          "IsLocalCountry": false,
-          "Location": {
-            "accuracy_radius": 1000,
-            "timezone": "America/Los_Angeles",
-            "latitude": 47.913,
-            "metro_code": 819,
-            "longitude": -122.3042
-          },
-          "Postal": {
-            "postal_code": "98275"
-          },
-          "PhysicalCountry": {
-            "iso_code": "US",
-            "geo_id": 6252001,
-            "name": "United States"
-          }
+          "Coordinates": [
+            47.913,
+            -122.3042
+          ],
+          "PostalCode": "98275"
         },
         {
-          "Continent": {
-            "code": "NA",
-            "geo_id": 6255149,
-            "name": "NorthAmerica"
-          },
-          "Geolocation": {
-            "coordinates": [
-              47.913,
-              -122.3042
-            ],
-            "type": "Point"
-          },
-          "City": {
-            "geo_id": 5804306,
-            "name": "Mukilteo"
-          },
+          "CityName": "Mukilteo",
+          "ContinentName": "NorthAmerica",
+          "LocationAccuracyRadius": 1000,
+          "LocationLatitude": 47.913,
+          "LocationLongitude": -122.3042,
+          "LocationMetroCode": 819,
+          "LocationTimezone": "America/Los_Angeles",
+          "PhysicalCountryIsoCode": "US",
+          "PhysicalCountryName": "United States",
+          "RegisteredCountryIsoCode": "US",
+          "RegisteredCountryName": "United States",
           "IPAddress": "1.2.3.5",
-          "RegisteredCountry": {
-            "iso_code": "US",
-            "geo_id": 6252001,
-            "name": "United States"
-          },
-          "IsLocalCountry": false,
-          "Location": {
-            "accuracy_radius": 1000,
-            "timezone": "America/Los_Angeles",
-            "latitude": 47.913,
-            "metro_code": 819,
-            "longitude": -122.3042
-          },
-          "Postal": {
-            "postal_code": "98275"
-          },
-          "PhysicalCountry": {
-            "iso_code": "US",
-            "geo_id": 6252001,
-            "name": "United States"
-          }
+          "Coordinates": [
+            47.913,
+            -122.3042
+          ],
+          "PostalCode": "98275"
         }
       ]
     },

@@ -23,7 +23,8 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_search_results_get_command, qradar_reference_sets_list_command, qradar_reference_set_create_command, \
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
-    qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties
+    qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
+    flatten_nested_geolocation_values
 
 from typing import Dict, Callable
 
@@ -84,6 +85,36 @@ def test_get_optional_time_parameter_valid_time_argument(arg, iso_format, epoch_
      - Case e: Ensure that correct FraudWatch format is returned.
     """
     assert (get_time_parameter(arg, iso_format=iso_format, epoch_format=epoch_format)) == expected
+
+
+@pytest.mark.parametrize('dict_key, inner_keys, expected',
+                         [('continent', ['name'], {'ContinentName': 'NorthAmerica'}),
+                          ('city', ['name'], {'CityName': 'Mukilteo'}),
+                          ('represented_country', ['unknown', 'confidence'],
+                           {'RepresentedCountryUnknown': None, 'RepresentedCountryConfidence': None}),
+                          ('registered_country', ['iso_code', 'name'],
+                           {'RegisteredCountryIsoCode': 'US', 'RegisteredCountryName': 'United States'}),
+                          ('location', ['accuracy_radius', 'timezone', 'latitude', 'metro_code', 'average_income',
+                                        'population_density', 'longitude'],
+                           {'LocationAccuracyRadius': 1000, 'LocationTimezone': 'America/Los_Angeles',
+                            'LocationLatitude': 47.913,
+                            'LocationMetroCode': 819, 'LocationAverageIncome': None, 'LocationPopulationDensity': None,
+                            'LocationLongitude': -122.3042})])
+def test_flatten_nested_geolocation_values(dict_key, inner_keys, expected):
+    """
+    Given:
+     - Dict of IP details returned by QRadar service for geolocations for ip command.
+     - Dict key to flatten its inner values.
+     - Inner values to be flattened
+
+    When:
+     - Creating outputs to Demisto form geolocations for ip command.
+
+    Then:
+     Ensure values are flattened as expected
+    """
+    assert flatten_nested_geolocation_values(command_test_data['geolocations_for_ip']['response'][0], dict_key,
+                                             inner_keys) == expected
 
 
 @pytest.mark.parametrize('properties, properties_to_enrich_dict, expected',

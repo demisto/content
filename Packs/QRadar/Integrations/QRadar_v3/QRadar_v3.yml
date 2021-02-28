@@ -1183,6 +1183,91 @@ script:
       isArray: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind geoip data for the given IP address.
+    outputs:
+    - contextPath: QRadar.GeoForIP.CityName
+      description: Name of the city that is associated with IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.ContinentName
+      description: Name of the continent that is associated with IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.LocationAccuracyRadius
+      description: The approximate accuracy radius in kilometers around the latitude and
+        longitude for the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationAverageIncome
+      description: The average income associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationLatitude
+      description: The approximate latitude of the location associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationTimezone
+      description: Timezone of the location.
+      type: String
+    - contextPath: QRadar.GeoForIP.LocationLongitude
+      description: The approximate longitude of the location associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationMetroCode
+      description: The metro code associated with the IP address. These are only available
+        for IP addresses in the US. Returns the same metro codes as the Google AdWords
+        API.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationPopulationDensity
+      description: The estimated number of people per square kilometer.
+      type: Number
+    - contextPath: QRadar.GeoForIP.PhysicalCountryIsoCode
+      description: ISO code of country where MaxMind believes the end user is located.
+      type: String
+    - contextPath: QRadar.GeoForIP.PhysicalCountryName
+      description: Name of country where MaxMind believes the end user is located.
+      type: String
+    - contextPath: QRadar.GeoForIP.RegisteredCountryIsoCode
+      description: ISO code of the country that ISP has registered the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RegisteredCountryName
+      description: Name of the country that ISP have registered the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryIsoCode
+      description: ISO code of the country that is represented by users of the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryName
+      description: Name of the country that is represented by users of the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryConfidence
+      description: Value between 0-100 that represents MaxMind's confidence that the
+        represented country is correct.
+      type: Number
+    - contextPath: QRadar.GeoForIP.IPAddress
+      description: IP address to lookup.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.autonomous_system_number
+      description: The autonomous system number associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.Traits.autonomous_system_organization
+      description: The organization associated with the registered autonomous system number
+        for the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.domain
+      description: The second level domain associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.internet_service_provider
+      description: The name of the Internet Service Provider associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.organization
+      description: The name of the organization associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.user_type
+      description: The user type associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Coordinates
+      description: Latitude and Longitude by MaxMind.
+      type: Number
+    - contextPath: QRadar.GeoForIP.PostalCode
+      description: The postal code associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.PostalCodeConfidence
+      description: Value between 0-100 that represents MaxMind's confidence that the postal
+        code is correct.
+      type: Number
     arguments:
     - name: ips
       description: Comma seperated list of IPs to retrieve their geolocation.

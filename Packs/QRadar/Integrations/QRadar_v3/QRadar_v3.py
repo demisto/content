@@ -482,7 +482,7 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def indicators_upload(self, ref_name: Optional[str], indicators: Optional[List[Any]], fields: Optional[str]):
+    def indicators_upload(self, ref_name: Optional[str], indicators: Optional[Any], fields: Optional[str]):
         return self.http_request(
             method='POST',
             url_suffix=f'/reference_data/maps/bulk_load/{ref_name}',
@@ -876,9 +876,9 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
         } if enrich_ip_addresses else dict()
 
         if enrich_assets:
-            source_ips = source_addresses_enrich.get('source_address_ids', [])
-            destination_ips = destination_addresses_enrich.get('local_destination_address_ids', [])
-            all_ips = source_ips + destination_ips
+            source_ips: List = source_addresses_enrich.get('source_address_ids', [])
+            destination_ips: List = destination_addresses_enrich.get('local_destination_address_ids', [])
+            all_ips: List = source_ips + destination_ips
             asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
         else:
             asset_enrich = dict()
@@ -2143,6 +2143,23 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     )
 
 
+def flatten_nested_geolocation_values(geolocation_dict: Dict, dict_key: str, nested_value_keys: List[str]) -> Dict:
+    """
+    Receives output from geolocation IPs command, and does:
+    1) flattens output, takes nested keys values.
+    2) Converts keys to prefix of 'dict_key' and suffix of nested key as camel case.
+    Args:
+        geolocation_dict (Dict): The dict to flatten.
+        dict_key (Dict): The key of the inner dict to use his values.
+        nested_value_keys (Dict): The keys inside inner dict to take.
+
+    Returns:
+        (Dict): dict of ({dict_key_name}{camel case nested key}: {nested key value}
+    """
+    return {f'{camelize_string(dict_key)}{camelize_string(k)}': geolocation_dict.get(dict_key, dict()).get(k) for k in
+            nested_value_keys}
+
+
 def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandResults:
     """
     Retrieves the MaxMind geoip data for the given IP addresses.
@@ -2165,14 +2182,40 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandRes
     fields = args.get('fields')
 
     response = client.geolocations_for_ip(filter_, fields)
+    outputs = []
+    for output in response:
+        city_values = flatten_nested_geolocation_values(output, 'city', ['name'])
+        continent_values = flatten_nested_geolocation_values(output, 'continent', ['name'])
+        location_values = flatten_nested_geolocation_values(output, 'location',
+                                                            ['accuracy_radius', 'average_income', 'latitude',
+                                                             'longitude', 'metro_code', 'population_density',
+                                                             'timezone'])
+        physical_country_values = flatten_nested_geolocation_values(output, 'physical_country', ['iso_code', 'name'])
+        registered_country_values = flatten_nested_geolocation_values(output, 'registered_country',
+                                                                      ['iso_code', 'name'])
+        represented_country_values = flatten_nested_geolocation_values(output, 'represented_country',
+                                                                       ['iso_code', 'name', 'confidence'])
+        subdivision_values = flatten_nested_geolocation_values(output, 'subdivision',
+                                                               ['name', 'iso_code', 'confidence'])
+        non_nested_values = {
+            'IPAddress': output.get('ip_address'),
+            'Traits': output.get('traits'),
+            'Coordinates': output.get('geo_json', dict()).get('coordinates'),
+            'PostalCode': output.get('postal', dict()).get('postal_code'),
+            'PostalCodeConfidence': output.get('postal', dict()).get('confidence')
+        }
+        final_output = dict(city_values, **continent_values, **location_values, **physical_country_values,
+                            **registered_country_values, **represented_country_values, **subdivision_values,
+                            **non_nested_values)
+        outputs.append(final_output)
 
-    outputs = sanitize_outputs(response, IP_GEOLOCATION_OLD_NEW_MAP)
+    final_outputs = sanitize_outputs(outputs)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Geolocation For IP', outputs),
+        readable_output=tableToMarkdown('Geolocation For IP', final_outputs),
         outputs_prefix='QRadar.GeoForIP',
         outputs_key_field='IPAddress',
-        outputs=outputs,
+        outputs=final_outputs,
         raw_response=response
     )
 
@@ -2407,7 +2450,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 
 def main() -> None:
     params = demisto.params()
-    command = demisto.command()
+    command = 'qradar-geolocations-for-ip'  # demisto.command()
     args = demisto.args()
 
     server = urljoin(params.get('server'), '/api')
