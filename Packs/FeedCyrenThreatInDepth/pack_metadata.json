@@ -4,6 +4,7 @@
     "support": "partner",
     "currentVersion": "1.3.1",
     "author": "Cyren",
+    "authorImage": "content/Packs/FeedCyrenThreatInDepth/Author.png",
     "url": "https://www.cyren.com/products/threat-indepth",
     "email": "paloalto-cortex-xsoar@cyren.com",
     "created": "2020-12-08T09:48:38Z",
