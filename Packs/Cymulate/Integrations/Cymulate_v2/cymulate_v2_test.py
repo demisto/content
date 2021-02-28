@@ -1,5 +1,4 @@
 import json
-import io
 import os
 
 BASE_URL = 'https://api.cymulate.com/v1'
@@ -343,16 +342,24 @@ def test_format_endpoint_security_incidents():
                                        '"source": "LAPTOP-123", '
                                        '"attackType": "Worm", "templateName": "Mundo Hacker Academy", '
                                        '"command": "N/A", '
-                                       '"description": "Listing all running processes to find a target process to inject the malicious DLL and the username owning that process.\\n'
-                                       'Step 2:\\nN/A is Injecting the DLL to the target process. using WINAPI CreateRemoteThread with LoadLibrary in order load DLL to a running target process.\\n'
-                                       'Step 3:\\nThe Malicious DLL was injected to the target process memory, executing the payload.\\n'
+                                       '"description": "Listing all running processes to find a target process to inject the '
+                                       'malicious DLL and the username owning that process.\\n'
+                                       'Step 2:\\nN/A is Injecting the DLL to the target process. using WINAPI CreateRemoteThread'
+                                       ' with LoadLibrary in order load DLL to a running target process.\\n'
+                                       'Step 3:\\nThe Malicious DLL was injected to the target process memory, executing the'
+                                       ' payload.\\n'
                                        'Step 4:\\nThe DLL is loaded to the target process memory.\\n'
                                        'Step 5:\\nListing all running processes to find a logged-on users tokens.\\n'
-                                       'Step 6:\\nDuplicating Tokens from each running process on the machine to use for Pass-The-Token.\\n'
-                                       'Step 7:\\n0 Tokens collected from all processes running on the machine\\nStep 8:\\nScanning port 445 (SMB) on 255.255.255.0 Subnet for potential targets.\\n'
+                                       'Step 6:\\nDuplicating Tokens from each running process on the machine to use for'
+                                       ' Pass-The-Token.\\n'
+                                       'Step 7:\\n0 Tokens collected from all processes running on the machine\\n'
+                                       'Step 8:\\nScanning port 445 (SMB) on 255.255.255.0 Subnet for potential targets.\\n'
                                        'Step 9:\\n0 targets discovered with port 445 opened\\n'
                                        'Step 10:\\nRetrieve shares on discovered targets:\\n'
-                                       'Step 11:\\nUsing collected tokens to copy the malicious payload to the scanned targets using Server Message Block (SMB) infrastructure on port 445. Attempts: 0\\n'
-                                       'Step 12:\\nCreate service on the remote target computer to execute the copied payload using the Service Control Manager (SCM).\\n'
-                                       'Step 13:\\nTriggering execution of the service created on the remote target computer executing the payload.", "md5": "N/A", "sha256": "N/A", "sha1": "N/A"}'
+                                       'Step 11:\\nUsing collected tokens to copy the malicious payload to the scanned targets'
+                                       ' using Server Message Block (SMB) infrastructure on port 445. Attempts: 0\\n'
+                                       'Step 12:\\nCreate service on the remote target computer to execute the copied payload '
+                                       'using the Service Control Manager (SCM).\\n'
+                                       'Step 13:\\nTriggering execution of the service created on the remote target computer '
+                                       'executing the payload.", "md5": "N/A", "sha256": "N/A", "sha1": "N/A"}'
                             }
