@@ -372,6 +372,51 @@ class TestParsingInternalFunctions:
 
         assert result_certification == Metadata.CERTIFIED
 
+    @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
+        ([], [], []),
+        ([], ["DummyPack"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}],
+         ["DummyPack", "DummyPack2"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"},
+          {"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}],
+         ["DummyPack2"],
+         [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
+    ])
+    def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
+        """
+           Given:
+               - pack_integration_images
+               - An empty integration images, display_dependencies_images, all level pack's dependencies data
+               - An empty list of integration images, display_dependencies_images, all level pack's dependencies data
+               - An empty list of integration images, display_dependencies_images, all level pack's dependencies data
+
+           When:
+               - Getting all pack images when formatting pack's metadata.
+
+           Then:
+               - Validates that all_pack_images is empty.
+               - Validates that all_pack_images list was updated according to the packs dependencies.
+               - Validates that all_pack_images list was updated without duplications.
+               - Validates that all_pack_images list was updated without the contribution details suffix.
+       """
+
+        dependencies_data = {
+            "DummyPack": {
+                "integrations": [{
+                    "name": "DummyIntegration",
+                    "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]},
+            "DummyPack2": {
+                "integrations": [{
+                    "name": "DummyIntegration2 (Partner Contribution)",
+                    "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
+
+        all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
+                                                    dependencies_data)
+
+        assert expected == all_pack_images
+
 
 class TestHelperFunctions:
     """ Class for testing helper functions that are used in marketplace_services and upload_packs modules.
