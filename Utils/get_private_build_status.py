@@ -44,6 +44,7 @@ def main():
         with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
             workflow_id = f.read()
 
+        # get github_token parameter
         arg_parser = argparse.ArgumentParser()
         arg_parser.add_argument('--github-token', help='Github token')
         args = arg_parser.parse_args()
@@ -52,6 +53,7 @@ def main():
         # gets the workflow status
         status = get_workflow_status(bearer_token, workflow_id)
 
+        # initialize timer
         start = time.time()
         time.process_time()
         elapsed = 0
@@ -64,8 +66,8 @@ def main():
             elapsed = time.time() - start
 
         if elapsed > TIMEOUT_THRESHOLD:
-            logging.error(
-                f'Private repo build timeout,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
+            logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
+                          f' {WORKFLOW_HTML_URL}/{workflow_id}')
             sys.exit(1)
 
         print(f'Workflow {workflow_id} status is {status}')

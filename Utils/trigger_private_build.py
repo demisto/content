@@ -67,10 +67,10 @@ def get_dispatch_workflows_ids(bearer_token, branch):
 
 
 def main():
+    # get github_token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
-
     bearer_token = 'Bearer ' + args.github_token
 
     # get branch name
@@ -86,11 +86,14 @@ def main():
         workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
 
         # trigger private build
+        payload = {'event_type': f'Trigger private build from content/{branch_name}',
+                   'client_payload': {'branch': branch_name, 'is_infra_build': 'True'}}
+
         res = requests.request("POST",
                                TRIGGER_BUILD_URL,
                                headers={'Accept': 'application/vnd.github.everest-preview+json',
                                         'Authorization': bearer_token},
-                               data=f'{{"event_type":"Trigger private build from content/{branch_name}"}}',
+                               data=json.dumps(payload),
                                verify=False)
 
         if res.status_code != 204:
@@ -101,6 +104,7 @@ def main():
         # wait 5 seconds and get the workflow ids again
         time.sleep(5)
         workflow_ids_new = get_dispatch_workflows_ids(bearer_token, 'master')
+
         # compare with the first workflows list to get the current id
         workflow_id = [x for x in workflow_ids_new if x not in workflow_ids]
         if workflow_id:
