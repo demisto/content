@@ -2,7 +2,7 @@ import traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 from datetime import timezone
-
+import inspect
 import dateparser
 import requests
 
@@ -237,7 +237,7 @@ class Client(BaseClient):
         return self.parse_whois(cybertotal_result, domain)
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int, reliability: str) -> List[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -293,6 +293,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             indicator_type=DBotScoreType.IP,
             integration_name='CyberTotal',
             score=score,
+            reliability=DBotScoreReliability.reliability,
             malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
@@ -736,6 +737,7 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     cybertotal_url = demisto.params().get('url')
     cybertotal_token = demisto.params().get('token')
+    reliability = demisto.params().get('integrationReliability')
 
     proxy = demisto.params().get('proxy', False)
 
