@@ -1,0 +1,1581 @@
+category: IT Services
+commonfields:
+  id: AzureNetworking
+  version: -1
+configuration:
+- additionalinfo: Your Azure subscription Id.
+  display: Subscription ID
+  name: subscription_id
+  required: true
+  type: 0
+- additionalinfo: Azure client secret
+  display: Access Secret
+  name: secret
+  required: true
+  type: 4
+- additionalinfo: Azure client ID
+  display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- additionalinfo: Azure tenant ID
+  display: Tenant ID
+  name: tenant
+  required: true
+  type: 0
+- additionalinfo: For cloud environments other than the US public cloud, the environment
+    name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`),
+    or a metadata discovery endpoint URL (required for Azure Stack).
+  defaultvalue: AzureCloud
+  display: Azure Cloud Environment
+  name: cloud_environment
+  required: true
+  type: 0
+- additionalinfo: Controls the certificate validation behavior for Azure endpoints.
+    By default, all modules will validate the server certificate, but when an HTTPS
+    proxy is in use, or against Azure Stack, it may be necessary to disable this behavior
+    by passing `ignore`.
+  defaultvalue: validate
+  display: Certificate Validation Mode
+  name: cert_validation_mode
+  options:
+  - ignore
+  - validate
+  required: true
+  type: 15
+- additionalinfo: Selects an API profile to use when communicating with Azure services.
+    Default value of `latest` is appropriate for public clouds; future values will
+    allow use with Azure Stack.
+  defaultvalue: latest
+  display: API Profile
+  name: api_profile
+  required: true
+  type: 0
+description: Manage Azure Networking resources
+display: Azure Networking
+name: AzureNetworking
+script:
+  commands:
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the Azure Firewall.
+      name: name
+      required: true
+    - description: Resource location.
+      name: location
+    - description: Collection of application rule collections used by Azure Firewall.
+      isArray: true
+      name: application_rule_collections
+    - description: Collection of NAT rule collections used by Azure Firewall.
+      isArray: true
+      name: nat_rule_collections
+    - description: Collection of network rule collections used by Azure Firewall.
+      isArray: true
+      name: network_rule_collections
+    - description: IP configuration of the Azure Firewall resource.
+      isArray: true
+      name: ip_configurations
+    - auto: PREDEFINED
+      defaultValue: present
+      description: |-
+        Assert the state of the AzureFirewall.
+        Use `present` to create or update an AzureFirewall and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Firewall instance.
+    name: azure-rm-azurefirewall
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+    - description: Resource name.
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get AzureFirewall info.
+    name: azure-rm-azurefirewall-info
+    outputs:
+    - contextPath: AzureNetworking.firewalls.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.firewalls.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureNetworking.firewalls.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.firewalls.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureNetworking.firewalls.etag
+      description: '[''Gets a unique read-only string that changes whenever the resource
+        is updated.'']'
+      type: string
+    - contextPath: AzureNetworking.firewalls.nat_rule_collections
+      description: '[''Collection of NAT rule collections used by Azure Firewall.'']'
+    - contextPath: AzureNetworking.firewalls.network_rule_collections
+      description: '[''Collection of network rule collections used by Azure Firewall.'']'
+    - contextPath: AzureNetworking.firewalls.ip_configurations
+      description: '[''IP configuration of the Azure Firewall resource.'']'
+    - contextPath: AzureNetworking.firewalls.provisioning_state
+      description: '[''The current state of the gallery.'']'
+      type: string
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: |-
+        List of IPv4 address ranges where each is formatted using CIDR notation.
+        Required when creating a new virtual network or using `purge_address_prefixes`.
+      name: address_prefixes_cidr
+    - description: |-
+        Custom list of DNS servers. Maximum length of two.
+        The first server in the list will be treated as the Primary server. This is an explicit list.
+        Existing DNS servers will be replaced with the specified list.
+        Use the `purge_dns_servers` option to remove all custom DNS servers and revert to default Azure servers.
+      name: dns_servers
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: Name of the virtual network.
+      name: name
+      required: true
+    - defaultValue: "no"
+      description: Use with `state=present` to remove any existing `address_prefixes`.
+      name: purge_address_prefixes
+    - defaultValue: "no"
+      description: Use with `state=present` to remove existing DNS servers, reverting
+        to default Azure servers. Mutually exclusive with DNS servers.
+      name: purge_dns_servers
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the virtual network. Use `present` to create or update
+        and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure virtual networks
+    name: azure-rm-virtualnetwork
+    outputs:
+    - contextPath: AzureNetworking.state.address_prefixes
+      description: '[''The virtual network IPv4 address ranges.'']'
+    - contextPath: AzureNetworking.state.dns_servers
+      description: '[''DNS servers.'']'
+    - contextPath: AzureNetworking.state.etag
+      description: '[''A unique read-only string that changes whenever the resource
+        is update.'']'
+      type: string
+    - contextPath: AzureNetworking.state.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.state.location
+      description: '[''The Geo-location where the resource lives.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureNetworking.state.provisioning_state
+      description: '[''Provisioning state of the virtual network.'']'
+      type: string
+    - contextPath: AzureNetworking.state.tags
+      description: '["Resource tags, such as { ''tags1'':''value1'' }"]'
+    - contextPath: AzureNetworking.state.type
+      description: '[''Resource type.'']'
+      type: string
+  - arguments:
+    - description: Only show results for a specific security group.
+      name: name
+    - description: Limit results by resource group. Required when filtering by name.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get virtual network facts
+    name: azure-rm-virtualnetwork-info
+    outputs:
+    - contextPath: AzureNetworking.virtualnetworks.id
+      description: '[''Resource ID of the virtual network.'']'
+      type: string
+    - contextPath: AzureNetworking.virtualnetworks.address_prefixes
+      description: '[''List of IPv4 address ranges where each is formatted using CIDR
+        notation.'']'
+    - contextPath: AzureNetworking.virtualnetworks.dns_servers
+      description: '[''Custom list of DNS servers.'']'
+    - contextPath: AzureNetworking.virtualnetworks.location
+      description: '[''Valid Azure location.'']'
+      type: string
+    - contextPath: AzureNetworking.virtualnetworks.tags
+      description: '[''Tags assigned to the resource. Dictionary of string:string
+        pairs.'']'
+    - contextPath: AzureNetworking.virtualnetworks.provisioning_state
+      description: '[''Provisioning state of the resource.'']'
+      type: string
+    - contextPath: AzureNetworking.virtualnetworks.name
+      description: '[''Name of the virtual network.'']'
+      type: string
+    - contextPath: AzureNetworking.virtualnetworks.subnets
+      description: '[''Subnets associated with the virtual network.'']'
+  - arguments:
+    - description: Name of a resource group where VPN Gateway exists or will be created.
+      name: resource_group
+      required: true
+    - description: Name of VPN Gateway.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the VPN Gateway. Use `present` to create or update VPN
+        gateway and `absent` to delete VPN gateway.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: |-
+        An existing virtual network with which the VPN Gateway will be associated.
+        Required when creating a VPN Gateway.
+        Can be the name of the virtual network.
+        Must be in the same resource group as VPN gateway when specified by name.
+        Can be the resource ID of the virtual network.
+        Can be a dict which contains `name` and `resource_group` of the virtual network.
+      name: virtual_network
+      required: true
+    - description: List of IP configurations.
+      name: ip_configurations
+    - auto: PREDEFINED
+      default: false
+      defaultValue: vpn
+      description: The type of this virtual network gateway.
+      name: gateway_type
+      predefined:
+      - vpn
+      - express_route
+    - auto: PREDEFINED
+      default: false
+      defaultValue: route_based
+      description: The type of this virtual private network.
+      name: vpn_type
+      predefined:
+      - route_based
+      - policy_based
+    - default: false
+      defaultValue: "False"
+      description: Whether BGP is enabled for this virtual network gateway or not.
+      name: enable_bgp
+    - auto: PREDEFINED
+      default: false
+      defaultValue: VpnGw1
+      description: The reference of the VirtualNetworkGatewaySku resource which represents
+        the SKU selected for Virtual network gateway.
+      name: sku
+      predefined:
+      - VpnGw1
+      - VpnGw2
+      - VpnGw3
+    - description: Virtual network gateway's BGP speaker settings.
+      name: bgp_settings
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure virtual network gateways
+    name: azure-rm-virtualnetworkgateway
+  - arguments:
+    - description: Name of a resource group where the vnet exists.
+      name: resource_group
+      required: true
+    - description: Name of the virtual network peering.
+      name: name
+      required: true
+    - description: Name or resource ID of the virtual network to be peered.
+      name: virtual_network
+      required: true
+    - description: |-
+        Remote virtual network to be peered.
+        It can be name of remote virtual network in same resource group.
+        It can be remote virtual network resource ID.
+        It can be a dict which contains `name` and `resource_group` of remote virtual network.
+        Required when creating.
+      name: remote_virtual_network
+    - default: false
+      defaultValue: "False"
+      description: Allows VMs in the remote VNet to access all VMs in the local VNet.
+      name: allow_virtual_network_access
+    - default: false
+      defaultValue: "False"
+      description: Allows forwarded traffic from the VMs in the remote VNet.
+      name: allow_forwarded_traffic
+    - default: false
+      defaultValue: "False"
+      description: If remote gateways can be used on this virtual network.
+      name: use_remote_gateways
+    - default: false
+      defaultValue: "False"
+      description: |-
+        Allows VNet to use the remote VNet's gateway. Remote VNet gateway must have --allow-gateway-transit enabled for remote peering.
+        Only 1 peering can have this flag enabled. Cannot be set if the VNet already has a gateway.
+      name: allow_gateway_transit
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: State of the virtual network peering. Use `present` to create or
+        update a peering and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Manage Azure Virtual Network Peering
+    name: azure-rm-virtualnetworkpeering
+  - arguments:
+    - description: Name of a resource group where the vnet exists.
+      name: resource_group
+      required: true
+    - description: Name or resource ID of a virtual network.
+      name: virtual_network
+      required: true
+    - description: Name of the virtual network peering.
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get facts of Azure Virtual Network Peering
+    name: azure-rm-virtualnetworkpeering-info
+    outputs:
+    - contextPath: AzureNetworking.vnetpeerings.id
+      description: ID of current Virtual Network peering.
+      type: string
+    - contextPath: AzureNetworking.vnetpeerings.name
+      description: '[''Name of Virtual Network peering.'']'
+      type: string
+    - contextPath: AzureNetworking.vnetpeerings.remote_virtual_network
+      description: '[''ID of remote Virtual Network to be peered to.'']'
+      type: string
+    - contextPath: AzureNetworking.vnetpeerings.remote_address_space
+      description: '[''The reference of the remote Virtual Network address space.'']'
+    - contextPath: AzureNetworking.vnetpeerings.peering_state
+      description: '[''The state of the virtual network peering.'']'
+      type: string
+    - contextPath: AzureNetworking.vnetpeerings.provisioning_state
+      description: '[''The provisioning state of the resource.'']'
+      type: string
+    - contextPath: AzureNetworking.vnetpeerings.allow_forwarded_traffic
+      description: '[''Whether forwarded traffic from the VMs in the remote Virtual
+        Network will be allowed/disallowed.'']'
+      type: boolean
+    - contextPath: AzureNetworking.vnetpeerings.allow_gateway_transit
+      description: '[''Whether gateway links can be used in remote Virtual Networking
+        to link to this Virtual Network.'']'
+      type: boolean
+    - contextPath: AzureNetworking.vnetpeerings.allow_virtual_network_access
+      description: '[''Whether the VMs in the linked Virtual Network space can access
+        all the VMs in local Virtual Network space.'']'
+      type: boolean
+    - contextPath: AzureNetworking.vnetpeerings.use_remote_gateways
+      description: '[''Whether remote gateways can be used on this Virtual Network.'']'
+      type: boolean
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the subnet.
+      name: name
+      required: true
+    - description: CIDR defining the IPv4 address space of the subnet. Must be valid
+        within the context of the virtual network.
+      name: address_prefix_cidr
+    - description: |-
+        Existing security group with which to associate the subnet.
+        It can be the security group name which is in the same resource group.
+        Can be the resource ID of the security group.
+        Can be a dict containing the `name` and `resource_group` of the security group.
+      name: security_group
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the subnet. Use `present` to create or update
+        a subnet and use `absent` to delete a subnet.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Name of an existing virtual network with which the subnet is or
+        will be associated.
+      name: virtual_network_name
+      required: true
+    - description: |-
+        The reference of the RouteTable resource.
+        Can be the name or resource ID of the route table.
+        Can be a dict containing the `name` and `resource_group` of the route table.
+      name: route_table
+    - description: An array of service endpoints.
+      isArray: true
+      name: service_endpoints
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Manage Azure subnets
+    name: azure-rm-subnet
+    outputs:
+    - contextPath: AzureNetworking.state.address_prefix
+      description: '[''IP address CIDR.'']'
+      type: string
+    - contextPath: AzureNetworking.state.id
+      description: '[''Subnet resource path.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Subnet name.'']'
+      type: string
+    - contextPath: AzureNetworking.state.network_security_group
+      description: '[''Associated network security group of subnets.'']'
+    - contextPath: AzureNetworking.state.provisioning_state
+      description: '[''Success or failure of the provisioning event.'']'
+      type: string
+  - arguments:
+    - description: The name of the resource group.
+      name: resource_group
+      required: true
+    - description: The name of the virtual network.
+      name: virtual_network_name
+      required: true
+    - description: The name of the subnet.
+      name: name
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Subnet facts
+    name: azure-rm-subnet-info
+    outputs:
+    - contextPath: AzureNetworking.subnets.id
+      description: '[''Subnet resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.resource_group
+      description: '[''Name of resource group.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.virtual_network_name
+      description: '[''Name of the containing virtual network.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.name
+      description: '[''Name of the subnet.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.address_prefix_cidr
+      description: '[''CIDR defining the IPv4 address space of the subnet.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.route_table
+      description: '[''Associated route table ID.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.security_group
+      description: '[''Associated security group ID.'']'
+      type: string
+    - contextPath: AzureNetworking.subnets.service_endpoints
+      description: '[''List of service endpoints.'']'
+    - contextPath: AzureNetworking.subnets.provisioning_state
+      description: '[''Provisioning state.'']'
+      type: string
+  - arguments:
+    - description: Name of a resource group where the Traffic Manager endpoint exists
+        or will be created.
+      name: resource_group
+      required: true
+    - description: The name of the endpoint.
+      name: name
+      required: true
+    - description: Name of Traffic Manager profile where this endpoints attaches to.
+      name: profile_name
+      required: true
+    - auto: PREDEFINED
+      description: The type of the endpoint.
+      name: type
+      predefined:
+      - azure_endpoints
+      - external_endpoints
+      - nested_endpoints
+      required: true
+    - description: |-
+        The Azure Resource URI of the of the endpoint.
+        Not applicable to endpoints of `type=external_endpoints`.
+      name: target_resource_id
+    - description: The fully-qualified DNS name of the endpoint.
+      name: target
+    - default: false
+      defaultValue: "True"
+      description: The status of the endpoint.
+      name: enabled
+    - description: |-
+        The weight of this endpoint when traffic manager profile has routing_method of `weighted`.
+        Possible values are from 1 to 1000.
+      name: weight
+    - description: |-
+        The priority of this endpoint when traffic manager profile has routing_method of `priority`.
+        Possible values are from 1 to 1000, lower values represent higher priority.
+        This is an optional parameter. If specified, it must be specified on all endpoints.
+        No two endpoints can share the same priority value.
+      name: priority
+    - description: Specifies the location of the external or nested endpoints when
+        using the 'Performance' traffic routing method.
+      name: location
+    - description: |-
+        The minimum number of endpoints that must be available in the child profile in order for the parent profile to be considered available.
+        Only applicable to endpoint of `type=nested_endpoints`.
+      name: min_child_endpoints
+    - description: The list of countries/regions mapped to this endpoint when traffic
+        manager profile has routing_method of `geographic`.
+      isArray: true
+      name: geo_mapping
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the Traffic Manager endpoint. Use `present`
+        to create or update a Traffic Manager endpoint and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Manage Azure Traffic Manager endpoint
+    name: azure-rm-trafficmanagerendpoint
+  - arguments:
+    - description: Limit results to a specific Traffic Manager endpoint.
+      name: name
+    - description: The resource group to search for the desired Traffic Manager profile.
+      name: resource_group
+      required: true
+    - description: Name of Traffic Manager Profile.
+      name: profile_name
+      required: true
+    - auto: PREDEFINED
+      description: Type of endpoint.
+      name: type
+      predefined:
+      - azure_endpoints
+      - external_endpoints
+      - nested_endpoints
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Traffic Manager endpoint facts
+    name: azure-rm-trafficmanagerendpoint-info
+    outputs:
+    - contextPath: AzureNetworking.endpoints.resource_group
+      description: '[''Name of a resource group.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.name
+      description: '[''Name of the Traffic Manager endpoint.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.type
+      description: '[''The type of the endpoint.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.target_resource_id
+      description: '[''The Azure Resource URI of the of the endpoint.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.target
+      description: '[''The fully-qualified DNS name of the endpoint.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.enabled
+      description: '[''The status of the endpoint.'']'
+      type: string
+    - contextPath: AzureNetworking.endpoints.weight
+      description: '["The weight of this endpoint when using the ''Weighted'' traffic
+        routing method."]'
+      type: number
+    - contextPath: AzureNetworking.endpoints.priority
+      description: '["The priority of this endpoint when using the ''Priority'' traffic
+        routing method."]'
+      type: string
+    - contextPath: AzureNetworking.endpoints.location
+      description: '["The location of the external or nested endpoints when using
+        the ''Performance'' traffic routing method."]'
+      type: string
+    - contextPath: AzureNetworking.endpoints.min_child_endpoints
+      description: '[''The minimum number of endpoints that must be available in the
+        child profile to make the parent profile available.'']'
+      type: number
+    - contextPath: AzureNetworking.endpoints.geo_mapping
+      description: '["The list of countries/regions mapped to this endpoint when using
+        the ''Geographic'' traffic routing method."]'
+  - arguments:
+    - description: Name of a resource group where the Traffic Manager profile exists
+        or will be created.
+      name: resource_group
+      required: true
+    - description: Name of the Traffic Manager profile.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the Traffic Manager profile. Use `present`
+        to create or update a Traffic Manager profile and `absent` to delete it.
+      name: state
+      predefined:
+      - absent
+      - present
+    - default: false
+      defaultValue: global
+      description: |-
+        Valid Azure location. Defaults to `global` because in default public Azure cloud, Traffic Manager profile can only be deployed globally.
+        Reference `https://docs.microsoft.com/en-us/azure/traffic-manager/quickstart-create-traffic-manager-profile#create-a-traffic-manager-profile`.
+      name: location
+    - auto: PREDEFINED
+      default: false
+      defaultValue: enabled
+      description: The status of the Traffic Manager profile.
+      name: profile_status
+      predefined:
+      - enabled
+      - disabled
+    - auto: PREDEFINED
+      default: false
+      defaultValue: performance
+      description: The traffic routing method of the Traffic Manager profile.
+      name: routing_method
+      predefined:
+      - performance
+      - priority
+      - weighted
+      - geographic
+    - description: The DNS settings of the Traffic Manager profile.
+      name: dns_config
+    - default: false
+      defaultValue: '{''protocol'': ''HTTP'', ''port'': 80, ''path'': ''/''}'
+      description: The endpoint monitoring settings of the Traffic Manager profile.
+      name: monitor_config
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Traffic Manager profile
+    name: azure-rm-trafficmanagerprofile
+  - arguments:
+    - description: Limit results to a specific Traffic Manager profile.
+      name: name
+    - description: The resource group to search for the desired Traffic Manager profile.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get Azure Traffic Manager profile facts
+    name: azure-rm-trafficmanagerprofile-info
+    outputs:
+    - contextPath: AzureNetworking.tms.resource_group
+      description: '[''Name of a resource group where the Traffic Manager profile
+        exists.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.name
+      description: '[''Name of the Traffic Manager profile.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.state
+      description: '[''The state of the Traffic Manager profile.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.location
+      description: '[''Location of the Traffic Manager profile.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.profile_status
+      description: '[''The status of the Traffic Manager profile.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.routing_method
+      description: '[''The traffic routing method of the Traffic Manager profile.'']'
+      type: string
+    - contextPath: AzureNetworking.tms.dns_config
+      description: '[''The DNS settings of the Traffic Manager profile.'']'
+    - contextPath: AzureNetworking.tms.monitor_config
+      description: '[''The endpoint monitoring settings of the Traffic Manager profile.'']'
+    - contextPath: AzureNetworking.tms.endpoints
+      description: '[''The list of endpoints in the Traffic Manager profile.'']'
+  - arguments:
+    - description: Name of a resource group where the network interface exists or
+        will be created.
+      name: resource_group
+      required: true
+    - description: Name of the network interface.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the network interface. Use `present` to create
+        or update an interface and `absent` to delete an interface.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - description: |-
+        An existing virtual network with which the network interface will be associated. Required when creating a network interface.
+        It can be the virtual network's name.
+        Make sure your virtual network is in the same resource group as NIC when you give only the name.
+        It can be the virtual network's resource id.
+        It can be a dict which contains `name` and `resource_group` of the virtual network.
+      name: virtual_network
+      required: true
+    - description: |-
+        Name of an existing subnet within the specified virtual network. Required when creating a network interface.
+        Use the `virtual_network`'s resource group.
+      name: subnet_name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Linux
+      description: |-
+        Determines any rules to be added to a default security group.
+        When creating a network interface, if no security group name is provided, a default security group will be created.
+        If the `os_type=Windows`, a rule allowing RDP access will be added.
+        If the `os_type=Linux`, a rule allowing SSH access will be added.
+      name: os_type
+      predefined:
+      - Windows
+      - Linux
+    - description: |-
+        (Deprecate) Valid IPv4 address that falls within the specified subnet.
+        This option will be deprecated in 2.9, use `ip_configurations` instead.
+      name: private_ip_address
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Dynamic
+      description: |-
+        (Deprecate) Whether or not the assigned IP address is permanent.
+        When creating a network interface, if you specify `private_ip_address=Static`, you must provide a value for `private_ip_address`.
+        You can update the allocation method to `Static` after a dynamic private IP address has been assigned.
+        This option will be deprecated in 2.9, use `ip_configurations` instead.
+      name: private_ip_allocation_method
+      predefined:
+      - Dynamic
+      - Static
+    - default: false
+      defaultValue: "yes"
+      description: |-
+        (Deprecate) When creating a network interface, if no public IP address name is provided a default public IP address will be created.
+        Set to `false` if you do not want a public IP address automatically created.
+        This option will be deprecated in 2.9, use `ip_configurations` instead.
+      name: public_ip
+    - description: |-
+        (Deprecate) Name of an existing public IP address object to associate with the security group.
+        This option will be deprecated in 2.9, use `ip_configurations` instead.
+      name: public_ip_address_name
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Dynamic
+      description: |-
+        (Deprecate) If a `public_ip_address_name` is not provided, a default public IP address will be created.
+        The allocation method determines whether or not the public IP address assigned to the network interface is permanent.
+        This option will be deprecated in 2.9, use `ip_configurations` instead.
+      name: public_ip_allocation_method
+      predefined:
+      - Dynamic
+      - Static
+    - description: List of IP configurations. Each configuration object should include
+        field `private_ip_address`, `private_ip_allocation_method`, `public_ip_address_name`,
+        `public_ip`, `public_ip_allocation_method`, `name`.
+      name: ip_configurations
+    - default: false
+      defaultValue: "False"
+      description: Whether the network interface should be created with the accelerated
+        networking feature or not.
+      name: enable_accelerated_networking
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Whether a security group should be be created with the NIC.
+        If this flag set to `True` and no `security_group` set, a default security group will be created.
+      name: create_with_security_group
+    - description: |-
+        An existing security group with which to associate the network interface.
+        If not provided, a default security group will be created when `create_with_security_group=true`.
+        It can be the name of security group.
+        Make sure the security group is in the same resource group when you only give its name.
+        It can be the resource id.
+        It can be a dict contains security_group's `name` and `resource_group`.
+      name: security_group
+    - description: When a default security group is created for a Linux host a rule
+        will be added allowing inbound TCP connections to the default SSH port `22`,
+        and for a Windows host rules will be added allowing inbound access to RDP
+        ports `3389` and `5986`. Override the default ports by providing a list of
+        open ports.
+      name: open_ports
+    - default: false
+      defaultValue: "False"
+      description: Whether to enable IP forwarding.
+      name: enable_ip_forwarding
+    - description: |-
+        Which DNS servers should the NIC lookup.
+        List of IP addresses.
+      isArray: true
+      name: dns_servers
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure network interfaces
+    name: azure-rm-networkinterface
+    outputs:
+    - contextPath: AzureNetworking.state.dns_server
+      description: '[''Which DNS servers should the NIC lookup.'', ''List of IP addresses.'']'
+    - contextPath: AzureNetworking.state.dns_setting
+      description: '[''The DNS settings in network interface.'']'
+    - contextPath: AzureNetworking.state.enable_ip_forwarding
+      description: Whether to enable IP forwarding.
+      type: boolean
+    - contextPath: AzureNetworking.state.etag
+      description: '[''A unique read-only string that changes whenever the resource
+        is updated.'']'
+      type: string
+    - contextPath: AzureNetworking.state.id
+      description: '[''Id of the network interface.'']'
+      type: string
+    - contextPath: AzureNetworking.state.enable_accelerated_networking
+      description: '[''Whether the network interface should be created with the accelerated
+        networking feature or not.'']'
+      type: boolean
+    - contextPath: AzureNetworking.state.ip_configurations
+      description: '[''List of IP configurations.'']'
+    - contextPath: AzureNetworking.state.location
+      description: '[''The network interface resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.state.mac_address
+      description: '[''The MAC address of the network interface.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Name of the network interface.'']'
+      type: string
+    - contextPath: AzureNetworking.state.network_security_group
+      description: '[''The reference of the network security group resource.'']'
+    - contextPath: AzureNetworking.state.primary
+      description: '[''Get whether this is a primary network interface on virtual
+        machine.'']'
+      type: boolean
+    - contextPath: AzureNetworking.state.provisioning_state
+      description: '[''The provisioning state of the public IP resource.'']'
+      type: string
+    - contextPath: AzureNetworking.state.tags
+      description: -Tags of the network interface.
+    - contextPath: AzureNetworking.state.type
+      description: '[''Type of the resource.'']'
+      type: string
+  - arguments:
+    - description: Only show results for a specific network interface.
+      name: name
+    - description: Name of the resource group containing the network interface(s).
+        Required when searching by name.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get network interface facts
+    name: azure-rm-networkinterface-info
+    outputs:
+    - contextPath: AzureNetworking.networkinterfaces.id
+      description: '[''Id of the network interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.resource_group
+      description: '[''Name of a resource group where the network interface exists.'']'
+    - contextPath: AzureNetworking.networkinterfaces.name
+      description: '[''Name of the network interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.location
+      description: '[''Azure location.'']'
+    - contextPath: AzureNetworking.networkinterfaces.virtual_network
+      description: '[''An existing virtual network with which the network interface
+        will be associated.'', ''It is a dict which contains I(name) and I(resource_group)
+        of the virtual network.'']'
+    - contextPath: AzureNetworking.networkinterfaces.subnet
+      description: '[''Name of an existing subnet within the specified virtual network.'']'
+    - contextPath: AzureNetworking.networkinterfaces.tags
+      description: '[''Tags of the network interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.ip_configurations
+      description: '[''List of IP configurations, if contains multiple configurations.'']'
+    - contextPath: AzureNetworking.networkinterfaces.enable_accelerated_networking
+      description: '[''Specifies whether the network interface should be created with
+        the accelerated networking feature or not.'']'
+    - contextPath: AzureNetworking.networkinterfaces.create_with_security_group
+      description: '[''Specifies whether a default security group should be be created
+        with the NIC. Only applies when creating a new NIC.'']'
+      type: boolean
+    - contextPath: AzureNetworking.networkinterfaces.security_group
+      description: '[''A security group resource ID with which to associate the network
+        interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.enable_ip_forwarding
+      description: '[''Whether to enable IP forwarding'']'
+    - contextPath: AzureNetworking.networkinterfaces.dns_servers
+      description: '[''Which DNS servers should the NIC lookup.'', ''List of IP addresses.'']'
+    - contextPath: AzureNetworking.networkinterfaces.mac_address
+      description: '[''The MAC address of the network interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.provisioning_state
+      description: '[''The provisioning state of the network interface.'']'
+    - contextPath: AzureNetworking.networkinterfaces.dns_settings
+      description: '[''The DNS settings in network interface.'']'
+  - arguments:
+    - description: Name of resource group with which the Public IP is associated.
+      name: resource_group
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: dynamic
+      description: |-
+        Control whether the assigned Public IP remains permanently assigned to the object.
+        If not set to `Static`, the IP address my changed anytime an associated virtual machine is power cycled.
+      name: allocation_method
+      predefined:
+      - dynamic
+      - static
+      - Static
+      - Dynamic
+    - description: |-
+        The customizable portion of the FQDN assigned to public IP address. This is an explicit setting.
+        If no value is provided, any existing value will be removed on an existing public IP.
+      name: domain_name
+    - description: Name of the Public IP.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the Public IP. Use `present` to create or update
+        a and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Valid Azure location. Defaults to location of the resource group.
+      name: location
+    - auto: PREDEFINED
+      description: The public IP address SKU.
+      name: sku
+      predefined:
+      - basic
+      - standard
+      - Basic
+      - Standard
+    - description: |-
+        List of IpTag associated with the public IP address.
+        Each element should contain type:value pair.
+      name: ip_tags
+    - description: Idle timeout in minutes.
+      name: idle_timeout
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ipv4
+      description: The public IP address version.
+      name: version
+      predefined:
+      - ipv4
+      - ipv6
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure Public IP Addresses
+    name: azure-rm-publicipaddress
+    outputs:
+    - contextPath: AzureNetworking.state.dns_settings
+      description: '[''The FQDN of the DNS record associated with the public IP address.'']'
+    - contextPath: AzureNetworking.state.etag
+      description: '[''A unique read-only string that changes whenever the resource
+        is updated.'']'
+      type: string
+    - contextPath: AzureNetworking.state.idle_timeout_in_minutes
+      description: '[''The idle timeout of the public IP address.'']'
+      type: number
+    - contextPath: AzureNetworking.state.ip_address
+      description: '[''The Public IP Prefix this Public IP Address should be allocated
+        from.'']'
+      type: string
+    - contextPath: AzureNetworking.state.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Name of the Public IP Address.'']'
+      type: string
+    - contextPath: AzureNetworking.state.provisioning_state
+      description: '[''The provisioning state of the Public IP resource.'']'
+      type: string
+    - contextPath: AzureNetworking.state.public_ip_allocation_method
+      description: '[''The public IP allocation method.'']'
+      type: string
+    - contextPath: AzureNetworking.state.public_ip_address_version
+      description: '[''The public IP address version.'']'
+      type: string
+    - contextPath: AzureNetworking.state.sku
+      description: '[''The public IP address SKU.'']'
+      type: string
+    - contextPath: AzureNetworking.state.tags
+      description: '[''The resource tags.'']'
+    - contextPath: AzureNetworking.state.type
+      description: '[''Type of the resource.'']'
+      type: string
+  - arguments:
+    - description: Only show results for a specific Public IP.
+      name: name
+    - description: Limit results by resource group. Required when using name parameter.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get public IP facts
+    name: azure-rm-publicipaddress-info
+    outputs:
+    - contextPath: AzureNetworking.publicipaddresses.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.name
+      description: '[''Name of the public IP address.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.type
+      description: '[''Resource type.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.tags
+      description: '[''Resource tags.'']'
+    - contextPath: AzureNetworking.publicipaddresses.allocation_method
+      description: '[''The public IP allocation method.'', ''Possible values are C(static)
+        and C(dynamic).'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.version
+      description: '[''The public IP address version.'', ''Possible values are C(ipv4)
+        and C(ipv6).'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.dns_settings
+      description: '[''The FQDN of the DNS record associated with the public IP address.'']'
+    - contextPath: AzureNetworking.publicipaddresses.ip_tags
+      description: '[''The list of tags associated with the public IP address.'']'
+    - contextPath: AzureNetworking.publicipaddresses.ip_address
+      description: '[''The Public IP Prefix this Public IP Address should be allocated
+        from.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.idle_timeout
+      description: '[''The idle timeout of the public IP address.'']'
+      type: number
+    - contextPath: AzureNetworking.publicipaddresses.provisioning_state
+      description: '[''The provisioning state of the PublicIP resource.'', ''Possible
+        values is C(Succeeded).'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.etag
+      description: '[''A unique read-only string that changes whenever the resource
+        is updated.'']'
+      type: string
+    - contextPath: AzureNetworking.publicipaddresses.sku
+      description: '[''The public IP address SKU.'']'
+      type: string
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the route.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the route. Use `present` to create or update
+        and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: The destination CIDR to which the route applies.
+      name: address_prefix
+    - auto: PREDEFINED
+      default: false
+      defaultValue: none
+      description: The type of Azure hop the packet should be sent to.
+      name: next_hop_type
+      predefined:
+      - virtual_network_gateway
+      - vnet_local
+      - internet
+      - virtual_appliance
+      - none
+    - description: |-
+        The IP address packets should be forwarded to.
+        Next hop values are only allowed in routes where the next hop type is VirtualAppliance.
+      name: next_hop_ip_address
+    - description: The name of the route table.
+      name: route_table_name
+      required: true
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure route resource
+    name: azure-rm-route
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the route table.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the route table. Use `present` to create or
+        update and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - default: false
+      defaultValue: "False"
+      description: Specified whether to disable the routes learned by BGP on that
+        route table.
+      name: disable_bgp_route_propagation
+    - description: |-
+        Region of the resource.
+        Derived from `resource_group` if not specified.
+      name: location
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure route table resource
+    name: azure-rm-routetable
+  - arguments:
+    - description: Limit results to a specific route table.
+      name: name
+    - description: Limit results in a specific resource group.
+      name: resource_group
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get route table facts
+    name: azure-rm-routetable-info
+  - arguments:
+    - description: |-
+        The set of default rules automatically added to a security group at creation.
+        In general default rules will not be modified. Modify rules to shape the flow of traffic to or from a subnet or NIC.
+        See rules below for the makeup of a rule dict.
+      name: default_rules
+    - description: Valid azure location. Defaults to location of the resource group.
+      name: location
+    - description: Name of the security group to operate on.
+      name: name
+    - default: false
+      defaultValue: "no"
+      description: Remove any existing rules not matching those defined in the default_rules
+        parameter.
+      name: purge_default_rules
+    - default: false
+      defaultValue: "no"
+      description: Remove any existing rules not matching those defined in the rules
+        parameters.
+      name: purge_rules
+    - description: Name of the resource group the security group belongs to.
+      name: resource_group
+      required: true
+    - description: Set of rules shaping traffic flow to or from a subnet or NIC. Each
+        rule is a dictionary.
+      name: rules
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the security group. Set to `present` to create
+        or update a security group. Set to `absent` to remove a security group.
+      name: state
+      predefined:
+      - absent
+      - present
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure network security groups
+    name: azure-rm-securitygroup
+    outputs:
+    - contextPath: AzureNetworking.state.default_rules
+      description: '[''The default security rules of network security group.'']'
+    - contextPath: AzureNetworking.state.id
+      description: '[''The resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.state.location
+      description: '[''The resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Name of the security group.'']'
+      type: string
+    - contextPath: AzureNetworking.state.network_interfaces
+      description: '[''A collection of references to network interfaces.'']'
+    - contextPath: AzureNetworking.state.rules
+      description: '[''A collection of security rules of the network security group.'']'
+    - contextPath: AzureNetworking.state.subnets
+      description: '[''A collection of references to subnets.'']'
+    - contextPath: AzureNetworking.state.tags
+      description: '[''Tags to assign to the security group.'']'
+    - contextPath: AzureNetworking.state.type
+      description: '[''The resource type.'']'
+      type: string
+  - arguments:
+    - description: Only show results for a specific security group.
+      name: name
+    - description: Name of the resource group to use.
+      name: resource_group
+      required: true
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    description: Get security group facts
+    name: azure-rm-securitygroup-info
+    outputs:
+    - contextPath: AzureNetworking.securitygroups.etag
+      description: '[''A unique read-only string that changes whenever the resource
+        is updated.'']'
+      type: string
+    - contextPath: AzureNetworking.securitygroups.id
+      description: '[''Resource ID.'']'
+      type: string
+    - contextPath: AzureNetworking.securitygroups.location
+      description: '[''Resource location.'']'
+      type: string
+    - contextPath: AzureNetworking.securitygroups.name
+      description: '[''Resource name.'']'
+      type: string
+    - contextPath: AzureNetworking.securitygroups.properties
+      description: '["List of security group''s properties."]'
+    - contextPath: AzureNetworking.securitygroups.tags
+      description: '[''Tags to assign to the security group.'']'
+    - contextPath: AzureNetworking.securitygroups.type
+      description: '[''Type of the resource.'']'
+      type: string
+  - arguments:
+    - description: Name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the existing DNS zone in which to manage the record set.
+      name: zone_name
+      required: true
+    - description: Relative name of the record set.
+      name: relative_name
+      required: true
+    - auto: PREDEFINED
+      description: The type of record set to create or delete.
+      name: record_type
+      predefined:
+      - A
+      - AAAA
+      - CNAME
+      - MX
+      - NS
+      - SRV
+      - TXT
+      - PTR
+      - CAA
+      - SOA
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: purge
+      description: Whether existing record values not sent to the module should be
+        purged.
+      name: record_mode
+      predefined:
+      - append
+      - purge
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the record set. Use `present` to create or
+        update and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - default: false
+      defaultValue: "3600"
+      description: Time to live of the record set in seconds.
+      name: time_to_live
+    - description: List of records to be created depending on the type of record (set).
+      name: records
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Create, delete and update DNS record sets and records
+    name: azure-rm-dnsrecordset
+    outputs:
+    - contextPath: AzureNetworking.state.id
+      description: '[''The DNS record set ID.'']'
+      type: string
+    - contextPath: AzureNetworking.state.name
+      description: '[''Relate name of the record set.'']'
+      type: string
+    - contextPath: AzureNetworking.state.fqdn
+      description: '[''Fully qualified domain name of the record set.'']'
+      type: string
+    - contextPath: AzureNetworking.state.etag
+      description: '[''The etag of the record set.'']'
+      type: string
+    - contextPath: AzureNetworking.state.provisioning_state
+      description: '[''The DNS record set state.'']'
+      type: string
+    - contextPath: AzureNetworking.state.target_resource
+      description: '[''The target resource of the record set.'']'
+    - contextPath: AzureNetworking.state.ttl
+      description: '[''The TTL(time-to-live) of the records in the records set.'']'
+      type: number
+    - contextPath: AzureNetworking.state.type
+      description: '[''The type of DNS record in this record set.'']'
+      type: string
+    - contextPath: AzureNetworking.state.arecords
+      description: '[''A list of records in the record set.'']'
+  - arguments:
+    - description: Only show results for a Record Set.
+      name: relative_name
+    - description: Limit results by resource group. Required when filtering by name
+        or type.
+      name: resource_group
+    - description: Limit results by zones. Required when filtering by name or type.
+      name: zone_name
+    - description: Limit record sets by record type.
+      name: record_type
+    - description: Limit the maximum number of record sets to return.
+      name: top
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Get DNS Record Set facts
+    name: azure-rm-dnsrecordset-info
+    outputs:
+    - contextPath: AzureNetworking.dnsrecordsets.id
+      description: '[''ID of the dns recordset.'']'
+    - contextPath: AzureNetworking.dnsrecordsets.relative_name
+      description: '[''Name of the dns recordset.'']'
+    - contextPath: AzureNetworking.dnsrecordsets.record_type
+      description: '[''The type of the record set.'', ''Can be C(A), C(AAAA), C(CNAME),
+        C(MX), C(NS), C(SRV), C(TXT), C(PTR).'']'
+    - contextPath: AzureNetworking.dnsrecordsets.time_to_live
+      description: '[''Time to live of the record set in seconds.'']'
+    - contextPath: AzureNetworking.dnsrecordsets.records
+      description: '[''List of records depending on the type of recordset.'']'
+    - contextPath: AzureNetworking.dnsrecordsets.provisioning_state
+      description: '[''Provision state of the resource.'']'
+    - contextPath: AzureNetworking.dnsrecordsets.fqdn
+      description: '[''Fully qualified domain name of the record set.'']'
+  - arguments:
+    - description: name of resource group.
+      name: resource_group
+      required: true
+    - description: Name of the DNS zone.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: present
+      description: Assert the state of the zone. Use `present` to create or update
+        and `absent` to delete.
+      name: state
+      predefined:
+      - absent
+      - present
+    - auto: PREDEFINED
+      description: The type of this DNS zone (`public` or `private`).
+      name: type
+      predefined:
+      - public
+      - private
+    - description: |-
+        A list of references to virtual networks that register hostnames in this DNS zone.
+        This is a only when `type=private`.
+        Each element can be the name or resource id, or a dict contains `name`, `resource_group` information of the virtual network.
+      isArray: true
+      name: registration_virtual_networks
+    - description: |-
+        A list of references to virtual networks that resolve records in this DNS zone.
+        This is a only when `type=private`.
+        Each element can be the name or resource id, or a dict contains `name`, `resource_group` information of the virtual network.
+      isArray: true
+      name: resolution_virtual_networks
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - description: |-
+        Dictionary of string:string pairs to assign as metadata to the object.
+        Metadata tags on the object will be updated with any provided values.
+        To remove tags set append_tags option to false.
+      isArray: true
+      name: tags
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Manage Azure DNS zones
+    name: azure-rm-dnszone
+  - arguments:
+    - description: Limit results by resource group. Required when filtering by name.
+      name: resource_group
+    - description: Only show results for a specific zone.
+      name: name
+    - description: Limit results by providing a list of tags. Format tags as 'key'
+        or 'key:value'.
+      isArray: true
+      name: tags
+    - description: Your Azure subscription Id.
+      name: subscription_id
+    - default: false
+      defaultValue: "True"
+      description: |-
+        Use to control if tags field is canonical or just appends to existing tags.
+        When canonical, any tags not found in the tags parameter will be removed from the object's metadata.
+      name: append_tags
+    description: Get DNS zone facts
+    name: azure-rm-dnszone-info
+    outputs:
+    - contextPath: AzureNetworking.dnszones.id
+      description: '[''id of the DNS Zone.'']'
+    - contextPath: AzureNetworking.dnszones.name
+      description: '[''name of the DNS zone.'']'
+    - contextPath: AzureNetworking.dnszones.type
+      description: '[''The type of this DNS zone (C(public) or C(private)).'']'
+    - contextPath: AzureNetworking.dnszones.registration_virtual_networks
+      description: '[''A list of references to virtual networks that register hostnames
+        in this DNS zone.'']'
+    - contextPath: AzureNetworking.dnszones.resolution_virtual_networks
+      description: '[''A list of references to virtual networks that resolve records
+        in this DNS zone.'']'
+    - contextPath: AzureNetworking.dnszones.number_of_record_sets
+      description: '[''The current number of record sets in this DNS zone.'']'
+      type: number
+    - contextPath: AzureNetworking.dnszones.max_number_of_record_sets
+      description: '[''The maximum number of record sets that can be created in this
+        DNS zone.'']'
+      type: number
+    - contextPath: AzureNetworking.dnszones.name_servers
+      description: '[''The name servers for this DNS zone.'']'
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

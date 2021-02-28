@@ -11,8 +11,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* ScheduleGenericPolling
 * RunPollingCommand
+* ScheduleGenericPolling
 * PrintErrorEntry
 
 ### Commands
@@ -23,11 +23,11 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| TicketNumber | ServiceNow ticket number to poll its state. |  | Required |
+| TicketNumber | The ServiceNow ticket number to poll for its state. |  | Required |
 | Interval | Frequency that the polling command will run \(minutes\). |  | Required |
 | Timeout | Amount of time to poll before declaring a timeout and resuming the playbook \(in minutes\). |  | Required |
 | InstanceName | Set the ServiceNow Instance that will be used by the polling command.<br/>Only relevant when there is more than one ServiceNow instance. |  | Optional |
-| AdditionalPollingCommandName | Values of the additional arguments for the polling command, for example: \(value1,value2,...\). |  | Optional |
+| AdditionalPollingCommandName | Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. <br/>If so, please add "Using" to the value. <br/>The polling command will then take the instance name as the instance to use.  |  | Optional |
 
 ## Playbook Outputs
 ---
