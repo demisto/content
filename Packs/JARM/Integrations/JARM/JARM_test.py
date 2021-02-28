@@ -131,9 +131,9 @@ def test_jarm_fingerprint(mocker):
 
     MOCK_HOST = 'google.com'
     MOCK_PORT = '443'
-    MOCK_FINGERPRINT = '27d27d27d29d27d1dc27d27d27d27d6c727b989c06cb37f7678fa2982d9377'
+    MOCK_FINGERPRINT = '27d40d40d29d40d1dc42d43d00041d132f09251ceeb363bb0349f742bf0947'
 
-    mocker.patch('jarm.scanner.scanner.Scanner.scan', return_value=(MOCK_FINGERPRINT, MOCK_HOST, int(MOCK_PORT)))
+    mocker.patch('jarm.scanner.scanner.Scanner.scan_async', return_value=(MOCK_FINGERPRINT, MOCK_HOST, int(MOCK_PORT)))
     client = Client()
     args = {
         'host': MOCK_HOST,

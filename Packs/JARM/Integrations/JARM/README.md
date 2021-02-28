@@ -39,7 +39,10 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 | JARM.Port | Number | TCP port |
 | JARM.Target | String | The host in the format [IP or FQDN]:Port | 
 | JARM.Fingerprint | String | JARM fingerprint of the host. | 
-
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 ```!jarm-fingerprint host="google.com" port=443```
@@ -49,11 +52,6 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 {
     "DBotScore": [
         {
-            "Host": {
-                "fqdn": "google.com",
-                "ip": null,
-                "port": 443
-            },
             "Indicator": "27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d",
             "Score": 0,
             "Type": "jarm",
@@ -71,4 +69,7 @@ Calculate JARM fingerprint by scanning host with multiple TLS packets.
 
 #### Human Readable Output
 
->New JARM indicator was found: 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d
+>### Results
+>|FQDN|Fingerprint|Port|Target|
+>|---|---|---|---|
+>| google.com | 27d40d40d29d40d1dc42d43d00041d4689ee210389f4f6b4b5b1b93f92252d | 443 | google.com:443 |

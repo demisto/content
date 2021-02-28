@@ -72,7 +72,7 @@ def jarm_fingerprint_command(
                     "Indicator": self._jarm,
                     "Type": "jarm",
                     "Vendor": "JARM",
-                    "Score": Common.DBotScore.NONE
+                    "Score": Common.DBotScore.NONE,
                 }
             }
 
