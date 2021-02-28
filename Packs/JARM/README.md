@@ -16,10 +16,7 @@ The JARM fingerprint is a 62 digit hexadecimal string and is compatible with aut
 ## Indicator Fields
 This following are the indicator fields for the JARM indicator layout.
 - JARM Fingerprint (primary key)
-- JARM Hosts (the hosts that originated this fingerprint). It is a grid field comprised of:
-    - IP Address
-    - FQDN
-    - Port
+- JARM Hosts (the hosts that originated this fingerprint). It is a tag field comprised of IP/FQDN:Port
 
 ## Integrations
 This pack includes an integration that implements the following Command.
