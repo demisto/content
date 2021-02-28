@@ -134,13 +134,17 @@ class Notable:
         if notable_id:
             self.id = notable_id
         else:
-            if EVENT_ID not in data:
-                raise Exception('When using the enrichment mechanism, an event_id field is needed, and thus, '
-                                'one must use a fetch query of the following format: search `notable` .......\n'
-                                'Please re-edit the fetchQuery parameter in the integration configuration, reset '
-                                'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
-                                'run the fetch again.')
-            self.id = data[EVENT_ID]
+            if EVENT_ID in data:
+                self.id = data[EVENT_ID]
+            else:
+                if ENABLED_ENRICHMENTS:
+                    raise Exception('When using the enrichment mechanism, an event_id field is needed, and thus, '
+                                    'one must use a fetch query of the following format: search `notable` .......\n'
+                                    'Please re-edit the fetchQuery parameter in the integration configuration, reset '
+                                    'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+                                    'run the fetch again.')
+                else:
+                    self.id = None
 
     @property
     def id(self):
@@ -193,6 +197,7 @@ class Cache:
         num_fetched_notables (int): The number of fetched notables from Splunk.
 
     """
+
     def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, last_run_regular_fetch=None,
                  last_run_over_fetch=None, num_fetched_notables=0):
         self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
@@ -668,8 +673,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     if not enrich_notables:
         demisto.info("Creating incidents from fetched notables without enrichment")
         for item in reader:
-            inc = notable_to_incident(item)
-            incidents.append(inc)
+            notable = Notable(data=item)
+            incidents.append(notable.to_incident())
 
         demisto.incidents(incidents)
         if len(incidents) < FETCH_LIMIT:
