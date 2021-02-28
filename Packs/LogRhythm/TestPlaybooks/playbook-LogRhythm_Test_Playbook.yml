@@ -256,7 +256,7 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root:
+          root: inputs.alarm_id
       comments: {}
       status:
         simple: Closed
