@@ -54,7 +54,7 @@ class OrcaClient:
 
         return alerts
 
-    def get_all_alerts(self, first_fetch: Optional[str],  fetch_informational: bool = False) -> List[Dict[str, Any]]:
+    def get_all_alerts(self, first_fetch: Optional[str], fetch_informational: bool = False) -> List[Dict[str, Any]]:  # pylint: disable=E1136 # noqa: E501
         demisto.info("get_all_alerts, enter")
 
         alerts: List[Dict[str, Any]] = []
@@ -159,7 +159,8 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     return incidents
 
 
-def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: Optional[str], fetch_informational: bool = False,
+def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: Optional[str],   # pylint: disable=E1136
+                    fetch_informational: bool = False,
                     pull_existing_alerts: bool = False, fetch_type="XSOAR-Pull") -> List[Dict[str, Any]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
 
@@ -184,7 +185,8 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, first_fetch_time: O
             if fetch_type == "XSOAR-Pull":
                 updated_alerts = orca_client.get_updated_alerts()
                 incidents = get_incidents_from_alerts(updated_alerts)
-                incidents = [incident for incident in incidents if incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
+                incidents = [incident for incident in incidents
+                             if incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
 
             demisto.incidents(incidents)
             demisto.setLastRun(
@@ -234,7 +236,8 @@ def main() -> None:
         first_fetch_time = None
         if arg := demisto.params().get('first_fetch'):
             first_fetch_time_stamp = dateparser.parse(arg)
-            first_fetch_time = first_fetch_time_stamp.isoformat()
+            if first_fetch_time_stamp:
+                first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(
             base_url=ORCA_API_DNS_NAME,
@@ -266,7 +269,8 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             fetch_incidents(orca_client, max_fetch=max_fetch, fetch_informational=fetch_informational,
-                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type, first_fetch_time=first_fetch_time)
+                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type,
+                            first_fetch_time=first_fetch_time)
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
