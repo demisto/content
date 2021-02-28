@@ -5,7 +5,6 @@ vcShouldKeepItemLegacyProdMachine: false
 name: AsanaConnect
 display: AsanaConnect
 category: Case Management
-image: devtesting/asana:1.0.0.1614532323
 description: This Integration uses Asana PATs to connect to projects tied to the Asana
   account.
 detaileddescription: |-
@@ -46,6 +45,6 @@ script:
   - name: asana-get-all-projects
     arguments: []
     description: gets the list of projects on asana
-  dockerimage: demisto/asana:latest
+  dockerimage: devtesting/asana:1.0.0.1614532323
   runonce: false
   subtype: python3
