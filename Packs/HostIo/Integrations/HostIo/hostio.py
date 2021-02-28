@@ -130,17 +130,17 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
 def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     field = args.get('field', None)
     value = args.get('value', None)
-    limit = args.get('limit', 25)
+    limit: int = args.get('limit', 25)
 
     data = client.get_search_data(field, value, limit, 0)
 
     domains = data.get('domains', [])
-    total: int = data.get('total')
+    total: int = data.get('total', 0)
     read = tableToMarkdown(f'Domains associated with {field}: {value}', data)
 
     if total == 0:
         read = f'No Domains associated with {field}'
-    elif int(str(total)) > int(str(limit)):
+    elif total > limit:
         # set it as len domains since in trial its always 5
         pages = ceil((int(str(total)) - len(domains)) / len(domains))
         page = 1
