@@ -35,7 +35,7 @@ def test_poll_context_field_from_root(mocker):
     """
     mocker.patch.object(demisto, 'context', return_value=context)
     args = {
-        'field': 'foo'
+        'key': 'foo'
     }
 
     result = poll_field(args)
@@ -56,7 +56,7 @@ def test_poll_context_field_from_root_with_regex_failure(mocker):
     """
     mocker.patch.object(demisto, 'context', return_value=context)
     args = {
-        'field': 'foo',
+        'key': 'foo',
         'regex': '^a',
     }
 
@@ -66,7 +66,7 @@ def test_poll_context_field_from_root_with_regex_failure(mocker):
     assert result.outputs['exists'] is False
 
 
-def test_poll_field_from_root_without_regex_success(mocker):
+def test_poll_field_from_root_with_regex_success(mocker):
     """ Unit test
     Given
         - An incident with the context field named 'foo' with value 'bar' in root
@@ -78,7 +78,7 @@ def test_poll_field_from_root_without_regex_success(mocker):
     """
     mocker.patch.object(demisto, 'context', return_value=context)
     args = {
-        'field': 'foo',
+        'key': 'foo',
         'regex': '^b',
     }
 
@@ -99,7 +99,7 @@ def test_poll_missing_context_field_in_root(mocker):
     """
     mocker.patch.object(demisto, 'context', return_value=missing_context)
     args = {
-        'field': 'foo',
+        'key': 'foo',
     }
 
     result = poll_field(args)
