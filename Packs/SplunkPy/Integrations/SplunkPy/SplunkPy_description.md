@@ -21,15 +21,19 @@ where the **$IDENTITY_VALUE** is replaced with the **user** & **src_user** from 
 1. Configure the integration to fetch incidents (see integration documentation for details).
 2. `Enrichment Types`: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. `Fetch notable events ES query`: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro, use the new default query as an example.  
-4.`Enrichment Timeout (Minutes)`:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-5.`Number of Events Per Enrichment Type`: The maximal amount of events to fetch per enrichment type (default to 20).
+4. `Enrichment Timeout (Minutes)`:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+5. `Number of Events Per Enrichment Type`: The maximal amount of events to fetch per enrichment type (default to 20).
 
-##### NOTE: The enrichment mechanism uses a new default fetch query. 
+#### Existing users
+**NOTE: The enrichment mechanism uses a new default fetch query.** 
 This implies that new fetched events might have a slightly different structure than old events fetched so far.
-**Users who wish to enrich fetched notables and have already used the integration in the past:** 
+**Users who wish to enrich fetched notables and have already used the integration in the past:**
 1. Might have to slightly change existing logic for some of their custom entities configured for Splunk (Playbooks, Mappers, Pre-Processing Rules, Scripts, Classifiers, etc...) in order for them to work with the modified structure of the fetched events. 
 2. Will need to change the `Fetch notable events ES enrichment query` parameter to the following query: 
-```search \`notable\` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)```
+
+```search \`notable\` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | \`get_urgency\` | \`risk_correlation\` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)```
+
+Or any other fetch query that uses the \`notable\` Splunk macro.
 
 #### Troubelshooting enrichment status
 Each enriched incident **may** contain the following fields in the incident context:
