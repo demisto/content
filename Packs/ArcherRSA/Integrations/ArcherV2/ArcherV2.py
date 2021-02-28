@@ -124,7 +124,8 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10
+        numeric_operator='', max_results=10,
+        sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
@@ -180,6 +181,13 @@ def search_records_soap_request(
                         '    </DateComparisonFilterCondition >' + \
                         '</Conditions>' + \
                         '</Filter>'
+
+    request_body += '<SortFields>' + \
+                    '    <SortField>' + \
+                    f'        <Field>{field_id}</Field>' + \
+                    f'        <SortType>{sort_type}</SortType>' + \
+                    '    </SortField >' + \
+                    '</SortFields>'
 
     request_body += ' </Criteria></SearchReport>]]>' + \
                     '</searchOptions>' + \
@@ -434,6 +442,7 @@ class Client(BaseClient):
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
             numeric_operator='', date_operator='', max_results=10,
+            sort_type: str = 'Ascending'
     ):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
         if fields_to_display is None:
@@ -463,7 +472,8 @@ class Client(BaseClient):
             field_id=search_field_id, field_name=search_field_name,
             numeric_operator=numeric_operator,
             date_operator=date_operator, search_value=search_value,
-            max_results=max_results
+            max_results=max_results,
+            sort_type=sort_type,
         )
 
         if not res:
