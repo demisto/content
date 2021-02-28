@@ -808,6 +808,29 @@ script:
         case 'guardicore-get-incident-attachments':
             commandUrlKey = 'guardicore-get-incident';
             break;
+        case 'guardicore-get-incidents':
+            var is_date_exist = false
+            var regEx = /^\d{4}-\d{2}-\d{2}$/;
+
+            if (args["to_time"]){
+                is_date_exist = true
+                if (args["to_time"].match(regEx)){
+                    args["to_time"] = args["to_time"] + "T00:00:00Z"
+                } else { throw 'Argument \'to_time\' is not with the right format. Format should be: YYYY-MM-DD'}
+            }
+
+            if (args["from_time"]){
+                is_date_exist = true
+                if (args["from_time"].match(regEx)){
+                    args["from_time"] = args["from_time"] + "T00:00:00Z"
+                } else { throw 'Argument \'from_time\' is not with the right format. Format should be: YYYY-MM-DD'}
+            }
+
+            if (!is_date_exist){
+                throw 'Missing argument \'from_time\' or \'to_time\' '
+            }
+            commandUrlKey = command;
+            break
 
         default:
             commandUrlKey = command;
@@ -843,6 +866,10 @@ script:
       description: Filter by severity.
     - name: tag
       description: Filter by tag.
+    - name: from_time
+      description: From which date to fetch incidents, format is YYYY-MM-DD
+    - name: to_time
+      description: Until which date to fetch incidents, format is YYYY-MM-DD
     - name: incident_type
       description: Filter by type of incidents, e.g. Deception, Lateral Movement.
     - name: source
