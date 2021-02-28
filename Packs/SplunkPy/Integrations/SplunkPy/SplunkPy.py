@@ -80,8 +80,10 @@ class Enrichment:
 
     """
     FAILED = 'Enrichment failed'
+    EXCEEDED_TIMEOUT = 'Enrichment exceed the given timeout'
     IN_PROGRESS = 'Enrichment is in progress'
     SUCCESSFUL = 'Enrichment successfully handled'
+    HANDLED = (EXCEEDED_TIMEOUT, FAILED, SUCCESSFUL)
 
     def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None):
         self.type = enrichment_type
@@ -125,12 +127,14 @@ class Notable:
         data (dict): The notable data.
         id (str): The notable's id.
         enrichments (list): The list of all enrichments that needs to handle.
+        incident_created (bool): Whether an incident created or not.
 
     """
 
     def __init__(self, data, enrichments=None, notable_id=None):
         self.data = data
         self.enrichments = enrichments if enrichments else []
+        self.incident_created = False
         if notable_id:
             self.id = notable_id
         else:
@@ -163,10 +167,39 @@ class Notable:
         self.data = data
 
     def to_incident(self):
+        """ Gathers all data from all notable's enrichments and return an incident """
+        self.incident_created = True
         for e in self.enrichments:
             self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
         return notable_to_incident(self.data)
+
+    def submitted(self):
+        """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
+        return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+
+    def failed_to_submit(self):
+        """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
+        return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
+               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+
+    def handled(self):
+        """ Returns an indicator on whether all notable's enrichments were handled or not """
+        return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
+               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+
+    def get_submitted_enrichments(self):
+        """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
+        submitted_drilldown, submitted_asset, submitted_identity = False, False, False
+        for enrichment in self.enrichments:
+            if enrichment.type == DRILLDOWN_ENRICHMENT:
+                submitted_drilldown = True
+            elif enrichment.type == ASSET_ENRICHMENT:
+                submitted_asset = True
+            elif enrichment.type == IDENTITY_ENRICHMENT:
+                submitted_identity = True
+        return submitted_drilldown, submitted_asset, submitted_identity
 
     @classmethod
     def from_json(cls, notable_dict):
@@ -245,6 +278,42 @@ class Cache:
     @num_fetched_notables.setter
     def num_fetched_notables(self, num_fetched_notables):
         self.num_fetched_notables = num_fetched_notables
+
+    def organize(self):
+        """ This function is designated to handle unexpected behaviors in the enrichment mechanism.
+         E.g. Connection error, instance disabling, etc...
+         It re-organizes the cache object to the correct state of the mechanism when the exception was caught.
+         If there are notables that were handled but the mechanism didn't create an incident for them, it returns them.
+         This function is called in each "end" of execution of the enrichment mechanism.
+
+        Returns:
+            handled_not_created_incident (list): The list of all notables that have been handled but not created an
+             incident.
+
+        """
+        not_yet_submitted, submitted, handled_not_created_incident = [], [], []
+
+        for notable in self.not_yet_submitted_notables:
+            if notable.submitted():
+                if notable not in self.submitted_notables:
+                    submitted.append(notable)
+            elif notable.failed_to_submit():
+                if not notable.incident_created:
+                    handled_not_created_incident.append(notable)
+            else:
+                not_yet_submitted.append(notable)
+
+        for notable in self.submitted_notables:
+            if notable.handled():
+                if not notable.incident_created:
+                    handled_not_created_incident.append(notable)
+            else:
+                submitted.append(notable)
+
+        self.not_yet_submitted_notables = not_yet_submitted
+        self.submitted_notables = submitted
+
+        return handled_not_created_incident
 
     @classmethod
     def from_json(cls, cache_dict):
@@ -1382,7 +1451,7 @@ def submit_notables(service, incidents, num_enrichment_events, cache_object):
         else:
             incidents.append(notable.to_incident())
             failed_notables.append(notable)
-            demisto.info('Created incident from notable {} as enrichment submission failed'.format(notable.id))
+            demisto.info('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
 
     cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
 
@@ -1411,17 +1480,19 @@ def submit_notable(service, notable, num_enrichment_events):
         task_status (bool): True if any of the enrichment's succeeded to be submitted to Splunk, False otherwise
 
     """
-    if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS:
+    submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
+
+    if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
         job = drilldown_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(create_enrichment_from_job(DRILLDOWN_ENRICHMENT, job))
-    if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS:
+    if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(create_enrichment_from_job(ASSET_ENRICHMENT, job))
-    if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS:
+    if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_identity:
         job = identity_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(create_enrichment_from_job(IDENTITY_ENRICHMENT, job))
 
-    return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in notable.enrichments)
+    return notable.submitted()
 
 
 def create_enrichment_from_job(enrichment_type, job):
@@ -1756,7 +1827,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
                         enrichment.data.append(item)
                     enrichment.status = Enrichment.SUCCESSFUL
 
-        if all(enrichment.status in (Enrichment.SUCCESSFUL, Enrichment.FAILED) for enrichment in notable.enrichments):
+        if notable.handled():
             task_status = True
             demisto.info("Handled open enrichment for notable {}.".format(notable.id))
         else:
@@ -1780,14 +1851,17 @@ def is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
     Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
 
     """
-    enrichments = [enrichment for enrichment in notable.enrichments if enrichment.status == Enrichment.IN_PROGRESS]
-    if enrichments:
-        earliest_enrichment_datetime = min(
-            datetime.strptime(enrichment.creation_time, JOB_CREATION_TIME_FORMAT)
-            for enrichment in enrichments
-        )
-        return datetime.utcnow() - earliest_enrichment_datetime > timedelta(minutes=enrichment_timeout)
-    return False
+    now = datetime.utcnow()
+    exceeding_timeout = False
+
+    for enrichment in notable.enrichments:
+        if enrichment.status == Enrichment.IN_PROGRESS:
+            creation_time_datetime = datetime.strptime(enrichment.creation_time, JOB_CREATION_TIME_FORMAT)
+            if now - creation_time_datetime > timedelta(minutes=enrichment_timeout):
+                exceeding_timeout = True
+                enrichment.status = Enrichment.EXCEEDED_TIMEOUT
+
+    return exceeding_timeout
 
 
 def reset_enriching_fetch_mechanism():
@@ -1849,7 +1923,9 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
 
     finally:
         store_incidents_for_mapping(incidents, integration_context)
+        handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context(integration_context)
+        incidents += [notable.to_incident() for notable in handled_but_not_created_incidents]
         demisto.incidents(incidents)
 
 
