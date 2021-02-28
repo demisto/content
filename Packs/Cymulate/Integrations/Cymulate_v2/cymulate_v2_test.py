@@ -319,7 +319,7 @@ def test_format_exfiltration_incidents():
     events = util_load_json('list_exfiltration_incidents.json')
     incidents, offset, timestamp, _ = format_incidents(events.get('data'), 0, 1604079530000, 'exfiltration')
     assert offset == 12
-    assert timestamp == 1614176290000
+    assert timestamp == 1614183490000
     assert incidents[0] == {'name': 'Cymulate - exfiltration - Google cloud configuration-source code',
                             'occurred': '2021-02-24T16:16:57Z',
                             'rawJSON': '{"cymulateStatus": "Exfiltrated", '
@@ -335,7 +335,7 @@ def test_format_endpoint_security_incidents():
     events = util_load_json('list_endpoint_security_incidents.json')
     incidents, offset, timestamp, _ = format_incidents(events.get('data'), 0, 1604079530000, 'endpoint-security')
     assert offset == 13
-    assert timestamp == 1613880730000
+    assert timestamp == 1613887930000
     assert incidents[0] == {'name': 'Cymulate - endpoint-security - DLL Inject - SMB Worm SCM',
                             'occurred': '2021-02-21T06:12:10Z',
                             'severity': 0,
