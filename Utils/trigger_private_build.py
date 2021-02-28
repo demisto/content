@@ -79,7 +79,6 @@ def main():
     branch_name = branch_name_reg.group(1)
 
     files = get_modified_files(branch_name)
-    files = ['Tests/scripts/validate_premium_packs.sh']
 
     if is_infrastructure_change(files):
         # get the workflows ids before triggering tye build
