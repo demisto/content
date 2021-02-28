@@ -1,0 +1,110 @@
+[
+    {
+        "id": "2106",
+        "reference": "CAS-4-20210125-1",
+        "severity": "Medium",
+        "title": "Splunk Alert ",
+        "false_positive": "No",
+        "status": "Active",
+        "tlp": "RED",
+        "acknowledged": "No",
+        "notes": "This is a test notes",
+        "description": "test description",
+        "assignee": "SOC Coordinator",
+        "owner": "SOAR",
+        "role": "Analyst",
+        "type": "Case",
+        "category": "SOC Monitoring",
+        "sub_category": "DLP Monitoring",
+        "last_update": "2021-02-18T01:13:58Z",
+        "last_update_sec": "1613600038",
+        "created": "2021-01-27T11:16:11Z",
+        "created_sec": "1611735371",
+        "assets": [
+            {
+                "Type": "Host Name",
+                "Value": "WINSRV12"
+            },
+            {
+                "Type": "MAC Address",
+                "Value": "00"
+            }
+        ],
+        "iocs": [
+            {
+                "Type": "Domain",
+                "Value": "appsync-api.eu-west-1.avsvmcloud.com"
+            }
+        ],
+        "custom_attributes": [
+            {
+                "Type": "Text",
+                "Title": "Splunk Alert ID",
+                "Value": "125543280"
+            },
+            {
+                "Type": "Text",
+                "Title": "Splunk Rule",
+                "Value": "Network Scan"
+            }
+        ],
+        "tags": [
+            "SOAR",
+            "Splunk SIEM"
+        ]
+    },
+    {
+        "id": "2107",
+        "reference": "CAS-4-20210125-2",
+        "severity": "High",
+        "title": "Splunk Alert ",
+        "false_positive": "Yes",
+        "status": "Closed",
+        "tlp": "RED",
+        "acknowledged": "No",
+        "notes": "This is a test notes",
+        "description": "test description",
+        "assignee": "SOC Coordinator",
+        "owner": "SOAR",
+        "role": "Analyst",
+        "type": "Case",
+        "category": "SOC Monitoring",
+        "sub_category": "DLP Monitoring",
+        "last_update": "2021-02-18T01:13:41Z",
+        "last_update_sec": "1613600021",
+        "created": "2021-01-27T11:16:11Z",
+        "created_sec": "1611735371",
+        "assets": [
+            {
+                "Type": "Host Name",
+                "Value": "WINSRV12"
+            },
+            {
+                "Type": "MAC Address",
+                "Value": "00"
+            }
+        ],
+        "iocs": [
+            {
+                "Type": "Domain",
+                "Value": "appsync-api.eu-west-1.avsvmcloud.com"
+            }
+        ],
+        "custom_attributes": [
+            {
+                "Type": "Text",
+                "Title": "Splunk Alert ID",
+                "Value": "125543281"
+            },
+            {
+                "Type": "Text",
+                "Title": "Splunk Rule",
+                "Value": "Network Scan"
+            }
+        ],
+        "tags": [
+            "SOAR",
+            "Splunk SIEM"
+        ]
+    }
+]

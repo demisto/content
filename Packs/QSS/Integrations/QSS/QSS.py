@@ -6,7 +6,7 @@ import json
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, Tuple, List, Optional, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -25,8 +25,7 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 class Client(BaseClient):
 
     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
-                      alert_type: Optional[str], max_results: Optional[int],
-                      start_time: Optional[int]) -> List[Dict[str, Any]]:
+                      alert_type: Optional[str], max_results: Optional[int]) -> List[Dict[str, Any]]:
 
         request_params: Dict[str, Any] = {}
 
@@ -65,8 +64,6 @@ class Client(BaseClient):
 
 
 def convert_to_demisto_severity(severity: str) -> int:
-
-    
     return {
         'Low': 1,  # low severity
         'Medium': 2,  # medium severity
@@ -98,18 +95,13 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
         return None
 
     if isinstance(arg, str) and arg.isdigit():
-        
         return int(arg)
     if isinstance(arg, str):
-        
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if date is None:
-           
             raise ValueError(f'Invalid date: {arg_name}')
-
         return int(date.timestamp())
     if isinstance(arg, (int, float)):
-         
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
@@ -118,9 +110,8 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 
 
 def test_module(client: Client, first_fetch_time: int) -> str:
-
     try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None, severity=None)
+        client.search_alerts(max_results=1, alert_status=None, alert_type=None, severity=None)
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -134,47 +125,32 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     min_severity: str, alert_type: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
-    
     last_fetch = last_run.get('last_fetch', None)
 
-   
     if last_fetch is None:
-
-       
         last_fetch = first_fetch_time
-
     else:
-
-       
         last_fetch = int(last_fetch)
 
-     
-
     latest_created_time = cast(int, last_fetch)
-
-     
     incidents: List[Dict[str, Any]] = []
- 
-
     alerts = client.search_alerts(
         alert_type=alert_type,
         alert_status=alert_status,
         max_results=max_results,
-        start_time=last_fetch,
         severity=''
     )
 
     demisto.debug("Alerts Fetched")
 
     for alert in alerts:
-        
+
         incident_created_time = int(alert.get('created_sec', '0'))
 
-         
         if last_fetch:
             if incident_created_time <= last_fetch:
                 continue
- 
+
         incident_name = 'SOC Case ' + alert['reference']
 
         demisto.debug("JSON debug alert")
@@ -190,11 +166,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
         incidents.append(incident)
 
-        
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
-    
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 
@@ -209,31 +183,24 @@ def main() -> None:
     :rtype:
     """
 
-     
     base_url = urljoin(demisto.params()['url'], '')
 
-     
     verify_certificate = not demisto.params().get('insecure', False)
 
-    
     first_fetch_time = arg_to_timestamp(
         arg=demisto.params().get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
-     
+
     assert isinstance(first_fetch_time, int)
 
-     
     proxy = demisto.params().get('proxy', False)
-
-     
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        headers = {
-            # 'Authorization': f'Bearer {api_key}'
+        headers: Dict[str, Any] = {
+            # No need for headers in the current version of integration
         }
         client = Client(
             base_url=base_url,

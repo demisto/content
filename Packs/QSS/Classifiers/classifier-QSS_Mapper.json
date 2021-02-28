@@ -1,7 +1,7 @@
 {
     "description": "Maps incoming QSS SOC Monitoring cases fields.",
     "feed": false,
-    "id": "3958c54b-d499-4e01-8a2f-fa99977c98f1",
+    "id": "QSS Mapper",
     "mapping": {
         "QSS SOC Monitoring": {
             "dontMapEventToLabels": true,

@@ -1,5 +1,3 @@
- 
-
 import json
 import io
 
@@ -9,28 +7,18 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
- 
 def test_fetch_incidents(requests_mock):
-    """Tests the fetch-incidents command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, fetch_incidents
+    from QSS import Client, fetch_incidents
 
-    mock_response = util_load_json('test_data/search_alerts.json')
+    mock_response = util_load_json('test_data/soc_monitoring_cases.json')
     requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
-        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1581944401', json=mock_response['alerts'])
+        'https://test.com/api/v1/get_alerts?apikey=5Xcaadf7b17e4c5e679d2a851a91a2&duration=48', json=mock_response['alerts'])
 
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
+        headers={}
     )
 
     last_run = {
@@ -49,15 +37,15 @@ def test_fetch_incidents(requests_mock):
 
     assert new_incidents == [
         {
-            'name': 'Hello World Alert 100',
-            'occurred': '2020-02-17T23:34:23.000Z',
+            'name': 'SOC Case CAS-4-20210125-1',
+            'occurred': '2021-01-27T11:16:11Z',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical, this is XSOAR severity (already converted)
+            'severity': 2,  # medium, this is XSOAR severity (already converted)
         },
         {
-            'name': 'Hello World Alert 200',
-            'occurred': '2020-02-17T23:34:23.000Z',
+            'name': 'SOC Case CAS-4-20210125-2',
+            'occurred': '2021-01-27T11:16:11Z',
             'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
+            'severity': 3,  # high, this is XSOAR severity (already converted)
         }
     ]

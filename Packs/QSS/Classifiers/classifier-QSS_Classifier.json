@@ -1,7 +1,7 @@
 {
     "description": "Classifies QSS SOC Monitoring cases based on category classification.",
     "feed": false,
-    "id": "dec05662-910b-4eea-8a01-7b42e0762348",
+    "id": "QSS Classifier",
     "keyTypeMap": {
         "SOC Monitoring": "QSS SOC Monitoring"
     },

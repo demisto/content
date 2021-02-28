@@ -707,7 +707,7 @@
         ]
     },
     "group": "incident",
-    "id": "fd65b983-2cc4-4c91-8bed-e02cbd665614",
+    "id": "QSS SOC Monitoring Layout",
     "mobile": {
         "sections": [
             {
@@ -1132,5 +1132,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "This is a customized layout to display SOC Management Cases with look and feel as SCMP"
 }
