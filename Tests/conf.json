@@ -2397,7 +2397,7 @@
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
-            "playbookID": "PAN-OS DAGd Configuration Test",
+            "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "timeout": 1500
