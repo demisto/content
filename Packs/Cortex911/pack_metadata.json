@@ -15,7 +15,7 @@
         "kondor117"
     ],
     "dependencies": {
-        "CortexXDR: {
+        "CortexXDR": {
             "mandatory": true,
             "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
         },
