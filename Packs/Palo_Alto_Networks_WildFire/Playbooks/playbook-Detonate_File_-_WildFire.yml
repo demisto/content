@@ -278,7 +278,7 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: match
                     left:
