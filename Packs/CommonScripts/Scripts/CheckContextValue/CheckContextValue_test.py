@@ -33,7 +33,7 @@ def test_poll_context_field_from_root(mocker):
     Then
         Validate the script finds the field
     """
-    mocker.patch.object(demisto, 'context', return_value=[context])
+    mocker.patch.object(demisto, 'context', return_value=context)
     args = {
         'field': 'foo'
     }
@@ -54,7 +54,7 @@ def test_poll_context_field_from_root_with_regex_failure(mocker):
     Then
         Validate the script returns a false value
     """
-    mocker.patch.object(demisto, 'context', return_value=[context])
+    mocker.patch.object(demisto, 'context', return_value=context)
     args = {
         'field': 'foo',
         'regex': '^a',
@@ -76,7 +76,7 @@ def test_poll_field_from_root_without_regex_success(mocker):
     Then
         Validate the script finds the context field
     """
-    mocker.patch.object(demisto, 'context', return_value=[context])
+    mocker.patch.object(demisto, 'context', return_value=context)
     args = {
         'field': 'foo',
         'regex': '^b',
@@ -97,7 +97,7 @@ def test_poll_missing_context_field_in_root(mocker):
     Then
         Validate the script returns a false value
     """
-    mocker.patch.object(demisto, 'context', return_value=[missing_context])
+    mocker.patch.object(demisto, 'context', return_value=missing_context)
     args = {
         'field': 'foo',
     }
