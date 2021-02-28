@@ -9,8 +9,8 @@ description: |-
      - Discover IOCs of associated activity related to the infection. 
      - Generate an indicator list to block indicators with SUNBURST tags.
   - Hunt for the SUNBURST backdoor
-     - Query firewall logs to detect network activity
-     - Search endpoint logs for Sunburst hashes to detect presence on hosts
+     - Query firewall logs to detect network activity.
+     - Search endpoint logs for Sunburst hashes. to detect presence on hosts.
   If compromised hosts are found:
   - Notify security team to review and trigger remediation response actions. 
   - Run sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
@@ -50,7 +50,7 @@ tasks:
     task:
       id: b711f4eb-e194-419b-8182-97c7be3d31e4
       version: -1
-      name: Collect and retrieve indicators to hunt
+      name: Collect and Retrieve Indicators to Hunt
       type: title
       iscommand: false
       brand: ""
@@ -299,7 +299,7 @@ tasks:
     task:
       id: 1710d125-1c29-49e8-8081-42eddeae672f
       version: -1
-      name: Mitigations
+      name: Mitigation
       description: commands.local.cmd.close.inv
       type: title
       iscommand: false
@@ -422,7 +422,7 @@ tasks:
     task:
       id: 371fd26b-01fd-4fca-894f-dfee2a3d8d56
       version: -1
-      name: Hunt SolarStorm and SunBurst in network activity
+      name: Hunt SolarStorm and SunBurst in Network Activity
       type: title
       iscommand: false
       brand: ""
@@ -452,7 +452,7 @@ tasks:
     task:
       id: a089a743-ff97-454c-8b1a-b6e648490166
       version: -1
-      name: Hunt backdoor SolarWinds and SunBurst in endpoints
+      name: Hunt Backdoor SolarWinds and SunBurst in Endpoints
       type: title
       iscommand: false
       brand: ""
@@ -708,7 +708,7 @@ tasks:
     task:
       id: adbcb588-358c-4a31-8aaa-78a0a2c0150e
       version: -1
-      name: Hunt IOC's
+      name: Hunt IOCs
       type: title
       iscommand: false
       brand: ""
@@ -1056,7 +1056,7 @@ tasks:
     task:
       id: a7010738-03eb-4ce8-822b-14a3206e2c90
       version: -1
-      name: Isolate compromised hosts
+      name: Isolate Compromised Hosts
       type: title
       iscommand: false
       brand: ""
@@ -1552,7 +1552,7 @@ tasks:
     task:
       id: 75a872a3-340d-4fb4-875a-a4ef369e4f34
       version: -1
-      name: Tag SolarStorm and SUNBURST indicators
+      name: Tag SolarStorm and SUNBURST Indicators
       type: title
       iscommand: false
       brand: ""
@@ -1580,7 +1580,7 @@ tasks:
     task:
       id: e007519b-6d8a-46c0-8ead-bfb3c99b17b1
       version: -1
-      name: Collect IOCs from UNIT42 git
+      name: Collect IOCs from UNIT42 GIT
       description: Sends HTTP request. Returns the response as a JSON file.
       scriptName: http
       type: regular
@@ -1624,7 +1624,7 @@ tasks:
     task:
       id: 1f8cb908-530f-4f5c-819e-b4961bf6550a
       version: -1
-      name: Indicators from GIT sources
+      name: Indicators from GIT Sources
       type: title
       iscommand: false
       brand: ""
@@ -1654,7 +1654,7 @@ tasks:
     task:
       id: cd4b7159-c42b-4b2a-8780-97393eafdb9a
       version: -1
-      name: Indicators from a STIX file
+      name: Indicators from a STIX File
       type: title
       iscommand: false
       brand: ""
@@ -1682,7 +1682,7 @@ tasks:
     task:
       id: b6e0ae1f-43ab-49f0-84c3-e06cfef87c8a
       version: -1
-      name: CVE indicators
+      name: CVE Indicators
       type: title
       iscommand: false
       brand: ""
@@ -1712,7 +1712,7 @@ tasks:
       version: -1
       name: Create a STIX file
       description: |
-        Will create a file (using the given data input or entry ID) and upload it to the current investigation in the War Room.
+        Create a file (using the given data input or entry ID) and upload it to the current investigation in the War Room.
       scriptName: FileCreateAndUpload
       type: regular
       iscommand: false
@@ -2284,7 +2284,7 @@ tasks:
       version: -1
       name: Change the password for SolarWinds user
       description: |
-        Change the password for the SolarWinds user,
+        Change the password for the SolarWinds user.
       type: regular
       iscommand: false
       brand: ""
