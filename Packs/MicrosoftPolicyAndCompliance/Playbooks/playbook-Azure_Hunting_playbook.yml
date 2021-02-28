@@ -1,7 +1,7 @@
 id: Azure Hunting playbook
 version: -1
 name: Azure Hunting playbook
-description: 'This playbook helps you collect and investigate suspicious security
+description: 'This playbook enables you to collect and investigate suspicious security
   events from Azure AD environment. '
 starttaskid: "0"
 tasks:
@@ -65,7 +65,7 @@ tasks:
       id: 9b9c34a8-15c4-46c8-83b9-5a15e108b370
       version: -1
       name: Search for Azure AD service account created or modified
-      description: "Hunt for Azure AD service account created or modified.\nXDR example\
+      description: "Hunt for a Azure AD new or modified service account.\nXDR example\
         \ query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter\
         \ activityDisplayName IN (\"Add service principal credentials\", \"Add service\
         \ principal\")\nAND result = \"success\" // find cases where someone adds\
@@ -141,9 +141,9 @@ tasks:
     task:
       id: dd13bebb-ebc9-4d62-85ef-38574f7aaac7
       version: -1
-      name: Search for Azure AD custom unverified domain was added
+      name: Search for an added Azure AD custom unverified domain
       description: |-
-        Hunt for Azure AD custom unverified domain was added.
+        Hunt for an added Azure AD custom unverified domain.
         XDR example query:
         preset = msft_azure_ad_audit // go over azure ad audit logs
         | filter activityDisplayName = "Add unverified domain" AND result = "success"  // find cases where someone added a custom domain to the azure ad env
@@ -206,9 +206,9 @@ tasks:
     task:
       id: f43f3472-e999-4839-8c7d-b55bdc08f0f7
       version: -1
-      name: Search for domain federation settings modified
+      name: Search for modified domain federation settings
       description: |-
-        Hunt for domain federation settings modified.
+        Hunt for modified domain federation settings.
         XDR example query:
         preset = msft_azure_ad_audit // go over azure ad audit logs
         | filter activityDisplayName = "Set federation settings on domain"
@@ -238,7 +238,7 @@ tasks:
     task:
       id: 1d40b042-db29-4326-8c51-16d499af1680
       version: -1
-      name: Search mail permissions were added to a service principal
+      name: Search mail permissions that were added to a service principal
       description: |-
         Hunt for cases where mail permissions were added to a service principal.
         XDR example query:
@@ -247,7 +247,7 @@ tasks:
         principal", "Add delegated permission grant", "Add application" ) and
                 modifiedPropertyNewValue ~= "(Mail.Read|Mail.ReadWrite)" and
                 modifiedPropertyOldValue not contains "Mail.Read" // find
-        cases where mail read was added as a permission to another account
+        cases where mail read was added as a permission to another account.
       type: regular
       iscommand: false
       brand: ""
@@ -275,7 +275,7 @@ tasks:
       id: 32bb1304-61c7-4d72-8535-c086a3a10bed
       version: -1
       name: Is Microsoft Policy And Compliance enabled?
-      description: Checks if Microsoft Policy And Compliance enabled
+      description: Checks if Microsoft Policy And Compliance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -544,7 +544,7 @@ tasks:
     scriptarguments:
       end_date: {}
       free_text:
-        simple: Disable Desktop Sso for a specific domain
+        simple: Disable Desktop SSO for a specific domain
       ip_addresses: {}
       operations: {}
       record_type:
@@ -617,7 +617,7 @@ tasks:
     task:
       id: 841b04e8-ecab-460f-898d-54710a044b8a
       version: -1
-      name: Search mail permissions were added to a service principal
+      name: Search whether mail permissions were added to a service principal
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
         for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
@@ -634,8 +634,8 @@ tasks:
     scriptarguments:
       end_date: {}
       free_text:
-        simple: Add app role assignment to service principal, Add delegated permission
-          grant, Add application
+        simple: Add app role assignment to service principal,Add delegated permission
+          grant,Add application
       ip_addresses: {}
       operations: {}
       record_type:
@@ -663,7 +663,7 @@ tasks:
     task:
       id: 8e96920a-4cd6-490f-8974-8d57e7ec0762
       version: -1
-      name: Set mail permissions were added to a service principal
+      name: Set added mail permissions to a service principal
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -726,7 +726,7 @@ tasks:
       id: 5ce1ba8d-8292-476c-8a58-70f3248c1296
       version: -1
       name: Found mail permissions were added to a service principal?
-      description: Cehcks for cases where mail permissions were added to a service principal.
+      description: Checks for cases where mail permissions were added to a service principal.
       type: condition
       iscommand: false
       brand: ""
