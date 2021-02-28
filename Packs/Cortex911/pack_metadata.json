@@ -13,5 +13,35 @@
     "keywords": [],
     "githubUser": [
         "kondor117"
-    ]
+    ],
+    "dependencies": {
+        "CortexXDR: {
+            "mandatory": true,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+        },
+        "CortexDataLake": {
+            "mandatory": true,
+            "display_name": "Cortex Data Lake"
+        },
+        "AutoFocus": {
+            "mandatory": true,
+            "display_name": "AutoFocus"
+        },
+        "TIM_SIEM": {
+            "mandatory": true,
+            "display_name": "TIM - SIEM Integration"
+        },
+        "TIM_Processing": {
+            "mandatory": true,
+            "display_name": "TIM - Indicator Auto-Processing"
+        },
+        "ExpanseV2": {
+            "mandatory": true,
+            "display_name": "Expanse v2"
+        },
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    }
 }
