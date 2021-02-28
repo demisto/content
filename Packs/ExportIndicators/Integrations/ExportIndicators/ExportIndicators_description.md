@@ -34,7 +34,7 @@ Use the following arguments in the URL to change the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip
 6. **sp** - Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp 
-7. **di** -  Only with `panosurl` format. If set will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written.
+7. **di** - Only with `panosurl` format. If set will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&di
 8. **cd** - Only with `proxysg` format. The default category for the exported indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category
@@ -47,6 +47,10 @@ Use the following arguments in the URL to change the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
 11. **tx** - Whether to output `csv` or `xsoar-csv` formats as textual web pages.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&tx
+12. **sf** - The field by which to sort the indicators by. Only applicable with the `sort_order` argument.
+ * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&sf=last_seen&so=asc
+13. **so** - The direction by which to order the indicators. The options are `asc` or `desc`. Only applicable with the `sort_field` argument.
+ * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=xsoar-csv&sf=last_seen&so=desc
 
 ### When running in On-Demand mode
 Please make sure to to run !eis-update for the first time to initialize the export process.
