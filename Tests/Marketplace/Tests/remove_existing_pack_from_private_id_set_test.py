@@ -73,6 +73,7 @@ def test_remove_old_pack_from_private_id_set():
         assert name not in pack_names_list
 
     private_id_set = remove_old_pack_from_private_id_set(PRIVATE_ID_SET, '')
+    pack_names_list = list(private_id_set.get('Packs').keys())
 
     assert ACTIVEMQ_INTEGRATION in private_id_set['integrations']
 
