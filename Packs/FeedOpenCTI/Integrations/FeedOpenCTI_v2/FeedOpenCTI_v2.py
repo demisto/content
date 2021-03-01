@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 # Disable info logging from the api
 logging.getLogger().setLevel(logging.ERROR)
 
-XSOHR_TYPES_TO_OPENCTI = {
+XSOAR_TYPES_TO_OPENCTI = {
     'account': "User-Account",
     'domain': "Domain-Name",
     'email': "Email-Addr",
@@ -79,7 +79,7 @@ def build_indicator_list(indicator_list: List[str]) -> List[str]:
         result = ['User-Account', 'Domain-Name', 'Email-Addr', 'StixFile', 'X-OpenCTI-Hostname', 'IPv4-Addr',
                   'IPv6-Addr', 'Windows-Registry-Key', 'Url']
     else:
-        result = [XSOHR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator) for indicator in indicator_list]
+        result = [XSOAR_TYPES_TO_OPENCTI.get(indicator.lower(), indicator) for indicator in indicator_list]
     return result
 
 
@@ -270,7 +270,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     except Exception:
         raise DemistoException("Data argument type should be json")
 
-    data['type'] = XSOHR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
+    data['type'] = XSOAR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type)  # type: ignore
     simple_observable_key = None
     simple_observable_value = None
     if 'file' in indicator_type.lower():  # type: ignore
