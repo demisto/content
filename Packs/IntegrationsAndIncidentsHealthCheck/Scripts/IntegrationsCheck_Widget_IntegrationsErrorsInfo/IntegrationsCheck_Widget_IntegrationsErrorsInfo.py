@@ -12,7 +12,7 @@ def main():
         try:
             list_json = json.loads(list_content)
         except:
-            list_json = None  # list_json = {} return enpty chart and the None return chart with N/As
+            list_json = None  # list_json = {} return empty chart and the None return chart with N/As
     else:
         list_json = None
 
