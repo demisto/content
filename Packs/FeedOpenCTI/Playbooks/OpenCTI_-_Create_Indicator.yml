@@ -433,5 +433,5 @@ outputs:
   description: New indicator data.
 fromversion: 5.5.0
 tests:
-- OpenCTI Feed v2 Test
+- OpenCTI Feed v4 Test
 description: Create indicator at OpenCTI.

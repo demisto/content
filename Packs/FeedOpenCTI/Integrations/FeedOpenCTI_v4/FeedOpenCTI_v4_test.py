@@ -1,6 +1,6 @@
 import pytest
 
-from FeedOpenCTI_v2 import *
+from FeedOpenCTI_v4 import *
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults
 from pycti import StixCyberObservable, MarkingDefinition, Label, ExternalReference

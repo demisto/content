@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: OpenCTI Feed v2
+  id: OpenCTI Feed v4
   version: -1
 configuration:
 - display: Base URL
@@ -122,8 +122,8 @@ configuration:
   required: false
   type: 8
 description: Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances.
-display: OpenCTI Feed v2
-name: OpenCTI Feed v2
+display: OpenCTI Feed v4
+name: OpenCTI Feed v4
 script:
   commands:
   - arguments:
@@ -552,5 +552,5 @@ script:
   subtype: python3
   type: python
 tests:
-- OpenCTI Feed v2 Test
+- OpenCTI Feed v4 Test
 fromversion: 5.5.0
