@@ -3308,8 +3308,6 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
-        "PAN-OS DAG Configuration Test": "Issue 19205",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
         "pyEWS_Test": "Issue 27942",
