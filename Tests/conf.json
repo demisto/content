@@ -3443,7 +3443,6 @@
         "XsoarPowershellTesting": "Integration which not use network.",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
-        "AWS - Security Hub": "Issue 24926",
         "SecurityAndCompliance": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
