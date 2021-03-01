@@ -39,7 +39,7 @@ def flatten(my_list: List[List]) -> List:
 
 class Tfidf(BaseEstimator, TransformerMixin):
     """
-    TFIDF class for indicators
+    TFIDF class for indicator
     """
 
     def __init__(self, feature_names, tfidf_params, normalize_function, x):
