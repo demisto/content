@@ -11,8 +11,8 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | identityiq_url | IdentityIQ Server URL \(e.g. https://identityiq-server.com/identityiq) | True |
-    | client_id | Client Id \(for OAuth 2.0\) | False |
-    | client_secret | Client Secret \(for OAuth 2.0\) | False |
+    | client_id | Client Id \(for OAuth 2.0\) | True |
+    | client_secret | Client Secret \(for OAuth 2.0\) | True |
     | isFetch | Fetch incidents | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
