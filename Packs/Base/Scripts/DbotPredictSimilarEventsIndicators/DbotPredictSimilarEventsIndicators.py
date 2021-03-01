@@ -232,7 +232,6 @@ def enriched_incidents(df, fields_incident_to_display):
     if is_error(res):
         return_error(res)
     if not json.loads(res[0]['Contents']):
-        demisto.results(df)
         return_error("No additional information found for those incidents")
     else:
         incidents = json.loads(res[0]['Contents'])

@@ -11,25 +11,15 @@ args:
   secret: false
 - default: false
   defaultValue: '150'
-  description: 'Number to filter out indicators that appear in many incidents '
+  description: 'Help to filter out indicators that appear in many incidents '
   isArray: false
   name: maxIncidentsInIndicatorsForWhiteList
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'True'
-  description: Aggregate duplicate incidents within diffrerent dates
-  isArray: false
-  name: aggreagateIncidents
-  predefined:
-    - 'True'
-    - 'False'
-  required: false
-  secret: false
 - default: false
-  defaultValue: '0'
-  description: 'Minimun number of indicators '
+  defaultValue: '1'
+  description: Minimun number of indicators required related to the incident before
+    running the model
   isArray: false
   name: minNumberOfIndicators
   required: false
@@ -42,8 +32,8 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: File,  URL, IP, Domain, IPv6
-  description: Type of indicators we want to take into account
+  description: Type of indicators we want to take into account  - If empty use all
+    indicators types
   isArray: false
   name: indicatorsTypes
   required: false
@@ -78,13 +68,14 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: status, type, created, name
+  defaultValue: type, created, name
   description: Fields to add in the table of incident
   isArray: false
   name: fieldsIncidentToDisplay
   required: false
   secret: false
-comment: Find similar incidents based on indicators similarity
+comment: Find similar incidents based on indicators similarity. Indicators contribution
+  to the final score is based on their scarity
 commonfields:
   id: DBotPredictSimilarEventsBasedOnIndicators
   version: -1
@@ -98,6 +89,6 @@ type: python
 dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: false
-fromversion: 5.0.0
 tests:
   - No tests (auto formatted)
+fromversion: 5.0.0
