@@ -330,24 +330,19 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
     """
 
     for service in client.services:
-
         client.build_iterator(service, indicator_type)
         feed_batches = client.get_batches_from_file(limit)
-
         for feed_dicts in feed_batches:
-
             indicators = []
             for item in feed_dicts:
                 raw_json = dict(item)
                 raw_json['value'] = value = item.get('Name')
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
-
                 risk = item.get('Risk')
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
-
                 lower_case_evidence_details_keys = []
                 evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
                 if evidence_details:
@@ -355,11 +350,9 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                     for rule in evidence_details:
                         rule = dict((key.lower(), value) for key, value in rule.items())
                         lower_case_evidence_details_keys.append(rule)
-
                 risk_string = item.get('RiskString')
                 if isinstance(risk_string, str):
                     raw_json['RiskString'] = format_risk_string(risk_string)
-
                 indicator_obj = {
                     'value': value,
                     'type': raw_json['type'],
@@ -370,7 +363,6 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                     },
                     'score': score
                 }
-
                 if client.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
@@ -394,7 +386,7 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     for indicators in fetch_indicators_command(client, indicator_type, limit):
         indicators_list.extend(indicators)
 
-        if limit and len(indicators_list) == limit:
+        if limit and len(indicators_list) >= limit:
             break
 
     entry_result = camelize(indicators_list)
