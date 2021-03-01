@@ -9,7 +9,10 @@ def main():
     list_table = []
 
     if list_content:
-        list_json = json.loads(list_content)
+        try:
+            list_json = json.loads(list_content)
+        except:
+            list_json = None  # list_json = {} return enpty chart and the None return chart with N/As
     else:
         list_json = None
 
