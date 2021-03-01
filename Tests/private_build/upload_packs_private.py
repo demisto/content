@@ -76,6 +76,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :return: List of dicts containing pack metadata information.
     """
     try:
+        logging.info(f'searching metadata files in: {private_index_path}')
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
         logging.exception(f'Could not find metadata files in {private_index_path}.')
@@ -86,18 +87,23 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_packs = []
     for metadata_file_path in metadata_files:
+        logging.info(f'scanning metadata file: {metadata_file_path}')
         try:
-            with open(metadata_file_path, "r") as metadata_file:
+            with open(metadata_file_path, 'r') as metadata_file:
                 metadata = json.load(metadata_file)
+
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
+
             if is_changed_private_pack:  # Should take metadata from artifacts.
-                with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
-                          "r") as metadata_file:
+                new_metadata_file_path = os.path.join(extract_destination_path, pack_id, "pack_metadata.json")
+                logging.info(f'reloading metadata using {new_metadata_file_path}')
+                with open(new_metadata_file_path, 'r') as metadata_file:
                     metadata = json.load(metadata_file)
+
             if metadata:
                 private_packs.append({
-                    'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
+                    'id': pack_id,
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
@@ -413,7 +419,7 @@ def main():
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
 
-    print(f"Packs artifact path is: {packs_artifacts_path}")
+    logging.info(f"Packs artifact path is: {packs_artifacts_path}")
 
     prepare_test_directories(packs_artifacts_path)
 
