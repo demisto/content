@@ -7,7 +7,6 @@ import copy
 from collections import defaultdict
 from typing import Callable
 
-import demistomock as demisto
 from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
@@ -30,6 +29,8 @@ class Client(BaseClient):
             proxy=params.get('proxy'),
             headers={'x-apikey': params['APIKey']}
         )
+
+    # region Reputation calls
 
     def ip(self, ip: str) -> dict:
         """
@@ -71,28 +72,9 @@ class Client(BaseClient):
             f'domains/{domain}'
         )
 
-    def file_sandbox_report(self, file_hash: dict, limit: int) -> dict:
-        """
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#files-relationships
-        """
-        return self._http_request(
-            'GET',
-            f'files/{file_hash}/behaviours',
-            params={'limit': limit}
-        )
+    # endregion
 
-    def passive_dns_data(self, ip: str, limit: int) -> dict:
-        """
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
-        """
-        return self._http_request(
-            'GET',
-            f'ip_addresses/{ip}/resolutions',
-            params={'limit': limit}
-        )
-
+    # region Comments call
     def get_ip_comments(self, ip: str, limit: int) -> dict:
         """
         See Also:
@@ -192,6 +174,9 @@ class Client(BaseClient):
             json_data={"type": "comment", "attributes": {"text": comment}}
         )
 
+    # endregion
+
+    # region Scan calls
     def file_rescan(self, file_hash: str) -> dict:
         """
         See Also:
@@ -240,6 +225,30 @@ class Client(BaseClient):
             'POST',
             'urls',
             data={'url': url}
+        )
+
+    # endregion
+
+    def file_sandbox_report(self, file_hash: dict, limit: int) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#files-relationships
+        """
+        return self._http_request(
+            'GET',
+            f'files/{file_hash}/behaviours',
+            params={'limit': limit}
+        )
+
+    def passive_dns_data(self, ip: str, limit: int) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#ip-relationships
+        """
+        return self._http_request(
+            'GET',
+            f'ip_addresses/{ip}/resolutions',
+            params={'limit': limit}
         )
 
     def search(self, query: str):
@@ -776,6 +785,104 @@ class ScoreCalculator:
 
 
 # region Helper functions
+def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str, raw_response: dict) -> CommandResults:
+    data = raw_response['data']
+
+    score = score_calculator.url_score(url, raw_response)
+    if score != Common.DBotScore.BAD and client.is_premium:
+        score = score_calculator.analyze_premium_url_score(client, url, score)
+
+    url_standard = {
+        'Data': url,
+        'Category': data.get('attributes', {}).get('categories')
+    }
+    logs = score_calculator.get_logs()
+    if score == Common.DBotScore.BAD:
+        url_standard['Malicious'] = {
+            'Vendor': INTEGRATION_NAME,
+            'Description': logs
+        }
+    demisto.debug(logs)
+    outputs = {
+        f'{INTEGRATION_ENTRY_CONTEXT}.URL(val.id && val.id === obj.id)': data,
+        Common.URL.CONTEXT_PATH: url_standard
+    }
+    outputs.update(
+        Common.DBotScore(
+            url,
+            DBotScoreType.URL,
+            INTEGRATION_NAME,
+            score
+        ).to_context()
+    )
+    # creating readable output
+    attributes = data.get('attributes', {})
+    last_analysis_stats = attributes['last_analysis_stats']
+    malicious = last_analysis_stats['malicious']
+    total = sum(last_analysis_stats.values())
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'URL data of "{url}"',
+            {
+                **data,
+                **data.get('attributes', {}),
+                'url': url,
+                'positives': f'{malicious}/{total}',
+                'last_modified': timestamp_to_datestring(attributes['last_modification_date'])
+            },
+            headers=[
+                'url',
+                'title',
+                'last_modified',
+                'has_content',
+                'last_http_response_content_sha256',
+                'positives',
+                'reputation'
+            ]
+        ),
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+
+def build_file_output(score_calculator, file_hash, raw_response) -> CommandResults:
+    data = raw_response['data']
+    score = score_calculator.file_score(file_hash, raw_response)
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+    outputs = {
+        f'{INTEGRATION_ENTRY_CONTEXT}.File(val.id && val.id === obj.id)': data,
+        **Common.DBotScore(
+            file_hash,
+            DBotScoreType.FILE,
+            integration_name=INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs
+        ).to_context()
+    }
+    last_analysis_stats = data['attributes']["last_analysis_stats"]
+    malicious = last_analysis_stats['malicious']
+    total = sum(last_analysis_stats.values())
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'Results of file hash {file_hash}',
+            {
+                **data,
+                **data['attributes'],
+                'positives': f'{malicious}/{total}'
+            },
+            headers=[
+                'sha1', 'sha256', 'md5',
+                'meaningful_name', 'type_extension', 'creation_date',
+                'last_modification_date', 'reputation', 'positives',
+                'links'
+            ]
+        ),
+        outputs=outputs,
+        raw_response=raw_response
+    )
+
+
 def get_whois(whois_string: str) -> defaultdict:
     """Gets a WHOIS string and returns a parsed dict of the WHOIS String.
 
@@ -898,6 +1005,7 @@ def remove_links(data: List[dict]) -> list:
 
 # endregion
 
+# region Reputation commands
 def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
     """
     1 API Call for regular
@@ -953,44 +1061,6 @@ def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> Co
     )
 
 
-def build_file_output(score_calculator, file_hash, raw_response) -> CommandResults:
-    data = raw_response['data']
-    score = score_calculator.file_score(file_hash, raw_response)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
-    outputs = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.File(val.id && val.id === obj.id)': data,
-        **Common.DBotScore(
-            file_hash,
-            DBotScoreType.FILE,
-            integration_name=INTEGRATION_NAME,
-            score=score,
-            malicious_description=logs
-        ).to_context()
-    }
-    last_analysis_stats = data['attributes']["last_analysis_stats"]
-    malicious = last_analysis_stats['malicious']
-    total = sum(last_analysis_stats.values())
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            f'Results of file hash {file_hash}',
-            {
-                **data,
-                **data['attributes'],
-                'positives': f'{malicious}/{total}'
-            },
-            headers=[
-                'sha1', 'sha256', 'md5',
-                'meaningful_name', 'type_extension', 'creation_date',
-                'last_modification_date', 'reputation', 'positives',
-                'links'
-            ]
-        ),
-        outputs=outputs,
-        raw_response=raw_response
-    )
-
-
 def bang_file(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
     """
     1 API Call
@@ -999,66 +1069,6 @@ def bang_file(client: Client, score_calculator: ScoreCalculator, args: dict) -> 
     raise_if_hash_not_valid(file_hash)
     raw_response = client.file(file_hash)
     return build_file_output(score_calculator, file_hash, raw_response)
-
-
-def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str, raw_response: dict) -> CommandResults:
-    data = raw_response['data']
-
-    score = score_calculator.url_score(url, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_url_score(client, url, score)
-
-    url_standard = {
-        'Data': url,
-        'Category': data.get('attributes', {}).get('categories')
-    }
-    logs = score_calculator.get_logs()
-    if score == Common.DBotScore.BAD:
-        url_standard['Malicious'] = {
-            'Vendor': INTEGRATION_NAME,
-            'Description': logs
-        }
-    demisto.debug(logs)
-    outputs = {
-        f'{INTEGRATION_ENTRY_CONTEXT}.URL(val.id && val.id === obj.id)': data,
-        Common.URL.CONTEXT_PATH: url_standard
-    }
-    outputs.update(
-        Common.DBotScore(
-            url,
-            DBotScoreType.URL,
-            INTEGRATION_NAME,
-            score
-        ).to_context()
-    )
-    # creating readable output
-    attributes = data.get('attributes', {})
-    last_analysis_stats = attributes['last_analysis_stats']
-    malicious = last_analysis_stats['malicious']
-    total = sum(last_analysis_stats.values())
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            f'URL data of "{url}"',
-            {
-                **data,
-                **data.get('attributes', {}),
-                'url': url,
-                'positives': f'{malicious}/{total}',
-                'last_modified': timestamp_to_datestring(attributes['last_modification_date'])
-            },
-            headers=[
-                'url',
-                'title',
-                'last_modified',
-                'has_content',
-                'last_http_response_content_sha256',
-                'positives',
-                'reputation'
-            ]
-        ),
-        outputs=outputs,
-        raw_response=raw_response
-    )
 
 
 def bang_url(client: Client, score_calculator: ScoreCalculator, args: dict) -> CommandResults:
@@ -1160,130 +1170,9 @@ def bang_domain(client: Client, score_calculator: ScoreCalculator, args: dict) -
     )
 
 
-def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
-    """
-    1 API Call
-    """
-    file_hash = args['file']
-    limit = int(args['limit'])
-    raise_if_hash_not_valid(file_hash)
-    raw_response = client.file_sandbox_report(file_hash, limit)
-    data = raw_response['data']
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport'
-        'id',
-        readable_output=tableToMarkdown(
-            f'Sandbox Reports for file hash: {file_hash}',
-            [
-                {
-                    'id': item['id'],
-                    **item['attributes'],
-                    'link': item['links']['self']
-                } for item in data
-            ],
-            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link']
-        ),
-        outputs=data,
-        raw_response=raw_response
-    )
+# endregion
 
-
-def ip_passive_dns_data(client: Client, args: dict) -> CommandResults:
-    """
-    1 API Call
-    """
-    ip = args['ip']
-    limit = int(args['limit'])
-    raw_response = client.passive_dns_data(ip, limit)
-    data = raw_response['data']
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.PassiveDNS',
-        'id',
-        readable_output=tableToMarkdown(
-            f'Passive DNS data for IP {ip}',
-            [
-                {
-                    'id': item['id'],
-                    **item['attributes']
-                } for item in data
-            ],
-            headers=['id', 'date', 'host_name', 'ip_address', 'resolver']
-        ),
-        outputs=data,
-        raw_response=raw_response
-    )
-
-
-def get_comments_command(client: Client, args: dict) -> CommandResults:
-    """
-    1 API Call
-
-    BC Break - No NotBefore argument
-    added limit
-    """
-    limit = int(args['limit'])
-    resource = args['resource']
-    resource_type = args['resource_type'].lower()
-    # Will find if there's one and only one True in the list.
-    if resource_type == 'ip':
-        raise_if_ip_not_valid(resource)
-        object_type = 'IP'
-        raw_response = client.get_ip_comments(resource, limit)
-    elif resource_type == 'url':
-        object_type = 'URL'
-        raw_response = client.get_url_comments(resource, limit)
-    elif resource_type == 'hash':
-        object_type = 'File'
-        raise_if_hash_not_valid(resource)
-        raw_response = client.get_hash_comments(resource, limit)
-    elif resource_type == 'domain':
-        object_type = 'Domain'
-        raw_response = client.get_domain_comments(resource, limit)
-    else:
-        raise DemistoException(f'Could not find resource type of "{resource_type}"')
-    data = raw_response['data']
-    data = remove_links(data)
-    context = {
-        'id': resource,
-        'comments': data
-    }
-    # TODO: human readable
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.{object_type}Comments',
-        'id',
-        readable_output=tableToMarkdown(
-            '',
-            data
-        ),
-        outputs=context,
-        raw_response=raw_response
-    )
-
-
-def add_comments_command(client: Client, args: dict) -> CommandResults:
-    """
-    1 API Call
-    """
-    resource = args['resource']
-    resource_type = args['resource_type'].lower()
-    comment = args['comment']
-    if resource_type == 'ip':
-        raise_if_ip_not_valid(resource)
-        client.add_comment_to_ip(resource, comment)
-    elif resource_type == 'url':
-        client.add_comment_to_url(resource, comment)
-    elif resource_type == 'domain':
-        client.add_comment_to_domain(resource, comment)
-    elif resource_type == 'hash':
-        raise_if_hash_not_valid(resource)
-        client.add_comment_to_file(resource, comment)
-    else:
-        raise DemistoException(f'Could not find resource type of "{resource_type}"')
-    return CommandResults(
-        readable_output=f'Comment has been added to {resource_type}: {resource}'
-    )
-
-
+# region Scan commands
 def file_rescan_command(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
@@ -1382,23 +1271,76 @@ def scan_url_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def search_command(client: Client, args: dict) -> CommandResults:
+# endregion
+
+# region Comments commands
+def get_comments_command(client: Client, args: dict) -> CommandResults:
+    """
+    1 API Call
+
+    BC Break - No NotBefore argument
+    added limit
+    """
+    limit = int(args['limit'])
+    resource = args['resource']
+    resource_type = args['resource_type'].lower()
+    # Will find if there's one and only one True in the list.
+    if resource_type == 'ip':
+        raise_if_ip_not_valid(resource)
+        object_type = 'IP'
+        raw_response = client.get_ip_comments(resource, limit)
+    elif resource_type == 'url':
+        object_type = 'URL'
+        raw_response = client.get_url_comments(resource, limit)
+    elif resource_type == 'hash':
+        object_type = 'File'
+        raise_if_hash_not_valid(resource)
+        raw_response = client.get_hash_comments(resource, limit)
+    elif resource_type == 'domain':
+        object_type = 'Domain'
+        raw_response = client.get_domain_comments(resource, limit)
+    else:
+        raise DemistoException(f'Could not find resource type of "{resource_type}"')
+    data = raw_response['data']
+    data = remove_links(data)
+    context = {
+        'id': resource,
+        'comments': data
+    }
+    # TODO: human readable
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.{object_type}Comments',
+        'id',
+        readable_output=tableToMarkdown(
+            '',
+            data
+        ),
+        outputs=context,
+        raw_response=raw_response
+    )
+
+
+def add_comments_command(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
-    query = args['query']
-    raw_response = client.search(query)
-    data = raw_response['data']
-    data = remove_links(data)
+    resource = args['resource']
+    resource_type = args['resource_type'].lower()
+    comment = args['comment']
+    if resource_type == 'ip':
+        raise_if_ip_not_valid(resource)
+        client.add_comment_to_ip(resource, comment)
+    elif resource_type == 'url':
+        client.add_comment_to_url(resource, comment)
+    elif resource_type == 'domain':
+        client.add_comment_to_domain(resource, comment)
+    elif resource_type == 'hash':
+        raise_if_hash_not_valid(resource)
+        client.add_comment_to_file(resource, comment)
+    else:
+        raise DemistoException(f'Could not find resource type of "{resource_type}"')
     return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SearchResults',
-        'id',
-        readable_output=tableToMarkdown(
-            f'Search result of query {query}',
-            data
-        ),
-        outputs=data,
-        raw_response=raw_response
+        readable_output=f'Comment has been added to {resource_type}: {resource}'
     )
 
 
@@ -1422,12 +1364,80 @@ def get_comments_by_id_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def check_module(client: Client) -> str:
+# endregion
+
+def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
-    client.get_ip_comments('8.8.8.8', 1)
-    return 'ok'
+    file_hash = args['file']
+    limit = int(args['limit'])
+    raise_if_hash_not_valid(file_hash)
+    raw_response = client.file_sandbox_report(file_hash, limit)
+    data = raw_response['data']
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport'
+        'id',
+        readable_output=tableToMarkdown(
+            f'Sandbox Reports for file hash: {file_hash}',
+            [
+                {
+                    'id': item['id'],
+                    **item['attributes'],
+                    'link': item['links']['self']
+                } for item in data
+            ],
+            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link']
+        ),
+        outputs=data,
+        raw_response=raw_response
+    )
+
+
+def ip_passive_dns_data(client: Client, args: dict) -> CommandResults:
+    """
+    1 API Call
+    """
+    ip = args['ip']
+    limit = int(args['limit'])
+    raw_response = client.passive_dns_data(ip, limit)
+    data = raw_response['data']
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.PassiveDNS',
+        'id',
+        readable_output=tableToMarkdown(
+            f'Passive DNS data for IP {ip}',
+            [
+                {
+                    'id': item['id'],
+                    **item['attributes']
+                } for item in data
+            ],
+            headers=['id', 'date', 'host_name', 'ip_address', 'resolver']
+        ),
+        outputs=data,
+        raw_response=raw_response
+    )
+
+
+def search_command(client: Client, args: dict) -> CommandResults:
+    """
+    1 API Call
+    """
+    query = args['query']
+    raw_response = client.search(query)
+    data = raw_response['data']
+    data = remove_links(data)
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.SearchResults',
+        'id',
+        readable_output=tableToMarkdown(
+            f'Search result of query {query}',
+            data
+        ),
+        outputs=data,
+        raw_response=raw_response
+    )
 
 
 def get_analysis_command(client: Client, args: dict) -> CommandResults:
@@ -1452,6 +1462,14 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
         },
         raw_response=raw_response
     )
+
+
+def check_module(client: Client) -> str:
+    """
+    1 API Call
+    """
+    client.get_ip_comments('8.8.8.8', 1)
+    return 'ok'
 
 
 def main(params: dict, args: dict, command: str):
