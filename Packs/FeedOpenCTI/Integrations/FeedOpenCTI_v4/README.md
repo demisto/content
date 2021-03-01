@@ -1,4 +1,4 @@
-Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances. For v3 and previous OpenCTI versions v1 integration should be used.
+Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances. For v3 OpenCTI version OpenCTI Feed v3 integration should be used.
 This integration was integrated and tested with version v4.0.7 of OpenCTI Feed v4
 ## Configure OpenCTI Feed v4 on Cortex XSOAR
 
