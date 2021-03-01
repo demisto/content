@@ -43,7 +43,7 @@ args:
   description: 'Maximum number of IPs to retrieve, default is 50 '
   defaultValue: "200"
 - name: confidence
-  description: 'Minimum confidence required of IPs to retrieve, default is 100'
+  description: 'The Minimum confidence required of IPs to retrieve. Default is 100.'
   defaultValue: "100"
 scripttarget: 0
 dependson:
