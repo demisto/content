@@ -3,6 +3,7 @@ import pytest
 import json
 import SplunkPy as splunk
 import demistomock as demisto
+from CommonServerPython import *
 from datetime import timedelta, datetime
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
@@ -746,6 +747,136 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
     """
     assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
 
+
+""" ========== Mirroring Mechanism Tests ========== """
+
+
+@pytest.mark.parametrize('last_update, demisto_params, splunk_time_timestamp', [
+    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '0'}, 1612874490),
+    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '+120'}, 1612881690),
+    ('2021-02-09T16:41:30.589575+02:00', {}, '')
+])
+def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
+    """ Tests the conversion of the Demisto server time into timestamp in Splunk Server time
+
+    Given:
+        - The last update time in the Demisto server
+        - The timezone in the Splunk Server
+    When:
+        Converting the time in the Demisto server into timestamp in Splunk Server time
+    Then:
+        - Conversion is correct
+        - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+    if demisto_params:
+        assert splunk.get_last_update_in_splunk_time(last_update) == splunk_time_timestamp
+    else:
+        error_msg = 'Cannot mirror incidents when timezone is not configured. Please enter the '
+        'timezone of the Splunk server being used in the integration configuration.'
+        with pytest.raises(Exception, match=error_msg):
+            splunk.get_last_update_in_splunk_time(last_update)
+
+
+def test_get_remote_data_command(mocker):
+    updated_notable = {'status': '1', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=False)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [updated_notable]
+
+
+def test_get_remote_data_command_close_incident(mocker):
+    updated_notable = {'status': '5', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_remote_data_command(Service(), args, close_incident=True)
+    results = demisto.results.call_args[0][0]
+    assert demisto.results.call_count == 1
+    assert results == [
+        updated_notable,
+        {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }]
+
+
+def test_get_modified_remote_data_command(mocker):
+    updated_incidet_review = {'rule_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x: [updated_incidet_review]
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
+    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch.object(demisto, 'results')
+    splunk.get_modified_remote_data_command(Service(), args)
+    results = demisto.results.call_args[0][0]['Contents']
+    assert demisto.results.call_count == 1
+    assert results == [updated_incidet_review['rule_id']]
+
+
+@pytest.mark.parametrize('args, params, call_count, success', [
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 4, True),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, False),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
+     5, True)
+])
+def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
+    requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
+    if not success:
+        mocker.patch.object(demisto, 'error')
+    assert splunk.update_remote_system_command(args, params, False) == args['remoteId']
+    assert demisto.info.call_count == call_count
+    if not success:
+        assert demisto.error.call_count == 1
 
 NOTABLE = {'rule_name': '', '': '', 'rule_title': '', 'security_domain': '', 'index': '', 'rule_description': '',
            'risk_score': '', 'host': '', 'host_risk_object_type': '', 'dest_risk_object_type': '',

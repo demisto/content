@@ -39,6 +39,9 @@ This integration was integrated and tested with Splunk v7.2.
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
 | use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
+| incoming_mirror | When selected, any notable data changed in remote Splunk server will be reflected on existing fetched incidents. | False |
+| close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
+| close_notable | When selected, closing the XSOAR incident is mirrored in Splunk. | False |
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset & Identity | False |
 | num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
 | enrichment_timeout | The maximal time for an enrichment to be processed. Default to 5min. When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False
@@ -73,6 +76,25 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
+
+### Splunk Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and Splunk Notables.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for SplunkPy and select your integration instance.
+3. Enable **Fetches incidents**.
+4. You can go to the `Fetch notable events ES enrichment query` parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+  * Incoming - Any changes in Splunk notables will be reflected in XSOAR incidents.
+  * Outgoing - Any changes in XSOAR incidents (notable's status, urgency, comments & owner) will be reflected in Splunk notables.
+  * Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
+  * None - Choose this to turn off incident mirroring.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on Splunk side.
+6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
+7. Newly fetched incidents will be mirrored in the chosen direction.
+  * Note: This will not effect existing incidents.
 
 ### Enriching fetch mechanism
 ***
@@ -810,6 +832,47 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The values of the demisto_store were deleted successfully
+
+
+### get-remote-data
+***
+Get data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote event ID. | Required | 
+| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.  | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### get-modified-remote-data
+***
+Get the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
+
+
+#### Base Command
+
+`get-modified-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
 
 
 ### splunk-reset-enriching-fetch-mechanism
