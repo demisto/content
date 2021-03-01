@@ -27,7 +27,7 @@ def options_handler():
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
-
+    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
     options = parser.parse_args()
     return options
 
@@ -103,19 +103,20 @@ def verify_pack(pack: dict) -> bool:
     return all([id_exists, price_is_valid])
 
 
-def check_commit_in_master_history(index_commit_hash: str) -> bool:
-    """Assert commit hash is in master history.
+def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -> bool:
+    """Assert commit hash is in branch's commit history.
 
     Args:
         index_commit_hash: commit hash
+        circle_branch: circle branch of current run
 
-    Returns: True if commit hash is in master history, False otherwise.
+    Returns: True if commit hash is in branch's commit history, False otherwise.
     """
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    master_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits("origin/master"))))
+    branch_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits(f"origin/{circle_branch}"))))
 
-    return log_message_if_statement(statement=(index_commit_hash in master_commits),
-                                    error_message=f"Commit hash {index_commit_hash} is not in master history",
+    return log_message_if_statement(statement=(index_commit_hash in branch_commits),
+                                    error_message=f"Commit hash {index_commit_hash} is not in {circle_branch} history",
                                     success_message="Commit hash in index file is valid.")
 
 
@@ -165,7 +166,7 @@ def main():
     commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
                                                     error_message="No commit field was found in the index.json")
     if commit_hash_is_valid:
-        commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
+        commit_hash_is_valid = check_commit_in_branch_history(index_data.get("commit", ""), options.circle_branch)
 
     if not all([index_is_valid, commit_hash_is_valid]):
         logging.critical("Index content is invalid. Aborting.")

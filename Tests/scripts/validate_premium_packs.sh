@@ -10,15 +10,21 @@ echo $GCS_MARKET_KEY > $GCS_PATH
 
 SECRET_CONF_PATH="./conf_secret.json"
 
-# ====== RUN VALIDATIONS ======
+# ====== BUCKET CONFIGURATION ======
 
+CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+  STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+fi
+
+# ====== RUN VALIDATIONS ======
 
 if [[ -n "$STORAGE_BASE_PATH" ]]; then
   echo "Validating index file in bucket at path gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
 else
   echo "Validating index file in bucket at path gs://$GCS_MARKET_BUCKET/content/packs"
 fi
-python3 ./Tests/scripts/validate_index.py -sa "$GCS_PATH" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET" -sb "$STORAGE_BASE_PATH"
+python3 ./Tests/scripts/validate_index.py -sa "$GCS_PATH" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET" -sb "$STORAGE_BASE_PATH" -c "$CIRCLE_BRANCH"
 
 if [[ -n "$STORAGE_BASE_PATH" ]]; then
   echo "Validating premium packs in server against index file in bucket at path gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH."
