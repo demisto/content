@@ -475,7 +475,7 @@ def test_create_mapping_dict():
 
 @pytest.mark.parametrize('cache_object, output', [
     (splunk.Cache(not_yet_submitted_notables=[splunk.Notable({'event_id': '1'})]), False),
-    (splunk.Cache(not_yet_submitted_notables=[]), False),
+    (splunk.Cache(not_yet_submitted_notables=[]), True),
     (splunk.Cache(), True)
 ])
 def test_is_done_submitting(cache_object, output):
@@ -665,13 +665,13 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
     assert latest_offset == latest
 
 
-@pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value, exc', [
-    ('field|s', {'field': '1'}, 'field', '1', False),
-    ('field', {'field': '1'}, 'field', '1', False),
-    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1', False),
-    ('x', {'y': '2'}, '', '', True)
+@pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
+    ('field|s', {'field': '1'}, 'field', '1'),
+    ('field', {'field': '1'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1'),
+    ('x', {'y': '2'}, '', '')
 ])
-def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, exc):
+def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
     """
     Scenario: When building the drilldown search query, we search for the field in the raw search query
      and search for its real name in the notable's data or in the notable's raw data.
@@ -688,23 +688,19 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
 
     Then:
     - Return the expected result
-    - Raise exception when needed
     """
-    if not exc:
-        field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
-        assert field == expected_field
-        assert value == expected_value
-    else:
-        with pytest.raises(Exception):
-            splunk.get_notable_field_and_value(raw_field, notable_data)
+    mocker.patch.object(demisto, 'error')
+    field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
+    assert field == expected_field
+    assert value == expected_value
 
 
-@pytest.mark.parametrize('notable_data, search, raw, expected_search, exc', [
-    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix', False),
-    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix', False),
-    ({'a': '1', '_raw': 'b=3'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, 'search a="1" c=$c$ suffix', True),
+@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, 'search a=$a|s$ c=$c$ suffix'),
 ])
-def test_build_drilldown_search(notable_data, search, raw, expected_search, exc):
+def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
@@ -719,13 +715,9 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, exc)
 
     Then:
     - Return the expected result
-    - Raise exception when needed
     """
-    if not exc:
-        assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
-    else:
-        with pytest.raises(Exception):
-            splunk.build_drilldown_search(notable_data, search, raw)
+    mocker.patch.object(demisto, 'error')
+    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [

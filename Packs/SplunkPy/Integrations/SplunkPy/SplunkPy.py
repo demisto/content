@@ -182,12 +182,12 @@ class Notable:
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
         return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
-               any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
 
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
@@ -1531,7 +1531,6 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None):
     raw_list = []  # type: list
     for field in fields:
         raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
-        raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
     raw_list = ['{}="{}"'.format(prefix, item.strip('"')) for item in raw_list]
 
     if not raw_list:
@@ -1598,6 +1597,10 @@ def build_drilldown_search(notable_data, search, raw_dict):
         prefix = groups[0]
         raw_field = (groups[1] or groups[2]).strip('$')
         field, replacement = get_notable_field_and_value(raw_field, notable_data, raw_dict)
+        if not field and not replacement:
+            demisto.error("Coldn't build search query for notable {} with the following drilldown "
+                          "search {}".format(notable_data[EVENT_ID], search))
+            return search
         if prefix:
             replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
         end = match.start()
@@ -1629,7 +1632,8 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     for field in raw:
         if field in raw_field:
             return field, raw[field]
-    raise Exception('Failed building drilldown search query. field {} was not found in the notable.'.format(raw_field))
+    demisto.error('Failed building drilldown search query. field {} was not found in the notable.'.format(raw_field))
+    return "", ""
 
 
 def get_drilldown_timeframe(notable_data, raw):
