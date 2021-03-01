@@ -1,9 +1,9 @@
 
-This integration was integrated and tested with version xx of Cisco Umbrella Cloud Security_EF-copy
+This integration was integrated and tested with version xx of Cisco Umbrella Cloud Security.
 ## Configure Cisco Umbrella Cloud Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Umbrella Cloud Security_EF-copy.
+2. Search for Cisco Umbrella Cloud Security.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
