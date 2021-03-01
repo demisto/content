@@ -988,7 +988,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://_23_11.redacted
+              simple: http://_23_11.redacted.com
     view: |-
       {
         "position": {
