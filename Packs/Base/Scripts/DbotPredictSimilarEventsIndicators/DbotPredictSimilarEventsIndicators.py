@@ -10,12 +10,22 @@ import re
 import math
 
 
-def normalize(x):
+def normalize(x: List[str]) -> str:
+    """
+    Normalize function for indicators
+    :param x:  list of indicators
+    :return:
+    """
     return ' '.join(x)
 
 
-def identity_score(X):
-    return X
+def identity_score(x):
+    """
+    Identity function
+    :param x: object
+    :return:
+    """
+    return x
 
 
 def flatten(my_list: List[List]) -> List:
@@ -28,6 +38,10 @@ def flatten(my_list: List[List]) -> List:
 
 
 class Tfidf(BaseEstimator, TransformerMixin):
+    """
+    TFIDF class for indicators
+    """
+
     def __init__(self, feature_names, tfidf_params, normalize_function, x):
         self.feature_names = feature_names
         self.params = tfidf_params
@@ -268,9 +282,10 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
         return indicators_df
     indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
     indicators_df['Involved Incidents Count'] = \
-        indicators_df['investigationIDs'].apply(lambda x: sum(id_ in x for id_ in incident_ids))
+        indicators_df['investigationIDs'].apply(lambda x: sum(id_ in incident_ids for id_ in x))
     indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
-    indicators_df = indicators_df[indicators_df.indicator_type.isin(indicators_types)]
+    if indicators_types:
+        indicators_df = indicators_df[indicators_df.indicator_type.isin(indicators_types)]
     indicators_df = indicators_df[indicators_df.id.isin([x.get('id') for x in indicators_list])]
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
@@ -282,7 +297,7 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
-    return_outputs_custom(hr, None)
+    return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)))
     return indicators_df
 
 
@@ -360,7 +375,8 @@ def get_prediction_for_incident():
     indicators = get_all_indicators_for_incident(incident_id)
     indicators_map = get_indicators_map(indicators)
     indicators = list(filter(lambda x: get_number_of_invs_for_indicators(x) < max_indicators, indicators))
-    indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
+    if indicators_types:
+        indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
     if len(indicators) < limit_nb_of_indicators:
         return_error("Number of indicators found is less then minNumberOfIndicators")
     if debug == 'True':
@@ -377,7 +393,8 @@ def get_prediction_for_incident():
 
     # Get indicators related to those investigations ids
     indicators_related = get_indicators_from_incident_ids(incident_ids)
-    indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
+    if indicators_types:
+        indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
     incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
     incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
     incidents_with_indicators_join.pop(incident_id, None)
@@ -413,8 +430,6 @@ def get_prediction_for_incident():
     similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display)
 
     incident_found_bool = (len(similar_incidents) > 0)
-    if not incident_found_bool:
-        demisto.results("No similar incidents were found with the given parameters")
 
     # Ouputs
     similar_incidents_json = similar_incidents.to_dict(orient='records')
@@ -429,7 +444,22 @@ def get_prediction_for_incident():
                                                     x not in ['id', 'created', 'name', 'indicators']]
         return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
                                                        col_incident))
-    return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col))
+
+    if incident_found_bool:
+        context = {
+            'similarIncident': (similar_incidents.to_dict(orient='records')),
+            'isSimilarIncidentFound': True
+        }
+    else:
+        context = {
+            'similarIncidentList': {},
+            'isSimilarIncidentFound': False
+        }
+
+    if incident_found_bool:
+        return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col),
+                       outputs={'DBotPredictSimilarEventsBasedOnIndicators': context})
+
     return similar_incidents_json
 
 

@@ -28,14 +28,14 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '2'
+  defaultValue: '0'
   description: 'Minimun number of indicators '
   isArray: false
   name: minNumberOfIndicators
   required: false
   secret: false
 - default: false
-  defaultValue: '0.1'
+  defaultValue: '0'
   description: Threshold to similarity value which is between 0 and 1
   isArray: false
   name: threshold
@@ -86,7 +86,7 @@ args:
   secret: false
 comment: Find similar incidents based on indicators similarity
 commonfields:
-  id: 824f077d-49e9-4378-86a4-aa6603890c44
+  id: DBotPredictSimilarEventsBasedOnIndicators
   version: -1
 enabled: true
 name: DBotPredictSimilarEventsBasedOnIndicators
@@ -95,8 +95,9 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.15569
+dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: false
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
+tests:
+  - No tests (auto formatted)
