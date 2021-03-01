@@ -5,6 +5,11 @@ from test_data.constants import FAILED_TABLE, FAILED_TABLE_EXPECTED
 
 
 @pytest.mark.parametrize('list_, expected', [
+    ([{'Contents': 'Item not found (8)'}], {'data': [{'Brand': 'N\\A',
+                                                      'Category': 'N\\A',
+                                                      'Information': 'N\\A',
+                                                      'Instance': 'N\\A'}],
+                                            'total': 1}),
     ([{'Contents': FAILED_TABLE}], FAILED_TABLE_EXPECTED),
     ([{'Contents': ''}], {'data': [{'Brand': 'N\\A',
                                     'Category': 'N\\A',
