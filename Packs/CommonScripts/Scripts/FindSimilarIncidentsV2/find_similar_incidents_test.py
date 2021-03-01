@@ -182,6 +182,14 @@ def test_get_incidents_by_keys():
 
 
 def test_build_similar_keys_list():
+    """
+    Given
+        - key and value of the incident fields.
+    When
+        - build_incident_fields_query is called
+    Then
+        - Ensure that the query matches the type of the incident field: int -> ":=", str -> "=".
+    """
     from FindSimilarIncidentsV2 import build_incident_fields_query
 
     int_res = build_incident_fields_query({u'sla': 0})
