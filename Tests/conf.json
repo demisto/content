@@ -3246,7 +3246,13 @@
         },
         {
             "integrations": "VirusTotal v3",
-            "playbookID": "VirusTotal-V3-test-playbook"
+            "playbookID": "VirusTotal-V3-test-playbook",
+            "instance_names": "virus_total_v3"
+        },
+        {
+            "integrations": "VirusTotal v3",
+            "playbookID": "VirusTotal-V3-test-playbook",
+            "instance_names": "virus_total_v3_premium"
         }
     ],
     "skipped_tests": {
