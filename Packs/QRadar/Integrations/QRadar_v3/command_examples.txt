@@ -1,1 +1,12 @@
-!qradar-offenses-list range=0-9
+!qradar-offenses-list enrichment=IPs filter="status=OPEN" range=0-2
+!qradar-offense-update offense_id=6 assigned_to=demisto enrichment="IPs And Assets" follow_up=true status=OPEN protected=false
+!qradar-closing-reasons include_deleted=true include_reserved=true
+!qradar-offense-notes-list offense_id=6 filter="username='API_user: demisto'" range=0-1
+!qradar-offense-note-create note_text="Note Regarding The Offense" offense_id=6
+!qradar-assets-list filter="id<1100" range=0-2
+!qradar-reference-set-create element_type=IP ref_name="Malicious IP" time_to_live="1 year" timeout_type=FIRST_SEEN
+!qradar-reference-set-delete ref_name="Malicious IPs"
+!qradar-indicators-upload ref_name="Mail Servers" limit=2 query="type:IP"
+!qradar-geolocations-for-ip ips="1.2.3.4,1.2.3.5" range=0-1
+!qradar-log-sources-list qrd_encryption_algorithm=AES128
+!qradar-get-custom-properties filter="id between 90 and 100" range=1-1231

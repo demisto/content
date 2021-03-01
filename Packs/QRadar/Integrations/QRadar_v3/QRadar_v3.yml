@@ -8,11 +8,6 @@ description: IBM QRadar SIEM helps security teams accurately detect and prioriti
   threats across the enterprise, and it provides intelligent insights that enable
   teams to respond quickly to reduce the impact of incidents.
 configuration:
-- display: Long Running Instance
-  name: long_running
-  required: false
-  type: 8
-  additionalinfo: TODO is this needed?
 - display: Server URL
   name: server
   type: 0
@@ -363,11 +358,19 @@ script:
     - name: include_reserved
       required: false
       description: If true, reserved closing reasons are included in the response.
-      defaultValue: false
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: include_deleted
       required: false
       description: If true, deleted closing reasons are included in the response.
-      defaultValue: false
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -939,9 +942,6 @@ script:
       - FIRST_SEEN
       - LAST_SEEN
       - UNKNOWN
-      - IP
-      - PORT
-      - DATE
     - name: time_to_live
       required: false
       description: "The time to live interval, time range. for example: '1 month'\
@@ -1273,9 +1273,6 @@ script:
       description: Comma seperated list of IPs to retrieve their geolocation.
       required: true
       isArray: true
-    - name: range
-      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
-      defaultValue: 0-49
     - name: fields
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the

@@ -292,17 +292,16 @@ class Client(BaseClient):
         self.password = password
         self.server = server
 
-    def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None, data: Optional[Dict] = None,
-                     additional_headers: Optional[Dict] = None):
+    def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
+                     json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         return self._http_request(
             method=method,
             url_suffix=url_suffix,
             params=params,
-            data=data,
+            json_data=json_data,
             headers=headers,
-            error_handler=qradar_error_handler,
-            timeout=50
+            error_handler=qradar_error_handler
         )
 
     def offenses_list(self, offense_id: Optional[int], range_: str, filter_: Optional[str],
@@ -425,7 +424,7 @@ class Client(BaseClient):
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/searches/{search_id}/results',
-            additional_headers={'Range': range_}
+            additional_headers={'Range': range_} if range_ else None
         )
 
     def reference_sets_list(self, ref_name: Optional[str], range_: str, filter_: Optional[str], fields: Optional[str]):
@@ -483,11 +482,16 @@ class Client(BaseClient):
         )
 
     def indicators_upload(self, ref_name: Optional[str], indicators: Optional[Any], fields: Optional[str]):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        if fields:
+            headers['fields'] = fields
         return self.http_request(
             method='POST',
-            url_suffix=f'/reference_data/maps/bulk_load/{ref_name}',
-            data=indicators,
-            additional_headers={'fields': fields} if fields else None
+            url_suffix=f'/reference_data/sets/bulk_load/{ref_name}',
+            json_data=indicators,
+            additional_headers=headers
         )
 
     def geolocations_for_ip(self, filter_: Optional[str], fields: Optional[str]):
@@ -515,7 +519,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix='/config/event_sources/custom_properties/regex_properties',
             params=assign_params(filter=filter_, fields=fields),
-            additional_headers={'Range': range_}
+            additional_headers={'Range': range_} if range_ else None
         )
 
     def offense_types(self, filter_: Optional[str], fields: Optional[str]):
@@ -560,6 +564,8 @@ def qradar_error_handler(res: Any):
         # Try to parse json error response
         error_entry = res.json()
         message = error_entry.get('message', '')
+        if 'items=x-y' in message:
+            message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern: x-y'
         err_msg += f'\n{message}'
         raise DemistoException(err_msg, res=res)
     except ValueError:
@@ -1100,8 +1106,9 @@ def test_module_command(client: Client, params: Dict) -> str:
     """
     try:
         client.test_connection()
-        is_long_running = params.get('long_running')
+        is_long_running = params.get('longRunning')
         if is_long_running:
+            demisto.error('long running check!')
             ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
             get_incidents_long_running_execution(
                 client=client,
@@ -1415,10 +1422,11 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     response = client.offenses_list(offense_id, range_, filter_, fields, sort=None)
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
-    headers = build_headers(['ID', 'Description'], set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
+    headers = build_headers(['ID', 'Description', 'OffenseType', 'Status', 'Severity'],
+                            set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Offenses List', final_outputs, headers=headers),
+        readable_output=tableToMarkdown('Offenses List', final_outputs, headers=headers, removeNull=True),
         outputs_prefix='QRadar.Offense',
         outputs_key_field='ID',
         outputs=final_outputs,
@@ -1468,9 +1476,11 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
 
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
+    headers = build_headers(['ID', 'Description', 'OffenseType', 'Status', 'Severity'],
+                            set(OFFENSE_OLD_NEW_NAMES_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('offense Update', final_outputs),
+        readable_output=tableToMarkdown('offense Update', final_outputs, headers, removeNull=True),
         outputs_prefix='QRadar.Offense',
         outputs_key_field='ID',
         outputs=final_outputs,
@@ -1510,7 +1520,7 @@ def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandRe
     headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_OLD_NEW_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers),
+        readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers, removeNull=True),
         outputs_prefix='QRadar.ClosingReason',
         outputs_key_field='ID',
         outputs=outputs,
@@ -1546,9 +1556,10 @@ def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResu
 
     response = client.offense_notes_list(offense_id, note_id, range_, filter_, fields)
     outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs),
+        readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs, headers),
         outputs_prefix='QRadar.Note',
         outputs_key_field='ID',
         outputs=outputs,
@@ -1579,9 +1590,10 @@ def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandRe
 
     response = client.offense_notes_create(offense_id, note_text, fields)
     outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Create Note', outputs),
+        readable_output=tableToMarkdown('Create Note', outputs, headers),
         outputs_prefix='QRadar.Note',
         outputs_key_field='ID',
         outputs=outputs,
@@ -1938,9 +1950,11 @@ def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandRe
 
     response = client.reference_set_create(ref_name, element_type, timeout_type, time_to_live, fields)
     outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+    headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
+                            set(REFERENCE_SETS_OLD_NEW_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Reference Set Create', outputs),
+        readable_output=tableToMarkdown('Reference Set Create', outputs, headers, removeNull=True),
         outputs_prefix='QRadar.Reference',
         outputs_key_field='Name',
         outputs=outputs,
@@ -2087,7 +2101,7 @@ def qradar_domains_list_command(client: Client, args: Dict) -> CommandResults:
     outputs = sanitize_outputs(response, DOMAIN_OLD_NEW_MAP)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Domains List', outputs),
+        readable_output=tableToMarkdown('Domains List', outputs, removeNull=True),
         outputs_prefix='QRadar.Domains',
         outputs_key_field='ID',
         outputs=outputs,
@@ -2120,9 +2134,11 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     fields = args.get('fields')
 
     indicators = demisto.searchIndicators(query=query, page=page, size=limit).get('iocs', [])
+    demisto.error('got indicators')
     indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
                        for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
     indicator_values = [indicator.get('Indicator Value') for indicator in indicators_data]
+
     if not indicators_data:
         return CommandResults(
             readable_output=f'### No Indicators Were Found For Reference Set {ref_name}'
@@ -2247,12 +2263,14 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
+    demisto.error(f'password {qrd_encryption_password}')
 
     response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Log Sources List', outputs),
+        readable_output=tableToMarkdown('Log Sources List', outputs, headers, removeNull=True),
         outputs_prefix='QRadar.LogSource',
         outputs_key_field='ID',
         outputs=outputs,
@@ -2288,9 +2306,13 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
 
     response = client.custom_properties(range_, filter_, fields)
     outputs = sanitize_outputs(response)
+    if outputs:
+        headers = build_headers(['id', 'name', 'identifier'], set(outputs[0].keys()))
+    else:
+        headers = None
 
     return CommandResults(
-        readable_output=tableToMarkdown('Custom Properties', outputs),
+        readable_output=tableToMarkdown('Custom Properties', outputs, headers, removeNull=True),
         outputs_prefix='QRadar.Properties',
         outputs_key_field='identifier',
         outputs=outputs,
