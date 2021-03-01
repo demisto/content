@@ -286,6 +286,8 @@ def get_scan_error_message(response, scan_id):
     return message
 
 
+# Request/Response methods
+# kwargs: request parameters
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
     if endpoint:
         endpoint = '/' + endpoint
@@ -293,6 +295,7 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
     try:
         res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=kwargs)
         res.raise_for_status()
+        return res.json()
     except HTTPError:
         if ignore_license_error and res.status_code in (403, 500):
             return
@@ -300,9 +303,11 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
         if demisto.command() != 'test-module':
             return_error(err_msg)
         else:
-            demisto.error(err_msg)
+            demisto.results(err_msg)
         demisto.error(traceback.format_exc())
-    return res.json()
+        sys.exit(0)
+    except ValueError:
+        return "No JSON to decode."
 
 
 def get_scan_info(scans_result_elem):

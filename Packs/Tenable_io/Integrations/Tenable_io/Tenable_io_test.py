@@ -103,4 +103,3 @@ def test_resume_scan_command(mocker, requests_mock):
     assert 'scan was resumed successfully' in results[0]['HumanReadable']
     assert entry_context['Id'] == '25'
     assert entry_context['Status'] == 'Resuming'
-

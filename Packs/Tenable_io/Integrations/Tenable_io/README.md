@@ -1523,7 +1523,7 @@
 </thead>
 <tbody>
 <tr>
-<td>paused</td>
+<td>Pausing</td>
 <td>10</td>
 </tr>
 </tbody>
@@ -1587,7 +1587,7 @@
 </thead>
 <tbody>
 <tr>
-<td>running</td>
+<td>Resuming</td>
 <td>10</td>
 </tr>
 </tbody>

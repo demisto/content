@@ -404,7 +404,7 @@ script:
     - default: false
       description: The unique id of the scan. Comma separated values.
       isArray: true
-      name: scan_id
+      name: scanId
       required: true
       secret: false
     deprecated: false
