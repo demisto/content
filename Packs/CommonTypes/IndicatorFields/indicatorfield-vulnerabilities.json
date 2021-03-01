@@ -4,7 +4,7 @@
  "modified": "2021-02-23T12:32:22.424545+02:00",
  "name": "vulnerabilities",
  "ownerOnly": false,
- "cliName": "vulnerabilities",
+ "cliName": "Vulnerabilities",
  "type": "multiSelect",
  "closeForm": false,
  "editForm": true,
