@@ -88,7 +88,7 @@ Searches for items by using the specified JSON query. Search by regex is support
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | collection | Name of the collection do query from. | Required | 
-| query | A JSON query to search for in the collection, in the format of: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Supports search by regex using the following query=`"{ "field": { "$regex": "search_option" } }"`. For example: query=`"{ "year": { "$regex": "2.*" } }"` - will query all entries such that their "year" field contains the number 2, query=`"{ "color": { "$regex": "Re.*", "$options": "i" } }"`: case insensitive search - will query all entries at the collection, where their "color" field contains the string "Re", case insensitive.| Required |
+| query | A JSON query to search for in the collection, in the format of: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Supports search by regex using the following query=`"{ "field": { "$regex": "search_option" } }"`. For example: query=`"{ "year": { "$regex": "2.*" } }"` - will query all entries such that their "year" field contains the number 2, query=`"{ "color": { "$regex": "Re.*", "$options": "i" } }"`: case insensitive search - will query all entries at the collection, where their "color" field contains the string "Re".| Required |
 | sort | Sorting order for the query results. Use the format "field1:asc,field2:desc". | Optional|
 
 
