@@ -834,7 +834,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
                            public_pack_names) -> Tuple[bool, list, list]:
     """
     Checks if there are private packs that were added/deleted/updated.
-    Update public index.json with private packs if needed.
+    Update public index.json with private packs.
 
     Args:
         public_index_folder_path: extracted public index folder full path.
@@ -862,14 +862,11 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         if public_index_json and private_index_path:
             # check if there are private packs that were updated
             is_private_content_packs_updated = is_private_packs_updated(public_index_json, private_index_path)
-            if is_private_content_packs_updated:
-                private_packs, updated_private_packs_ids = update_index_with_priced_packs(private_index_path,
-                                                                                          extract_destination_path,
-                                                                                          public_index_folder_path,
-                                                                                          public_pack_names)
-                return is_private_content_packs_updated, private_packs, updated_private_packs_ids
-
-            logging.debug("Skipping index update of priced packs")
+            private_packs, updated_private_packs_ids = update_index_with_priced_packs(private_index_path,
+                                                                                      extract_destination_path,
+                                                                                      public_index_folder_path,
+                                                                                      public_pack_names)
+            return is_private_content_packs_updated, private_packs, updated_private_packs_ids
     return is_private_content_packs_updated, [], []
 
 
