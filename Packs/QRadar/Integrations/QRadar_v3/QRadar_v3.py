@@ -2450,7 +2450,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 
 def main() -> None:
     params = demisto.params()
-    command = 'qradar-geolocations-for-ip'  # demisto.command()
+    command = demisto.command()
     args = demisto.args()
 
     server = urljoin(params.get('server'), '/api')
