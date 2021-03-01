@@ -109,13 +109,19 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
+def prepare_value_to_query_with(value):
+    str_value = str(value) if isinstance(value, int) else value
+    str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+    str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
+    return str_value
+
+
 def build_incident_fields_query(incident_data):
     similar_keys_list = []
     for key, value in incident_data.items():
-        str_value = str(value) if isinstance(value, int) else value
-        str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
-        str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
-        similar_key = '{}:="{}"'.format(key, str_value) if isinstance(value, int) else '{}="{}"'.format(key, str_value)
+        str_value = prepare_value_to_query_with(value)
+        query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
+        similar_key = query_template.format(key, str_value)
         similar_keys_list.append(similar_key) if isinstance(value, int) else \
             similar_keys_list.append(str(similar_key).decode('utf-8'))  # type: ignore
 
