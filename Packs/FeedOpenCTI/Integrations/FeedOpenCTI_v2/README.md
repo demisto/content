@@ -1,5 +1,5 @@
 Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances.
-This integration was integrated and tested with version xx of OpenCTI Feed v2
+This integration was integrated and tested with version v4.0.7 of OpenCTI Feed v2
 ## Configure OpenCTI Feed v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -140,7 +140,7 @@ Gets indicators from the feed.
                         "objectMarkingIds": [
                             "c9819001-c80c-45e1-8edb-e543e350f195"
                         ],
-                        "observable_value": "1.1.2.2",
+                        "observable_value": "1.1.1.1",
                         "parent_types": [
                             "Basic-Object",
                             "Stix-Object",
@@ -150,12 +150,12 @@ Gets indicators from the feed.
                         "spec_version": "2.1",
                         "standard_id": "ipv4-addr--1d5586d0-4327-5e1c-9317-19c1e0cf8ec0",
                         "updated_at": "2021-02-18T08:04:10.997Z",
-                        "value": "1.1.2.2",
+                        "value": "1.1.1.1",
                         "x_opencti_description": "test fetch one",
                         "x_opencti_score": 100
                     },
                     "type": "IP",
-                    "value": "1.1.2.2"
+                    "value": "1.1.1.1"
                 },
                 {
                     "id": "700c8187-2dce-4aeb-bf3a-0864cb7b02c7",
@@ -249,7 +249,7 @@ Gets indicators from the feed.
 >### Indicators
 >|type|value|id|
 >|---|---|---|
->| IP | 1.1.2.2 | 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b |
+>| IP | 1.1.1.1 | 33bd535b-fa1c-41e2-a6f9-80d82dd29a9b |
 >| IP | 1.2.3.4 | 700c8187-2dce-4aeb-bf3a-0864cb7b02c7 |
 
 

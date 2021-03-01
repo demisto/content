@@ -236,7 +236,7 @@ def indicator_field_update_command(client: OpenCTIApiClient, args: dict) -> Comm
         result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
     except Exception as e:
         demisto.error(str(e))
-        raise DemistoException(f'Can't update indicator with field: {key}.')
+        raise DemistoException(f"Can't update indicator with field: {key}.")
 
     return CommandResults(
         outputs_prefix='OpenCTI.Indicator',
