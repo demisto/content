@@ -192,7 +192,7 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
             'updateddate': resource.get('last_updated'),
             'creationdate': resource.get('published_date'),
             'rawJSON': resource,
-            'tagstype': [label.get('name') for label in resource.get('labels')],  # type: ignore
+            'tags': [label.get('name') for label in resource.get('labels')],  # type: ignore
             'fields': {}
         }
         if tlp_color:

@@ -1,0 +1,185 @@
+{
+ "description": "Maps incoming CrowdStrike Indicator Feed indicator fields.",
+ "feed": true,
+ "id": "CrowdStrike Indicator Feed Indicator Mapper",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Actor": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "actors",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Creation Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "published_date",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Domain Name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "domain_types",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "IP Address": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "ip_address_types",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Malicious Confidence": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "malicious_confidence",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Malware Family": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "malware_families",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Reports": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "reports",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "STIX Kill Chain Phases": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "kill_chains",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Tags": {
+     "complex": {
+      "accessor": "name",
+      "filters": [
+
+      ],
+      "root": "labels",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Targets": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "targets",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Threat Types": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "threat_types",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Updated Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "last_updated",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Vulnerabilities": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "vulnerabilities",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "name": "CrowdStrike Indicator Feed - Incoming Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

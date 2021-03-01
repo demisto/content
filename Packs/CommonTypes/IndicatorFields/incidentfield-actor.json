@@ -18,15 +18,13 @@
     "breachScript": "",
     "editForm": true,
     "description": "",
-    "associatedToAll": false,
-    "associatedTypes": [
-        "File"
-    ],
+    "associatedTypes": null,
+    "systemAssociatedTypes": null,
+    "associatedToAll": true,
     "caseInsensitive": true,
     "columns": null,
     "placeholder": "",
     "useAsKpi": false,
-    "systemAssociatedTypes": null,
     "locked": false,
     "name": "Actor",
     "ownerOnly": false,
