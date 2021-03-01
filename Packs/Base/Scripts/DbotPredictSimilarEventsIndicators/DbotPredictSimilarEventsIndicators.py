@@ -10,21 +10,21 @@ import re
 import math
 
 
-def normalize(l):
-    return ' '.join(l)
+def normalize(x):
+    return ' '.join(x)
 
 
-def identity_score(X, y):
+def identity_score(X):
     return X
 
 
-def flatten(l: List[List]) -> List:
+def flatten(my_list: List[List]) -> List:
     """
     Flatten a list of list
     :param l: list of list
     :return: list
     """
-    return [item for sublist in l for item in sublist]
+    return [item for sublist in my_list for item in sublist]
 
 
 class Tfidf(BaseEstimator, TransformerMixin):
@@ -32,24 +32,25 @@ class Tfidf(BaseEstimator, TransformerMixin):
         self.feature_names = feature_names
         self.params = tfidf_params
         self.normalize_function = normalize_function
+        self.frequency = {}
         if self.normalize_function:
             x = x[self.feature_names].apply(self.normalize_function)
         else:
             x = x[self.feature_names]
         self.vocabulary = x.iloc[0].split(' ')
 
-    def fit(self, x, y=None):
+    def fit(self, x):
         if self.normalize_function:
             x = x[self.feature_names].apply(self.normalize_function)
         else:
             x = x[self.feature_names]
         size = len(x) + 1
-        self.frequency = Counter(flatten([t.split(' ') for t in x.values]))
-        self.frequency.update(Counter(self.vocabulary))
-        self.frequency = {k: math.log(1 + size / v) for k, v in self.frequency.items()}
+        frequencies = Counter(flatten([t.split(' ') for t in x.values]))
+        frequencies.update(Counter(self.vocabulary))
+        self.frequency = {k: math.log(1 + size / v) for k, v in frequencies.items()}
         return self
 
-    def transform(self, x, y=None):
+    def transform(self, x):
         if self.normalize_function:
             x = x[self.feature_names].apply(self.normalize_function)
         else:
@@ -58,8 +59,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
 
     def compute_term_score(self, x):
         x = x.split(' ')
-        return sum([1 * self.frequency[word] for word in self.vocabulary if word in x]) / \
-               sum([self.frequency[word] for word in self.vocabulary])
+        return sum([1 * self.frequency[word] for word in self.vocabulary if word in x]) / sum(
+            [self.frequency[word] for word in self.vocabulary])
 
 
 TRANSFORMATION = {
@@ -114,10 +115,10 @@ class Model:
     def remove_empty_field(self):
         remove_list = []
         for field in self.indicators:
-            if not field in self.incident_to_match.columns or not self.incident_to_match[field].values[
+            if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
-                    self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
-                0] == 'N/A':
+                    self.incident_to_match[field].values[0] == 'None' or \
+                    self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
         self.indicators = [x for x in self.indicators if x not in remove_list]
 
@@ -133,7 +134,7 @@ class Model:
             lambda x: ','.join([id for id in x.split(' ') if id in vocabulary]))
 
 
-def get_all_indicators_for_incident(incident_id: str) -> Dict:
+def get_all_indicators_for_incident(incident_id: str) -> List[Dict]:
     """
     Get indicators for one incident
     :param incident_id: incident id
@@ -149,7 +150,7 @@ def get_all_indicators_for_incident(incident_id: str) -> Dict:
     return indicators
 
 
-def get_number_of_invs_for_indicators(indicator: List[Dict]) -> int:
+def get_number_of_invs_for_indicators(indicator: Dict) -> int:
     """
     :param indicator: list of dict representing indicators
     :return: lenght of investigation ids for this indicator
@@ -185,7 +186,7 @@ def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -
     :param incident_ids: list of incident ids
     :return: dict of {incident id : list of indicators ids related to this incident)
     """
-    d = {k: [] for k in incident_ids}
+    d = {k: [] for k in incident_ids}  # type: Dict[str, List]
     for indicator in indicators:
         inv_ids = indicator.get('investigationIDs', None)
         if inv_ids:
@@ -207,7 +208,7 @@ def enriched_incidents(df, fields_incident_to_display):
     else:
         ids = df.index
     ids_string = []
-    for id_ in df.id:
+    for id_ in ids:
         ids_string.append('id: "%s"' % id_)
     query = " OR ".join(ids_string)
     res = demisto.executeCommand('GetIncidentsByQuery', {
@@ -302,11 +303,11 @@ def get_indicators_map(indicators: List[Dict]) -> Dict[str, Dict]:
     return {ind['id']: ind for ind in indicators}
 
 
-def join(l: List) -> str:
-    return ' '.join(l)
+def join(my_list: List) -> str:
+    return ' '.join(my_list)
 
 
-def display(similar_incidents: pd.DataFrame, indicators_map: Dict, aggregate: bool, threshold: float,
+def display(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], aggregate: bool, threshold: float,
             max_incidents_to_display: int) \
         -> pd.DataFrame:
     """
@@ -321,7 +322,7 @@ def display(similar_incidents: pd.DataFrame, indicators_map: Dict, aggregate: bo
     similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
     similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
-        lambda _ids: '\n'.join([indicators_map.get(x).get('value') for x in _ids.split(',')]))
+        lambda _ids: '\n'.join([indicators_map.get(x).get('value') for x in _ids.split(',')]))  # type: ignore
     similar_incidents = similar_incidents[['ID', 'id', 'Identical indicators', 'similarity indicators']]
     # if aggregate == 'True':
     #     agg_fields = [x for x in similar_incidents.columns if x not in ['id']]  #
@@ -339,8 +340,8 @@ def get_prediction_for_incident():
     aggregate = demisto.args().get('aggreagateIncidents')
     limit_nb_of_indicators = int(demisto.args()['minNumberOfIndicators'])
     threshold = float(demisto.args()['threshold'])
-    indicatorsTypes = demisto.args()['indicatorsTypes'].split(',')
-    indicatorsTypes = [x.strip() for x in indicatorsTypes if x]
+    indicators_types = demisto.args()['indicatorsTypes'].split(',')
+    indicators_types = [x.strip() for x in indicators_types if x]
     show_actual_incident = demisto.args().get('showActualIncident')
     debug = demisto.args().get('debug')
     max_incidents_to_display = int(demisto.args()['maxIncidentsToDisplay'])
@@ -358,7 +359,7 @@ def get_prediction_for_incident():
     indicators = get_all_indicators_for_incident(incident_id)
     indicators_map = get_indicators_map(indicators)
     indicators = list(filter(lambda x: get_number_of_invs_for_indicators(x) < max_indicators, indicators))
-    indicators = [x for x in indicators if x.get('indicator_type') in indicatorsTypes]
+    indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
     if len(indicators) < limit_nb_of_indicators:
         return_error("Number of indicators found is less then minNumberOfIndicators")
     if debug == 'True':
@@ -371,11 +372,11 @@ def get_prediction_for_incident():
     incident_ids = flatten(incident_ids)
     p = re.compile('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
     incident_ids = [x for x in incident_ids if not p.match(x)]
-    return_indicator_entry(incident_ids, indicatorsTypes, indicators)
+    return_indicator_entry(incident_ids, indicators_types, indicators)
 
     # Get indicators related to those investigations ids
     indicators_related = get_indicators_from_incident_ids(incident_ids)
-    indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicatorsTypes]
+    indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
     incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
     incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
     incidents_with_indicators_join.pop(incident_id, None)
@@ -385,7 +386,7 @@ def get_prediction_for_incident():
     incidents_df = pd.DataFrame.from_dict(incidents_with_indicators_join, orient='index')
     incidents_df.columns = ['indicators']
 
-    indicators_for_incident = [' '.join(set([x.get('id') for x in indicators]))]
+    indicators_for_incident = [' '.join(set([x.get('id') for x in indicators]))]  # type: ignore
     incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
     if debug == 'True':
         incidents_df_debug = incidents_df.reset_index()
@@ -406,11 +407,10 @@ def get_prediction_for_incident():
 
     # Display
     incident_df['Indicators'] = incident_df['indicators'].apply(
-        lambda _ids: '\n'.join([indicators_map.get(x).get('value') for x in _ids.split(' ')]))
+        lambda _ids: '\n'.join([indicators_map.get(x).get('value') for x in _ids.split(' ')]))  # type: ignore
     similar_incidents = display(similar_incidents, indicators_map, aggregate, threshold, max_incidents_to_display)
     similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display)
 
-    incidents_found = len(similar_incidents)
     incident_found_bool = (len(similar_incidents) > 0)
     if not incident_found_bool:
         demisto.results("No similar incidents were found with the given parameters")

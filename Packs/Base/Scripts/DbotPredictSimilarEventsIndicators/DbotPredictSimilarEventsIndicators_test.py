@@ -34,7 +34,8 @@ def test_get_prediction_for_incident(mocker):
                             'threshold': '0.1',
                             'indicatorsTypes': 'File,  URL, IP, Domain, IPv6',
                             'showActualIncident': "True",
-                            'maxIncidentsToDisplay': '150'
+                            'maxIncidentsToDisplay': '150',
+                            'fieldsIncidentToDisplay': 'type'
                         })
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res = get_prediction_for_incident()

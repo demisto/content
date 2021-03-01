@@ -1,10 +1,8 @@
-from collections import defaultdict
-
-import pytest
 import pandas as pd
-from CommonServerPython import *
+# from CommonServerPython import *
+# import pytest
 from DbotPredictSimilarEventsIndicators import identity_score, match_indicators_incident, get_indicators_map, Tfidf, \
-    Transformer, Model, get_number_of_invs_for_indicators, get_prediction_for_incident
+    get_number_of_invs_for_indicators
 
 TRANSFORMATION = {
     'indicators': {'transformer': Tfidf,
