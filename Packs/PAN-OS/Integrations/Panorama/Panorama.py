@@ -6600,19 +6600,63 @@ def create_wildfire_best_practice_profile_command(profile_name: str):
     return_results(f'The profile {profile_name} was created successfully.')
 
 
-def prettify_user_interface_config(interface_config: Union[List, Dict]) -> Union[List, Dict]:
-    pretty_interface_config = []
-    if isinstance(interface_config, dict):
+def prettify_zones_config(zones_config: Union[List, Dict]) -> Union[List, Dict]:
+    pretty_zones_config = []
+    if isinstance(zones_config, dict):
         return {
-            'Name': interface_config['@name'],
-            'Network': interface_config['network']
+            'Name': zones_config.get('@name'),
+            'Network': zones_config.get('network'),
+            'ZoneProtectionProfile': zones_config.get('zone-protection-profile'),
+            'EnableUserIdentification': zones_config.get('enable-user-identification'),
+            'LogSetting': zones_config.get('log-setting')
         }
 
-    for interface in interface_config:
-        pretty_interface_config.append({
-            'Name': interface['@name'],
-            'Network': interface['network']
+    for zone in zones_config:
+        pretty_zones_config.append({
+            'Name': zone.get('@name'),
+            'Network': zone.get('network'),
+            'ZoneProtectionProfile': zone.get('zone-protection-profile'),
+            'EnableUserIdentification': zone.get('enable-user-identification'),
+            'LogSetting': zone.get('log-setting')
         })
+
+    return pretty_zones_config
+
+
+def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List, Dict]:
+    pretty_interface_config = []
+    if isinstance(zone_config, dict):
+        # extract interfaces list - could be under layer3 or tap depending on response's source
+        interfaces = zone_config.get('network', {}).get('layer3', {}).get('member')
+        if not interfaces:
+            interfaces = zone_config.get('network', {}).get('tap', {}).get('member')
+
+        if isinstance(interfaces, str):
+            interfaces = [interfaces]
+
+        for interface in interfaces:
+            pretty_interface_config.append({
+                'Name': interface,
+                'Zone': zone_config.get('@name'),
+                'EnableUserIdentification': zone_config.get('enable-user-identification')
+            })
+
+    else:
+        for zone in zone_config:
+            # extract interfaces list - could be under layer3 or tap depending on response's source
+            interfaces = zone.get('network', {}).get('layer3', {}).get('member')
+            if not interfaces:
+                interfaces = zone.get('network', {}).get('tap', {}).get('member')
+
+            if isinstance(interfaces, str):
+                interfaces = [interfaces]
+
+            for interface in interfaces:
+                pretty_interface_config.append({
+                    'Name': interface,
+                    'Zone': zone.get('@name'),
+                    'EnableUserIdentification': zone.get('enable-user-identification')
+                })
 
     return pretty_interface_config
 
@@ -6667,7 +6711,29 @@ def show_user_id_interface_config_command(args: dict):
                 outputs_key_field='Name',
                 outputs=formatted_results,
                 readable_output=tableToMarkdown('User Interface Configuration:', formatted_results,
-                                                ['Name', 'Network'],
+                                                ['Name', 'Zone', 'EnableUserIdentification'],
+                                                removeNull=True),
+                raw_response=raw_response
+            )
+        )
+
+    else:
+        return_results("No results found")
+
+
+def show_zone_config_command(args):
+    raw_response = show_user_id_interface_config_request(args)
+
+    if raw_response:
+        formatted_results = prettify_zones_config(raw_response)
+        return_results(
+            CommandResults(
+                outputs_prefix="Panorama.Zone",
+                outputs_key_field='Name',
+                outputs=formatted_results,
+                readable_output=tableToMarkdown('Zone Configuration:', formatted_results,
+                                                ['Name', 'Network', 'EnableUserIdentification',
+                                                 'ZoneProtectionProfile', 'LogSetting'],
                                                 removeNull=True),
                 raw_response=raw_response
             )
@@ -6746,7 +6812,8 @@ def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Uni
             'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
             'EnableHipCollection': user_id_agents.get('enable-hip-collection'),
             'IpUserMapping': user_id_agents.get('ip-user-mappings'),
-            'SerialNumber': user_id_agents.get('serial-number')
+            'SerialNumber': user_id_agents.get('serial-number'),
+            'Disabled': user_id_agents.get('disabled')
         }
 
     for agent in user_id_agents:
@@ -6760,7 +6827,8 @@ def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Uni
             'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
             'EnableHipCollection': agent.get('enable-hip-collection'),
             'IpUserMapping': agent.get('ip-user-mappings'),
-            'SerialNumber': agent.get('serial-number')
+            'SerialNumber': agent.get('serial-number'),
+            'Disabled': agent.get('disabled')
         })
 
     return pretty_user_id_agents
@@ -7204,6 +7272,9 @@ def main():
 
         elif demisto.command() == 'panorama-show-user-id-interfaces-config':
             show_user_id_interface_config_command(args)
+
+        elif demisto.command() == 'panorama-show-zones-config':
+            show_zone_config_command(args)
 
         elif demisto.command() == 'panorama-list-configured-user-id-agents':
             list_configured_user_id_agents_command(args)

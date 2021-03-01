@@ -4454,14 +4454,11 @@ script:
     - contextPath: Panorama.UserInterfaces.Name
       description: The name of the user interface.
       type: String
-    - contextPath: Panorama.UserInterfaces.Network.layer3.member
-      description: The interface network layer3 member.
+    - contextPath: Panorama.UserInterfaces.Zone
+      description: The zone to which the interfacce wi connected
       type: String
-    - contextPath: Panorama.UserInterfaces.Network.log-setting
-      description: The interface network log settings.
-      type: String
-    - contextPath: Panorama.UserInterfaces.tap.member
-      description: The interface network tap member.
+    - contextPath: Panorama.UserInterfaces.EnableUserIdentification
+      description: Whether user identification is enabled.
       type: String
   - arguments:
     - default: false
@@ -4520,6 +4517,9 @@ script:
       type: String
     - contextPath: Panorama.UserIDAgents.Secret
       description: The user-ID agent secret.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Disabled
+      description: Whether the user-ID agent is disbaled.
       type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false

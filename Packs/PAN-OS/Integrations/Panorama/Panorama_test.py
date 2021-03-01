@@ -256,14 +256,14 @@ def test_validate_search_time():
 def test_prettify_user_interface_config():
     from Panorama import prettify_user_interface_config
     raw_response = [{'@name': 'internal', 'network': {'layer3': {'member': 'ethernet1/2'},
-                                                      'log-setting': 'ToLoggingService'}},
-                    {'@name': 'External', 'network': {'layer3': {'member': 'ethernet1/1'},
-                                                      'log-setting': 'ToLoggingService'}}]
+                                                      'log-setting': 'ToLoggingService'},
+                     'enable-user-identification': 'yes'},
+                    {'@name': 'External', 'network': {'tap': {'member': 'ethernet1/1'},
+                                                      'log-setting': 'ToLoggingService'},
+                     'enable-user-identification': 'no'}]
     response = prettify_user_interface_config(raw_response)
-    expected = [{'Name': 'internal', 'Network': {'layer3': {'member': 'ethernet1/2'},
-                                                 'log-setting': 'ToLoggingService'}},
-                {'Name': 'External', 'Network': {'layer3': {'member': 'ethernet1/1'},
-                                                 'log-setting': 'ToLoggingService'}}]
+    expected = [{'Name': 'ethernet1/2', 'Zone': 'internal', 'EnableUserIdentification': 'yes'},
+                {'Name': 'ethernet1/1', 'Zone': 'External', 'EnableUserIdentification': 'no'}]
     assert response == expected
 
 
@@ -276,10 +276,10 @@ def test_prettify_configured_user_id_agents__multi_result():
     response = prettify_configured_user_id_agents(raw_response)
     expected = [{'Name': 'testing2', 'Host': None, 'Port': None, 'NtlmAuth': None, 'LdapProxy': None,
                  'CollectorName': None, 'Secret': None, 'EnableHipCollection': None, 'SerialNumber': 'panorama2',
-                 'IpUserMapping': None},
+                 'IpUserMapping': None, 'Disabled': None},
                 {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
                  'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
-                 'IpUserMapping': 'yes'}]
+                 'IpUserMapping': 'yes', 'Disabled': None}]
     assert response == expected
 
 
@@ -291,5 +291,5 @@ def test_prettify_configured_user_id_agents__single_result():
     response = prettify_configured_user_id_agents(raw_response)
     expected = {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
-                'IpUserMapping': 'yes'}
+                'IpUserMapping': 'yes', 'Disabled': None}
     assert response == expected
