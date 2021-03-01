@@ -511,7 +511,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Order by descending order
+      description: Whether to order by descending order.
     deprecated: false
     description: Searches for records in the given application.
     execution: false
