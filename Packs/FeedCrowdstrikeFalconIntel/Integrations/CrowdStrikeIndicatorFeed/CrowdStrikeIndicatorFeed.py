@@ -111,14 +111,22 @@ class Client(BaseClient):
                                filter=filter,
                                sort='last_updated|asc')
 
-        timestamp = self.set_last_run()
-
         response = self.http_request(
             method='GET',
             params=params,
             headers=self._headers,
             url_suffix='intel/combined/indicators/v1'
         )
+
+        timestamp = self.set_last_run()
+
+        # need to fetch all indicators after the limit
+        if pagination := response.get('meta', {}).get('pagination'):
+            pagination_offset = pagination.get('offset', 0)
+            pagination_limit = pagination.get('limit', 200)
+            total = pagination.get('total', 0)
+            if pagination_offset * pagination_limit + pagination_limit < total:
+                timestamp = response.get('resources')[-1].get('last_updated')
 
         if response and not get_indicators_command:
             demisto.setIntegrationContext({'last_modified_time': timestamp})
