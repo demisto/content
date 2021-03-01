@@ -1528,7 +1528,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="h_3361940724151542101639989">8. Pause a scan</h3>
+<h3 id="h_3361940724151542101639989">8. Resume a scan</h3>
 <hr>
 <p>Resume all scans inputted as an array. Comma separated values. Will work only if the scan status is 'Paused'.</p>
 <h5>Base Command</h5>
