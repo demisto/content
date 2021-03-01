@@ -3,7 +3,6 @@ An integration module for the Virus Total v3 API.
 API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
-import copy
 from collections import defaultdict
 from typing import Callable
 
@@ -785,6 +784,10 @@ class ScoreCalculator:
 
 
 # region Helper functions
+def epoch_to_timestamp(epoch: int):
+    return datetime.utcfromtimestamp(epoch).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str, raw_response: dict) -> CommandResults:
     data = raw_response['data']
 
@@ -828,7 +831,7 @@ def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str
                 **data.get('attributes', {}),
                 'url': url,
                 'positives': f'{malicious}/{total}',
-                'last_modified': timestamp_to_datestring(attributes['last_modification_date'])
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date'])
             },
             headers=[
                 'url',
@@ -900,7 +903,7 @@ def build_file_output(score_calculator: ScoreCalculator, file_hash: str, raw_res
                 **data,
                 **attributes,
                 'positives': f'{malicious}/{total}',
-                'last_modified': timestamp_to_datestring(attributes['last_modification_date'])
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date'])
             },
             headers=[
                 'sha1', 'sha256', 'md5',
@@ -1014,26 +1017,6 @@ def encode_url_to_base64(url: str) -> str:
     return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
 
-def remove_links(data: List[dict]) -> list:
-    """
-
-    Args:
-        data: List from raw response which may contain links.
-
-    Returns:
-        data without links key
-
-    Examples:
-        >>> remove_links([{'links': ['link', 'link']}])
-        [{}]
-    """
-    data = copy.deepcopy(data)
-    for i, item in enumerate(data):
-        del item['links']
-        data[i] = item
-    return data
-
-
 # endregion
 
 # region Reputation commands
@@ -1057,7 +1040,7 @@ def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> Co
         'ASN': attributes.get('asn'),
         'Geo': assign_params(
             Country=attributes.get('country')
-    ),
+        ),
         'Vendor': 'VirusTotal'
     }
     if score == Common.DBotScore.BAD:
@@ -1084,7 +1067,7 @@ def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> Co
             {
                 **data,
                 **attributes,
-                'last_modified': timestamp_to_datestring(attributes['last_modification_date']),
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
                 'positives': f'{malicious}/{total}'
             },
             headers=['id', 'network', 'country', 'last_modified', 'reputation', 'positives']
@@ -1185,7 +1168,7 @@ def bang_domain(client: Client, score_calculator: ScoreCalculator, args: dict) -
         readable_output=tableToMarkdown(
             f'Domain data of {domain}',
             {
-                'last_modified': timestamp_to_datestring(attributes['last_modification_date']),
+                'last_modified': epoch_to_timestamp(attributes['last_modification_date']),
                 **data,
                 **whois,
                 **attributes
@@ -1336,18 +1319,22 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
     else:
         raise DemistoException(f'Could not find resource type of "{resource_type}"')
     data = raw_response['data']
-    data = remove_links(data)
     context = {
         'id': resource,
         'comments': data
     }
     # TODO: human readable
+    if data:
+        first_comment = data[0]['attributes']
+        first_comment['date'] = epoch_to_timestamp(first_comment['date'])
+    else:
+        first_comment = {}
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.{object_type}Comments',
         'id',
         readable_output=tableToMarkdown(
-            '',
-            data
+            f'First comment of {resource_type}: "{resource}"',
+            first_comment,
         ),
         outputs=context,
         raw_response=raw_response
@@ -1385,13 +1372,13 @@ def get_comments_by_id_command(client: Client, args: dict) -> CommandResults:
     comment_id = args['id']
     raw_response = client.get_comment_by_id(comment_id)
     data = raw_response['data']
-    data = remove_links(data)
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.Comments',
         'id',
         readable_output=tableToMarkdown(
             f'Comment of ID {comment_id}',
-            data
+            data['attributes'],
+            removeNull=True
         ),
         outputs=data,
         raw_response=raw_response
@@ -1461,7 +1448,6 @@ def search_command(client: Client, args: dict) -> CommandResults:
     query = args['query']
     raw_response = client.search(query)
     data = raw_response['data']
-    data = remove_links(data)
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.SearchResults',
         'id',

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from VirusTotalV3 import remove_links, encode_url_to_base64, raise_if_hash_not_valid, \
+from VirusTotalV3 import encode_url_to_base64, raise_if_hash_not_valid, \
     raise_if_ip_not_valid, ScoreCalculator
 
 
@@ -35,14 +35,6 @@ class TestScoreCalculator:
 
 
 class TestHelpers:
-    @pytest.mark.parametrize('lists_with_links', (
-        [],
-        [{'links': 'a link'}],
-        [{'links': 'a link'}, {'links': 'a link'}]
-    ))
-    def test_remove_links(self, lists_with_links):
-        assert not any('links' in item for item in remove_links(lists_with_links))
-
     def test_encode_url_to_base64(self):
         assert encode_url_to_base64('https://example.com') == 'aHR0cHM6Ly9leGFtcGxlLmNvbQ'
 
