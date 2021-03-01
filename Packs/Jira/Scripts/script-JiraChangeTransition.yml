@@ -1,0 +1,30 @@
+commonfields:
+  id: script-JiraChangeTransition
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: script-JiraChangeTransition
+script: |+
+  import json
+  def main():
+      incident = demisto.incidents()[0]
+
+      custom_fields = incident.get('CustomFields')
+      chosen_transition = custom_fields.get("jiratransitions")
+      demisto.executeCommand('jira-edit-issue',
+      {'issueId': incident.get('dbotMirrorId'), "transition": chosen_transition})
+
+
+
+  if __name__ in ["__main__", "builtin", "builtins"]:
+    main()
+
+type: python
+tags:
+- field-change-triggered
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.15759
+runas: DBotWeakRole

@@ -1,0 +1,26 @@
+commonfields:
+  id: script-JiraListTransition
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: script-JiraListTransition
+script: |
+  import json
+  def main():
+      incident = demisto.incidents()[0]
+      res = demisto.executeCommand('jira-list-transitions-command', {'issueId': incident.get('dbotMirrorId')})[0]["Contents"]
+
+      demisto.results({'hidden': False, 'options': sorted(res)})
+
+
+  if __name__ in ["__main__", "builtin", "builtins"]:
+    main()
+type: python
+tags:
+- field-display
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.15759
+runas: DBotWeakRole
