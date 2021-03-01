@@ -525,4 +525,4 @@ script:
   runonce: false
   dockerimage: demisto/python3:3.9.1.15759
 tests:
-- virusTotal-test-playbook
+- VirusTotal-V3-test-playbook

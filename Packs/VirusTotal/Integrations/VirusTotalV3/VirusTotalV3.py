@@ -845,11 +845,40 @@ def build_url_output(client: Client, score_calculator: ScoreCalculator, url: str
     )
 
 
-def build_file_output(score_calculator, file_hash, raw_response) -> CommandResults:
+def build_file_output(score_calculator: ScoreCalculator, file_hash: str, raw_response: dict) -> CommandResults:
     data = raw_response['data']
+    attributes = data['attributes']
     score = score_calculator.file_score(file_hash, raw_response)
     logs = score_calculator.get_logs()
     demisto.debug(logs)
+    signature_info = attributes.get('signature_info', {})
+    exiftool = attributes.get('exiftool', {})
+    standard_output = assign_params(
+        Name=exiftool.get('OriginalFileName'),
+        Size=attributes.get('size'),
+        SHA1=attributes.get('sha1'),
+        MD5=attributes.get('md5'),
+        SHA256=attributes.get('sha256'),
+        SSDeep=attributes.get('ssdeep'),
+        Extension=exiftool.get('FileTypeExtension'),
+        Company=exiftool.get('CompanyName'),
+        ProductName=exiftool.get('ProductName'),
+        Tags=attributes.get('tags'),
+        Signature=assign_params(
+            Authentihash=attributes.get('authentihash'),
+            Copyright=signature_info.get('copyright'),
+            FileVersion=signature_info.get('file version'),
+            Description=signature_info.get('description'),
+            InternalName=signature_info.get('internal name'),
+            OriginalName=signature_info.get('original name')
+        )
+    )
+    if score == Common.DBotScore.BAD:
+        standard_output['Malicious'] = {
+            'Vendor': INTEGRATION_NAME,
+            'Description': logs
+
+        }
     outputs = {
         f'{INTEGRATION_ENTRY_CONTEXT}.File(val.id && val.id === obj.id)': data,
         **Common.DBotScore(
@@ -858,7 +887,8 @@ def build_file_output(score_calculator, file_hash, raw_response) -> CommandResul
             integration_name=INTEGRATION_NAME,
             score=score,
             malicious_description=logs
-        ).to_context()
+        ).to_context(),
+        Common.File.CONTEXT_PATH: standard_output
     }
     last_analysis_stats = data['attributes']["last_analysis_stats"]
     malicious = last_analysis_stats['malicious']
@@ -868,15 +898,16 @@ def build_file_output(score_calculator, file_hash, raw_response) -> CommandResul
             f'Results of file hash {file_hash}',
             {
                 **data,
-                **data['attributes'],
-                'positives': f'{malicious}/{total}'
+                **attributes,
+                'positives': f'{malicious}/{total}',
+                'last_modified': timestamp_to_datestring(attributes['last_modification_date'])
             },
             headers=[
                 'sha1', 'sha256', 'md5',
                 'meaningful_name', 'type_extension', 'creation_date',
-                'last_modification_date', 'reputation', 'positives',
-                'links'
-            ]
+                'last_modified', 'reputation', 'positives'
+            ],
+            removeNull=True
         ),
         outputs=outputs,
         raw_response=raw_response
@@ -1024,7 +1055,9 @@ def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> Co
     ip_standard = {
         'Address': ip,
         'ASN': attributes.get('asn'),
-        'Geo': {'Country': data.get('country')},
+        'Geo': assign_params(
+            Country=attributes.get('country')
+    ),
         'Vendor': 'VirusTotal'
     }
     if score == Common.DBotScore.BAD:
@@ -1040,7 +1073,7 @@ def bang_ip(client: Client, score_calculator: ScoreCalculator, args: dict) -> Co
             INTEGRATION_NAME,
             score
         ).to_context(),
-        **ip_standard
+        Common.IP.CONTEXT_PATH: ip_standard
     }
     last_analysis_stats = data['attributes']["last_analysis_stats"]
     malicious = last_analysis_stats['malicious']
