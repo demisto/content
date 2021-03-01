@@ -126,7 +126,7 @@ class Client(BaseClient):
             pagination_limit = pagination.get('limit', 200)
             total = pagination.get('total', 0)
             if pagination_offset * pagination_limit + pagination_limit < total:
-                timestamp = response.get('resources')[-1].get('last_updated')
+                timestamp = response.get('resources', [])[-1].get('last_updated')
 
         if response and not get_indicators_command:
             demisto.setIntegrationContext({'last_modified_time': timestamp})
