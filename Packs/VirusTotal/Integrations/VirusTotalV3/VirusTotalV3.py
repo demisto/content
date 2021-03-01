@@ -192,7 +192,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#files-scan
         """
-        with open(file_path) as file:
+        with open(file_path, 'rb') as file:
             if upload_url:
                 return self._http_request(
                     'POST',
@@ -1210,7 +1210,7 @@ def file_rescan_command(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
-    file_hash = args['hash']
+    file_hash = args['file']
     raise_if_hash_not_valid(file_hash)
     raw_response = client.file_rescan(file_hash)
     data = raw_response['data']
@@ -1240,6 +1240,7 @@ def file_scan(client: Client, args: dict) -> CommandResults:
     assert file_path, 'File path does not exists. it the entry id is right?'
     raw_response = client.file_scan(file_path, upload_url=upload_url)
     data = raw_response['data']
+    # add current file as identifiers
     data.update(
         assign_params(
             **get_file_context(entry_id)
@@ -1248,11 +1249,11 @@ def file_scan(client: Client, args: dict) -> CommandResults:
 
     context = {
         'vtScanID': data['id'],  # BC Preservation
-        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id == obj.id)': data
+        f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)': data
     }
     return CommandResults(
         readable_output=tableToMarkdown(
-            f'The file has been submitted {file_obj["name"]}',
+            f'The file has been submitted "{file_obj["name"]}"',
             data,
             headers=['id', 'EntryID']
         ),
