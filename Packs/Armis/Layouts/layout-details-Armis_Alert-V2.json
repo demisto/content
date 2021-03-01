@@ -348,7 +348,7 @@
             "name": "Investigation Data",
             "static": false,
             "w": 1,
-            "x": 1,
+            "x": 0,
             "y": 4
           },
           {
@@ -359,11 +359,13 @@
             "i": "caseinfoid-13fb6a00-5efe-11eb-90eb-cb64f89e3f0d",
             "items": [
               {
+                "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "armisalertdescription",
                 "height": 22,
                 "id": "6509b050-5efe-11eb-90eb-cb64f89e3f0d",
                 "index": 0,
+                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -386,11 +388,13 @@
                 "startCol": 0
               },
               {
+                "dropEffect": "move",
                 "endCol": 2,
                 "fieldId": "armisalertstatus",
                 "height": 22,
                 "id": "680c9010-5efe-11eb-90eb-cb64f89e3f0d",
                 "index": 3,
+                "listId": "caseinfoid-13fb6a00-5efe-11eb-90eb-cb64f89e3f0d",
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -440,6 +444,15 @@
                 "height": 22,
                 "id": "6a1b24c0-5efe-11eb-90eb-cb64f89e3f0d",
                 "index": 8,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "armisdeviceid",
+                "height": 22,
+                "id": "cc032690-764d-11eb-b0cd-addc6954af82",
+                "index": 9,
                 "sectionItemType": "field",
                 "startCol": 0
               }

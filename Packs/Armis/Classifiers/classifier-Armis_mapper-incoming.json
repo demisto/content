@@ -40,6 +40,10 @@
                     "complex": null,
                     "simple": "type"
                 },
+                "Armis Device IDs": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
+                },
                 "State": {
                     "complex": null,
                     "simple": "status"
@@ -283,6 +287,10 @@
                 "Alert Name": {
                     "complex": null,
                     "simple": "title"
+                },
+                "Armis Device ID": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
                 },
                 "Event Type": {
                     "complex": null,

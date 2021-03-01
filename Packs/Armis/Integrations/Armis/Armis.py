@@ -33,18 +33,16 @@ class AccessToken:
 
 
 class Client(BaseClient):
-    def __init__(self, secret: str, base_url):
-        super().__init__(base_url)
+    def __init__(self, secret: str, base_url, verify):
+        super().__init__(base_url, verify=verify)
         self._secret = secret
         self._token: AccessToken = AccessToken('', datetime.now())
 
     def _get_token(self, force_new=False):
         """
         Returns an existing access token if a valid one is available and creates one if not
-
         Args:
             force_new (bool): create a new access token even if an existing one is available
-
         Returns:
             AccessToken: A valid Access Token to authorize requests
         """
@@ -62,13 +60,11 @@ class Client(BaseClient):
         Search with an AQL string and return the results.
         This function exists to allow a more advanced search than is provided for
         by the basic search alerts and search devices functions
-
         Args:
             aql_string (str): The AQL String by which to search
             order_by (str): what attribute to order the results by (time, etc')
             max_results (int): The maximum number of results to return
             page_from (int): Start from this number result - skip this many results
-
         Returns:
             dict: A JSON containing a list of results represented by JSON objects
         """
@@ -108,7 +104,6 @@ class Client(BaseClient):
                       page_from: int = None):
         """
         Search Alerts based on commonly used parameters
-
         Args:
             severity (List[str]): The severities of Alerts to include
             status (List[str]): The statuses of Alerts to include
@@ -118,22 +113,21 @@ class Client(BaseClient):
             order_by (str): Order results by this attribute
             max_results (int): The maximum number of results to return
             page_from (int): Start from this number result - skip this many results
-
         Returns:
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
         time_frame = '30 Days' if time_frame is None else time_frame
         aql_string = ['in:alerts', f'timeFrame:"{time_frame}"']
-        if severity is not None:
+        if severity:
             severity_string = ','.join([severity_option for severity_option in severity])
             aql_string.append(f'riskLevel:{severity_string}')
-        if status is not None:
+        if status:
             status_string = ','.join([status_option for status_option in status])
             aql_string.append(f'status:{status_string}')
-        if alert_type is not None:
+        if alert_type:
             alert_string = ','.join([f'"{alert_option}"' for alert_option in alert_type])
             aql_string.append(f'type:{alert_string}')
-        if alert_id is not None:
+        if alert_id:
             aql_string.append(f'alertId:({alert_id})')
 
         aql_string = ' '.join(aql_string)
@@ -142,13 +136,11 @@ class Client(BaseClient):
     def free_string_search_alerts(self, aql_string, order_by=None, max_results=None, page_from=None):
         """
         Search Alerts using a custom AQL String
-
         Args:
             aql_string (str): The AQL String by which to search
             order_by (str): Order results by this attribute
             max_results (int): The maximum number of results to return
             page_from (int): Start from this number result - skip this many results
-
         Returns:
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
@@ -161,7 +153,6 @@ class Client(BaseClient):
     def update_alert_status(self, alert_id, status: str):
         """
         Update the status of an Alert
-
         Args:
             status (str): The new status of the Alert to set
             alert_id (str): The Id of the Alert
@@ -178,7 +169,6 @@ class Client(BaseClient):
     def tag_device(self, device_id, tags: List[str]):
         """
         Add tags to a Device
-
         Args:
             tags (str): The tags to add to the Device
             device_id (str): The Id of the Device
@@ -190,7 +180,6 @@ class Client(BaseClient):
     def untag_device(self, device_id, tags):
         """
         Remove tags from a Device
-
         Args:
             tags (List[str]): The tags to remove from the Device
             device_id (str): The Id of the Device
@@ -211,7 +200,6 @@ class Client(BaseClient):
                        max_results: int = None):
         """
         Search Devices using commonly used search parameters
-
         Args:
             name (str): The name of the Device
             device_id (str): The Id of a Device
@@ -222,7 +210,6 @@ class Client(BaseClient):
             time_frame (str): A time frame to filter by
             order_by (str): Order results by this attribute
             max_results (int): The maximum number of results to return
-
         Returns:
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
@@ -250,12 +237,10 @@ class Client(BaseClient):
     def free_string_search_devices(self, aql_string, order_by: str = None, max_results: int = None):
         """
         Search Devices using commonly used search parameters
-
         Args:
             aql_string (str): The AQL Sgtring by which to search
             order_by (str): Order results by this attribute
             max_results (int): The maximum number of results to return
-
         Returns:
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
@@ -267,10 +252,8 @@ def test_module(client):
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     This test works by using a Client instance to create a temporary access token using the provided secret key,
     thereby testing both the connection to the server and the validity of the secret key
-
     Args:
         client: Armis client
-
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
@@ -286,10 +269,8 @@ def _ensure_timezone(date: datetime):
     """
     Some datetime objects are timezone naive and these cannot be compared to timezone aware datetime objects.
     This function sets a default timezone of UTC for any object without a timezone
-
     Args:
         date (datetime): The date object to add a timezone to
-
     Returns:
         datetime: A timezone aware datetime object
     """
@@ -308,7 +289,6 @@ def fetch_incidents(client,
                     max_results):
     """
     This function will execute each interval (default is 1 minute).
-
     Args:
         client (Client): Armis client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
@@ -318,7 +298,6 @@ def fetch_incidents(client,
         alert_status (List[str]): the status of alerts to fetch
         free_search_string (str): A custom search string for fetching alerts
         max_results: (int): The maximum number of alerts to fetch at once
-
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
@@ -386,7 +365,6 @@ def fetch_incidents(client,
 def untag_device_command(client, args):
     """
     armis-untag-device command: Remove tags from a Device
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
@@ -395,13 +373,12 @@ def untag_device_command(client, args):
     device_id = args.get('device_id')
     tags = argToList(args.get('tags'))
     client.untag_device(device_id, tags)
-    return 'Untagging successful'
+    return f'Successfully Tagged device: {device_id} with tags: {tags}'
 
 
 def tag_device_command(client, args):
     """
     armis-tag-device command: Add the given tags to a device
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
@@ -409,13 +386,12 @@ def tag_device_command(client, args):
     device_id = args.get('device_id')
     tags = argToList(args.get('tags'))
     client.tag_device(device_id, tags)
-    return 'Tagging successful'
+    return f'Successfully Tagged device: {device_id} with tags: {tags}'
 
 
 def update_alert_status_command(client, args):
     """
     armis-update-alert-status command: Update the status of an Alert to the given status
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
@@ -423,17 +399,15 @@ def update_alert_status_command(client, args):
     alert_id = args.get('alert_id')
     status = args.get('status')
     client.update_alert_status(alert_id, status)
-    return 'Alert status updated successfully'
+    return f'Successfully Updated Alert: {alert_id} to status: {status}'
 
 
 def search_alerts_command(client: Client, args):
     """
     armis-search-alerts command: Returns results for searching Alerts by common parameters
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
-
     Returns:
         CommandResults: A CommandResults object containing the matching alerts
     """
@@ -450,9 +424,10 @@ def search_alerts_command(client: Client, args):
         alert_type = argToList(alert_type)
 
     alert_id = args.get('alert_id')
+    max_results = args.get('max_results', 50)
     time_frame = args.get('time_frame')
 
-    response = client.search_alerts(severity, status, alert_type, alert_id, time_frame)
+    response = client.search_alerts(severity, status, alert_type, alert_id, time_frame, max_results=max_results)
     results = response.get('results')
     if results:
         return CommandResults(
@@ -472,7 +447,7 @@ def search_alerts_command(client: Client, args):
                 'alertId',
                 'connectionIds',
                 'deviceIds'
-            ])
+            ], removeNull=True)
         )
     return 'No results found'
 
@@ -480,7 +455,6 @@ def search_alerts_command(client: Client, args):
 def search_devices_command(client: Client, args):
     """
     armis-search-devices command: Returns results for searching Devices by common parameters
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
@@ -498,6 +472,7 @@ def search_devices_command(client: Client, args):
     mac_address = args.get('mac_address')
     ip_address = args.get('ip_address')
     time_frame = args.get('time_frame')
+    max_results = args.get('max_results', 50)
 
     response = client.search_devices(name,
                                      device_id,
@@ -505,7 +480,8 @@ def search_devices_command(client: Client, args):
                                      risk_level,
                                      ip_address,
                                      device_type,
-                                     time_frame)
+                                     time_frame,
+                                     max_results=max_results)
     results = response.get('results')
     if results:
         return CommandResults(
@@ -513,6 +489,29 @@ def search_devices_command(client: Client, args):
             outputs_key_field='deviceId',
             outputs=results,
             raw_response=response,
+            readable_output=tableToMarkdown('Devices', results, headers=[
+                'riskLevel',
+                'name',
+                'dataSources',
+                'category',
+                'type',
+                'model',
+                'manufacturer',
+                'macAddress',
+                'ipAddress',
+                'site',
+                'tags',
+                'operatingSystem',
+                'operatingSystemVersion',
+                'sensor',
+                'user',
+                'accessSwitch',
+                'firstSeen',
+                'id',
+                'ipv6',
+                'lastSeen',
+                'visibility',
+            ], removeNull=True)
         )
     return 'No devices found'
 
@@ -520,13 +519,14 @@ def search_devices_command(client: Client, args):
 def search_devices_by_aql_command(client: Client, args):
     """
     armis-search-devices-by-aql command: Returns results for searching Devices using a free AQL string
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
     aql_string = args.get('aql_string')
-    response = client.free_string_search_devices(aql_string)
+    max_results = args.get('max_results', 50)
+
+    response = client.free_string_search_devices(aql_string, max_results=max_results)
     results = response.get('results')
     if results:
         return CommandResults(
@@ -534,6 +534,29 @@ def search_devices_by_aql_command(client: Client, args):
             outputs_key_field='deviceId',
             outputs=results,
             raw_response=response,
+            readable_output=tableToMarkdown('Devices', results, headers=[
+                'riskLevel',
+                'name',
+                'dataSources',
+                'category',
+                'type',
+                'model',
+                'manufacturer',
+                'macAddress',
+                'ipAddress',
+                'site',
+                'tags',
+                'operatingSystem',
+                'operatingSystemVersion',
+                'sensor',
+                'user',
+                'accessSwitch',
+                'firstSeen',
+                'id',
+                'ipv6',
+                'lastSeen',
+                'visibility',
+            ], removeNull=True)
         )
     return 'No devices found'
 
@@ -541,13 +564,14 @@ def search_devices_by_aql_command(client: Client, args):
 def search_alerts_by_aql_command(client: Client, args):
     """
    armis-search-alerts-by-aql command: Returns results for searching Alerts using a free AQL string
-
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
     aql_string = args.get('aql_string')
-    response = client.free_string_search_alerts(aql_string)
+    max_results = args.get('max_results', 50)
+
+    response = client.free_string_search_alerts(aql_string, max_results=max_results)
     results = response.get('results')
     if results:
         return CommandResults(
@@ -567,7 +591,7 @@ def search_alerts_by_aql_command(client: Client, args):
                 'alertId',
                 'connectionIds',
                 'deviceIds',
-            ])
+            ], removeNull=True)
         )
     return 'No alerts found'
 
@@ -580,13 +604,14 @@ def main():
 
     # get the service API url
     base_url = demisto.params().get('url')
+    verify = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(secret, base_url=base_url)
+        client = Client(secret, base_url=base_url, verify=verify)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

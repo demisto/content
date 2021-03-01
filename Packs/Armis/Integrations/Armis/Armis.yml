@@ -109,7 +109,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum results to return.
+      defaultValue: '50'
+      description: The Maximum number of results to get
       isArray: false
       name: max_results
       required: false
@@ -133,22 +134,22 @@ script:
     name: armis-search-alerts
     outputs:
     - contextPath: Armis.SearchAlerts.activityIds
-      description: The activity ids of the Alert
+      description: The activity ids of the alert
       type: Number
     - contextPath: Armis.SearchAlerts.activityUUIDs
-      description: The activity UUIDs of the Alert
+      description: The activity UUIDs of the alert
       type: String
     - contextPath: Armis.SearchAlerts.alertId
       description: The ID of the Alert
       type: Number
     - contextPath: Armis.SearchAlerts.connectionIds
-      description: The connection ids of the Alert
+      description: The connection ids of the alert
       type: Unknown
     - contextPath: Armis.SearchAlerts.description
       description: A text description of the Alert
       type: String
     - contextPath: Armis.SearchAlerts.deviceIds
-      description: The device ids of the Alert
+      description: The device ids of the alert
       type: Number
     - contextPath: Armis.SearchAlerts.severity
       description: The Severity of the Alert
@@ -194,28 +195,35 @@ script:
       name: aql_string
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The Maximum number of results to get
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
     deprecated: false
     description: Search the Alerts with a raw aql string
     execution: false
     name: armis-search-alerts-by-aql-string
     outputs:
     - contextPath: Armis.SearchAlertsByAQLString.activityIds
-      description: The activity ids of the Alert
+      description: The activity ids of the alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.activityUUIDs
-      description: The activity UUIDs of the Alert
+      description: The activity UUIDs of the alert
       type: String
     - contextPath: Armis.SearchAlertsByAQLString.alertId
       description: The ID of the Alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.connectionIds
-      description: The connection ids of the Alert
+      description: The connection ids of the alert
       type: Unknown
     - contextPath: Armis.SearchAlertsByAQLString.description
       description: The description of the Alert
       type: String
     - contextPath: Armis.SearchAlertsByAQLString.deviceIds
-      description: The device ids of the Alert
+      description: The device ids of the alert
       type: Number
     - contextPath: Armis.SearchAlertsByAQLString.severity
       description: The Severity of the Alert
@@ -237,13 +245,13 @@ script:
       description: The ID of the device to add a tag to
       isArray: false
       name: device_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: The tags to add to the Device
       isArray: true
       name: tags
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Add a tag to a Device
@@ -254,13 +262,13 @@ script:
       description: The ID of the device to remove a tag from
       isArray: false
       name: device_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: The tags to remove from the Device
       isArray: true
       name: tags
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Remove a tag from a Device
@@ -298,15 +306,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type of the device
       isArray: false
       name: device_type
+      description: The device type
       required: false
       secret: false
     - default: false
-      description: The time frame in which to search
       isArray: false
       name: time_frame
+      description: The time frame
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The Maximum number of results to get
+      isArray: false
+      name: max_results
       required: false
       secret: false
     deprecated: false
@@ -321,7 +336,7 @@ script:
       description: The category of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.firstSeen
-      description: The time the device was first seen
+      description: The first time the device was seen
       type: Unknown
     - contextPath: Armis.SearchDevices.id
       description: The id of the device
@@ -333,7 +348,7 @@ script:
       description: The ipv6 address of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.lastSeen
-      description: The time the device was last seen
+      description: The last time the device was seen
       type: Unknown
     - contextPath: Armis.SearchDevices.macAddress
       description: The mac address of the device
@@ -357,7 +372,7 @@ script:
       description: The purdue level of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.riskLevel
-      description: The risk level associated with the device
+      description: The risk level of the device
       type: Unknown
     - contextPath: Armis.SearchDevices.sensor
       description: The sensor of the device
@@ -379,9 +394,16 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The aql string to search by
       isArray: false
+      description: The AQL string
       name: aql_string
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The Maximum number of results to get
+      isArray: false
+      name: max_results
       required: false
       secret: false
     deprecated: false
@@ -396,19 +418,19 @@ script:
       description: The category of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.firstSeen
-      description: The time the device was first seen
+      description: The first time the device was seen
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.id
       description: The id of the device
       type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.ipaddress
+    - contextPath: Armis.SearchDevicesByAql.ipAddress
       description: The ip address of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.ipv6
       description: The ipv6 address of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.lastSeen
-      description: The time the device was last seen
+      description: The last time the device was seen
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.macAddress
       description: The mac address of the device
@@ -432,7 +454,7 @@ script:
       description: The purdue level of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.riskLevel
-      description: The risk level associated with the device
+      description: The risk level of the device
       type: Unknown
     - contextPath: Armis.SearchDevicesByAql.sensor
       description: The sensor of the device
@@ -461,6 +483,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage45: demisto/python3:3.8.6.12176
 defaultmapperin: Armis_mapper-incoming
 defaultclassifier: classifier-armis-alerts
 fromversion: 5.0.0
