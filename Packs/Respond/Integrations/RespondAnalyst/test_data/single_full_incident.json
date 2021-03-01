@@ -76,9 +76,9 @@
       ],
       "timeGiven": "1594074534086",
       "optionalText": "new text",
-      "userId": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a",
+      "userId": "user1",
       "closedAt": "1594065777284",
-      "closedBy": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
+      "closedBy": "user1"
     },
     "userIds": [],
     "tags": [

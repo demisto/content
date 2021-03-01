@@ -511,7 +511,7 @@ def test_get_remote_data_command(requests_mock):
             "escalationReasons": [
                 {
                     "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"}],
-            "assignedUsers": ["cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"],
+            "assignedUsers": ["user1"],
             "feedback": {
                 "timeUpdated": "1593469076049",
                 "userId": "qa-user@respond-software.com",

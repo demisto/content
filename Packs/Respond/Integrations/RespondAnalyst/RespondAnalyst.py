@@ -830,7 +830,7 @@ def close_incident_command(rest_client, args):
 def get_incident_command(rest_client, args):
     formatted_incident = get_formatted_incident(rest_client, args)
     new_incident = {
-        'name': args['tenant_id'] + ': ' + formatted_incident['incidentId'],
+        'name': formatted_incident['tenantId'] + ': ' + formatted_incident['incidentId'],
         'occurred': formatted_incident.get('timeGenerated'),
         'rawJSON': json.dumps(formatted_incident)
     }
@@ -1072,7 +1072,7 @@ def main():
     """
     Executes an integration command
     """
-    LOG('Command being called is ' + demisto.command())
+    demisto.info('Command being called is ' + demisto.command())
 
     """
         PARSE AND VALIDATE INTEGRATION PARAMS

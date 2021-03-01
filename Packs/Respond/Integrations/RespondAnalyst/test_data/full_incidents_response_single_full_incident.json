@@ -53,7 +53,7 @@
         "title": "Virus Infections, Suspicious Repeated Connections and Int - Int Network IPS Activity",
         "description": "description of the incident",
         "userIds": [
-          "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
+          "user1"
         ],
         "authDataAccounts": [
           {

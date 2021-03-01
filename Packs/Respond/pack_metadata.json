@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Respond Software",
-    "url": "https://github.com/dannomayernotabot",
-    "email": "",
+    "url": "https://github.com/Respond-Software/content",
+    "email": "d.mayer@fireeye.com",
     "created": "2020-08-11T18:55:01Z",
     "categories": [
         "Analytics & SIEM"
@@ -13,5 +13,5 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": ["dannomayernotabot"]
 }

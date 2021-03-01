@@ -51,19 +51,19 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ID of the Tenant in which the incident resides
+      description: ID of the Tenant in which the incident resides in Respond
       isArray: false
       name: tenant_id
       required: false
       secret: false
     - default: false
-      description: ID of the incident to retrieve
+      description: Respond incident ID of the incident to retrieve
       isArray: false
       name: incident_id
       required: true
       secret: false
     deprecated: false
-    description: get a specific incident from Respond
+    description: pull a specific incident from Respond into XSOAR. Incidents can be pulled in regardless of closure status
     execution: false
     name: respond-get-incident
     outputs:
@@ -72,20 +72,20 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ID of the Tenant in which the incident resides
+      description: ID of the Tenant in which the incident resides in Respond
       isArray: false
       name: tenant_id
       required: false
       secret: false
     - default: false
-      description: ID of the incident to retrieve
+      description: Respond incident ID of the incident to retrieve
       isArray: false
       name: incident_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Outcome of the incident
+      description: Outcome of the incident. Confirmed, Non-Actionable, or Inconclusive. This outcome is determined by the analyst who closes the incident
       isArray: false
       name: incident_feedback
       predefined:
@@ -95,13 +95,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: additional feedback information
+      description: additional feedback information added by analysts. Any specific notes or observations
       isArray: false
       name: feedback_optional_text
       required: false
       secret: false
     deprecated: false
-    description: close an incident in Respond and provide feedback
+    description: close an incident in Respond and provide feedback on that incident. If the incident is already closed, feedback can still be updated. Additional comments and an updated closure code are viable options for updates on an incident that has already been closed (and on incidents that have not been closed yet as well)
     execution: false
     name: respond-close-incident
   - arguments:
@@ -124,7 +124,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: add a user to a respond incident
+    description: assign a user to a Respond incident
     execution: false
     name: respond-assign-user
   - arguments:
@@ -147,7 +147,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: remove a user from a Respond incident
+    description: unassign a user from a Respond incident
     execution: false
     name: respond-remove-user
   - arguments:
@@ -164,7 +164,7 @@ script:
       secret: false
       description: tenant id
     deprecated: false
-    description: Get escalation data associated with incident
+    description: Get escalation data associated with incident. In Respond, an 'escalation' is a specific event derived from a cybersecurity telemetry. Escalations are compiled together to form Incidents in Respond.
     execution: false
     name: respond-get-escalations
   dockerimage: demisto/python3:3.9.1.15759

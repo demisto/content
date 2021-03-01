@@ -1,12 +1,12 @@
 {
  "description": "",
  "feed": false,
- "id": "745b2e2d-07c2-4d44-88b4-ad9a5baf1a5a_custom",
+ "id": "respond-analyst-classifier",
  "keyTypeMap": {
   "Closed": "Respond Software Incident",
   "Open": "Respond Software Incident"
  },
- "name": "Respond_Analyst_instance_1 (custom) (classifier)",
+ "name": "Respond Analyst Classifier",
  "transformer": {
   "complex": {
    "accessor": "",

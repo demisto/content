@@ -10,7 +10,7 @@
       "newStatus": "NonActionable",
       "optionalText": "fdsafdsafdsa",
       "timeGiven": "1592523622852",
-      "userId": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
+      "userId": "user1"
     },
     "firstEventTime": "1591345217714",
     "id": "8",
@@ -48,7 +48,7 @@
       "newStatus": "Inconclusive",
       "optionalText": null,
       "timeGiven": "1592784436497",
-      "userId": "cbe263b5-c2ff-42e9-9d7a-bff7a3261d4a"
+      "userId": "user1"
     },
     "firstEventTime": "1590653233714",
     "id": "14",

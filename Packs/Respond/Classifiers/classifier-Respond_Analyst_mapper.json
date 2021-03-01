@@ -1,7 +1,7 @@
 {
  "description": "",
  "feed": false,
- "id": "745b2e2d-07c2-4d44-88b4-ad9a5baf1a5a_custom-mapper",
+ "id": "respond-analyst-mapper",
  "mapping": {
   "Respond Software Incident": {
    "dontMapEventToLabels": false,
