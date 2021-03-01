@@ -11,7 +11,7 @@ def main():
     if list_content:
         try:
             list_json = json.loads(list_content)
-        except:
+        except Exception:
             list_json = None  # list_json = {} return empty chart and the None return chart with N/As
     else:
         list_json = None
