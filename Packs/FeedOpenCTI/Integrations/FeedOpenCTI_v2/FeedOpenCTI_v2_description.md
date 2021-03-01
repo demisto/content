@@ -1,5 +1,3 @@
 ## Configure OpenCTI Feed v2 on Cortex XSOAR
 
-1. Enter **Base URL** and **API Key**.
-2. Choose **Indicators Types** to fetch.
-3. Click **Test** to validate the URLs, token, and connection.
+In order to retrieve **API Key**, navigate to OpenCTI URL. On the upper right corner click on an icon with person. Go to profile. Under **API access** written the **API KEY**.  
