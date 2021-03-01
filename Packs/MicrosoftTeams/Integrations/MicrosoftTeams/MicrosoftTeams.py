@@ -903,8 +903,8 @@ def create_channel_command():
 
 def create_meeting_command():
     subject: str = demisto.args().get('subject', '')
-    start_date_time: str = demisto.args().get('start_date_time', '')
-    end_date_time: str = demisto.args().get('end_date_time', '')
+    start_date_time: str = demisto.args().get('start_time', '')
+    end_date_time: str = demisto.args().get('end_time', '')
     member = demisto.args().get('member', '')
 
     user: list = get_user(member)

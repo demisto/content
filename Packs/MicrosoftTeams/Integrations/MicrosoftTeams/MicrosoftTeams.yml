@@ -294,15 +294,15 @@ script:
     name: microsoft-teams-create-channel
   - arguments:
     - default: false
-      description: The meeting start time. For example, start_time="2019-07-12T14:30:34.2444915-07:00".
+      description: The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00".
       isArray: false
-      name: start_date_time
+      name: start_time
       required: false
       secret: false
     - default: false
-      description: The meeting end time. For example, start_time="2019-07-12T14:30:34.2444915-07:00".
+      description: The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00".
       isArray: false
-      name: end_date_time
+      name: end_time
       required: false
       secret: false
     - default: false
