@@ -51,7 +51,7 @@ tasks:
       - "3"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
@@ -150,7 +150,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -198,24 +197,16 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e4bfa5c5-e5cc-47cc-8613-8ea226060631
-    type: regular
+    taskid: 4577088f-17a2-4361-8c7e-7f5bbc74d720
+    type: title
     task:
-      id: e4bfa5c5-e5cc-47cc-8613-8ea226060631
+      id: 4577088f-17a2-4361-8c7e-7f5bbc74d720
       version: -1
       name: closeInvestigation
       description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -231,16 +222,15 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0dd2c644-05a1-4ef2-859b-b93a93d01b25
+    taskid: 2f28e51d-0622-45bc-883a-bc8110f02467
     type: condition
     task:
-      id: 0dd2c644-05a1-4ef2-859b-b93a93d01b25
+      id: 2f28e51d-0622-45bc-883a-bc8110f02467
       version: -1
       name: verify results
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "5"
@@ -264,14 +254,6 @@ tasks:
           right:
             value:
               simple: elonmusk
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: HostIo.Search.Total
-            iscontext: true
-          right:
-            value:
-              simple: "283"
     view: |-
       {
         "position": {
@@ -289,7 +271,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 885,
+        "height": 855,
         "width": 1330,
         "x": 50,
         "y": 50
