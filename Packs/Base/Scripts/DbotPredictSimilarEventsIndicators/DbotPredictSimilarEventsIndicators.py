@@ -92,7 +92,7 @@ class Transformer():
     def get_score(self):
         scoring_function = self.params[self.type]['scoring']['scoring_function']
         X_vect, incident_vect = self.fit_transform()
-        dist = scoring_function(X_vect, incident_vect)
+        dist = scoring_function(X_vect)
         self.incidents_df['similarity %s' % self.field] = np.round(dist, 2)
         return self.incidents_df
 
@@ -218,6 +218,7 @@ def enriched_incidents(df, fields_incident_to_display):
     if is_error(res):
         return_error(res)
     if not json.loads(res[0]['Contents']):
+        demisto.results(df)
         return_error("No additional information found for those incidents")
     else:
         incidents = json.loads(res[0]['Contents'])
@@ -249,7 +250,7 @@ def return_no_mututal_indicators_found_entry():
 def add_context_key(entry_context):
     new_context = {}
     for k, v in entry_context.items():
-        new_context['{}.{}'.format('EmailCampaign', k)] = v
+        new_context['{}.{}'.format('MutualIndicators', k)] = v
     return new_context
 
 
@@ -281,7 +282,7 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
-    return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)))
+    return_outputs_custom(hr, None)
     return indicators_df
 
 
@@ -420,9 +421,14 @@ def get_prediction_for_incident():
     col = similar_incidents.columns.tolist()
     col = ['ID', 'created', 'name'] + [x for x in col if x not in ['ID', 'created', 'name', 'id']]
     if show_actual_incident == 'True':
+        incident_df['id'] = [incident_id]
+        incident_df = enriched_incidents(incident_df, fields_incident_to_display)
         incident_json = incident_df.to_dict(orient='records')
+        col_incident = incident_df.columns.tolist()
+        col_incident = ['id', 'created', 'name'] + [x for x in col_incident if
+                                                    x not in ['id', 'created', 'name', 'indicators']]
         return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
-                                                       ['Indicators']))
+                                                       col_incident))
     return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col))
     return similar_incidents_json
 

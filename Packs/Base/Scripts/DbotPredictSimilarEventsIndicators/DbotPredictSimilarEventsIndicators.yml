@@ -89,7 +89,7 @@ commonfields:
   id: 824f077d-49e9-4378-86a4-aa6603890c44
   version: -1
 enabled: true
-name: DbotPredictSimilarEventsBasedOnIndicators
+name: DBotPredictSimilarEventsBasedOnIndicators
 script: '-'
 subtype: python3
 system: false
