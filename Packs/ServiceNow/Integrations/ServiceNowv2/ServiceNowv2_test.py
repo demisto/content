@@ -6,7 +6,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
@@ -29,6 +29,7 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_MAPPING, EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 import demistomock as demisto
+from urllib.parse import urlencode
 
 
 def test_get_server_url():
@@ -877,3 +878,71 @@ def test_multiple_query_params(requests_mock, command, args):
     human_readable, entry_context, result, bol = command(client, args)
 
     assert result == RESPONSE_TICKET_ASSIGNED
+
+
+@pytest.mark.parametrize('api_response', [
+    ({'result': []}),
+    ({'result': [{'sys_id': 'sys_id1'}, {'sys_id': 'sys_id2'}]}),
+])
+def test_get_modified_remote_data(requests_mock, mocker, api_response):
+    """
+    Given:
+        - Case A: No updated records
+        - Case B: 2 updated records
+
+    When:
+     - Running get-modified-remote-data
+
+    Then:
+        - Case A: Ensure no record IDs returned
+        - Case B: Ensure the 2 records IDs returned
+    """
+    mocker.patch.object(demisto, 'debug')
+    url = 'https://test.service-now.com/api/now/v2/'
+    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    last_update = '2020-11-18T13:16:52.005381+02:00'
+    params = {
+        'sysparm_limit': '100',
+        'sysparm_offset': '0',
+        'sysparm_query': 'sys_updated_on>2020-11-18 11:16:52',
+        'sysparm_fields': 'sys_id',
+    }
+    requests_mock.request(
+        'GET',
+        f'{url}table/ticket_type?{urlencode(params)}',
+        json=api_response
+    )
+    result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
+
+    assert result.modified_incident_ids == [
+        record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
+    ]
+
+
+@pytest.mark.parametrize('sys_created_on, expected', [
+    (None, 'table_sys_id=id'),
+    ('', 'table_sys_id=id'),
+    ('2020-11-18 11:16:52', 'table_sys_id=id^sys_created_on>2020-11-18 11:16:52')
+])
+def test_get_ticket_attachments(mocker, sys_created_on, expected):
+    """
+    Given:
+        - Cases A+B: sys_created_on argument was not provided
+        - Case C: sys_created_on argument was provided
+
+    When:
+        - Getting a ticket attachments.
+
+    Then:
+        - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
+        - Case C: Ensure that the query parameters include ^sys_created_on>
+    """
+    client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    mocker.patch.object(client, 'send_request', return_value=[])
+
+    client.get_ticket_attachments('id', sys_created_on)
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
