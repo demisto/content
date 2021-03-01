@@ -4455,10 +4455,53 @@ script:
       description: The name of the user interface.
       type: String
     - contextPath: Panorama.UserInterfaces.Zone
-      description: The zone to which the interfacce wi connected
+      description: The zone to which the interface is connected
       type: String
     - contextPath: Panorama.UserInterfaces.EnableUserIdentification
       description: Whether user identification is enabled.
+      type: String
+  - arguments:
+    - default: false
+      description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration parameter.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: The template stack to use when running the command.
+      isArray: false
+      name: template_stack
+      required: false
+      secret: false
+    - default: false
+      description: 'The name of the virtual system to be configured. Will use the
+        configured VSYS parameter if exists. If given a value, will override the VSYS
+        parameter. If neither the VSYS parameter and this argument are entered, will
+        default to ''vsys1''. '
+      isArray: false
+      name: vsys
+      required: false
+      secret: false
+    deprecated: false
+    description: Shows the user ID interface configuration
+    execution: false
+    name: panorama-show-zones-config
+    outputs:
+    - contextPath: Panorama.Zone.Name
+      description: The name of the zone.
+      type: String
+    - contextPath: Panorama.Zone.Network
+      description: The network to which the zone connected
+      type: String
+    - contextPath: Panorama.Zone.EnableUserIdentification
+      description: Whether user identification is enabled.
+      type: String
+    - contextPath: Panorama.Zone.ZoneProtectionProfile
+      description: The zone protection profile.
+      type: String
+    - contextPath: Panorama.Zone.LogSetting
+      description: The log setting for the zone
       type: String
   - arguments:
     - default: false
