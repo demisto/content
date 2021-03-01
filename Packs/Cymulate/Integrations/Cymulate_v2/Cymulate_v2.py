@@ -15,6 +15,7 @@ CY_GENERAL_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 CY_UNIQUE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 MAX_INCIDENTS_TO_FETCH = 35
+MAX_EVENTS_TO_DISPLAY = 20
 
 SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 ACCESSED_STATUS = ['penetrated', 'accessed', 'executed completely', 'exfiltrated', 'completed']
@@ -48,18 +49,18 @@ class Client(BaseClient):
                         }
 
     def validate(self):
-        """ Helper function for test_module, that creates a simple API call"""
+        """ Helper function for test_module that creates a simple API call"""
         return self._http_request(method='GET',
                                   url_suffix='/user/modules',
                                   headers=self.headers,
                                   resp_type='response')
 
     def start_assessment(self, endpoint: Optional[str], data: dict):
-        """ Start a new assessment.
+        """ Start new assessment.
 
         Args:
-            endpoint (str): The Cymulate endpoint to start the assessment on.
-            data (dict): a dictionary containing all relevant data for running new assessment.
+            endpoint (str): Cymulate's endpoint to start the assessment on.
+            data (dict): Dictionary containing all relevant data for running new assessment.
         """
         return self._http_request(method='POST',
                                   url_suffix=f'{endpoint}/start',
@@ -80,7 +81,7 @@ class Client(BaseClient):
         """ Retrieve an assessment status.
 
         Args:
-            endpoint (str): The Cymulate endpoint to get the assessment status for.
+            endpoint (str): Cymulate's endpoint to get the assessment status for.
             assessment_id (str): The assessment ID to get the status to.
         """
         return self._http_request(method='GET',
@@ -129,18 +130,20 @@ class Client(BaseClient):
         """Retrieves attacks by module.
 
         Args:
-            endpoint (str): The Cymulate endpoint to list attacks by module.
+            endpoint (str): Cymulate's endpoint to list attacks by module.
         """
-        return self._http_request(method='GET',
-                                  url_suffix=f'/{endpoint}/attacks/technical',
-                                  headers=self.headers).get('data')
+        response = self._http_request(method='GET',
+                                      url_suffix=f'/{endpoint}/attacks/technical',
+                                      headers=self.headers)
+        response = response.get('data') if response else response
+        return response
 
     def list_attack_ids_by_date(self, endpoint: Optional[str], from_date: Optional[str],
                                 to_date: Optional[str] = None):
         """Retrieves attack IDs by their dates.
 
         Args:
-            endpoint (str): The Cymulate endpoint to list attacks.
+            endpoint (str): Cymulate's endpoint to list attacks.
             from_date (str): From which date to fetch data.
             to_date (str): End date to fetch data. If no argument is given, default is now.
         """
@@ -149,7 +152,8 @@ class Client(BaseClient):
                                       url_suffix=f'/{endpoint}/history/get-ids',
                                       params={'fromDate': from_date,
                                               'toDate': to_date},
-                                      headers=self.headers).get('data')
+                                      headers=self.headers)
+        response = response.get('data') if response else response
         response = response.get('attack') if response else response
         return response
 
@@ -160,11 +164,13 @@ class Client(BaseClient):
             from_date (str): From which date to fetch data.
             to_date (str): End date to fetch data. If no argument is given, default is now.
         """
-        return self._http_request(method='GET',
-                                  url_suffix='/immediate-threats/ids',
-                                  params={'fromDate': from_date,
-                                          'toDate': to_date},
-                                  headers=self.headers).get('data')
+        response = self._http_request(method='GET',
+                                      url_suffix='/immediate-threats/ids',
+                                      params={'fromDate': from_date,
+                                              'toDate': to_date},
+                                      headers=self.headers)
+        response = response.get('data') if response else response
+        return response
 
     def list_attack_ids(self, endpoint: Optional[str]):
         """Retrieves all attack IDs.
@@ -172,9 +178,11 @@ class Client(BaseClient):
         Args:
             endpoint (str): The Cymulate endpoint to list attacks.
         """
-        return self._http_request(method='GET',
-                                  url_suffix=f'/{endpoint}/ids',
-                                  headers=self.headers).get('data')
+        response = self._http_request(method='GET',
+                                      url_suffix=f'/{endpoint}/ids',
+                                      headers=self.headers)
+        response = response.get('data') if response else response
+        return response
 
     def get_attack_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
         """Retrieves data regarding an attack by the attack ID.
@@ -183,9 +191,11 @@ class Client(BaseClient):
             endpoint (str): The Cymulate endpoint to retrieve attacks data from.
             attack_id (str): ID of the attack to retrieve data to.
         """
-        return self._http_request(method='GET',
-                                  url_suffix=f'/{endpoint}/attack/technical/{attack_id}',
-                                  headers=self.headers).get('data')
+        response = self._http_request(method='GET',
+                                      url_suffix=f'/{endpoint}/attack/technical/{attack_id}',
+                                      headers=self.headers)
+        response = response.get('data') if response else response
+        return response
 
     def get_immediate_threat_assessment(self, attack_id: Optional[str]):
         """Retrieves data regarding immediate threats attack by the attack ID.
@@ -199,18 +209,18 @@ class Client(BaseClient):
         response = response.get('payloads') if response else response
         return response
 
-    def get_incident_by_id(self, endpoint: Optional[str], incident_id: Optional[str]):
-        """ Retrieves all incident data."""
+    def get_events_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
+        """ Retrieves all event data."""
         return self._http_request(method='GET',
-                                  url_suffix=f'{endpoint}/history/technical/{incident_id}',
+                                  url_suffix=f'{endpoint}/history/technical/{attack_id}',
                                   headers=self.headers,
-                                  params={'id': incident_id})
+                                  params={'id': attack_id})
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def extract_status_output(result: dict) -> dict:
+def extract_status_commands_output(result: dict) -> dict:
     """Parse the dictionary returned from the API call to a XSOAR output.
 
     Args:
@@ -264,13 +274,13 @@ def validate_timestamp(timestamp: Any) -> bool:
 
 def get_alerts_by_module(client: Client, module_name: str,
                          last_fetch: int) -> Tuple[List[Any], int, int, int]:
-    """Helper function to retrieves raw data from API according to the module currently fetched,
+    """Helper function to retrieves raw data from the API according to the module currently fetched,
     and using format_incidents() function to format the raw data into XSOAR incident format.
 
     Args:
         client (Client): Cymulate client.
         module_name (str): The module we are currently fetching.
-        last_fetch (int): timestamp in milliseconds on when to start fetching incidents.
+        last_fetch (int): Timestamp in milliseconds on when to start fetching incidents.
 
     Returns:
         list: incidents,
@@ -284,18 +294,12 @@ def get_alerts_by_module(client: Client, module_name: str,
     timestamp_endpoint = None
     event_offset = get_integration_context().get('offset', 0)
 
-    if module_name == 'web-gateway':
-        raw_data = client.list_attacks(ENDPOINT_DICT.get(module_name))
-
-    elif module_name == 'exfiltration':
+    if module_name in ('web-gateway', 'exfiltration', 'endpoint-security'):
         raw_data = client.list_attacks(ENDPOINT_DICT.get(module_name))
 
     elif module_name == 'email-gateway':
         raw_data = client.list_attacks(ENDPOINT_DICT.get(module_name))
         timestamp_endpoint = 'Email_Received'
-
-    elif module_name == 'endpoint-security':
-        raw_data = client.list_attacks(ENDPOINT_DICT.get(module_name))
 
     elif module_name == 'waf':
         id_data_list = client.list_attack_ids(module_name)
@@ -321,11 +325,10 @@ def get_alerts_by_module(client: Client, module_name: str,
             raw_data.extend(client.get_attack_by_id(ENDPOINT_DICT.get(module_name), cur_id))
 
     elif module_name == 'immediate-threats':
-        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name),
-                                                      timestamp_to_datestring(last_fetch,
-                                                                              '%Y-%m-%d'))
+        from_date = timestamp_to_datestring(last_fetch, '%Y-%m-%d')
+        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
 
-        # Kill Chain endpoint returns IDs from all times so filter by time before creating incidents
+        # Immediate threats endpoint returns IDs from all times so filter by time.
         relevant_id_list = []
         for cur_id in id_data_list:
             alert_created_time = int(date_to_timestamp(cur_id.get('Timestamp'),
@@ -339,23 +342,18 @@ def get_alerts_by_module(client: Client, module_name: str,
         for cur_id in site_id_list:
             raw_data.extend(client.get_immediate_threat_assessment(cur_id))
 
-    elif module_name == 'phishing-awareness':
+    elif module_name in ('phishing-awareness', 'lateral-movement'):
         from_date = timestamp_to_datestring(last_fetch, '%Y-%m-%d')
-        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name),
-                                                      from_date)
+        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
+
+        # Extracting the attack data for each site ID.
         site_id_list = format_id_list(id_data_list)
 
         for cur_id in site_id_list:
             raw_data.extend(client.get_attack_by_id(ENDPOINT_DICT.get(module_name), cur_id))
+
+        if module_name == 'phishing-awareness':
             timestamp_endpoint = 'Campaign_Start_Timestamp'
-
-    elif module_name == 'lateral-movement':
-        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name),
-                                                      timestamp_to_datestring(last_fetch,
-                                                                              '%Y-%m-%d'))
-        site_id_list = format_id_list(id_data_list)
-        for cur_id in site_id_list:
-            raw_data.extend(client.get_attack_by_id(ENDPOINT_DICT.get(module_name), cur_id))
 
     return format_incidents(raw_data, event_offset, last_fetch, module_name, timestamp_endpoint)
 
@@ -413,6 +411,7 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
         # if current event name is identical to previous, then only update incident description.
         if (module_name in ('endpoint-security', 'kill-chain')) and \
                 (incidents and extract_event_name(event, module_name) == incidents[-1].get('name')):
+            event_offset += 1
             last_incident = incidents[-1]
             alert_created_time = last_incident.get('occurred')
 
@@ -430,19 +429,15 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
             current_description = data.get('description')
             new_description = f"\nStep {step_num}:\n{extract_event_description(event)}"
 
-            if current_description:
-                data['description'] = f'{current_description}{new_description}'
-
-            elif new_description:
-                data['description'] = new_description
+            data['description'] = f'{current_description}{new_description}' if current_description\
+                else new_description
 
             # Insert new description to the previous incident.
             last_incident['rawJSON'] = json.dumps(data)
             incidents[-1] = last_incident
 
-            event_offset += 1
-
-            # Keep track on the latest incident timestamp.
+            # Keep track on the latest incident timestamp. Events that are part of an incident are
+            # returned without timestamp so we only use the first the event's timestamp (First step)
             if alert_created_time > max_alert_created_time:
                 max_alert_created_time = alert_created_time
 
@@ -451,10 +446,11 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
             if event_counter >= MAX_INCIDENTS_TO_FETCH:
                 break
 
-            # Incrementing the event offset, regardless of a new incident will be created or not.
+            # Incrementing the event offset, regardless of whether new incident will be created.
             event_offset += 1
 
-            # If attack status is identical to previous assessment status, we won't create incident.
+            # If attack status is identical to previous assessment status, or the current attack was
+            # unsuccessful, we won't create incident.
             if not event_status_changed(event):
                 continue
 
@@ -489,14 +485,12 @@ def extract_event_name(event: dict, module_name: str) -> str:
         module_name (str): Module name.
     """
     event_name = f"Cymulate - {module_name} - "
-    if module_name == 'web-gateway':
+
+    if module_name in ('web-gateway', 'email-gateway', 'immediate-threats'):
         event_name = f"{event_name}{event.get('Attack_Payload')}"
 
     elif module_name == 'exfiltration':
         event_name = f"{event_name}{event.get('Phrase_Title')}-{event.get('Classification')}"
-
-    elif module_name == 'email-gateway':
-        event_name = f"{event_name}{event.get('Attack_Payload')}"
 
     elif module_name == 'endpoint-security':
         event_name = f"{event_name}{event.get('Scenario_Title')}"
@@ -506,9 +500,6 @@ def extract_event_name(event: dict, module_name: str) -> str:
 
     elif module_name == 'kill-chain':
         event_name = f"{event_name}{event.get('Template_Name')}"
-
-    elif module_name == 'immediate-threats':
-        event_name = f"{event_name}{event.get('Attack_Payload')}"
 
     elif module_name == 'phishing-awareness':
         event_name = f"{event_name}{event.get('User')}"
@@ -570,7 +561,7 @@ def build_incident_dict(event: dict, module_name: str, event_timestamp=None) -> 
     Args:
         event (dict): Event dictionary.
         module_name (str): Module name.
-        event_timestamp: event timestamp.
+        event_timestamp: Event timestamp.
 
     Returns:
         dict: XSOAR incident.
@@ -687,7 +678,6 @@ def list_exfiltration_template_command(client: Client) -> CommandResults:
     """
     raw_response = client.list_templates(ENDPOINT_DICT.get('exfiltration'))
     outputs = raw_response.get('data', None)
-
     readable_output = tableToMarkdown('Exfiltration templates list:', outputs, removeNull=True)
 
     command_results = CommandResults(
@@ -750,9 +740,7 @@ def stop_exfiltration_assessment_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the stop assessment data.
-
     """
-
     raw_response = client.stop_assessment(ENDPOINT_DICT.get('exfiltration'))
     readable_output = tableToMarkdown('Stopping exfiltration assessment:', raw_response)
 
@@ -779,10 +767,8 @@ def get_exfiltration_assessment_status_command(client: Client,
                         containing the assessment status.
 
     """
-
     raw_response = client.get_assessment_status(ENDPOINT_DICT.get('exfiltration'), assessment_id)
-
-    output = extract_status_output(raw_response)
+    output = extract_status_commands_output(raw_response)
     readable_output = tableToMarkdown('Exfiltration assessment status:', output, removeNull=True)
 
     command_results = CommandResults(
@@ -804,9 +790,7 @@ def list_email_gateway_template_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the list of all email-gateway templates.
-
     """
-
     raw_response = client.list_templates(ENDPOINT_DICT.get('email-gateway'))
     readable_output = tableToMarkdown('Email gateway templates list:',
                                       raw_response,
@@ -836,7 +820,6 @@ def start_email_gateway_assessment_command(client: Client, template_id: str, age
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the start assessment data.
-
     """
 
     params = {
@@ -872,9 +855,7 @@ def stop_email_gateway_assessment_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the stop assessment data.
-
     """
-
     raw_response = client.stop_assessment(ENDPOINT_DICT.get('email-gateway'))
     readable_output = tableToMarkdown('Stopping email gateway assessment:', raw_response)
 
@@ -898,21 +879,21 @@ def get_email_gateway_assessment_status_command(client: Client,
 
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
-                        containing the assessment status.
-
+                        containing the email gateway assessment status.
     """
-
+    outputs = {}
     raw_response = client.get_assessment_status(ENDPOINT_DICT.get('email-gateway'), assessment_id)
 
-    output = raw_response.get('data')[0]
-    output = extract_status_output(output)
+    output = raw_response.get('data')
+    if output:
+        outputs = extract_status_commands_output(output[0])
 
-    readable_output = tableToMarkdown('Email gateway assessment status:', output, removeNull=True)
+    readable_output = tableToMarkdown('Email gateway assessment status:', outputs, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Cymulate.EmailGateway.Assessment',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=output,
+        outputs=outputs,
         raw_response=raw_response
     )
     return command_results
@@ -927,13 +908,12 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the list of all endpoint security templates.
-
     """
-
     raw_response = client.list_templates(ENDPOINT_DICT.get('endpoint-security'))
     readable_output = tableToMarkdown('Endpoint security templates list:',
                                       raw_response,
                                       removeNull=True)
+
     command_results = CommandResults(
         outputs_prefix='Cymulate.EndpointSecurity.Templates',
         outputs_key_field='_id',
@@ -960,7 +940,6 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the start assessment data.
-
     """
 
     params = {
@@ -1027,7 +1006,7 @@ def get_endpoint_security_assessment_status_command(client: Client,
     """
     endpoint = ENDPOINT_DICT.get('endpoint-security')
     raw_response = client.get_assessment_status(endpoint, assessment_id)
-    output = extract_status_output(raw_response)
+    output = extract_status_commands_output(raw_response)
 
     readable_output = tableToMarkdown('Endpoint security assessment status:', output,
                                       removeNull=True)
@@ -1149,7 +1128,7 @@ def get_waf_assessment_status_command(client: Client, assessment_id: str) -> Com
     """
     endpoint = ENDPOINT_DICT.get('waf')
     raw_response = client.get_assessment_status(endpoint, assessment_id)
-    output = extract_status_output(raw_response)
+    output = extract_status_commands_output(raw_response)
 
     readable_output = tableToMarkdown('WAF assessment status:', output, removeNull=True)
 
@@ -1173,7 +1152,7 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         browsing_address (str): Browsing address.
-        mail_address (str): Agent email address..
+        mail_address (str): Agent email address.
         edr_address (str): EDR address.
 
     Returns:
@@ -1217,9 +1196,7 @@ def stop_immediate_threat_assessment_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the stop assessment data.
-
     """
-
     raw_response = client.stop_assessment(ENDPOINT_DICT.get('immediate-threats'))
 
     readable_output = tableToMarkdown('Stop immediate-threats assessment:', raw_response)
@@ -1247,12 +1224,12 @@ def get_immediate_threat_assessment_status_command(client: Client,
     """
     endpoint = ENDPOINT_DICT.get('immediate-threats')
     raw_response = client.get_assessment_status(endpoint, assessment_id)
-    output = extract_status_output(raw_response)
 
+    output = extract_status_commands_output(raw_response)
     readable_output = tableToMarkdown('Immediate-threats assessment status:',
                                       output,
-                                      removeNull=True
-                                      )
+                                      removeNull=True)
+
     command_results = CommandResults(
         outputs_prefix='Cymulate.ImmediateThreats.Assessment',
         outputs_key_field='',
@@ -1272,7 +1249,6 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the list of all lateral movement templates.
-
     """
 
     raw_response = client.list_templates(ENDPOINT_DICT.get('lateral-movement'))
@@ -1373,7 +1349,7 @@ def get_lateral_movement_assessment_status_command(client: Client,
     """
     endpoint = ENDPOINT_DICT.get('lateral-movement')
     raw_response = client.get_assessment_status(endpoint, assessment_id)
-    output = extract_status_output(raw_response.get('data'))
+    output = extract_status_commands_output(raw_response.get('data'))
     readable_output = tableToMarkdown('Lateral movement assessment status:', output,
                                       removeNull=True)
 
@@ -1483,6 +1459,40 @@ def list_agents_command(client: Client) -> CommandResults:
 
     command_results = CommandResults(
         outputs_prefix='Cymulate.Agent',
+        outputs_key_field='',
+        readable_output=readable_output,
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+    return command_results
+
+
+def list_events_command(client: Client, module: str, attack_id: str):
+    """ Retrieve a list of all events by ID.
+
+    Args:
+        client (Client): Cymulate client.
+        module (str): Module to retrieve events to.
+        attack_id (str): Attack ID.
+
+    Returns:
+        CommandResults: A CommandResults object that is then passed to 'return_results',
+                        containing the list of all module events from a specific ID.
+    """
+    outputs = []
+    raw_response = client.get_events_by_id(ENDPOINT_DICT.get(module), attack_id).get('data')
+    num_events_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
+
+    if raw_response:
+        outputs = raw_response[:num_events_to_display]
+
+    readable_output = tableToMarkdown(f"Displaying {num_events_to_display}/{len(raw_response)} "
+                                      f"Events:",
+                                      outputs,
+                                      removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix='Cymulate.Events',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
@@ -1617,6 +1627,9 @@ def main() -> None:
                                                   fetch_categories=fetch_categories)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
+        elif command == 'cymulate-events-list':
+            return_results(list_events_command(client, **demisto.args()))
 
         # exfiltration
         elif command == 'cymulate-exfiltration-template-list':

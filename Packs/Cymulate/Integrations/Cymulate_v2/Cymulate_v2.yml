@@ -646,6 +646,92 @@ script:
     - contextPath: Cymulate.Agent.addressMethod
       description: The agent's methods.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Module to retrieve events to.
+      isArray: false
+      name: module
+      predefined:
+      - web-gateway
+      - exfiltration
+      - email-gateway
+      - endpoint-security
+      - waf
+      - kill-chain
+      - immediate-threats
+      - phishing-awareness
+      - lateral-movement
+      required: true
+      secret: false
+    - default: false
+      description: Attack ID.
+      isArray: false
+      name: attack_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a list of all events by ID.
+    execution: false
+    name: cymulate-events-list
+    outputs:
+    - contextPath: Cymulate.Events.Attack_Type
+      description: Attack payload
+      type: String
+    - contextPath: Cymulate.Events.Classification
+      description: Attack classification.
+      type: String
+    - contextPath: Cymulate.Events.Content_Type
+      description: Content type.
+      type: String
+    - contextPath: Cymulate.Events.Module
+      description: Event's module.
+      type: String
+    - contextPath: Cymulate.Events.Phrase
+      description: Attack description.
+      type: String
+    - contextPath: Cymulate.Events.Phrase_Title
+      description: Attack name.
+      type: String
+    - contextPath: Cymulate.Events.Status
+      description: Attack status
+      type: String
+    - contextPath: Cymulate.Events.PrevStatus
+      description: Attack Previous status
+      type: String
+    - contextPath: Cymulate.Events.Risk
+      description: Attack risk level.
+      type: String
+    - contextPath: Cymulate.Events.Source
+      description: Attack Source
+      type: String
+    - contextPath: Cymulate.Events.User
+      description: User committed the attack ot was attacked.
+      type: String
+    - contextPath: Cymulate.Events.Attack_Vector
+      description: Attack vector
+      type: String
+    - contextPath: Cymulate.Events.Source_Email_Address
+      description: Source email address.
+      type: String
+    - contextPath: Cymulate.Events.Md5
+      description: MD5 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Events.Sha256
+      description: Sha256 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Events.Sha1
+      description: Sha1 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Events.Mitigation
+      description: Mitigation details.
+      type: String
+    - contextPath: Cymulate.Events.Mitigation_Details
+      description: Mitigation details.
+      type: String
+    - contextPath: Cymulate.Events.Description
+      description: Attack description
+      type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
