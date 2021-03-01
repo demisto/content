@@ -80,6 +80,13 @@
             "timeout": 700
         },
         {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
+            "instance_names": "ewv2_regular",
+            "fromversion": "5.5.0",
+            "timeout": 700
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"
