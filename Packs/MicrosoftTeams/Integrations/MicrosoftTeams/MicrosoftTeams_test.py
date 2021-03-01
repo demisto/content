@@ -1189,16 +1189,16 @@ def test_create_channel(requests_mock):
 
 
 def test_create_meeting_command(requests_mock, mocker):
-    from MicrosoftTeams import create_meeting_command, get_user
+    from MicrosoftTeams import create_meeting_command
     mocker.patch.object(demisto, 'args', return_value={"subject": "Best_Meeting", "member": "username"})
     mocker.patch.object(demisto, 'results')
     requests_mock.get(
-        f'https://graph.microsoft.com/v1.0/users',
+        'https://graph.microsoft.com/v1.0/users',
         json={"value": [{"id": "userid1"}]}
     )
 
     requests_mock.post(
-        f'https://graph.microsoft.com/v1.0/users/userid1/onlineMeetings',
+        'https://graph.microsoft.com/v1.0/users/userid1/onlineMeetings',
         json={
             "chatInfo": {
                 "threadId": "19:@thread.skype",

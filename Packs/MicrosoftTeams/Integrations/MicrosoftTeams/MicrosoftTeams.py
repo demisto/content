@@ -938,7 +938,7 @@ def create_meeting_command():
     return_results(result)
 
 
-def get_participant_info(participants: dict) -> (str, str):
+def get_participant_info(participants: dict) -> Tuple[str, str]:
     """
     Retrieves the participant id and name
     :param participants: The participants in the Team meeting
