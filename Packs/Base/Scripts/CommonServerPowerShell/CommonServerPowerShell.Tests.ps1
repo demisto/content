@@ -167,11 +167,18 @@ Describe 'Check-UtilityFunctions' {
         It "Check with False boolean that is not $null" {
             @{test=$false} | TableToMarkdown | Should -Be "| test`n| ---`n| False`n"
         }
-        It "Check with PSObject that nested list" {
+        It "Check with PSObject that nested list"{
             $OneElementObject += New-Object PSObject -Property @{Index=1;Name=@('test1';'test2')}
             $OneElementObject | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | \[`"test1`",`"test2`"\]`n"
         }
-        
+        It "ArrayList object"{
+            $ArrLst = [System.Collections.ArrayList]::new()
+            $ArrLst.Add("a string")
+            $ArrLst.Add("another string")
+            $tbl = @{"arraylist" = $ArrLst} | TableToMarkdown
+            $tbl | Should -Match "a string"
+            $tbl | Should -Match "another string"
+        }
     }
     Context "Test stringEscapeMD" {
         It "Escaping special chars"{

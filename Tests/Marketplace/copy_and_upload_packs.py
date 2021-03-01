@@ -235,15 +235,17 @@ def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     assert not not_uploaded and not mistakenly_uploaded, error_str
 
 
-def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict):
-    """ If the two dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
+def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,
+                            pc_successful_private_packs_dict: dict):
+    """ If the three dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
 
     Args:
         pc_successful_packs_dict: The successful packs dict
         pc_failed_packs_dict: The failed packs dict
+        pc_successful_private_packs_dict : The successful private packs dict
 
     """
-    if not pc_successful_packs_dict and not pc_failed_packs_dict:
+    if not pc_successful_packs_dict and not pc_failed_packs_dict and not pc_successful_private_packs_dict:
         logging.warning("Production bucket is updated with origin/master.")
         logging.warning("Skipping Upload To Marketplace Storage Step.")
         sys.exit(0)
@@ -309,6 +311,10 @@ def main():
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
+    # Relevant when triggering test upload flow
+    if production_bucket_name:
+        GCPConfig.PRODUCTION_BUCKET = production_bucket_name
+
     # Download and extract build index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
@@ -323,7 +329,7 @@ def main():
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
 
     # Check if needs to upload or not
-    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
+    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict)
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
