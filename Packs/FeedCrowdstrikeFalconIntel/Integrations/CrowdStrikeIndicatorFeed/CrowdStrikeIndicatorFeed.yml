@@ -123,7 +123,7 @@ configuration:
   required: false
   type: 16
 - defaultvalue: '500'
-  display: Max. indicators per fetch (default is 500)
+  display: Max. indicators per fetch
   hidden: false
   name: max_indicator_to_fetch
   required: false
