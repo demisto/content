@@ -49,7 +49,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
       - "2"
     scriptarguments:
       all:
@@ -88,7 +87,7 @@ tasks:
       brand: HostIo
     nexttasks:
       '#none#':
-      - "4"
+      - "3"
     scriptarguments:
       domain:
         simple: google.com
@@ -102,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
+          "x": 50,
           "y": 390
         }
       }
@@ -115,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f0b75357-8192-4a4b-8fdb-098c0b4bf4fd
+    taskid: 70205281-10c8-42b2-87d0-3285e905d39b
     type: regular
     task:
-      id: f0b75357-8192-4a4b-8fdb-098c0b4bf4fd
+      id: 70205281-10c8-42b2-87d0-3285e905d39b
       version: -1
       name: hostio-domain-search
       description: Returns a list of domains associated with a specific field, and
@@ -141,56 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 687fe653-0742-441e-8972-24ce2bb41248
-    type: condition
-    task:
-      id: 687fe653-0742-441e-8972-24ce2bb41248
-      version: -1
-      name: verify domain
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Domain.Name
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: HostIo.Domain.web.server
-            iscontext: true
-          right:
-            value:
-              simple: gws
-    view: |-
-      {
-        "position": {
-          "x": -580,
-          "y": 670
+          "x": 50,
+          "y": 560
         }
       }
     note: false
@@ -202,12 +153,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 89b51695-7424-4741-8e56-0c2a76858d0f
+    taskid: ec880cd9-675b-4501-8faf-6049506375f9
     type: condition
     task:
-      id: 89b51695-7424-4741-8e56-0c2a76858d0f
+      id: ec880cd9-675b-4501-8faf-6049506375f9
       version: -1
-      name: verify search
+      name: verify results
       type: condition
       iscommand: false
       brand: ""
@@ -234,11 +185,27 @@ tasks:
           right:
             value:
               simple: elonmusk
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Domain.web.server
+            iscontext: true
+          right:
+            value:
+              simple: gws
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 680
+          "x": 50,
+          "y": 710
         }
       }
     note: false
@@ -264,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 960
+          "x": 50,
+          "y": 970
         }
       }
     note: false
@@ -280,14 +247,12 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 975,
-        "width": 1600,
-        "x": -580,
+        "height": 985,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)

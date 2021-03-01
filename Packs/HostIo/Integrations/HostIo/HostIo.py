@@ -130,7 +130,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
 def search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     field = args.get('field', None)
     value = args.get('value', None)
-    limit: int = args.get('limit', 25)
+    limit = int(args.get('limit', 25))
 
     data = client.get_search_data(field, value, limit, 0)
 
