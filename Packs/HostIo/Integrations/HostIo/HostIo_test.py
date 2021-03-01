@@ -16,7 +16,7 @@ def test_domain(requests_mock):
     domain reputation API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from hostio import Client, domain_command
+    from HostIo import Client, domain_command
     from CommonServerPython import Common
 
     domain_to_check = 'google.com'
@@ -55,7 +55,7 @@ def test_search(requests_mock):
     the output of the command function with the expected output.
     """
 
-    from hostio import Client, search_command
+    from HostIo import Client, search_command
 
     field_to_check = 'googleanalytics'
     value_to_check = 'UA-61330992'
