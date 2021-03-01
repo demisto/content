@@ -244,9 +244,9 @@ def test_cymulate_create_phishing_awareness_contact_group_command(mocker):
 
 
 def test_extract_status_output():
-    from Cymulate_v2 import extract_status_output
+    from Cymulate_v2 import extract_status_commands_output
     status_response = util_load_json('exfiltration_assessment_status.json')
-    result = extract_status_output(status_response)
+    result = extract_status_commands_output(status_response)
     assert result.get('id') == 'id_12345'
 
 
