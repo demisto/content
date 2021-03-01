@@ -95,10 +95,29 @@ def get_matter_by_id(service, matter_id):
 
 
 def get_matters_by_state(service, state):
+    nextPage = True
+    matter_list_results = []
+    request = None
+    response = None
+
     state = state.upper()
     matter_state = state if state in ('OPEN', 'CLOSED', 'DELETED') else 'STATE_UNSPECIFIED'
-    matter_list = service.matters().list(state=matter_state).execute()
-    return matter_list
+
+    while(nextPage):
+        if request:
+            request = service.matters().list_next(request, response)
+            response = request.execute()
+        else:
+            request = service.matters().list(state=matter_state)
+            response = request.execute()
+
+        for matter in response['matters']:
+            matter_list_results.append(matter)
+
+        if not response.get('nextPageToken'):
+            nextPage = False
+
+    return matter_list_results
 
 
 def delete_matter(service, matter_id):
@@ -563,8 +582,7 @@ def list_matters_command():
         service = connect()
         state = demisto.args().get('state', 'STATE_UNSPECIFIED')
         validate_input_values([state], ['All', 'Open', 'Closed', 'Deleted', 'STATE_UNSPECIFIED', ''])
-        matters = (get_matters_by_state(service, state))['matters']
-
+        matters = (get_matters_by_state(service, state))
         if not matters:
             demisto.results('No matters found.')
         else:
