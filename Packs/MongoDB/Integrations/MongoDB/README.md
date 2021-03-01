@@ -340,7 +340,7 @@ Searches for items by the specified JSON pipleline query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | collection | Name of the collection to query. | Required | 
-| pipeline | A JSON pipeline query to search by for in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]. | Required | 
+| pipeline | A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]. | Required | 
 | limit | Limits the result returned from MongoDB. Default value - 50. Default is 50. | Optional | 
 | offset | Offset of the result returned from MongoDB. Default value - 0. Default is 0. | Optional | 
 
