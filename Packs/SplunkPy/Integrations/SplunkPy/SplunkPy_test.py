@@ -752,8 +752,9 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
 
 
 @pytest.mark.parametrize('last_update, demisto_params, splunk_time_timestamp', [
-    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '0'}, 1612874490),
-    ('2021-02-09T16:41:30.589575+02:00', {'timezone': '+120'}, 1612881690),
+    ('2021-02-22T18:39:47.753+00:00', {'timezone': '0'}, 1614019187.753),
+    ('2021-02-22T18:39:47.753+02:00', {'timezone': '+120'}, 1614019187.753),
+    ('2021-02-22T20:39:47.753+02:00', {'timezone': '0'}, 1614019187.753),
     ('2021-02-09T16:41:30.589575+02:00', {}, '')
 ])
 def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time_timestamp, mocker):
@@ -858,12 +859,12 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 4, True),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, False),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     5, True)
+     4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
     mocker.patch.object(demisto, 'info')
@@ -874,9 +875,10 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     if not success:
         mocker.patch.object(demisto, 'error')
     assert splunk.update_remote_system_command(args, params, False) == args['remoteId']
-    assert demisto.info.call_count == call_count
+    assert demisto.debug.call_count == call_count
     if not success:
         assert demisto.error.call_count == 1
+
 
 NOTABLE = {'rule_name': '', '': '', 'rule_title': '', 'security_domain': '', 'index': '', 'rule_description': '',
            'risk_score': '', 'host': '', 'host_risk_object_type': '', 'dest_risk_object_type': '',

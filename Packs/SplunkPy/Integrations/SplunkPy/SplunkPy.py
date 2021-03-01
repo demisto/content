@@ -6,6 +6,7 @@ import splunklib.client as client
 import splunklib.results as results
 import json
 from datetime import timedelta, datetime
+import pytz
 import dateparser
 import urllib2
 import ssl
@@ -184,7 +185,7 @@ class Notable:
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
-               len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
@@ -803,9 +804,9 @@ def handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch, c
 
     for item in reader:
         cache_object.not_yet_submitted_notables.append(Notable(data=item))
-        cache_object.num_fetched_notables += 1
 
     # maintaining last run metadata to be set when we finish handling all notables
+    cache_object.num_fetched_notables = len(cache_object.not_yet_submitted_notables)
     cache_object.last_run_regular_fetch = last_run_regular_fetch
     cache_object.last_run_over_fetch = last_run_over_fetch
     demisto.info("Fetched {} notables.".format(cache_object.num_fetched_notables))
@@ -1092,16 +1093,16 @@ def test_module(service):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
-                if MIRROR_DIRECTION.get(params.get('mirror_direction')):
-                    if 'event_id' not in item:
+                if EVENT_ID not in item:
+                    if MIRROR_DIRECTION.get(params.get('mirror_direction')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
-                if params.get('enabled_enrichments', []):
-                    if 'event_id' not in item:
+                    if params.get('enabled_enrichments', []):
                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
                                      'one must use a fetch query of the following format: search `notable` .......\n'
                                      'Please re-edit the fetchQuery parameter in the integration configuration, reset '
                                      'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
                                      'run the fetch again.')
+
         except HTTPError as error:
             return_error(str(error))
     if params.get('hec_url'):
@@ -2026,7 +2027,8 @@ def get_last_update_in_splunk_time(last_update):
     if not splunk_timezone:
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
-    return date_to_timestamp(last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))) / 1000
+    dt = last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))
+    return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
 def get_remote_data_command(service, args, close_incident):
@@ -2070,10 +2072,7 @@ def get_remote_data_command(service, args, close_incident):
         })
 
     demisto.info('Updated notable {}'.format(notable_id))
-    return_results(GetRemoteDataResponse(
-        mirrored_object=updated_notable,
-        entries=entries
-    ))
+    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
@@ -2129,7 +2128,7 @@ def update_remote_system_command(args, params, proxy):
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
             demisto.debug('Closing notable {}'.format(notable_id))
-            changed_data['status'] = '5'
+            changed_data['status'] = '5'  # type: ignore
 
         if any(changed_data.values()):
             demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
@@ -2207,8 +2206,6 @@ def main():
         splunk_job_create_command(service)
     elif command == 'splunk-results':
         splunk_results_command(service)
-    elif command == 'fetch-incidents':
-        fetch_incidents(service)
     elif command == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     elif command == 'fetch-incidents':

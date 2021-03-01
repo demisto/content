@@ -145,16 +145,6 @@ configuration:
   name: use_requests_handler
   required: false
   type: 8
-- additionalinfo: Used only for Mapping with the Select Schema option. The name of
-    the field that contains the type of the event or alert. The default value is "source",
-    which is a good option for Notable Events, however you may choose any custom field
-    that suits the need.
-  defaultvalue: source
-  display: Event Type Field
-  hidden: false
-  name: type_field
-  required: false
-  type: 0
 - display: Enrichment Types
   name: enabled_enrichments
   type: 16
@@ -175,13 +165,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: false
-  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset & Identity)
-- defaultvalue: 'false'
-  display: Use CIM Schemas for Mapping
-  name: use_cim
-  required: false
-  type: 8
-  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
+  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset & Identity) 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
