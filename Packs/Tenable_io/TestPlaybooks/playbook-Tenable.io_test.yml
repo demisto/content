@@ -1,19 +1,19 @@
 id: Tenable.io test
-version: 31
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Tenable.io test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f4e35d27-8883-4ac7-8cca-0c97825bf418
+    taskid: 62e769aa-1e67-45a6-8486-5639a888ccc5
     type: start
     task:
-      id: f4e35d27-8883-4ac7-8cca-0c97825bf418
+      id: 62e769aa-1e67-45a6-8486-5639a888ccc5
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -30,35 +30,68 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: f372c3eb-3676-441e-83d7-04bc986c78fd
+  "1":
+    id: "1"
+    taskid: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
     type: regular
     task:
-      id: f372c3eb-3676-441e-83d7-04bc986c78fd
+      id: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
       version: -1
-      name: tenable-io-get-scan-status
-      description: |-
-        Check the status of a specific scan using its ID. The status can
-        hold following possible values : Running, Completed and Empty (Ready to run).
-      script: Tenable.io_SE6712_2/12|||tenable-io-get-scan-status
+      name: tenable-io-list-scans
+      description: Retrive scans from the Tenable platform.
+      script: '|||tenable-io-list-scans'
       type: regular
       iscommand: true
-      brand: Tenable.io_SE6712_2/12
+      brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "3"
     scriptarguments:
-      scanId:
-        simple: "225"
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
+      retry-count:
+        simple: "2"
+      folderId: {}
+      lastModifiedDate: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 540
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
+    type: regular
+    task:
+      id: 9634a316-8a3b-4465-81fe-57ffad58de35
+      version: -1
+      name: tenable-io-get-scan-status
+      description: 'Check the status of a specific scan using its ID. The status can
+        hold following possible values : Running, Completed and Empty (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      retry-count:
+        simple: "2"
+      scanId:
+        simple: "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -68,35 +101,35 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a1d9e9d4-024d-4c38-8e09-00a96e95ab19
+    taskid: a35b2c05-a636-44a5-81f1-78ca8515d361
     type: regular
     task:
-      id: a1d9e9d4-024d-4c38-8e09-00a96e95ab19
+      id: a35b2c05-a636-44a5-81f1-78ca8515d361
       version: -1
       name: tenable-io-get-scan-report
-      description: Retrieve scan-report for the given scan.
-      script: Tenable.io_SE6712_2/12|||tenable-io-get-scan-report
+      description: Retrive scan-report for the given scan.
+      script: '|||tenable-io-get-scan-report'
       type: regular
       iscommand: true
-      brand: Tenable.io_SE6712_2/12
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
+      retry-count:
+        simple: "2"
       detailed:
         simple: "yes"
       info:
         simple: "yes"
       scanId:
-        simple: "53"
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
+        simple: "16"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1050
+          "y": 720
         }
       }
     note: false
@@ -106,10 +139,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 8094237c-09be-40b6-8e79-76756d44a263
+    taskid: 24ff10a9-0083-4901-8445-8e30269ce776
     type: regular
     task:
-      id: 8094237c-09be-40b6-8e79-76756d44a263
+      id: 24ff10a9-0083-4901-8445-8e30269ce776
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -119,7 +152,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -127,8 +160,6 @@ tasks:
       key: {}
       keysToKeep: {}
       subplaybook: {}
-      using:
-        simple: Tenable.io_ProdVersion_instance_1
     separatecontext: false
     view: |-
       {
@@ -144,20 +175,21 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 0637d625-7599-46db-8402-31047bc296da
+    taskid: ade32dca-adc8-4d9e-8b64-4d69592c9392
     type: regular
     task:
-      id: 0637d625-7599-46db-8402-31047bc296da
+      id: ade32dca-adc8-4d9e-8b64-4d69592c9392
       version: -1
       name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
-      script: Tenable.io_SE6712_2/12|||tenable-io-get-vulnerability-details
+      script: '|||tenable-io-get-vulnerability-details'
       type: regular
       iscommand: true
-      brand: Tenable.io_SE6712_2/12
+      brand: ""
     scriptarguments:
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
+      retry-count:
+        simple: "2"
+      dateRange: {}
       vulnerabilityId:
         complex:
           root: TenableIO
@@ -167,7 +199,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1380
+          "y": 1070
         }
       }
     note: false
@@ -177,34 +209,35 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 30c55dbe-2f86-4e4b-8547-72b27316b544
+    taskid: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
     type: regular
     task:
-      id: 30c55dbe-2f86-4e4b-8547-72b27316b544
+      id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
       description: Get a list of up to 5000 of the vulnerabilities recorded for a
-        given asset.
-      script: Tenable.io|||tenable-io-get-vulnerabilities-by-asset
+        given asset. By default, this list is sorted by vulnerability count, descending.
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
-      brand: Tenable.io
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
+      retry-count:
+        simple: "2"
+      assetId: {}
       dateRange: {}
-      hostname: {}
-      ip:
-        simple: 10.0.0.2
-      using:
-        simple: Tenable.io
+      hostname:
+        simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
+      ip: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1225
+          "y": 895
         }
       }
     note: false
@@ -212,114 +245,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 4a92728f-45b5-4d26-87d7-45d855bfda03
-    type: regular
-    task:
-      id: 4a92728f-45b5-4d26-87d7-45d855bfda03
-      version: -1
-      name: tenable-io-pause-scan
-      description: Pauses all scans imputted as an array
-      script: Tenable.io_SE6712_2/12|||tenable-io-pause-scan
-      type: regular
-      iscommand: true
-      brand: Tenable.io_SE6712_2/12
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      scanId:
-        simple: "49"
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 2b1d6d07-1883-42dc-8ecf-b5c27b723920
-    type: regular
-    task:
-      id: 2b1d6d07-1883-42dc-8ecf-b5c27b723920
-      version: -1
-      name: tenable-io-resume-scan
-      description: Resume all scans inputted as an array. Comma separated values.
-      script: Tenable.io_SE6712_2/12|||tenable-io-resume-scan
-      type: regular
-      iscommand: true
-      brand: Tenable.io_SE6712_2/12
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      scanId:
-        simple: "49"
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "9":
-    id: "9"
-    taskid: 4f0b59a3-a9df-4db8-83dd-5ef581ffe944
-    type: regular
-    task:
-      id: 4f0b59a3-a9df-4db8-83dd-5ef581ffe944
-      version: -1
-      name: tenable-io-list-scans
-      description: Retrive scans from the Tenable platform.
-      script: Tenable.io_SE6712_2/12|||tenable-io-list-scans
-      type: regular
-      iscommand: true
-      brand: Tenable.io_SE6712_2/12
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      folderId: {}
-      lastModificationDate: {}
-      using:
-        simple: Tenable.io_SE6712_2/12_instance_1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1425,
+        "height": 1115,
         "width": 380,
         "x": 50,
         "y": 50
@@ -329,3 +261,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
