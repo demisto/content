@@ -341,3 +341,4 @@ view: |-
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-ContextResults-Test
