@@ -648,3 +648,93 @@ def test_get_mirror_type_none():
 
     res = get_mirror_type(False, False)
     assert res is None
+
+
+def test_edit_issue_status(mocker):
+    """
+    Given:
+        - New status for an issue
+    When
+        - Need to change a status of an issue
+    Then
+        - An issue has a new status
+    """
+    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, edit_status
+    mocker.patch('JiraV2.jira_req', return_value=None)
+    mocker.patch('JiraV2.get_issue_fields', return_value=None)
+    mocker.patch('JiraV2.get_issue', return_value=True)
+    mocker.patch('JiraV2.list_transitions_data_for_issue', return_value={'transitions': [{"name": "To Do", "id": 1}]})
+    mocked_return_error = mocker.patch('JiraV2.return_error', return_value=None)
+    mocked_edit_transition = mocker.patch('JiraV2.edit_transition', return_value=None)
+    mocked_edit_status = mocker.patch('JiraV2.edit_status', side_effect=edit_status)
+    res = edit_issue_command('1234', status='To Do')
+    assert mocked_return_error.call_count == 0
+    assert mocked_edit_status.call_count == 1
+    assert mocked_edit_transition.call_count == 0
+    assert res is True
+
+
+def test_edit_issue_transition(mocker):
+    """
+    Given:
+        - New transition for an issue
+    When
+        - Need to change transition type in order to change the issue's status
+    Then
+        - An issue has a new transition
+    """
+    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue
+    mocker.patch('JiraV2.jira_req', return_value=None)
+    mocker.patch('JiraV2.get_issue_fields', return_value=None)
+    mocker.patch('JiraV2.get_issue', return_value=True)
+    mocker.patch('JiraV2.list_transitions_data_for_issue', return_value={'transitions': [{"name": "To Do", "id": 1}]})
+    mocked_return_error = mocker.patch('JiraV2.return_error', return_value=None)
+    mocked_edit_transition = mocker.patch('JiraV2.edit_transition', side_effect=edit_transition)
+    mocked_edit_status = mocker.patch('JiraV2.edit_status', return_value=None)
+    res = edit_issue_command('1234', transition='To Do')
+    assert mocked_return_error.call_count == 0
+    assert mocked_edit_status.call_count == 0
+    assert mocked_edit_transition.call_count == 1
+    assert res is True
+
+
+def test_edit_issue_when_passing_both_transition_and_status(mocker):
+    """
+    Given:
+        - Transition and status for an issue
+    When
+        - A user passes to edit_issue command both parameters
+    Then
+        - Error is being returned saying both parameters can't be passed
+    """
+    from JiraV2 import edit_issue_command, edit_transition, get_issue_fields, list_transitions_data_for_issue, edit_status
+    mocker.patch('JiraV2.jira_req', return_value=None)
+    mocker.patch('JiraV2.get_issue_fields', return_value=None)
+    mocker.patch('JiraV2.get_issue', return_value=True)
+    mocker.patch('JiraV2.list_transitions_data_for_issue', return_value={'transitions': [{"name": "To Do", "id": 1}]})
+    mocked_return_error = mocker.patch('JiraV2.return_error', return_value=None)
+    mocked_edit_transition = mocker.patch('JiraV2.edit_transition', return_value=None)
+    mocked_edit_status = mocker.patch('JiraV2.edit_status', return_value=None)
+    edit_issue_command('1234', transition='To Do', status='To Do')
+    assert mocked_return_error.call_count == 1
+    assert mocked_edit_status.call_count == 0
+    assert mocked_edit_transition.call_count == 0
+
+
+def test_list_transitions_command(mocker):
+    """
+    Given:
+        - issueId
+    When
+        - Need to get a list of all possible transitions
+    Then
+        - Returns a list of transitions
+    """
+    from JiraV2 import list_transitions_command
+    mocker.patch('JiraV2.list_transitions_data_for_issue', return_value={'transitions': [{"name": "To Do", "id": 1}]})
+    res = list_transitions_command({"issueId": "123"})
+    assert res.outputs_key_field == 'ticketId'
+    assert res.raw_response == ['To Do']
+    assert res.outputs == {'ticketId': '123', 'transitions': ['To Do']}
+
+
