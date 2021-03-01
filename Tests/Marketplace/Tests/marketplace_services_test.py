@@ -992,6 +992,25 @@ class TestImagesUpload:
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
 
+    @pytest.mark.parametrize("display_name", [
+        'Integration Name (Developer Contribution)',
+        'Integration Name (Community Contribution) ',
+        'Integration Name',
+        'Integration Name (Partner Contribution)',
+        'Integration Name(Partner Contribution)'
+    ])
+    def test_remove_contrib_suffix_from_name(self, dummy_pack, display_name):
+        """
+           Given:
+               - Integration name.
+           When:
+               - Uploading integrations images to gcs.
+           Then:
+               - Validates that the contribution details were removed
+       """
+
+        assert "Integration Name" == dummy_pack.remove_contrib_suffix_from_name(display_name)
+
     def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
         """
            Given:
