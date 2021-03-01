@@ -382,7 +382,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Scan id to be resumed
+      description: The unique id of the scan. Comma separated values.
       isArray: true
       name: scanId
       required: true
@@ -402,7 +402,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Id of the scan. Comma separated values.
+      description: The unique id of the scan. Comma separated values.
       isArray: true
       name: scan_id
       required: true
