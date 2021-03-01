@@ -919,3 +919,30 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     assert result.modified_incident_ids == [
         record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
     ]
+
+
+@pytest.mark.parametrize('sys_created_on, expected', [
+    (None, 'table_sys_id=id'),
+    ('', 'table_sys_id=id'),
+    ('2020-11-18 11:16:52', 'table_sys_id=id^sys_created_on>2020-11-18 11:16:52')
+])
+def test_get_ticket_attachments(mocker, sys_created_on, expected):
+    """
+    Given:
+        - Cases A+B: sys_created_on argument was not provided
+        - Case C: sys_created_on argument was provided
+
+    When:
+        - Getting a ticket attachments.
+
+    Then:
+        - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
+        - Case C: Ensure that the query parameters include ^sys_created_on>
+    """
+    client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    mocker.patch.object(client, 'send_request', return_value=[])
+
+    client.get_ticket_attachments('id', sys_created_on)
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
