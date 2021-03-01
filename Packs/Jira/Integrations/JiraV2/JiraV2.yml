@@ -136,6 +136,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Queries Jira issues.
     execution: false
     name: jira-issue-query
     outputs:
@@ -156,18 +157,28 @@ script:
       type: Unknown
     - contextPath: Ticket.Status
       description: The status of the ticket.
-    description: Queries Jira issues.
-  - name: jira-get-id-by-attribute
-    arguments:
-    - name: attribute
-      required: true
+      type: Unknown
+  - arguments:
+    - default: false
       description: The user's attribute value. Can be Username or Email address.
-    - name: max_results
-      defaultValue: 50
-      description: The maximum number of users to pull when searching for a matching user (default is 50). The maximum
-        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
-        If you specify a value that is higher than this number, your search results
-        will be truncated.
+      isArray: false
+      name: attribute
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of users to pull when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the JIRA property
+        'jira.search.views.default.max'. If you specify a value that is higher than
+        this number, your search results will be truncated.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the Account ID for a given user's attribute.
+    execution: false
+    name: jira-get-id-by-attribute
     outputs:
     - contextPath: Jira.User.Attribute
       description: The user's attribute.
@@ -175,10 +186,11 @@ script:
     - contextPath: Jira.User.AccountID
       description: The user's Account ID.
       type: string
-    description: Gets the Account ID for a given user's attribute.
-  - name: jira-get-issue
-    arguments:
-    - name: issueId
+  - arguments:
+    - default: false
+      description: The ID of the issue.
+      isArray: false
+      name: issueId
       required: true
       secret: false
     - default: false
@@ -212,6 +224,7 @@ script:
     deprecated: false
     description: Fetches an issue from Jira.
     execution: false
+    name: jira-get-issue
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
@@ -300,13 +313,28 @@ script:
       secret: false
     - default: false
       description: 'The due date for the issue (in the format: 2018-03-11).'
-    - name: assignee
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, please provide the assignee_id argument instead.
-    - name: assignee_id
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
-    - name: reporter
+      isArray: false
+      name: dueDate
+      required: false
+      secret: false
+    - default: false
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, please provide the assignee_id argument instead.
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    - default: false
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's Account ID.
+      isArray: false
+      name: assignee_id
+      required: false
+      secret: false
+    - default: false
       description: The account ID of the reporter.
       isArray: false
+      name: reporter
       required: false
       secret: false
     - default: false
@@ -474,13 +502,34 @@ script:
       secret: false
     - default: false
       description: The due date for the issue (in the format 2018-03-11).
-    - name: assignee
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead.
-    - name: assignee_id
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
-    - name: status
+      isArray: false
+      name: dueDate
+      required: false
+      secret: false
+    - default: false
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud please provide the assignee_id argument instead.
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    - default: false
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's Account ID.
+      isArray: false
+      name: assignee_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the status.
       isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: The name of the transition.
+      isArray: false
+      name: transition
       required: false
       secret: false
     deprecated: false
@@ -575,12 +624,27 @@ script:
       the current incident, it's here for debugging purposes.
     execution: false
     name: update-remote-system
+  - arguments:
+    - default: false
+      description: The ID of the issue.
+      isArray: false
+      name: issueId
+      required: true
+      secret: false
+    deprecated: false
+    description: List all possible transitions
+    execution: false
+    name: jira-list-transitions-command
+    outputs:
+    - contextPath: Ticket.Transitions.ticketId
+      description: The ID of the issue.
+      type: Number
+    - contextPath: Ticket.Transitions.transitions
+      description: A list of all possible transitions
+      type: Unknown
+  dockerimage: demisto/oauthlib:1.0.0.16907
   feed: false
-  dockerimage: demisto/oauthlib:1.0.0.15507
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

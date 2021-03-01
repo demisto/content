@@ -1,8 +1,7 @@
 from requests_oauthlib import OAuth1
 from dateparser import parse
-
+from typing import Union
 from CommonServerPython import *
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -605,12 +604,16 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, **kwargs):
+def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     url = f'rest/api/latest/issue/{issue_id}/'
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
     jira_req('PUT', url, json.dumps(issue))
-    if status:
+    if status and transition:
+        return_error("Please provide only status or transition and try again.")
+    elif status:
         edit_status(issue_id, status)
+    elif transition:
+        edit_transition(issue_id, transition)
 
     return get_issue(issue_id, headers, is_update=True)
 
@@ -618,8 +621,7 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, **k
 def edit_status(issue_id, status):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
-    url = f'rest/api/2/issue/{issue_id}/transitions'
-    j_res = jira_req('GET', url, resp_type='json')
+    j_res = list_transitions_data_for_issue(issue_id)
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
@@ -628,6 +630,40 @@ def edit_status(issue_id, status):
             return jira_req('POST', url, json.dumps(json_body))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+
+
+def list_transitions_data_for_issue(issue_id):
+    url = f'rest/api/2/issue/{issue_id}/transitions'
+    return jira_req('GET', url, resp_type='json')
+
+
+def edit_transition(issue_id, transition_name):
+    j_res = list_transitions_data_for_issue(issue_id)
+    transitions_data = j_res.get('transitions')
+    for transition in transitions_data:
+        if transition.get('name') == transition_name:
+            url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
+            json_body = {"transition": {"id": transition.get("id")}}
+            return jira_req('POST', url, json.dumps(json_body))
+
+    return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
+
+
+def list_transitions_command(args):
+    issue_id = args.get('issueId')
+    transitions_data_list = list_transitions_data_for_issue(issue_id)
+    transitions_names = [transition.get('name') for transition in transitions_data_list.get('transitions')]
+    readable_output = tableToMarkdown(
+        'List Transitions:', transitions_names, headers=['Transition Name']
+    )
+    outputs = {'ticketId': issue_id,
+               'transitions': transitions_names
+               }
+    return CommandResults(raw_response=transitions_names,
+                                     readable_output=readable_output,
+                                     outputs_prefix="Ticket.Transitions",
+                                     outputs_key_field="ticketId",
+                                     outputs=outputs)
 
 
 def get_comments_command(issue_id):
@@ -1141,6 +1177,8 @@ def main():
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
 
+        elif demisto.command() == 'jira-list-transitions-command':
+            return_results(list_transitions_command(demisto.args()))
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
