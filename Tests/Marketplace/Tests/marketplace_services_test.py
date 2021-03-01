@@ -386,11 +386,15 @@ class TestParsingInternalFunctions:
     ])
     def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
         """
+           Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
+           and without the contribution details suffix if exists.
+           All test cases getting the same dependencies_data (all level pack's dependencies data) dictionary.
            Given:
-               - pack_integration_images
-               - An empty integration images, display_dependencies_images, all level pack's dependencies data
-               - An empty list of integration images, display_dependencies_images, all level pack's dependencies data
-               - An empty list of integration images, display_dependencies_images, all level pack's dependencies data
+               - Empty pack_integration_images, empty display_dependencies_images
+               - Empty pack_integration_images, display_dependencies_images with one pack
+               - pack_integration_images with DummyIntegration, display_dependencies_images DummyPack1 and DummyPack2
+               - pack_integration_images with DummyIntegration2 without contribution detauils suffix,
+                 display_dependencies_images DummyPack2
 
            When:
                - Getting all pack images when formatting pack's metadata.
