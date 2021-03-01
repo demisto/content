@@ -1,0 +1,4 @@
+!iam-get-user user-profile=`{"email": "testdemistomock@paloaltonetworks.com", "userName": "powershelly10"}`
+!iam-update-user user-profile=`{"email": "testtesting@paloaltonetworks.com", "active": "true"}`
+!iam-create-user user-profile=`{"emails": ["testdemistomock15@paloaltonetworks.com"], "userName": "testuser15"}`
+!iam-disable-user user-profile=`{"email": "testdemistomock@paloaltonetworks.com", "userName": "powershelly10"}`

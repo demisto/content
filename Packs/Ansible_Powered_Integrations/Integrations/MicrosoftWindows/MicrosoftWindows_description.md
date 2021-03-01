@@ -1,0 +1,1 @@
+Connects over WinRM. Before selecting WinRM over HTTPS (port 5986), be aware that configuration on the host is required. Please also note that the default Windows Firewall Policy allows WinRM to only the local subnet.

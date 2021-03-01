@@ -30,7 +30,7 @@ def get_args():
 
 
 def bold(word):
-    return '<b>{}</b>'.format(word)
+    return '**{}**'.format(word)
 
 
 def executeCommand(command, args=None):
@@ -80,12 +80,19 @@ def test_predict_phishing_words(mocker):
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
 
-    res = predict_phishing_words("modelName", "list", "word1", "word2 word3", 0, 0, 0, 10, True)
-    correct_res = {'OriginalText': 'word1 word2 word3',
+    email_subject = "word1"
+    email_body = "word2 word3"
+    res = predict_phishing_words("modelName", "list", email_subject, email_body, 0, 0, 0, 10, True)
+    correct_res = {'OriginalText': concatenate_subject_body(email_subject, email_body),
                    'Probability': 0.7, 'NegativeWords': ['word2'],
-                   'TextTokensHighlighted': '<b>word1</b> word2 word3',
-                   'PositiveWords': ['word1'], 'Label': 'Valid'}
+                   'TextTokensHighlighted': concatenate_subject_body('**{}**'.format(email_subject), email_body),
+                   'PositiveWords': ['word1'],
+                   'Label': 'Valid'}
     assert res['Contents'] == correct_res
+
+
+def concatenate_subject_body(email_subject, email_body):
+    return '{} \n{}'.format(email_subject, email_body)
 
 
 def test_predict_phishing_words_low_threshold(mocker):
@@ -152,10 +159,13 @@ def test_predict_phishing_words_hashed(mocker):
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            'wordsToHashedTokens': {'word1': ['23423'], 'word2': ['432432'], 'word3': ['12321']},
                            }
-    res = predict_phishing_words("modelName", "list", "word1", "word2 word3", 0, 0, 0, 10, True)
-    assert res['Contents'] == {'OriginalText': 'word1 word2 word3',
+    email_subject = "word1"
+    email_body = "word2 word3"
+    res = predict_phishing_words("modelName", "list", email_subject, email_body, 0, 0, 0, 10, True)
+    assert res['Contents'] == {'OriginalText': concatenate_subject_body(email_subject, email_body),
                                'Probability': 0.7, 'NegativeWords': ['word2'],
-                               'TextTokensHighlighted': '<b>word1</b> word2 word3',
+                               'TextTokensHighlighted': concatenate_subject_body('**{}**'.format(email_subject),
+                                                                                 email_body),
                                'PositiveWords': ['word1'], 'Label': 'Valid'}
 
 
@@ -262,15 +272,15 @@ def test_main(mocker):
                            }
 
     res = main()
-    correct_res = {'OriginalText': 'word1 word2 word3',
+    correct_res = {'OriginalText': concatenate_subject_body(args['emailSubject'], args['emailBody']),
                    'Probability': 0.7, 'NegativeWords': ['word2'],
-                   'TextTokensHighlighted': '<b>word1</b> word2 word3',
+                   'TextTokensHighlighted': concatenate_subject_body(bold(args['emailSubject']), args['emailBody']),
                    'PositiveWords': ['word1'], 'Label': 'Valid'}
     assert res['Contents'] == correct_res
 
     args['emailBodyHTML'] = args.pop('emailBody')
-    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBodyHTML']),
-                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBodyHTML']),
+    TOKENIZATION_RESULT = {'originalText': concatenate_subject_body(args['emailSubject'], args['emailBodyHTML']),
+                           'tokenizedText': concatenate_subject_body(args['emailSubject'], args['emailBodyHTML']),
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
     main()

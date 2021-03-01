@@ -7,7 +7,7 @@ configuration:
   name: serverURL
   required: true
   type: 0
-- display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<api_key>"
+- display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   name: APIKey
   required: true
   type: 4

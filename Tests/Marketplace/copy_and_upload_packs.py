@@ -235,15 +235,17 @@ def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     assert not not_uploaded and not mistakenly_uploaded, error_str
 
 
-def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict):
-    """ If the two dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
+def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,
+                            pc_successful_private_packs_dict: dict):
+    """ If the three dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
 
     Args:
         pc_successful_packs_dict: The successful packs dict
         pc_failed_packs_dict: The failed packs dict
+        pc_successful_private_packs_dict : The successful private packs dict
 
     """
-    if not pc_successful_packs_dict and not pc_failed_packs_dict:
+    if not pc_successful_packs_dict and not pc_failed_packs_dict and not pc_successful_private_packs_dict:
         logging.warning("Production bucket is updated with origin/master.")
         logging.warning("Skipping Upload To Marketplace Storage Step.")
         sys.exit(0)
@@ -309,20 +311,25 @@ def main():
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
 
+    # Relevant when triggering test upload flow
+    if production_bucket_name:
+        GCPConfig.PRODUCTION_BUCKET = production_bucket_name
+
     # Download and extract build index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
+    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict = get_successful_and_failed_packs(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
     )
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
+    logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
 
     # Check if needs to upload or not
-    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
+    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict)
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
@@ -357,15 +364,7 @@ def main():
             pack.cleanup()
             continue
 
-        # Create a local copy of the pack's index changelog
-        task_status = pack.create_local_changelog(build_index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
-
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              pack.latest_version,
                                                                               pc_successful_packs_dict)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
@@ -394,7 +393,8 @@ def main():
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
+        list(pc_successful_private_packs_dict)
     )
 
     # verify that the successful from Prepare content and are the ones that were copied

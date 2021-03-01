@@ -1745,14 +1745,14 @@ script:
       name: tags
       required: false
       secret: false
-    - default: true
+    - default: false
       description: Subject of case to create.
       isArray: false
       name: subject
       required: true
       secret: false
-    - default: true
-      description: 'Case description. May use HTML, which will be sanitized. '
+    - default: false
+      description: 'Case description. May use HTML, which will be sanitized.'
       isArray: false
       name: description
       required: true
@@ -6690,7 +6690,7 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Observations IP Address Address
       type: String
-  dockerimage: demisto/argus-toolbelt:1.0.0.14739
+  dockerimage: demisto/argus-toolbelt:1.0.0.15350
   feed: false
   isfetch: true
   longRunning: false

@@ -520,33 +520,25 @@ script:
     }
     function getURLs(url) {
         var urls = [];
+        var nonUrls = []
         var urlList = argToList(url);
         for (z = urlList.length - 1; z >= 0; z--) {
             var isURL = urlList[z].match(/(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?/);
             if (isURL == null){
-                var i = z;
-                var url;
-                var optionalURL;
-                while(i>=0 && z > 0 && optionalURL == null) {
-                    i--;
-                    optionalURL = urlList.slice(i, z).join("").match(/(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?/);
-                }
-                if (optionalURL !== null) {
-                    urls.push(urlList.slice(i, z+1).join(","));
-                }
-                z = i;
-            } else {
+                nonUrls.push(urlList[z])
+            }
+            else {
                 urls.push(urlList[z]);
             }
         }
+        return {'validURLs': urls, 'invalidURLs': nonUrls};
 
-        return urls;
     }
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
-
-        var urlList = getURLs(url);
+        var urls = getURLs(url);
+        var urlList = urls.validURLs;
         var entryList = [];
         for (z = 0; z < urlList.length; z++) {
             url = urlList[z];
@@ -654,12 +646,25 @@ script:
                     }
                 }
             }
+
             entryList.push({
                 Type: entryTypes.note,
                 Contents: res.body,
                 ContentsFormat: formats.json,
                 HumanReadable: md,
                 EntryContext: ec
+            });
+        }
+
+        invalidURLsList = urls.invalidURLs
+        if (invalidURLsList.length !== 0) {
+            var invalidURLsMd = "### The following indicators were not scanned since they are not valid URLs: \n" + invalidURLsList
+            entryList.push({
+                Type: entryTypes.note,
+                Contents: {},
+                ContentsFormat: formats.json,
+                HumanReadable: invalidURLsMd,
+                EntryContext: {}
             });
         }
         return entryList;
@@ -1178,7 +1183,7 @@ script:
     - name: url
       required: true
       default: true
-      description: The URL to check.
+      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
       isArray: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,

@@ -389,7 +389,7 @@ script:
     - contextPath: Okta.IAMConfiguration.Instance
       description: An XSOAR IAM integration instance name.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -397,6 +397,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - Okta IAM - Test Playbook
 defaultmapperin: Okta IAM - App Sync (mapper)

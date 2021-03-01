@@ -796,7 +796,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "-1"
+              simple: "0"
       - - operator: isEqualNumber
           left:
             value:
@@ -804,12 +804,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
-      - - operator: isExists
-          left:
-            value:
-              simple: Domain.Malicious.Vendor
-            iscontext: true
+              simple: "0"
     view: |-
       {
         "position": {

@@ -1,0 +1,55 @@
+{
+    "totalResults": 1,
+    "startIndex": 1,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "urn:ietf:params:scim:schemas:sailpoint:1.0:User": {
+                "regionOwner": {},
+                "administrator": {},
+                "capabilities": [
+                    "WebServicesExecutor",
+                    "PluginAdministrator"
+                ],
+                "locationOwner": {},
+                "isManager": false,
+                "accounts": [],
+                "riskScore": 150,
+                "costcenter": []
+            },
+            "emails": [
+                {
+                    "type": "work",
+                    "value": "serviceaccount@sailpointdemo.com",
+                    "primary": true
+                }
+            ],
+            "displayName": "Service Account",
+            "meta": {
+                "created": "2020-02-18T13:45:36.792-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Users/7f000001705914d1817059d59e18000e",
+                "lastModified": "2020-03-12T10:02:43.628-05:00",
+                "version": "W/\"1584025363628\"",
+                "resourceType": "User"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:User",
+                "urn:ietf:params:scim:schemas:core:2.0:User",
+                "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+            ],
+            "name": {
+                "formatted": "Service Account",
+                "familyName": "Service",
+                "givenName": "Account"
+            },
+            "active": true,
+            "id": "7f000001705914d1817059d59e18000e",
+            "userName": "serviceaccount",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+                "manager": {}
+            }
+        }
+    ]
+}

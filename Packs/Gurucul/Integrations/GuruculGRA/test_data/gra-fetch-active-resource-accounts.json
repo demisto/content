@@ -1,0 +1,32 @@
+[
+   {
+      "id":15,
+      "name":"Adrian.Veidt01_NN",
+      "type":null,
+      "created_on":"02/09/2017 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   },
+   {
+      "id":13,
+      "name":"Alec.Holland01_NN",
+      "type":null,
+      "created_on":"02/09/2018 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   }
+]

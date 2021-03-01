@@ -38,6 +38,7 @@ This integration was integrated and tested with Splunk v7.2.
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
+| use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -82,6 +83,13 @@ To use this feature, you must set several integration instance parameters:
  - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
  - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
+### Mapping Splunk CIM fields using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based on Splunk CIM.
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+The CIM mapping fields implemented in this integration are of 4.18.0 version.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -99,6 +107,7 @@ Returns the results of a previous Splunk search. This command can be used in con
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sid | The ID of the search for which to return results. | Required | 
+| limit | The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended). | Optional | 
 
 
 ##### Context Output
@@ -106,7 +115,7 @@ Returns the results of a previous Splunk search. This command can be used in con
 There is no context output for this command.
 
 ##### Command Example
-``` !splunk-results sid="1566221331.1186" ```
+``` !splunk-results sid="1566221331.1186" limit="200" ```
 
 ### Search for events
 ***

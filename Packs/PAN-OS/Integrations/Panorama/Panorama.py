@@ -121,6 +121,8 @@ def http_request(uri: str, method: str, headers: dict = {},
 
             #  catch urlfiltering error and display a meaningful message
             elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+                if DEVICE_GROUP:
+                    raise Exception('URL filtering commands are only available on Firewall devices.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
@@ -756,11 +758,11 @@ def panorama_list_addresses(tag: Optional[str] = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_addresses_command(tag: Optional[str] = None):
+def panorama_list_addresses_command(args: dict):
     """
     Get all addresses
     """
-    addresses_arr = panorama_list_addresses(tag)
+    addresses_arr = panorama_list_addresses(args.get('tag'))
     addresses_output = prettify_addresses_arr(addresses_arr)
 
     return_results({
@@ -803,7 +805,7 @@ def panorama_get_address(address_name: str) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
+        'xpath': f'{XPATH_OBJECTS}address/entry[@name=\'{address_name}\']',
         'key': API_KEY
     }
     result = http_request(
@@ -815,11 +817,11 @@ def panorama_get_address(address_name: str) -> Dict:
     return result['response']['result']['entry']
 
 
-def panorama_get_address_command(name: str):
+def panorama_get_address_command(args: dict):
     """
     Get an address
     """
-    address_name = name
+    address_name = args.get('name')
 
     address = panorama_get_address(address_name)
     address_output = prettify_address(address)
@@ -922,11 +924,11 @@ def panorama_delete_address(address_name: str):
     return result
 
 
-def panorama_delete_address_command(name: str):
+def panorama_delete_address_command(args: dict):
     """
     Delete an address
     """
-    address_name = name
+    address_name = args.get('name')
 
     address = panorama_delete_address(address_name)
     address_output = {'Name': address_name}
@@ -997,11 +999,11 @@ def panorama_list_address_groups(tag: str = None):
     return result['response']['result']['entry']
 
 
-def panorama_list_address_groups_command(tag: Optional[str] = None):
+def panorama_list_address_groups_command(args: dict):
     """
     Get all address groups
     """
-    address_groups_arr = panorama_list_address_groups(tag)
+    address_groups_arr = panorama_list_address_groups(args.get('tag'))
     address_groups_output = prettify_address_groups_arr(address_groups_arr)
 
     return_results({
@@ -1056,11 +1058,11 @@ def panorama_get_address_group(address_group_name: str):
     return result['response']['result']['entry']
 
 
-def panorama_get_address_group_command(name: str):
+def panorama_get_address_group_command(args: dict):
     """
     Get an address group
     """
-    address_group_name = name
+    address_group_name = args.get('name')
 
     result = panorama_get_address_group(address_group_name)
 
@@ -3067,8 +3069,6 @@ def panorama_list_pcaps_command(args: dict):
     """
     Get list of pcap files
     """
-    if DEVICE_GROUP:
-        raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3080,6 +3080,14 @@ def panorama_list_pcaps_command(args: dict):
         params['dlp-password'] = args['password']
     elif args['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
+
+    serial_number = args.get('serialNumber')
+    if VSYS and serial_number:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
+        params['target'] = serial_number
 
     result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
@@ -3128,8 +3136,6 @@ def panorama_get_pcap_command(args: dict):
     """
     Get pcap file
     """
-    if DEVICE_GROUP:
-        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3153,6 +3159,14 @@ def panorama_get_pcap_command(args: dict):
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
     device_name = args.get('deviceName')
+
+    serial_number = args.get('serialNumber')
+    if VSYS and serial_number:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
+        params['target'] = serial_number
 
     file_name = None
     if pcap_id:
@@ -5544,152 +5558,159 @@ def get_security_profiles_command(security_profile: str = None):
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
-    content = []
     context = {}
     if 'spyware' in security_profiles and security_profiles['spyware'] is not None:
+        spyware_content = []
         profiles = security_profiles.get('spyware', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 spyware_rules = prettify_profiles_rules(rules)
-                content.append({
+                spyware_content.append({
                     'Name': profile['@name'],
                     'Rules': spyware_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             spyware_rules = prettify_profiles_rules(rules)
-            content = [{
+            spyware_content = [{
                 'Name': profiles['@name'],
                 'Rules': spyware_rules
             }]
 
-        human_readable = tableToMarkdown('Anti Spyware Profiles', content)
-        context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
+        human_readable = tableToMarkdown('Anti Spyware Profiles', spyware_content)
+        context.update({"Panorama.Spyware(val.Name == obj.Name)": spyware_content})
 
     if 'virus' in security_profiles and security_profiles['virus'] is not None:
+        virus_content = []
         profiles = security_profiles.get('virus', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('decoder', {}).get('entry', [])
                 antivirus_rules = prettify_profiles_rules(rules)
-                content.append({
+                virus_content.append({
                     'Name': profile['@name'],
                     'Decoder': antivirus_rules
                 })
         else:
             rules = profiles.get('decoder', {}).get('entry', [])
             antivirus_rules = prettify_profiles_rules(rules)
-            content = [{
+            virus_content = [{
                 'Name': profiles['@name'],
                 'Rules': antivirus_rules
             }]
 
-        human_readable += tableToMarkdown('Antivirus Profiles', content)
-        context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Antivirus Profiles', virus_content, headers=['Name', 'Decoder', 'Rules'],
+                                          removeNull=True)
+        context.update({"Panorama.Antivirus(val.Name == obj.Name)": virus_content})
 
     if 'file-blocking' in security_profiles and security_profiles['file-blocking'] is not None:
+        file_blocking_content = []
         profiles = security_profiles.get('file-blocking', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 file_blocking_rules = prettify_profiles_rules(rules)
-                content.append({
+                file_blocking_content.append({
                     'Name': profile['@name'],
                     'Rules': file_blocking_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             file_blocking_rules = prettify_profiles_rules(rules)
-            content = [{
+            file_blocking_content = [{
                 'Name': profiles['@name'],
                 'Rules': file_blocking_rules
             }]
 
-        human_readable += tableToMarkdown('File Blocking Profiles', content)
-        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('File Blocking Profiles', file_blocking_content)
+        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": file_blocking_content})
 
     if 'vulnerability' in security_profiles and security_profiles['vulnerability'] is not None:
+        vulnerability_content = []
         profiles = security_profiles.get('vulnerability', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 vulnerability_rules = prettify_profiles_rules(rules)
-                content.append({
+                vulnerability_content.append({
                     'Name': profile['@name'],
                     'Rules': vulnerability_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             vulnerability_rules = prettify_profiles_rules(rules)
-            content = [{
+            vulnerability_content = [{
                 'Name': profiles['@name'],
                 'Rules': vulnerability_rules
             }]
 
-        human_readable += tableToMarkdown('Vulnerability Protection Profiles', content)
-        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Vulnerability Protection Profiles', vulnerability_content)
+        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": vulnerability_content})
 
     if 'data-filtering' in security_profiles and security_profiles['data-filtering'] is not None:
+        data_filtering_content = []
         profiles = security_profiles.get('data-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 data_filtering_rules = prettify_data_filtering_rules(rules)
-                content.append({
+                data_filtering_content.append({
                     'Name': profile['@name'],
                     'Rules': data_filtering_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             data_filtering_rules = prettify_data_filtering_rules(rules)
-            content = [{
+            data_filtering_content = [{
                 'Name': profiles['@name'],
                 'Rules': data_filtering_rules
             }]
 
-        human_readable += tableToMarkdown('Data Filtering Profiles', content)
-        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Data Filtering Profiles', data_filtering_content)
+        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": data_filtering_content})
 
     if 'url-filtering' in security_profiles and security_profiles['url-filtering'] is not None:
+        url_filtering_content = []
         profiles = security_profiles.get('url-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 url_filtering_rules = prettify_get_url_filter(profile)
-                content.append({
+                url_filtering_content.append({
                     'Name': profile['@name'],
                     'Rules': url_filtering_rules
                 })
         else:
             url_filtering_rules = prettify_get_url_filter(profiles)
-            content = [{
+            url_filtering_content = [{
                 'Name': profiles['@name'],
                 'Rules': url_filtering_rules
             }]
 
-        human_readable += tableToMarkdown('URL Filtering Profiles', content)
-        context.update({'Panorama.URLFilter(val.Name == obj.Name)': content})
+        human_readable += tableToMarkdown('URL Filtering Profiles', url_filtering_content)
+        context.update({'Panorama.URLFilter(val.Name == obj.Name)': url_filtering_content})
 
     if 'wildfire-analysis' in security_profiles and security_profiles['wildfire-analysis'] is not None:
+        wildfire_analysis_content = []
         profiles = security_profiles.get('wildfire-analysis', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 wildfire_rules = prettify_wildfire_rules(rules)
-                content.append({
+                wildfire_analysis_content.append({
                     'Name': profile['@name'],
                     'Rules': wildfire_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             wildfire_rules = prettify_wildfire_rules(rules)
-            content = [{
+            wildfire_analysis_content = [{
                 'Name': profiles['@name'],
                 'Rules': wildfire_rules
             }]
 
-        human_readable += tableToMarkdown('WildFire Profiles', content)
-        context.update({"Panorama.WildFire(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('WildFire Profiles', wildfire_analysis_content)
+        context.update({"Panorama.WildFire(val.Name == obj.Name)": wildfire_analysis_content})
 
     return_results({
         'Type': entryTypes['note'],
@@ -5702,12 +5723,11 @@ def get_security_profiles_command(security_profile: str = None):
 
 
 @logger
-def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str) -> Dict:
+def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
-        f"profiles/{profile_type}",
+        'xpath': xpath,
         'key': API_KEY,
         'element': f'<member>{profile_name}</member>'
     }
@@ -5718,12 +5738,18 @@ def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, pro
 
 def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
 
-    if DEVICE_GROUP:
+    if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
 
-    apply_security_profile(pre_post, rule_name, profile_type, profile_name)
+    else:  # firewall instance
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
+
+    apply_security_profile(xpath, profile_name)
     return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
@@ -6682,23 +6708,23 @@ def main():
 
         # Addresses commands
         elif demisto.command() == 'panorama-list-addresses':
-            panorama_list_addresses_command(**args)
+            panorama_list_addresses_command(args)
 
         elif demisto.command() == 'panorama-get-address':
-            panorama_get_address_command(**args)
+            panorama_get_address_command(args)
 
         elif demisto.command() == 'panorama-create-address':
             panorama_create_address_command(args)
 
         elif demisto.command() == 'panorama-delete-address':
-            panorama_delete_address_command(**args)
+            panorama_delete_address_command(args)
 
         # Address groups commands
         elif demisto.command() == 'panorama-list-address-groups':
-            panorama_list_address_groups_command(**args)
+            panorama_list_address_groups_command(args)
 
         elif demisto.command() == 'panorama-get-address-group':
-            panorama_get_address_group_command(**args)
+            panorama_get_address_group_command(args)
 
         elif demisto.command() == 'panorama-create-address-group':
             panorama_create_address_group_command(args)

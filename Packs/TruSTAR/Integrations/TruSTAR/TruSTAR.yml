@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: TruSTAR
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. We recommend using TruSTAR v2 instead.
+description: Deprecated. Use the TruSTAR v2 integration instead.
 display: TruSTAR (Deprecated)
 deprecated: true
 configuration:

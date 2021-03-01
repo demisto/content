@@ -34,7 +34,7 @@ This playbook does not use any integrations.
 | fromPolicy | Use only with ML Method.<br/>Whether to take into account the email from field for deduplication.<br/><br/>"TextOnly" - incidents will be considered duplicated based on test similarity only, ignoring the sender's address. <br/><br/>"Exact" - incidents will be considered duplicated if their text is similar, and their sender is the same. <br/><br/>"Domain" -  Default. Incidents will be considered duplicated if their text is similar, and their senders' address has the same domain. |  | Optional |
 | DuplicateThreshold | The similarity threshold by which to consider an incident as a duplicate \(0-1\), where "1" is a duplicate and "0" is not a duplicate. Use this argument in the ML or text methods. | 0.7 | Required |
 | TimeFrameHours | The time frame \(in hours\) in which to check for duplicate incident candidates. | 72 | Optional |
-| IgnoreCloseIncidents | Whether to ignore closed incidents. Can be "yes" or "no". | yes | Optional |
+| IgnoreClosedIncidents | Whether to ignore closed incidents. Can be "yes" or "no". | yes | Optional |
 | MaxNumberOfCandidates | The maximum number of candidates to check for duplication. | 1000 | Optional |
 | CloseAsDuplicate | Whether to close incidents identified as duplicates. Can be "true" or "false". | true | Optional |
 | TimeField | The Time field by which to query for past incidents to check for duplicate incident candidates. Values: created, occurred, modified | created | Optional |

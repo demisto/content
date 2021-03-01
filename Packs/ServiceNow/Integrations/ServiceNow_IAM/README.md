@@ -12,7 +12,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | ServiceNow URL \(https://&amp;lt;domain&amp;gt;.service-now.com\) | True |
+| url | ServiceNow URL \(https://domain.service-now.com\) | True |
 | api_version | ServiceNow API Version \(e.g. 'v1'\). Specify this value to use an endpoint version other than the latest. | False |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |

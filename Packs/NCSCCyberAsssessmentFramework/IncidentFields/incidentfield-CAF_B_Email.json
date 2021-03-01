@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "NCSC CAF Assessment"
+ ],
+ "caseInsensitive": true,
+ "cliName": "cafbemail",
+ "closeForm": false,
+ "content": true,
+ "description": "Enter the e-mail address of the person responsible for answering questions related to \"Protecting against cyber-attack\"",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_cafbemail",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "CAF B Email",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

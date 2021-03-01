@@ -197,7 +197,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 | --- | --- | --- |
 | channel | The channel to which to send messages. | Optional | 
 | message | The message to send to the channel or team member. | Optional | 
-| team_member | The team member to which to send the message. | Optional | 
+| team_member | Display name or email address of the team member to send the message to. | Optional |
 | team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional | 
 | adaptive_card | The Microsoft Teams adaptive card to send. | Optional | 
 

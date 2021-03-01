@@ -52,7 +52,6 @@ tasks:
       - "23"
       - "8"
       - "10"
-      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -87,7 +86,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -121,94 +120,6 @@ tasks:
           left:
             value:
               simple: EWS.Mailboxes.mailboxId
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 165f60fe-458e-4005-81ec-a0cab94a4fed
-    type: regular
-    task:
-      id: 165f60fe-458e-4005-81ec-a0cab94a4fed
-      version: -1
-      name: Search mailboxes
-      script: '|||ews-search-mailboxes'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      filter:
-        simple: test
-      mailbox-search-scope: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 9f4fdd22-ae60-44be-8e21-129a7313c256
-    type: condition
-    task:
-      id: 9f4fdd22-ae60-44be-8e21-129a7313c256
-      version: -1
-      name: Verify Items context key
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].mailbox
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].subject
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].sender
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].hasAttachment
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].datetimeSent
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: EWS.Items.[0].datetimeReceived
             iscontext: true
     view: |-
       {

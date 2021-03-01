@@ -27,9 +27,9 @@ def test_fetch_incidents(mocker):
     mapped_user = util_load_json('test_data/mapped_user.json')
 
     mocker.patch.object(Client, 'get_full_report', return_value=client_response)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=("id", "mail"))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "")
+    fetch_events = fetch_incidents(client, {}, "", "")
     assert fetch_events == EVENT_RESULTS

@@ -1153,7 +1153,7 @@ def fetch_incidents(
         incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
-        if last_fetch_time <= incident_created_time:
+        if last_fetch_time < incident_created_time:
             incidents.append(incident)
             if next_fetch < incident_created_time:
                 next_fetch = incident_created_time

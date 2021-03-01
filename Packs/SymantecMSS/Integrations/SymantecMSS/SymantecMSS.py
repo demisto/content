@@ -87,7 +87,12 @@ def api_call(body, headers):
             raise Exception(
                 "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
                     res.headers))
-        return xml.etree.ElementTree.fromstring(res.content)
+        try:
+            return xml.etree.ElementTree.fromstring(res.content)
+        except xml.etree.ElementTree.ParseError as exc:
+            # in case of a parsing error, try to remove problematic chars and try again.
+            demisto.debug('failed to parse request content, trying to parse without problematic chars:\n{}'.format(exc))
+            return xml.etree.ElementTree.fromstring(strip_unwanted_chars(res.content))
 
 
 def event_to_incident(event):

@@ -1121,12 +1121,21 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('time_after')
+    to_time = args.get('time_before')
+    time_range = args.get('time_range')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+
+    if time_range:
+        if from_time or to_time:
+            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
+                         "arguments.")
+        else:
+            from_time, to_time = time_range.split(',')
+
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
@@ -1498,11 +1507,6 @@ def search_file_command(file):
             score=score
         )
 
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1515,6 +1519,12 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            tags=get_tags_for_generic_context(tags),
+        )
+
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
@@ -1526,6 +1536,19 @@ def search_file_command(file):
         ))
 
     return command_results
+
+
+def get_tags_for_generic_context(tags: Optional[list]):
+    if not tags:
+        return None
+    results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    for item in tags:
+        generic_context_tags = {key: item.get(key) for key in keys}
+        generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
 
 
 def get_export_list_command(args):

@@ -210,27 +210,25 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
     #>
 }
 
+
+
 function ParseResults([string]$results, [int]$limit = -1) {
+    $results_matches = (Select-String -AllMatches "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)[},]"  -InputObject $results).Matches
     $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    $lines = $results.Split(",")
-    # Results limit
-    foreach ($line in $lines)
+    foreach ($match in $results_matches)
     {
-        if ($limit -ne -1 -and $parsed_results.Count -ge $limit){
+        if ($parsed_results.Count -ge $limit -and $limit -ne -1){
             break
         }
-        if ($line -match "Location: (\S+); Sender: ([\S ]+); Subject: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+); Data Link: ([^\}]+)")
-        {
-            $parsed_results.Add(@{
-                "Location" = $matches[1]
-                "Sender" = $matches[2]
-                "Subject" = $matches[3]
-                "Type" = $matches[4]
-                "Size" = $matches[5]
-                "ReceivedTime" = $matches[6]
-                "DataLink" = $matches[7]
-            })
-        }
+        $parsed_results.Add(@{
+            "Location" = $match.Groups[1].Value
+            "Sender" = $match.Groups[2].Value
+            "Subject" = $match.Groups[3].Value
+            "Type" = $match.Groups[4].Value
+            "Size" = $match.Groups[5].Value
+            "ReceivedTime" = $match.Groups[6].Value
+            "DataLink" = $match.Groups[7].Value
+        })
     }
 
     return $parsed_results

@@ -9,7 +9,7 @@ import requests
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs, PackStatus
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -22,6 +22,7 @@ SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
+CONTENT_CHANNEL = 'dmst-content-team'
 
 
 def get_faild_steps_list():
@@ -72,6 +73,7 @@ def options_handler():
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)
     parser.add_argument('-ca', '--circle_artifacts', help="The path to the circle artifacts directory")
     parser.add_argument('-j', '--job_name', help='The job name that is running the slack notifier')
+    parser.add_argument('-ch', '--slack_channel', help='The slack channel in which to send the notification')
     options = parser.parse_args()
 
     return options
@@ -139,7 +141,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs = get_successful_and_failed_packs(
+        successful_packs, failed_packs, successful_private_packs_dict = get_successful_and_failed_packs(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
@@ -151,8 +153,14 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         if failed_packs:
             steps_fields += [{
                 "title": "Failed Packs:",
-                "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                "value": "\n".join([f"{pack_name}: {PackStatus[pack_data.get(BucketUploadFlow.STATUS)].value}"
                                     for pack_name, pack_data in failed_packs.items()]),
+                "short": False
+            }]
+        if successful_private_packs_dict:
+            steps_fields += [{
+                "title": "Successful Private Packs:",
+                "value": "\n".join([pack_name for pack_name in {*successful_private_packs_dict}]),
                 "short": False
             }]
 
@@ -274,12 +282,12 @@ def get_fields():
 
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
-                   job_name=""):
+                   job_name="", slack_channel=CONTENT_CHANNEL):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
@@ -307,7 +315,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            json={'channel': 'dmst-content-team',
+            json={'channel': slack_channel,
                   'username': 'Content CircleCI',
                   'as_user': 'False',
                   'attachments': content_team_attachments}
@@ -325,13 +333,14 @@ def main():
     bucket_upload = options.bucket_upload
     circle_artifacts_path = options.circle_artifacts
     job_name = options.job_name
+    slack_channel = options.slack_channel or CONTENT_CHANNEL
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
-                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name
-                       )
+                           circle_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
+                       slack_channel=slack_channel)
     elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
         slack_notifier(url, slack, test_type)
     else:

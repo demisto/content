@@ -1,5 +1,6 @@
-comment: > 
-  This widget script generates a map of the Open Expanse Issue Incidents with provider On Prem.
+comment: >
+  This widget script generates a map of the Open Expanse Issue Incidents with provider
+  On Prem.
   The map is generated as a static PNG file embedded in Markdown.
 args:
 - default: false
@@ -17,7 +18,7 @@ args:
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1
-dockerimage: demisto/chromium:1.0.0.13616
+dockerimage: demisto/chromium:1.0.0.15159
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
 runas: DBotWeakRole
