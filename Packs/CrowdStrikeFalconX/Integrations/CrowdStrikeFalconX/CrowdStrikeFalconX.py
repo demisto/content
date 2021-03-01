@@ -201,6 +201,32 @@ class Client:
         token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
         return token_res.get('access_token')
 
+    def upload_file_v2(
+            self,
+            file: str,
+            file_name: str,
+            is_confidential: str = "true",
+            comment: str = ""
+    ) -> dict:
+        """Creating the needed arguments for the http request
+        :param file: content of the uploaded sample in binary format
+        :param file_name: name of the file
+        :param is_confidential: defines visibility of this file in Falcon MalQuery, either via the API or the Falcon console
+        :param comment: a descriptive comment to identify the file for other users
+        :return: http response
+        """
+        get_file_path_res = demisto.getFilePath(file)
+        file_path = get_file_path_res["path"]
+        file_name = get_file_path_res["name"]
+        demisto.log(str(file_name))
+        with open(file_path, 'rb') as f:
+            file_bytes = f.read()
+
+        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
+                     f"&comment={comment}"
+        self._headers['Content-Type'] = 'application/octet-stream'
+        return self._http_request("POST", url_suffix, files={'file': (file_name, file_bytes)})
+
     def upload_file(
             self,
             file: str,
@@ -223,7 +249,7 @@ class Client:
                              f"&comment={comment}"
                 self._headers['Content-Type'] = 'application/octet-stream'
                 shutil.rmtree(file_name, ignore_errors=True)
-                return self._http_request("POST", url_suffix, files={'file': f})
+                return self._http_request("POST", url_suffix, files={'file': (file_name, f)})
         except OSError:
             raise Exception('Failed to prepare file for upload.')
         finally:
@@ -552,7 +578,8 @@ def upload_file_command(
     :param submit_file: if "yes" run cs-fx-submit-uploaded-file for the uploaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
-    response = client.upload_file(file, file_name, is_confidential, comment)
+    #response = client.upload_file(file, file_name, is_confidential, comment)
+    response = client.upload_file_v2(file, file_name, is_confidential, comment)
 
     resources_fields = ["file_name", "sha256"]
     filtered_outputs = parse_outputs(response, resources_fields=resources_fields)
@@ -836,6 +863,15 @@ def find_submission_id_command(
     entry_context = {'csfalconx.resource(val.id === obj.id)': [filtered_outputs]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
+
+
+def get_file(entry_id):
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res["path"]
+    file_name = get_file_path_res["name"]
+    with open(file_path, 'rb') as f:
+        file_bytes = f.read()
+    return file_name, file_bytes
 
 
 def main():
