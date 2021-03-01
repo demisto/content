@@ -121,6 +121,7 @@ def get_pack_name(zip_fp: str) -> str:
 
 
 def run_validate(file_path: str, json_output_file: str) -> None:
+    os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
     if not os.path.exists(tests_dir):
         os.makedirs(tests_dir)
