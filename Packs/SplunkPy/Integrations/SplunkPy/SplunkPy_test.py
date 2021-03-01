@@ -1,7 +1,9 @@
 from copy import deepcopy
 import pytest
+import json
 import SplunkPy as splunk
 import demistomock as demisto
+from datetime import timedelta, datetime
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -422,7 +424,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_notables(mocker):
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -431,7 +433,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
+    splunk.fetch_notables(service, enrich_notables=False)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
@@ -466,6 +468,283 @@ EXPECTED_OUTPUT = {
 def test_create_mapping_dict():
     mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
     assert mapping_dict == EXPECTED_OUTPUT
+
+
+""" ========== Enriching Fetch Mechanism Tests ========== """
+
+
+@pytest.mark.parametrize('cache_object, output', [
+    (splunk.Cache(not_yet_submitted_notables=[splunk.Notable({'event_id': '1'})]), False),
+    (splunk.Cache(not_yet_submitted_notables=[]), True),
+    (splunk.Cache(), True)
+])
+def test_is_done_submitting(cache_object, output):
+    """
+    Scenario: New fetch is possible if we have done submitting all fetched notables to Splunk.
+
+    Given:
+    - List of one fetched notable that haven't been submitted yet.
+    - An empty list of fetched notables
+    - An empty Cache object
+
+    When:
+    - Testing whether we've done submitting all fetched notables to Splunk or not.
+
+    Then:
+    - Return the expected result
+    """
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT]
+    assert splunk.is_done_submitting(cache_object) is output
+
+
+@pytest.mark.parametrize('integration_context, output', [
+    ({splunk.INCIDENTS: ['incident']}, ['incident']),
+    ({splunk.INCIDENTS: []}, []),
+    ({}, [])
+])
+def test_fetch_incidents_for_mapping(integration_context, output, mocker):
+    """
+    Scenario: When a user configures a mapper using Fetch from Instance when the enrichment mechanism is working,
+     we save the ready incidents in the integration context.
+
+    Given:
+    - List of ready incidents
+    - An empty list of incidents
+    - An empty integration context object
+
+    When:
+    - fetch_incidents_for_mapping is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'incidents')
+    splunk.fetch_incidents_for_mapping(integration_context)
+    assert demisto.incidents.call_count == 1
+    assert demisto.incidents.call_args[0][0] == output
+
+
+def test_reset_enriching_fetch_mechanism(mocker):
+    """
+    Scenario: When a user is willing to reset the enriching fetch mechanism and start over.
+
+    Given:
+    - An integration context object with not empty Cache and incidents
+
+    When:
+    - reset_enriching_fetch_mechanism is called
+
+    Then:
+    - Check that the integration context does not contain this fields
+    """
+    integration_context = {
+        splunk.CACHE: "cache_string",
+        splunk.INCIDENTS: ['i1', 'i2'],
+        'wow': 'wow'
+    }
+    mocker.patch('SplunkPy.get_integration_context', return_value=integration_context)
+    mocker.patch('SplunkPy.set_integration_context')
+    splunk.reset_enriching_fetch_mechanism()
+    assert integration_context == {'wow': 'wow'}
+
+
+@pytest.mark.parametrize('drilldown_creation_time, asset_creation_time, enrichment_timeout, output', [
+    (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+    ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
+])
+def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+    """
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
+     the data gathered so far.
+
+    Given:
+    - Two enrichments that none of them exceeds the timeout.
+    - An enrichment exceeding the timeout and one that does not exceeds the timeout.
+
+    When:
+    - is_enrichment_process_exceeding_timeout is called
+
+    Then:
+    - Return the expected result
+    """
+    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    notable = splunk.Notable({splunk.EVENT_ID: 'id'})
+    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+    assert splunk.is_enrichment_process_exceeding_timeout(notable, enrichment_timeout) is output
+
+
+@pytest.mark.parametrize('cache_object, last_run, output', [
+    (splunk.Cache(), {}, {}),
+    (splunk.Cache(
+        last_run_regular_fetch={'time': 1, 'offset': 0},
+        last_run_over_fetch={'time': 2, 'offset': 50},
+        num_fetched_notables=50
+    ), {}, {'time': 2, 'offset': 50}),
+    (splunk.Cache(
+        last_run_regular_fetch={'time': 1, 'offset': 0},
+        last_run_over_fetch={'time': 2, 'offset': 50},
+        num_fetched_notables=20
+    ), {}, {'time': 1, 'offset': 0})
+])
+def test_handle_last_run(cache_object, last_run, output, mocker):
+    """
+    Scenario: When we finished processing all fetched notables (submit & handle), we set the last run object.
+
+    Given:
+    - An empty Cache object (First fetch)
+    - A Cache object that represents over fetch, i.e. num of fetched notables >= FETCH_LIMIT
+    - A Cache object that represents regular fetch, i.e. num of fetched notables < FETCH_LIMIT
+
+    When:
+    - handle_last_run is called
+
+    Then:
+    - Set the last run to the expected value
+    """
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    mocker.patch.object(demisto, 'setLastRun')
+    splunk.handle_last_run(cache_object)
+    assert last_run == output
+
+
+INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
+INCIDENT_2 = {'name': 'incident2', 'rawJSON': json.dumps({})}
+
+
+@pytest.mark.parametrize('integration_context, incidents, output', [
+    ({}, [], []),
+    ({}, [INCIDENT_1, INCIDENT_2], [INCIDENT_1, INCIDENT_2])
+])
+def test_store_incidents_for_mapping(integration_context, incidents, output):
+    """
+    Scenario: Store ready incidents in integration context, to be retrieved by a user configuring a mapper
+     and selecting "Fetch from instance" when the enrichment mechanism is working.
+
+    Given:
+    - An empty list of incidents
+    - A list of two incidents
+
+    When:
+    - store_incidents_for_mapping is called
+
+    Then:
+    - Return the expected result
+    """
+    splunk.store_incidents_for_mapping(incidents, integration_context)
+    assert integration_context.get(splunk.INCIDENTS, []) == output
+
+
+@pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
+    ({}, {}, False, "", ""),
+    ({"drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+      "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME)},
+     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
+    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
+])
+def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
+    """
+    Scenario: Trying to get the drilldown's timeframe from the notable's data
+
+    Given:
+    - An empty notable's data
+    - An notable's data that the info of the timeframe is in the raw field
+    - An notable's data that the info is in the data dict
+
+    When:
+    - get_drilldown_timeframe is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'info')
+    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
+    assert task_status == status
+    assert earliest_offset == earliest
+    assert latest_offset == latest
+
+
+@pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
+    ('field|s', {'field': '1'}, 'field', '1'),
+    ('field', {'field': '1'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1'),
+    ('x', {'y': '2'}, '', '')
+])
+def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
+    """
+    Scenario: When building the drilldown search query, we search for the field in the raw search query
+     and search for its real name in the notable's data or in the notable's raw data.
+     We also ignore Splunk advanced syntax such as "|s, |h, ..."
+
+    Given:
+    - A raw field that has the same name in the notable's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's data
+    - A raw field that has "|s" as a suffix in the raw search query and its value is in the notable's raw data
+    - A raw field that is not is the notable's data or in the notable's raw data
+
+    When:
+    - get_notable_field_and_value is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'error')
+    field, value = splunk.get_notable_field_and_value(raw_field, notable_data)
+    assert field == expected_field
+    assert value == expected_value
+
+
+@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, 'search a=$a|s$ c=$c$ suffix'),
+])
+def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+    """
+    Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
+     corresponding query part (key & value).
+
+    Given:
+    - A raw search query with fields both in the notable's data and in the notable's raw data
+    - A raw search query with fields in the notable's data that has more than one value
+    - A raw search query with fields that does not exist in the notable's data or in the notable's raw data
+
+    When:
+    - build_drilldown_search is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(demisto, 'error')
+    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+
+
+@pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
+    ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
+    ({'_raw': '1233,user=u1'}, 'user', ['user'], 'user="u1"'),
+    ({'user': ['u1', 'u2'], '_raw': '1321,src_user=u3'}, 'user', ['user', 'src_user'],
+     '(user="u1" OR user="u2" OR user="u3")'),
+    ({}, 'prefix', ['field'], '')
+])
+def test_get_fields_query_part(notable_data, prefix, fields, query_part):
+    """
+    Scenario: When building an enrichment search query, we search for values in the notable's data / notable's raw data
+     and fill them in the raw search query to create a searchable query.
+
+    Given:
+    - One field with multiple values, values in the data
+    - One field, value is in the raw data
+    - Two fields with multiple values, values in both the data and the raw data
+    - An empty notable data, field does not exists
+
+    When:
+    - get_fields_query_part is called
+
+    Then:
+    - Return the expected result
+    """
+    assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
 
 
 NOTABLE = {'rule_name': '', '': '', 'rule_title': '', 'security_domain': '', 'index': '', 'rule_description': '',
@@ -567,6 +846,7 @@ IDENTITY = {
 
 
 def test_get_cim_mapping_field_command(mocker):
+    """ Scenario: When the mapping is based on Splunk CIM. """
     mocker.patch.object(demisto, 'results')
     splunk.get_cim_mapping_field_command()
     fields = demisto.results.call_args[0][0]

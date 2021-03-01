@@ -16,11 +16,12 @@ configuration:
   name: port
   required: true
   type: 0
-- defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+- defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
   display: Fetch notable events ES query
   name: fetchQuery
   required: false
   type: 0
+  additionalinfo: The query for the notable events enrichment (defined by default). If you decide to edit this, make sure to provide a query that uses the \`notable\` macro, use the new default query as an example.
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -110,6 +111,27 @@ configuration:
   name: type_field
   required: false
   type: 0
+- display: Enrichment Types
+  name: enabled_enrichments
+  type: 16
+  required: false
+  options:
+  - Drilldown
+  - Asset
+  - Identity
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+- display: Enrichment Timeout (Minutes)
+  name: enrichment_timeout
+  defaultvalue: "5"
+  type: 0
+  required: false
+  additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+- display: Number of Events Per Enrichment Type
+  name: num_enrichment_events
+  defaultvalue: "20"
+  type: 0
+  required: false
+  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset & Identity)
 - defaultvalue: 'false'
   display: Use CIM Schemas for Mapping
   name: use_cim
@@ -619,6 +641,9 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - name: splunk-reset-enriching-fetch-mechanism
+    arguments: []
+    description: Resets the enrichment mechanism of fetched notables.
   dockerimage: demisto/splunksdk:1.0.0.15975
   feed: false
   isfetch: true
