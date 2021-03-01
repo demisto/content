@@ -99,24 +99,6 @@ script:
       default: true
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: false
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return full response for scans. Default is "false".
-      defaultValue: "false"
-    - name: threshold
-      description: If the number of positives is higher than the threshold, the file
-        will be considered malicious. If the threshold is not specified, the default
-        file threshold, as configured in the instance settings, will be used.
-    - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
-      defaultValue: "60"
-    - name: retries
-      description: Number of retries for the API rate limit. Default is "0".
-      defaultValue: "0"
     outputs:
     - contextPath: File.MD5
       description: Bad MD5 hash.
@@ -164,37 +146,7 @@ script:
       required: true
       default: true
       description: IP address to check.
-      isArray: true
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return full response for detected URLs. Default is "false".
-      defaultValue: "false"
-    - name: threshold
-      description: If the number of positives is higher than the threshold, the IP
-        address will be considered malicious. If the threshold is not specified, the
-        default IP threshold, as configured in the instance settings, will be used.
-    - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format. Default is "10".
-      defaultValue: "10"
-    - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
-      defaultValue: "60"
-    - name: retries
-      description: Number of retries for API rate limit. Default is "0".
-      defaultValue: "0"
-    - name: fullResponse
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return all results, which can be thousands. Default
-        is "false". We recommend that you don't return full results in playbooks.
-      defaultValue: "false"
+      isArray: false
     outputs:
     - contextPath: IP.Address
       description: Bad IP address.
@@ -242,9 +194,8 @@ script:
     - name: url
       required: true
       default: true
-      description: A comma-seperated list of URLs to check. This command will not
-        work properly on URLs containing commas.
-      isArray: true
+      description: URL to check.
+      isArray: false
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found.
@@ -285,38 +236,7 @@ script:
       required: true
       default: true
       description: Domain name to check.
-      isArray: true
-    - name: long
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return the full response for detected URLs. Default
-        is "false".
-      defaultValue: "false"
-    - name: sampleSize
-      description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format.
-      defaultValue: "10"
-    - name: threshold
-      description: If the number of positives is higher than the threshold, the domain
-        will be considered malicious. If the threshold is not specified, the default
-        domain threshold, as configured in the instance settings, will be used.
-    - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is
-        reached. Default is "60".
-      defaultValue: "60"
-    - name: retries
-      description: Number of retries for API rate limit. Default is "0".
-      defaultValue: "0"
-    - name: fullResponse
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to return all results, which can be thousands. Default
-        is "false". We recommend that you don't return full results in playbooks.
-      defaultValue: "false"
+      isArray: false
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found.
