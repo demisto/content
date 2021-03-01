@@ -38,7 +38,8 @@ This integration was integrated and tested with Splunk v7.2.
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
-| incoming_mirror | When selected, any notable data changed in remote Splunk server will reflected on existing fetched incidents. | False |
+| use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
+| incoming_mirror | When selected, any notable data changed in remote Splunk server will be reflected on existing fetched incidents. | False |
 | close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
 | close_notable | When selected, closing the XSOAR incident is mirrored in Splunk. | False |
 
@@ -73,6 +74,25 @@ Use the following naming convention: (demisto_fields_{type}).
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
 
+### Splunk Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and Splunk Notables.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for SplunkPy and select your integration instance.
+3. Enable **Fetches incidents**.
+4. You can go to the `Fetch notable events ES enrichment query` parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+  * Incoming - Any changes in Splunk notables will be reflected in XSOAR incidents.
+  * Outgoing - Any changes in XSOAR incidents (notable's status, urgency, comments & owner) will be reflected in Splunk notables.
+  * Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
+  * None - Choose this to turn off incident mirroring.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on Splunk side.
+6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
+7. Newly fetched incidents will be mirrored in the chosen direction.
+  * Note: This will not effect existing incidents.
+
 ### Mapping fetched incidents using Select Schema
 This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
 When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
@@ -84,6 +104,13 @@ To use this feature, you must set several integration instance parameters:
  - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
  - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
+
+### Mapping Splunk CIM fields using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based on Splunk CIM.
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
