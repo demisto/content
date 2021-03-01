@@ -46,10 +46,10 @@ PRIVATE_ID_SET = {
 }
 
 ACCESSDATA_INTEGRATION = {"Accessdata": {"name": "Accessdata", "pack": "Accessdata"}}
-ACCESSDATA_PACK_NAMES = ["Accessdata", "Access data"]
+ACCESSDATA_PACK_NAMES = ["Accessdata", "Access data"]  # For 2 versions of Packs that can be inside the ID set
 
 ACTIVEMQ_INTEGRATION = {"ActiveMQ": {"name": "ActiveMQ", "pack": "ActiveMQ"}}
-ACTIVEMQ_PACK_NAMES = ["ActiveMQ", "Active MQ"]
+ACTIVEMQ_PACK_NAMES = ["ActiveMQ", "Active MQ"]  # For 2 versions of Packs that can be inside the ID set
 
 
 def test_remove_old_pack_from_private_id_set():
