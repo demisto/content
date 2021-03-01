@@ -68,7 +68,7 @@ def get_failed_tasks_output(tasks: list, incident: dict):
             "Error Entry ID": error_entries,
             "Number of Errors": len(error_entries),
             "Task ID": task.get("id"),
-            "Incident Created Date": incident.get("created", '').replace("T", " "),
+            "Incident Created Date": incident.get("created", ''),
             "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
             "Incident Owner": incident["owner"]
         }
