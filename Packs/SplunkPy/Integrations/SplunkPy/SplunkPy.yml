@@ -78,8 +78,7 @@ configuration:
   type: 12
 - additionalinfo: Used only for Mapping with the Select Schema option. The name of
     the field that contains the type of the event or alert. The default value is "source",
-    which is a good option for Notable Events, however you may choose any custom field
-    that suits the need.
+    which is a good option for Notable Events, however, you may choose any custom field.
   defaultvalue: source
   display: Event Type Field
   hidden: false
@@ -91,7 +90,7 @@ configuration:
   name: use_cim
   required: false
   type: 8
-  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info.
+  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from Cortex XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info.
 - defaultvalue: None
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk
       to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to
@@ -114,7 +113,7 @@ configuration:
   name: close_incident
   required: false
   type: 8
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in Splunk.
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Splunk.
   defaultvalue: 'false'
   display: Close Mirrored Splunk Notable Event
   hidden: false
