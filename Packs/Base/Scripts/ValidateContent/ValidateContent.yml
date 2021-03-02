@@ -6,7 +6,8 @@ script: ''
 type: python
 subtype: python3
 tags: []
-comment: Runs validation and linting on content items.
+comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs.
+  This automation script is used as part of the content validation that runs as part of the contribution flow.
 enabled: true
 args:
 - default: false
