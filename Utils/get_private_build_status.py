@@ -55,7 +55,6 @@ def main():
 
     # initialize timer
     start = time.time()
-    time.process_time()
     elapsed = 0
 
     # polling the workflow status while is in progress
