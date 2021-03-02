@@ -176,6 +176,32 @@ def get_id_offset():
     )
 
 
+def get_custom_fields():
+    """
+    This function returns all custom fields.
+    :return: dict of custom fields: id as key and description as value.
+    """
+    custom_id_description_mapping = {}
+    try:
+        res = requests.request(
+            method='GET',
+            url=BASE_URL + 'rest/api/latest/field/search?type=custom',
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except Exception as e:
+        demisto.error(f'Could not get custom fields because got the next exception: {e}')
+    else:
+        if res.status_code == 200:
+            custom_fields_list = res.json().get('values', [])
+            custom_id_description_mapping = {field.get('id'): field.get('description') for field in custom_fields_list}
+        else:
+            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
+    finally:
+        return custom_id_description_mapping
+
+
 def expand_urls(data, depth=0):
     if isinstance(data, dict) and depth < 10:
         for key, value in data.items():
@@ -952,6 +978,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     :return: A list of keys you want to map
     """
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
+    custom_fields = get_custom_fields()
+    ISSUE_INCIDENT_FIELDS.update(custom_fields)
     for argument, description in ISSUE_INCIDENT_FIELDS.items():
         jira_incident_type_scheme.add_field(name=argument, description=description)
 
@@ -1057,7 +1085,6 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         incident_modified_date: datetime = parse(parsed_args.last_update)
         # Update incident only if issue modified in Jira server-side after the last sync
         if jira_modified_date > incident_modified_date:
-
             incident_update = issue_raw_response
 
             demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
