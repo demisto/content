@@ -7,7 +7,7 @@ from pyunpack import Archive
 
 filePath = None
 fileEntryID = ''
-if demisto.args().has_key('fileName') or demisto.args().has_key('lastPackedFileInWarroom'):
+if 'fileName' in demisto.args() or 'lastPackedFileInWarroom' in demisto.args():
     entries = demisto.executeCommand('getEntries', {})
     for entry in entries:
         fn = demisto.get(entry, 'File')
@@ -16,30 +16,32 @@ if demisto.args().has_key('fileName') or demisto.args().has_key('lastPackedFileI
         is_correct_file = demisto.args().get('fileName', '').lower() == fn.lower()
 
         if is_text:
-            if demisto.args().has_key('fileName') and is_correct_file:
+            if 'fileName' in demisto.args() and is_correct_file:
                 fileEntryID = entry['ID']
                 break
-            if demisto.args().has_key('lastPackedFileInWarroom') and fn.lower().endswith(demisto.args().get('lastPackedFileInWarroom', '').lower()):
+            if 'lastPackedFileInWarroom' in demisto.args() and fn.lower().endswith(demisto.args().get(
+                    'lastPackedFileInWarroom', '').lower()):
                 fileEntryID = entry['ID']
 
     if fileEntryID == '':
         errorMessage = ''
-        if demisto.args().has_key('fileName'):
+        if 'fileName' in demisto.args():
             demisto.results({
                 'Type': entryTypes['error'],
                 'ContentsFormat': formats['text'],
                 'Contents': '"' + demisto.args().get('fileName') + '" no such file in the war room'
             })
-        if demisto.args().has_key('lastPackedFileInWarroom'):
+        if 'lastPackedFileInWarroom' in demisto.args():
             demisto.results({
                 'Type': entryTypes['error'],
                 'ContentsFormat': formats['text'],
-                'Contents': 'Could not find "' + demisto.args().get('lastPackedFileInWarroom', '') + '" file in war room'
+                'Contents': 'Could not find "' + demisto.args().get('lastPackedFileInWarroom',
+                                                                    '') + '" file in war room'
             })
 
         sys.exit(0)
 
-if demisto.args().has_key('entryID'):
+if 'entryID' in demisto.args():
     fileEntryID = demisto.args().get('entryID')
 
 if not fileEntryID:
@@ -73,7 +75,8 @@ for root, directories, files in os.walk('.'):
     # removing the previously existing dirs from the search
     directories[:] = [d for d in directories if d not in excludedDirs]
     for f in files:
-        # skipping previously existing files and verifying that the current file is a file and then adding it to the extracted files list
+        # skipping previously existing files and verifying that the current file is a file and then adding it
+        # to the extracted files list
         if f not in excludedFiles and isfile(os.path.join(root, f)):
             filenames.append(os.path.join(root, f))
 if len(filenames) == 0:
@@ -94,8 +97,11 @@ else:
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': {'extractedFiles': files_base_names},
-            'EntryContext': {'ExtractedFiles': files_base_names, 'File(val.EntryID=="' + fileEntryID + '").Unpacked': True},
+            'EntryContext': {'ExtractedFiles': files_base_names,
+                             'File(val.EntryID=="' + fileEntryID + '").Unpacked': True},
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Extracted Files', [{'name': file_name, 'path': file_path} for file_path, file_name in files_dic.items()])
+            'HumanReadable': tableToMarkdown('Extracted Files',
+                                             [{'name': file_name, 'path': file_path} for file_path, file_name in
+                                              files_dic.items()])
         })
     demisto.results(results)
