@@ -40,7 +40,7 @@ def test_ip(requests_mock):
         'threshold': 10,
     }
 
-    response = ip_reputation_command(client, args, 10)[0]
+    response = ip_reputation_command(client, args, 10, reliability='C - Fairly reliable')[0]
 
     assert response.outputs_prefix == 'CyberTotal.IP'
     assert response.outputs_key_field == 'task_id'
@@ -85,7 +85,7 @@ def test_url(requests_mock):
         'threshold': 10,
     }
 
-    response = url_reputation_command(client, args, 10)[0]
+    response = url_reputation_command(client, args, 10, reliability='C - Fairly reliable')[0]
 
     assert response.outputs_prefix == 'CyberTotal.URL'
     assert response.outputs_key_field == 'task_id'
@@ -130,7 +130,7 @@ def test_domain(requests_mock):
         'threshold': 10,
     }
 
-    response = domain_reputation_command(client, args, 10)[0]
+    response = domain_reputation_command(client, args, 10, reliability='C - Fairly reliable')[0]
 
     assert response.outputs_prefix == 'CyberTotal.Domain'
     assert response.outputs_key_field == 'task_id'
@@ -175,7 +175,7 @@ def test_file(requests_mock):
         'threshold': 10,
     }
 
-    response = file_reputation_command(client, args, 10)[0]
+    response = file_reputation_command(client, args, 10, reliability='C - Fairly reliable')[0]
 
     assert response.outputs_prefix == 'CyberTotal.File'
     assert response.outputs_key_field == 'task_id'

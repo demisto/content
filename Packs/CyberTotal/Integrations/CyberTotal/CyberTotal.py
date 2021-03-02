@@ -155,9 +155,10 @@ class Client(BaseClient):
         if 'whois' in cybertotal_result:
             if len(cybertotal_result['whois']) > 0:
                 result = cybertotal_result['whois'].pop(0)
+        parsed_date = dateparser.parse(scan_time)
         result['permalink'] = permalink,
         result['resource'] = resource,
-        result['scan_date'] = dateparser.parse(scan_time).strftime("%Y-%m-%d %H:%M:%S"),
+        result['scan_date'] = parsed_date.strftime("%Y-%m-%d %H:%M:%S") if parsed_date else '',
         result['task_id'] = task_id
         result['message'] = "search success"
         if 'createdAt' in result:
