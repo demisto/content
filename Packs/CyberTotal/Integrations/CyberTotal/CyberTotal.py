@@ -2,7 +2,6 @@ import traceback
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 from datetime import timezone
-import inspect
 import dateparser
 import requests
 
@@ -254,6 +253,10 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         default threshold to determine whether an IP is malicious
         if threshold is not specified in the XSOAR arguments
 
+    :type reliability: ``str``
+    :param reliability:
+        a DbotScore Reliability for the indicators extracted from integration
+
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
         that contains IPs
@@ -293,7 +296,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             indicator_type=DBotScoreType.IP,
             integration_name='CyberTotal',
             score=score,
-            reliability=DBotScoreReliability.reliability,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
             malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
@@ -327,7 +330,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                           reliability: str) -> List[CommandResults]:
     """url command: Returns URL reputation for a list of URLs
 
     :type client: ``Client``
@@ -343,6 +347,10 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
     :param default_threshold:
         default threshold to determine whether an URL is malicious
         if threshold is not specified in the XSOAR arguments
+
+    :type reliability: ``str``
+    :param reliability:
+        a DbotScore Reliability for the indicators extracted from integration
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -383,6 +391,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
             indicator_type=DBotScoreType.URL,
             integration_name='CyberTotal',
             score=score,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
             malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
@@ -416,7 +425,8 @@ def url_reputation_command(client: Client, args: Dict[str, Any], default_thresho
     return command_results
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                            reliability: str) -> List[CommandResults]:
     """file command: Returns File reputation for a list of Files
 
     :type client: ``Client``
@@ -432,6 +442,10 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
     :param default_threshold:
         default threshold to determine whether an File is malicious
         if threshold is not specified in the XSOAR arguments
+
+    :type reliability: ``str``
+    :param reliability:
+        a DbotScore Reliability for the indicators extracted from integration
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -472,6 +486,7 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
             indicator_type=DBotScoreType.FILE,
             integration_name='CyberTotal',
             score=score,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
             malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
@@ -508,7 +523,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any], default_thresh
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                              reliability: str) -> List[CommandResults]:
     """domain command: Returns Domain reputation for a list of Domains
 
     :type client: ``Client``
@@ -524,6 +540,10 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     :param default_threshold:
         default threshold to determine whether an Domain is malicious
         if threshold is not specified in the XSOAR arguments
+
+    :type reliability: ``str``
+    :param reliability:
+        a DbotScore Reliability for the indicators extracted from integration
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -564,6 +584,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             integration_name='CyberTotal',
             indicator_type=DBotScoreType.DOMAIN,
             score=score,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
             malicious_description=f'CyberTotal returned reputation {reputation}'
         )
 
@@ -759,19 +780,19 @@ def main() -> None:
 
         elif demisto.command() == 'ip':
             default_threshold = int(demisto.params().get('threshold_ip', '10'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold))
+            return_results(ip_reputation_command(client, demisto.args(), default_threshold, reliability))
 
         elif demisto.command() == 'url':
             default_threshold = int(demisto.params().get('threshold_url', '10'))
-            return_results(url_reputation_command(client, demisto.args(), default_threshold))
+            return_results(url_reputation_command(client, demisto.args(), default_threshold, reliability))
 
         elif demisto.command() == 'domain':
             default_threshold = int(demisto.params().get('threshold_domain', '10'))
-            return_results(domain_reputation_command(client, demisto.args(), default_threshold))
+            return_results(domain_reputation_command(client, demisto.args(), default_threshold, reliability))
 
         elif demisto.command() == 'file':
             default_threshold = int(demisto.params().get('threshold_hash', '10'))
-            return_results(file_reputation_command(client, demisto.args(), default_threshold))
+            return_results(file_reputation_command(client, demisto.args(), default_threshold, reliability))
 
         elif demisto.command() == 'cybertotal-ip-whois':
             return_results(ip_whois_command(client, demisto.args()))

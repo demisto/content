@@ -286,7 +286,7 @@ class DBotScoreReliability(object):
         )
 
     @staticmethod
-    def get_dbot_score_reliability_from_str(reliability_str: str):
+    def get_dbot_score_reliability_from_str(reliability_str):
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -301,7 +301,8 @@ class DBotScoreReliability(object):
             return DBotScoreReliability.E
         elif reliability_str == DBotScoreReliability.F:
             return DBotScoreReliability.F
-        return None
+        raise Exception("Please use supported reliability only.")
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
