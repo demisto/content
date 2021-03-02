@@ -345,14 +345,18 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
+    logging.info("Chanoch A, tests_set: {0}".format(tests_set))
+
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
         script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
+    logging.info("Chanoch B, tests_set: {0}".format(tests_set))
     packs_to_install.update(test_packs_to_install)
 
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     missing_ids, tests_set = check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set)
+    logging.info("Chanoch C, tests_set: {0}".format(tests_set))
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
@@ -494,7 +498,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
-
+    logging.info("Chanoch 333, playbook_names: {0}".format(playbook_names))
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
@@ -509,27 +513,30 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
 
+    logging.info("Chanoch 444, playbook_names: {0}".format(playbook_names))
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
 
+    logging.info("Chanoch 555, playbook_names: {0}".format(playbook_names))
     integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
                                   updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
 
+    logging.info("Chanoch 666, playbook_names: {0}".format(playbook_names))
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
                                updated_playbook_names, catched_playbooks, tests_set)
-
+    logging.info("Chanoch 777, playbook_names: {0}".format(playbook_names))
     for new_script in updated_script_names:
         script_names.add(new_script)
 
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
-
+    logging.info("Chanoch 888, playbook_names: {0}".format(playbook_names))
     affected_ids_strings = {
         'scripts': '',
         'playbooks': '',
