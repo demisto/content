@@ -92,12 +92,6 @@ script:
       name: search
       required: false
       secret: false
-    - default: false
-      description: 'Request timeout in seconds'
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
     - defaultValue: 20
       description: 'Limit emails to fetch in one request'
       isArray: false

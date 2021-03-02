@@ -109,7 +109,6 @@ class MsGraphClient:
         no_folder = f'/users/{user_id}/messages'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
-        user_timeout = float(demisto.args().get('timeout', 300))
         page_size = demisto.args().get('page_size', 20)
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
@@ -119,14 +118,7 @@ class MsGraphClient:
         if odata:
             suffix += f'?{odata}'
         demisto.debug(f"URL suffix is {suffix}")
-
-        try:
-            response = self.ms_client.http_request('GET', suffix, timeout=user_timeout)
-        except DemistoException as e:
-            demisto.debug(f"Response exception {e.message}")
-            if 'requests.exceptions.ConnectionError' in e.message:
-                raise DemistoException("Connection timeout error. You can set timeout as an argument while running this "
-                                       "command, try to increase the value.", e)
+        response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
     def delete_mail(self, user_id: str, message_id: str, folder_id: str = None) -> bool:
