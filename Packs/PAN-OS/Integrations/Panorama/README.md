@@ -4469,9 +4469,9 @@ Shows the user ID interface configuration.
 {
     "Panorama": {
         "UserInterfaces": {
-            "EnableUserIdentification": null,
+            "EnableUserIdentification": "no",
             "Name": "ethernet1/1",
-            "Zone": "test_zone_DO_NOT_DELETE"
+            "Zone": "test_zone"
         }
     }
 }
@@ -4480,9 +4480,9 @@ Shows the user ID interface configuration.
 #### Human Readable Output
 
 >### User Interface Configuration:
->|Name|Zone|
->|---|---|
->| ethernet1/1 | test_zone_DO_NOT_DELETE |
+>|Name|Zone|EnableUserIdentification|
+>|---|---|---|
+>| ethernet1/1 | test_zone | no |
 
 
 ### panorama-show-zones-config
@@ -4521,7 +4521,7 @@ Shows the zones configuration.
 {
     "Panorama": {
         "Zone": {
-            "EnableUserIdentification": null,
+            "EnableUserIdentification": "no",
             "LogSetting": null,
             "Name": "test_zone",
             "Network": {
@@ -4538,9 +4538,9 @@ Shows the zones configuration.
 #### Human Readable Output
 
 >### Zone Configuration:
->|Name|Network|
->|---|---|
->| test_zone | tap: {"member": "ethernet1/1"} |
+>|Name|Network|EnableUserIdentification|
+>|---|---|---|
+>| test_zone | tap: {"member": "ethernet1/1"} | no |
 
 
 ### panorama-list-configured-user-id-agents
