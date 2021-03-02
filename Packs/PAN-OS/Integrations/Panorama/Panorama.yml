@@ -4541,7 +4541,7 @@ script:
       description: The user-ID Agent port.
       type: Number
     - contextPath: Panorama.UserIDAgents.LdapProxy
-      description: Whther LDAP proxy is used in the user-ID agent.
+      description: Whether LDAP proxy is used in the user-ID agent.
       type: String
     - contextPath: Panorama.UserIDAgents.NtlmAuth
       description: Whether NLTM authentication is used in the user-ID agent.

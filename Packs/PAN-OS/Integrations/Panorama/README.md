@@ -4567,7 +4567,7 @@ Retrieves list of user-ID agents configured in the system.
 | Panorama.UserIDAgents.Name | String | The user-ID Agent name. | 
 | Panorama.UserIDAgents.Host | String | The user-ID Agent host. | 
 | Panorama.UserIDAgents.Port | Number | The user-ID Agent port. | 
-| Panorama.UserIDAgents.LdapProxy | String | Whther LDAP proxy is used in the user-ID agent. | 
+| Panorama.UserIDAgents.LdapProxy | String | Whether LDAP proxy is used in the user-ID agent. | 
 | Panorama.UserIDAgents.NtlmAuth | String | Whether NLTM authentication is used in the user-ID agent. | 
 | Panorama.UserIDAgents.EnableHipCollection | String | Whether HIP collection is enabled in the user-ID agent. | 
 | Panorama.UserIDAgents.IpUserMapping | String | Whether IP user mapping is enabled in the user-ID agent. | 

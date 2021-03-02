@@ -6817,14 +6817,14 @@ def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Uni
             'Name': user_id_agents['@name'],
             'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
             'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
-            'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth']),
-            'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy']),
+            'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth'], default_return_value='no'),
+            'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy'], default_return_value='no'),
             'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
             'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
-            'EnableHipCollection': user_id_agents.get('enable-hip-collection'),
-            'IpUserMapping': user_id_agents.get('ip-user-mappings'),
+            'EnableHipCollection': user_id_agents.get('enable-hip-collection', 'no'),
+            'IpUserMapping': user_id_agents.get('ip-user-mappings', 'no'),
             'SerialNumber': user_id_agents.get('serial-number'),
-            'Disabled': user_id_agents.get('disabled')
+            'Disabled': user_id_agents.get('disabled', 'no')
         }
 
     for agent in user_id_agents:
@@ -6832,14 +6832,14 @@ def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Uni
             'Name': agent['@name'],
             'Host': dict_safe_get(agent, keys=['host-port', 'host']),
             'Port': dict_safe_get(agent, keys=['host-port', 'port']),
-            'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth']),
-            'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy']),
+            'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth'], default_return_value='no'),
+            'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy'], default_return_value='no'),
             'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
             'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
-            'EnableHipCollection': agent.get('enable-hip-collection'),
-            'IpUserMapping': agent.get('ip-user-mappings'),
+            'EnableHipCollection': agent.get('enable-hip-collection', 'no'),
+            'IpUserMapping': agent.get('ip-user-mappings', 'no'),
             'SerialNumber': agent.get('serial-number'),
-            'Disabled': agent.get('disabled')
+            'Disabled': agent.get('disabled', 'no')
         })
 
     return pretty_user_id_agents
@@ -6850,7 +6850,7 @@ def list_configured_user_id_agents_command(args):
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
         formatted_results = prettify_configured_user_id_agents(raw_response)
-        headers = ['Name', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth', 'IpUserMapping']
+        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth', 'IpUserMapping']
 
         return_results(
             CommandResults(

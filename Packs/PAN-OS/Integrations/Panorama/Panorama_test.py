@@ -273,12 +273,12 @@ def test_prettify_configured_user_id_agents__multi_result():
                                                         'ldap-proxy': 'yes', 'collectorname': 'demisto',
                                                         'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}]
     response = prettify_configured_user_id_agents(raw_response)
-    expected = [{'Name': 'testing2', 'Host': None, 'Port': None, 'NtlmAuth': None, 'LdapProxy': None,
-                 'CollectorName': None, 'Secret': None, 'EnableHipCollection': None, 'SerialNumber': 'panorama2',
-                 'IpUserMapping': None, 'Disabled': None},
+    expected = [{'Name': 'testing2', 'Host': None, 'Port': None, 'NtlmAuth': 'no', 'LdapProxy': 'no',
+                 'CollectorName': None, 'Secret': None, 'EnableHipCollection': 'no', 'SerialNumber': 'panorama2',
+                 'IpUserMapping': 'no', 'Disabled': 'no'},
                 {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
-                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
-                 'IpUserMapping': 'yes', 'Disabled': None}]
+                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
+                 'IpUserMapping': 'yes', 'Disabled': 'no'}]
     assert response == expected
 
 
@@ -289,6 +289,6 @@ def test_prettify_configured_user_id_agents__single_result():
                                                        'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}
     response = prettify_configured_user_id_agents(raw_response)
     expected = {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
-                'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': None, 'SerialNumber': None,
-                'IpUserMapping': 'yes', 'Disabled': None}
+                'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
+                'IpUserMapping': 'yes', 'Disabled': 'no'}
     assert response == expected
