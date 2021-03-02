@@ -1,9 +1,9 @@
 id: CCTV Motion Detected
 version: -1
 name: CCTV Motion Detected
-fromversion: 6.0.0
 description: A playbook that runs ComputerVision on CCTV events
 starttaskid: "0"
+fromversion: "6.0.0"
 tasks:
   "0":
     id: "0"
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 50
+          "x": 480,
+          "y": -60
         }
       }
     note: false
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 195
+          "x": 480,
+          "y": 75
         }
       }
     note: false
@@ -81,7 +81,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+      - "19"
     scriptarguments:
       entryIDs:
         simple: '${.=(val.InfoFile instanceof Array ? val.InfoFile[val.InfoFile.length-1].EntryID
@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 545
+          "x": 480,
+          "y": 405
         }
       }
     note: false
@@ -126,8 +126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 370
+          "x": 480,
+          "y": 240
         }
       }
     note: false
@@ -151,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2120
+          "x": 910,
+          "y": 1965
         }
       }
     note: false
@@ -162,14 +162,17 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
+    taskid: 3cb8a303-a24a-4a3e-859e-2e6dd49b31f0
     type: condition
     task:
-      id: 69f1c2e3-ff30-4d1b-87c3-8835cd5222e4
+      id: 3cb8a303-a24a-4a3e-859e-2e6dd49b31f0
       version: -1
-      name: Check if person detected
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      name: Check if the object is detected
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
       type: condition
       iscommand: false
       brand: ""
@@ -177,20 +180,23 @@ tasks:
       '#default#':
       - "9"
       "YES":
-      - "7"
+      - "8"
     separatecontext: false
     conditions:
-    - label: "YES"
+    - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isNotEqualString
           left:
             value:
-              simple: ComputerVision.Images.person
+              simple: JsonStr
             iscontext: true
+          right:
+            value:
+              simple: "null"
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 480,
           "y": 720
         }
       }
@@ -229,7 +235,7 @@ tasks:
       raw_message: {}
       replyTo: {}
       subject:
-        simple: ${incident.camera_name} - Intruder detected!!!
+        simple: ${incident.labels.camera_name} - Intruder detected!!!
       templateParams: {}
       to:
         simple: ${inputs.NotifyEmail}
@@ -240,63 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 6014f529-4bd7-424a-8ffd-c0734f22895f
-    type: regular
-    task:
-      id: 6014f529-4bd7-424a-8ffd-c0734f22895f
-      version: -1
-      name: Get Hours
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      append: {}
-      key:
-        simple: hoursTimeNow
-      stringify: {}
-      value:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: T
-              fields:
-                value:
-                  simple: "2"
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: ':'
-              fields:
-                value:
-                  simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 895
+          "x": 910,
+          "y": 1070
         }
       }
     note: false
@@ -306,10 +257,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 0449d7c2-ed54-4a51-8754-07590848d845
+    taskid: 2dd8909a-834d-4e71-87d0-180b8ab44860
     type: condition
     task:
-      id: 0449d7c2-ed54-4a51-8754-07590848d845
+      id: 2dd8909a-834d-4e71-87d0-180b8ab44860
       version: -1
       name: If in the night
       description: Decide if the event is late in the night. If it is report this
@@ -329,7 +280,27 @@ tasks:
       - - operator: greaterThanOrEqual
           left:
             value:
-              simple: hoursTimeNow
+              complex:
+                root: incident
+                accessor: occurred
+                transformers:
+                - operator: Cut
+                  args:
+                    delimiter:
+                      value:
+                        simple: T
+                    fields:
+                      value:
+                        simple: "2"
+                - operator: Cut
+                  args:
+                    delimiter:
+                      value:
+                        simple: ':'
+                    fields:
+                      value:
+                        simple: "1"
+                - operator: abs
             iscontext: true
           right:
             value:
@@ -338,7 +309,27 @@ tasks:
         - operator: lessThanOrEqual
           left:
             value:
-              simple: hoursTimeNow
+              complex:
+                root: incident
+                accessor: occurred
+                transformers:
+                - operator: Cut
+                  args:
+                    delimiter:
+                      value:
+                        simple: T
+                    fields:
+                      value:
+                        simple: "2"
+                - operator: Cut
+                  args:
+                    delimiter:
+                      value:
+                        simple: ':'
+                    fields:
+                      value:
+                        simple: "1"
+                - operator: abs
             iscontext: true
           right:
             value:
@@ -347,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1070
+          "x": 700,
+          "y": 900
         }
       }
     note: false
@@ -358,12 +349,12 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: bdc9452c-0e57-4437-879a-5af5ed478c92
+    taskid: 1a686650-7158-4016-859e-54662c759690
     type: regular
     task:
-      id: bdc9452c-0e57-4437-879a-5af5ed478c92
+      id: 1a686650-7158-4016-859e-54662c759690
       version: -1
-      name: Set Severity Low
+      name: Set severity to Low
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -371,7 +362,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -397,6 +388,7 @@ tasks:
       application: {}
       approximatenumberofaffecteddatasubjects: {}
       assetid: {}
+      assigneduser: {}
       assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
@@ -448,7 +440,10 @@ tasks:
       contactname: {}
       contacttelephonenumber: {}
       coordinates: {}
+      costcenter: {}
+      costcentercode: {}
       country: {}
+      countryname: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
       criticalassets: {}
@@ -473,6 +468,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      department: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -494,8 +490,11 @@ tasks:
       detectionticketed: {}
       detectionupdatetime: {}
       detectionurl: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -519,10 +518,12 @@ tasks:
       digitalguardiansourceip: {}
       digitalguardianthreattype: {}
       digitalguardianusername: {}
+      displayname: {}
       dpoemailaddress: {}
       dponotification: {}
       duoaccountstatus: {}
       duration: {}
+      email: {}
       emailaddress: {}
       emailauthenticitycheck: {}
       emailautoreply: {}
@@ -554,6 +555,7 @@ tasks:
       employeemanageremail: {}
       endtime: {}
       escalation: {}
+      eventaction: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -575,6 +577,7 @@ tasks:
       financialinformationbreached: {}
       firstname: {}
       firstseen: {}
+      givenname: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
       googleadminrolesstatus: {}
@@ -606,6 +609,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -665,12 +669,18 @@ tasks:
       irondefensevueurl: {}
       isolated: {}
       isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
       labels: {}
       lastmodifiedby: {}
       lastmodifiedon: {}
       lastname: {}
       lastseen: {}
+      leadership: {}
       likelyimpact: {}
+      location: {}
+      locationregion: {}
       loginattemptcount: {}
       logsource: {}
       logzioalerteventid: {}
@@ -685,10 +695,14 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
       mobiledevicemodel: {}
+      mobilephone: {}
       name: {}
       niststage: {}
       numberofports: {}
@@ -700,6 +714,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -714,6 +729,7 @@ tasks:
       pcapnumberofstreams: {}
       pcapstarttime: {}
       penteraoperationdetails: {}
+      personalemail: {}
       phase: {}
       phishingsubtype: {}
       phonenumber: {}
@@ -838,6 +854,7 @@ tasks:
       servicenowurgency: {}
       severity:
         simple: "1"
+      sha256: {}
       signature: {}
       signindatetime: {}
       sizenumberofemployees: {}
@@ -846,6 +863,7 @@ tasks:
       skutier: {}
       sla: {}
       slaField: {}
+      somefileds: {}
       sourcehostname: {}
       sourceip: {}
       sourcenetwork: {}
@@ -861,6 +879,7 @@ tasks:
       state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      streetaddress: {}
       subcategory: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -874,6 +893,7 @@ tasks:
       subtype: {}
       successfullogin: {}
       suggestionsanddiscussionofhowtoimprovetheteam: {}
+      surname: {}
       suspiciousactivityendtime: {}
       suspiciousactivityid: {}
       suspiciousactivityseverity: {}
@@ -896,6 +916,7 @@ tasks:
       ticketcloseddate: {}
       ticketnumber: {}
       ticketopeneddate: {}
+      title: {}
       trapsid: {}
       travelmaplink: {}
       triggeredsecurityprofile: {}
@@ -925,6 +946,7 @@ tasks:
       whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
       whenwastheproblemfirstdetectedandbywhom: {}
       whereisdatahosted: {}
+      workphone: {}
       xdralertcount: {}
       xdralerts: {}
       xdrassigneduseremail: {}
@@ -941,14 +963,16 @@ tasks:
       xdrnotes: {}
       xdrresolvecomment: {}
       xdrstatus: {}
+      xdrstatusv2: {}
       xdrurl: {}
       xdrusercount: {}
+      zipcode: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -958,12 +982,12 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
+    taskid: c67385d0-00d1-4d84-887a-07adbb3dd5bd
     type: regular
     task:
-      id: 4d5c57a6-94d4-44ea-83e1-f574b4be526a
+      id: c67385d0-00d1-4d84-887a-07adbb3dd5bd
       version: -1
-      name: Set severity medium
+      name: Set severity to medium
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -971,7 +995,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "15"
+      - "17"
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -997,6 +1021,7 @@ tasks:
       application: {}
       approximatenumberofaffecteddatasubjects: {}
       assetid: {}
+      assigneduser: {}
       assignmentgroup: {}
       associatedmaliciousdomains: {}
       attachmentcount: {}
@@ -1048,7 +1073,10 @@ tasks:
       contactname: {}
       contacttelephonenumber: {}
       coordinates: {}
+      costcenter: {}
+      costcentercode: {}
       country: {}
+      countryname: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
       criticalassets: {}
@@ -1073,6 +1101,7 @@ tasks:
       dbotpredictionprobability: {}
       dbottextsuggestionhighlighted: {}
       deleteEmptyField: {}
+      department: {}
       dest: {}
       desthostname: {}
       destinationhostname: {}
@@ -1094,8 +1123,11 @@ tasks:
       detectionticketed: {}
       detectionupdatetime: {}
       detectionurl: {}
+      deviceexternalip: {}
       devicegsuiteaccountstatus: {}
       devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
       devicename: {}
       digitalguardianactivity: {}
       digitalguardianalarmname: {}
@@ -1119,10 +1151,12 @@ tasks:
       digitalguardiansourceip: {}
       digitalguardianthreattype: {}
       digitalguardianusername: {}
+      displayname: {}
       dpoemailaddress: {}
       dponotification: {}
       duoaccountstatus: {}
       duration: {}
+      email: {}
       emailaddress: {}
       emailauthenticitycheck: {}
       emailautoreply: {}
@@ -1154,6 +1188,7 @@ tasks:
       employeemanageremail: {}
       endtime: {}
       escalation: {}
+      eventaction: {}
       eventid: {}
       eventtype: {}
       exactlywhathappenedandatwhattimes: {}
@@ -1175,6 +1210,7 @@ tasks:
       financialinformationbreached: {}
       firstname: {}
       firstseen: {}
+      givenname: {}
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
       googleadminrolesstatus: {}
@@ -1206,6 +1242,7 @@ tasks:
       illusivenetworkssourceoperatingsystem: {}
       illusivenetworksstepstocrownjewel: {}
       illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
       indenideviceid: {}
       indeniissueid: {}
       individualsnotification: {}
@@ -1265,12 +1302,18 @@ tasks:
       irondefensevueurl: {}
       isolated: {}
       isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
       labels: {}
       lastmodifiedby: {}
       lastmodifiedon: {}
       lastname: {}
       lastseen: {}
+      leadership: {}
       likelyimpact: {}
+      location: {}
+      locationregion: {}
       loginattemptcount: {}
       logsource: {}
       logzioalerteventid: {}
@@ -1285,10 +1328,14 @@ tasks:
       malwarefamily: {}
       managementnotification: {}
       manageremail: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
       measurestomitigate: {}
       medianotification: {}
       medicalinformationbreached: {}
       mobiledevicemodel: {}
+      mobilephone: {}
       name: {}
       niststage: {}
       numberofports: {}
@@ -1300,6 +1347,7 @@ tasks:
       os: {}
       osversion: {}
       otherpiidatabreached: {}
+      outgoingmirrorerror: {}
       owner: {}
       parentprocessid: {}
       participants: {}
@@ -1314,6 +1362,7 @@ tasks:
       pcapnumberofstreams: {}
       pcapstarttime: {}
       penteraoperationdetails: {}
+      personalemail: {}
       phase: {}
       phishingsubtype: {}
       phonenumber: {}
@@ -1438,6 +1487,7 @@ tasks:
       servicenowurgency: {}
       severity:
         simple: "2"
+      sha256: {}
       signature: {}
       signindatetime: {}
       sizenumberofemployees: {}
@@ -1446,6 +1496,7 @@ tasks:
       skutier: {}
       sla: {}
       slaField: {}
+      somefileds: {}
       sourcehostname: {}
       sourceip: {}
       sourcenetwork: {}
@@ -1461,6 +1512,7 @@ tasks:
       state: {}
       statecisonotification: {}
       statewherethebreachtookplace: {}
+      streetaddress: {}
       subcategory: {}
       subscriptionassignedby: {}
       subscriptioncreatedby: {}
@@ -1474,6 +1526,7 @@ tasks:
       subtype: {}
       successfullogin: {}
       suggestionsanddiscussionofhowtoimprovetheteam: {}
+      surname: {}
       suspiciousactivityendtime: {}
       suspiciousactivityid: {}
       suspiciousactivityseverity: {}
@@ -1496,6 +1549,7 @@ tasks:
       ticketcloseddate: {}
       ticketnumber: {}
       ticketopeneddate: {}
+      title: {}
       trapsid: {}
       travelmaplink: {}
       triggeredsecurityprofile: {}
@@ -1525,6 +1579,7 @@ tasks:
       whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
       whenwastheproblemfirstdetectedandbywhom: {}
       whereisdatahosted: {}
+      workphone: {}
       xdralertcount: {}
       xdralerts: {}
       xdrassigneduseremail: {}
@@ -1541,14 +1596,16 @@ tasks:
       xdrnotes: {}
       xdrresolvecomment: {}
       xdrstatus: {}
+      xdrstatusv2: {}
       xdrurl: {}
       xdrusercount: {}
+      zipcode: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -2147,8 +2204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1420
+          "x": 910,
+          "y": 1245
         }
       }
     note: false
@@ -2158,10 +2215,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: af2094e2-cdd8-45f8-8cf7-0d8c2b4933e1
+    taskid: e65e79f4-dd75-44ae-8af5-81654c4d572c
     type: regular
     task:
-      id: af2094e2-cdd8-45f8-8cf7-0d8c2b4933e1
+      id: e65e79f4-dd75-44ae-8af5-81654c4d572c
       version: -1
       name: Assign analyst
       description: |-
@@ -2185,14 +2242,13 @@ tasks:
       email: {}
       onCall: {}
       roles: {}
-      username:
-        simple: admin
+      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1595
+          "x": 910,
+          "y": 1420
         }
       }
     note: false
@@ -2202,98 +2258,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 96b753b8-8af8-472b-8d88-cd10a3946605
-    type: regular
-    task:
-      id: 96b753b8-8af8-472b-8d88-cd10a3946605
-      version: -1
-      name: Close the ticket
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      assetid: {}
-      closeNotes:
-        simple: Closing, not critical
-      closeReason: {}
-      code42alerttype: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 2411a559-c5b7-4254-8e64-b68838a461ef
-    type: regular
-    task:
-      id: 2411a559-c5b7-4254-8e64-b68838a461ef
-      version: -1
-      name: Assign analyst
-      description: |-
-        Assign analyst to incident.
-        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
-        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
-        machine-learning: DBot will calculated and decide who is the best analyst for the job.
-        top-user: The user that is most commonly owns this type of incident
-        less-busy-user: The less busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-        current: The user that executed the command
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      assignBy:
-        simple: random
-      email: {}
-      onCall:
-        simple: "true"
-      roles: {}
-      username:
-        simple: admin
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: 7efe254d-4d37-4e8a-8794-689a05c380c3
+    taskid: 318529b6-d09d-4af4-897b-53f8d0e550fb
     type: condition
     task:
-      id: 7efe254d-4d37-4e8a-8794-689a05c380c3
+      id: 318529b6-d09d-4af4-897b-53f8d0e550fb
       version: -1
-      name: Is this a trusted person?
+      name: Is the object detected trusted?
       description: Let the analyst manually determine if this is a trusted person.
       type: condition
       iscommand: false
@@ -2311,8 +2283,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 1770
+          "x": 910,
+          "y": 1595
         }
       }
     note: false
@@ -2322,9 +2294,10 @@ tasks:
       to:
         simple: ${inputs.NotifyEmail}
       subject:
-        simple: Intruder detected!!!
+        simple: A suspicious object on camera detected!!!
       body:
-        simple: Intruder detected!!! Is this a trusted person?
+        simple: A suspicious object has been detected. Is this object considered to
+          be trusted?
       methods:
       - email
       format: ""
@@ -2370,8 +2343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1945
+          "x": 275,
+          "y": 1790
         }
       }
     note: false
@@ -2381,12 +2354,12 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 8a62dd94-25cb-49b9-8cb3-ebd6aa20f504
+    taskid: 1d24b1c8-33a7-4392-8293-cdfe15e8d423
     type: regular
     task:
-      id: 8a62dd94-25cb-49b9-8cb3-ebd6aa20f504
+      id: 1d24b1c8-33a7-4392-8293-cdfe15e8d423
       version: -1
-      name: Investigate
+      name: Manual analyst investigation
       description: Human being to investigate what's on the snapshot
       type: regular
       iscommand: false
@@ -2398,8 +2371,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 1945
+          "x": 910,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 5fb8eb7b-9250-449e-8819-7a520435f261
+    type: regular
+    task:
+      id: 5fb8eb7b-9250-449e-8819-7a520435f261
+      version: -1
+      name: Get the object values
+      description: Dumps a json from context key input, and returns a json object
+        string result
+      scriptName: DumpJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: ComputerVision.Images.${inputs.ObjectToDetect}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 565
         }
       }
     note: false
@@ -2414,10 +2420,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 1567.5,
+        "height": 2090,
+        "width": 1240,
         "x": 50,
-        "y": 50
+        "y": -60
       }
     }
   }
@@ -2436,9 +2442,28 @@ inputs:
   playbookInputQuery:
 - key: NotifyEmail
   value:
-    simple: dom@drobniuch.pl
+    simple: 
   required: false
   description: What email to use for critical notification?
+  playbookInputQuery:
+- key: DetectionThreshold
+  value:
+    simple: "0.3"
+  required: false
+  description: The Machine Learning detection threshold level.
+  playbookInputQuery:
+- key: DetectionConfidence
+  value:
+    simple: "0.5"
+  required: false
+  description: The Machine Learning confidence threshold level.
+  playbookInputQuery:
+- key: ObjectToDetect
+  value:
+    simple: person
+  required: false
+  description: "Objects to detect. \nPossible options: dog,cat,car,truck,airplane,bear,luggage,traffic\
+    \ lights,plant and many more."
   playbookInputQuery:
 outputs: []
 tests:
