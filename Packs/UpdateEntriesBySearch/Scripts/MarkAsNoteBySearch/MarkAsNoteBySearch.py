@@ -1,6 +1,6 @@
 import fnmatch
 import re
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -13,6 +13,17 @@ def to_string(value: Any) -> Optional[str]:
         return str(value)
     except ValueError:
         return None
+
+
+def to_entry_type_code(name: str) -> int:
+    etype = {
+        'NOTE': EntryType.NOTE,
+        'ERROR': EntryType.ERROR
+    }.get(name)
+
+    if etype is None:
+        raise ValueError(f'Invalid entry type: {name}')
+    return etype
 
 
 def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) -> re.Pattern[str]:
@@ -37,24 +48,33 @@ def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) 
 
 
 class EntryFilter:
-    def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]], node_paths: List[str]):
+    def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]], node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str]):
         """
         Initialize the filter with the matching conditions.
 
         :param include_pattern: A pattern to perform matching.
         :param exclude_pattern: A pattern to exclude.
         :param node_paths: The list of node path of entries to which the pattern matching is performed.
+        :param filter_entry_formats: The list of entry format to filter entries.
+        :param filter_entry_types: The list of entry type to filter entries.
         """
         self.__include_pattern = include_pattern
         self.__exclude_pattern = exclude_pattern
         self.__node_paths = node_paths
+        self.__filter_entry_formats = filter_entry_formats
+        self.__filter_entry_types = [to_entry_type_code(f) for f in filter_entry_types]
 
-    def match(self, entry: Dict[str, Any]) -> Optional[re.Match]:
+        # Check content format name
+        for f in filter_entry_formats:
+            if not EntryFormat.is_valid_type(f):
+                raise ValueError(f'Invalid entry format: {f}')
+
+    def match(self, entry: Dict[str, Any]) -> Optional[Tuple[re.Match, str]]:
         """
         Search the entry for the pattern.
 
         :param entry: The entry data.
-        :return: re.Match if the pattern matched with the entry, None otherwise.
+        :return: re.Match and the target string if the pattern matched with the entry, None otherwise.
         """
         def iterate_value(value: Any) -> Iterator[Any]:
             if isinstance(value, list):
@@ -67,6 +87,13 @@ class EntryFilter:
             else:
                 yield value
 
+        if self.__filter_entry_types and entry.get('Type') not in self.__filter_entry_types:
+            return None
+
+        if self.__filter_entry_formats and \
+                entry.get('ContentsFormat') not in self.__filter_entry_formats:
+            return None
+
         matched = None
         for node_path in self.__node_paths:
             for val in iterate_value(demisto.get(entry, node_path)):
@@ -76,14 +103,17 @@ class EntryFilter:
                         return None
 
                     if not matched:
-                        matched = self.__include_pattern.search(s)
+                        m = self.__include_pattern.search(s)
+                        if m:
+                            matched = (m, s)
         return matched
 
 
 class Entry:
-    def __init__(self, entry: Dict[str, Any], match: Optional[re.Match]):
+    def __init__(self, entry: Dict[str, Any], match: Optional[re.Match], value_matched: Optional[str]):
         self.entry = entry
         self.match = match
+        self.value_matched = value_matched
 
 
 def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any],
@@ -115,11 +145,11 @@ def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any],
 
         for ent in ents:
             if not entry_filter:
-                yield Entry(ent, None)
+                yield Entry(ent, None, None)
             else:
                 match = entry_filter.match(ent)
                 if match:
-                    yield Entry(ent, match)
+                    yield Entry(ent, match[0], match[1])
 
         # Set the next ID
         last_id = ent['ID']
@@ -163,7 +193,9 @@ def main():
         entry_filter=EntryFilter(
             include_pattern=include_pattern,
             exclude_pattern=exclude_pattern,
-            node_paths=argToList(args.get('node_paths', 'Contents'))
+            node_paths=argToList(args.get('node_paths', 'Contents')),
+            filter_entry_formats=argToList(args.get('filter_entry_formats', [])),
+            filter_entry_types=argToList(args.get('filter_entry_types', []))
         )
     ):
         if ent.entry['ID'] not in exclude_ids:
@@ -171,7 +203,8 @@ def main():
                 'ID': ent.entry['ID']
             }
             if 'verbose' == output_option and ent.match:
-                rent['Summary'] = ent.match[0][:128]
+                rent['Where'] = ent.match[0][:128]
+                rent['Text'] = ent.value_matched
             ents.append(rent)
 
     if 'first_entry' in filter_options:
@@ -198,7 +231,8 @@ def main():
         if output_option != 'quiet':
             header = assign_params(
                 ID='Entry ID',
-                Summary='Summary' if 'verbose' == output_option else None
+                Where='Where' if 'verbose' == output_option else None,
+                Text='Text' if 'verbose' == output_option else None
             )
             md += '\n' + tblToMd('', ents, headers=header.keys(), headerTransform=lambda h: header.get(h, ''))
         return_outputs(md)

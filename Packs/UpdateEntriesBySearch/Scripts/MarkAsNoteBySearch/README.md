@@ -19,6 +19,8 @@ Search entries in the war room for the pattern text, and mark as note to the ent
 | filter_categories | The list of categories of source entries |
 | filter_options | The options to filter entries |
 | filter_tags | The tags to filter entries |
+| filter_entry_types | The list of entry type of source entries |
+| filter_entry_formats | The list of entry format of source entries |
 | algorithm | The pattern matching algorithm |
 | pattern | The pattern text to search |
 | exclude_pattern | The pattern text to exclude entries matched |
