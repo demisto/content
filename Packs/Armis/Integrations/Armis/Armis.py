@@ -372,7 +372,7 @@ def untag_device_command(client, args):
     device_id = args.get('device_id')
     tags = argToList(args.get('tags'))
     client.untag_device(device_id, tags)
-    return f'Successfully Tagged device: {device_id} with tags: {tags}'
+    return f'Successfully Untagged device: {device_id} with tags: {tags}'
 
 
 def tag_device_command(client, args):
@@ -423,7 +423,7 @@ def search_alerts_command(client: Client, args):
         alert_type = argToList(alert_type)
 
     alert_id = args.get('alert_id')
-    max_results = args.get('max_results', 50)
+    max_results = int(args.get('max_results', 50))
     time_frame = args.get('time_frame')
 
     response = client.search_alerts(severity, status, alert_type, alert_id, time_frame, max_results=max_results)
@@ -471,7 +471,7 @@ def search_devices_command(client: Client, args):
     mac_address = args.get('mac_address')
     ip_address = args.get('ip_address')
     time_frame = args.get('time_frame')
-    max_results = args.get('max_results', 50)
+    max_results = int(args.get('max_results', 50))
 
     response = client.search_devices(name,
                                      device_id,
@@ -523,7 +523,7 @@ def search_devices_by_aql_command(client: Client, args):
         args (dict): A dict object containing the arguments for this command
     """
     aql_string = args.get('aql_string')
-    max_results = args.get('max_results', 50)
+    max_results = int(args.get('max_results', 50))
 
     response = client.free_string_search_devices(aql_string, max_results=max_results)
     results = response.get('results')
@@ -568,7 +568,7 @@ def search_alerts_by_aql_command(client: Client, args):
         args (dict): A dict object containing the arguments for this command
     """
     aql_string = args.get('aql_string')
-    max_results = args.get('max_results', 50)
+    max_results = int(args.get('max_results', 50))
 
     response = client.free_string_search_alerts(aql_string, max_results=max_results)
     results = response.get('results')

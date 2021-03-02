@@ -1,5 +1,4 @@
 """Armis Integration for Cortex XSOAR - Unit Tests file
-
 This file contains the Pytest Tests for the Armis Integration
 """
 import time
@@ -21,8 +20,9 @@ def test_untag_device_success(requests_mock):
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    assert untag_device_command(client, '1', 'test-tag') == 'Untagging successful'
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    result = untag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
+    assert result == "Successfully Untagged device: 1 with tags: ['test-tag']"
 
 
 def test_untag_device_failure(requests_mock):
@@ -37,9 +37,9 @@ def test_untag_device_failure(requests_mock):
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={}, status_code=400)
 
-    client = Client('secret-example', 'https://test.com/api/v1')
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
     with pytest.raises(CommonServerPython.DemistoException):
-        untag_device_command(client, '1', 'test-tag')
+        untag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
 
 
 def test_tag_device(requests_mock):
@@ -54,8 +54,9 @@ def test_tag_device(requests_mock):
 
     requests_mock.post('https://test.com/api/v1/devices/1/tags/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    assert tag_device_command(client, '1', ['test-tag']) == 'Tagging successful'
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    result = tag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
+    assert result == "Successfully Tagged device: 1 with tags: ['test-tag']"
 
 
 def test_update_alert_status(requests_mock):
@@ -70,8 +71,9 @@ def test_update_alert_status(requests_mock):
 
     requests_mock.patch('https://test.com/api/v1/alerts/1/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    assert update_alert_status_command(client, '1', 'UNHANDLED') == 'Alert status updated successfully'
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    args = {'alert_id': '1', 'status': 'UNHANDLED'}
+    assert update_alert_status_command(client, args) == "Successfully Updated Alert: 1 to status: UNHANDLED"
 
 
 def test_search_alerts(requests_mock):
@@ -102,15 +104,16 @@ def test_search_alerts(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    response = search_alerts_command(
-        client,
-        ['Policy Violation'],
-        ['High', 'Medium'],
-        ['UNHANDLED', 'RESOLVED'],
-        '1',
-        '3 days'
-    )
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    args = {
+        'severity': 'High,Medium',
+        'status': 'UNHANDLED,RESOLVED',
+        'alert_type': 'Policy Violation',
+        'alert_id': '1',
+        'max_results': '20',
+        'time_frame': '3 days',
+    }
+    response = search_alerts_command(client, args)
     assert response == 'No results found'
 
     example_alerts = [
@@ -157,14 +160,7 @@ def test_search_alerts(requests_mock):
     mock_results['data']['results'] = example_alerts
 
     requests_mock.get(url, json=mock_results)
-    response = search_alerts_command(
-        client,
-        ['Policy Violation'],
-        ['High', 'Medium'],
-        ['UNHANDLED', 'RESOLVED'],
-        '1',
-        '3 days'
-    )
+    response = search_alerts_command(client, args)
     assert response.outputs == example_alerts
 
 
@@ -195,11 +191,11 @@ def test_search_alerts_by_aql(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    response = search_alerts_by_aql_command(
-        client,
-        'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
-    )
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    args = {
+        'aql_string': 'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
+    }
+    response = search_alerts_by_aql_command(client, args)
     assert response == 'No alerts found'
 
     example_alerts = [
@@ -246,10 +242,7 @@ def test_search_alerts_by_aql(requests_mock):
     mock_results['data']['results'] = example_alerts
 
     requests_mock.get(url, json=mock_results)
-    response = search_alerts_by_aql_command(
-        client,
-        'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
-    )
+    response = search_alerts_by_aql_command(client, args)
     assert response.outputs == example_alerts
 
 
@@ -272,8 +265,12 @@ def test_search_devices(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    response = search_devices_command(client, None, '1', None, None, None, None, '3 days')
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    args = {
+        'device_id': '1',
+        'time_frame': '3 days'
+    }
+    response = search_devices_command(client, args)
     assert response == 'No devices found'
 
     example_alerts = [
@@ -323,7 +320,7 @@ def test_search_devices(requests_mock):
     mock_results['data']['results'] = example_alerts
 
     requests_mock.get(url, json=mock_results)
-    response = search_devices_command(client, None, '1', None, None, None, None, '3 days')
+    response = search_devices_command(client, args)
     assert response.outputs == example_alerts
 
 
@@ -346,8 +343,11 @@ def test_search_devices_by_aql(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1')
-    response = search_devices_by_aql_command(client, 'timeFrame:"3 days" deviceId:(1)')
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    args = {
+        'aql_string': 'timeFrame:"3 days" deviceId:(1)'
+    }
+    response = search_devices_by_aql_command(client, args)
     assert response == 'No devices found'
 
     example_alerts = [
@@ -397,5 +397,5 @@ def test_search_devices_by_aql(requests_mock):
     mock_results['data']['results'] = example_alerts
 
     requests_mock.get(url, json=mock_results)
-    response = search_devices_by_aql_command(client, 'timeFrame:"3 days" deviceId:(1)')
+    response = search_devices_by_aql_command(client, args)
     assert response.outputs == example_alerts
