@@ -339,8 +339,10 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
+
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
+
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
         script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
@@ -489,6 +491,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
+
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
@@ -517,11 +520,13 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
                                updated_playbook_names, catched_playbooks, tests_set)
+
     for new_script in updated_script_names:
         script_names.add(new_script)
 
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
+
     affected_ids_strings = {
         'scripts': '',
         'playbooks': '',
