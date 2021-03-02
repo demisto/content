@@ -198,7 +198,6 @@ def collect_tests_and_content_packs(
     test_playbooks_set = id_set['TestPlaybooks']
     integration_to_command, _ = get_integration_commands(integration_ids, integration_set)
 
-    logging.info("hello 0, tests_set: {0}".format(tests_set))
     for test_playbook in test_playbooks_set:
         detected_usage = False
         test_playbook_id = list(test_playbook.keys())[0]
@@ -209,14 +208,12 @@ def collect_tests_and_content_packs(
             if script in script_ids:
                 detected_usage = True
                 tests_set.add(test_playbook_id)
-                logging.info("hello 0, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
                 detected_usage = True
                 tests_set.add(test_playbook_id)
-                logging.info("hello 1, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
@@ -228,9 +225,6 @@ def collect_tests_and_content_packs(
                                 command_to_integration.get(command) == integration_id:
                             detected_usage = True
                             tests_set.add(test_playbook_id)
-                            logging.info("hello hello, command_to_integration: {0}, integration_id: {1}".format(command_to_integration[command], integration_id))
-                            logging.info("hello 2, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
-                            logging.info("hello 222, integration_to_command: {0}".format(integration_to_command))
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
@@ -345,24 +339,16 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     script_names = set([])
     playbook_names = set([])
     integration_ids = set([])
-
-    logging.info("Chanoch 111, modified_files: {0}".format(modified_files))
-
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
-
-    logging.info("Chanoch A, tests_set: {0}".format(tests_set))
-
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
         script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
-    logging.info("Chanoch B, tests_set: {0}".format(tests_set))
     packs_to_install.update(test_packs_to_install)
 
     missing_ids = update_with_tests_sections(missing_ids, modified_files, test_ids, tests_set)
 
     missing_ids, tests_set = check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set)
-    logging.info("Chanoch C, tests_set: {0}".format(tests_set))
 
     if len(missing_ids) > 0:
         test_string = '\n'.join(missing_ids)
@@ -494,7 +480,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
-            logging.info("Chanoch 222, playbook_name: {0}".format(name))
 
         elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
             _id = tools.get_script_or_integration_id(file_path)
@@ -504,7 +489,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         if collect_helpers.checked_type(file_path, API_MODULE_REGEXES):
             api_module_name = tools.get_script_or_integration_id(file_path)
             changed_api_modules.add(api_module_name)
-    logging.info("Chanoch 333, playbook_names: {0}".format(playbook_names))
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
@@ -519,30 +503,25 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                                                   playbook_set, playbook_names,
                                                   integration_set, integration_ids)
 
-    logging.info("Chanoch 444, playbook_names: {0}".format(playbook_names))
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
 
-    logging.info("Chanoch 555, playbook_names: {0}".format(playbook_names))
     integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
                                   updated_playbook_names, catched_scripts, catched_playbooks, tests_set)
 
-    logging.info("Chanoch 666, playbook_names: {0}".format(playbook_names))
     for playbook_id in playbook_names:
         enrich_for_playbook_id(playbook_id, playbook_to_version[playbook_id], playbook_names, script_set, playbook_set,
                                updated_playbook_names, catched_playbooks, tests_set)
-    logging.info("Chanoch 777, playbook_names: {0}".format(playbook_names))
     for new_script in updated_script_names:
         script_names.add(new_script)
 
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
-    logging.info("Chanoch 888, playbook_names: {0}".format(playbook_names))
     affected_ids_strings = {
         'scripts': '',
         'playbooks': '',
@@ -1121,8 +1100,6 @@ def get_test_list_and_content_packs_to_install(files_string,
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
 
-    logging.info("Chanoch 3, tests: {0}".format(tests))
-
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1162,7 +1139,6 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
-    logging.info("Chanoch 4, tests: {0}".format(tests))
 
     if not tests:
         logging.info("No tests found running sanity check only")
@@ -1310,10 +1286,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
-            logging.info("Chanoch 1, files_string: {0}".format(files_string))
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-            logging.info("Chanoch 2, files_string: {0}".format(files_string))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
