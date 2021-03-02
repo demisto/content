@@ -58,6 +58,6 @@ type: python
 dockerimage: demisto/sklearn:1.0.0.16697
 runas: DBotWeakRole
 runonce: false
-fromversion: 6.0.1
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.1
