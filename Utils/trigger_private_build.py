@@ -70,6 +70,7 @@ def main():
     # get github_token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
+    arg_parser.add_argument('--commit-sha1', help='commit sha1 for creating the private repo')
     args = arg_parser.parse_args()
     bearer_token = f'Bearer {args.github_token}'
 
@@ -86,7 +87,7 @@ def main():
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                   'client_payload': {'branch': branch_name, 'is_infra_build': 'True'}}
+                       'client_payload': {'commit_sha1': args.commit_sha1, 'is_infra_build': 'True'}}
 
         res = requests.request("POST",
                                TRIGGER_BUILD_URL,

@@ -292,7 +292,7 @@ references:
       name: Trigger Private Reo Build
       when: always
       command: |
-        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --commit-sha1 $CIRCLE_SHA1
 
   get_private_build_status: &get_private_build_status
     run:
