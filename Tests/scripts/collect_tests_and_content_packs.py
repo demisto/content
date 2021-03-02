@@ -198,6 +198,7 @@ def collect_tests_and_content_packs(
     test_playbooks_set = id_set['TestPlaybooks']
     integration_to_command, _ = get_integration_commands(integration_ids, integration_set)
 
+    logging.info("hello 0, tests_set: {0}".format(tests_set))
     for test_playbook in test_playbooks_set:
         detected_usage = False
         test_playbook_id = list(test_playbook.keys())[0]
@@ -208,12 +209,14 @@ def collect_tests_and_content_packs(
             if script in script_ids:
                 detected_usage = True
                 tests_set.add(test_playbook_id)
+                logging.info("hello 0, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                 catched_scripts.add(script)
 
         for playbook in test_playbook_data.get('implementing_playbooks', []):
             if playbook in playbook_ids:
                 detected_usage = True
                 tests_set.add(test_playbook_id)
+                logging.info("hello 1, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                 catched_playbooks.add(playbook)
 
         if integration_to_command:
@@ -225,6 +228,7 @@ def collect_tests_and_content_packs(
                                 command_to_integration.get(command) == integration_id:
                             detected_usage = True
                             tests_set.add(test_playbook_id)
+                            logging.info("hello 2, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
