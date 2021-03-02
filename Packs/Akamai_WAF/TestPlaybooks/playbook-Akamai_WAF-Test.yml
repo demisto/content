@@ -331,6 +331,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      extended:
+        simple: "false"
+      include_elements:
+        simple: "false"
       list_type:
         simple: IP
       search: {}

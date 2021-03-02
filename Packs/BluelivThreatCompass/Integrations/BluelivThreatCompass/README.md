@@ -1,6 +1,6 @@
 Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
 organization and its employees safe
-This integration was integrated and tested with version xx of Blueliv ThreatCompass
+
 ## Configure Blueliv ThreatCompass on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -1,0 +1,410 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RST Cloud - Threat Feed API
+  version: -1
+configuration:
+- defaultvalue: https://api.rstcloud.net/v1
+  display: Server URL (e.g. https://api.rstcloud.net/v1)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine
+    if an IP is malicious (0-100)
+  defaultvalue: '55'
+  display: Score threshold for IP reputation command
+  name: threshold_ip
+  required: true
+  type: 0
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine
+    if a domain is malicious (0-100)
+  defaultvalue: '45'
+  display: Score threshold for domain reputation command
+  name: threshold_domain
+  required: true
+  type: 0
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine
+    if a url is malicious (0-100)
+  defaultvalue: '35'
+  display: Score threshold for url reputation command
+  name: threshold_url
+  required: true
+  type: 0
+- additionalinfo: Mark IP indicators older than indicator_expiration_ip value in days
+    as Suspicious ignoring the last available score
+  defaultvalue: '7'
+  display: IP Indicator Expiration (days)
+  name: indicator_expiration_ip
+  required: true
+  type: 0
+- additionalinfo: Mark domain indicators older than indicator_expiration_domain value
+    in days as Suspicious ignoring the last available score
+  defaultvalue: '14'
+  display: Domain Indicator Expiration (days)
+  name: indicator_expiration_domain
+  required: true
+  type: 0
+- additionalinfo: Mark URL indicators older than indicator_expiration_url value in
+    days as Suspicious ignoring the last available score
+  defaultvalue: '30'
+  display: URL Indicator Expiration (days)
+  name: indicator_expiration_url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: This is the RST Threat Feed integration for interacting with API
+display: RST Cloud - Threat Feed API
+name: RST Cloud - Threat Feed API
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '45'
+      description: If the IP has reputation above the threshold then the IP defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns IP information and reputation.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: Country of origin.
+      type: String
+    - contextPath: IP.Tags
+      description: The associated tags
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Malicious.Score
+      description: The score calculated for the indicator by the vendor
+      type: String
+    - contextPath: RST.IP.Address
+      description: The actual IP address.
+      type: String
+    - contextPath: RST.IP.Geo.Country
+      description: The country name
+      type: String
+    - contextPath: RST.IP.Geo.Region
+      description: The geo region name
+      type: String
+    - contextPath: RST.IP.Geo.City
+      description: The city name
+      type: String
+    - contextPath: RST.IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: RST.IP.Organization
+      description: The organisation name for the autonomous system name for the IP address.
+      type: String
+    - contextPath: RST.IP.ISP
+      description: The Internet Service Provider name for the autonomous system name
+        for the IP address.
+      type: String
+    - contextPath: RST.IP.CloudHosting
+      description: The Cloud Provider name for the IP address.
+      type: String
+    - contextPath: RST.IP.NumberOfDomainInASN
+      description: The number of domain names for the IP address.
+      type: String
+    - contextPath: RST.IP.FirstSeen
+      description: First Seen
+      type: Date
+    - contextPath: RST.IP.LastSeen
+      description: Last Seen
+      type: Date
+    - contextPath: RST.IP.Tags
+      description: The associated tags
+      type: String
+    - contextPath: RST.IP.Threat
+      description: The associated Malware Family or threat name
+      type: String
+    - contextPath: RST.IP.Score
+      description: The total score
+      type: Number
+    - contextPath: RST.IP.UUID
+      description: The unique ID for the indicator
+      type: String
+    - contextPath: RST.IP.RSTReference
+      description: The link to the raw JSON indicator
+      type: String
+    - contextPath: RST.IP.Related
+      description: The associated domains
+      type: String
+    - contextPath: RST.IP.FalsePositive
+      description: true if it is likely a False Positive
+      type: String
+    - contextPath: RST.IP.FalsePositiveDesc
+      description: Description why we think it may be a False Positive
+      type: String
+  - arguments:
+    - default: true
+      description: List of Domains.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '45'
+      description: If the domain has reputation above the threshold then the domain
+        defined as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Tags
+      description: The associated tags
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Score
+      description: The score calculated for the indicator by the vendor
+      type: String
+    - contextPath: RST.Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: RST.Domain.WhoisAge
+      description: Days since creation
+      type: Number
+    - contextPath: RST.Domain.WhoisDomainCreationDate
+      description: Creation date. Format is ISO8601.
+      type: Date
+    - contextPath: RST.Domain.WhoisDomainUpdateDate
+      description: Update date. Format is ISO8601.
+      type: Date
+    - contextPath: RST.Domain.WhoisDomainExpireDate
+      description: Expiration date. Format is ISO8601.
+      type: Date
+    - contextPath: RST.Domain.WhoisRegistrar
+      description: Domain Registrar
+      type: String
+    - contextPath: RST.Domain.WhoisRegistrant
+      description: Domain Registrant
+      type: String
+    - contextPath: RST.Domain.FirstSeen
+      description: First Seen
+      type: Date
+    - contextPath: RST.Domain.LastSeen
+      description: Last Seen
+      type: Date
+    - contextPath: RST.Domain.Tags
+      description: The associated tags
+      type: String
+    - contextPath: RST.Domain.Threat
+      description: The associated Malware Family or threat name
+      type: String
+    - contextPath: RST.Domain.Score
+      description: The total score
+      type: Number
+    - contextPath: RST.Domain.UUID
+      description: The unique ID for the indicator
+      type: String
+    - contextPath: RST.Domain.RSTReference
+      description: The link to the raw JSON indicator
+      type: String
+    - contextPath: RST.Domain.Related
+      description: The associated IP addresses
+      type: String
+    - contextPath: RST.Domain.FalsePositive
+      description: true if it is likely a False Positive
+      type: String
+    - contextPath: RST.Domain.FalsePositiveDesc
+      description: Description why we think it may be a False Positive
+      type: String
+  - arguments:
+    - default: true
+      description: List of URLs
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: If the URL has reputation above the threshold then the domain defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns URL information and reputation.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Tags
+      description: The associated tags
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description explaining why the URL was reported as malicious
+      type: String
+    - contextPath: URL.Malicious.Score
+      description: The score calculated for the URL indicator by the vendor
+      type: String
+    - contextPath: RST.URL.Data
+      description: The URL
+      type: String
+    - contextPath: RST.URL.Status
+      description: Last HTTP status code
+      type: String
+    - contextPath: RST.URL.FirstSeen
+      description: First Seen
+      type: Date
+    - contextPath: RST.URL.LastSeen
+      description: Last Seen
+      type: Date
+    - contextPath: RST.URL.Tags
+      description: The associated tags
+      type: String
+    - contextPath: RST.URL.Threat
+      description: The associated Malware Family or threat name
+      type: String
+    - contextPath: RST.URL.Score
+      description: The total score
+      type: Number
+    - contextPath: RST.URL.UUID
+      description: The unique ID for the indicator
+      type: String
+    - contextPath: RST.URL.Description
+      description: The associated Description provided by the vendor
+      type: String
+    - contextPath: RST.URL.FalsePositive
+      description: true if it is likely a False Positive
+      type: String
+    - contextPath: RST.URL.FalsePositiveDesc
+      description: Description why we think it may be a False Positive
+      type: String
+    - contextPath: RST.URL.Parsed
+      description: Parsed URL components
+      type: String
+    - contextPath: RST.URL.CVE
+      description: Related CVE (vulnerabilities)
+      type: String
+  - arguments:
+    - default: true
+      description: List of IOCs (URLs, domains or IPs)
+      isArray: true
+      name: ioc
+      required: true
+      secret: false
+    - default: false
+      description: Any context to pass to RST Cloud
+      isArray: true
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits an indicator to RST Threat Feed.
+    execution: false
+    name: rst-submit-new
+  - arguments:
+    - default: true
+      description: List of IOCs (URLs, domains or IPs)
+      isArray: true
+      name: ioc
+      required: true
+      secret: false
+    - default: false
+      description: Any context to pass to RST Cloud
+      isArray: true
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a potential False Positive to RST Threat Feed.
+    execution: false
+    name: rst-submit-fp
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

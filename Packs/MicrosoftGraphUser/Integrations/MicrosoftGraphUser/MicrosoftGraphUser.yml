@@ -541,7 +541,7 @@ script:
     description: Tests connectivity to Microsoft Graph User.
     execution: false
     name: msgraph-user-test
-  dockerimage: demisto/crypto:1.0.0.11650
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false

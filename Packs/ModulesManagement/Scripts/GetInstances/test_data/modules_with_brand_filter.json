@@ -1,0 +1,16 @@
+[
+    {
+        "brand": "EWS v2",
+        "category": "Messaging",
+        "defaultIgnored": "false",
+        "state": "active",
+        "name": "EWS v2_instance_1"
+    },
+    {
+        "brand": "splunk",
+        "category": "Analytics & SIEM",
+        "defaultIgnored": "false",
+        "state": "disabled",
+        "name": "splunk"
+    }
+]

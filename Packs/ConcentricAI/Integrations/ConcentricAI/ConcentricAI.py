@@ -564,7 +564,7 @@ def get_file_sharing_details(loginClient: LoginClient, queryClient: QueryClient,
         outputs_key_field='info',
         outputs=results
     )
-
+  
 
 def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
     res = queryClient.get_users_overview(loginClient, str(max_users))
@@ -606,7 +606,6 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
         target = transform_user_details(answer)
         results.append(target)
 
-    # for the time being.
     if results == []:
         return_results(f'No Results found for this user while executing {demisto.command()} command')
 

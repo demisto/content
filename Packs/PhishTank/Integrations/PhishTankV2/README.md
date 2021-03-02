@@ -8,6 +8,7 @@ This integration was integrated and tested with version 1.0.1 of PhishTank.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| use_https | Use HTTPS connection | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | fetchIntervalHours | Database refresh interval \(hours\) | False |

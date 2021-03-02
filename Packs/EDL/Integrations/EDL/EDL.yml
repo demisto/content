@@ -80,6 +80,14 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: Internal page size used when querying XSOAR for the EDL. By default,
+    this value shouldn't be changed.
+  defaultvalue: '2000'
+  display: XSOAR Indicator Page Size
+  hidden: false
+  name: page_size
+  required: false
+  type: 0
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
@@ -146,7 +154,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.13080
+  dockerimage: demisto/teams:1.0.0.16813
   feed: false
   isfetch: false
   longRunning: true

@@ -24,7 +24,7 @@
 <h2>Configure the Salesforce Integration on Demisto</h2>
 <hr>
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers `&` Services</strong>.</li>
 <li>Search for Salesforce.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>

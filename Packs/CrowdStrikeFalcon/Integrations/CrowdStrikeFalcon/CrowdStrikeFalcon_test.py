@@ -2409,9 +2409,9 @@ def test_search_iocs_command_error(requests_mock, mocker):
         status_code=404
     )
     mocker.patch.object(demisto, 'results')
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    search_iocs_command()
-    assert return_error_mock.call_args.args[0] == 'Error in API call to CrowdStrike Falcon: code: 404 - reason: None'
+    mocker.patch(RETURN_ERROR_TARGET)
+    res = search_iocs_command()
+    assert 'Could not find any Indicators of Compromise.' in res['HumanReadable']
 
 
 def test_get_ioc_command_does_not_exist(requests_mock):
@@ -2562,9 +2562,8 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
         reason='Not found'
     )
     mocker.patch(RETURN_ERROR_TARGET)
-    with pytest.raises(DemistoException) as excinfo:
-        get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert expected_error == excinfo.value.args[0]
+    res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
+    assert 'No results found for md5 - testmd5' == res
 
 
 def test_get_ioc_device_count_command_exists(requests_mock):

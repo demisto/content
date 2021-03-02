@@ -10,7 +10,7 @@ def main():
         params['feed_url_to_config']['https://feodotracker.abuse.ch/downloads/ipblocklist.csv'] = {
             "indicator_type": FeedIndicatorType.IP,
             "indicator": {
-                "regex": r"^.+,(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
+                "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
             "fields": [{
@@ -38,7 +38,7 @@ def main():
         params['feed_url_to_config']["https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt"] = {
             "indicator_type": FeedIndicatorType.IP,
             "indicator": {
-                "regex": r"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
+                "regex": r"^\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
             "ignore_regex": '#*'

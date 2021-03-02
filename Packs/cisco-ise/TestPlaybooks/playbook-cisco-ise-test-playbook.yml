@@ -1,7 +1,6 @@
 id: cisco-ise-test-playbook
 version: -1
 name: cisco-ise-test-playbook
-description: ""
 starttaskid: "0"
 tasks:
   "0":
@@ -14,17 +13,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
       - "3"
-      - "5"
-      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -51,8 +48,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -81,8 +78,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -108,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 220
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -128,6 +125,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
       policy_name:
         simple: policyTest23
@@ -135,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 400
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -155,12 +155,15 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 230
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -197,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
-          "y": 230
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -226,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
-          "y": 410
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -246,6 +249,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       endpointID:
         simple: ${Endpoint.ID}
@@ -254,8 +260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 600
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -266,9 +272,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 645,
-        "width": 1810,
-        "x": -450,
+        "height": 1465,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
@@ -276,3 +282,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

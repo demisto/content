@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
@@ -11,8 +12,8 @@ from Tests.scripts.utils.log_util import install_logging
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.', default="Demisto Marketplace")
+                                          '"Server 6.0", "Server Master". The server url is determined by the'
+                                          ' AMI environment.', default="Server Master")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
@@ -27,7 +28,7 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=options.secret)
@@ -35,18 +36,23 @@ def main():
     password: str = secret_conf_file.get('userPassword')
 
     # Configure the Servers
-    for host in hosts:
-        server = Server(host=host, user_name=username, password=password)
-        logging.info(f'Adding Marketplace configuration to {host}')
+    for server_url, port in server_to_port_mapping.items():
+        server = Server(internal_ip=server_url, port=port, user_name=username, password=password)
+        logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
         set_marketplace_url(servers=[server], branch_name=options.branch, ci_build_number=options.build_number)
 
         # Acquire the server's host and install all content packs (one threaded execution)
-        logging.info(f'Starting to install all content packs in {host}')
+        logging.info(f'Starting to install all content packs in {server_url}')
         server_host: str = server.client.api_client.configuration.host
-        install_all_content_packs(client=server.client, host=server_host)
-        logging.success(f'Finished installing all content packs in {host}')
+        success_flag = install_all_content_packs(client=server.client, host=server_host, server_version=server_version)
+
+        if success_flag:
+            logging.success(f'Finished installing all content packs in {server_url}')
+        else:
+            logging.error('Failed to install all packs.')
+            sys.exit(1)
 
 
 if __name__ == '__main__':

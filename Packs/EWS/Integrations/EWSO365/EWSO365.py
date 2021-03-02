@@ -86,11 +86,13 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
+TARGET_MAILBOX = 'receivedBy'
 
 # context paths
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
-    ITEM_ID, MESSAGE_ID
-)
+CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
+                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(
     ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID
 )
@@ -1911,7 +1913,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         template_params = handle_template_params(templateParams)
         if template_params:
             body = body.format(**template_params)
-            htmlBody = htmlBody.format(**template_params)
+            if htmlBody:
+                htmlBody = htmlBody.format(**template_params)
 
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader)
 
@@ -2245,7 +2248,9 @@ def sub_main():
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
-    params['default_target_mailbox'] = args.get('target_mailbox', params['default_target_mailbox'])
+    # client's default_target_mailbox is the authorization source for the instance
+    params['default_target_mailbox'] = args.get('target_mailbox',
+                                                args.get('source_mailbox', params['default_target_mailbox']))
     client = EWSClient(**params)
     start_logging()
     try:

@@ -5,8 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-import traceback
-from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
@@ -15,6 +13,7 @@ urllib3.disable_warnings()
 ''' GLOBALS '''
 TAGS = 'feedTags'
 TLP_COLOR = 'trafficlightprotocol'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -97,6 +96,7 @@ class Client(BaseClient):
                 ignore_regex: '^#'
         """
         super().__init__(base_url=url, verify=not insecure, proxy=proxy)
+        handle_proxy()
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
@@ -221,8 +221,30 @@ class Client(BaseClient):
                         f' {r.status_code!r} {r.content!r}')
                     raise
                 url_to_response_list.append({url: r})
-        except requests.ConnectionError:
-            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
+        except requests.exceptions.ConnectTimeout as exception:
+            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.SSLError as exception:
+            # in case the "Trust any certificate" is already checked
+            if not self._verify:
+                raise
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
 
         results = []
         for url_to_response in url_to_response_list:
@@ -258,9 +280,14 @@ class Client(BaseClient):
         return created_custom_fields
 
 
-def datestring_to_millisecond_timestamp(datestring):
-    date = parse(str(datestring))
-    return int(date.timestamp() * 1000)
+def datestring_to_server_format(date_string: str) -> str:
+    """
+    formats a datestring to the ISO-8601 format which the server expects to recieve
+    :param date_string: Date represented as a tring
+    :return: ISO-8601 date string
+    """
+    parsed_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    return parsed_date.strftime(DATE_FORMAT)
 
 
 def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
@@ -343,12 +370,10 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, *
                 attributes, value = get_indicator_fields(line, url, feed_tags, tlp_color, client)
                 if value:
                     if 'lastseenbysource' in attributes.keys():
-                        attributes['lastseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['lastseenbysource'])
+                        attributes['lastseenbysource'] = datestring_to_server_format(attributes['lastseenbysource'])
 
                     if 'firstseenbysource' in attributes.keys():
-                        attributes['firstseenbysource'] = datestring_to_millisecond_timestamp(
-                            attributes['firstseenbysource'])
+                        attributes['firstseenbysource'] = datestring_to_server_format(attributes['firstseenbysource'])
                     indicator_type = determine_indicator_type(
                         client.feed_url_to_config.get(url, {}).get('indicator_type'), itype, auto_detect, value)
                     indicator_data = {
@@ -445,5 +470,5 @@ def feed_main(feed_name, params=None, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]\nTrace\n:{traceback.format_exc()}'
-        return_error(err_msg)
+        err_msg = f'Error in {feed_name} integration [{e}]'
+        return_error(err_msg, error=e)

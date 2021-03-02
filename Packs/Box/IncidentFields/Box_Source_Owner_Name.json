@@ -1,0 +1,30 @@
+{
+ "id": "incident_boxsourceownername",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "name": "Box Source Owner Name",
+ "ownerOnly": false,
+ "description": "The name for the owner of the source.",
+ "cliName": "boxsourceownername",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Box Incident"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

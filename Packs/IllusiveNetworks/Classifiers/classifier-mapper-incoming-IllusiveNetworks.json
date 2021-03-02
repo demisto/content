@@ -8,18 +8,6 @@
         "Illusive Networks Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " Illusive Networks Incident Host Name": {
-                    "complex": null,
-                    "simple": "sourceHostname"
-                },
-                " Illusive Networks Incident Last Seen User": {
-                    "complex": null,
-                    "simple": "lastSeenUser"
-                },
-                " Illusive Networks Incident Source Operating System": {
-                    "complex": null,
-                    "simple": "sourceOperatingSystem"
-                },
                 "Illusive Networks Has Forensics": {
                     "complex": null,
                     "simple": "hasForensics"
@@ -32,19 +20,11 @@
                     "complex": null,
                     "simple": "incidentId"
                 },
-                "Illusive Networks Incident Has Forensics": {
-                    "complex": null,
-                    "simple": "hasForensics"
-                },
-                "Illusive Networks Incident ID": {
-                    "complex": null,
-                    "simple": "incidentId"
-                },
-                "Illusive Networks Incident Steps To Crown Jewel": {
+                "Illusive Networks Steps To Crown Jewel": {
                     "complex": null,
                     "simple": "riskInsights.stepsToCrownJewel"
                 },
-                "Illusive Networks Incident Steps To Domain Admin": {
+                "Illusive Networks Steps To Domain Admin": {
                     "complex": null,
                     "simple": "riskInsights.stepsToDomainAdmin"
                 },
@@ -55,14 +35,6 @@
                 "Illusive Networks Source Operating System": {
                     "complex": null,
                     "simple": "sourceOperatingSystem"
-                },
-                "Illusive Networks Steps To Crown Jewel": {
-                    "complex": null,
-                    "simple": "riskInsights.stepsToCrownJewel"
-                },
-                "Illusive Networks Steps To Domain Admin": {
-                    "complex": null,
-                    "simple": "riskInsights.stepsToDomainAdmin"
                 },
                 "Source IP": {
                     "complex": null,

@@ -1,7 +1,12 @@
 id: Block File - Generic v2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Block File - Generic v2
-description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+description: "This playbook is used to block files from running on endpoints. \nThis\
+  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo\
+  \ Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n-\
+  \ Cylance Protect v2\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +26,7 @@ tasks:
       - "9"
       - "10"
       - "11"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -36,10 +42,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 24babe11-954f-4415-8d3d-a1100cdbb3df
+    taskid: 5a2f437e-234a-43ef-858d-28d07fd1c7c2
     type: playbook
     task:
-      id: 24babe11-954f-4415-8d3d-a1100cdbb3df
+      id: 5a2f437e-234a-43ef-858d-28d07fd1c7c2
       version: -1
       name: Block File - Carbon Black Response
       playbookName: Block File - Carbon Black Response
@@ -101,7 +107,8 @@ tasks:
       id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
+      description: This playbook accepts an MD5 hash and blocks the file using the
+        Cybereason integration.
       playbookName: Block File - Cybereason
       type: playbook
       iscommand: false
@@ -135,7 +142,8 @@ tasks:
       id: a887370c-f94a-42f9-866f-2d80b7707f41
       version: -1
       name: Block File - Cylance Protect v2
-      description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global
+        Quarantine list using the Cylance Protect v2 integration.
       playbookName: Block File - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -197,20 +205,25 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
+    taskid: de27dee3-4496-4589-8514-94db4642810f
     type: playbook
     task:
-      id: ca09ee7f-ce03-43e9-8eed-0bfeef2b2ef3
+      id: de27dee3-4496-4589-8514-94db4642810f
       version: -1
       name: Traps Quarantine Event
+      description: This playbook accepts a file hash and quarantines this file using
+        Traps.
       playbookName: Traps Quarantine Event
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      EventId:
+        complex:
+          root: inputs.EventId
     separatecontext: true
     loop:
       iscommand: false
@@ -342,6 +355,72 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "12":
+    id: "12"
+    taskid: b42b03dd-99c1-4149-8c32-336d23b88cf0
+    type: title
+    task:
+      id: b42b03dd-99c1-4149-8c32-336d23b88cf0
+      version: -1
+      name: Palo Alto Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
+    type: playbook
+    task:
+      id: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
+      version: -1
+      name: Cortex XDR - Block File
+      playbookName: Cortex XDR - Block File
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      HashList:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -349,7 +428,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 2100,
+        "width": 2570,
         "x": 50,
         "y": 50
       }
@@ -370,7 +449,7 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: ""
+  description: The SHA256 hash of the file you want to block.
   playbookInputQuery:
 - key: EventId
   value: {}
@@ -384,6 +463,6 @@ outputs:
   description: Last block hostname
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
-fromversion: 5.0.0
 tests:
-- block_indicators_-_generic_-_test
+- No tests (auto formatted)
+fromversion: 5.0.0

@@ -1,0 +1,6 @@
+!gh-get-message id="12345" includeheaders="true"
+!gh-search-message filters="[{\"targets\": [\"penguin@scuftysails.com\"], \"origin\": [\"action@ifttt.com\"]}]"
+!gh-remediate-message action="banner" message="This email may be a phishing attempt" eventId="20128"
+!gh-revert-remediate-message action="banner" eventId="20128"
+!gh-get-policy policyid="16567"
+!gh-set-policy policyid="16567" updatemethod="patch" policyjson="{\"config\": [\"or\", [\"and\", {\"opt\": \"from\", \"values\": [\"asdf@asdf.com\",\"asdf2@asdf2.com\"], \"type\": \"regex\"}]]}"

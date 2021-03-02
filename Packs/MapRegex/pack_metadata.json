@@ -1,0 +1,14 @@
+{
+    "name": "MapRegex",
+    "description": "This pack contains a transformer that will take in a value and transform it based on multiple regular expressions defined in a JSON dictionary. The key:value pair of the JSON dictionary should be:\n\n\"desired outcome\": \"regex to match\"\n\nFor example:\n\n{\n    \"Match 1\": \".*match 1.*\",\n    \"Match 2\": \".*match 2.*\",\n    \"Catch all\": \".*\"\n}\n\nThe transformer will match in order of dictionary entries.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-18T11:00:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

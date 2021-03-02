@@ -1,0 +1,30 @@
+{
+ "id": "incident_arguscaseservice",
+ "version": -1,
+ "modified": "2020-11-04T02:50:55.51191879-05:00",
+ "name": "Argus Case Service",
+ "ownerOnly": false,
+ "cliName": "arguscaseservice",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Argus Case"
+ ],
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

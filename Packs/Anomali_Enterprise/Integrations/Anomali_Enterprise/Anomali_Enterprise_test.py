@@ -64,7 +64,7 @@ def test_domain_command_suspicious(mocker):
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     expected_result = {
         'Domain': [
-            {'Name': 'suspicious.com'}
+            {'Name': 'suspicious.com', 'Tags': 'DGA'}
         ],
         'DBotScore': [
             {
@@ -103,7 +103,7 @@ def test_domain_command_malicious(mocker):
     expected_result = {
         'Domain': [
             {'Malicious': {'Description': 'my_malware', 'Vendor': 'Anomali Enterprise'},
-             'Name': 'malicious.com'}
+             'Name': 'malicious.com', 'Tags': 'DGA'}
         ],
         'DBotScore': [
             {

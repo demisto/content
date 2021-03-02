@@ -1,7 +1,8 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
-from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
+from IAMApiModule import *
+from CommonServerPython import EntryType
 
 
 OKTA_USER_OUTPUT = {
@@ -339,7 +340,7 @@ def test_get_mapping_fields_command(mocker):
     mocker.patch.object(client, 'get_okta_fields', return_value={'field1': 'description1', 'field2': 'description2'})
 
     mapping_response = get_mapping_fields_command(client)
-    mapping = mapping_response.extract_mapping()[0]
+    mapping = mapping_response.extract_mapping()
 
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'description1'
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'

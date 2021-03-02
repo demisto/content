@@ -1,7 +1,7 @@
 {
     "name": "Lockpath Keylight",
     "description": "Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.",
-    "support": "Cortex XSOAR",
+    "support": "xsoar",
     "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",

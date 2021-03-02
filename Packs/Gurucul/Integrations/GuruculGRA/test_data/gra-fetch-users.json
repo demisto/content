@@ -1,0 +1,53 @@
+[
+   {
+      "firstName":"Simon",
+      "middleName":null,
+      "lastName":"Barrera",
+      "employeeId":"Wing.Whitfield",
+      "riskScore":0,
+      "userRisk":98,
+      "department":"Human Resources",
+      "email":"Suspendisse@gurucul.corp",
+      "phone":"(750) 787-0920",
+      "location":"KY",
+      "manager":"Forrest.Stephens",
+      "title":"Admin",
+      "joiningDate":"10/11/2019 13:11:02",
+      "exitDate":"07/22/2019 23:06:31",
+      "profilePicturePath":null
+   },
+   {
+      "firstName":"Solomon",
+      "middleName":null,
+      "lastName":"Juarez",
+      "employeeId":"Brody.Sanford",
+      "riskScore":0,
+      "userRisk":98,
+      "department":"Human Resources",
+      "email":"amet.risus@gurucul.corp",
+      "phone":"(144) 848-1510",
+      "location":"UT",
+      "manager":"Cairo.Mcmillan",
+      "title":"VP",
+      "joiningDate":"01/09/2020 16:16:38",
+      "exitDate":"03/29/2019 08:02:35",
+      "profilePicturePath":null
+   },
+   {
+      "firstName":"Noble",
+      "middleName":null,
+      "lastName":"Ingram",
+      "employeeId":"Lyle.Boyer",
+      "riskScore":0,
+      "userRisk":98,
+      "department":"Customer Relations",
+      "email":"convallis.ligula@gurucul.corp",
+      "phone":"(274) 228-9838",
+      "location":"MO",
+      "manager":"Michael.Leon",
+      "title":"QA",
+      "joiningDate":"07/16/2018 11:50:39",
+      "exitDate":"12/10/2018 05:46:15",
+      "profilePicturePath":null
+   }
+]

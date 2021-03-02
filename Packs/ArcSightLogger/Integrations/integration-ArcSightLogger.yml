@@ -259,7 +259,7 @@ script:
             bodyArgs.summary_fields = parseArray(summaryFields);
         }
         if (fieldSummary) {
-            bodyArgs.field_summary = fieldSummary;
+            bodyArgs.field_summary = parseBool(fieldSummary);
         }
         if (localSearch) {
             bodyArgs.local_search = parseBool(localSearch);
@@ -647,7 +647,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'. If the local search option is configured to 'False' on your ArcSight Logger instance, make sure to include this argument with a value of 'false' for the command.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
@@ -773,7 +773,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'. If the local search option is configured to 'False' on your ArcSight Logger instance, make sure to include this argument with a value of 'false' for the command.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout

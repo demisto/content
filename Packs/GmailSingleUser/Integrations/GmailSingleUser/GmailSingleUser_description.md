@@ -8,9 +8,11 @@ To allow Demisto to access Gmail, the user has to approve the Demisto app using 
 4. Save the instance.
 5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
 
-**NOTE:** The Demisto App is verified through the Google verification process. During the verification process the app is not fully verified, and you may receive from Google an "unverified app" warning in the authorization flow.
+## Application Configuration Options
+See the [Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/gmail-single-user) for additional App configuration options:
+* **GSuite Admins:** How to trust the Demisto App.
+* **Bring your own App:** Use your own App instead of the default Demisto App. 
 
-**Optional:** You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites). When creating the OAuth client ID, select **iOS** as the type (this is the type used for Desktop Apps). After you create the app, copy the *client id* to the integration configuration. Proceed with the OAuth 2.0 authorization flow detailed above.
-
----
+----
 Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+

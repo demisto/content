@@ -1,0 +1,9 @@
+{
+    "message": "The given data was invalid.",
+    "code": "INVALID_DATA",
+    "errors": {
+        "input": [
+            "Invalid input task."
+        ]
+    }
+}

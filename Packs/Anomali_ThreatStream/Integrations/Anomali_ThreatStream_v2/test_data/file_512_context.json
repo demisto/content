@@ -1,0 +1,20 @@
+{
+  "DBotScore": {
+    "Vendor": "ThreatStream",
+    "Type": "SHA512",
+    "Indicator": "665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d300e07013a1643c17d64464b77d89ef",
+    "Score": 2
+  },
+  "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+    "SHA512": "665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d300e07013a1643c17d64464b77d89ef"
+  },
+  "ThreatStream.File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+    "Confidence": 50,
+    "Modified": "2020-11-12T10:17:49.892Z",
+    "Source": "Demisto",
+    "Status": "active",
+    "Type": "SHA512",
+    "Severity": "medium",
+    "SHA512": "665564674b6b4a7a3a69697221acef98ee5ca3664ce6b370059cb7d3b0942589556e5a9d69d83d038339535ea4ced2d4d300e07013a1643c17d64464b77d89ef"
+  }
+}

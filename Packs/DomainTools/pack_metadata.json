@@ -2,7 +2,7 @@
     "name": "DomainTools",
     "description": "Domain name, DNS and Internet OSINT-based cyber threat intelligence and cybercrime forensics products and data",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",

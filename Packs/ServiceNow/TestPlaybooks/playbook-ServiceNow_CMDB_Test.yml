@@ -1,0 +1,513 @@
+id: ServiceNow_CMDB_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: ServiceNow_CMDB_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c46c93af-6071-4afc-8c2c-d590cd5e1cff
+    type: start
+    task:
+      id: c46c93af-6071-4afc-8c2c-d590cd5e1cff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6985ccc7-8e77-4ce3-8893-8a0f114b19d4
+    type: regular
+    task:
+      id: 6985ccc7-8e77-4ce3-8893-8a0f114b19d4
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 678a0a39-5fcb-4314-85f1-5a55ce4815f6
+    type: regular
+    task:
+      id: 678a0a39-5fcb-4314-85f1-5a55ce4815f6
+      version: -1
+      name: servicenow-cmdb-records-list
+      script: '|||servicenow-cmdb-records-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      class:
+        simple: cmdb_ci_linux_server
+      limit:
+        simple: "1"
+      offset: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 32ca50c2-2857-4b41-8426-aff737d3f061
+    type: regular
+    task:
+      id: 32ca50c2-2857-4b41-8426-aff737d3f061
+      version: -1
+      name: servicenow-cmdb-record-get-by-id
+      script: '|||servicenow-cmdb-record-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      class:
+        simple: ${ServiceNowCMDB.Record.Class}
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      sys_id:
+        simple: ${ServiceNowCMDB.Record.SysID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 357bf720-3ec6-4336-8eb2-09a1924e8ed2
+    type: regular
+    task:
+      id: 357bf720-3ec6-4336-8eb2-09a1924e8ed2
+      version: -1
+      name: servicenow-cmdb-record-create
+      script: '|||servicenow-cmdb-record-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      attributes:
+        simple: name=Test Playbook Record
+      class:
+        simple: cmdb_ci_linux_server
+      fields: {}
+      inbound_relations: {}
+      outbound_relations: {}
+      relation_limit: {}
+      relation_offset: {}
+      source: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e8916169-4de0-4b6d-8019-3a6ad423f35c
+    type: condition
+    task:
+      id: e8916169-4de0-4b6d-8019-3a6ad423f35c
+      version: -1
+      name: Verify Record Name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServiceNowCMDB.Record.Attributes.name
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Record
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8ff590c4-ce79-4abc-8124-8e8a620f56e9
+    type: regular
+    task:
+      id: 8ff590c4-ce79-4abc-8124-8e8a620f56e9
+      version: -1
+      name: servicenow-cmdb-record-update
+      script: '|||servicenow-cmdb-record-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      attributes:
+        simple: name=Updated Name Test Playbook
+      class:
+        simple: ${ServiceNowCMDB.Record.Class}
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      source: {}
+      sys_id:
+        simple: ${ServiceNowCMDB.Record.SysID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0afd959d-3154-4c45-85c1-bbe13c026d5e
+    type: regular
+    task:
+      id: 0afd959d-3154-4c45-85c1-bbe13c026d5e
+      version: -1
+      name: servicenow-cmdb-record-add-relations
+      script: '|||servicenow-cmdb-record-add-relations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      class:
+        simple: ${ServiceNowCMDB.Record.Class}
+      fields: {}
+      inbound_relations:
+        simple: '[{''type'': ''cb5592603751200032ff8c00dfbe5d17'',''target'':''829e953a0ad3370200af63483498b1ea'',''sys_class_name'':''cmdb_ci_appl''}]'
+      outbound_relations: {}
+      relation_limit: {}
+      relation_offset: {}
+      source: {}
+      sys_id:
+        simple: ${ServiceNowCMDB.Record.SysID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1d067b80-df66-4d29-8aaf-6c6ba862e6b8
+    type: condition
+    task:
+      id: 1d067b80-df66-4d29-8aaf-6c6ba862e6b8
+      version: -1
+      name: Verify Record Inbound Relations Not Empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ServiceNowCMDB.Record.InboundRelations
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8c134160-80a0-432e-8f56-151602131353
+    type: regular
+    task:
+      id: 8c134160-80a0-432e-8f56-151602131353
+      version: -1
+      name: servicenow-cmdb-record-delete-relations
+      script: '|||servicenow-cmdb-record-delete-relations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      class:
+        simple: ${ServiceNowCMDB.Record.Class}
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      relation_sys_id:
+        simple: ${ServiceNowCMDB.Record.InboundRelations.[0].sys_id}
+      sys_id:
+        simple: ${ServiceNowCMDB.Record.SysID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 577891e4-571c-4883-8d41-722e9d71956b
+    type: condition
+    task:
+      id: 577891e4-571c-4883-8d41-722e9d71956b
+      version: -1
+      name: Verify Record Inbound Relations Is Empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ServiceNowCMDB.Record.InboundRelations
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 48aff8f7-f9fc-4742-8ef6-d0bd046ade6c
+    type: title
+    task:
+      id: 48aff8f7-f9fc-4742-8ef6-d0bd046ade6c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 3ba1d6e5-0f16-49bc-844f-68c025ff0a65
+    type: condition
+    task:
+      id: 3ba1d6e5-0f16-49bc-844f-68c025ff0a65
+      version: -1
+      name: Verify Record Updated Name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServiceNowCMDB.Record.Attributes.name
+            iscontext: true
+          right:
+            value:
+              simple: Updated Name Test Playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b3a32822-2595-4bee-8f0b-3de4ecdddbfb
+    type: condition
+    task:
+      id: b3a32822-2595-4bee-8f0b-3de4ecdddbfb
+      version: -1
+      name: Verify Record Name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServiceNowCMDB.Record.Attributes.name
+            iscontext: true
+          right:
+            value:
+              simple: Updated Name Test Playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

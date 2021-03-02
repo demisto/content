@@ -297,11 +297,12 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query):
+    def get_advanced_hunting(self, query: str, timeout: int) -> dict:
         """Retrieves results according to query.
 
         Args:
             query (str): Query to do advanced hunting on
+            timeout (int): Connection timeout
 
         Returns:
             dict. Advanced hunting results
@@ -310,7 +311,7 @@ class MsClient:
         json_data = {
             'Query': query
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data, timeout=timeout)
 
     def create_alert(self, machine_id, severity, title, description, event_time, report_id, rec_action, category):
         """Creates new Alert on top of Event.
@@ -748,7 +749,7 @@ class MsClient:
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[str]
+            description: Optional[str], severity: Optional[int]
     ) -> Dict:
         """Updates a given indicator
 
@@ -1117,8 +1118,9 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    query = args.get('query')
-    response = client.get_advanced_hunting(query)
+    query = args.get('query', '')
+    timeout = int(args.get('timeout', 10))
+    response = client.get_advanced_hunting(query, timeout)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
         report_id = results[0].get('ReportId')
@@ -2092,7 +2094,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
             assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
     except ValueError:
         raise DemistoException('The confidence argument must be an integer.')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     tags = argToList(args.get('tags'))
     body = assign_params(
         action=action,
@@ -2235,7 +2237,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, D
         human readable, outputs
     """
     indicator_id = args.get('indicator_id', '')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     expiration_time = get_future_time(args.get('expiration_time', ''))
     description = args.get('description')
     if description is not None:

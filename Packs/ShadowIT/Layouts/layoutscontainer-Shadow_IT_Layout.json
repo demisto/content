@@ -1,0 +1,809 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 12
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 53,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 53,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitrisk",
+                                "height": 22,
+                                "id": "1395f810-1a0b-11eb-9a04-f593389f52a8",
+                                "index": 0,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitsactionedservice",
+                                "height": 22,
+                                "id": "e48ff490-19fa-11eb-9a04-f593389f52a8",
+                                "index": 1,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitsensitivedata",
+                                "height": 22,
+                                "id": "183bed50-1ab7-11eb-a0ec-5f553ed9357f",
+                                "index": 2,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitcloudaccountid",
+                                "height": 22,
+                                "id": "1191ad20-19ca-11eb-b593-170360eba584",
+                                "index": 3,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "shadowitregion",
+                                "height": 22,
+                                "id": "5ca8bf80-2044-11eb-9729-4f899f730196",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitorganizationalunit",
+                                "height": 22,
+                                "id": "d5f76210-19fa-11eb-9a04-f593389f52a8",
+                                "index": 5,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitoucontactname",
+                                "height": 22,
+                                "id": "54483f10-1a0d-11eb-9a04-f593389f52a8",
+                                "index": 6,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitfqdn",
+                                "height": 22,
+                                "id": "063ef0d0-1a0c-11eb-9a04-f593389f52a8",
+                                "index": 7,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitip",
+                                "height": 22,
+                                "id": "098ae780-1a0c-11eb-9a04-f593389f52a8",
+                                "index": 8,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "shadowitaccountownername",
+                                "height": 22,
+                                "id": "0b34ccf0-19ca-11eb-b593-170360eba584",
+                                "index": 9,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitusersuggestions",
+                                "height": 106,
+                                "id": "0abc1aa0-1ab3-11eb-924f-17c107fd1114",
+                                "index": 10,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "shadowitsource",
+                                "height": 22,
+                                "id": "07c4e2a0-1a0e-11eb-9a04-f593389f52a8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitbilledtocorp",
+                                "height": 22,
+                                "id": "e3127c50-19fa-11eb-9a04-f593389f52a8",
+                                "index": 1,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitservicepurpose",
+                                "height": 22,
+                                "id": "19dad040-1ab7-11eb-a0ec-5f553ed9357f",
+                                "index": 2,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitprovider",
+                                "height": 22,
+                                "id": "c0314930-1a0b-11eb-9a04-f593389f52a8",
+                                "index": 3,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "shadowitservice",
+                                "height": 22,
+                                "id": "626bd0b0-2044-11eb-9729-4f899f730196",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitoucontactemail",
+                                "height": 22,
+                                "id": "4ec989e0-1a0d-11eb-9a04-f593389f52a8",
+                                "index": 5,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitport",
+                                "height": 22,
+                                "id": "0b2b02f0-1a0c-11eb-9a04-f593389f52a8",
+                                "index": 6,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitcloudaccounttype",
+                                "height": 22,
+                                "id": "128de770-19ca-11eb-b593-170360eba584",
+                                "index": 7,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitaccountowneremail",
+                                "height": 22,
+                                "id": "07347a60-19ca-11eb-b593-170360eba584",
+                                "index": 8,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "shadowitcertificate",
+                                "height": 22,
+                                "id": "0f3392e0-1a0c-11eb-9a04-f593389f52a8",
+                                "index": 9,
+                                "listId": "caseinfoid-df003520-1a0a-11eb-9a04-f593389f52a8",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Shadow IT",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": false,
+                "id": "rpue9k9tpz",
+                "name": "Linked Incidents",
+                "sections": [
+                    {
+                        "h": 4,
+                        "i": "rpue9k9tpz-936762f0-1a0f-11eb-8034-ef5ed48c7b58",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_shadowitsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitorganizationalunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitoucontactname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitoucontactemail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitaccountownername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitaccountowneremail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitcloudaccounttype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitcloudaccountid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitfqdn",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitcertificate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitprovider",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitrisk",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitservicepurpose",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitsactionedservice",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitbilledtocorp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitsensitivedata",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_shadowitusersuggestions",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Shadow IT",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Additional Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "shadowit",
+    "name": "Shadow IT Incident",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

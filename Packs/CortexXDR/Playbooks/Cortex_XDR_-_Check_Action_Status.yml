@@ -1,0 +1,254 @@
+id: Cortex XDR - Check Action Status
+version: -1
+name: Cortex XDR - Check Action Status
+description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 025a81bc-ff46-4679-89e4-a0d3cfda1589
+    type: start
+    task:
+      id: 025a81bc-ff46-4679-89e4-a0d3cfda1589
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4b1b699b-2112-4d74-897e-d558dc990050
+    type: playbook
+    task:
+      id: 4b1b699b-2112-4d74-897e-d558dc990050
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.action_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: action_id
+      PollingCommandName:
+        simple: xdr-action-status-get
+      Timeout:
+        simple: "10"
+      dt:
+        simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" && val.status
+          != "ABORTED" && val.status != "EXPIRED" && val.status != "COMPLETED_PARTIAL"
+          && val.status != "COMPLETED_SUCCESSFULLY" && val.status != "FAILED" && val.status
+          != "TIMEOUT").action_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1d6f1210-f000-41a7-8ae4-27500e74e123
+    type: title
+    task:
+      id: 1d6f1210-f000-41a7-8ae4-27500e74e123
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5d245f47-e54e-4ede-88a2-2ec7a0f60342
+    type: condition
+    task:
+      id: 5d245f47-e54e-4ede-88a2-2ec7a0f60342
+      version: -1
+      name: Action status is final
+      description: Checks if the action is at its final status.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.GetActionStatus(val.status).status
+            iscontext: true
+          right:
+            value:
+              simple: CANCELLED,ABORTED,EXPIRED,COMPLETED_PARTIAL,COMPLETED_SUCCESSFULLY,FAILED,TIMEOUT
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 380f500c-b4c6-4569-84c7-4d3e5fb66253
+    type: regular
+    task:
+      id: 380f500c-b4c6-4569-84c7-4d3e5fb66253
+      version: -1
+      name: Print Error message
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The status of this action is still not final.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: cb32c787-21a2-4488-8948-b1bc28943d7a
+    type: regular
+    task:
+      id: cb32c787-21a2-4488-8948-b1bc28943d7a
+      version: -1
+      name: xdr-action-status-get
+      description: Retrieves the status of the requested actions according to the
+        action ID.
+      script: '|||xdr-action-status-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_id:
+        simple: ${inputs.action_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: action_id
+  value: {}
+  required: false
+  description: Action ID of the specific request.
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksXDR.GetActionStatus
+  description: Gets Action Status command results.
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.endpoint_id
+  description: Endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.status
+  description: Status of specific endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
+  description: The action ID that was the input.
+  type: number
+fromversion: 5.0.0
+tests:
+- Test XDR Playbook
+- Cortex XDR - IOC - Test
