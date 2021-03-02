@@ -4447,7 +4447,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Shows the user ID interface configuration
+    description: Shows the user ID interface configuration.
     execution: false
     name: panorama-show-user-id-interfaces-config
     outputs:
@@ -4484,7 +4484,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Shows the user ID interface configuration
+    description: Shows the zones configuration.
     execution: false
     name: panorama-show-zones-config
     outputs:
