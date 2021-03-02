@@ -1,12 +1,11 @@
 args:
-- auto: PREDEFINED
-  default: false
+- default: false
   description: Incident id to get prediction, if empty - using the current incident
     id
   isArray: false
   name: incidentId
   predefined:
-  - comma separated optional values
+    - ''
   required: false
   secret: false
 - default: false
@@ -74,13 +73,24 @@ args:
   name: fieldsIncidentToDisplay
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Aggregate similar incidents
+  isArray: false
+  name: aggregateIncidents
+  predefined:
+    - 'True'
+    - ' False'
+  required: false
+  secret: false
 comment: Find similar incidents based on indicators similarity. Indicators contribution
-  to the final score is based on their scarity
+  to the final score is based on their scarcity
 commonfields:
-  id: DBotPredictSimilarEventsBasedOnIndicators
+  id: DBotFindSimilarIncidentsByIndicators
   version: -1
 enabled: true
-name: DBotPredictSimilarEventsBasedOnIndicators
+name: DBotFindSimilarIncidentsByIndicators
 script: '-'
 subtype: python3
 system: false
