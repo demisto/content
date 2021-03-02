@@ -1,0 +1,22 @@
+commonfields:
+  id: PortListenCheck
+  version: -1
+name: PortListenCheck
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Checks whether a port was open on given host.
+enabled: true
+args:
+- name: host
+  required: true
+  description: Hostname to check.
+- name: port
+  description: Port to check.
+outputs:
+- contextPath: portOpen
+  description: Returns true if given port on host was open.
+  type: boolean
+scripttarget: 0
+fromversion: 5.0.0
