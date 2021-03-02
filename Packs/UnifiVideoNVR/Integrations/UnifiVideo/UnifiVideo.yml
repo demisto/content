@@ -44,7 +44,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '0'
+- defaultvalue: '50'
   display: Fetch Limit (unlimited=0)
   hidden: false
   name: fetch_limit
