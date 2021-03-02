@@ -227,7 +227,7 @@ def issue_format(issue):
         'Updated_at': issue.get('updated_at'),
         'Closed_at': issue.get('closed_at'),
         'Closed_by': closed_by,
-        'User': issue.get('user').get('login')  if issue.get('user') else ''
+        'User': issue.get('user').get('login') if issue.get('user') else ''
     }
     return form
 
@@ -896,6 +896,12 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
+def get_team_members(organization: str, team_slug: str) -> dict:
+    suffix = f'/orgs/{organization}/teams/{team_slug}/members'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
 def get_team_membership_command():
     args = demisto.args()
     team_id = args.get('team_id')
@@ -1226,6 +1232,25 @@ def get_github_actions_usage():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=usage_result)
 
 
+def get_team_members_command():
+    args = demisto.args()
+    org = args.get('organization')
+    team_slug = args.get('team_slug')
+    response = get_team_members(org, team_slug)
+    members = []
+    for member in response:
+        ec_object = {
+            'ID': member.get("id"),
+            'Login': member.get("login"),
+        }
+        members.append(ec_object)
+    ec = {
+        'GitHub.TEAMMEMBER(val.ID === obj.ID)': members
+    }
+    human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1287,6 +1312,7 @@ COMMANDS = {
     'GitHub-is-pr-merged': is_pr_merged_command,
     'GitHub-create-pull-request': create_pull_request_command,
     'Github-get-github-actions-usage': get_github_actions_usage,
+    'GitHub-list-team-members': get_team_members_command,
 }
 
 '''EXECUTION'''
