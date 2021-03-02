@@ -230,7 +230,7 @@ script:
       secret: false
     deprecated: false
     description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days.
-                 Due to an api limitation, maximum of 10,000 results can be returned.
+                 Due to a limitation of the API, a maximum of 10,000 results can be returned.
     execution: false
     name: microsoft-atp-get-machines
     outputs:
