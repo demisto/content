@@ -12,17 +12,20 @@ from Tests.scripts.utils.log_util import install_logging
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-INFRASTRUCTURE_FILES = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
-                        'Tests/scripts/validate_index.py']
-INFRASTRUCTURE_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
+PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
+                               'Tests/scripts/validate_index.py']
+PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
+GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/'
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 GET_WORKFLOWS_MAX_RETRIES = 3
+
+GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
 
 def get_modified_files(branch_name):
@@ -36,22 +39,21 @@ def get_modified_files(branch_name):
 
 def is_infrastructure_change(modified_files):
     for file in modified_files:
-        if file in INFRASTRUCTURE_FILES:
+        if file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
 
         path = os.path.dirname(file)
-        for dir_path in INFRASTRUCTURE_FOLDERS:
+        for dir_path in PRIVATE_BUILD_INFRA_FOLDERS:
             if path.startswith(dir_path):
                 return True
     return False
 
 
 def get_dispatch_workflows_ids(bearer_token, branch):
-    res = requests.request("GET",
-                           GET_DISPATCH_WORKFLOWS_URL,
-                           headers={'Authorization': bearer_token},
-                           params={'branch': branch, 'event': 'repository_dispatch'},
-                           verify=False)
+    res = requests.get(GET_DISPATCH_WORKFLOWS_URL,
+                       headers={'Authorization': bearer_token},
+                       params={'branch': branch, 'event': 'repository_dispatch'},
+                       verify=False)
     if res.status_code != 200:
         logging.error(f'Failed to gets private repo workflows, request to '
                       f'{GET_DISPATCH_WORKFLOWS_URL} failed with error: {str(res.content)}')
@@ -92,12 +94,11 @@ def main():
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
                        'client_payload': {'commit_sha1': args.commit_sha1, 'is_infra_build': 'True'}}
 
-        res = requests.request("POST",
-                               TRIGGER_BUILD_URL,
-                               headers={'Accept': 'application/vnd.github.everest-preview+json',
-                                        'Authorization': bearer_token},
-                               data=json.dumps(payload),
-                               verify=False)
+        res = requests.post(TRIGGER_BUILD_URL,
+                            headers={'Accept': 'application/vnd.github.everest-preview+json',
+                                    'Authorization': bearer_token},
+                            data=json.dumps(payload),
+                            verify=False)
 
         if res.status_code != 204:
             logging.error(f'Failed to trigger private repo build, request to '

@@ -7,24 +7,18 @@ import requests
 import logging
 from urllib.parse import urljoin
 from Tests.scripts.utils.log_util import install_logging
+from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE,\
+                                        GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
-GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/'
-
-PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
-
-TIMEOUT_THRESHOLD = 3600  # one hour
-
 
 def get_workflow_status(bearer_token, workflow_id):
     workflow_url = urljoin(GET_WORKFLOW_URL, workflow_id)
-    res = requests.request("GET",
-                           workflow_url,
-                           headers={'Authorization': bearer_token},
-                           verify=False)
+    res = requests.get(workflow_url,
+                       headers={'Authorization': bearer_token},
+                       verify=False)
     if res.status_code != 200:
         logging.error(
             f'Failed to gets private repo workflow, request to {workflow_url} failed with error: {str(res.content)}')
@@ -65,13 +59,13 @@ def main():
     elapsed = 0
 
     # polling the workflow status while is in progress
-    while status in ['queued', 'in_progress'] and elapsed < TIMEOUT_THRESHOLD:
+    while status in ['queued', 'in_progress'] and elapsed < GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.info(f'Workflow {workflow_id} status is {status}')
         time.sleep(10)
         status = get_workflow_status(bearer_token, workflow_id)
         elapsed = time.time() - start
 
-    if elapsed > TIMEOUT_THRESHOLD:
+    if elapsed > GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
                       f' {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
