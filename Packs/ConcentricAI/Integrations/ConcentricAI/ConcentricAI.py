@@ -23,7 +23,7 @@ VERIFY_CERT: bool
 PROXY: bool
 TENANT_ID: str
 USERNAME: str
-QUERY_HEADERS: dict = None
+QUERY_HEADERS = None
 COOKIE: str
 LAST_FETCH = None
 RISK_RULES: dict
@@ -107,8 +107,8 @@ This is the client class that will have all the client login calls.
 class LoginClient(BaseClient):
     def fetch_api_token(self):
         res = self._http_request(
-                method='GET',
-                url_suffix='api/v1/login'
+            method='GET',
+            url_suffix='api/v1/login'
         )
         accessToken = res['accessToken']
         return accessToken
@@ -287,8 +287,6 @@ def fetch_token(client: LoginClient):
         raise Exception('Failed to fetch token', e)
 
 
-
-
 def get_rule_names(risk_id: List, risk_rules: dict):
     rule_names = None
     for id in risk_id:
@@ -437,9 +435,8 @@ def test_module(client: LoginClient):
         raise Exception('Test Failure', e)
 
 
-
-
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int, fetch_time):
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int],
+                    max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
     scroll_id = last_run.get('scroll_id', None)
