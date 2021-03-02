@@ -305,7 +305,7 @@
 </tr>
 <tr>
 <td style="width: 169px;">confidence</td>
-<td style="width: 481px;">Minimum confidence of IPs to retrieve, default is 100</td>
+<td style="width: 481px;">The Minimum confidence required for the retrieved IPs, default is 100</td>
 <td style="width: 90px;">Optional</td>
 </tr>
 </tbody>

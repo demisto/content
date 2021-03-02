@@ -253,7 +253,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: 'The Minimum confidence required of IPs to retrieve. Default is 100.'
+      description: The Minimum confidence required for the retrieved IPs.
       isArray: false
       name: confidence
       required: false
