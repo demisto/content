@@ -189,7 +189,8 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
     domains_counter = Counter(senders_domain).most_common()  # type: ignore
-    recipients = incidents_df[EMAIL_TO_FIELD].replace('', np.nan).dropna().tolist()
+    if EMAIL_TO_FIELD in incidents_df.columns:
+        recipients = incidents_df[EMAIL_TO_FIELD].replace('', np.nan).dropna().tolist()
     if EMAIL_CC_FIELD in incidents_df.columns:
         recipients += incidents_df[EMAIL_CC_FIELD].replace('', np.nan).dropna().tolist()
     if EMAIL_BCC_FIELD in incidents_df.columns:
