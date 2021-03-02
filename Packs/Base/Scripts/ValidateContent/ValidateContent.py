@@ -17,8 +17,7 @@ from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
-    ContributionConverter, format_manager, get_child_directories,
-    get_child_files)
+    ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split_yml.extractor import Extractor
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
