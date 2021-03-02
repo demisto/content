@@ -184,7 +184,7 @@ def main():
         exclude_ids.append(demisto.parentEntry()['id'])
 
     ents = []
-    for ent in iterate_entries(
+    for entry in iterate_entries(
         incident_id=args.get('incident_id'),
         query_filter=assign_params(
             categories=argToList(args.get('filter_categories')),
@@ -198,14 +198,14 @@ def main():
             filter_entry_types=argToList(args.get('filter_entry_types', []))
         )
     ):
-        if ent.entry['ID'] not in exclude_ids:
+        if entry.entry['ID'] not in exclude_ids:
             rent = {
-                'ID': ent.entry['ID'],
-                'Tags': ent.entry['Tags'] or [],
+                'ID': entry.entry['ID'],
+                'Tags': entry.entry['Tags'] or [],
             }
-            if 'verbose' == output_option and ent.match:
-                rent['Where'] = ent.match[0][:128]
-                rent['Text'] = ent.value_matched
+            if 'verbose' == output_option and entry.match:
+                rent['Where'] = entry.match[0][:128]
+                rent['Text'] = entry.value_matched
             ents.append(rent)
 
     if 'first_entry' in filter_options:
