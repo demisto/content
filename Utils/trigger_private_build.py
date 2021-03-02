@@ -7,6 +7,7 @@ import argparse
 import requests
 import logging
 import demisto_sdk.commands.common.tools as tools
+from Tests.scripts.utils.log_util import install_logging
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -24,12 +25,10 @@ PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 def get_modified_files(branch_name):
     files = []
-    files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+    files_string = tools.run_command(f'git diff --name-only origin/master...{branch_name}')
     for line in files_string.split("\n"):
         if line:
-            _, file_path = line.split(maxsplit=1)
-            if file_path:
-                files.append(file_path)
+            files.append(line)
     return files
 
 
@@ -67,11 +66,12 @@ def get_dispatch_workflows_ids(bearer_token, branch):
 
 
 def main():
+    install_logging("TriggerPrivateBuild.log")
     # get github_token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
-    bearer_token = 'Bearer ' + args.github_token
+    bearer_token = f'Bearer {args.github_token}'
 
     # get branch name
     branches = tools.run_command("git branch")
@@ -81,7 +81,7 @@ def main():
     files = get_modified_files(branch_name)
 
     if is_infrastructure_change(files):
-        # get the workflows ids before triggering tye build
+        # get the workflows ids before triggering the build
         workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
 
         # trigger private build
@@ -108,8 +108,8 @@ def main():
         workflow_id = [x for x in workflow_ids_new if x not in workflow_ids]
         if workflow_id:
             workflow_id = workflow_id[0]
-            print(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
-                  f' {WORKFLOW_HTML_URL}/{workflow_id}')
+            logging.info(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
+                         f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
             # write the workflow id to text file to use it in get_private_build_status.py
             with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:
@@ -117,8 +117,7 @@ def main():
             sys.exit(0)
 
     else:
-        print('Build private repo skipped')
-        sys.exit(0)
+        logging.info('Build private repo skipped')
 
 
 if __name__ == "__main__":

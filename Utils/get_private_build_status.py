@@ -6,6 +6,7 @@ import argparse
 import requests
 import logging
 from urllib.parse import urljoin
+from Tests.scripts.utils.log_util import install_logging
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -32,56 +33,57 @@ def get_workflow_status(bearer_token, workflow_id):
     try:
         workflow = json.loads(res.content)
     except ValueError:
-        logging.error('Enable to parse private repo workflows response')
+        logging.exception('Enable to parse private repo workflows response')
         sys.exit(1)
 
     return workflow.get('status')
 
 
 def main():
-    if os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
-        # gets workflow id from the file
-        with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
-            workflow_id = f.read()
+    install_logging("GetPrivateBuildStatus.log")
 
-        # get github_token parameter
-        arg_parser = argparse.ArgumentParser()
-        arg_parser.add_argument('--github-token', help='Github token')
-        args = arg_parser.parse_args()
-        bearer_token = 'Bearer ' + args.github_token
+    if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
+        logging.info('Build private repo skipped')
+        sys.exit(0)
 
-        # gets the workflow status
+    # gets workflow id from the file
+    with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
+        workflow_id = f.read()
+
+    # get github_token parameter
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('--github-token', help='Github token')
+    args = arg_parser.parse_args()
+    bearer_token = f'Bearer {args.github_token}'
+
+    # gets the workflow status
+    status = get_workflow_status(bearer_token, workflow_id)
+
+    # initialize timer
+    start = time.time()
+    time.process_time()
+    elapsed = 0
+
+    # polling the workflow status while is in progress
+    while status in ['queued', 'in_progress'] and elapsed < TIMEOUT_THRESHOLD:
+        logging.info(f'Workflow {workflow_id} status is {status}')
+        time.sleep(10)
         status = get_workflow_status(bearer_token, workflow_id)
+        elapsed = time.time() - start
 
-        # initialize timer
-        start = time.time()
-        time.process_time()
-        elapsed = 0
+    if elapsed > TIMEOUT_THRESHOLD:
+        logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
+                      f' {WORKFLOW_HTML_URL}/{workflow_id}')
+        sys.exit(1)
 
-        # polling the workflow status while is in progress
-        while status in ['queued', 'in_progress'] and elapsed < TIMEOUT_THRESHOLD:
-            print(f'Workflow {workflow_id} status is {status}')
-            time.sleep(10)
-            status = get_workflow_status(bearer_token, workflow_id)
-            elapsed = time.time() - start
+    logging.info(f'Workflow {workflow_id} status is {status}')
+    if status != 'completed':
+        logging.error(
+            f'Private repo build failed,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
+        sys.exit(1)
 
-        if elapsed > TIMEOUT_THRESHOLD:
-            logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
-                          f' {WORKFLOW_HTML_URL}/{workflow_id}')
-            sys.exit(1)
-
-        print(f'Workflow {workflow_id} status is {status}')
-        if status != 'completed':
-            logging.error(
-                f'Private repo build failed,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
-            sys.exit(1)
-
-        print('Build private repo finished successfully')
-        sys.exit(0)
-
-    else:
-        print('Build private repo skipped')
-        sys.exit(0)
+    logging.info('Build private repo finished successfully')
+    sys.exit(0)
 
 
 if __name__ == "__main__":
