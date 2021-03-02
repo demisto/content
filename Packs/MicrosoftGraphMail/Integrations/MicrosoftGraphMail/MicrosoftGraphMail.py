@@ -1115,12 +1115,12 @@ def list_mails_command(client: MsGraphClient, args):
     odata = args.get('odata')
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
-    last_page_response = raw_response[len(raw_response)-1]
+    last_page_response = raw_response[len(raw_response) - 1]
     metadata = ''
     next_page = last_page_response.get('@odata.nextLink')
     if next_page:
         metadata = '\nPay attention there are more results than shown. For more data please ' \
-                               'increase "pages_to_pull" argument'
+                   'increase "pages_to_pull" argument'
 
     mail_context = build_mail_object(raw_response, user_id)
     entry_context = {}
