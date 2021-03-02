@@ -383,7 +383,7 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
     return context
 
 
-def get_prediction_for_incident():
+def main():
     max_indicators = int(demisto.args()['maxIncidentsInIndicatorsForWhiteList'])
     aggregate = demisto.args().get('aggregateIncidents')
     limit_nb_of_indicators = int(demisto.args()['minNumberOfIndicators'])
@@ -436,14 +436,12 @@ def get_prediction_for_incident():
     if indicators_types:
         indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
         if not indicators_related:
-            return_no_mututal_indicators_found_entry()
             return_no_similar_incident_found_entry("")
             return
     incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
     incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
     incidents_with_indicators_join.pop(incident_id, None)
     if not bool(incidents_with_indicators_join):
-        return_no_mututal_indicators_found_entry()
         return_no_similar_incident_found_entry("")
         return
 
@@ -504,4 +502,4 @@ def get_prediction_for_incident():
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
-    get_prediction_for_incident()
+    main()
