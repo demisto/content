@@ -60,4 +60,4 @@ runas: DBotWeakRole
 runonce: false
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.1
+fromversion: 6.1.0
