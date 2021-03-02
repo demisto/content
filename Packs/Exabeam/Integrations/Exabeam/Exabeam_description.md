@@ -1,8 +1,5 @@
 The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics and SOAR.
 
-Full documentation for this integration is available in the [reference docs](https://xsoar.pan.dev/docs/reference/integrations/exabeam).
-
-
 ### Authentication Methods
 
 In addition to the User Credentials authentication method, **Exabeam Cloud** users can authenticate using a **Cluster Authentication Token**. To authenticate with a Cluster Authentication Token, insert `__token` in the "Username" parameter, and the token itself in the "Password" parameter.

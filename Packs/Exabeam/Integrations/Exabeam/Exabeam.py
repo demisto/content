@@ -415,7 +415,8 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def remove_watchlist_items_request(self, watchlist_id: str, items: list, category: str = None) -> Dict:
+    def remove_watchlist_items_request(self, watchlist_id: str = None, items: list = None,
+                                       category: str = None) -> Dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to remove an item from
@@ -489,18 +490,10 @@ class Client(BaseClient):
                 (dict) The context table records update response.
         """
         params = {'sessionId': session_id} if session_id else {}
-
-        try:
-            records = []
-            for record_item in records_list:
-                record = record_item.split(':')
-                records.append({
-                    'key': record[0],
-                    'value': [] if key_only else record[1].split(';')
-                })
-        except IndexError:
-            raise ValueError('records argument is malformed.')
-        payload = {'records': records}
+        record_item_format = 'key' if key_only else 'key:value'
+        payload = {
+            'records': parse_context_table_records_list(records_list, fmt=record_item_format)
+        }
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/add'
 
@@ -525,19 +518,10 @@ class Client(BaseClient):
 
         params = {'sessionId': session_id} if session_id else {}
 
-        try:
-            records = []
-            for record_item in records_list:
-                # an example for a record structure in the argument: id:key:val1;val2
-                record = record_item.split(':')
-                records.append({
-                    'id': record[0],
-                    'key': record[1],
-                    'value': [] if key_only else record[2].split(';')
-                })
-        except IndexError:
-            raise ValueError('records argument is malformed.')
-        payload = {'records': records}
+        record_item_format = 'id:key' if key_only else 'id:key:value'
+        payload = {
+            'records': parse_context_table_records_list(records_list, fmt=record_item_format)
+        }
 
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/update'
 
@@ -562,13 +546,7 @@ class Client(BaseClient):
 
         params = {'sessionId': session_id} if session_id else {}
         payload = {
-            'records': [
-                {
-                    'id': record.split(':')[0],
-                    'key': ''
-                }
-                for record in records
-            ]
+            'records': parse_context_table_records_list(records, fmt='id', is_delete=True)
         }
         url_suffix = f'/api/setup/contextTables/{context_table_name}/changes/delete'
 
@@ -835,6 +813,34 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
             outputs.extend(activity_events)
 
     return outputs, human_readable
+
+
+def parse_context_table_records_list(records_list: list, fmt: str, is_delete: bool = False):
+    """ Parses records list given as an argument in context tables management commands.
+
+    Args:
+        records_list: The list of records
+        fmt: The format of each record, e.g. id:key:value
+        is_delete: Whether or not it is a delete request
+    Returns:
+        (list) The records, in request payload format.
+    """
+    records = []
+    for record_item in records_list:
+        record_item = record_item.split(':')
+        keys = fmt.split(':')
+        if len(keys) != len(record_item):
+            raise ValueError('records argument is malformed.')
+
+        record = {k: v for k, v in zip(keys, record_item)}
+        if is_delete:
+            record['key'] = ''
+        if record.get('value'):
+            record['value'] = record['value'].split(';')
+        elif record.get('value') == '':
+            record['value'] = []
+        records.append(record)
+    return records
 
 
 def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple[Any, Dict[str, Any]]:
