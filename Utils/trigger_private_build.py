@@ -19,7 +19,7 @@ PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
-GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/'
+GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/{:s}/jobs'
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
@@ -84,7 +84,6 @@ def main():
     branch_name = branch_name_reg.group(1)
 
     files = get_modified_files(branch_name)
-    files=['Tests/scripts/validate_index.py']
 
     if is_infrastructure_change(files):
         # get the workflows ids before triggering the build
