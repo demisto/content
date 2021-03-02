@@ -2370,7 +2370,7 @@ tasks:
       id: 3b1c5766-8c44-49e8-8860-53091bef6ab6
       version: -1
       name: domain
-      script: '|||domain'
+      script: 'ExpanseV2|||domain'
       type: regular
       iscommand: true
       brand: ""
