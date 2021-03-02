@@ -38,13 +38,13 @@ def get_modified_files(branch_name):
 
 
 def is_infrastructure_change(modified_files):
-    for file in modified_files:
-        if file in PRIVATE_BUILD_INFRA_SCRIPTS:
+    for infra_file in modified_files:
+        if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
 
-        path = os.path.dirname(file)
-        for dir_path in PRIVATE_BUILD_INFRA_FOLDERS:
-            if path.startswith(dir_path):
+        path = os.path.dirname(infra_file)
+        for infra_code_dir_path in PRIVATE_BUILD_INFRA_FOLDERS:
+            if path.startswith(infra_code_dir_path):
                 return True
     return False
 
@@ -55,7 +55,7 @@ def get_dispatch_workflows_ids(bearer_token, branch):
                        params={'branch': branch, 'event': 'repository_dispatch'},
                        verify=False)
     if res.status_code != 200:
-        logging.error(f'Failed to gets private repo workflows, request to '
+        logging.error(f'Failed to get private repo workflows, request to '
                       f'{GET_DISPATCH_WORKFLOWS_URL} failed with error: {str(res.content)}')
         sys.exit(1)
 
@@ -83,15 +83,15 @@ def main():
     branch_name_reg = re.search(r"\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    files = get_modified_files(branch_name)
+    modified_files = get_modified_files(branch_name)
 
-    if is_infrastructure_change(files):
+    if is_infrastructure_change(modified_files):
         # get the workflows ids before triggering the build
-        workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
+        pre_existing_workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                       'client_payload': {'commit_sha1': args.commit_sha1, 'is_infra_build': 'True'}}
+                   'client_payload': {'commit_sha1': args.commit_sha1, 'is_infra_build': 'True'}}
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
@@ -108,16 +108,16 @@ def main():
         for i in range(GET_WORKFLOWS_MAX_RETRIES):
             # wait 5 seconds and get the workflow ids again
             time.sleep(5)
-            workflow_ids_new = get_dispatch_workflows_ids(bearer_token, 'master')
+            workflow_ids_after_dispatch = get_dispatch_workflows_ids(bearer_token, 'master')
 
             # compare with the first workflows list to get the current id
-            workflow_ids_diff = [x for x in workflow_ids_new if x not in workflow_ids]
+            workflow_ids_diff = [x for x in workflow_ids_after_dispatch if x not in pre_existing_workflow_ids]
             if workflow_ids_diff:
                 break
 
         if len(workflow_ids_diff) == 1:
             workflow_id = workflow_ids_diff[0]
-            logging.info(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
+            logging.info(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
                          f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
             # write the workflow id to text file to use it in get_private_build_status.py

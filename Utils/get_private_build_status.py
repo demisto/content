@@ -82,7 +82,7 @@ def main():
         status, conclusion, step = get_workflow_status(bearer_token, workflow_id)
         elapsed = time.time() - start
 
-    if elapsed > GET_WORKFLOWS_TIMEOUT_THRESHOLD:
+    if elapsed >= GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
                       f' {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
