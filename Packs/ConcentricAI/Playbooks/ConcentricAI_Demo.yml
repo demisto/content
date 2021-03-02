@@ -1,7 +1,6 @@
 id: ConcentricAI Demo Playbook
 version: -1
 name: ConcentricAI Demo Playbook
-vcShouldKeepItemLegacyProdMachine: false
 description: This playbook will show how to handle a risk incident and fetch all appropriate
   file details with respect to it along with user details for the owner of the File.
 starttaskid: "0"

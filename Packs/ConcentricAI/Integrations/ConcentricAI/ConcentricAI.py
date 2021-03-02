@@ -640,8 +640,6 @@ def main() -> None:
         base_url=base_url,
         headers=QUERY_HEADERS,
         proxy=proxy)
-
-    # where is this printed ?
     
     try:
         # This is the call made when pressing the integration Test button.
