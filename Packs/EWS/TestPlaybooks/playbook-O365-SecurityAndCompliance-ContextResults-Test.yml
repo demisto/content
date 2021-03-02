@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -21,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -42,10 +41,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "2"
     scriptarguments:
       ' exchange_location_exclusion': {}
       allow_not_found_exchange_locations:
@@ -73,7 +71,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -84,10 +82,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a29f9a55-d82e-4019-8874-81ae8e42debc
+    taskid: 3b57f8af-4f25-4bd0-89b7-d1cc302b42ba
     type: condition
     task:
-      id: a29f9a55-d82e-4019-8874-81ae8e42debc
+      id: 3b57f8af-4f25-4bd0-89b7-d1cc302b42ba
       version: -1
       name: Validate Search Action Context Output
       description: Check whether the values provided in arguments are equal. If either
@@ -154,8 +152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 540
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -174,13 +172,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 50,
+          "y": 545
         }
       }
     note: false
