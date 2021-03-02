@@ -188,43 +188,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: a633298b-6366-4248-812b-ee663235756e
-    type: condition
-    task:
-      id: a633298b-6366-4248-812b-ee663235756e
-      version: -1
-      name: Check Wether To Validate Search Action Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
