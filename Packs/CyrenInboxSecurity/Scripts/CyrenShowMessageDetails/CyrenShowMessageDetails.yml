@@ -1,0 +1,24 @@
+comment: Converts cyren incident message details to formatted markdown.
+commonfields:
+  id: Cyren_ShowMessageDetails
+  version: -1
+dockerimage: demisto/python:2.7.18.15765
+enabled: true
+name: Cyren_ShowMessageDetails
+outputs:
+- contextPath: cyrenMessageDetails
+  description: Well-formed markdown of message details
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- incidents
+- dynamic-section
+- transformer
+timeout: 300ns
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,21 @@
+comment: Displays attachment details for an email
+commonfields:
+  id: Cyren_ShowAttachmentDetails
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: Cyren_ShowAttachmentDetails
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- incidents
+- dynamic-section
+- transformer
+timeout: 300ns
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

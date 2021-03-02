@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#fe5723",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Cyren",
+    "layout": "13939612-37b3-45c6-8c82-62424e9a644d",
+    "locked": false,
+    "name": "Cyren",
+    "playbookId": "Cyren Inbox Security Default Playbook",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}

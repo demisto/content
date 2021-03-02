@@ -1,0 +1,42 @@
+args:
+- description: the case id of incidents to return
+  name: case_id
+comment: Finds similar incidents by Cyren Case ID
+commonfields:
+  id: Cyren_FindSimilarIncidents
+  version: -1
+dockerimage: demisto/python:2.7.18.15765
+enabled: true
+name: Cyren_FindSimilarIncidents
+outputs:
+- contextPath: cyrenSimilarIncident.raw_id
+  description: Similar incident ID.
+  type: string
+- contextPath: cyrenIsSimilarIncidentFound
+  description: Whether a similar incident was found ("true" or "false").
+  type: boolean
+- contextPath: cyrenSimilarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: cyrenSimilarIncident.name
+  description: Similar incident name.
+  type: string
+- contextPath: cyrenSimilarIncidentList
+  description: an array if similar incidents
+- contextPath: cyrenSimilarIncidentCsv
+  description: comma separated raw ids
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- dedup
+- duplicate
+- incidents
+- dynamic-section
+timeout: 300ns
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

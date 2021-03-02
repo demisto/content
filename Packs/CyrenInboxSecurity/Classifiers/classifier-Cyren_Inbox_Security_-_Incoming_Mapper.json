@@ -1,0 +1,224 @@
+{
+    "description": "Maps incoming Cyren Inbox Security Incident fields.",
+    "feed": false,
+    "id": "640ba35c-51a1-4b63-86e3-27f01e7685f4",
+    "mapping": {
+        "Cyren": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "payload.incident_id"
+                },
+                "Cyren Case ID": {
+                    "complex": null,
+                    "simple": "payload.case_id"
+                },
+                "Cyren Confidence": {
+                    "complex": {
+                        "accessor": "confidence",
+                        "filters": [],
+                        "root": "payload",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "high"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External From Address": {
+                    "complex": null,
+                    "simple": "payload.message_details.is_external_from"
+                },
+                "Cyren External Reply To Address": {
+                    "complex": null,
+                    "simple": "payload.message_details.is_external_reply_to"
+                },
+                "Cyren Feedback": {
+                    "complex": null,
+                    "simple": "payload.feedback.[0].feedback_type"
+                },
+                "Cyren Feedback Details": {
+                    "complex": null,
+                    "simple": "payload.feedback.[0].details"
+                },
+                "Cyren Feedback Indicators": {
+                    "complex": {
+                        "accessor": "threat_indicators_type",
+                        "filters": [],
+                        "root": "payload.feedback",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Incident ID": {
+                    "complex": null,
+                    "simple": "payload.incident_id"
+                },
+                "Cyren Message Details": {
+                    "complex": {
+                        "accessor": "message_details",
+                        "filters": [],
+                        "root": "payload",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Reported By": {
+                    "complex": null,
+                    "simple": "payload.reported_by"
+                },
+                "Cyren Threat Indicators": {
+                    "complex": {
+                        "accessor": "threat_indicators",
+                        "filters": [],
+                        "root": "payload",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Threat Type": {
+                    "complex": null,
+                    "simple": "payload.threat_type"
+                },
+                "Cyren Type": {
+                    "complex": null,
+                    "simple": "payload.incident_type"
+                },
+                "Email From": {
+                    "complex": {
+                        "accessor": "from",
+                        "filters": [],
+                        "root": "payload.message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "address"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email In Reply To": {
+                    "complex": {
+                        "accessor": "reply_to",
+                        "filters": [],
+                        "root": "payload.message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "address"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Message ID": {
+                    "complex": null,
+                    "simple": "payload.message_details.internet_message_id"
+                },
+                "Email Subject": {
+                    "complex": null,
+                    "simple": "payload.message_details.email_subject"
+                },
+                "Email To": {
+                    "complex": null,
+                    "simple": "payload.message_details.targeted_employee.address"
+                },
+                "Email To Count": {
+                    "complex": {
+                        "accessor": "to_recipients",
+                        "filters": [],
+                        "root": "payload.message_details",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Hello World Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "complex": null,
+                    "simple": "name"
+                }
+            }
+        },
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "payload.incident_id"
+                }
+            }
+        }
+    },
+    "name": "Cyren Inbox Security - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

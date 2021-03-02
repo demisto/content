@@ -1,0 +1,132 @@
+category: Utilities
+commonfields:
+  id: Cyren Inbox Security
+  version: -1
+configuration:
+- additionalinfo: The endpoint  provided by your Cyren Representative.
+  defaultvalue: https://marketing.plutoserv.com
+  display: Server URL (e.g. https://marketing.plutoserv.com)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: The ID of the Feed provided by your Cyren Representative. Use "sample"
+    to try it out.
+  display: Feed ID
+  name: feed_id
+  required: true
+  type: 0
+- additionalinfo: The token provided by your Cyren Representative. Use "sample" to
+    try it out.
+  display: Token
+  name: token
+  required: true
+  type: 4
+- additionalinfo: This will limit the number of incidents that can be generated per
+    fetch..
+  defaultvalue: "10"
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Filter incidents created in XSOAR based upon their Cyren type. If
+    left blank, no inbound filtering is performed and all incidents are accepted.
+  defaultvalue: feedback
+  display: Incident Type
+  name: incident_types
+  options:
+  - feedback
+  - admin
+  - post_remediation
+  - notification
+  required: false
+  type: 16
+- additionalinfo: Filter incidents created in XSOAR based upon their Threat type.
+    If left blank, no inbound filtering is performed and all incidents are accepted.
+  display: Threat Type
+  name: threat_types
+  options:
+  - phishing
+  - malware
+  - bec
+  required: false
+  type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: A number (defaults to 0) to instruct where in the feed to begin
+    processing.
+  defaultvalue: "0"
+  display: First Fetch Offset
+  name: first_fetch
+  required: false
+  type: 0
+description: This Cyren integration imports incidents from Cyren Inbox Security into
+  Cortex XSOAR.
+display: Cyren Inbox Security
+name: Cyren Inbox Security
+script:
+  commands:
+  - arguments: []
+    description: return information for feed
+    name: cyreninboxsecurity-info
+  - arguments:
+    - description: The name of the instance to handle the request. Leave blank for
+        all instances.
+      name: instance_name
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: display verbose information when command executes
+      name: verbose
+      predefined:
+      - "yes"
+      - "no"
+    description: Simulates a fetch operation
+    name: cyreninboxsecurity-simulate-fetch
+  - arguments:
+    - default: true
+      description: URL to check
+      name: url
+      required: true
+      isArray: false
+    description: Checks the reputation of a URL.
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor reporting
+    - contextPath: URL.Malicious.Description
+      description: description of url reputation
+    - contextPath: DBotScore.Indicator
+      description: Indicator that was tested
+    - contextPath: DBotScore.Type
+      description: indicator type
+    - contextPath: DBotScore.Score
+      description: actual score
+    - contextPath: DBotScore.Vendor
+      description: vendor calculating score
+  - arguments: []
+    description: dump phishing url list
+    name: cyreninboxsecurity-dump-urls
+  dockerimage: demisto/python3:3.9.1.15759
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
