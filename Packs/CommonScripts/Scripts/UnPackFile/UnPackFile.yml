@@ -24,7 +24,7 @@ args:
     war room.
 outputs:
 - contextPath: ExtractedFiles
-  description: list of file names which extracted from package
+  description: List of file names which extracted from package.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/unrar:1.4

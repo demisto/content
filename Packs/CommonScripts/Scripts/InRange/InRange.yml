@@ -10,7 +10,7 @@ tags:
 - number
 comment: |-
   checks if left side is in range of right side (from,to anotation)
-  e.g. - InRange left=4right=1,8 will return true
+  e.g. - InRange left=4right=1,8 will return true.
 enabled: true
 args:
 - name: left
