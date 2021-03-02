@@ -1105,6 +1105,8 @@ def get_test_list_and_content_packs_to_install(files_string,
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
 
+    logging.info("Chanoch 3, tests: {0}".format(tests))
+
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
@@ -1144,6 +1146,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
+    logging.info("Chanoch 4, tests: {0}".format(tests))
 
     if not tests:
         logging.info("No tests found running sanity check only")
@@ -1291,8 +1294,10 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
+            logging.info("Chanoch 1, files_string: {0}".format(files_string))
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            logging.info("Chanoch 2, files_string: {0}".format(files_string))
             # Checks if the build is for contributor PR and if so add it's pack.
             if os.getenv('CONTRIB_BRANCH'):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
