@@ -48,7 +48,8 @@ def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) 
 
 
 class EntryFilter:
-    def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]], node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str]):
+    def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]],
+                 node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str]):
         """
         Initialize the filter with the matching conditions.
 
