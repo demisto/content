@@ -87,7 +87,9 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 500
         },
         {
             "integrations": "Majestic Million",
@@ -125,7 +127,8 @@
         },
         {
             "integrations": "AWS - Security Hub",
-            "playbookID": "AWS-securityhub Test"
+            "playbookID": "AWS-securityhub Test",
+            "timeout": 800
         },
         {
             "integrations": "Microsoft Advanced Threat Analytics",
@@ -844,6 +847,12 @@
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0"
         },
         {
@@ -1717,17 +1726,20 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
         },
         {
             "integrations": "Tanium",
@@ -2312,7 +2324,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
-            "memory_threshold": 100,
+            "memory_threshold": 200,
             "fromversion": "5.5.0"
         },
         {
@@ -3210,6 +3222,10 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "MicrosoftGraphIdentityandAccess",
+            "playbookID": "Identity & Access test playbook"
+        },
+        {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
             "playbookID": "Audit Log - Test"
         },
@@ -3220,6 +3236,13 @@
         {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test"
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v2",
+            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
         }
     ],
     "skipped_tests": {
@@ -3252,7 +3275,6 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
@@ -3268,7 +3290,6 @@
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
-        "AWS-securityhub Test": "Issue 29796",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
@@ -3286,8 +3307,6 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
-        "PAN-OS DAG Configuration Test": "Issue 19205",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
         "pyEWS_Test": "Issue 27942",
@@ -3303,12 +3322,12 @@
         "Field polling test": "Issue 33951"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
-        "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
@@ -3378,19 +3397,19 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3401,8 +3420,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "TAXIIFeed": "Until next SDK release, fix for build will be issued there."
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3410,13 +3428,13 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "EwsExtension": "Powershell does not support proxy",
+        "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
-        "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
-        "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
@@ -3427,11 +3445,8 @@
         "XsoarPowershellTesting": "Integration which not use network.",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
-        "AWS - Security Hub": "Issue 24926",
         "SecurityAndCompliance": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
-        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
@@ -3475,21 +3490,13 @@
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
-        "Microsoft Graph": "Test direct access to oproxy",
-        "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Azure Security Center v2": "Test direct access to oproxy",
-        "Microsoft Graph Calendar": "Test direct access to oproxy",
-        "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3512,8 +3519,7 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected.",
-        "Rapid7 Nexpose": "Test playbook (nexpose_test) downloads a file"
+        "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
         "AWS - EC2",
@@ -3562,11 +3568,10 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "AWS - Security Hub",
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
