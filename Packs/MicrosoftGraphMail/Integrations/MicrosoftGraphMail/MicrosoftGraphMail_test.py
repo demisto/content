@@ -122,7 +122,8 @@ def test_list_mails_command(mocker, client):
         mocker.patch.object(demisto, 'results')
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
-        assert '### Total of 2 mails received' in hr
+        assert '2 mails received \nPay attention there are more results than shown. For more data please ' \
+               'increase "pages_to_pull" argument' in hr
 
     # call list mails with no emails
     with open('test_data/no_mails') as mail_json:
