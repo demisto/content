@@ -11,6 +11,7 @@ This integration was integrated and tested with version 1.6.4 of CyberTotal
 | url | CyberTotal URL | True |
 | token | CyberTotal API Token | True |
 | feed | Fetch indicators | False |
+| integrationReliability | Source Reliability | True |
 | threshold_ip | Bad ip threshold | False |
 | threshold_file | Bad hash threshold | False |
 | threshold_domain | Bad domain threshold | False |
