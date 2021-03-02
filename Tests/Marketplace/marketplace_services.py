@@ -427,6 +427,8 @@ class Pack(object):
 
             for dependency_integration in dependency_integration_images:
                 dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_integration['name'] = Pack.remove_contrib_suffix_from_name(
+                    dependency_integration.get('name', ''))
                 dependency_pack_name = os.path.basename(
                     os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
 
