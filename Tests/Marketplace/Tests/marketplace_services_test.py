@@ -393,7 +393,7 @@ class TestParsingInternalFunctions:
                - Empty pack_integration_images, empty display_dependencies_images
                - Empty pack_integration_images, display_dependencies_images with one pack
                - pack_integration_images with DummyIntegration, display_dependencies_images DummyPack1 and DummyPack2
-               - pack_integration_images with DummyIntegration2 without contribution detauils suffix,
+               - pack_integration_images with DummyIntegration2 without contribution details suffix,
                  display_dependencies_images DummyPack2
 
            When:
