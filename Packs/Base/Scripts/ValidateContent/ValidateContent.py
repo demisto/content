@@ -14,7 +14,6 @@ from typing import Callable, List, Tuple
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.content import Content
-from demisto_sdk.commands.common.content.objects.pack_objects.pack import Pack
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
@@ -68,14 +67,6 @@ def content_item_to_package_format(
                 self.contrib_conversion_errs.append(err_msg)
             if del_unified:
                 os.remove(content_item_file_path)
-
-
-def format_converted_pack(self) -> None:
-    """Runs the demisto-sdk's format command on the pack converted from the contribution zipfile"""
-    from_version = '6.0.0' if self.create_new else ''
-    format_manager(
-        input=self.pack_dir_path, from_version=from_version, no_validate=True, update_docker=True, assume_yes=True
-    )
 
 
 def convert_contribution_to_pack(contrib_converter: ContributionConverter) -> None:
@@ -186,14 +177,7 @@ def validate_content(filename, data, tmp_directory: str) -> List:
         convert_contribution_to_pack(contrib_converter)
         # Call the standalone function and get the raw response
         os.remove(zip_path)
-        pack_path = contrib_converter.pack_dir_path
-        pack_entity = Pack(pack_path)
-        for content_entities in pack_entity.scripts, pack_entity.integrations:
-            for content_entity in content_entities:
-                buff = io.StringIO()
-                yaml.dump(content_entity.to_dict(), buff)
-                content_entity.path.write_text(buff.getvalue())
-        path_to_validate = pack_path
+        path_to_validate = contrib_converter.pack_dir_path
     else:
         # a single content item
         pack_name = 'TmpPack'
