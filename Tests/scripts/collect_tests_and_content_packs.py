@@ -228,6 +228,7 @@ def collect_tests_and_content_packs(
                                 command_to_integration.get(command) == integration_id:
                             detected_usage = True
                             tests_set.add(test_playbook_id)
+                            logging.info("hello hello, command_to_integration: {0}, integration_id: {1}".format(command_to_integration[command], integration_id))
                             logging.info("hello 2, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
                             logging.info("hello 222, integration_to_command: {0}".format(integration_to_command))
                             catched_intergrations.add(integration_id)
