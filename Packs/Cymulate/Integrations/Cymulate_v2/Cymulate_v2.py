@@ -209,7 +209,7 @@ class Client(BaseClient):
         response = response.get('payloads') if response else response
         return response
 
-    def get_events_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
+    def get_simulations_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
         """ Retrieves all event data."""
         return self._http_request(method='GET',
                                   url_suffix=f'{endpoint}/history/technical/{attack_id}',
@@ -558,6 +558,7 @@ def event_status_changed(event: dict) -> bool:
 
 def build_incident_dict(event: dict, module_name: str, event_timestamp=None) -> dict:
     """ Helper function for fetch incident that builds the incidents.
+
     Args:
         event (dict): Event dictionary.
         module_name (str): Module name.
@@ -1467,35 +1468,78 @@ def list_agents_command(client: Client) -> CommandResults:
     return command_results
 
 
-def list_events_command(client: Client, module: str, attack_id: str):
-    """ Retrieve a list of all events by ID.
+def list_attack_simulations_command(client: Client, module: str, from_date: str,
+                                    to_date: str = None) -> CommandResults:
+    """ Retrieve a list of all simulations IDs.
 
     Args:
         client (Client): Cymulate client.
-        module (str): Module to retrieve events to.
+        module (str): Module to retrieve simulations IDs to.
+        from_date (str): From which date to fetch data.
+        to_date (str): End date to fetch data. If no argument is given, default is now.
+
+    Returns:
+        CommandResults: A CommandResults object that is then passed to 'return_results',
+                        containing the list of all module simulations from a specific ID.
+    """
+    outputs = []
+    raw_response = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module), from_date, to_date)
+    num_simulations_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
+
+    if raw_response:
+        for simulation_id_data in raw_response:
+            data = simulation_id_data
+            data['Timestamp'] = str(parse_date_string(simulation_id_data.get('Timestamp')))
+            outputs.append(data)
+
+    readable_output = tableToMarkdown(f"Displaying {num_simulations_to_display}/{len(raw_response)}"
+                                      f" Attack IDs:",
+                                      outputs[:num_simulations_to_display])
+
+    command_results = CommandResults(
+        outputs_prefix='Cymulate.Simulations',
+        outputs_key_field='ID',
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=raw_response
+    )
+    return command_results
+
+
+def list_simulations_command(client: Client, module: str, attack_id: str):
+    """ Retrieve a list of all simulations by ID.
+
+    Args:
+        client (Client): Cymulate client.
+        module (str): Module to retrieve simulations to.
         attack_id (str): Attack ID.
 
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
-                        containing the list of all module events from a specific ID.
+                        containing the list of all module simulations from a specific ID.
     """
     outputs = []
-    raw_response = client.get_events_by_id(ENDPOINT_DICT.get(module), attack_id).get('data')
-    num_events_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
+    raw_response = client.get_simulations_by_id(ENDPOINT_DICT.get(module), attack_id)
+
+    raw_response = raw_response.get('data')
+    num_simulations_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
 
     if raw_response:
-        outputs = raw_response[:num_events_to_display]
+        outputs = raw_response
+        # Adding the attack ID to the simulation data.
+        for simulation in outputs:
+            simulation['Id'] = attack_id
 
-    readable_output = tableToMarkdown(f"Displaying {num_events_to_display}/{len(raw_response)} "
-                                      f"Events:",
-                                      outputs,
+    readable_output = tableToMarkdown(f"Displaying {num_simulations_to_display}/{len(raw_response)}"
+                                      f" simulations:",
+                                      outputs[:num_simulations_to_display],
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.Events',
-        outputs_key_field='',
+        outputs_prefix='Cymulate.Simulations',
+        outputs_key_field='Id',
         readable_output=readable_output,
-        outputs=raw_response,
+        outputs=outputs,
         raw_response=raw_response
     )
     return command_results
@@ -1628,8 +1672,11 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif command == 'cymulate-events-list':
-            return_results(list_events_command(client, **demisto.args()))
+        elif command == 'cymulate-simulations-id-list':
+            return_results(list_attack_simulations_command(client, **demisto.args()))
+
+        elif command == 'cymulate-simulations-list':
+            return_results(list_simulations_command(client, **demisto.args()))
 
         # exfiltration
         elif command == 'cymulate-exfiltration-template-list':

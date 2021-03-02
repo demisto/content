@@ -1618,3 +1618,161 @@ There are no input arguments for this command.
 >| James  | http | James |
 >| Bill-MacBook-Pro  | http | Bill-MacBook-Pro |
 
+
+### cymulate-simulations-list
+***
+Retrieve a list of all simulations by ID.
+
+
+#### Base Command
+
+`cymulate-simulations-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| module | Module to retrieve events to. Possible values are: web-gateway, exfiltration, email-gateway, endpoint-security, waf, kill-chain, immediate-threats, phishing-awareness, lateral-movement. | Required | 
+| attack_id | Attack ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cymulate.Simulations.Attack_Type | String | Attack payload | 
+| Cymulate.Simulations.Classification | String | Attack classification. | 
+| Cymulate.Simulations.Content_Type | String | Content type. | 
+| Cymulate.Simulations.Module | String | Event's module. | 
+| Cymulate.Simulations.Phrase | String | Attack description. | 
+| Cymulate.Simulations.Phrase_Title | String | Attack name. | 
+| Cymulate.Simulations.Status | String | Attack status | 
+| Cymulate.Simulations.PrevStatus | String | Attack Previous status | 
+| Cymulate.Simulations.Risk | String | Attack risk level. | 
+| Cymulate.Simulations.Source | String | Attack Source | 
+| Cymulate.Simulations.User | String | User committed the attack ot was attacked. | 
+| Cymulate.Simulations.Attack_Vector | String | Attack vector | 
+| Cymulate.Simulations.Source_Email_Address | String | Source email address. | 
+| Cymulate.Simulations.Md5 | String | MD5 attached to the attack. | 
+| Cymulate.Simulations.Sha256 | String | Sha256 attached to the attack. | 
+| Cymulate.Simulations.Sha1 | String | Sha1 attached to the attack. | 
+| Cymulate.Simulations.Mitigation | String | Mitigation details. | 
+| Cymulate.Simulations.Mitigation_Details | String | Mitigation details. | 
+| Cymulate.Simulations.Description | String | Attack description | 
+| Cymulate.Simulations.Id | String | Attack ID. | 
+
+
+#### Command Example
+```!cymulate-simulations-list module="waf" attack_id="603ba9adc3d4b76ab14dda28"```
+
+#### Context Example
+```json
+{
+    "Cymulate": {
+        "Simulations": {
+            "Action": "http://cymulatelabs.com/",
+            "Category": "SQL Injection",
+            "Database": "DB Agnostic",
+            "Display_Url": "http://cymulatelabs.com/",
+            "FullRequest": "N/A",
+            "Id": "603ba9adc3d4b76ab14dda28",
+            "Input": "password",
+            "Method": "post",
+            "Mitigation": "Create a WAF Security rule to block incoming requests that contains:; if not((select serverproperty('isintegratedsecurityonly')) <> 0) waitfor delay '0:0:2' --.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Blind signature pack (SQL Injection)",
+            "Module": "Web Application Firewall",
+            "Payload": "; if not((select serverproperty('isintegratedsecurityonly')) <> 0) waitfor delay '0:0:2' --",
+            "Platform": "OS Agnostic",
+            "PrevStatus": "blocked",
+            "Risk": "high",
+            "Source": "http://cymulatelabs.com",
+            "Status": "blocked",
+            "SubCategoryType": "MSSQL Blind",
+            "Timestamp": "2021-02-28 16:33:41",
+            "Url": "http://cymulatelabs.com/",
+            "date": "2021-02-28T14:33:41.559Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Displaying 20/193 simulations:
+>|Action|Category|Database|Display_Url|FullRequest|Id|Input|Method|Mitigation|Module|Payload|Platform|PrevStatus|Risk|Source|Status|SubCategoryType|Timestamp|Url|date|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(table_name) FROM (SELECT DISTINCT(table_name), ROWNUM AS LIMIT FROM sys.all_tables) WHERE LIMIT=3)) AND 'i'='i.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(table_name) FROM (SELECT DISTINCT(table_name), ROWNUM AS LIMIT FROM sys.all_tables) WHERE LIMIT=3)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.475Z |
+>| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:1) or benchmark(10000000,MD5(1))#.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | 1) or benchmark(10000000,MD5(1))# | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.476Z |
+>| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | 603ba9adc3d4b76ab14dda28 | tel | post | Create a WAF Security rule to block incoming requests that contains:1' and non_existant_table = '1.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | 1' and non_existant_table = '1 | OS Agnostic | blocked | high | http://Google.com | blocked | General SQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.478Z |
+>| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:' or 1=1 /*.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1 /* | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.478Z |
+>| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:' group by userid having 1=1--.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' group by userid having 1=1-- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.476Z |
+>| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | 603ba9adc3d4b76ab14dda28 | tel | post | Create a WAF Security rule to block incoming requests that contains:) waitfor delay '0:0:20' /*.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ) waitfor delay '0:0:20' /* | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.479Z |
+>| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:' or 1=1--.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' or 1=1-- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.481Z |
+>| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | 603ba9adc3d4b76ab14dda28 | hidden | post | Create a WAF Security rule to block incoming requests that contains:' OR 'something' like 'some%'.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' OR 'something' like 'some%' | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.480Z |
+>| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:' union select * from users where login = char(114,111,111,116);.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' union select * from users where login = char(114,111,111,116); | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.481Z |
+>| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:' AND 1=utl_inaddr.get_host_address((SELECT SYS.DATABASE_NAME FROM DUAL)) AND 'i'='i.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the General SQL Injection signature pack (SQL Injection) | Web Application Firewall | ' AND 1=utl_inaddr.get_host_address((SELECT SYS.DATABASE_NAME FROM DUAL)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | General SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.479Z |
+>| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:;waitfor delay '0:0:__TIME__'--.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ;waitfor delay '0:0:__TIME__'-- | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.480Z |
+>| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:waitfor delay '0:0:20' /*.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | waitfor delay '0:0:20' /* | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.481Z |
+>| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:1or1=1.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | 1or1=1 | OS Agnostic | blocked | high | http://Google.com | blocked | Mysql Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.483Z |
+>| http://Google.com/team/dudi | SQL Injection | DB Agnostic | http://Google.com/team/dudi | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:) or sleep(__TIME__)='.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Generic Blind Injection signature pack (SQL Injection) | Web Application Firewall | ) or sleep(__TIME__)=' | OS Agnostic | blocked | high | http://Google.com | blocked | Generic Blind Injection | 2021-02-28 16:33:41 | http://Google.com/team/dudi | 2021-02-28T14:33:41.483Z |
+>| http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | SQL Injection | DB Agnostic | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains: @var select @var as var into temp end --.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Passive SQL Injection signature pack (SQL Injection) | Web Application Firewall |  @var select @var as var into temp end -- | OS Agnostic | blocked | high | http://Google.com | blocked | Passive SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/%d7%94%d7%9e%d7%a8%d7%a4%d7%90%d7%95%d7%aa-%d7%a9%d7%9c%d7%a0%d7%95 | 2021-02-28T14:33:41.485Z |
+>| http://Google.com/team/ruba | SQL Injection | DB Agnostic | http://Google.com/team/ruba | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(granted_role) FROM (SELECT DISTINCT(granted_role), ROWNUM AS LIMIT FROM dba_role_privs WHERE GRANTEE=SYS.LOGINUSER) WHERE LIMIT=1)) AND 'i'='i.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Oracle SQL Injection signature pack (SQL Injection) | Web Application Firewall | AND 1=utl_inaddr.get_host_address((SELECT DISTINCT(granted_role) FROM (SELECT DISTINCT(granted_role), ROWNUM AS LIMIT FROM dba_role_privs WHERE GRANTEE=SYS.LOGINUSER) WHERE LIMIT=1)) AND 'i'='i | OS Agnostic | blocked | high | http://Google.com | blocked | Oracle SQL Injection | 2021-02-28 16:33:41 | http://Google.com/team/ruba | 2021-02-28T14:33:41.482Z |
+>| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:create table myfile (input TEXT); load data infile '<filepath>' into table myfile; select * from myfile;.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the Mysql Injection signature pack (SQL Injection) | Web Application Firewall | create table myfile (input TEXT); load data infile '<filepath>' into table myfile; select * from myfile; | OS Agnostic | blocked | high | http://Google.com | blocked | Mysql Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.484Z |
+>| http://Google.com/contact | SQL Injection | DB Agnostic | http://Google.com/contact | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:and 0=benchmark(3000000,MD5(1))%20/*.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | and 0=benchmark(3000000,MD5(1))%20/* | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/contact | 2021-02-28T14:33:41.486Z |
+>| http://Google.com/ | SQL Injection | DB Agnostic | http://Google.com/ | N/A | 603ba9adc3d4b76ab14dda28 | tel | post | Create a WAF Security rule to block incoming requests that contains:; exec master..xp_cmdshell 'ping 10.10.1.2'--.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | ; exec master..xp_cmdshell 'ping 10.10.1.2'-- | OS Agnostic | blocked | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/ | 2021-02-28T14:33:41.485Z |
+>| http://Google.com/signup | SQL Injection | DB Agnostic | http://Google.com/signup | N/A | 603ba9adc3d4b76ab14dda28 | password | post | Create a WAF Security rule to block incoming requests that contains:insert into mysql.user (user, host, password) values ('name', 'localhost', password('pass123')) --.The rule could be a Regular expression that needs to be implemented or an update of your WAF.Validate that the specific input/url is protected with the MSSQL Injection signature pack (SQL Injection) | Web Application Firewall | insert into mysql.user (user, host, password) values ('name', 'localhost', password('pass123')) -- | OS Agnostic | N/A | high | http://Google.com | blocked | MSSQL Injection | 2021-02-28 16:33:41 | http://Google.com/signup | 2021-02-28T14:33:41.487Z |
+
+
+### cymulate-simulations-id-list
+***
+Retrieve a list of all simulations IDs.
+
+
+#### Base Command
+
+`cymulate-simulations-id-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| module | Module to retrieve simulations IDs to. Possible values are: web-gateway, exfiltration, email-gateway, endpoint-security, waf, kill-chain, immediate-threats, phishing-awareness, lateral-movement. | Required | 
+| from_date | From which date to fetch data. format: year-month-day. For example: March 1st 2021 should be written: 2021-03-1. . | Required | 
+| to_date | End date to fetch data. If no argument is given, default is now. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cymulate.Simulations.ID | String | Attack ID. | 
+| Cymulate.Simulations.Timestamp | String | Attack timestamp | 
+| Cymulate.Simulations.Agent | String | Agent connected to the attack. | 
+| Cymulate.Simulations.Template | String | Attack template. | 
+
+
+#### Command Example
+```!cymulate-simulations-id-list module="kill-chain" from_date="2021-01-01"```
+
+#### Context Example
+```json
+{
+    "Cymulate": {
+        "Simulations": {
+            "Agent": "",
+            "ID": "6008718952736b3ce9623b79",
+            "Template": "fdsf",
+            "Timestamp": "2021-01-20 18:08:09.565000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Displaying 6/6 Attack IDs:
+>|Agent|ID|Template|Timestamp|
+>|---|---|---|---|
+>| LAPTOP-L839VER5 | 603cbedea873f53d0c81a734 | Cobalt Group | 2021-03-01 10:15:58.230000 |
+>| LAPTOP-L839VER5 | 6037d6c1c3d4b76ab14cc40d | Cobalt Group | 2021-02-25 16:56:33.871000 |
+>| info@cymulate.com | 6034e062b862ca5d6ad4af79 | Cobalt Group | 2021-02-23 11:00:50.988000 |
+>|  | 60087ac9d60eab3c5222c095 | fdsf | 2021-01-20 18:47:37.452000 |
+>|  | 60087a176b52e55f393cf584 | fdsf | 2021-01-20 18:44:39.469000 |
+>|  | 6008718952736b3ce9623b79 | fdsf | 2021-01-20 18:08:09.565000 |

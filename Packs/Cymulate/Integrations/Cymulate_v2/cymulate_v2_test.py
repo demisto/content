@@ -235,6 +235,26 @@ def test_cymulate_get_phishing_awareness_contact_group_command(mocker):
     assert result[0].get('lastName') == 'Bonds'
 
 
+def test_list_attack_simulations_command(mocker):
+    from Cymulate_v2 import list_attack_simulations_command
+    mocked_client = mocker.Mock()
+    mocked_client.list_attack_ids_by_date.return_value = util_load_json('list_attack_simulation_ids.json').get('data')
+    result = list_attack_simulations_command(mocked_client, 'kill-chain', '2021-01-01').outputs
+    assert len(result) == 3
+    assert result[0].get('ID') == 'id_12345'
+    assert result[0].get('Agent') == 'LAPTOP-1'
+    assert result[0].get('Template') == 'Cy Group'
+
+
+def test_attack_simulations_command(mocker):
+    from Cymulate_v2 import list_simulations_command
+    mocked_client = mocker.Mock()
+    mocked_client.get_simulations_by_id.return_value = util_load_json('list__attack_simulation.json')
+    result = list_simulations_command(mocked_client, 'kill-chain', 'id-123').outputs
+    assert len(result) == 3
+    assert result[0].get('Module') == 'Web Application Firewall'
+
+
 def test_cymulate_create_phishing_awareness_contact_group_command(mocker):
     from Cymulate_v2 import add_phishing_awareness_contact_groups_command
     mocked_client = mocker.Mock()

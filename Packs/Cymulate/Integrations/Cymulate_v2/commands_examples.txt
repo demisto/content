@@ -33,4 +33,5 @@
 !cymulate-phishing-awareness-contacts-get group_id="5d7f43b497177063b8ceff92"
 !cymulate-phishing-awareness-contacts-group-create group_name="Qmasters_group_02"
 
-!cymulate-events-list module="exfiltration" attack_id="6034ba727dad170cf31dcab3"
+!cymulate-simulations-id-list module="kill-chain" from_date="2021-01-01"
+!cymulate-simulations-list module="waf" attack_id="603ba9adc3d4b76ab14dda28"
