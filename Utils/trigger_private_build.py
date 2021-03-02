@@ -22,6 +22,8 @@ WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
 
 PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
+GET_WORKFLOWS_MAX_RETRIES = 3
+
 
 def get_modified_files(branch_name):
     files = []
@@ -80,6 +82,7 @@ def main():
     branch_name = branch_name_reg.group(1)
 
     files = get_modified_files(branch_name)
+    files=['Tests/scripts/validate_index.py']
 
     if is_infrastructure_change(files):
         # get the workflows ids before triggering the build
@@ -101,14 +104,19 @@ def main():
                           f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
             sys.exit(1)
 
-        # wait 5 seconds and get the workflow ids again
-        time.sleep(5)
-        workflow_ids_new = get_dispatch_workflows_ids(bearer_token, 'master')
+        workflow_ids_diff = []
+        for i in range(GET_WORKFLOWS_MAX_RETRIES):
+            # wait 5 seconds and get the workflow ids again
+            time.sleep(5)
+            workflow_ids_new = get_dispatch_workflows_ids(bearer_token, 'master')
 
-        # compare with the first workflows list to get the current id
-        workflow_id = [x for x in workflow_ids_new if x not in workflow_ids]
-        if workflow_id:
-            workflow_id = workflow_id[0]
+            # compare with the first workflows list to get the current id
+            workflow_ids_diff = [x for x in workflow_ids_new if x not in workflow_ids]
+            if workflow_ids_diff:
+                break
+
+        if len(workflow_ids_diff) == 1:
+            workflow_id = workflow_ids_diff[0]
             logging.info(f'Build private repo triggered successfully, workflow id: {workflow_id}\n URL:'
                          f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
@@ -116,6 +124,10 @@ def main():
             with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:
                 f.write(str(workflow_id))
             sys.exit(0)
+
+        else:
+            logging.error('Could not found the private repo workflow')
+            sys.exit(1)
 
     else:
         logging.info('Build private repo skipped')
