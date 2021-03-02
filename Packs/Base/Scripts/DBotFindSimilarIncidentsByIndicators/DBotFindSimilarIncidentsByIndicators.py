@@ -346,8 +346,9 @@ def display(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], ag
     similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
     similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
     similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
-        lambda _ids: '\n'.join([indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in
-                                _ids.split(',')]))  # type: ignore
+        lambda _ids: '\n'.join(
+            [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
+             _ids.split(',')]))  # type: ignore
     similar_incidents = similar_incidents[['ID', 'id', 'Identical indicators', 'similarity indicators']]
     # if aggregate == 'True':
     #     demisto.results(json.dumps(similar_incidents.columns.tolist()))
@@ -363,7 +364,7 @@ def display(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], ag
     return similar_incidents.head(max_incidents_to_display)
 
 
-def return_no_similar_incident_found_entry(hr_):
+def return_no_similar_incident_found_entry():
     hr = '### No Similar indicators' + '\n'
     hr += 'No Similar indicators were found.'
     return_outputs(readable_output=hr, outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()})
@@ -413,7 +414,7 @@ def main():
         indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
     if len(indicators) < limit_nb_of_indicators:
         return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry("Number of indicators found is less then minNumberOfIndicators")
+        return_no_similar_incident_found_entry()
         return
     if debug == 'True':
         demisto.results("Indicators found for the incident")
@@ -427,7 +428,7 @@ def main():
     incident_ids = [x for x in incident_ids if not p.match(x)]
     if not incident_ids:
         return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry("")
+        return_no_similar_incident_found_entry()
         return
     return_indicator_entry(incident_ids, indicators_types, indicators)
 
@@ -436,13 +437,13 @@ def main():
     if indicators_types:
         indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
         if not indicators_related:
-            return_no_similar_incident_found_entry("")
+            return_no_similar_incident_found_entry()
             return
     incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
     incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
     incidents_with_indicators_join.pop(incident_id, None)
     if not bool(incidents_with_indicators_join):
-        return_no_similar_incident_found_entry("")
+        return_no_similar_incident_found_entry()
         return
 
     incidents_df = pd.DataFrame.from_dict(incidents_with_indicators_join, orient='index')
@@ -469,8 +470,9 @@ def main():
 
     # Display
     incident_df['Indicators'] = incident_df['indicators'].apply(
-        lambda _ids: '\n'.join([indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in
-                                _ids.split(' ')]))  # type: ignore
+        lambda _ids: '\n'.join(
+            [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
+             _ids.split(' ')]))  # type: ignore
     similar_incidents = display(similar_incidents, indicators_map, aggregate, threshold, max_incidents_to_display)
     similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display)
 

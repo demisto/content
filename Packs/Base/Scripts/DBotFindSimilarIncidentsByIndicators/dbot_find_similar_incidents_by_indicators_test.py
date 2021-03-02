@@ -1,7 +1,7 @@
 import pandas as pd
 # from CommonServerPython import *
 # import pytest
-from DbotPredictSimilarEventsIndicators import identity_score, match_indicators_incident, get_indicators_map, Tfidf, \
+from DBotFindSimilarIncidentsByIndicators import identity_score, match_indicators_incident, get_indicators_map, Tfidf, \
     get_number_of_invs_for_indicators
 
 TRANSFORMATION = {
