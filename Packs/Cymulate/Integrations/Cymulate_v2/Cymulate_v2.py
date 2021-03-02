@@ -443,7 +443,7 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
 
         # The current event is new (has new name), then we need to build a new incident.
         else:
-            if event_counter >= MAX_INCIDENTS_TO_FETCH:
+            if event_counter >= min(MAX_INCIDENTS_TO_FETCH, int(demisto.params().get('max_fetch'))):
                 break
 
             # Incrementing the event offset, regardless of whether new incident will be created.
@@ -1483,6 +1483,9 @@ def list_attack_simulations_command(client: Client, module: str, from_date: str,
                         containing the list of all module simulations from a specific ID.
     """
     outputs = []
+    if not validate_timestamp(from_date) or (to_date and not validate_timestamp(to_date)):
+        raise ValueError("Wrong date format. Year-Month-Day, for example: March 1st 2021 should be"
+                         " written: 2021-03-01.")
     raw_response = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module), from_date, to_date)
     num_simulations_to_display = min(MAX_EVENTS_TO_DISPLAY, len(raw_response))
 

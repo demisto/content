@@ -35,7 +35,10 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
+- additionalinfo: Maximal number of incidents to fetch. Max value can be no grater
+    than 35.
+  defaultvalue: '35'
+  display: Max Fetch
   name: max_fetch
   required: false
   type: 0
@@ -754,8 +757,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'From which date to fetch data. format: year-month-day. For example:
-        March 1st 2021 should be written: 2021-03-1. '
+      description: 'From which date to fetch data. format: Year-Month-Day, for example:
+        March 1st 2021 should be written: 2021-03-01. '
       isArray: false
       name: from_date
       required: true
