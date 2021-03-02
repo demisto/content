@@ -21,7 +21,7 @@ For more details about the authentication used in this integration, see [Microso
 
 ## Limitations
 --
-Due to an api limitation, **microsoft-atp-get-machines** command can return maximum of 10,000 results.
+Due to a limitation of the API, the **microsoft-atp-get-machines** command can return a maximum of 10,000 results.
 
 ### Required Permissions
 * AdvancedQuery.Read.All - Application
