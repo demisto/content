@@ -643,6 +643,7 @@ class Pack(object):
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
             pack_metadata['partnerId'] = user_metadata.get('partnerId')
+            pack_metadata['vendorName'] = user_metadata.get('vendorName')
             pack_metadata['partnerName'] = user_metadata.get('partnerName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
