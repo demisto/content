@@ -641,7 +641,7 @@ class Pack(object):
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
         if 'partnerId' in user_metadata:
             pack_metadata['premium'] = True
-            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
             pack_metadata['partnerId'] = user_metadata.get('partnerId')
             pack_metadata['partnerName'] = user_metadata.get('partnerName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
