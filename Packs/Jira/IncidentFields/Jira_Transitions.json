@@ -9,8 +9,8 @@
  "closeForm": false,
  "editForm": true,
  "required": false,
- "script": "a80e5f96-dc66-468e-8b2c-f3dab0e70670",
- "fieldCalcScript": "fb9b9127-315e-4a3d-8cc2-69c709ea4dc0",
+ "script": "script-JiraChangeTransition",
+ "fieldCalcScript": "script-JiraListTransition",
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
