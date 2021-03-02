@@ -259,12 +259,12 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
         {
             'file': 'demistomock.py',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.py',
-            'content_path': 'Test/demistomock',
+            'content_path': 'Tests/demistomock',
         },
         {
             'file': 'demistomock.ps1',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.ps1',
-            'content_path': 'Test/demistomock',
+            'content_path': 'Tests/demistomock',
         },
         {
             'file': 'tox.ini',
