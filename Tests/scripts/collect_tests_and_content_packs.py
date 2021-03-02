@@ -340,6 +340,8 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     playbook_names = set([])
     integration_ids = set([])
 
+    logging.info("Chanoch 111, modified_files: {0}".format(modified_files))
+
     tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
@@ -482,6 +484,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (tools.get_from_version(file_path), tools.get_to_version(file_path))
+            logging.info("Chanoch 222, playbook_name: {0}".format(name))
 
         elif collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
             _id = tools.get_script_or_integration_id(file_path)
