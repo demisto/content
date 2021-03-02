@@ -19,6 +19,10 @@ For more details about the authentication used in this integration, see [Microso
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
 
+## Limitations
+--
+Due to an api limitation, **microsoft-atp-get-machines** command can return maximum of 10,000 results.
+
 ### Required Permissions
 * AdvancedQuery.Read.All - Application
 * Alert.ReadWrite.All - Application
