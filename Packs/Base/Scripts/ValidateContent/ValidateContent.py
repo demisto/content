@@ -328,7 +328,7 @@ def main():
             del os.environ['HTTPS_PROXY']
             del os.environ['http_proxy']
             del os.environ['https_proxy']
-        verify_ssl = args.get('trust_any_certificate') != 'yes'
+        verify_ssl = argToBoolean(args.get('trust_any_certificate'))
 
         content_repo = git.Repo.init(content_tmp_dir.name)
         content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
