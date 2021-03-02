@@ -172,10 +172,10 @@ tasks:
       name: cisco-stealthwatch-list-security-events-initialize
       description: Initialize listing security events for a domain (called Tenant
         on the API)
-      script: cisco_stealthwatch|||cisco-stealthwatch-list-security-events-initialize
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-initialize
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "8"
@@ -208,10 +208,10 @@ tasks:
       version: -1
       name: cisco-stealthwatch-list-security-events-status
       description: List security events status
-      script: cisco_stealthwatch|||cisco-stealthwatch-list-security-events-status
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-status
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "6"
@@ -243,10 +243,10 @@ tasks:
       name: cisco-stealthwatch-list-security-events-results
       description: List security events results, use this command after the search
         job is over.
-      script: cisco_stealthwatch|||cisco-stealthwatch-list-security-events-results
+      script: Cisco Stealthwatch|||cisco-stealthwatch-list-security-events-results
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "5"
@@ -314,6 +314,6 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs:
-- contextPath: QRadar.Search.Result
+- contextPath: CiscoStealthwatch.SecurityEventResults
   description: The result of the search
 sourceplaybookid: QRadarFullSearch

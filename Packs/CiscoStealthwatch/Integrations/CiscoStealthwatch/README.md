@@ -3,7 +3,7 @@ This integration was integrated and tested with version 1.0.0 of Cisco Stealthwa
 ## Configure Cisco Stealthwatch on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for cisco_stealthwatch.
+2. Search for Cisco Stealthwatch.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

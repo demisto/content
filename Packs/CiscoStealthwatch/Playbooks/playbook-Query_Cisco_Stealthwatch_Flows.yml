@@ -172,10 +172,10 @@ tasks:
       name: cisco-stealthwatch-query-flows-initialize
       description: Initialize flow search based on parameters. Please provide start
         time, time range, or start time and end time.
-      script: cisco_stealthwatch|||cisco-stealthwatch-query-flows-initialize
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-initialize
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "11"
@@ -211,10 +211,10 @@ tasks:
       version: -1
       name: cisco-stealthwatch-query-flows-status
       description: Flow search check status
-      script: cisco_stealthwatch|||cisco-stealthwatch-query-flows-status
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-status
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "6"
@@ -245,10 +245,10 @@ tasks:
       version: -1
       name: cisco-stealthwatch-query-flows-results
       description: Flow search results, use this command after the search job is over.
-      script: cisco_stealthwatch|||cisco-stealthwatch-query-flows-results
+      script: Cisco Stealthwatch|||cisco-stealthwatch-query-flows-results
       type: regular
       iscommand: true
-      brand: cisco_stealthwatch
+      brand: Cisco Stealthwatch
     nexttasks:
       '#none#':
       - "5"
@@ -316,6 +316,6 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs:
-- contextPath: QRadar.Search.Result
+- contextPath: CiscoStealthwatch.FlowResults
   description: The result of the search
 sourceplaybookid: QRadarFullSearch

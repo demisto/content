@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: cisco_stealthwatch
+  id: Cisco Stealthwatch
   version: -1
 configuration:
 - additionalinfo: 'Server URL for Cisco Stealthwatch console. e.g: https://ip:port/'
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: Scalable visibility and security analytics
 display: Cisco Stealthwatch
-name: cisco_stealthwatch
+name: Cisco Stealthwatch
 script:
   commands:
   - arguments:
@@ -405,5 +405,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
+  fromversion: 5.5.0
   subtype: python3
   type: python
