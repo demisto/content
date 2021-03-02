@@ -8,6 +8,8 @@ import dateparser
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+TOKEN_INPUT_IDENTIFIER = '__token'
+
 
 class Client(BaseClient):
     """
@@ -22,11 +24,11 @@ class Client(BaseClient):
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username and self.password:
+        if self.username != TOKEN_INPUT_IDENTIFIER:
             self._login()
 
     def __del__(self):
-        if self.username and self.password:
+        if self.username != TOKEN_INPUT_IDENTIFIER:
             self._logout()
 
     def _login(self):
@@ -263,6 +265,8 @@ class Client(BaseClient):
             'sortOrder': sort_order,
             'numberOfResults': limit
         }
+        # note: "numberOfResults" is a required query parameter, no "offset" and no "startTime" parameters,
+        # therefore it's impossible to implement a pagination here.
 
         url_suffix = f'/uba/api/asset/{asset_id}/securityAlerts'
 
@@ -361,6 +365,30 @@ class Client(BaseClient):
         else:
             raise ValueError('Invalid entry_id argument.')
 
+    def add_watchlist_items_by_name_request(self, watchlist_id: str = None, watch_until_days: int = None,
+                                            items: list = None, category: str = None) -> Dict:
+        """
+            Args:
+                watchlist_id: ID of the watchlist to search assets for
+                items: A comma-separated list of the items to add.
+                watch_until_days: Number of days until asset is automatically removed from the watchlist
+                category: The items category
+
+            Returns:
+                (dict) The addFromCsv API response.
+        """
+
+        params = {
+            'watchUntilDays': watch_until_days,
+            'category': category
+        }
+        array_type_params = {'items[]': items}
+        query_params_str = get_query_params_str(params, array_type_params)
+
+        url_suffix = f'/uba/api/watchlist/{watchlist_id}/add?{query_params_str}'
+        response = self._http_request('PUT', url_suffix=url_suffix)
+        return response
+
     def search_asset_in_watchlist_request(self, keyword: str = None, watchlist_id: str = None, limit: int = None,
                                           is_exclusive: str = None, search_by_ip: str = None) -> Dict:
         """
@@ -387,25 +415,26 @@ class Client(BaseClient):
         response = self._http_request('GET', url_suffix=url_suffix, params=params)
         return response
 
-    def remove_watchlist_item_request(self, watchlist_id: str = None, item: str = None, category: str = None) -> Dict:
+    def remove_watchlist_items_request(self, watchlist_id: str, items: list, category: str = None) -> Dict:
         """
             Args:
                 watchlist_id: ID of the watchlist to remove an item from
-                item: An item to remove
+                items: A comma-separated list of items to remove
                 category: The item category
 
             Returns:
                 (dict) The removal API response.
         """
 
-        form_data = {
+        params = {
             'watchlistId': watchlist_id,
-            'category': category,
-            'items[]': item
+            'category': category
         }
-        url_suffix = f'/uba/api/watchlist/{watchlist_id}/remove'
+        array_type_params = {'items[]': items}
+        query_params_str = get_query_params_str(params, array_type_params)
 
-        response = self._http_request('PUT', url_suffix=url_suffix, data=form_data)
+        url_suffix = f'/uba/api/watchlist/{watchlist_id}/remove?{query_params_str}'
+        response = self._http_request('PUT', url_suffix=url_suffix)
         return response
 
     def list_context_table_records_request(self, context_table_name: str = None,
@@ -801,7 +830,8 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
 
             title = f"{activity['count']} {activity['event_type']} event(s) " \
                 f"between {activity['start_time']} and {activity['end_time']}"
-            human_readable += tableToMarkdown(title, activity_events, removeNull=True) + '\n'
+            human_readable += tableToMarkdown(title, activity_events, removeNull=True,
+                                              headerTransform=underscoreToCamelCase) + '\n'
             outputs.extend(activity_events)
 
     return outputs, human_readable
@@ -829,27 +859,18 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
 ''' COMMANDS '''
 
 
-def test_module(client: Client, username: Optional[str], password: Optional[str], cluster_auth_token: Optional[str]):
+def test_module(client: Client, *_):
     """test function
 
     Args:
         client: Client
-        username: Username parameter
-        password: Password parameter
-        cluster_auth_token: Cluster Authentication Token
 
     Returns:
         ok if successful
     """
-    if not cluster_auth_token:
-        if not username and not password:
-            raise DemistoException('You must provide either user credentials or a cluster authentication token '
-                                   'to authenticate.')
-        elif not username or not password:
-            raise DemistoException('You must provide both username and password '
-                                   'when using credentials to authenticate.')
     client.test_module_request()
-    return 'ok'
+    demisto.results('ok')
+    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -927,10 +948,10 @@ def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     """
     username = args.get('username')
-    start_time = args.get('start_time', datetime.now() - timedelta(days=30))
-    end_time = args.get('end_time', datetime.now())
-    parse_start_time = date_to_timestamp(start_time)
-    parse_end_time = date_to_timestamp(end_time)
+    start_time = args.get('start_time', '30 days ago')
+    end_time = args.get('end_time', '0 minutes ago')
+    parse_start_time = convert_date_to_unix(start_time)
+    parse_end_time = convert_date_to_unix(end_time)
     contents = []
     headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
 
@@ -1207,7 +1228,7 @@ def list_security_alerts_by_asset(client: Client,
         security_alerts.append(security_alert)
 
     human_readable = tableToMarkdown(f'Asset {asset_id} Security Alerts', security_alerts,
-                                     removeNull=True, headerTransform=pascalToSpace)
+                                     removeNull=True, headerTransform=underscoreToCamelCase)
 
     entry_context = {'Exabeam.AssetSecurityAlert': security_alerts}
 
@@ -1299,8 +1320,8 @@ def get_rules_model_definition(client: Client, args: Dict[str, str]) -> Tuple[An
     return human_readable, entry_context, model
 
 
-def add_watchlist_item_from_csv(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
-    """  Add a watchlist item from CSV file.
+def add_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
+    """  Add a watchlist items by names or from a CSV file.
 
     Args:
         client: Client
@@ -1309,11 +1330,20 @@ def add_watchlist_item_from_csv(client: Client, args: Dict[str, str]) -> Tuple[s
     """
     watchlist_id = args.get('watchlist_id')
     csv_entry_id = args.get('csv_entry_id')
+    items = argToList(args.get('items', ''))
     category = args.get('category')
     watch_until_days = int(args['watch_until_days'])
 
-    raw_response = client.add_watchlist_items_from_csv_request(watchlist_id, watch_until_days, csv_entry_id, category)
-    added_count = raw_response.get('addedCount')
+    if csv_entry_id and not items:
+        raw_response = client.add_watchlist_items_from_csv_request(watchlist_id, watch_until_days,
+                                                                   csv_entry_id, category)
+        added_count = raw_response.get('addedCount')
+    elif items and not csv_entry_id:
+        raw_response = client.add_watchlist_items_by_name_request(watchlist_id, watch_until_days, items, category)
+        added_count = raw_response.get('numberAdded')
+    else:
+        raise DemistoException('You must specify exactly one of the following arguments: items, csv_entry_id.')
+
     human_readable = f'Successfully added {added_count} items to watchlist {watchlist_id}.'
 
     return human_readable, None, raw_response
@@ -1335,6 +1365,9 @@ def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any
 
     assets_raw_data = client.search_asset_in_watchlist_request(keyword, watchlist_id, limit, is_exclusive, search_by_ip)
     assets = assets_raw_data.get('assets', [])
+    for asset in assets:
+        asset['firstSeen'] = convert_unix_to_date(asset.get('firstSeen'))
+        asset['lastSeen'] = convert_unix_to_date(asset.get('lastSeen'))
     entry_context = {'Exabeam.AssetInfo((val.ipAddress && val.ipAddress === obj.ipAddress) ||'
                      '(val.hostName && val.hostName === obj.hostName))': assets}
     human_readable = tableToMarkdown(f'Watchlist {watchlist_id} Assets Search Results', assets,
@@ -1343,7 +1376,7 @@ def search_asset_in_watchlist(client: Client, args: Dict[str, str]) -> Tuple[Any
     return human_readable, entry_context, assets_raw_data
 
 
-def remove_watchlist_item(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
+def remove_watchlist_items(client: Client, args: Dict[str, str]) -> Tuple[str, Optional[Any], Optional[Any]]:
     """  Removes items from a watchlist.
 
     Args:
@@ -1355,12 +1388,12 @@ def remove_watchlist_item(client: Client, args: Dict[str, str]) -> Tuple[str, Op
     items = argToList(args.get('items'))
     category = args.get('category')
 
-    for item in items:
-        client.remove_watchlist_item_request(watchlist_id, item, category)
+    raw_response = client.remove_watchlist_items_request(watchlist_id, items, category)
+    removed_count = raw_response.get('numberRemoved')
 
-    human_readable = f'Successfully removed {len(items)} items from watchlist {watchlist_id}.'
+    human_readable = f'Successfully removed {removed_count} items from watchlist {watchlist_id}.'
 
-    return human_readable, None, None
+    return human_readable, None, raw_response
 
 
 def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
@@ -1488,20 +1521,17 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    if demisto.params().get('credentials'):
-        username = demisto.params().get('credentials').get('identifier')
-        password = demisto.params().get('credentials').get('password')
-    else:
-        username = password = None
-    cluster_auth_token = demisto.params().get('cluster_auth_token')
+    username = demisto.params().get('credentials').get('identifier')
+    password = demisto.params().get('credentials').get('password')
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if cluster_auth_token and not username and not password:
-        headers['ExaAuthToken'] = cluster_auth_token
+    if username == TOKEN_INPUT_IDENTIFIER:
+        headers['ExaAuthToken'] = password
 
     commands = {
+        'test-module': test_module,
         'get-notable-users': get_notable_users,
         'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
@@ -1532,9 +1562,9 @@ def main():
         'exabeam-update-context-table-records': update_context_table_records,
         'exabeam-delete-context-table-records': delete_context_table_records,
         'exabeam-get-context-table-in-csv': get_context_table_csv,
-        'exabeam-watchlist-add-from-csv': add_watchlist_item_from_csv,
+        'exabeam-watchlist-add-items': add_watchlist_items,
         'exabeam-watchlist-asset-search': search_asset_in_watchlist,
-        'exabeam-watchilst-remove-items': remove_watchlist_item
+        'exabeam-watchlist-remove-items': remove_watchlist_items
     }
 
     try:
@@ -1542,9 +1572,7 @@ def main():
                         password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
-        if command == 'test-module':
-            return_outputs(test_module(client, username, password, cluster_auth_token))
-        elif command in commands:
+        if command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

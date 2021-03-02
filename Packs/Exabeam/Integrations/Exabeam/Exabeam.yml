@@ -7,17 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- additionalinfo: In order to authenticate with a Cluster Authentication Token, insert
+    `__token` in the "Username" textbox, and the token itself in the "Password" textbox.
+  display: Username
   name: credentials
-  required: false
+  required: true
   type: 9
-- additionalinfo: Use this token to authenticate in Exabeam Cloud platform. See detailed
-    instructions for further information.
-  display: Cluster Authentication Token
-  hidden: false
-  name: cluster_auth_token
-  required: false
-  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -362,13 +357,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16.
+      description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
       isArray: false
       name: end_time
       required: false
@@ -656,7 +651,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The event time.
+      description: The event time, e.g. "2 years ago" or "2019-02-27".
       isArray: false
       name: event_time
       required: true
@@ -1208,10 +1203,16 @@ script:
       required: true
       secret: false
     - default: false
+      description: A comma-separated list of the items to add.
+      isArray: false
+      name: items
+      required: false
+      secret: false
+    - default: false
       description: The entry ID of the CSV file.
       isArray: false
       name: csv_entry_id
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '50'
@@ -1234,9 +1235,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add a watchlist item from CSV file.
+    description: Add watchlist items by their names or from a CSV file.
     execution: false
-    name: exabeam-watchlist-add-from-csv
+    name: exabeam-watchlist-add-items
   - arguments:
     - default: false
       description: A keyword to search.
@@ -1337,7 +1338,7 @@ script:
     deprecated: false
     description: Removes items from a watchlist.
     execution: false
-    name: exabeam-watchilst-remove-items
+    name: exabeam-watchlist-remove-items
   - arguments:
     - default: false
       description: The name of the context table
@@ -1364,22 +1365,22 @@ script:
     execution: false
     name: exabeam-list-context-table-records
     outputs:
-    - contextPath: Exabeam.ContextTableRecord.contextTableName
+    - contextPath: Exabeam.ContextTable.Name
       description: Name of the context table.
       type: String
-    - contextPath: Exabeam.ContextTableRecord.key
+    - contextPath: Exabeam.ContextTable.Record.key
       description: The key of the record.
       type: String
-    - contextPath: Exabeam.ContextTableRecord.id
+    - contextPath: Exabeam.ContextTable.Record.id
       description: The ID of the record.
       type: String
-    - contextPath: Exabeam.ContextTableRecord.sourceType
+    - contextPath: Exabeam.ContextTable.Record.sourceType
       description: The source type of the record.
       type: String
-    - contextPath: Exabeam.ContextTableRecord.position
+    - contextPath: Exabeam.ContextTable.Record.position
       description: The position of the record.
       type: Number
-    - contextPath: Exabeam.ContextTableRecord.value
+    - contextPath: Exabeam.ContextTable.Record.value
       description: Value of the record.
       type: String
   - arguments:

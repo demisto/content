@@ -5,18 +5,10 @@ Full documentation for this integration is available in the [reference docs](htt
 
 ### Authentication Methods
 
-This integration allows two methods for authentication:
-1. User Credentials Authentication
-2. Cluster Authentication Token
-
-For the User Credentials Authentication, insert your credentials in the Username and Password parameters. 
+In addition to the User Credentials authentication method, **Exabeam Cloud** users can authenticate using a **Cluster Authentication Token**. To authenticate with a Cluster Authentication Token, insert `__token` in the "Username" parameter, and the token itself in the "Password" parameter.
 
 
-### Authenticate with a Cluster Authentication Token
-
-The cluster authentication token is used to verify identities between clusters that have been deployed in phases as well as HTTP-based log collectors. Each peer cluster in a query pool must have its own token. You can set expiration dates during token creation or manually revoke tokens at any time.
-
-To generate a token:
+### Generate a Cluster Authentication Token
 
 1. Navigate to Settings > Admin Operations > Cluster Authentication Token.
 
