@@ -1,7 +1,10 @@
+import json
+import time
 from copy import deepcopy
 import pytest
 import SplunkPy as splunk
 import demistomock as demisto
+from datetime import datetime
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
@@ -420,24 +423,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
     output = splunk.get_kv_store_config(Name())
     expected_output = '{}{}'.format(START_OUTPUT, expected_output)
-    assert output == expected_output
-
-
-def test_fetch_incidents(mocker):
-    mocker.patch.object(demisto, 'incidents')
-    mocker.patch.object(demisto, 'setLastRun')
-    mock_last_run = {'time': '2018-10-24T14:13:20'}
-    mock_params = {'fetchQuery': "something"}
-    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
-    mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
-    incidents = demisto.incidents.call_args[0][0]
-    assert demisto.incidents.call_count == 1
-    assert len(incidents) == 1
-    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
-                                   "Recurring Malware Infection - Rule"
+    assert output == expected_outpu
 
 
 SPLUNK_RESULTS = [
@@ -468,3 +454,98 @@ EXPECTED_OUTPUT = {
 def test_create_mapping_dict():
     mapping_dict = splunk.create_mapping_dict(SPLUNK_RESULTS, type_field='source')
     assert mapping_dict == EXPECTED_OUTPUT
+
+
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                   "Recurring Malware Infection - Rule"
+
+
+def test_remove_old_incident_ids():
+    from SplunkPy import remove_old_incident_ids
+
+    incident_ids = {
+        "incident_under_one_hour_old": int(time.time()) - 300,
+        "incident_over_one_hour_old": int(time.time()) - 200000
+    }
+
+    assert "incident_under_one_hour_old" in incident_ids
+    assert "incident_over_one_hour_old" in incident_ids
+
+    new_incident_ids = remove_old_incident_ids(incident_ids)
+
+    assert "incident_under_one_hour_old" in new_incident_ids
+    assert "incident_over_one_hour_old" not in new_incident_ids
+
+
+time = str(int(time.time()) - 300)
+first_incident = {
+    'rawJSON': {
+        '_raw': 'first incident'
+    },
+    'occurred': time
+}
+second_incident = {
+    'rawJSON': {
+        '_raw': 'first incident'
+    },
+    'occurred': time
+}
+
+def test_create_incident_custom_id_creates_different_ids():
+    from SplunkPy import create_incident_custom_id
+
+    first_incident_str = json.dumps(first_incident)
+    first_incident_custom_id = create_incident_custom_id(first_incident_str)
+
+    second_incident_str = json.dumps(second_incident)
+    second_incident_custom_id = create_incident_custom_id(second_incident_str)
+
+    assert first_incident_custom_id != second_incident_custom_id
+
+
+def test_create_incident_custom_id_length():
+    from SplunkPy import create_incident_custom_id
+
+    first_incident_str = json.dumps(first_incident)
+    first_incident_custom_id = create_incident_custom_id(first_incident_str)
+
+    assert len(first_incident_custom_id) < 100
+
+
+test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:45:16.000-07:00')
+test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:46:16.000-07:00')
+test_get_next_start_time_under_20_minutes_and_incidents_found = ( 21, True, '2020-08-04T05:44:16.000-07:00')
+
+get_next_start_time_test_data = [
+    test_get_next_start_time_over_20_minutes,
+    test_get_next_start_time_under_20_minutes,
+    test_get_next_start_time_under_20_minutes_and_incidents_found
+]
+
+
+@pytest.mark.parametrize('same_start_time_count, were_new_incidents_found, expected', get_next_start_time_test_data)
+def test_get_next_start_time_over_20_minutes(same_start_time_count, were_new_incidents_found, expected):
+    from SplunkPy import get_next_start_time
+    last_run = '2020-08-04T05:45:16.000-07:00'
+    last_run_plus_one_minute = '2020-08-04T05:46:16.000-07:00'
+    fetches_with_same_start_time_count = 21
+    were_new_incidents_found = False
+    next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_incidents_found)
+    assert next_run == last_run_plus_one_minute
+
+
+def test_get_latest_incident_time():
+    from SplunkPy import get_latest_incident_time

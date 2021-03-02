@@ -524,16 +524,8 @@ def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time):
     return new_last_run_fetched_ids
 
 
-def fetch_incidents(service):
-    last_run_data = demisto.getLastRun()
-    last_run = last_run_data and last_run_data['time']
-    search_offset = last_run_data.get('offset', 0)
-
-    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
-
-    incidents = []
+def get_last_run_time(dem_params, service, last_run):
     current_time_for_fetch = datetime.utcnow()
-    dem_params = demisto.params()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
@@ -549,31 +541,54 @@ def fetch_incidents(service):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
         extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
+    
+    return last_run, now
+
+
+def build_fetch_kwargs(dem_params, last_run_time, now, search_offset):
 
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run, now))
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    return kwargs_oneshot
 
-    searchquery_oneshot = dem_params['fetchQuery']
+
+def build_fetch_query(dem_params):
+    fetch_query = dem_params['fetchQuery']
 
     if demisto.get(dem_params, 'extractFields'):
         extractFields = dem_params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
-            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    return fetch_query
+
+
+def fetch_incidents(service):
+    last_run_data = demisto.getLastRun()
+    last_run_time = last_run_data and last_run_data['time']
+    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
+
+    search_offset = last_run_data.get('offset', 0)
+
+    dem_params = demisto.params()
+    last_run_time, now = get_last_run_time(dem_params, service, last_run_time)
+    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
+
+    kwargs_oneshot = build_fetch_kwargs(dem_params, last_run_time, now, search_offset)
+    fetch_query = build_fetch_query(dem_params)
+
+    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-
     current_epoch_time = int(time.time())
 
+    incidents = []
     for item in reader:
         inc = notable_to_incident(item)
         extensive_log('Incident data after parsing to notable: {}'.format(inc))
@@ -589,7 +604,7 @@ def fetch_incidents(service):
     extensive_log('SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
     debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.\n incidents found: {}'.format(last_run, now, searchquery_oneshot,
+                    'query: {} is: {}.\n incidents found: {}'.format(last_run_time, now, fetch_query,
                                                                      len(incidents), incidents)
     extensive_log(debug_message)
 
@@ -599,7 +614,7 @@ def fetch_incidents(service):
     extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
 
     if len(incidents) == 0:
-        next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, False)
+        next_run = get_next_start_time(last_run_time, fetches_with_same_start_time_count, False)
         extensive_log('SplunkPy - Next run time with no incidents found: {}'.format(next_run))
         demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
                             'fetch_start_update_count': fetches_with_same_start_time_count})
@@ -611,8 +626,8 @@ def fetch_incidents(service):
             {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
              'fetch_start_update_count': 0})
     else:
-        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run))
-        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
+        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run_time))
+        demisto.setLastRun({'time': last_run_time, 'offset': search_offset + FETCH_LIMIT,
                             'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_ids})
 
 
