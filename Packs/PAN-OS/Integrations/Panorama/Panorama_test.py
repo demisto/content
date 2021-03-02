@@ -259,8 +259,7 @@ def test_prettify_user_interface_config():
                                                       'log-setting': 'ToLoggingService'},
                      'enable-user-identification': 'yes'},
                     {'@name': 'External', 'network': {'tap': {'member': 'ethernet1/1'},
-                                                      'log-setting': 'ToLoggingService'},
-                     'enable-user-identification': 'no'}]
+                                                      'log-setting': 'ToLoggingService'}}]
     response = prettify_user_interface_config(raw_response)
     expected = [{'Name': 'ethernet1/2', 'Zone': 'internal', 'EnableUserIdentification': 'yes'},
                 {'Name': 'ethernet1/1', 'Zone': 'External', 'EnableUserIdentification': 'no'}]

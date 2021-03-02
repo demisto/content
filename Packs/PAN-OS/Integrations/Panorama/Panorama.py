@@ -6607,7 +6607,7 @@ def prettify_zones_config(zones_config: Union[List, Dict]) -> Union[List, Dict]:
             'Name': zones_config.get('@name'),
             'Network': zones_config.get('network'),
             'ZoneProtectionProfile': zones_config.get('zone-protection-profile'),
-            'EnableUserIdentification': zones_config.get('enable-user-identification'),
+            'EnableUserIdentification': zones_config.get('enable-user-identification', 'no'),
             'LogSetting': zones_config.get('log-setting')
         }
 
@@ -6616,37 +6616,48 @@ def prettify_zones_config(zones_config: Union[List, Dict]) -> Union[List, Dict]:
             'Name': zone.get('@name'),
             'Network': zone.get('network'),
             'ZoneProtectionProfile': zone.get('zone-protection-profile'),
-            'EnableUserIdentification': zone.get('enable-user-identification'),
+            'EnableUserIdentification': zone.get('enable-user-identification', 'no'),
             'LogSetting': zone.get('log-setting')
         })
 
     return pretty_zones_config
 
 
+def get_interfaces_from_zone_config(zone_config: Dict) -> List:
+    """Extract interfaces names from zone configuration"""
+    # a zone has several network options as listed bellow, a single zone my only have one network option
+    possible_zone_layers = ['layer2', 'layer3', 'tap', 'virtual-wire', 'tunnel']
+
+    for zone_layer in possible_zone_layers:
+        zone_network_info = zone_config.get('network', {}).get(zone_layer)
+
+        if zone_network_info:
+            interfaces = zone_network_info.get('member')
+            if interfaces:
+                if isinstance(interfaces, str):
+                    return [interfaces]
+
+                else:
+                    return interfaces
+
+    return []
+
+
 def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List, Dict]:
     pretty_interface_config = []
     if isinstance(zone_config, dict):
-        # extract interfaces list - could be under layer3 or tap depending on response's source
-        interfaces = zone_config.get('network', {}).get('layer3', {}).get('member')
-        if not interfaces:
-            interfaces = zone_config.get('network', {}).get('tap', {}).get('member')
-
-        if isinstance(interfaces, str):
-            interfaces = [interfaces]
+        interfaces = get_interfaces_from_zone_config(zone_config)
 
         for interface in interfaces:
             pretty_interface_config.append({
                 'Name': interface,
                 'Zone': zone_config.get('@name'),
-                'EnableUserIdentification': zone_config.get('enable-user-identification')
+                'EnableUserIdentification': zone_config.get('enable-user-identification', 'no')
             })
 
     else:
         for zone in zone_config:
-            # extract interfaces list - could be under layer3 or tap depending on response's source
-            interfaces = zone.get('network', {}).get('layer3', {}).get('member')
-            if not interfaces:
-                interfaces = zone.get('network', {}).get('tap', {}).get('member')
+            interfaces = get_interfaces_from_zone_config(zone)
 
             if isinstance(interfaces, str):
                 interfaces = [interfaces]
@@ -6655,7 +6666,7 @@ def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List
                 pretty_interface_config.append({
                     'Name': interface,
                     'Zone': zone.get('@name'),
-                    'EnableUserIdentification': zone.get('enable-user-identification')
+                    'EnableUserIdentification': zone.get('enable-user-identification', 'no')
                 })
 
     return pretty_interface_config
