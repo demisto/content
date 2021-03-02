@@ -7,8 +7,9 @@ INVALID_ARG = "INVALID_ARG"
 def to_float(s):
     try:
         return float(s)
-    except:
+    except Exception:
         return INVALID_ARG
+
 
 # "1,8" => will return a tupple (1, 8)
 
@@ -29,7 +30,9 @@ left = to_float(leftArg)
 fromRange, toRange = parse_range(rightArg)
 
 if INVALID_ARG in [left, fromRange, toRange]:
-    demisto.error("InRange - invalid arguments. left shuld be a number, right should be from,to (e.g. '1,8'). got left - %s, right - %s" % (leftArg, rightArg))
+    demisto.error(
+        "InRange - invalid arguments. left shuld be a number, right should be from,to (e.g. '1,8'). "
+        "got left - %s, right - %s" % (leftArg, rightArg))
     demisto.results(False)
 else:
     demisto.results(left >= fromRange and left <= toRange)
