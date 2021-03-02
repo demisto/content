@@ -87,7 +87,8 @@ if len(filenames) == 0:
     })
 else:
     results = []
-    # extracted files can be in sub directories so we save the base names of the files and also the full path of the file
+    # extracted files can be in sub directories so we save the base names of the files and also the full path of
+    # the file
     files_base_names = [os.path.basename(file_path) for file_path in filenames]
     files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
     for file_path, file_name in files_dic.items():
