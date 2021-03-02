@@ -58,6 +58,7 @@ from CommonServerPython import tableToMarkdown
 import json
 import io
 
+
 URL = "https://openphish.com/feed.txt"
 
 
