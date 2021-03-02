@@ -161,49 +161,55 @@ def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
             raise
 
 
-def validate_content(filename, data, tmp_directory: str) -> List:
-    # case when a pack zip file has been passed
+def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> str:
+    # write zip file data to file system
+    zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
+    with open(zip_path, 'wb') as fp:
+        fp.write(data)
+
+    pack_name = get_pack_name(zip_path)
+    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
+    convert_contribution_to_pack(contrib_converter)
+    # Call the standalone function and get the raw response
+    os.remove(zip_path)
+    return contrib_converter.pack_dir_path
+
+
+def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_directory: str) -> str:
     content = Content(tmp_directory)
+    pack_name = 'TmpPack'
+    pack_dir = content.path / 'Packs' / pack_name
+    # create pack_metadata.json file in TmpPack
+    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name)
+    contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
+    prefix = '-'.join(filename.split('-')[:-1])
+    containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
+    containing_dir.mkdir(exist_ok=True)
+    data_as_string = data.decode()
+    loaded_data = yaml.load(data_as_string)
+    buff = io.StringIO()
+    yaml.dump(loaded_data, buff)
+    data_as_string = buff.getvalue()
+    # write yaml integration file to file system
+    file_path = containing_dir / filename
+    file_path.write_text(data_as_string)
+    file_type = find_type(str(file_path))
+    file_type = file_type.value if file_type else file_type
+    extractor = Extractor(
+        input=str(file_path), file_type=file_type, output=containing_dir, no_logging=True, no_pipenv=True)
+    # validate the resulting package files, ergo set path_to_validate to the package directory that results
+    # from extracting the unified yaml to a package format
+    extractor.extract_to_package_format()
+    return extractor.get_output_path()
+
+
+def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     if filename.endswith('.zip'):
-        # write zip file data to file system
-        zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
-        with open(zip_path, 'wb') as fp:
-            fp.write(data)
-
-        pack_name = get_pack_name(zip_path)
-        contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
-        convert_contribution_to_pack(contrib_converter)
-        # Call the standalone function and get the raw response
-        os.remove(zip_path)
-        path_to_validate = contrib_converter.pack_dir_path
+        path_to_validate = prepare_content_pack_for_validation(filename, data, tmp_directory)
     else:
-        # a single content item
-        pack_name = 'TmpPack'
-        pack_dir = content.path / 'Packs' / pack_name
-        # create pack_metadata.json file in TmpPack
-        contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name)
-        contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
-        prefix = '-'.join(filename.split('-')[:-1])
-        containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
-        containing_dir.mkdir(exist_ok=True)
-        data_as_string = data.decode()
-        loaded_data = yaml.load(data_as_string)
-        buff = io.StringIO()
-        yaml.dump(loaded_data, buff)
-        data_as_string = buff.getvalue()
-        # write yaml integration file to file system
-        file_path = containing_dir / filename
-        file_path.write_text(data_as_string)
-        file_type = find_type(str(file_path))
-        file_type = file_type.value if file_type else file_type
-        extractor = Extractor(
-            input=str(file_path), file_type=file_type, output=containing_dir, no_logging=True, no_pipenv=True)
-        # validate the resulting package files, ergo set path_to_validate to the package directory that results
-        # from extracting the unified yaml to a package format
-        path_to_validate = extractor.get_output_path()
-        extractor.extract_to_package_format()
+        path_to_validate = prepare_single_content_item_for_validation(filename, data, tmp_directory)
 
     operations = [
         (run_validate, [path_to_validate, json_output_path]),
