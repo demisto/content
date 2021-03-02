@@ -9,6 +9,7 @@ contentitemexportablefields:
 vcShouldKeepItemLegacyProdMachine: false
 name: Query Cisco Stealthwatch Flows
 description: This playbook runs a query on Cisco Stealthwatch flows and return its results to the context.
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
