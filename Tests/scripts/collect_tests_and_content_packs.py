@@ -229,6 +229,7 @@ def collect_tests_and_content_packs(
                             detected_usage = True
                             tests_set.add(test_playbook_id)
                             logging.info("hello 2, tests_set: {0}, test_playbook: {1}".format(tests_set, test_playbook))
+                            logging.info("hello 222, integration_to_command: {0}".format(integration_to_command))
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
