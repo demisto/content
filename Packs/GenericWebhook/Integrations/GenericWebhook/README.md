@@ -45,7 +45,7 @@ The request payload does not have to contain the fields mentioned above, and may
 The payload could then be mapped in Cortex XSOAR mapping wizard:
 - Note that the *Store sample events for mapping* parameter need to be set.
 
-    <img width="500" src="./../../doc_imgs/mapping.png" />
+    <img width="900" src="./../../doc_imgs/mapping.png" />
 
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
