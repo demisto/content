@@ -16,6 +16,10 @@ STATUS_DICT = {
     3: "Archive",
 }
 
+ROUND_SCORING = 2
+COMMON_FIELDS = ['id', 'created', 'name']
+PLAYGROUND_PATTERN = '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
+
 
 def normalize(x: List[str]) -> str:
     """
@@ -49,9 +53,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
     TFIDF class for indicator
     """
 
-    def __init__(self, feature_names, tfidf_params, normalize_function, x):
+    def __init__(self, feature_names, normalize_function, x):
         self.feature_names = feature_names
-        self.params = tfidf_params
         self.normalize_function = normalize_function
         self.frequency = {}
         if self.normalize_function:
@@ -87,34 +90,33 @@ class Tfidf(BaseEstimator, TransformerMixin):
 TRANSFORMATION = {
     'indicators': {'transformer': Tfidf,
                    'normalize': None,
-                   'params': {'analyzer': 'word', 'max_features': 200, 'token_pattern': '.'},  # [\d\D]*
-                   'scoring': {'scoring_function': identity_score, 'min': 0.5}
+                   'params': {'analyzer': 'word', 'max_features': 200, 'token_pattern': '.'},
+                   'scoring_function': identity_score
                    }
 }
 
 
 class Transformer():
-    def __init__(self, p_type, field, p_incidents_df, p_incident_to_match, p_params):
-        self.type = p_type
+    def __init__(self, p_transformer_type, field, p_incidents_df, p_incident_to_match, p_params):
+        self.transformer_type = p_transformer_type
         self.field = field
         self.incident_to_match = p_incident_to_match
         self.incidents_df = p_incidents_df
         self.params = p_params
 
     def fit_transform(self):
-        transformation = self.params[self.type]
-        transformer = transformation['transformer'](self.field, transformation['params'], transformation['normalize'],
+        transformation = self.params[self.transformer_type]
+        transformer = transformation['transformer'](self.field, transformation['normalize'],
                                                     self.incident_to_match)
         X_vect = transformer.fit_transform(self.incidents_df)
         incident_vect = transformer.transform(self.incident_to_match)
-
         return X_vect, incident_vect
 
     def get_score(self):
-        scoring_function = self.params[self.type]['scoring']['scoring_function']
+        scoring_function = self.params[self.transformer_type]['scoring_function']
         X_vect, incident_vect = self.fit_transform()
-        dist = scoring_function(X_vect)
-        self.incidents_df['similarity %s' % self.field] = np.round(dist, 2)
+        distance = scoring_function(X_vect)
+        self.incidents_df['similarity %s' % self.field] = np.round(distance, ROUND_SCORING)
         return self.incidents_df
 
 
@@ -149,7 +151,6 @@ class Model:
             t.get_score()
 
     def display(self):
-        # self.incidents_df.sort_values(['similarity indicators'], inplace=True, ascending=False)
         vocabulary = self.incident_to_match['indicators'].iloc[0].split(' ')
         self.incidents_df['Identical indicators'] = self.incidents_df['indicators'].apply(
             lambda x: ','.join([id for id in x.split(' ') if id in vocabulary]))
@@ -350,15 +351,6 @@ def display(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], ag
             [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
              _ids.split(',')]))  # type: ignore
     similar_incidents = similar_incidents[['ID', 'id', 'Identical indicators', 'similarity indicators']]
-    # if aggregate == 'True':
-    #     demisto.results(json.dumps(similar_incidents.columns.tolist()))
-    #     agg_fields = [x for x in similar_incidents.columns if x not in ['id', 'ID']]  #
-    #     similar_incidents = similar_incidents.groupby(agg_fields, as_index=False, dropna=False).agg(
-    #         {
-    #             'id': lambda x: ' , '.join(x),
-    #             'ID': lambda x: ' , '.join(x)
-    #         }
-    #     )
     similar_incidents = similar_incidents[similar_incidents['similarity indicators'] > threshold]
     similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)
     return similar_incidents.head(max_incidents_to_display)
@@ -371,6 +363,11 @@ def return_no_similar_incident_found_entry():
 
 
 def create_context_for_incidents(similar_incidents=pd.DataFrame()):
+    """
+    Return context from dataframe of incident
+    :param similar_incidents: DataFrame of incidents with indicators
+    :return: context
+    """
     if len(similar_incidents) == 0:
         context = {
             'similarIncidentList': {},
@@ -382,6 +379,94 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
             'isSimilarIncidentFound': True
         }
     return context
+
+
+def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: List[str]) -> None:
+    """
+    Display current incident
+    :param incident_df: DataFrame of incident
+    :param incident_id: incident ID
+    :param fields_incident_to_display: fields to display
+    :return: None
+    """
+    incident_df['id'] = [incident_id]
+    incident_df = enriched_incidents(incident_df, fields_incident_to_display)
+    incident_json = incident_df.to_dict(orient='records')
+    col_incident = incident_df.columns.tolist()
+    col_incident = COMMON_FIELDS + [x for x in col_incident if
+                                    x not in ['id', 'created', 'name', 'indicators']]
+    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
+                                                   col_incident))
+
+
+def load_indicators_for_current_incident(incident_id: str, indicators_types: List[str], limit_nb_of_indicators: int,
+                                         max_indicators: int, debug: bool):
+    """
+    Take
+    :param incident_id: ID of current incident
+    :param indicators_types: list of indicators type accepted
+    :param limit_nb_of_indicators: Min number of indicators in the current incident
+    :param max_indicators: Max incidents in indicators for white list
+    :param debug: Boolean if want to print additional comment
+    :return: return [*indicators] and dictionnary {key: indicators} and if early_stop
+    """
+    indicators = get_all_indicators_for_incident(incident_id)
+    indicators_map = get_indicators_map(indicators)
+    indicators = list(filter(lambda x: get_number_of_invs_for_indicators(x) < max_indicators, indicators))
+    if indicators_types:
+        indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
+    if len(indicators) < limit_nb_of_indicators:
+        return_no_mututal_indicators_found_entry()
+        return_no_similar_incident_found_entry()
+        return [], {}, True
+    if debug == 'True':
+        demisto.results("Indicators found for the incident")
+        demisto.results(json.dumps([x.get('id') for x in indicators]))
+    return indicators, indicators_map, False
+
+
+def get_incidents_ids_related_to_indicators(indicators):
+    """
+    Return incident ids from a list of indicators
+    :param indicators: List of indicators
+    :return: [*incidents_ids]
+    """
+    incident_ids = [indicator.get('investigationIDs', None) for indicator in indicators if
+                    indicator.get('investigationIDs', None)]
+    incident_ids = flatten(incident_ids)
+    p = re.compile(PLAYGROUND_PATTERN)
+    incident_ids = [x for x in incident_ids if not p.match(x)]
+    if not incident_ids:
+        return_no_mututal_indicators_found_entry()
+        return_no_similar_incident_found_entry()
+        return [], True
+    return incident_ids, False
+
+
+def get_related_incidents_with_indicators(incident_ids: List[str], indicators_types: List[str],
+                                          incident_id: str) -> pd.DataFrame:
+    """
+    Create dataframe of incident with indicators from incidents ids list
+    :param incident_ids: List if incident id
+    :param indicators_types: List of indicators type
+    :param incident_id: current incident (in order to remove it)
+    :return: dataframe of incident with indicators
+    """
+    indicators_related = get_indicators_from_incident_ids(incident_ids)
+    if indicators_types:
+        indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
+        if not indicators_related:
+            return_no_similar_incident_found_entry()
+            return pd.DataFrame(), True
+    incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
+    incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
+    incidents_with_indicators_join.pop(incident_id, None)
+    if not bool(incidents_with_indicators_join):
+        return_no_similar_incident_found_entry()
+        return pd.DataFrame(), True
+    incidents_df = pd.DataFrame.from_dict(incidents_with_indicators_join, orient='index')
+    incidents_df.columns = ['indicators']
+    return incidents_df, False
 
 
 def main():
@@ -406,51 +491,30 @@ def main():
         incident = demisto.incidents()[0]
         incident_id = incident['id']
 
-    # load the related indicators to the incident
-    indicators = get_all_indicators_for_incident(incident_id)
-    indicators_map = get_indicators_map(indicators)
-    indicators = list(filter(lambda x: get_number_of_invs_for_indicators(x) < max_indicators, indicators))
-    if indicators_types:
-        indicators = [x for x in indicators if x.get('indicator_type') in indicators_types]
-    if len(indicators) < limit_nb_of_indicators:
-        return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
+    # load the related indicators to the incidents
+    indicators, indicators_map, early_exit = load_indicators_for_current_incident(incident_id, indicators_types,
+                                                                                  limit_nb_of_indicators,
+                                                                                  max_indicators, debug)
+    if early_exit:
         return
-    if debug == 'True':
-        demisto.results("Indicators found for the incident")
-        demisto.results(json.dumps([x.get('id') for x in indicators]))
 
     # Get the Investigation IDs related to the indicators if the incidents
-    incident_ids = [indicator.get('investigationIDs', None) for indicator in indicators if
-                    indicator.get('investigationIDs', None)]
-    incident_ids = flatten(incident_ids)
-    p = re.compile('[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}')
-    incident_ids = [x for x in incident_ids if not p.match(x)]
-    if not incident_ids:
-        return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
-        return
-    return_indicator_entry(incident_ids, indicators_types, indicators)
-
-    # Get indicators related to those investigations ids
-    indicators_related = get_indicators_from_incident_ids(incident_ids)
-    if indicators_types:
-        indicators_related = [x for x in indicators_related if x.get('indicator_type') in indicators_types]
-        if not indicators_related:
-            return_no_similar_incident_found_entry()
-            return
-    incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
-    incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
-    incidents_with_indicators_join.pop(incident_id, None)
-    if not bool(incidents_with_indicators_join):
-        return_no_similar_incident_found_entry()
+    incident_ids, early_exit = get_incidents_ids_related_to_indicators(indicators)
+    if early_exit:
         return
 
-    incidents_df = pd.DataFrame.from_dict(incidents_with_indicators_join, orient='index')
-    incidents_df.columns = ['indicators']
+    # Return Mutual indicators
+    _ = return_indicator_entry(incident_ids, indicators_types, indicators)
 
+    # Get related incidents with indicators
+    incidents_df, early_exit = get_related_incidents_with_indicators(incident_ids, indicators_types, incident_id)
+    if early_exit:
+        return
+
+    # Current incident
     indicators_for_incident = [' '.join(set([x.get('id') for x in indicators]))]  # type: ignore
-    incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
+    current_incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
+
     if debug == 'True':
         incidents_df_debug = incidents_df.reset_index()
         return_outputs(
@@ -459,7 +523,7 @@ def main():
 
     # Prediction
     model = Model(p_transformation=TRANSFORMATION)
-    model.init_prediction(incident_df, incidents_df, ['indicators'])
+    model.init_prediction(current_incident_df, incidents_df, ['indicators'])
     similar_incidents = model.predict()
 
     if debug == "True":
@@ -468,8 +532,8 @@ def main():
             readable_output=tableToMarkdown("After model predict", similar_incidents_debug.to_dict(orient='records'),
                                             list(similar_incidents_debug.columns)))
 
-    # Display
-    incident_df['Indicators'] = incident_df['indicators'].apply(
+    # Display and enriched incidents data
+    current_incident_df['Indicators'] = current_incident_df['indicators'].apply(
         lambda _ids: '\n'.join(
             [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
              _ids.split(' ')]))  # type: ignore
@@ -478,20 +542,13 @@ def main():
 
     incident_found_bool = (len(similar_incidents) > 0)
 
-    # Ouputs
+    # Outputs
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     col = similar_incidents.columns.tolist()
     col = ['ID', 'created', 'name'] + [x for x in col if x not in ['ID', 'created', 'name', 'id']]
 
     if show_actual_incident == 'True':
-        incident_df['id'] = [incident_id]
-        incident_df = enriched_incidents(incident_df, fields_incident_to_display)
-        incident_json = incident_df.to_dict(orient='records')
-        col_incident = incident_df.columns.tolist()
-        col_incident = ['id', 'created', 'name'] + [x for x in col_incident if
-                                                    x not in ['id', 'created', 'name', 'indicators']]
-        return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
-                                                       col_incident))
+        display_actual_incident(current_incident_df, incident_id, fields_incident_to_display)
 
     if incident_found_bool:
         context = create_context_for_incidents(similar_incidents)
