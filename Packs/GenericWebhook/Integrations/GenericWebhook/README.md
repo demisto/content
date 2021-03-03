@@ -38,6 +38,15 @@ For example, the following triggers the webhook using cURL:
 
 `curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -d '{"name":"incident created via generic webhook","raw_json":{"some_field":"some_value"}}'`
 
+The request payload does not have to contain the fields mentioned above, and may include anything:
+
+`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
+
+The payload could then be mapped in Cortex XSOAR mapping wizard:
+- Note that the *Store sample events for mapping* parameter need to be set.
+
+    <img width="500" src="./../../doc_imgs/mapping.png" />
+
 The response is an array containing an object with the created incident metadata, such as the incident ID.
 
 ## Security
