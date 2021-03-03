@@ -136,8 +136,8 @@ def search_records_soap_request(
                    f'            <sessionToken>{token}</sessionToken>' + \
                    '            <searchOptions>' + \
                    '                <![CDATA[<SearchReport>' + \
-                   '                <PageSize>100</PageSize>' + \
-                   '                <PageNumber>1</PageNumber>' + \
+                   f'                <PageSize>{max_results}</PageSize>' + \
+                   '                 <PageNumber>1</PageNumber>' + \
                    f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
                    '                <ShowStatSummaries>false</ShowStatSummaries>' + \
                    f'                <DisplayFields>{display_fields}</DisplayFields>' + \
