@@ -1,0 +1,1027 @@
+id: SailPointIdentityNow-Test
+name: SailPointIdentityNow-Test
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: identitynow-search-identities
+      description: ''
+      script: '|||identitynow-search-identities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.inactive
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.protected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.isManager
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.identityProfile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accounts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accountCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.appCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accessCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.entitlementCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.roleCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.accessProfileCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Identity.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: identitynow-get-accounts
+      description: ''
+      script: '|||identitynow-get-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.identityId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.nativeIdentity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.sourceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.authoritative
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.locked
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.systemAccount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.uncorrelated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.manuallyCorrelated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.Account.hasEntitlements
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: identitynow-get-accountactivities
+      description: ''
+      script: '|||identitynow-get-accountactivities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: completed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: completionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: requesterIdentitySummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: targetIdentitySummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: items
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: executionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: cancelable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: cancelComment
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: identitynow-search-accessprofiles
+      description: ''
+      script: '|||identitynow-search-accessprofiles'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.entitlements
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.entitlementCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.requestable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.requestCommentsRequired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SailPointIdentityNow.AccessProfile.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: identitynow-search-roles
+      description: ''
+      script: '|||identitynow-search-roles'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.accessProfiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.accessProfileCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.requestable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.requestCommentsRequired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Role.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: identitynow-search-entitlements
+      description: ''
+      script: '|||identitynow-search-entitlements'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.privileged
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.identityCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.attribute
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.schema
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Entitlement.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: identitynow-search-events
+      description: ''
+      script: '|||identitynow-search-events'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.stack
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.synced
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.objects
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.technicalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.target
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.attributes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.operation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.pod
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IdentityNow.Event.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: identitynow-request-grant
+      description: ''
+      script: '|||identitynow-request-grant'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '17'
+    type: regular
+    task:
+      id: '17'
+      version: -1
+      name: identitynow-request-revoke
+      description: ''
+      script: '|||identitynow-request-revoke'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: '18'
+    taskid: '18'
+    type: title
+    task:
+      id: '18'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
