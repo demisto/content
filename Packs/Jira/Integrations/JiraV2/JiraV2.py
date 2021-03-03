@@ -24,6 +24,8 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          'dueDate': 'The due date for the issue (in the format 2018-03-11).',
                          'assignee': 'The name of the assignee.',
                          'status': 'The name of the status.',
+                          'assignee_id': 'The account ID of the assignee. Use'
+                                        ' the jira-get-id-by-attribute command to get the user\'s Account ID.'
                          }
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
