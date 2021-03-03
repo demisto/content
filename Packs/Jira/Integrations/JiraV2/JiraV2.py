@@ -546,8 +546,11 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     if issue_args.get('description'):
         issue['fields']['description'] = issue_args['description']
 
-    if issue_args.get('labels'):
+    if issue_args.get('labels') and isinstance(issue_args.get('labels'), str):
         issue['fields']['labels'] = issue_args['labels'].split(",")
+
+    if issue_args.get('labels') and isinstance(issue_args.get('labels'), list):
+        issue['fields']['labels'] = issue_args['labels']
 
     if issue_args.get('priority'):
         if not issue['fields'].get('priority'):
