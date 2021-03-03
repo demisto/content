@@ -1,0 +1,981 @@
+description: Parse files
+id: Log Analysis Read All files
+inputs: []
+name: Log Analysis Read All files
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: deadb7e1-c620-4dc9-8204-feb1b9d8ecd4
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: deadb7e1-c620-4dc9-8204-feb1b9d8ecd4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 50
+        }
+      }
+  "7":
+    fieldMapping:
+    - incidentfield: XSOAR Version
+      output:
+        simple: ${DemistoVersion.version}
+    - incidentfield: XSOAR Build
+      output:
+        simple: ${DemistoVersion.buildNumber}
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the Demisto server version.
+      id: f6c48237-e603-475f-8123-f189d305894d
+      iscommand: false
+      name: Get version
+      script: DemistoVersion
+      type: regular
+      version: -1
+    taskid: f6c48237-e603-475f-8123-f189d305894d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 340
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: license_data.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read license_data.log and set customer name, license end date
+      id: 75c7e35f-a9c8-497c-8cd3-1ff4178eb7ed
+      iscommand: false
+      name: Read license_data.log and set customer name, license end date
+      script: e382ff7b-32fd-44ee-8863-e4d01df09d89
+      type: regular
+      version: -1
+    taskid: 75c7e35f-a9c8-497c-8cd3-1ff4178eb7ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: web-app.log
+          root: File
+          transformers:
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read web-app file
+      id: 110d1c9a-2908-4367-80cd-f61cbbb16509
+      iscommand: false
+      name: Read web-app file
+      script: eceedb9b-6a40-424d-89b9-d12c182d4561
+      type: regular
+      version: -1
+    taskid: 110d1c9a-2908-4367-80cd-f61cbbb16509
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1535
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IncidentID:
+        simple: ${incident.id}
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: startWith
+              right:
+                value:
+                  simple: server
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: .log
+          root: File
+      maxFileSize: {}
+      since:
+        simple: ${incident.lasince}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read server log file line by line and display warnings, fatal errors
+        and keyword results in a table to the war room
+      id: 13bdeef9-e2be-4901-8f83-27b84d3271ef
+      iscommand: false
+      name: Read server.log file and display
+      script: 635cba01-1955-45b7-8a2a-c37b895ac7fd
+      tags:
+      - ServerResults
+      type: regular
+      version: -1
+    taskid: 13bdeef9-e2be-4901-8f83-27b84d3271ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc80ad3a-2167-4840-8549-601b7b9ebd00
+      iscommand: false
+      name: Read all files
+      type: title
+      version: -1
+      description: ''
+    taskid: dc80ad3a-2167-4840-8549-601b7b9ebd00
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 195
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: docker.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read docker log file
+      id: ef118a34-95dd-4a94-84b5-e7da4fb31960
+      iscommand: false
+      name: Read the Docker.log file
+      script: b02c78b9-9792-4753-892e-cb6855fceaa4
+      type: regular
+      version: -1
+    taskid: ef118a34-95dd-4a94-84b5-e7da4fb31960
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: docker.log
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if docker log exist
+      id: 42a5ea9d-2110-4e40-8294-ce435e8fe63e
+      iscommand: false
+      name: 'Do we have a docker log in the bundle ? '
+      type: condition
+      version: -1
+    taskid: 42a5ea9d-2110-4e40-8294-ce435e8fe63e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 865
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: workers.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read workers logfile
+      id: d8685b58-4a77-4300-867a-05e99dddbdf9
+      iscommand: false
+      name: Read the workers.log file
+      script: 4cfe787f-41ac-4419-8ecb-3b1f226bb72e
+      type: regular
+      version: -1
+    taskid: d8685b58-4a77-4300-867a-05e99dddbdf9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 515
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: filesystem.log
+          root: File
+      minFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read the filesystem.log file extracted from the log bundle
+      id: 12444b8e-5e26-47bb-8a98-61de20387a90
+      iscommand: false
+      name: Read the filesystem.log file
+      script: cf23925a-f797-476f-8bea-c4923fd8dbb3
+      type: regular
+      version: -1
+    taskid: 12444b8e-5e26-47bb-8a98-61de20387a90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 690
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: confserver.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read the license_data.log file extracted from the log bundle
+      id: 356d2dd9-6381-4ee3-84e0-c4612410e94f
+      iscommand: false
+      name: Read the confserver.log file
+      script: b5042a5f-9bb3-4eaa-8c96-e4b53ab3eef8
+      type: regular
+      version: -1
+    taskid: 356d2dd9-6381-4ee3-84e0-c4612410e94f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 515
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4fdae8fd-d028-4e26-83e5-a6ffa19b3b89
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4fdae8fd-d028-4e26-83e5-a6ffa19b3b89
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2060
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: conf.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read the conf.log file extracted from the log bundle
+      id: e5597944-d4de-4e0d-8584-fa31daaec7ce
+      iscommand: false
+      name: Read the conf.log file
+      script: 2b5de551-cd4c-4223-8e2f-7ca5f7c10002
+      type: regular
+      version: -1
+    taskid: e5597944-d4de-4e0d-8584-fa31daaec7ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 690
+        }
+      }
+  "52":
+    continueonerror: true
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: telemetry.log
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read Telemetry file
+      id: 160893f2-7850-407a-8007-20b7ccf5e959
+      iscommand: false
+      name: Read Telemetry file
+      script: 33759f86-c018-417c-8602-7054314fed21
+      type: regular
+      version: -1
+    taskid: 160893f2-7850-407a-8007-20b7ccf5e959
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: endWith
+              right:
+                value:
+                  simple: version_control.log
+          root: File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Read the version_control.log file extracted from the log bundle
+      id: 0aa0b582-3127-4f07-8dbf-40d9d1d9f8b1
+      iscommand: false
+      name: Read the version_control.log file
+      script: 94f29c66-ca5f-47f0-855e-9724688218f1
+      type: regular
+      version: -1
+    taskid: 0aa0b582-3127-4f07-8dbf-40d9d1d9f8b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 340
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+      - "52"
+      - "62"
+      - "63"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af5cfa36-65e8-4bda-89d4-fee52d0b6b06
+      iscommand: false
+      name: Continue
+      type: title
+      version: -1
+      description: ''
+    taskid: af5cfa36-65e8-4bda-89d4-fee52d0b6b06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1215
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 845b68b9-4a5f-48fd-8051-eea8bcbf3846
+      iscommand: false
+      name: 84e9588a-b0e0-4ada-8607-2f6736061627
+      playbookId: 84e9588a-b0e0-4ada-8607-2f6736061627
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 845b68b9-4a5f-48fd-8051-eea8bcbf3846
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d30a8f9f-8e1a-44c0-868f-1828eb570c2f
+      iscommand: false
+      name: Content
+      type: title
+      version: -1
+      description: ''
+    taskid: d30a8f9f-8e1a-44c0-868f-1828eb570c2f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1375
+        }
+      }
+  "59":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: installedpacks.json
+      label: "yes"
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check for PACKS
+      id: 9072011b-5146-42d6-82d3-bbcb7a2ff10e
+      iscommand: false
+      name: Check for PACKS
+      type: condition
+      version: -1
+    taskid: 9072011b-5146-42d6-82d3-bbcb7a2ff10e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1710
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: isEqualString
+              right:
+                value:
+                  simple: installedpacks.json
+          root: ${File
+      maxFileSize: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Read the installedpacks.json. \n\nCount and get pacs names"
+      id: 5cb28273-a7ce-44b8-83af-79fffe272fef
+      iscommand: false
+      name: Read installedpacks.json
+      script: f41e0e48-f95c-49a7-8f63-bbc75ec786e9
+      type: regular
+      version: -1
+    taskid: 5cb28273-a7ce-44b8-83af-79fffe272fef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1885
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e6f39ce-cea6-444c-8395-8b46dc70405d
+      iscommand: false
+      name: 'Architecture: DR/HA/MultiRepo/DD/Elastic'
+      type: title
+      version: -1
+      description: ''
+    taskid: 4e6f39ce-cea6-444c-8395-8b46dc70405d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1725
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 53255b37-c40b-4555-81ff-00800f077b4a
+      iscommand: false
+      name: Server Logs Logic
+      type: title
+      version: -1
+      description: ''
+    taskid: 53255b37-c40b-4555-81ff-00800f077b4a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1725
+        }
+      }
+  "63":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: justKey
+          operator: isExists
+      label: "yes"
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "64"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Collect Large Investigation
+      id: fb986ab6-ee5e-44d2-84fe-ec9367a9c913
+      iscommand: false
+      name: Collect Large Investigation
+      type: condition
+      version: -1
+    taskid: fb986ab6-ee5e-44d2-84fe-ec9367a9c913
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1535
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "65"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      from: {}
+      table_result: {}
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR
+        investigations.
+      id: 2ffef78b-f013-4ab5-8f71-f7accacc8fb4
+      iscommand: false
+      name: Get Large IO Incidents
+      script: GetLargestInputsAndOuputsInIncidents
+      type: regular
+      version: -1
+    taskid: 2ffef78b-f013-4ab5-8f71-f7accacc8fb4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 1695
+        }
+      }
+  "65":
+    id: "65"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      from: {}
+      table_result: {}
+      to: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns all investigations larger than 1 MB from all Cortex XSOAR.
+      id: fb407910-bffe-44ad-819c-a323d8356977
+      iscommand: false
+      name: Get Large Investigations
+      script: GetLargestInvestigations
+      type: regular
+      version: -1
+    taskid: fb407910-bffe-44ad-819c-a323d8356977
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 1885
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2075,
+        "width": 1812.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

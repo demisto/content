@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: War room entryID of the file to read.
+  name: entryID
+  required: true
+comment: |-
+  Read the we-app.log file from the extracted files of log bundle
+
+  Set content version, asset id to incident and available_modules to context
+commonfields:
+  id: HealthCheckWebApp
+  version: -1
+dockerimage: demisto/python3:3.9.2.17246
+enabled: true
+name: HealthCheckWebApp
+outputs:
+- contextPath: FileData
+  description: Data read from war room file
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

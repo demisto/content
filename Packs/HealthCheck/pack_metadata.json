@@ -1,0 +1,17 @@
+{
+    "name": "Health Check",
+    "description": "Health Check pack for diagnostics system resource and content usages such as playbook, system settings, etc",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "CS",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

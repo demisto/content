@@ -1,0 +1,299 @@
+description: Collect Logs and parse data
+id: 'Health Check - Log Analysis '
+inputs: []
+name: 'Health Check - Log Analysis '
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ace96cc-102f-4c74-85ab-d0a35b059fe3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7ace96cc-102f-4c74-85ab-d0a35b059fe3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "57"
+      "no":
+      - "56"
+      "yes":
+      - "70"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: containsString
+              right:
+                value:
+                  simple: logs-bundle
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: tar
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
+        \ unsupported use cases and unextracted files. "
+      id: 0ebcdf63-8fee-4bea-8f65-f44de9a2c8c4
+      iscommand: false
+      name: UnPack the zipped log file
+      script: e8db2b76-bb7b-44db-8f20-58071ce01446
+      type: condition
+      version: -1
+    taskid: 0ebcdf63-8fee-4bea-8f65-f44de9a2c8c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: file type is not supported
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: e20b0e15-33e1-4ec5-8fd4-18dc573f6838
+      iscommand: false
+      name: File Type is not supported
+      script: Print
+      type: regular
+      version: -1
+    taskid: e20b0e15-33e1-4ec5-8fd4-18dc573f6838
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: File can't be extracted
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 66045950-0118-425d-82a1-ccb72da17b23
+      iscommand: false
+      name: File can't be extracted
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 66045950-0118-425d-82a1-ccb72da17b23
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb58c036-2faf-4bc2-85fd-4a78ad312289
+      iscommand: false
+      name: continue
+      type: title
+      version: -1
+      description: ''
+    taskid: fb58c036-2faf-4bc2-85fd-4a78ad312289
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "70":
+    id: "70"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6e0519d-68f7-491b-869d-d29ca2f91485
+      iscommand: false
+      name: Read All Files
+      type: title
+      version: -1
+      description: ''
+    taskid: a6e0519d-68f7-491b-869d-d29ca2f91485
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9fb899c8-1412-4add-8281-b42962d7beb3
+      iscommand: false
+      name: 3150d845-2ee8-4036-8051-7615dce87b40
+      playbookId: 3150d845-2ee8-4036-8051-7615dce87b40
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9fb899c8-1412-4add-8281-b42962d7beb3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description: {}
+      filename: {}
+      uri:
+        simple: /log/bundle
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Download files from Demisto server
+      id: e7488c8a-ae0f-4994-8586-7617fea4cab4
+      iscommand: true
+      name: Download log bundle
+      script: '|||demisto-api-download'
+      type: regular
+      version: -1
+    taskid: e7488c8a-ae0f-4994-8586-7617fea4cab4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

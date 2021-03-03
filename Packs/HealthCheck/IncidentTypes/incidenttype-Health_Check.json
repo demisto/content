@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#7C71F5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Health Check",
+    "layout": "d41a54bc-292f-479f-8a42-892cc2d04430",
+    "locked": false,
+    "name": "Health Check",
+    "onChangeRepAlg": 1,
+    "playbookId": "143edcc1-1fef-4551-8a9a-ee4da64208a3",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
