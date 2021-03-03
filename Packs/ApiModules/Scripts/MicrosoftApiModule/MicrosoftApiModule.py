@@ -133,7 +133,7 @@ class MicrosoftClient(BaseClient):
             try:
                 error_message = response.json()
             except Exception:
-                error_message = 'Page Not Found - 404 Response'
+                error_message = 'Not Found - 404 Response'
             raise NotFoundError(error_message)
 
         try:
@@ -543,7 +543,7 @@ class MicrosoftClient(BaseClient):
 
 
 class NotFoundError(Exception):
-    """Exception raised for 404 - Page Not Found errors.
+    """Exception raised for 404 - Not Found errors.
 
     Attributes:
         message -- explanation of the error
