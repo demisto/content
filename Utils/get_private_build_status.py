@@ -6,8 +6,8 @@ import argparse
 import requests
 import logging
 from Tests.scripts.utils.log_util import install_logging
-from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE,\
-                                        GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
+from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE, \
+    GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -55,7 +55,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
     job_conclusion = curr_job.get('conclusion')
 
     if job_status == 'completed':
-        return 'completed', job_conclusion, None
+        return 'completed', job_conclusion, ''
 
     # if the job is still in progress - get the current step
     curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
@@ -78,10 +78,10 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
-    bearer_token = f'Bearer {args.github_token}'
+    github_token = args.github_token
 
     # gets the workflow status
-    status, conclusion, step = get_workflow_status(bearer_token, workflow_id)
+    status, conclusion, step = get_workflow_status(github_token, workflow_id)
 
     # initialize timer
     start = time.time()
@@ -91,7 +91,7 @@ def main():
     while status in ['queued', 'in_progress'] and elapsed < GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.info(f'Workflow {workflow_id} status is {status}, current step: {step}')
         time.sleep(10)
-        status, conclusion, step = get_workflow_status(bearer_token, workflow_id)
+        status, conclusion, step = get_workflow_status(github_token, workflow_id)
         elapsed = time.time() - start
 
     if elapsed >= GET_WORKFLOWS_TIMEOUT_THRESHOLD:
