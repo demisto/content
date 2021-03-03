@@ -1,5 +1,5 @@
 id: Cisco Stealthwatch
-version: 8
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Cisco Stealthwatch
 starttaskid: "0"
@@ -989,3 +989,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
