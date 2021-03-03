@@ -31,7 +31,9 @@ tasks:
     id: "1"
     taskid: 7e471176-b33d-4e40-8641-35293e602811
     type: regular
-
+    task:
+      id: 7e471176-b33d-4e40-8641-35293e602811
+      version: -1
       iscommand: true
       brand: Builtin
     nexttasks:
