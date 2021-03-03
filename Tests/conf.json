@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "fromversion": "5.0.0",
+            "integrations": ["WildFire-v2"],
+            "playbookID": "Detonate File - WildFire - Test",
+            "is_mockable": false
+        },
+        {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "is_mockable": false
