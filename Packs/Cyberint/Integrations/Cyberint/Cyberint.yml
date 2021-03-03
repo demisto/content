@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.0.0
+fromversion: 5.5.0
 commonfields:
   id: cyberint
   version: -1

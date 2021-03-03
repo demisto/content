@@ -1,12 +1,6 @@
 id: List Cisco Stealthwatch Security Events
 version: 21
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.2.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: List Cisco Stealthwatch Security Events
 description: This playbook list security events and return the results to the context.
 fromversion: 5.5.0

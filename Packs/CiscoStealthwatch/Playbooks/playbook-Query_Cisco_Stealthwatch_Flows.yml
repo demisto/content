@@ -1,12 +1,6 @@
 id: Query Cisco Stealthwatch Flows
 version: 6
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.2.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: Query Cisco Stealthwatch Flows
 description: This playbook runs a query on Cisco Stealthwatch flows and return its results to the context.
 fromversion: 5.5.0
