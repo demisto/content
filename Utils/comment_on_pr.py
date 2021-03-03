@@ -45,7 +45,6 @@ def get_pr_comments_url(pr_number: str) -> str:
         print_error('Could not find the pull request to reply on.')
         sys.exit(1)
     page = 1
-    page = 1
     comments_url = pr['comments_url']
     while True:
         response = requests.get(comments_url, params={'page': str(page)})
