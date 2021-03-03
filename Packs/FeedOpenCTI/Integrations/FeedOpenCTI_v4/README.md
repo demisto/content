@@ -1,5 +1,6 @@
-Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances. For v3 OpenCTI version OpenCTI Feed v3 integration should be used.
-This integration was integrated and tested with version v4.0.7 of OpenCTI Feed v4
+Ingest indicator feeds from OpenCTI. 
+This integration was integrated and tested with version v4.0.7 of OpenCTI Feed.
+Compatible with OpenCTI v4 instances. For v3.* and lower OpenCTI versions use the OpenCTI Feed v3 integration.
 ## Configure OpenCTI Feed v4 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -751,4 +752,3 @@ Get list of all marking definitions.
 >|---|---|
 >| TLP:GREEN | dc911977-796a-4d96-95e4-615bd1c41263 |
 >| TLP:AMBER | 9128e411-c759-4af0-aeb0-b65f12082648 |
-
