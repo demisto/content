@@ -8,6 +8,7 @@ import requests
 import logging
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -80,8 +81,14 @@ def main():
 
     # get branch name
     branches = tools.run_command("git branch")
-    branch_name_reg = re.search(r"\* (.*)", branches)
-    branch_name = branch_name_reg.group(1)
+    branch_name_regex = re.search(r"\* (.*)", branches)
+    branch_name = branch_name_regex.group(1)
+
+    file_validator = ValidateManager()
+    file_validator.branch_name = 'trigger-private-build'
+    modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
+    print(modified_files)
+    print(added_files)
 
     modified_files = get_modified_files(branch_name)
 
