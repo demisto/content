@@ -43,7 +43,7 @@ def executeCommand(command, args):
 TRANSFORMATION = {
     'indicators': {'transformer': Tfidf,
                    'normalize': None,
-                   'params': {'analyzer': 'word', 'max_features': 200, 'token_pattern': '.'},  # [\d\D]*
+                   'params': None,  # [\d\D]*
                    'scoring': {'scoring_function': identity_score, 'min': 0.5}
                    }
 }
@@ -67,7 +67,6 @@ def test_match_indicators_incident(mocker):
 
 
 def test_score(mocker):
-    params = TRANSFORMATION['indicators']['params']
     normalize_function = TRANSFORMATION['indicators']['normalize']
     incident = pd.DataFrame({'indicators': ['1 2 3 4 5 6']})
     # Check if incident is rare then the score is higher
