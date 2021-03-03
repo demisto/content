@@ -313,3 +313,5 @@ outputs:
 - contextPath: CiscoStealthwatch.FlowResults
   description: The result of the search
 sourceplaybookid: QRadarFullSearch
+tests:
+ -  No tests

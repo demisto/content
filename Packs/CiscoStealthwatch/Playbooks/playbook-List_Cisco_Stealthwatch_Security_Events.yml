@@ -311,3 +311,5 @@ outputs:
 - contextPath: CiscoStealthwatch.SecurityEventResults
   description: The result of the search
 sourceplaybookid: QRadarFullSearch
+tests:
+ -  No tests
