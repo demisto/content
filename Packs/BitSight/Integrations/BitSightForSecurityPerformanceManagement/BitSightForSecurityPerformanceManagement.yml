@@ -1,0 +1,375 @@
+commonfields:
+  id: BitSight for Security Performance Management
+  version: -1
+name: BitSight for Security Performance Management
+display: BitSight for Security Performance Management
+category: Utilities
+description: "BitSight for Security Performance Management (SPM) enables CISOs to\
+  \ use an external view of security performance to measure, monitor, manage, and\
+  \ report on their cybersecurity program performance over time, and to facilitate\
+  \ a universal understanding of cyber risk across their organization. This improved\
+  \ understanding enables security leaders to make more informed decisions about their\
+  \ cybersecurity program, including where to focus their limited resources in order\
+  \ to achieve the greatest impact, where to spend money, and how to manage their\
+  \ cyber risk more effectively. \nThe data-driven metrics within BitSight indicate\
+  \ if the cybersecurity program is performing up to the expectations set by internal\
+  \ goals and objectives, industry best practices, regulators, customers, and other\
+  \ internal or external stakeholders. The BitSight Security Rating, the industry’s\
+  \ original cybersecurity rating score, provides a trusted metric that reflects the\
+  \ organization’s cybersecurity program performance over time. By combining the insights\
+  \ gained from BitSight SPM with the BitSight Security Rating, security leaders provide\
+  \ a more complete view of their cybersecurity program performance over time and\
+  \ help to bring about a universal understanding of cyber risk to the Board of Directors\
+  \ and other stakeholders. \nBring BitSight findings event information into your\
+  \ security program and leverage Cortex XSOAR's incident management workflows for\
+  \ automation of managing security incidents. This visibility enables you to pinpoint\
+  \ and control the sources of infections in your company infrastructure, seamlessly\
+  \ going from awareness to rapid remediation. The findings information reveals associated\
+  \ IP addresses, destination ports, and more, to assist your company in connecting\
+  \ the security and IT teams to respond faster and more effectively to threats. "
+configuration:
+- display: Server URL (e.g. https://api.bitsighttech.com)
+  name: url
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Company's GUID
+  name: guid
+  type: 0
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: "3"
+  type: 0
+  required: false
+  additionalinfo: 'Enter the  number in days '
+- display: Incident Daily Fetch time
+  name: fetch_time
+  defaultvalue: "00:01"
+  type: 0
+  required: false
+  additionalinfo: Please provide Incident fetch time in day in 24 hours format ('HH:MM')
+- display: Max Fetch
+  name: max_fetch
+  defaultvalue: "100"
+  type: 0
+  required: false
+  additionalinfo: Maximum Number of records to fetch
+- display: Minimum Severity for Findings
+  name: findings_min_severity
+  defaultvalue: Material
+  type: 15
+  required: false
+  options:
+  - Minor
+  - Moderate
+  - Material
+  - Severe
+- display: Findings minimum asset category
+  name: findings_asset_category
+  defaultvalue: High
+  type: 15
+  required: false
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  additionalinfo: By default value will be empty, records will be fetched without
+    asset category filter
+- display: Findings Grade
+  name: findings_grade
+  defaultvalue: 'WARN,BAD '
+  type: 16
+  required: false
+  options:
+  - GOOD
+  - FAIR
+  - WARN
+  - 'BAD '
+  - NEUTRAL
+- display: Risk Vector (All has been selected by default)
+  name: risk_vector
+  defaultvalue: Web Application Headers,Breaches,Botnet Infections,Desktop Software,DKIM,DNSSEC,File
+    Sharing,Insecure Systems,Malware Servers,Mobile App Publications,Mobile Application
+    Security,Mobile Software,Open Ports,Patching Cadence,Potentially Exploited,Server
+    Software,Spam Propagation,SPF,SSL Certificates,SSL Configurations,Unsolicited
+    Communications
+  type: 16
+  required: false
+  options:
+  - Web Application Headers
+  - Botnet Infections
+  - Breaches
+  - Desktop Software
+  - DKIM
+  - DNSSEC
+  - File Sharing
+  - Insecure Systems
+  - Malware Servers
+  - Mobile App Publications
+  - Mobile Application Security
+  - Mobile Software
+  - Open Ports
+  - Patching Cadence
+  - Potentially Exploited
+  - Server Software
+  - Spam Propagation
+  - SPF
+  - SSL Certificates
+  - SSL Configurations
+  - Unsolicited Communications
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: bitsight-get-company-details
+    arguments:
+    - name: guid
+      required: true
+      description: GUID of the company to fetch its details
+    outputs:
+    - contextPath: errorCode
+      description: Error code number when API fails
+      type: string
+    - contextPath: errorMessage
+      description: Error Message when API fails
+      type: string
+    - contextPath: guid
+      description: guid
+      type: string
+    - contextPath: customId
+      description: customId
+      type: string
+    - contextPath: name
+      description: name
+      type: string
+    - contextPath: description
+      description: description
+      type: string
+    - contextPath: ipv4Count
+      description: ipv4Count
+      type: string
+    - contextPath: peopleCount
+      description: peopleCount
+      type: string
+    - contextPath: shortName
+      description: shortName
+      type: string
+    - contextPath: industry
+      description: industry
+      type: string
+    - contextPath: industrySlug
+      description: industrySlug
+      type: string
+    - contextPath: subIndustry
+      description: subIndustry
+      type: string
+    - contextPath: subIndustrySlug
+      description: subIndustrySlug
+      type: string
+    - contextPath: homePage
+      description: homePage
+      type: string
+    - contextPath: primaryDomain
+      description: primaryDomain
+      type: string
+    - contextPath: type
+      description: type
+      type: string
+    - contextPath: displayURL
+      description: displayURL
+      type: string
+    - contextPath: ratingDetails
+      description: ratingDetails
+      type: string
+    - contextPath: ratings
+      description: ratings
+      type: string
+    - contextPath: searchCount
+      description: searchCount
+      type: string
+    - contextPath: subscriptionType
+      description: subscriptionType
+      type: string
+    - contextPath: sparkline
+      description: sparkline
+      type: string
+    - contextPath: subscriptionTypeKey
+      description: subscriptionTypeKey
+      type: string
+    - contextPath: subscriptionEndDate
+      description: subscriptionEndDate
+      type: string
+    - contextPath: bulkEmailSenderStatus
+      description: bulkEmailSenderStatus
+      type: string
+    - contextPath: serviceProvider
+      description: serviceProvider
+      type: string
+    - contextPath: customerMonitoringCount
+      description: customerMonitoringCount
+      type: string
+    - contextPath: availableUpgradeTypes
+      description: availableUpgradeTypes
+      type: string
+    - contextPath: hasCompanyTree
+      description: hasCompanyTree
+      type: string
+    - contextPath: hasPreferredContact
+      description: hasPreferredContact
+      type: string
+    - contextPath: isBundle
+      description: isBundle
+      type: string
+    - contextPath: ratingIndustryMedian
+      description: ratingIndustryMedian
+      type: string
+    - contextPath: primaryCompany
+      description: primaryCompany
+      type: string
+    - contextPath: permissions
+      description: permissions
+      type: string
+    - contextPath: isPrimary
+      description: isPrimary
+      type: string
+    - contextPath: securityGrade
+      description: securityGrade
+      type: string
+    - contextPath: inSpmPortfolio
+      description: inSpmPortfolio
+      type: string
+    - contextPath: isMycompMysubsBundle
+      description: isMycompMysubsBundle
+      type: string
+    - contextPath: companyFeatures
+      description: companyFeatures
+      type: string
+    description: BitSight command - to get comany details based on guid.
+  - name: bitsight-get-company-findings
+    arguments:
+    - name: guid
+      required: true
+      description: Guid of the company
+    - name: first_seen
+      required: true
+      description: First seen date of the findings, Date format is YYYY-MM-DD
+    - name: last_seen
+      required: true
+      description: Last seen date of the findings, Date format is YYYY-MM-DD
+    - name: severity
+      description: Minimum Severity of the findings
+    - name: grade
+      description: Minimum Grade of the findings
+    - name: asset_category
+      description: Asset Category of the findings
+    - name: risk_vector_label
+      description: Risk category of the findings
+      isArray: true
+    outputs:
+    - contextPath: errorCode
+      description: Error code number when API fails
+      type: string
+    - contextPath: errorMessage
+      description: Error Message when API fails
+      type: String
+    - contextPath: temporaryId
+      description: temporary Id
+      type: string
+    - contextPath: affectsRating
+      description: Whther rating is affected
+      type: string
+    - contextPath: assets
+      description: Information about assets
+    - contextPath: details
+      description: Details about findings
+      type: string
+    - contextPath: evidenceKey
+      description: evidence key
+      type: string
+    - contextPath: firstSeen
+      description: first seen date of the findings
+      type: date
+    - contextPath: lastSeen
+      description: last seen date of the findings
+      type: date
+    - contextPath: relatedFindings
+      description: related findings
+      type: string
+    - contextPath: riskCategory
+      description: risk category
+      type: string
+    - contextPath: riskVector
+      description: risk vector
+      type: string
+    - contextPath: riskVectorLabel
+      description: risk vector label
+      type: string
+    - contextPath: rolledupObservationId
+      description: rolledup observation id
+      type: string
+    - contextPath: severity
+      description: severity
+      type: string
+    - contextPath: severityCategory
+      description: severity category
+      type: string
+    - contextPath: tags
+      description: tags
+      type: string
+    - contextPath: duration
+      description: duration
+      type: string
+    - contextPath: comments
+      description: comments
+    - contextPath: remainingDecay
+      description: remaining decay
+      type: string
+    description: BitSight command to get company findings
+  - name: bitsight-get-companies-guid
+    arguments: []
+    outputs:
+    - contextPath: BitSight.Guid.companyName
+      description: Name of the company
+      type: String
+    - contextPath: BitSight.Guid.shortName
+      description: short name of the company
+      type: Date
+    - contextPath: BitSight.Guid.guid
+      description: GUID of the company
+      type: String
+    - contextPath: BitSight.Guid.errorCode
+      description: Error code in case API fails
+      type: String
+    - contextPath: BitSight.Guid.errorMessage
+      description: Error Message in case API fails
+      type: String
+    description: BitSight command to get list of companies and GUID
+  dockerimage: demisto/python3:3.9.1.15759
+  isfetch: true
+  runonce: false
+  subtype: python3
+  isFetchSamples: true
+fromversion: 5.0.0
+tests:
+- No tests
