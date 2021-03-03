@@ -56,7 +56,7 @@ configuration:
   - None
   required: true
   type: 15
-  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense into IP
+  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense to IP
     values. Asset enrichment adds correlated assets to the fetched offenses.
 - defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
     CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
@@ -72,6 +72,12 @@ configuration:
   name: events_columns
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
+  type: 12
+- additionalinfo: Comma-separated configuration for advanced parameters values.
+    e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+  display: Advanced Parameters
+  name: adv_params
+  required: false
   type: 12
 - display: Trust any certificate (not secure)
   name: insecure
@@ -169,12 +175,12 @@ script:
       description: Status of the offense. One of 'OPEN', 'HIDDEN', 'CLOSED'.
       type: String
     - contextPath: QRadar.Offense.LinkToOffense
-      description: Link to the URL contaning information about the offense.
+      description: Link to the URL containing information about the offense.
       type: String
     arguments:
     - name: offense_id
       description: The offense ID to retrieve its details. Specify offense_id if you
-        want to get details only about certain offense.
+        want to get details about certain offense.
     - name: enrichment
       defaultValue: None
       auto: PREDEFINED
@@ -182,7 +188,7 @@ script:
       - IPs
       - IPs And Assets
       - None
-      description: IPs enrichment transforms IDs of the IPs of the offense into IP
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP
         values. Asset enrichment adds correlated assets to the fetched offenses.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -283,7 +289,7 @@ script:
       description: Status of the offense. One of 'OPEN', 'HIDDEN', 'CLOSED'.
       type: String
     - contextPath: QRadar.Offense.LinkToOffense
-      description: Link to the URL contaning information about the offense.
+      description: Link to the URL containing information about the offense.
       type: String
     arguments:
     - name: offense_id
@@ -296,7 +302,7 @@ script:
       - IPs
       - IPs And Assets
       - None
-      description: IPs enrichment transforms IDs of the IPs of the offense into IP
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP
         values. Asset enrichment adds correlated assets to the fetched offenses.
     - name: protected
       description: Whether the offense should be protected.
@@ -305,7 +311,7 @@ script:
       - 'true'
       - 'false'
     - name: follow_up
-      description: Whether the offense should be marke for follow up.
+      description: Whether the offense should be marked for follow up.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -354,7 +360,7 @@ script:
     - name: closing_reason_id
       required: false
       description: The closing reason ID to retrieve its details. Specify closing_reason_id
-        if you want to get details only about certain closing reason.
+        if you want to get details about certain closing reason.
     - name: include_reserved
       required: false
       description: If true, reserved closing reasons are included in the response.
@@ -405,7 +411,7 @@ script:
       description: The offense ID to retrieve the notes for.
     - name: note_id
       description: The note ID to retrieve its details. Specify note_id if you want
-        to get details only about certain note.
+        to get details about certain note.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -490,7 +496,7 @@ script:
     - name: rule_id
       required: false
       description: The rule ID to retrieve its details. Specify rule_id if you want
-        to get details only about certain rule.
+        to get details about certain rule.
     - name: rule_type
       auto: PREDEFINED
       predefined:
@@ -549,7 +555,7 @@ script:
     - name: rule_group_id
       required: false
       description: The rule group ID to retrieve its details. Specify rule_group_id
-        if you want to get details only about certain rule group.
+        if you want to get details about certain rule group.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -698,7 +704,7 @@ script:
     - name: asset_id
       required: false
       description: The asset ID to retrieve its details. Specify asset_id if you want
-        to get details only about certain asset.
+        to get details about certain asset.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -751,7 +757,7 @@ script:
     - name: saved_search_id
       required: false
       description: The saved search ID to retrieve its details. Specify saved_search_id
-        if you want to get details only about certain saved search.
+        if you want to get details about certain saved search.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -869,7 +875,7 @@ script:
     - name: ref_name
       required: false
       description: The reference name of the reference set to retrieve its details.
-        Specify ref_name if you want to get details only about certain reference set.
+        Specify ref_name if you want to get details about certain reference set.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -920,7 +926,7 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to be created.
+      description: The name of the reference set to be created. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: element_type
       auto: PREDEFINED
       required: true
@@ -954,11 +960,11 @@ script:
         full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
       isArray: true
   - name: qradar-reference-set-delete
-    description: Removes a reference set or purges its contents. or not
+    description: Removes a reference set or purges its contents.
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to be deleted.
+      description: The name of the reference set to be deleted. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: purge_only
       description: Indicates if the reference set should have its contents purged
         (true), keeping the reference set structure. If the value is 'false', or not
@@ -969,13 +975,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - name: fields
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields
-        in brackets and multiple fields in the same object separated by commas. For
-        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-DELETE.html'
-      isArray: true
   - name: qradar-reference-set-value-upsert
     description: Add or update an element in a reference set.
     outputs:
@@ -1013,7 +1012,7 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to add or update an element in.
+      description: The name of the reference set to add or update an element in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: value
       required: true
       description: "Comma separated list. The values to add or update in the reference\
@@ -1043,7 +1042,7 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to remove a value from.
+      description: The name of the reference set to remove a value from. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: value
       required: true
       description: "The value to remove from the reference set. If value chosen is\
@@ -1056,13 +1055,6 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - name: fields
-      description: 'If used, will filter all fields except for the specified ones.
-        Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields
-        in brackets and multiple fields in the same object separated by commas. For
-        full list of available fields, https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-value-DELETE.html'
-      isArray: true
   - name: qradar-domains-list
     description: Gets the list of domains. You must have the System Administrator
       or Security Administrator permissions to call this endpoint if you are trying
@@ -1115,7 +1107,7 @@ script:
     arguments:
     - name: domain_id
       description: The domain ID to retrieve its details. Specify domain_id if you
-        want to get details only about certain domain.
+        want to get details about certain domain.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -1129,7 +1121,7 @@ script:
         full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html'
       isArray: true
   - name: qradar-indicators-upload
-    description: Uploads indicators from Demisto to Qradar.
+    description: Uploads indicators from Demisto to QRadar.
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
       description: Timeout type of the reference set. One of 'UNKNOWN', 'FIRST_SEEN',
@@ -1164,8 +1156,7 @@ script:
       type: String
     arguments:
     - name: ref_name
-      description: The name of map to add or update data in. TODO add get ref maps
-        command
+      description: The name of set to add or update data in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
       required: true
     - name: query
       description: The query for getting indicators from Demisto.
@@ -1270,7 +1261,7 @@ script:
       type: Number
     arguments:
     - name: ips
-      description: Comma seperated list of IPs to retrieve their geolocation.
+      description: Comma separated list of IPs to retrieve their geolocation.
       required: true
       isArray: true
     - name: fields

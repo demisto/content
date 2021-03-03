@@ -385,7 +385,7 @@
             "Credibility": 3, 
             "Status": "OPEN", 
             "DestinationHostname": [
-                "Net-10-172-192.Net_172_16_0_0"
+                "Net-10-172-192.Net_172_26_1_1"
             ], 
             "StartTime": "2018-10-16T13:07:36.245000Z", 
             "Protected": false, 
@@ -813,7 +813,7 @@
             "Credibility": 3, 
             "Status": "OPEN", 
             "DestinationHostname": [
-                "Net-10-172-192.Net_172_16_0_0"
+                "Net-10-172-192.Net_172_26_1_1"
             ], 
             "StartTime": "2018-10-16T13:07:36.245000Z", 
             "Protected": false, 

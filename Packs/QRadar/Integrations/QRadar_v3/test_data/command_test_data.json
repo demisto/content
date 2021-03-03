@@ -776,7 +776,7 @@
             "last_seen_profiler": 1613395223530,
             "created": 1612292712138,
             "last_seen_scanner": null,
-            "name": "TLVWIN9131Q21",
+            "name": "TLVWIN1293X15",
             "first_seen_scanner": null,
             "id": 1007,
             "type": "NETBIOS",
@@ -802,7 +802,7 @@
             "type_id": 1002,
             "id": 1006,
             "last_reported_by": "IDENTITY:112",
-            "value": "TLVWIN9131Q21"
+            "value": "TLVWIN1293X15"
           }
         ],
         "products": [],
@@ -810,7 +810,7 @@
           "IPAddress": []
         },
         "Name": {
-          "Value": "TLVWIN9131Q21",
+          "Value": "TLVWIN1293X15",
           "LastUser": "IDENTITY:112"
         }
       },
@@ -872,7 +872,7 @@
             "last_seen_profiler": 1613395223530,
             "created": 1612292712138,
             "last_seen_scanner": null,
-            "name": "TLVWIN9131Q21",
+            "name": "TLVWIN1293X15",
             "first_seen_scanner": null,
             "id": 1007,
             "type": "NETBIOS",
@@ -898,7 +898,7 @@
             "type_id": 1002,
             "id": 1006,
             "last_reported_by": "IDENTITY:112",
-            "value": "TLVWIN9131Q21"
+            "value": "TLVWIN1293X15"
           }
         ],
         "products": []
@@ -955,7 +955,7 @@
             {
               "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
               "created": "2021-02-02T19:05:12.138000+00:00",
-              "name": "TLVWIN9131Q21",
+              "name": "TLVWIN1293X15",
               "id": 1007,
               "type": "NETBIOS",
               "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00"
@@ -978,7 +978,7 @@
               "type_id": 1002,
               "id": 1006,
               "last_reported_by": "IDENTITY:112",
-              "value": "TLVWIN9131Q21"
+              "value": "TLVWIN1293X15"
             }
           ]
         },
