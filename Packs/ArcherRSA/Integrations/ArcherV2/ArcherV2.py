@@ -1048,6 +1048,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
+    sort_type = 'Descending' if argToBoolean(args.get('isDescending', 'false')) else 'Ascending'
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -1062,7 +1063,8 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     records, raw_res = client.search_records(
         app_id, fields_to_get, field_to_search, search_value,
-        numeric_operator, date_operator, max_results=max_results
+        numeric_operator, date_operator, max_results=max_results,
+        sort_type=sort_type,
     )
 
     records = list(map(lambda x: x['record'], records))
