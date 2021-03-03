@@ -1,4 +1,3 @@
-import re
 import os
 import sys
 import json
@@ -6,6 +5,7 @@ import time
 import argparse
 import requests
 import logging
+from typing import List
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
 
@@ -28,7 +28,16 @@ GET_WORKFLOWS_MAX_RETRIES = 3
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
 
-def get_modified_files(branch_name=None):
+def get_modified_files(branch_name: str = None) -> List[str]:
+    """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
+        compare master branch with the commit sha1 from the environment variable CIRCLE_SHA1.
+
+    Args:
+        branch_name: The branch name to compare with master.
+
+    Returns: A list of modified files.
+
+    """
     if not branch_name:
         branch_name = os.environ.get('CIRCLE_SHA1')
 
@@ -40,7 +49,15 @@ def get_modified_files(branch_name=None):
     return files
 
 
-def branch_has_private_build_infra_change(branch_name=None):
+def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
+    """ Checks whether the modified files in the branch are private build infrastructure files.
+
+    Args:
+        branch_name: The branch name to compare with master.
+
+    Returns: True if private build infrastructure files modified, False otherwise.
+
+    """
     modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
         if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
@@ -53,9 +70,18 @@ def branch_has_private_build_infra_change(branch_name=None):
     return False
 
 
-def get_dispatch_workflows_ids(bearer_token, branch):
+def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
+    """ Gets private repo dispatch workflows on the given branch.
+
+    Args:
+        github_token: Github bearer token.
+        branch: The branch to get the workflows from.
+
+    Returns: A list of workflows ids.
+
+    """
     res = requests.get(GET_DISPATCH_WORKFLOWS_URL,
-                       headers={'Authorization': bearer_token},
+                       headers={'Authorization': f'Bearer {github_token}'},
                        params={'branch': branch, 'event': 'repository_dispatch'},
                        verify=False)
     if res.status_code != 200:
@@ -75,17 +101,18 @@ def get_dispatch_workflows_ids(bearer_token, branch):
 
 def main():
     install_logging("TriggerPrivateBuild.log")
-    # get github_token parameter
+    # get github token and commit sha1 parameters
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
     arg_parser.add_argument('--commit-sha1', help='commit sha1 for creating the private repo')
     args = arg_parser.parse_args()
-    bearer_token = f'Bearer {args.github_token}'
+
+    github_token = args.github_token
     branch_name = os.environ.get('CIRCLE_BRANCH')
 
     if branch_has_private_build_infra_change():
         # get the workflows ids before triggering the build
-        pre_existing_workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
+        pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
@@ -93,7 +120,7 @@ def main():
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
-                                     'Authorization': bearer_token},
+                                     'Authorization': f'Bearer {github_token}'},
                             data=json.dumps(payload),
                             verify=False)
 
@@ -106,7 +133,7 @@ def main():
         for i in range(GET_WORKFLOWS_MAX_RETRIES):
             # wait 5 seconds and get the workflow ids again
             time.sleep(5)
-            workflow_ids_after_dispatch = get_dispatch_workflows_ids(bearer_token, 'master')
+            workflow_ids_after_dispatch = get_dispatch_workflows_ids(github_token, 'master')
 
             # compare with the first workflows list to get the current id
             workflow_ids_diff = [x for x in workflow_ids_after_dispatch if x not in pre_existing_workflow_ids]

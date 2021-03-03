@@ -13,11 +13,23 @@ from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_
 requests.packages.urllib3.disable_warnings()
 
 
-def get_workflow_status(bearer_token, workflow_id) -> (str, str, str):
+def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
+    """ Returns a set with the workflow job status, job conclusion and current step that running now in the job
+        for the given workflow id.
+
+    Args:
+        github_token: Github bearer token.
+        workflow_id: Github workflow id.
+
+    Returns: (Workflow job status, Workflow job conclusion - only if the job completed otherwise its None,
+              Current step that running now - only if the job is running otherwise its None )
+
+    """
+
     # get the workflow run status
     workflow_url = GET_WORKFLOW_URL.format(workflow_id)
     res = requests.get(workflow_url,
-                       headers={'Authorization': bearer_token},
+                       headers={'Authorization': f'Bearer {github_token}'},
                        verify=False)
     if res.status_code != 200:
         logging.error(
@@ -43,7 +55,7 @@ def get_workflow_status(bearer_token, workflow_id) -> (str, str, str):
     job_conclusion = curr_job.get('conclusion')
 
     if job_status == 'completed':
-        return 'completed', job_conclusion, ''
+        return 'completed', job_conclusion, None
 
     # if the job is still in progress - get the current step
     curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
