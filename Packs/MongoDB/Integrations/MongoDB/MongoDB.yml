@@ -232,14 +232,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limits the result returned from MongoDB.
+      description: Limits the number of results returned from MongoDB.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset of the result returned from MongoDB.
+      description: Offset to the first result returned from MongoDB.
       isArray: false
       name: offset
       required: false
