@@ -10,9 +10,12 @@ script: |+
 
       custom_fields = incident.get('CustomFields')
       chosen_transition = custom_fields.get("jiratransitions")
+      incident_id = incident.get('dbotMirrorId')
       demisto.executeCommand('jira-edit-issue',
-      {'issueId': incident.get('dbotMirrorId'), "transition": chosen_transition})
-
+      {'issueId': incident_id, "transition": chosen_transition})
+      jira_status = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})[0]["Contents"]["fields"]["status"]["name"]
+      demisto.executeCommand('setIncident', {'jirastatus': jira_status})
+      demisto.executeCommand('setIncident', {'jiratransitions': 'Select'})
 
 
   if __name__ in ["__main__", "builtin", "builtins"]:
