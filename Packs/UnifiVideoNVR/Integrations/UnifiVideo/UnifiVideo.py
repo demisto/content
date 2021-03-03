@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 import cv2
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -72,7 +70,7 @@ if demisto.command() == 'unifivideo-get-recording':
     f = open("/tmp/recording.mp4", "rb")
     output = f.read()
     filename = recording_file_name
-    file =  fileResult(filename=filename, data=output, file_type=EntryType.ENTRY_INFO_FILE)
+    file = fileResult(filename=filename, data=output, file_type=EntryType.ENTRY_INFO_FILE)
     demisto.results(file)
 
 if demisto.command() == 'unifivideo-get-recording-motion-snapshot':
@@ -180,7 +178,7 @@ if demisto.command() == 'fetch-incidents':
     if last_run:
         start_time = last_run.get('start_time')
     if not isinstance(start_time, datetime):
-        start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
+        start_time = datetime.strptime(str(start_time), '%Y-%m-%d %H:%M:%S.%f')
     uva.refresh_recordings()
     for rec in uva.get_recordings(limit=fetch_limit, start_time=start_time, order='desc'):
         incident = {}
