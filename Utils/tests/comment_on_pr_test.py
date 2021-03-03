@@ -71,7 +71,6 @@ def test_get_pr_comments_url_new(requests_mock):
        - Ensure the comments URL is a new comment
     """
     pr_number = '1'
-    pr_number = '1'
     requests_mock.get('https://api.github.com/repos/demisto/content/pulls/1',
                       json={'comments_url': 'https://api.github.com/repos/demisto/content/issues/1/comments'},
                       status_code=200)
