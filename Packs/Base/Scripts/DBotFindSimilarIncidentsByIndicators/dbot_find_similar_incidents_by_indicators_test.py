@@ -72,7 +72,7 @@ def test_score(mocker):
     incident = pd.DataFrame({'indicators': ['1 2 3 4 5 6']})
     # Check if incident is rare then the score is higher
     incidents_1 = pd.DataFrame({'indicators': ['1 2', '1 3', '1 3']})
-    tfidf = Tfidf('indicators', params, normalize_function, incident)
+    tfidf = Tfidf('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -80,7 +80,7 @@ def test_score(mocker):
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if same rarity then same scores
     incidents_1 = pd.DataFrame({'indicators': ['1 2', '3 4']})
-    tfidf = Tfidf('indicators', params, normalize_function, incident)
+    tfidf = Tfidf('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -88,7 +88,7 @@ def test_score(mocker):
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if more indicators in commun them better score
     incidents_1 = pd.DataFrame({'indicators': ['1 2 3', '4 5', '6']})
-    tfidf = Tfidf('indicators', params, normalize_function, incident)
+    tfidf = Tfidf('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()

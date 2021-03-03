@@ -90,7 +90,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
 TRANSFORMATION = {
     'indicators': {'transformer': Tfidf,
                    'normalize': None,
-                   'params': {'analyzer': 'word', 'max_features': 200, 'token_pattern': '.'},
+                   'params': None,
                    'scoring_function': identity_score
                    }
 }
