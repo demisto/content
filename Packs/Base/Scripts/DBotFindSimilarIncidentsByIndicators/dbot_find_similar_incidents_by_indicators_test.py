@@ -1,14 +1,14 @@
 import pandas as pd
 # from CommonServerPython import *
 # import pytest
-from DBotFindSimilarIncidentsByIndicators import identity_score, match_indicators_incident, get_indicators_map, Tfidf, \
+from DBotFindSimilarIncidentsByIndicators import identity_score, match_indicators_incident, get_indicators_map, \
+    FrequencyIndicators, \
     get_number_of_invs_for_indicators
 
 TRANSFORMATION = {
-    'indicators': {'transformer': Tfidf,
+    'indicators': {'transformer': FrequencyIndicators,
                    'normalize': None,
-                   'params': {'analyzer': 'word', 'max_features': 200, 'token_pattern': '.'},  # [\d\D]*
-                   'scoring': {'scoring_function': identity_score, 'min': 0.5}
+                   'scoring_function': identity_score
                    }
 }
 
@@ -41,9 +41,8 @@ def executeCommand(command, args):
 
 
 TRANSFORMATION = {
-    'indicators': {'transformer': Tfidf,
+    'indicators': {'transformer': FrequencyIndicators,
                    'normalize': None,
-                   'params': None,  # [\d\D]*
                    'scoring': {'scoring_function': identity_score, 'min': 0.5}
                    }
 }
@@ -71,7 +70,7 @@ def test_score(mocker):
     incident = pd.DataFrame({'indicators': ['1 2 3 4 5 6']})
     # Check if incident is rare then the score is higher
     incidents_1 = pd.DataFrame({'indicators': ['1 2', '1 3', '1 3']})
-    tfidf = Tfidf('indicators', normalize_function, incident)
+    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -79,7 +78,7 @@ def test_score(mocker):
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if same rarity then same scores
     incidents_1 = pd.DataFrame({'indicators': ['1 2', '3 4']})
-    tfidf = Tfidf('indicators', normalize_function, incident)
+    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -87,7 +86,7 @@ def test_score(mocker):
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if more indicators in commun them better score
     incidents_1 = pd.DataFrame({'indicators': ['1 2 3', '4 5', '6']})
-    tfidf = Tfidf('indicators', normalize_function, incident)
+    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
