@@ -14,8 +14,8 @@ Allows the usage of DT scripts within playbooks transformers.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The value to perfom the transformation on. |
-| dt | The DT expression. |
+| value | The value to perform the transformation on. |
+| dt | DT expression. |
 
 ## Outputs
 ---

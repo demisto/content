@@ -644,7 +644,8 @@ def checkpoint_list_address_range_command(client: Client, limit: int,
         for element in result:
             current_printable_result = {}
             for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
+                if element.get(endpoint):
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
         readable_output = tableToMarkdown('CheckPoint data for all address ranges:',
