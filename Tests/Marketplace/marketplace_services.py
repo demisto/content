@@ -641,10 +641,12 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        if 'vendorId' in user_metadata:
+        if 'partnerId' in user_metadata:
             pack_metadata['premium'] = True
-            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
+            pack_metadata['partnerId'] = user_metadata.get('partnerId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            pack_metadata['partnerName'] = user_metadata.get('partnerName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
