@@ -111,7 +111,7 @@ if demisto.command() == 'yolo-coco-process-image':
     # ensure at least one detection exists
     if len(idxs) > 0:
         # loop over the indexes we are keeping
-        for i in idxs.flatten_list():
+        for i in idxs.flatten():
             tmp_list = []
             # extract the bounding box coordinates
             (x, y) = (boxes[i][0], boxes[i][1])  # type: ignore

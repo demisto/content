@@ -13,8 +13,8 @@
   "tags": [],
   "useCases": [],
   "keywords": [
-        "base",
-        "common"
-    ],
-    "dependencies": {}
+    "base",
+    "common"
+  ],
+  "dependencies": {}
 }

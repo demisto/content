@@ -13,16 +13,16 @@
   "keywords": [],
   "dependencies": {
     "DemistoRESTAPI": {
-            "mandatory": true,
-            "display_name": "Demisto REST API"
-        },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
+      "mandatory": true,
+      "display_name": "Demisto REST API"
+    },
+    "Gmail": {
+      "mandatory": false,
+      "display_name": "Gmail"
+    },
+    "EWSMailSender": {
+      "mandatory": false,
+      "display_name": "EWS Mail Sender"
         },
         "MailSenderNew": {
             "mandatory": false,
