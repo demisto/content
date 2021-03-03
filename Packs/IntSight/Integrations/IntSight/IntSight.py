@@ -761,7 +761,7 @@ def fetch_incidents():
                     current_fetch = alert_timestamp
 
     demisto.incidents(incidents)
-    demisto.setLastRun({'time': current_fetch + 1})
+    demisto.setLastRun({'time': current_fetch + 1000})
 
 
 def get_iocs():
