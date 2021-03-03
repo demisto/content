@@ -55,7 +55,7 @@ post_data=$(cat <<-EOF
   "parameters": {
     "bucket_upload": "${_bucket_upload}",
     "force_pack_upload": "${_force}",
-    "packs_to_upload": "${_packs}",
+    "packs_to_upload": "${_packs}"
   }
 }
 EOF
