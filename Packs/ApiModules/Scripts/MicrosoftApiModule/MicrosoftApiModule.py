@@ -41,6 +41,7 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -85,6 +86,7 @@ class MicrosoftClient(BaseClient):
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
+        self.azure_ad_endpoint = azure_ad_endpoint
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -512,11 +514,11 @@ class MicrosoftClient(BaseClient):
 
         return headers
 
-    def device_auth_request(self) -> str:
+    def device_auth_request(self) -> dict:
         response_json = {}
         try:
             response = requests.post(
-                url='https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode',
+                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
                 data={
                     'client_id': self.client_id,
                     'scope': self.scope
@@ -530,4 +532,4 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
         set_integration_context({'device_code': response_json.get('device_code')})
-        return response_json.get('user_code', '')
+        return response_json

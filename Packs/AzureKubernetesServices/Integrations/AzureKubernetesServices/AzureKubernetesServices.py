@@ -3,14 +3,16 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
+import re
 
 urllib3.disable_warnings()
 
 API_VERSION = '2020-09-01'
-
+REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
 
 class AKSClient:
-    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
+                 azure_ad_endpoint: str):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -27,6 +29,7 @@ class AKSClient:
             proxy=proxy,
             resource='https://management.core.windows.net',
             scope='https://management.azure.com/user_impersonation offline_access user.read',
+            azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
@@ -133,9 +136,13 @@ def clusters_addon_update(client: AKSClient, args: Dict) -> str:
 
 
 def start_auth(client: AKSClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
+    response = client.ms_client.device_auth_request()
+    message = response.get('message')
+    url = re.search(REGEX_SEARCH_URL, message).group("url")
+    user_code = response.get('user_code')
+
     return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+1. To sign in, use a web browser to open the page [{url}]({url})
  and enter the code **{user_code}** to authenticate.
 2. Run the **!azure-ks-auth-complete** command in the War Room.""")
 
@@ -168,6 +175,7 @@ def main() -> None:
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
         )
         if command == 'test-module':
             return_results('The test module is not functional, run the azure-ks-auth-start command instead.')
