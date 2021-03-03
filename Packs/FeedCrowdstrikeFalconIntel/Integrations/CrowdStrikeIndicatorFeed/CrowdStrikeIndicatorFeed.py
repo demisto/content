@@ -91,7 +91,7 @@ class Client(BaseClient):
 
     def get_indicators(self, type: list = None, malicious_confidence='', filter='', q='',
                        limit: int = 200, offset: int = 0, include_deleted=False,
-                       get_indicators_command=False) -> Dict[str, Any]:
+                       get_indicators_command_or_test=False) -> Dict[str, Any]:
         if type:
             type_fql = self.build_type_fql(type)
             filter = f'{type_fql}+{filter}' if filter else type_fql
@@ -100,7 +100,7 @@ class Client(BaseClient):
             malicious_confidence_fql = f"malicious_confidence:'{malicious_confidence}'"
             filter = f"{filter}+{malicious_confidence_fql}" if filter else malicious_confidence_fql
 
-        if not get_indicators_command:
+        if not get_indicators_command_or_test:
             if last_run := self.get_last_run():
                 filter = f'{filter}+{last_run}' if filter else last_run
 
@@ -125,10 +125,10 @@ class Client(BaseClient):
             pagination_offset = pagination.get('offset', 0)
             pagination_limit = pagination.get('limit', 200)
             total = pagination.get('total', 0)
-            if pagination_offset * pagination_limit + pagination_limit < total:
+            if pagination_offset + pagination_limit < total:
                 timestamp = response.get('resources', [])[-1].get('last_updated')
 
-        if response.get('meta', {}).get('pagination', {}).get('total', 0) and not get_indicators_command:
+        if response.get('meta', {}).get('pagination', {}).get('total', 0) and not get_indicators_command_or_test:
             demisto.setIntegrationContext({'last_modified_time': timestamp})
             demisto.info(f'set last_run: {timestamp}')
         return response
@@ -170,7 +170,7 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
         malicious_confidence=malicious_confidence,
         filter=filter, q=q,
         include_deleted=include_deleted,
-        get_indicators_command=False,
+        get_indicators_command_or_test=False,
         limit=limit
     )
     parsed_indicators = []  # type: List
@@ -227,7 +227,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
         limit=limit,
         offset=offset,
         include_deleted=include_deleted,
-        get_indicators_command=True
+        get_indicators_command_or_test=True
     )
     indicators_list = raw_response.get('resources')
     if outputs := copy.deepcopy(indicators_list):
@@ -260,7 +260,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
 def test_module(client: Client, args: dict) -> str:
     try:
-        client.get_indicators(limit=1)
+        client.get_indicators(limit=1, get_indicators_command_or_test=True)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
