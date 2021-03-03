@@ -121,7 +121,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Ingest indicator feeds from OpenCTI. Works with OpenCTI v4 instances.
+description: Ingest indicator feeds from OpenCTI. Compatible with OpenCTI v4.* instances.
 display: OpenCTI Feed v4
 name: OpenCTI Feed v4
 script:
