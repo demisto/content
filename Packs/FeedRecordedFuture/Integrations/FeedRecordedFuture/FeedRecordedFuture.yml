@@ -106,6 +106,7 @@ configuration:
     Limit the indicators list to a specific risk rule. To see available
     risk rules run the rf-feed-get-risk-rules command. This parameter will only be
     used for the 'connectApi' service.
+    Using the 'large' risk rule is not recommended.
   display: Risk Rule
   hidden: false
   name: risk_rule
