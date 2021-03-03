@@ -443,7 +443,8 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
 
         # The current event is new (has new name), then we need to build a new incident.
         else:
-            if event_counter >= min(MAX_INCIDENTS_TO_FETCH, int(demisto.params().get('max_fetch'))):
+            if event_counter >= min(MAX_INCIDENTS_TO_FETCH,
+                                    int(demisto.params().get('max_fetch', MAX_INCIDENTS_TO_FETCH))):
                 break
 
             # Incrementing the event offset, regardless of whether new incident will be created.
