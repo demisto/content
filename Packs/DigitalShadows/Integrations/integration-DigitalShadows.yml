@@ -44,14 +44,14 @@ configuration:
   name: fetchLimit
   defaultvalue: "50"
   type: 0
-  required: true
+  required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.  Must
     be an integer between 1 and 200 inclusive.
 - display: Digital Shadows Page Size
   name: pageSize
   defaultvalue: "500"
   type: 0
-  required: true
+  required: false
   additionalinfo: The maximum page size to request through the Digital Shadows API.  This
     parameter is included for testing purposes and should not be updated.
     Must be an integer between 1 and 500 inclusive.
@@ -59,7 +59,7 @@ configuration:
   name: initialFetch
   defaultvalue: "1"
   type: 0
-  required: true
+  required: false
   additionalinfo: The time period in minutes for which to fetch historic incidents.
     This is used the first time incidents are fetched and if the last run details
     are reset. Must be an integer greater than or equal to 1.
@@ -905,6 +905,10 @@ script:
     };
 
     var validateParameters = function() {
+        if(!params.fetchLimit) params.fetchLimit = 50;
+        if(!params.pageSize) params.pageSize = 500;
+        if(!params.initialFetch) params.initialFetch = 1;
+        
         if (isNaN(params.fetchLimit) || params.fetchLimit > 200 || params.fetchLimit < 1) throw 'Fetch limit must be an integer between 1 and 200';
         if (isNaN(params.pageSize) || params.pageSize > 500 || params.pageSize < 1) throw 'Page size must be an integer between 1 and 500';
         if (isNaN(params.initialFetch) || params.initialFetch < 1) throw 'Initial fetch must be an integer greater than or equal to 1';
