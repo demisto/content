@@ -140,10 +140,12 @@ def test_create_incident_command(requests_mock) -> None:
     from QualysFIM import Client, create_incident_command
     mock_response = util_load_json('test_data/create_incident.json')
     requests_mock.post(f'{BASE_URL}fim/v3/incidents/create', json=mock_response)
+    mock_response = util_load_json('test_data/list_incidents.json')
+    requests_mock.post(f'{BASE_URL}fim/v3/incidents/search', json=mock_response)
     requests_mock.post(f'{BASE_URL}/auth', json={})
     client = Client(base_url=BASE_URL, verify=False, proxy=False, auth=('a', 'b'))
     result = create_incident_command(client, {'name': 'test'})
-    assert result.outputs_prefix == 'QualysFIM.CreatedIncident'
+    assert result.outputs_prefix == 'QualysFIM.Incident'
     assert result.outputs_key_field == 'id'
 
 

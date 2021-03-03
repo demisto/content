@@ -402,7 +402,10 @@ def create_incident_command(client: Client, args: dict):
                                   'comment': args.get('comment'),
                                   'reviewers': argToList(args.get('reviewers'))})
 
-    raw_response = client.create_incident(data)
+    created = client.create_incident(data)
+    raw_response = client.incidents_list({'filter': f'id:{created.get("id")}'})
+
+    raw_response = raw_response[0].get('data')
     table_headers = ['id', 'name', 'reviewers', 'username', 'occurred', 'filters', 'approvalType']
 
     output = create_event_or_incident_output(raw_response, table_headers)
@@ -419,7 +422,7 @@ def create_incident_command(client: Client, args: dict):
                                       headers=table_headers,
                                       removeNull=True)
 
-    return CommandResults(outputs_prefix='QualysFIM.CreatedIncident',
+    return CommandResults(outputs_prefix='QualysFIM.Incident',
                           outputs_key_field='id',
                           raw_response=raw_response,
                           outputs=raw_response,
