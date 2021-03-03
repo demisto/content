@@ -85,7 +85,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                 "actors": [],
                 "deleted": false,
                 "domain_types": [],
-                "id": "ip_address_141.105.70.30",
+                "id": "ip_address_1.1.1.1",
                 "ip_address_types": [],
                 "kill_chains": [
                     "C2"
@@ -108,7 +108,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "Commodity"
                 ],
                 "type": "IP",
-                "value": "141.105.70.30",
+                "value": "1.1.1.1",
                 "vulnerabilities": []
             },
             {
@@ -117,7 +117,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                 ],
                 "deleted": false,
                 "domain_types": [],
-                "id": "ip_address_45.76.210.68",
+                "id": "ip_address_2.2.2.2",
                 "ip_address_types": [],
                 "kill_chains": [
                     "C2"
@@ -144,14 +144,14 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "Targeted"
                 ],
                 "type": "IP",
-                "value": "45.76.210.68",
+                "value": "2.2.2.2",
                 "vulnerabilities": []
             },
             {
                 "actors": [],
                 "deleted": false,
                 "domain_types": [],
-                "id": "ip_address_186.206.207.143",
+                "id": "ip_address_1.2.3.4",
                 "ip_address_types": [],
                 "kill_chains": [
                     "C2"
@@ -174,7 +174,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "Commodity"
                 ],
                 "type": "IP",
-                "value": "186.206.207.143",
+                "value": "1.2.3.4",
                 "vulnerabilities": []
             }
         ]
@@ -187,9 +187,9 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 >### Indicators from CrowdStrike Falcon Intel
 >|Type|Value|Id|
 >|---|---|---|
->| IP | 141.105.70.30 | ip_address_141.105.70.30 |
->| IP | 45.76.210.68 | ip_address_45.76.210.68 |
->| IP | 186.206.207.143 | ip_address_186.206.207.143 |
+>| IP | 1.1.1.1 | ip_address_1.1.1.1 |
+>| IP | 2.2.2.2 | ip_address_2.2.2.2 |
+>| IP | 1.2.3.4 | ip_address_1.2.3.4 |
 
 
 ### crowdstrike-reset-fetch-indicators

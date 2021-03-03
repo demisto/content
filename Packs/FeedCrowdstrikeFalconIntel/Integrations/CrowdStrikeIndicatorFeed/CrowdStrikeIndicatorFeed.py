@@ -89,7 +89,7 @@ class Client(BaseClient):
             params = ''
         return params
 
-    def get_indicators(self, type=None, malicious_confidence='', filter='', q='',
+    def get_indicators(self, type: list = None, malicious_confidence='', filter='', q='',
                        limit: int = 200, offset: int = 0, include_deleted=False,
                        get_indicators_command=False) -> Dict[str, Any]:
         if type:
