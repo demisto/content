@@ -28,7 +28,10 @@ GET_WORKFLOWS_MAX_RETRIES = 3
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
 
-def get_modified_files(branch_name):
+def get_modified_files(branch_name=None):
+    if not branch_name:
+        branch_name = os.environ.get('CIRCLE_SHA1')
+
     files = []
     files_string = tools.run_command(f'git diff --name-only origin/master...{branch_name}')
     for line in files_string.split("\n"):
@@ -37,7 +40,8 @@ def get_modified_files(branch_name):
     return files
 
 
-def is_infrastructure_change(modified_files):
+def branch_has_private_build_infra_change(branch_name=None):
+    modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
         if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
             return True
@@ -77,15 +81,9 @@ def main():
     arg_parser.add_argument('--commit-sha1', help='commit sha1 for creating the private repo')
     args = arg_parser.parse_args()
     bearer_token = f'Bearer {args.github_token}'
+    branch_name = os.environ.get('CIRCLE_BRANCH')
 
-    # get branch name
-    branches = tools.run_command("git branch")
-    branch_name_regex = re.search(r"\* (.*)", branches)
-    branch_name = branch_name_regex.group(1)
-
-    modified_files = get_modified_files(branch_name)
-
-    if is_infrastructure_change(modified_files):
+    if branch_has_private_build_infra_change():
         # get the workflows ids before triggering the build
         pre_existing_workflow_ids = get_dispatch_workflows_ids(bearer_token, 'master')
 
@@ -95,7 +93,7 @@ def main():
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
-                                    'Authorization': bearer_token},
+                                     'Authorization': bearer_token},
                             data=json.dumps(payload),
                             verify=False)
 
