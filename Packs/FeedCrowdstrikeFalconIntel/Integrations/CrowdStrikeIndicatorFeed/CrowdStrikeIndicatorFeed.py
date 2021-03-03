@@ -10,7 +10,7 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-XSOHR_TYPES_TO_CROWDSTRIKE = {
+XSOAR_TYPES_TO_CROWDSTRIKE = {
     'account': "username",
     'domain': "domain",
     'email': "email_address",
@@ -20,7 +20,7 @@ XSOHR_TYPES_TO_CROWDSTRIKE = {
     'registry key': "registry",
     'url': "url"
 }
-CROWDSTRIKE_TO_XSOHR_TYPES = {
+CROWDSTRIKE_TO_XSOAR_TYPES = {
     'username': 'Account',
     'domain': 'Domain',
     'email_address': 'Email',
@@ -59,7 +59,8 @@ class Client(BaseClient):
             params=params,
             data=data,
             timeout=timeout,
-            auth=auth
+            auth=auth,
+            error_handler=self.handle_error_response
         )
 
     def _get_access_token(self):
@@ -75,23 +76,25 @@ class Client(BaseClient):
         )
         return token_res.get('access_token')
 
-    def set_last_run(self):
-        current_time = datetime.now()
-        current_timestamp = datetime.timestamp(current_time)
-        timestamp = str(int(current_timestamp))
-        return timestamp
+    def get_indicators(self, limit: Optional[int], type: list = None, malicious_confidence='', filter='', q='',
+                       offset: Optional[int] = 0, include_deleted=False,
+                       fetch_command=False, tlp_color=None) -> List:
+        """ Get indicators from CrowdStrike API
 
-    def get_last_run(self) -> str:
-        if last_run := demisto.getIntegrationContext().get('last_modified_time'):
-            demisto.info(f'get last_run: {last_run}')
-            params = f'last_updated:>={last_run}'
-        else:
-            params = ''
-        return params
+        Args:
+            limit(int): number of indicators to return
+            type: indicators type requested by customer
+            malicious_confidence: indicator malicious confidence requested by customer
+            filter: fql filter
+            q: generic phrase match
+            offset: indicators offset
+            include_deleted: whether include deleted indicators or not
+            fetch_command: In order not to update last_run time if it is not fetch command
+            tlp_color:
 
-    def get_indicators(self, limit: int, type: list = None, malicious_confidence='', filter='', q='',
-                        offset: int = 0, include_deleted=False,
-                       get_indicators_command_or_test=False) -> Dict[str, Any]:
+        Returns:
+            parsed indicators
+        """
         if type:
             type_fql = self.build_type_fql(type)
             filter = f'{type_fql}+{filter}' if filter else type_fql
@@ -100,7 +103,7 @@ class Client(BaseClient):
             malicious_confidence_fql = f"malicious_confidence:'{malicious_confidence}'"
             filter = f"{filter}+{malicious_confidence_fql}" if filter else malicious_confidence_fql
 
-        if not get_indicators_command_or_test:
+        if fetch_command:
             if last_run := self.get_last_run():
                 filter = f'{filter}+{last_run}' if filter else last_run
 
@@ -128,13 +131,87 @@ class Client(BaseClient):
             if pagination_offset + pagination_limit < total:
                 timestamp = response.get('resources', [])[-1].get('last_updated')
 
-        if response.get('meta', {}).get('pagination', {}).get('total', 0) and not get_indicators_command_or_test:
+        if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
             demisto.setIntegrationContext({'last_modified_time': timestamp})
             demisto.info(f'set last_run: {timestamp}')
-        return response
 
-    def build_type_fql(self, types_list: list) -> str:
-        """Builds an indicator type query for the query"""
+        indicators = self.create_indicators_from_response(response, tlp_color)
+        return indicators
+
+    @staticmethod
+    def set_last_run():
+        """
+        Returns: Current timestamp
+        """
+        current_time = datetime.now()
+        current_timestamp = datetime.timestamp(current_time)
+        timestamp = str(int(current_timestamp))
+        return timestamp
+
+    @staticmethod
+    def get_last_run() -> str:
+        """ Gets last run time in timestamp
+
+        Returns:
+            last run in timestamp, or '' if no last run
+        """
+        if last_run := demisto.getIntegrationContext().get('last_modified_time'):
+            demisto.info(f'get last_run: {last_run}')
+            params = f'last_updated:>={last_run}'
+        else:
+            params = ''
+        return params
+
+    @staticmethod
+    def create_indicators_from_response(raw_response, tlp_color=None) -> list:
+        """ Builds indicators from API raw response
+
+            Args:
+                raw_response: response from crowdstrike API
+                tlp_color: tlp color chosen by customer
+
+            Returns:
+                list of indicators
+            """
+
+        parsed_indicators = []  # type: List
+        indicator = {}  # type: Dict
+        for resource in raw_response['resources']:
+            indicator = {
+                'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
+                'value': resource.get('indicator'),
+                'rawJSON': resource,
+                'fields': {'actor': resource.get('actors'),
+                           'reports': resource.get('reports'),
+                           'malwarefamily': resource.get('malware_families'),
+                           'stixkillchainphases': resource.get('kill_chains'),
+                           'ipaddress': resource.get('ip_address_types'),
+                           'domainname': resource.get('domain_types'),
+                           'targets': resource.get('targets'),
+                           'threattypes': resource.get('threat_types'),
+                           'vulnerabilities': resource.get('vulnerabilities'),
+                           'maliciousconfidence': resource.get('malicious_confidence'),
+                           'updateddate': resource.get('last_updated'),
+                           'creationdate': resource.get('published_date'),
+                           'tags': [label.get('name') for label in resource.get('labels')]  # type: ignore
+                           }
+            }
+            if tlp_color:
+                indicator['fields']['trafficlightprotocol'] = tlp_color
+            parsed_indicators.append(indicator)
+
+        return parsed_indicators
+
+    @staticmethod
+    def build_type_fql(types_list: list) -> str:
+        """ Builds an indicator type query for the filter parameter
+
+        Args:
+            types_list(list): indicator types that was chosen by user
+
+        Returns:
+            fql query (str)
+        """
 
         if 'ALL' in types_list:
             # Replaces "ALL" for all types supported on XSOAR.
@@ -143,10 +220,31 @@ class Client(BaseClient):
             crowdstrike_types = [f"type:'{type}'" for type in crowdstrike_types]
 
         else:
-            crowdstrike_types = [f"type:'{XSOHR_TYPES_TO_CROWDSTRIKE.get(type.lower(), type)}'" for type in types_list]
+            crowdstrike_types = [f"type:'{XSOAR_TYPES_TO_CROWDSTRIKE.get(type.lower(), type)}'" for type in types_list]
 
         result = ','.join(crowdstrike_types)
         return result
+
+    @staticmethod
+    def handle_error_response(res) -> None:
+        """
+        Handle error response and display user specific error message based on status code.
+
+        :param res: response from API.
+        :return: raise DemistoException based on status code.
+        """
+        errors = []
+        try:
+            error_entry = res.json()
+            errors = error_entry['errors']
+        except Exception:  # ignoring json parsing errors
+            pass
+
+        error_message = next((item for item in errors if item['code'] == res.status_code)).get('message')
+        if error_message:
+            raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {error_message}')
+        else:
+            raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {res.text}')
 
 
 def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q, limit):
@@ -165,40 +263,15 @@ def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious
     Returns:
         list of indicators(list)
     """
-    raw_response = client.get_indicators(
+    parsed_indicators = client.get_indicators(
         type=type,
         malicious_confidence=malicious_confidence,
         filter=filter, q=q,
         include_deleted=include_deleted,
-        get_indicators_command_or_test=False,
-        limit=limit
+        fetch_command=True,
+        limit=limit,
+        tlp_color=tlp_color
     )
-    parsed_indicators = []  # type: List
-    indicator = {}  # type: Dict
-    for resource in raw_response['resources']:
-        indicator = {
-            'type': CROWDSTRIKE_TO_XSOHR_TYPES.get(resource.get('type'), resource.get('type')),
-            'value': resource.get('indicator'),
-            'actor': resource.get('actors'),
-            'reports': resource.get('reports'),
-            'malwarefamily': resource.get('malware_families'),
-            'stixkillchainphases': resource.get('kill_chains'),
-            'ipaddress': resource.get('ip_address_types'),
-            'domainname': resource.get('domain_types'),
-            'targets': resource.get('targets'),
-            'threattypes': resource.get('threat_types'),
-            'vulnerabilities': resource.get('vulnerabilities'),
-            'maliciousconfidence': resource.get('malicious_confidence'),
-            'updateddate': resource.get('last_updated'),
-            'creationdate': resource.get('published_date'),
-            'rawJSON': resource,
-            'tags': [label.get('name') for label in resource.get('labels')],  # type: ignore
-            'fields': {}
-        }
-        if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
-        parsed_indicators.append(indicator)
-
     return parsed_indicators
 
 
@@ -217,29 +290,21 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     malicious_confidence = args.get('malicious_confidence')
     filter = args.get('filter')
     q = args.get('generic_phrase_match')
-    offset = int(args.get('offset', 0))
-    limit = int(args.get('limit', 50))
+    offset = arg_to_number(args.get('offset', 0))
+    limit = arg_to_number(args.get('limit', 50))
 
-    raw_response = client.get_indicators(
+    parsed_indicators = client.get_indicators(
         type=type_,
         malicious_confidence=malicious_confidence,
         filter=filter, q=q,
         limit=limit,
         offset=offset,
         include_deleted=include_deleted,
-        get_indicators_command_or_test=True
+        fetch_command=False
     )
-    indicators_list = raw_response.get('resources')
-    if outputs := copy.deepcopy(indicators_list):
+    if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:
-            indicator['type'] = CROWDSTRIKE_TO_XSOHR_TYPES.get(indicator['type'], indicator['type'])
-            indicator['published_date'] = timestamp_to_datestring(indicator['published_date'])
-            indicator['last_updated'] = timestamp_to_datestring(indicator['last_updated'])
-            indicator['value'] = indicator['indicator']
-            indicator['labels'] = [label.get('name') for label in indicator.get('labels')]
-            del indicator['indicator']
-            del indicator['relations']
-            del indicator['_marker']
+            indicator['id'] = indicator.get('rawJSON', {}).get('id')
 
         readable_output = tableToMarkdown(name='Indicators from CrowdStrike Falcon Intel', t=outputs,
                                           headers=["type", "value", "id"], headerTransform=pascalToSpace)
@@ -249,18 +314,17 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
             outputs_prefix='CrowdStrikeFalconIntel.Indicators',
             outputs_key_field='id',
             readable_output=readable_output,
-            raw_response=raw_response
+            raw_response=parsed_indicators
         )
     else:
         return CommandResults(
-            readable_output='No Indicators.',
-            raw_response=raw_response
+            readable_output='No Indicators.'
         )
 
 
 def test_module(client: Client, args: dict) -> str:
     try:
-        client.get_indicators(limit=1, get_indicators_command_or_test=True)
+        client.get_indicators(limit=1, fetch_command=False)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
@@ -291,7 +355,7 @@ def main() -> None:
     malicious_confidence = params.get('malicious_confidence')
     filter = params.get('filter')
     q = params.get('q')
-    max_fetch = arg_to_number(params.get('max_indicator_to_fetch'))  # if params.get('max_indicator_to_fetch') else 500
+    max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 100
     command = demisto.command()
     args = demisto.args()
 

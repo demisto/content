@@ -10,22 +10,20 @@ CrowdStrike Falcon Intel Indicator Feed
     | Fetch indicators |  | False |
     | Crowdstrike API client ID |  | True |
     | Crowdstrike API client secret |  | True |
+    | Include deleted indicators |  | False |
+    | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
+    | Max. indicators per fetch |  | False |
+    | Malicious confidence | Malicious confidence level of the indicator. | False |
+    | Filter | Advanced: FQL query. For more information visit CrowdStrike documentation. | False |
+    | Generic phrase match | Generic phrase match search across all indicators fields. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
     | Feed Fetch Interval |  | False |
+    | Tags | Supports CSV values. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Tags | Supports CSV values. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Include deleted indicators |  | False |
-    | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha1", "File sha256", "Host", "IP", "IPv6", "Registry Key", and "URL". The default is "ALL". | False |
-    | Max. indicators per fetch |  | False |
-    | Malicious confidence | Malicious confidence level of the indicator. | False |
-    | Filter | FQL query. | False |
-    | Generic phrase match |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -47,9 +45,9 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | offset | The index of the first indicator to fetch. | Optional | 
 | include_deleted | Include deleted indicators. Possible values are: true, false. | Optional | 
 | type | Indicator type. Possible values are: ALL, Account, Domain, Email, File MD5, File SHA-256, IP, Registry Key, URL. Default is ALL. | Optional | 
-| malicious_confidence | Malicious Confidence. Possible values are: high, medium, low, unverified. | Optional | 
+| malicious_confidence | Malicious confidence level of the indicator. Possible values are: high, medium, low, unverified. | Optional | 
 | filter | FQL query, indicators filter. | Optional | 
-| generic_phrase_match | Generic phrase match search across all indicators. | Optional | 
+| generic_phrase_match | Generic phrase match search across all indicators fields. | Optional | 
 
 
 #### Context Output
@@ -71,6 +69,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | CrowdStrikeFalconIntel.Indicators.targets | Unknown | Targets of indicator. | 
 | CrowdStrikeFalconIntel.Indicators.threat_types | Unknown | Indicator threat types. | 
 | CrowdStrikeFalconIntel.Indicators.vulnerabilities | Unknown | Indicator vulnerabilities. | 
+| CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. | 
 
 
 #### Command Example

@@ -11,12 +11,68 @@ configuration:
 - display: Crowdstrike API client ID
   name: client_id
   required: true
-  type: 4
+  type: 0
 - display: Crowdstrike API client secret
   hidden: false
   name: client_secret
   required: true
   type: 4
+- defaultvalue: 'false'
+  display: Include deleted indicators
+  hidden: false
+  name: include_deleted
+  options:
+  - 'false'
+  - 'true'
+  required: false
+  type: 15
+- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
+    in XSOAR are: "Account", "Domain", "Email", "File md5",
+    "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'
+  display: Type
+  hidden: false
+  name: type
+  options:
+  - ALL
+  - Account
+  - Domain
+  - Email
+  - File MD5
+  - File SHA-256
+  - IP
+  - Registry Key
+  - URL
+  required: false
+  type: 16
+- display: Max. indicators per fetch
+  defaultvalue: 100
+  hidden: false
+  name: max_indicator_to_fetch
+  required: false
+  type: 0
+- additionalinfo: Malicious confidence level of the indicator.
+  display: Malicious confidence
+  hidden: false
+  name: malicious_confidence
+  options:
+  - high
+  - medium
+  - low
+  - unverified
+  required: false
+  type: 15
+- additionalinfo: "Advanced: FQL query. For more information visit CrowdStrike documentation."
+  display: Filter
+  hidden: false
+  name: filter
+  required: false
+  type: 0
+- display: Generic phrase match
+  additionalinfo: Generic phrase match search across all indicators fields.
+  hidden: false
+  name: q
+  required: false
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Good
@@ -74,6 +130,11 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -82,11 +143,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -94,60 +150,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Include deleted indicators
-  hidden: false
-  name: include_deleted
-  options:
-  - 'false'
-  - 'true'
-  required: false
-  type: 15
-- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
-    in XSOAR are: "Account", "Domain", "Email", "File md5",
-    "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'
-  display: Type
-  hidden: false
-  name: type
-  options:
-  - ALL
-  - Account
-  - Domain
-  - Email
-  - File MD5
-  - File SHA-256
-  - IP
-  - Registry Key
-  - URL
-  required: false
-  type: 16
-- display: Max. indicators per fetch
-  hidden: false
-  name: max_indicator_to_fetch
-  required: false
-  type: 0
-- additionalinfo: Malicious confidence level of the indicator.
-  display: Malicious confidence
-  hidden: false
-  name: malicious_confidence
-  options:
-  - high
-  - medium
-  - low
-  - unverified
-  required: false
-  type: 15
-- additionalinfo: FQL query.
-  display: Filter
-  hidden: false
-  name: filter
-  required: false
-  type: 0
-- display: Generic phrase match
-  hidden: false
-  name: q
-  required: false
-  type: 0
 description: CrowdStrike Falcon Intel Indicator Feed
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
@@ -196,7 +198,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Malicious Confidence
+      description: Malicious confidence level of the indicator.
       isArray: false
       name: malicious_confidence
       predefined:
@@ -213,7 +215,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Generic phrase match search across all indicators.
+      description: Generic phrase match search across all indicators fields.
       isArray: false
       name: generic_phrase_match
       required: false
@@ -267,6 +269,9 @@ script:
       type: Unknown
     - contextPath: CrowdStrikeFalconIntel.Indicators.vulnerabilities
       description: Indicator vulnerabilities.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.rawJSON
+      description: Raw response.
       type: Unknown
   - deprecated: false
     description: 'WARNING: This command will reset your fetch history.'
