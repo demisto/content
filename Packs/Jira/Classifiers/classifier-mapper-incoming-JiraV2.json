@@ -16,7 +16,7 @@
     },
     "Jira Description": {
      "complex": null,
-     "simple": "fields.issuetype.description"
+     "simple": "fields.description"
     },
     "Jira Due Date": {
      "complex": null,
