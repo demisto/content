@@ -387,67 +387,67 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: id
+              simple: SailPointIdentityNow.AccountActivity.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: name
+              simple: SailPointIdentityNow.AccountActivity.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: created
+              simple: SailPointIdentityNow.AccountActivity.created
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: modified
+              simple: SailPointIdentityNow.AccountActivity.modified
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: completed
+              simple: SailPointIdentityNow.AccountActivity.completed
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: completionStatus
+              simple: SailPointIdentityNow.AccountActivity.completionStatus
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: type
+              simple: SailPointIdentityNow.AccountActivity.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: requesterIdentitySummary
+              simple: SailPointIdentityNow.AccountActivity.requesterIdentitySummary
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: targetIdentitySummary
+              simple: SailPointIdentityNow.AccountActivity.targetIdentitySummary
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: items
+              simple: SailPointIdentityNow.AccountActivity.items
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: executionStatus
+              simple: SailPointIdentityNow.AccountActivity.executionStatus
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: cancelable
+              simple: SailPointIdentityNow.AccountActivity.cancelable
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: cancelComment
+              simple: SailPointIdentityNow.AccountActivity.cancelComment
             iscontext: true
     view: '{"position": {"x": 50, "y": 1400}}'
     note: false
@@ -626,77 +626,77 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.id
+              simple: SailPointIdentityNow.Role.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.name
+              simple: SailPointIdentityNow.Role.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.description
+              simple: SailPointIdentityNow.Role.description
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.accessProfiles
+              simple: SailPointIdentityNow.Role.accessProfiles
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.accessProfileCount
+              simple: SailPointIdentityNow.Role.accessProfileCount
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.created
+              simple: SailPointIdentityNow.Role.created
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.modified
+              simple: SailPointIdentityNow.Role.modified
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.synced
+              simple: SailPointIdentityNow.Role.synced
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.enabled
+              simple: SailPointIdentityNow.Role.enabled
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.requestable
+              simple: SailPointIdentityNow.Role.requestable
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.requestCommentsRequired
+              simple: SailPointIdentityNow.Role.requestCommentsRequired
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.owner
+              simple: SailPointIdentityNow.Role.owner
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.pod
+              simple: SailPointIdentityNow.Role.pod
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.org
+              simple: SailPointIdentityNow.Role.org
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Role.type
+              simple: SailPointIdentityNow.Role.type
             iscontext: true
     view: '{"position": {"x": 50, "y": 2200}}'
     note: false
@@ -748,77 +748,77 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.id
+              simple: SailPointIdentityNow.Entitlement.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.name
+              simple: SailPointIdentityNow.Entitlement.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.displayName
+              simple: SailPointIdentityNow.Entitlement.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.description
+              simple: SailPointIdentityNow.Entitlement.description
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.modified
+              simple: SailPointIdentityNow.Entitlement.modified
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.synced
+              simple: SailPointIdentityNow.Entitlement.synced
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.source
+              simple: SailPointIdentityNow.Entitlement.source
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.privileged
+              simple: SailPointIdentityNow.Entitlement.privileged
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.identityCount
+              simple: SailPointIdentityNow.Entitlement.identityCount
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.attribute
+              simple: SailPointIdentityNow.Entitlement.attribute
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.value
+              simple: SailPointIdentityNow.Entitlement.value
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.schema
+              simple: SailPointIdentityNow.Entitlement.schema
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.pod
+              simple: SailPointIdentityNow.Entitlement.pod
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.org
+              simple: SailPointIdentityNow.Entitlement.org
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Entitlement.type
+              simple: SailPointIdentityNow.Entitlement.type
             iscontext: true
     view: '{"position": {"x": 50, "y": 2600}}'
     note: false
@@ -870,87 +870,87 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.id
+              simple: SailPointIdentityNow.Event.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.name
+              simple: SailPointIdentityNow.Event.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.stack
+              simple: SailPointIdentityNow.Event.stack
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.created
+              simple: SailPointIdentityNow.Event.created
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.synced
+              simple: SailPointIdentityNow.Event.synced
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.objects
+              simple: SailPointIdentityNow.Event.objects
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.ipAddress
+              simple: SailPointIdentityNow.Event.ipAddress
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.technicalName
+              simple: SailPointIdentityNow.Event.technicalName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.target
+              simple: SailPointIdentityNow.Event.target
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.actor
+              simple: SailPointIdentityNow.Event.actor
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.action
+              simple: SailPointIdentityNow.Event.action
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.attributes
+              simple: SailPointIdentityNow.Event.attributes
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.operation
+              simple: SailPointIdentityNow.Event.operation
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.status
+              simple: SailPointIdentityNow.Event.status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.pod
+              simple: SailPointIdentityNow.Event.pod
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.org
+              simple: SailPointIdentityNow.Event.org
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: IdentityNow.Event.type
+              simple: SailPointIdentityNow.Event.type
             iscontext: true
     view: '{"position": {"x": 50, "y": 3000}}'
     note: false
