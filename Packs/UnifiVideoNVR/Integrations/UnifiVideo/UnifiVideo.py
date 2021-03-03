@@ -4,8 +4,10 @@ import cv2
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from unifi_video import UnifiVideoAPI
+import dateparser
 import json
 
+demisto_format = '%Y-%m-%dT%H:%M:%SZ'
 params = demisto.params()
 args = demisto.args()
 api_key = params.get('api_key')
@@ -15,30 +17,6 @@ schema = params.get('schema')
 fetch_limit = params.get('fetch_limit')
 verify_cert = params.get('verify_cert')
 FETCH_TIME = params.get('fetch_time')
-TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
-                        'year': 365 * 24 * 60}
-
-
-def parse_time_to_minutes():
-    """
-    Calculate how much time to fetch back in minutes
-    Returns (int): Time to fetch back in minutes
-    """
-    number_of_times, time_unit = FETCH_TIME.split(' ')
-    if str(number_of_times).isdigit():
-        number_of_times = int(number_of_times)
-    else:
-        return_error("Error: Invalid fetch time, need to be a positive integer with the time unit afterwards"
-                     " e.g '2 months, 4 days'.")
-    # If the user input contains a plural of a time unit, for example 'hours', we remove the 's' as it doesn't
-    # impact the minutes in that time unit
-    if time_unit[-1] == 's':
-        time_unit = time_unit[:-1]
-    time_unit_value_in_minutes = TIME_UNIT_TO_MINUTES.get(time_unit.lower())
-    if time_unit_value_in_minutes:
-        return number_of_times * time_unit_value_in_minutes
-
-    return_error('Error: Invalid time unit.')
 
 
 if demisto.command() == 'test-module':
@@ -198,8 +176,7 @@ if demisto.command() == 'fetch-incidents':
     # lastRun is a dictionary, with value "now" for key "time".
     # JSON of the incident type created by this integration
     inc = []
-    fetch_time_in_minutes = parse_time_to_minutes()
-    start_time = datetime.now() - timedelta(minutes=fetch_time_in_minutes)
+    start_time = dateparser.parse(FETCH_TIME)
     if last_run:
         start_time = last_run.get('start_time')
     if not isinstance(start_time, datetime):
