@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory
-from typing import Callable, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
