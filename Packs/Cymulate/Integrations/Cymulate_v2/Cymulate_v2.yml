@@ -65,6 +65,8 @@ script:
   - arguments:
     - default: false
       description: The ID of the template to run the exfiltration Assessment with.
+        Can be retrieved using Cymulate's UI, or using cymulate-exfiltration-template-list
+        command.
       isArray: false
       name: template_id
       required: true
@@ -158,6 +160,8 @@ script:
   - arguments:
     - default: false
       description: The ID of the template to run the email gateway assessment with.
+        Can be retrieved using Cymulate's UI, or using cymulate-email-gateway-template-list
+        command.
       isArray: false
       name: template_id
       required: true
@@ -254,7 +258,8 @@ script:
   - arguments:
     - default: false
       description: The ID of the template to run the endpoint security assessment
-        with.
+        with. Can be retrieved using Cymulate's UI, or using cymulate-endpoint-security-template-list
+        command.
       isArray: false
       name: template_id
       required: true
@@ -350,7 +355,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the template to run the WAF assessment with,
+      description: The ID of the template to run the WAF assessment with. Can be retrieved
+        using Cymulate's UI, or using cymulate-waf-template-list command.
       isArray: false
       name: template_id
       required: true
@@ -454,7 +460,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: template ID
+      description: The ID of the template to run the immediate threat assessment with.
+        Can be retrieved using Cymulate's UI.
       isArray: false
       name: template_id
       required: true
@@ -565,7 +572,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the template to run the lateral movement with.
+      description: The ID of the template to run the lateral movement with. Can be
+        retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list
+        command.
       isArray: false
       name: template_id
       required: true
@@ -668,7 +677,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Attack ID.
+      description: Attack ID. Can be retrieved using cymulate-simulations-id-list
+        command.
       isArray: false
       name: attack_id
       required: true
@@ -757,14 +767,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'From which date to fetch data. format: Year-Month-Day, for example:
+      description: 'From which date to fetch data. Format: YYYY-MM-DD, for example:
         March 1st 2021 should be written: 2021-03-01. '
       isArray: false
       name: from_date
       required: true
       secret: false
     - default: false
-      description: End date to fetch data. If no argument is given, default is now.
+      description: 'End date to fetch data. format: YYYY-MM-DD, for example: March
+        1st 2021 should be written: 2021-03-01. If no argument is given, default is
+        now.'
       isArray: false
       name: to_date
       required: false
