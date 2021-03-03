@@ -182,12 +182,13 @@ def search_records_soap_request(
                         '</Conditions>' + \
                         '</Filter>'
 
-    request_body += '<SortFields>' + \
-                    '    <SortField>' + \
-                    f'        <Field>{field_id}</Field>' + \
-                    f'        <SortType>{sort_type}</SortType>' + \
-                    '    </SortField >' + \
-                    '</SortFields>'
+    if field_id:
+        request_body += '<SortFields>' + \
+                        '    <SortField>' + \
+                        f'        <Field>{field_id}</Field>' + \
+                        f'        <SortType>{sort_type}</SortType>' + \
+                        '    </SortField >' + \
+                        '</SortFields>'
 
     request_body += ' </Criteria></SearchReport>]]>' + \
                     '</searchOptions>' + \
