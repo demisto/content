@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3575
+          "y": 3925
         }
       }
   "3":
@@ -149,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3720
+          "y": 4070
         }
       }
   "5":
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2760
         }
       }
   "9":
@@ -308,7 +308,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 2905
         }
       }
   "10":
@@ -337,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 1740
         }
       }
   "11":
@@ -382,7 +382,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3895
+          "y": 4245
         }
       }
   "13":
@@ -420,7 +420,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1740
+          "y": 1915
         }
       }
   "14":
@@ -455,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 3080
         }
       }
   "16":
@@ -526,7 +526,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 3255
         }
       }
   "18":
@@ -559,7 +559,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3050
+          "y": 3400
         }
       }
   "19":
@@ -596,7 +596,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4245
+          "y": 4595
         }
       }
   "20":
@@ -634,7 +634,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4420
+          "y": 4770
         }
       }
   "21":
@@ -642,7 +642,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "22"
+      - "35"
     note: false
     quietmode: 0
     scriptarguments:
@@ -700,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1565
         }
       }
   "23":
@@ -741,7 +741,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3225
+          "y": 3575
         }
       }
   "24":
@@ -776,7 +776,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 3750
         }
       }
   "25":
@@ -791,20 +791,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0ca777fd-1e8a-4aad-86d1-b48168634347
+      id: c6b06d6c-2e3e-4052-86bd-e7bcde3cc954
       iscommand: false
-      name: Rules
+      name: Rules & Models
       type: title
       version: -1
       description: ''
-    taskid: 0ca777fd-1e8a-4aad-86d1-b48168634347
+    taskid: c6b06d6c-2e3e-4052-86bd-e7bcde3cc954
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1915
+          "y": 2090
         }
       }
   "26":
@@ -837,7 +837,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 2235
         }
       }
   "27":
@@ -845,7 +845,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "8"
+      - "36"
     note: false
     quietmode: 0
     scriptarguments:
@@ -869,7 +869,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2410
         }
       }
   "28":
@@ -897,7 +897,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4770
+          "y": 5120
         }
       }
   "29":
@@ -931,7 +931,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4915
+          "y": 5265
         }
       }
   "30":
@@ -939,7 +939,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "32"
+      - "37"
     note: false
     quietmode: 0
     scriptarguments:
@@ -963,7 +963,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5265
+          "y": 5615
         }
       }
   "31":
@@ -980,8 +980,19 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Exabeam.ContextTable.Record
-          operator: isExists
+              simple: Exabeam.ContextTable.Record.key
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: key_test_playbook1
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTable.Record.key
+          operator: hasLength
+          right:
+            value:
+              simple: "1"
       label: "yes"
     id: "31"
     ignoreworker: false
@@ -994,19 +1005,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5948f16b-bf81-4eeb-88a4-51cc9ab8e96f
+      id: 8e5f967f-9649-4277-88fa-b16b423efc56
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 5948f16b-bf81-4eeb-88a4-51cc9ab8e96f
+    taskid: 8e5f967f-9649-4277-88fa-b16b423efc56
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5090
+          "y": 5440
         }
       }
   "32":
@@ -1031,7 +1042,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5440
+          "y": 6490
         }
       }
   "33":
@@ -1069,7 +1080,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4070
+          "y": 4420
         }
       }
   "34":
@@ -1105,7 +1116,236 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4595
+          "y": 4945
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sequence_id:
+        simple: ${Exabeam.User.Session.SessionID}
+      sequence_type:
+        simple: session
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: List top domains of a sequence.
+      id: beb0e907-e1aa-41d4-8e30-35aaf5bb159f
+      iscommand: true
+      name: List top domains
+      script: '|||exabeam-list-top-domains'
+      type: regular
+      version: -1
+    taskid: beb0e907-e1aa-41d4-8e30-35aaf5bb159f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      model_name:
+        simple: AM-GOU
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a rule model definition by name.
+      id: 9c19b3df-07ef-488a-893a-b5435422e4bd
+      iscommand: true
+      name: Get Rule Model Definition
+      script: '|||exabeam-get-rules-model-definition'
+      type: regular
+      version: -1
+    taskid: 9c19b3df-07ef-488a-893a-b5435422e4bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      context_table_type:
+        simple: key_value
+      records:
+        simple: 'key_test_playbook1:v1;v2,key_test_playbook2:v3,key_test_playbook3:'
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add records to the context table.
+      id: 55099f61-98b9-4834-8d8e-bfac1c3b610f
+      iscommand: true
+      name: Add records to Context Table
+      script: '|||exabeam-add-context-table-records'
+      type: regular
+      version: -1
+    taskid: 55099f61-98b9-4834-8d8e-bfac1c3b610f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5790
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      context_table_type:
+        simple: key_value
+      records:
+        simple: 0-1:key_test_playbook4:v1
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates records of a context table.
+      id: 94fb013b-265b-438f-8d78-f63741e708dd
+      iscommand: true
+      name: Update records in Context Table
+      script: '|||exabeam-update-context-table-records'
+      type: regular
+      version: -1
+    taskid: 94fb013b-265b-438f-8d78-f63741e708dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5965
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      records:
+        simple: 0-1,0-2,0-3
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete records from a context table.
+      id: 2e424cc7-55ab-4d8e-8c08-e47f026e1e1a
+      iscommand: true
+      name: Delete records from Context Table
+      script: '|||exabeam-delete-context-table-records'
+      type: regular
+      version: -1
+    taskid: 2e424cc7-55ab-4d8e-8c08-e47f026e1e1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6140
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: removed
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: updated
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: created
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0b4616fc-4cba-4cca-8488-3e5ad6d98389
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 0b4616fc-4cba-4cca-8488-3e5ad6d98389
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6315
         }
       }
 version: -1
@@ -1114,7 +1354,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5455,
+        "height": 6505,
         "width": 380,
         "x": 50,
         "y": 50
