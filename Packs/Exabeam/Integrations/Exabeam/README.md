@@ -1,5 +1,23 @@
-The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-This integration was integrated and tested with version 53.5 of Exabeam
+The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics and SOAR.
+This integration was integrated and tested with version 53.5 of Exabeam.
+
+### Authentication Methods
+
+In addition to the User Credentials authentication method, **Exabeam Cloud** users can authenticate using a **Cluster Authentication Token**. To authenticate with a Cluster Authentication Token, insert `__token` in the "Username" parameter, and the token itself in the "Password" parameter.
+
+
+### Generate a Cluster Authentication Token
+
+1. Navigate to Settings > Admin Operations > Cluster Authentication Token.
+
+2. At the Cluster Authentication Token menu, click the blue `+` button.
+   
+3. In the **Setup Token** menu, fill in the **Token Name**, **Expiry Date**, and select the **Permission Level**(s).
+
+4. Click **ADD TOKEN** to apply the configuration.
+
+For additional information, refer to [Exabeam Administration Guide](https://docs.exabeam.com/en/advanced-analytics/i54/advanced-analytics-administration-guide/113254-configure-advanced-analytics.html#UUID-70a0411c-6ddc-fd2a-138d-fa83c7c59a40).
+
 ## Configure Exabeam on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -225,352 +243,7 @@ There are no input arguments for this command.
       <td> Chief Marketing Officer </td>
     </tr>
     <tr>
-      <td>  </td>
-    </tr>
-    <tr>
       <td> Chief Strategy Officer </td>
-    </tr>
-    <tr>
-      <td> CN=Andrew Bautista,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> BitLockerUsersComputers </td>
-    </tr>
-    <tr>
-      <td> trinet </td>
-    </tr>
-    <tr>
-      <td> Admin Operations </td>
-    </tr>
-    <tr>
-      <td> 118 </td>
-    </tr>
-    <tr>
-      <td> Corp </td>
-    </tr>
-    <tr>
-      <td> 102 </td>
-    </tr>
-    <tr>
-      <td> CN=Emery Santiago,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> 105 </td>
-    </tr>
-    <tr>
-      <td> Computer Scientist </td>
-    </tr>
-    <tr>
-      <td> Electrical Engineer </td>
-    </tr>
-    <tr>
-      <td> VP Business Development </td>
-    </tr>
-    <tr>
-      <td> Hardware Engineer </td>
-    </tr>
-    <tr>
-      <td> Executive Assistant </td>
-    </tr>
-    <tr>
-      <td> GenCouncil </td>
-    </tr>
-    <tr>
-      <td> Consulting </td>
-    </tr>
-    <tr>
-      <td> 109 </td>
-    </tr>
-    <tr>
-      <td> Legal Secretary </td>
-    </tr>
-    <tr>
-      <td> VP Operations </td>
-    </tr>
-    <tr>
-      <td> 106 </td>
-    </tr>
-    <tr>
-      <td> Washington </td>
-    </tr>
-    <tr>
-      <td> Operations Director </td>
-    </tr>
-    <tr>
-      <td> Process Engineer </td>
-    </tr>
-    <tr>
-      <td> 104 </td>
-    </tr>
-    <tr>
-      <td> Account Manager </td>
-    </tr>
-    <tr>
-      <td> Shop Floor Supervisor </td>
-    </tr>
-    <tr>
-      <td> IT Operations </td>
-    </tr>
-    <tr>
-      <td> VP Marketing </td>
-    </tr>
-    <tr>
-      <td> HR </td>
-    </tr>
-    <tr>
-      <td> design,milling </td>
-    </tr>
-    <tr>
-      <td> superUsers </td>
-    </tr>
-    <tr>
-      <td> WIFI IL </td>
-    </tr>
-    <tr>
-      <td> ProgramMgmt </td>
-    </tr>
-    <tr>
-      <td> Engagement Manager </td>
-    </tr>
-    <tr>
-      <td> InfoSec </td>
-    </tr>
-    <tr>
-      <td> Sales Operations </td>
-    </tr>
-    <tr>
-      <td> Security Systems Engineer </td>
-    </tr>
-    <tr>
-      <td> design </td>
-    </tr>
-    <tr>
-      <td> CN=Tracee Weber,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> sap </td>
-    </tr>
-    <tr>
-      <td> CN=May Mcconnell,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> jobvite </td>
-    </tr>
-    <tr>
-      <td> Sales </td>
-    </tr>
-    <tr>
-      <td> partners </td>
-    </tr>
-    <tr>
-      <td> CN=Emely Blanchard,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> Corporate Marketing Strategist </td>
-    </tr>
-    <tr>
-      <td> Web Developer </td>
-    </tr>
-    <tr>
-      <td> Domain Admins </td>
-    </tr>
-    <tr>
-      <td> VP Information Systems </td>
-    </tr>
-    <tr>
-      <td> CN=Raelene Thompson,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> VP Engineering </td>
-    </tr>
-    <tr>
-      <td> Marketing Coordinator </td>
-    </tr>
-    <tr>
-      <td> VP Sales </td>
-    </tr>
-    <tr>
-      <td> 103 </td>
-    </tr>
-    <tr>
-      <td> Product Manager </td>
-    </tr>
-    <tr>
-      <td> Welder </td>
-    </tr>
-    <tr>
-      <td> milling </td>
-    </tr>
-    <tr>
-      <td> VP Human Resources </td>
-    </tr>
-    <tr>
-      <td> Partner Corrdinator </td>
-    </tr>
-    <tr>
-      <td> execs </td>
-    </tr>
-    <tr>
-      <td> 117 </td>
-    </tr>
-    <tr>
-      <td> Engineering </td>
-    </tr>
-    <tr>
-      <td> Seattle </td>
-    </tr>
-    <tr>
-      <td> 107 </td>
-    </tr>
-    <tr>
-      <td> Program Director </td>
-    </tr>
-    <tr>
-      <td> Chief Council </td>
-    </tr>
-    <tr>
-      <td> Machinist </td>
-    </tr>
-    <tr>
-      <td> Software Developer </td>
-    </tr>
-    <tr>
-      <td> Office365-Users </td>
-    </tr>
-    <tr>
-      <td> CN=Harris Oliver,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> CN=Tu Petersen,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> ITServiceUsersDomainAdmins </td>
-    </tr>
-    <tr>
-      <td> root </td>
-    </tr>
-    <tr>
-      <td> IT </td>
-    </tr>
-    <tr>
-      <td> Atlanta </td>
-    </tr>
-    <tr>
-      <td> autocad </td>
-    </tr>
-    <tr>
-      <td> Building Engineer </td>
-    </tr>
-    <tr>
-      <td> Dallas </td>
-    </tr>
-    <tr>
-      <td> Security Security Coordinator </td>
-    </tr>
-    <tr>
-      <td> salesforce </td>
-    </tr>
-    <tr>
-      <td> Software Engineer </td>
-    </tr>
-    <tr>
-      <td> 110 </td>
-    </tr>
-    <tr>
-      <td> Saless </td>
-    </tr>
-    <tr>
-      <td> CN=Marianne Hughes,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> Civil Engineer </td>
-    </tr>
-    <tr>
-      <td> CN=Vince Andrade,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> Security Analyst </td>
-    </tr>
-    <tr>
-      <td> Sales Representative </td>
-    </tr>
-    <tr>
-      <td> Operations </td>
-    </tr>
-    <tr>
-      <td> Jobvite-users </td>
-    </tr>
-    <tr>
-      <td> Chicago </td>
-    </tr>
-    <tr>
-      <td> Los Angeles </td>
-    </tr>
-    <tr>
-      <td> New York </td>
-    </tr>
-    <tr>
-      <td> councilApp </td>
-    </tr>
-    <tr>
-      <td> VP Information Security </td>
-    </tr>
-    <tr>
-      <td> Direct Support </td>
-    </tr>
-    <tr>
-      <td> MA/DCG </td>
-    </tr>
-    <tr>
-      <td> orch_admins </td>
-    </tr>
-    <tr>
-      <td> Chief Operating Officer </td>
-    </tr>
-    <tr>
-      <td> ITInfraAdmins </td>
-    </tr>
-    <tr>
-      <td> Manager, IT Corporate Services </td>
-    </tr>
-    <tr>
-      <td> VP Council </td>
-    </tr>
-    <tr>
-      <td> CN=Felipe Pennington,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> CN=May Mcconnell,OU=US,OU=Users,OU=Ktenergy,DC=ktenergy,DC=local </td>
-    </tr>
-    <tr>
-      <td> Public Relations Officer </td>
-    </tr>
-    <tr>
-      <td> Human Resources Coordinator </td>
-    </tr>
-    <tr>
-      <td> Chief Information Secuity Officer </td>
-    </tr>
-    <tr>
-      <td> Marketing Strategist </td>
-    </tr>
-    <tr>
-      <td> Front Desk Receptionist </td>
-    </tr>
-    <tr>
-      <td> CEO </td>
-    </tr>
-    <tr>
-      <td> IT Administrator </td>
-    </tr>
-    <tr>
-      <td> Sales Coordinator </td>
-    </tr>
-    <tr>
-      <td> Network Engineer </td>
-    </tr>
-    <tr>
-      <td> 108 </td>
     </tr>
   </tbody>
 </table>
@@ -968,9 +641,9 @@ Gets all the triggered rules of a sequence.
 ### Sequence test-20200630233800 Triggered Rules
 |_Id|anchorScore|anomalyFactor|createdTime|eType|eventId|riskScore|ruleData|ruleId|ruleType|scoreData|sessionId|triggeringTime|username|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 60072e97131b380006eb2208 | 15.0 | 1.0 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 15.0 | featureValue: tks_en_dd7_kt<br/>scopeValue: test<br/>modelName: LL-UH<br/>totalEvents: 28<br/>numBins: 3<br/>numObservations: 0<br/>probability: 0.0<br/>percentileThresholdValue: <br/>percentileThresholdCount: 0.0<br/>confidenceFactor: 0.9994335170855323<br/>distanceCountPercentile: 0.0<br/>distanceValuePercentile: 0.0<br/>histogramId: LL-UH#test#t#NA | LL-UH-F | session | histScoreData: {"weight": 1.0, "rawScore": 1.0585832492943268}<br/>bayesAnchorScoreData: {"weight": 1.0}<br/>ruleDefScore: 15.0 | test-20200630233800 | 2020-06-30T23:38:00 | test |
-| 60072e97131b380006eb220b | 15.0 | 0.28 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 4.27 | featureValue: tks_en_dd7_kt<br/>scopeValue: it administrator<br/>modelName: LL-GH<br/>totalEvents: 366<br/>numBins: 26<br/>numObservations: 0<br/>probability: 0.0<br/>percentileThresholdValue: <br/>percentileThresholdCount: 0.0<br/>confidenceFactor: 0.9289617486338798<br/>distanceCountPercentile: 0.0<br/>distanceValuePercentile: 0.0<br/>histogramId: LL-GH#it administrator#t#NA | LL-GH-F | session | histScoreData: {"weight": 1.0, "rawScore": 0.6133293162851026}<br/>peerScoreData: {"weight": 1.0, "peerGroupSize": 396}<br/>multiplePeerGroupsScoreData: {"weight": 0.2850645220062152, "cohesiveness": 0.2850645220062152}<br/>bayesAnchorScoreData: {"weight": 1.0}<br/>ruleDefScore: 15.0 | test-20200630233800 | 2020-06-30T23:38:00 | test |
-| 60072e97131b380006eb220d | 7.0 | 0.27 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 1.9 | featureValue: tks_en_dd7_kt<br/>scopeValue: salesforce<br/>modelName: LL-GH<br/>totalEvents: 509<br/>numBins: 36<br/>numObservations: 1<br/>probability: 0.0<br/>percentileThresholdValue: <br/>percentileThresholdCount: 8.0<br/>confidenceFactor: 0.9292730844793713<br/>distanceCountPercentile: 0.0<br/>distanceValuePercentile: 0.0<br/>histogramId: LL-GH#salesforce#t#NA | LL-GH-A | session | histScoreData: {"weight": 1.0, "rawScore": 3.5486919149585874}<br/>peerScoreData: {"weight": 1.0, "peerGroupSize": 6395}<br/>multiplePeerGroupsScoreData: {"weight": 0.2719893861729281, "cohesiveness": 0.2719893861729281}<br/>bayesAnchorScoreData: {"weight": 1.0}<br/>ruleDefScore: 7.0 | test-20200630233800 | 2020-06-30T23:38:00 | test |
+| 60072e97131b380006eb2208 | 15.0 | 1.0 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 15.0 | featureValue: tks_en_dd7_kt<br/>scopeValue: test<br/>modelName: LL-UH | LL-UH-F | session | histScoreData: {"weight": 1.0, "rawScore": 1.0585832492943268} | test-20200630233800 | 2020-06-30T23:38:00 | test |
+| 60072e97131b380006eb220b | 15.0 | 0.28 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 4.27 | featureValue: tks_en_dd7_kt<br/>scopeValue: it administrator<br/>modelName: LL-GH | LL-GH-F | session | histScoreData: {"weight": 1.0, "rawScore": 0.6133293162851026} | test-20200630233800 | 2020-06-30T23:38:00 | test |
+| 60072e97131b380006eb220d | 7.0 | 0.27 | 2021-01-19T19:10:15.330000 | local-logon | 2311678@m | 1.9 | featureValue: tks_en_dd7_kt<br/>scopeValue: salesforce<br/>modelName: LL-GH | LL-GH-A | session | histScoreData: {"weight": 1.0, "rawScore": 3.5486919149585874} | test-20200630233800 | 2020-06-30T23:38:00 | test |
 
 
 ### exabeam-get-asset-info
@@ -1074,15 +747,11 @@ Gets next events for a given asset.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test_account1 | ntlm | Kerberos | tks_en_360_kt | 8.8.8.8 | kt_cloud | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 279@m | local-logon | zone55 | 1421552590 | dc_486 | true | 2 - Interactive | blozano | 2020-06-01T15:29:00 | blozano-20200601152900 | 1 | Windows | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T15:29:00 | blozano | test_drive\blozano |
 
-### 5 remote-access event(s) between 2020-06-01 16:00:00 and 2020-06-01 16:03:00
+### 2 remote-access event(s) between 2020-06-01 16:00:00 and 2020-06-01 16:03:00
 |Account|AssetFeature|AuthPackage|AuthProcess|DestHost|DestIp|Domain|EntityAssetId|EventCategory|EventCode|EventId|EventType|Getvalue('ZoneInfo', Dest)|Hash|Host|LogonTypeText|NtlmHost|RawlogTime|SessionId|SessionOrder|Source|SrcHost|SrcHostWindows|SrcIp|SrcZone|Time|User|UserSid|ZoneFeature|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | test_account1 | test_asset:test_asset2 | ntlm | Negotiate | test_asset2 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 562@m | remote-access | chicago office | 1895168631 | dc_887 | 3 - Network | test_asset | 2020-06-01T16:00:00 | test_account1-20200601160000 | 2 | Windows | test_asset | test_asset | 8.8.8.8 | zone55 | 2020-06-01T16:00:00 | test_account1 | test_drive\test_account1 | zone55:chicago office |
 | test_account2 | test_asset:test_asset3 | ntlm | Kerberos | test_asset3 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 873@m | remote-access | zone55 | 1665078914 | dc_879 | 3 - Network | test_asset | 2020-06-01T16:02:00 | test_account2-20200601140600 | 3 | Windows | test_asset | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T16:02:00 | test_account2 | test_drive\test_account2 | zone55:los angeles office |
-| test_account2 | test_asset:test_asset3 | ntlm | Kerberos | test_asset3 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 1102@m | remote-access | zone55 | 1440699034 | dc_256 | 3 - Network | test_asset | 2020-06-01T16:03:00 | test_account2-20200601140600 | 4 | Windows | test_asset | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T16:03:00 | test_account2 | test_drive\test_account2 | zone55:los angeles office |
-| test_account2 | test_asset:test_asset3 | ntlm | Kerberos | test_asset3 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 1131@m | remote-access | zone55 | 158816280 | dc_197 | 3 - Network | test_asset | 2020-06-01T16:03:00 | test_account2-20200601140600 | 5 | Windows | test_asset | test_asset | 8.8.8.8 | los angeles office | 2020-06-01T16:03:00 | test_account2 | test_drive\test_account2 | zone55:los angeles office |
-| test_account1 | test_asset:test_asset4 | ntlm | Kerberos | test_asset4 | 8.8.8.8 | dev_kt | asset@test_asset-20200601 | user-events,<br/>asset-events | 4624 | 1161@m | remote-access | los angeles office | 1987232403 | dc_427 | 3 - Network | test_asset | 2020-06-01T16:03:00 | test_account1-20200601160000 | 3 | Windows | test_asset | test_asset | 8.8.8.8 | zone55 | 2020-06-01T16:03:00 | test_account1 | test_drive\test_account1 | zone55:los angeles office |
-
 
 ### exabeam-list-security-alerts-by-asset
 ***
@@ -1196,16 +865,13 @@ Searches for rules by a keyword.
 
 
 #### Command Example
-```!exabeam-search-rules limit=3 keyword=account```
+```!exabeam-search-rules limit=1 keyword=account```
 
 #### Human Readable Output
 ### Rule Search Results
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
 | false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-OG-A<br/>ruleName: Abnormal account addition to this group for the organization<br/>ruleDescription: This is noteworthy because changes are not often made to this group.<br/>reasonTemplate: Abnormal account management addition to group {user.group\|featureValue} for the organization<br/>aggregateReasonTemplate: Abnormal account addition to this group for the organization: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(group_name, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-AG<br/>factFeatureName: group_name<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: (confidencefactoraboveorequal() && ((num_observations > 0) && ((num_observations < percentile_threshold_count) && !wasrulefired('AM-OG-A'))))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-OG-A | ModifiedExabeam |
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GA-AC-A<br/>ruleName: Abnormal account creation activity for peer group<br/>ruleDescription: It is abnormal for a member of this peer group to create accounts. Account creation events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account creation activity for peer group {user.group\|scopeValue}<br/>aggregateReasonTemplate: Abnormal account creation activity for peer group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: ((count(peers('default', user), 'account-creation') = 1) && (!exists(user_type) \|\| (user_type != 'local')))<br/>ruleEventTypes: account-creation<br/>disabled: false<br/>modelName: AE-GA<br/>factFeatureName: event_type<br/>hasDynamicScore: false<br/>score: 90.0<br/>percentileThreshold: 0.1<br/>ruleExpression: (confidencefactoraboveorequal() && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GA-AC-A | ModifiedExabeam |
-
 
 ### exabeam-get-rule-string
 ***
@@ -1287,16 +953,13 @@ Gets all rules.
 
 
 #### Command Example
-```!exabeam-fetch-rules limit=3```
+```!exabeam-fetch-rules limit=1```
 
 #### Human Readable Output
 ### Rule Search Results
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
 | false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-OG-A<br/>ruleName: Abnormal account addition to this group for the organization<br/>ruleDescription: This is noteworthy because changes are not often made to this group.<br/>reasonTemplate: Abnormal account management addition to group {user.group\|featureValue} for the organization<br/>aggregateReasonTemplate: Abnormal account addition to this group for the organization: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(group_name, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-AG<br/>factFeatureName: group_name<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: (confidencefactoraboveorequal() && ((num_observations > 0) && ((num_observations < percentile_threshold_count) && !wasrulefired('AM-OG-A'))))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-OG-A | ModifiedExabeam |
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GA-AC-A<br/>ruleName: Abnormal account creation activity for peer group<br/>ruleDescription: It is abnormal for a member of this peer group to create accounts. Account creation events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account creation activity for peer group {user.group\|scopeValue}<br/>aggregateReasonTemplate: Abnormal account creation activity for peer group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: ((count(peers('default', user), 'account-creation') = 1) && (!exists(user_type) \|\| (user_type != 'local')))<br/>ruleEventTypes: account-creation<br/>disabled: false<br/>modelName: AE-GA<br/>factFeatureName: event_type<br/>hasDynamicScore: false<br/>score: 90.0<br/>percentileThreshold: 0.1<br/>ruleExpression: (confidencefactoraboveorequal() && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GA-AC-A | ModifiedExabeam |
-
 
 
 ### exabeam-get-rules-model-definition
