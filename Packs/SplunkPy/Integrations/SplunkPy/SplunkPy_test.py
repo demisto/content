@@ -6,6 +6,7 @@ import SplunkPy as splunk
 import demistomock as demisto
 from datetime import datetime
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
+SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
@@ -423,7 +424,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
     output = splunk.get_kv_store_config(Name())
     expected_output = '{}{}'.format(START_OUTPUT, expected_output)
-    assert output == expected_outpu
+    assert output == expected_output
 
 
 SPLUNK_RESULTS = [
@@ -475,59 +476,49 @@ def test_fetch_incidents(mocker):
 
 def test_remove_old_incident_ids():
     from SplunkPy import remove_old_incident_ids
-
+    cur_time = int(time.time())
     incident_ids = {
-        "incident_under_one_hour_old": int(time.time()) - 300,
-        "incident_over_one_hour_old": int(time.time()) - 200000
+        "incident_under_one_hour_old": cur_time - 300,
+        "incident_over_one_hour_old": cur_time - 200000
     }
 
     assert "incident_under_one_hour_old" in incident_ids
     assert "incident_over_one_hour_old" in incident_ids
 
-    new_incident_ids = remove_old_incident_ids(incident_ids)
+    new_incident_ids = remove_old_incident_ids(incident_ids, cur_time)
 
     assert "incident_under_one_hour_old" in new_incident_ids
     assert "incident_over_one_hour_old" not in new_incident_ids
 
 
-time = str(int(time.time()) - 300)
+occurred_time = str(int(time.time()) - 300)
+
 first_incident = {
-    'rawJSON': {
-        '_raw': 'first incident'
-    },
-    'occurred': time
+    'rawJSON': '{"_raw": "first incident"}',
+    'occurred': occurred_time
 }
+
 second_incident = {
-    'rawJSON': {
-        '_raw': 'first incident'
-    },
-    'occurred': time
+    'rawJSON': '{"_raw": "second incident"}',
+    'occurred': occurred_time
 }
 
 def test_create_incident_custom_id_creates_different_ids():
     from SplunkPy import create_incident_custom_id
-
-    first_incident_str = json.dumps(first_incident)
-    first_incident_custom_id = create_incident_custom_id(first_incident_str)
-
-    second_incident_str = json.dumps(second_incident)
-    second_incident_custom_id = create_incident_custom_id(second_incident_str)
-
+    first_incident_custom_id = create_incident_custom_id(first_incident)
+    second_incident_custom_id = create_incident_custom_id(second_incident)
     assert first_incident_custom_id != second_incident_custom_id
 
 
 def test_create_incident_custom_id_length():
     from SplunkPy import create_incident_custom_id
-
-    first_incident_str = json.dumps(first_incident)
-    first_incident_custom_id = create_incident_custom_id(first_incident_str)
-
+    first_incident_custom_id = create_incident_custom_id(first_incident)
     assert len(first_incident_custom_id) < 100
 
 
-test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:45:16.000-07:00')
-test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:46:16.000-07:00')
-test_get_next_start_time_under_20_minutes_and_incidents_found = ( 21, True, '2020-08-04T05:44:16.000-07:00')
+test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:46:16')
+test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:45:16')
+test_get_next_start_time_under_20_minutes_and_incidents_found = (21, True, '2020-08-04T05:44:16')
 
 get_next_start_time_test_data = [
     test_get_next_start_time_over_20_minutes,
@@ -540,12 +531,240 @@ get_next_start_time_test_data = [
 def test_get_next_start_time_over_20_minutes(same_start_time_count, were_new_incidents_found, expected):
     from SplunkPy import get_next_start_time
     last_run = '2020-08-04T05:45:16.000-07:00'
-    last_run_plus_one_minute = '2020-08-04T05:46:16.000-07:00'
-    fetches_with_same_start_time_count = 21
-    were_new_incidents_found = False
-    next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_incidents_found)
-    assert next_run == last_run_plus_one_minute
+    next_run = get_next_start_time(last_run, same_start_time_count, were_new_incidents_found)
+    assert next_run == expected
 
 
-def test_get_latest_incident_time():
+incidents_with_minutes_difference = (
+    [
+        {'occurred': '2020-08-04T05:44:16.000-07:00'},
+        {'occurred': '2020-08-04T05:48:17.000-07:00'},
+    ],
+    '2020-08-04T05:48:17.000-07:00'
+)
+
+incidents_with_days_difference = (
+    [
+        {'occurred': '2020-08-05T05:48:17.000-07:00'},
+        {'occurred': '2020-08-04T05:48:17.000-07:00'},
+    ],
+    '2020-08-05T05:48:17.000-07:00'
+)
+
+incidents_with_seconds_difference = (
+    [
+        {'occurred': '2020-08-04T05:48:18.000-07:00'},
+        {'occurred': '2020-08-04T05:48:17.000-07:00'},
+    ],
+    '2020-08-04T05:48:18.000-07:00'
+)
+
+get_latest_incident_time_test_data = [
+    incidents_with_minutes_difference,
+    incidents_with_days_difference,
+    incidents_with_seconds_difference
+]
+
+@pytest.mark.parametrize('test_incidents, expected', get_latest_incident_time_test_data)
+def test_get_latest_incident_time(test_incidents, expected):
     from SplunkPy import get_latest_incident_time
+
+    latest_time = get_latest_incident_time(test_incidents)
+    assert latest_time == expected
+
+response_with_early_incident = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-04T05:45:16.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+response_with_late_incident = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-04T05:45:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+def test_fetch_incidents_pre_indexing(mocker):
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
+    splunk.fetch_incidents(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    next_run_timestamp = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    earlier_incident_time = response_with_late_incident[0]["_time"].split('.')[0]
+    earlier_incident_time = datetime.strptime(earlier_incident_time, SPLUNK_TIME_FORMAT)
+    assert earlier_incident_time > next_run_timestamp
+
+
+def test_fetch_incidents_deduping(mocker):
+    from SplunkPy import create_incident_custom_id
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
+    splunk.fetch_incidents(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 0
+
+
+def test_fetch_incidents_deduping(mocker):
+    from SplunkPy import create_incident_custom_id
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
+    splunk.fetch_incidents(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+    assert next_run["fetch_start_update_count"] == 0
+
+
+def test_fetch_incidents_time_relapse(mocker):
+    from SplunkPy import create_incident_custom_id
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=[])
+    splunk.fetch_incidents(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 0
+    assert next_run["time"] == '2018-10-24T14:13:20'
+
+
+def test_fetch_incidents_time_relapse(mocker):
+    from SplunkPy import create_incident_custom_id
+    from SplunkPy import occurred_to_datetime
+
+    from datetime import timedelta
+
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something"}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_with_late_incident)
+    splunk.fetch_incidents(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    incident_found = incidents[0]
+    found_incident_time = occurred_to_datetime(incident_found['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+
+    assert next_run_time == found_incident_time - timedelta(minutes=1)
