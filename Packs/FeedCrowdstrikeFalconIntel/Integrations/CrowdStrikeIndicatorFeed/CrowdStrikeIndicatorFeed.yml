@@ -104,9 +104,8 @@ configuration:
   required: false
   type: 15
 - additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
-    in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha1",
-    "File sha256", "Host", "IP", "IPv6", "Registry Key", and
-    "URL". The default is "ALL".'
+    in XSOAR are: "Account", "Domain", "Email", "File md5",
+    "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'
   display: Type
   hidden: false
   name: type
@@ -122,8 +121,7 @@ configuration:
   - URL
   required: false
   type: 16
-- defaultvalue: '500'
-  display: Max. indicators per fetch
+- display: Max. indicators per fetch
   hidden: false
   name: max_indicator_to_fetch
   required: false

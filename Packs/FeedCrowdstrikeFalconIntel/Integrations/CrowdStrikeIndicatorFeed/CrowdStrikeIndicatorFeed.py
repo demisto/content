@@ -89,8 +89,8 @@ class Client(BaseClient):
             params = ''
         return params
 
-    def get_indicators(self, type: list = None, malicious_confidence='', filter='', q='',
-                       limit: int = 200, offset: int = 0, include_deleted=False,
+    def get_indicators(self, limit: int, type: list = None, malicious_confidence='', filter='', q='',
+                        offset: int = 0, include_deleted=False,
                        get_indicators_command_or_test=False) -> Dict[str, Any]:
         if type:
             type_fql = self.build_type_fql(type)
@@ -123,7 +123,7 @@ class Client(BaseClient):
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
             pagination_offset = pagination.get('offset', 0)
-            pagination_limit = pagination.get('limit', 200)
+            pagination_limit = pagination.get('limit')
             total = pagination.get('total', 0)
             if pagination_offset + pagination_limit < total:
                 timestamp = response.get('resources', [])[-1].get('last_updated')
@@ -291,7 +291,7 @@ def main() -> None:
     malicious_confidence = params.get('malicious_confidence')
     filter = params.get('filter')
     q = params.get('q')
-    max_fetch = params.get('max_indicator_to_fetch') if params.get('max_indicator_to_fetch') else 500
+    max_fetch = arg_to_number(params.get('max_indicator_to_fetch'))  # if params.get('max_indicator_to_fetch') else 500
     command = demisto.command()
     args = demisto.args()
 
