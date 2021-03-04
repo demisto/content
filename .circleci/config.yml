@@ -292,7 +292,7 @@ references:
       name: Trigger Private Repo Build
       when: always
       command: |
-        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --commit-sha1 $CIRCLE_SHA1
+        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
 
   get_private_build_status: &get_private_build_status
     run:

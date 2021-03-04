@@ -101,14 +101,13 @@ def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
 
 def main():
     install_logging("TriggerPrivateBuild.log")
-    # get github token and commit sha1 parameters
+    # get github token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
-    arg_parser.add_argument('--commit-sha1', help='commit sha1 for creating the private repo')
     args = arg_parser.parse_args()
 
     github_token = args.github_token
-    commit_sha1 = args.commit_sha1
+    commit_sha1 = os.environ.get('CIRCLE_SHA1')
     branch_name = os.environ.get('CIRCLE_BRANCH')
 
     if branch_has_private_build_infra_change(commit_sha1):
