@@ -11,13 +11,13 @@ comment: Extracts blacklisted IP addresses from AbuseIPDB, and Populates Indicat
 enabled: true
 args:
 - name: days
-  description: Time range to return reports for (in days), default is 30
+  description: Time range to return reports for (in days).
   defaultValue: "30"
 - name: limit
-  description: 'Maximum number of IPs to retrieve, default is 50 '
+  description: 'Maximum number of IPs to retrieve.'
   defaultValue: "200"
 - name: confidence
-  description: 'The Minimum confidence required of IPs to retrieve. Default is 100.'
+  description: 'The Minimum confidence required of IPs to retrieve.'
   defaultValue: "100"
 scripttarget: 0
 dependson:
