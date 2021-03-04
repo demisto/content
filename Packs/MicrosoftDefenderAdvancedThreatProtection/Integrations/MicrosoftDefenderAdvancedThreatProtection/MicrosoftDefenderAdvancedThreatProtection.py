@@ -228,8 +228,9 @@ class MsClient:
         Returns:
             dict. Machine's info
         """
-        cmd_url = f'/machines?$top={int(page_size)}'
-        params = {'$filter': filter_req} if filter_req else None
+        cmd_url = '/machines'
+        params = {'$filter': filter_req, '$top': page_size} if filter_req else {'$top': page_size}
+
         if next_link:  # pagination
             machines = self.ms_client.http_request(method='GET', full_url=next_link,  params=params)
         else:
