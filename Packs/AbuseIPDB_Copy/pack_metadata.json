@@ -1,0 +1,17 @@
+{
+    "name": "AbuseIPDB_copy",
+    "description": "Test submit for existing integration update",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Guy Test",
+    "url": "",
+    "email": "",
+    "created": "2021-03-04T13:23:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "glicht"
+    ]
+}
