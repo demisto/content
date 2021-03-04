@@ -116,32 +116,26 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    output_capture = io.StringIO()
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
-            v_manager = ValidateManager(
-                is_backward_check=False, prev_ver=None, use_git=False, only_committed_files=False,
-                print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
-                validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
-                silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-                staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False)
-            v_manager.run_validation()
+    v_manager = ValidateManager(
+        is_backward_check=False, prev_ver=None, use_git=False, only_committed_files=False,
+        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
+        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
+        silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
+        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False)
+    v_manager.run_validation()
 
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    output_capture = io.StringIO()
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
-            lint_manager = LintManager(
-                input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
-                log_path=lint_log_dir, prev_ver='', json_file_path=json_output_file
-            )
-            lint_manager.run_dev_packages(
-                parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
-                no_vulture=False, keep_container=False, no_pylint=True, no_test=True, no_pwsh_analyze=True,
-                no_pwsh_test=True, test_xml='', failure_report=lint_log_dir
-            )
+    lint_manager = LintManager(
+        input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
+        log_path=lint_log_dir, prev_ver='', json_file_path=json_output_file
+    )
+    lint_manager.run_dev_packages(
+        parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
+        no_vulture=False, keep_container=False, no_pylint=True, no_test=True, no_pwsh_analyze=True,
+        no_pwsh_test=True, test_xml='', failure_report=lint_log_dir
+    )
 
 
 def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> str:
@@ -189,13 +183,16 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
 def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
-    if filename.endswith('.zip'):
-        path_to_validate = prepare_content_pack_for_validation(filename, data, tmp_directory)
-    else:
-        path_to_validate = prepare_single_content_item_for_validation(filename, data, tmp_directory)
+    output_capture = io.StringIO()
+    with redirect_stdout(output_capture):
+        with redirect_stderr(output_capture):
+            if filename.endswith('.zip'):
+                path_to_validate = prepare_content_pack_for_validation(filename, data, tmp_directory)
+            else:
+                path_to_validate = prepare_single_content_item_for_validation(filename, data, tmp_directory)
 
-    run_validate(path_to_validate, json_output_path)
-    run_lint(path_to_validate, lint_output_path)
+            run_validate(path_to_validate, json_output_path)
+            run_lint(path_to_validate, lint_output_path)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
