@@ -497,12 +497,12 @@ script:
             var discover_fields = true;
         } else {
             var fields = null;
-            var discover_fields = false
+            var discover_fields = false;
         }
         if (params.fetchlimit){
-            var fetchlimit = params.fetchlimit
+            var fetchlimit = params.fetchlimit;
         } else {
-            var fetchlimit = 100
+            var fetchlimit = 100;
         }
         var events = getSearchEventsRequest(userSessionId, query, 120000, startTime,
             endTime, discover_fields, null, null, false, null,
