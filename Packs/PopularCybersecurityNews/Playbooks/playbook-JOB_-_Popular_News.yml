@@ -4,7 +4,7 @@ contentitemexportablefields:
     - all
 description: Playbook can be run ad-hoc or as a Job to fetch results from Popular
   News sites
-id: 'JOB - Popular News '
+id: JOB - Popular News
 inputs:
 - description: ""
   key: KrebsOnSecurity
