@@ -145,21 +145,6 @@ def run_lint(file_path: str, json_output_file: str) -> None:
             )
 
 
-def run_parallel_operations(operations: List[Tuple[Callable, List]]) -> None:
-    parallel_ops = len(operations)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_ops) as executor:
-        try:
-            for func_to_execute, func_args in operations:
-                executor.submit(func_to_execute, *func_args)
-        except Exception as e:
-            demisto.debug(f'Stopping concurrent operations of validation script due to error - {e}')
-            try:
-                executor.shutdown(wait=False)
-            except Exception as e:
-                demisto.debug(f'Failed shutting down executor - {e}')
-            raise
-
-
 def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> str:
     # write zip file data to file system
     zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
@@ -210,11 +195,8 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     else:
         path_to_validate = prepare_single_content_item_for_validation(filename, data, tmp_directory)
 
-    operations = [
-        (run_validate, [path_to_validate, json_output_path]),
-        (run_lint, [path_to_validate, lint_output_path])
-    ]
-    run_parallel_operations(operations)
+    run_validate(path_to_validate, json_output_path)
+    run_lint(path_to_validate, lint_output_path)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
