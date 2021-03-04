@@ -513,10 +513,9 @@ def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_i
 def create_incident_custom_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
-    incident_custom_id = incident_occurred + incident_raw_data
-    incident_custom_id_hash = hashlib.md5(incident_custom_id).hexdigest()
-    demisto.debug('length of incident new custom ID is: {}'.format(len(incident_custom_id)))
-    return incident_custom_id_hash
+    raw_hash = hashlib.md5(incident_raw_data).hexdigest()
+    incident_custom_id = '{}_{}'.format(incident_occurred, raw_hash)
+    return incident_custom_id
 
 
 def extensive_log(message):

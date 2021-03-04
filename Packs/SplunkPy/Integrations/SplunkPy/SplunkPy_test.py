@@ -637,20 +637,6 @@ def test_create_incident_custom_id_creates_different_ids():
     assert first_incident_custom_id != second_incident_custom_id
 
 
-def test_create_incident_custom_id_length():
-    """
-    Given:
-    - An incident.
-    When:
-    - Creating a custom ID for the incident.
-    Then:
-    - The length of the ID is relatively small and will not take up too much space.
-    """
-    from SplunkPy import create_incident_custom_id
-    first_incident_custom_id = create_incident_custom_id(first_incident)
-    assert len(first_incident_custom_id) < 100
-
-
 test_get_next_start_time_over_20_minutes = (21, False, '2020-08-04T05:46:16')
 test_get_next_start_time_under_20_minutes = (17, False, '2020-08-04T05:45:16')
 test_get_next_start_time_under_20_minutes_and_incidents_found = (21, True, '2020-08-04T05:44:16')
