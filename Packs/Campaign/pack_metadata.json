@@ -1,6 +1,6 @@
 {
     "name": "Campain",
-    "description": "Phishing incidents consume plenty of the analysts' time? This Content Pack can help you to find related phishing incidents and to characterize campaigns.",
+    "description": "This pack can help you find related phishing, spam or other types of email incidents and characterize campaigns.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
