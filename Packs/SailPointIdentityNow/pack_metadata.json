@@ -10,9 +10,41 @@
     "categories": [
         "Identity and Access Management"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "GDPR",
+        "HIPAA",
+        "IAM",
+        "IT",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Compliance",
+        "Access",
+        "Identity and Access Management",
+        "Incident Response"
+    ],
+    "keywords": [
+        "SailPoint",
+        "Identity",
+        "Security",
+        "IdentityNow",
+        "Governance",
+        "Context",
+        "Compliance",
+        "Identity Governance",
+        "Account Management",
+        "Access Request",
+        "Accounts",
+        "Account Activities",
+        "Access Profiles",
+        "Roles",
+        "Entitlements",
+        "Events",
+        "Grant Access",
+        "Revoke Access",
+        "Trigger"
+    ],
     "githubUser": [
         "prashant-kagwad-sp"
     ]

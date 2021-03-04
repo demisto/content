@@ -1,5 +1,5 @@
 SailPoint IdentityNow
-This integration was integrated and tested with version xx of SailPointIdentityNow
+This integration was integrated and tested with SailPoint IdentityNow.
 ## Configure SailPointIdentityNow on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -81,7 +81,7 @@ Total: 1
 ### Identity(Identities)
 |id|name|displayName|firstName|lastName|email|created|modified|inactive|protected|status|isManager|identityProfile|source|attributes|accounts|accountCount|appCount|accessCount|entitlementCount|roleCount|accessProfileCount|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c918084740346d5017408d79229489e | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | 2020-08-19T22:29:39.498Z | 2021-02-04T02:03:11.294Z | false | false | UNREGISTERED | false | id: 2c9180887372d217017408d3c85d0b20</br>name: ZIA Users | id: 2c91808a737cf404017408d28c1e77a2</br>name: ZIA | uid: 7a736361-6c65-7200-7363-696d005d7d1a</br>firstname: testy.testerson@sailpoint.com</br>cloudAuthoritativeSource: 2c91808a737cf404017408d28c1e77a2</br>cloudStatus: UNREGISTERED</br>iplanet-am-user-alias-list: </br>displayName: testy.testerson@sailpoint.com</br>internalCloudStatus: UNREGISTERED</br>identificationNumber: 7a736361-6c65-7200-7363-696d005d7d1a</br>email: testy.testerson@sailpoint.com</br>lastname: testy.testerson@sailpoint.com | {'id': '2c918084740346d5017408d7922a489f', 'name': 'testy.testerson@sailpoint.com', 'accountId': '7a736361-6c65-7200-7363-696d005d7d1a', 'source': {'id': '2c91808a737cf404017408d28c1e77a2', 'name': 'ZIA', 'type': 'SCIM 2.0'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-19T22:29:39.498Z'},</br>{'id': '2c918084740346d601740c98765a306e', 'name': 'testy.testerson@sailpoint.com', 'accountId': 'testy.testerson@sailpoint.com', 'source': {'id': '2c91808563f9f8b40163fa9734d3029f', 'name': 'IdentityNow', 'type': 'IdentityNowConnector'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-20T15:59:12.475Z'} | 2 | 0 | 0 | 0 | 0 | 0 | stg-uswest | sailpoint-idn | identity |
+| 2c918084740346d5017408d79229489e | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | testy.testerson@sailpoint.com | 2020-08-19T22:29:39.498Z | 2021-02-04T02:03:11.294Z | false | false | UNREGISTERED | false | id: 2c9180887372d217017408d3c85d0b20<br/>name: ZIA Users | id: 2c91808a737cf404017408d28c1e77a2<br/>name: ZIA | uid: 7a736361-6c65-7200-7363-696d005d7d1a<br/>firstname: testy.testerson@sailpoint.com<br/>cloudAuthoritativeSource: 2c91808a737cf404017408d28c1e77a2<br/>cloudStatus: UNREGISTERED<br/>iplanet-am-user-alias-list: <br/>displayName: testy.testerson@sailpoint.com<br/>internalCloudStatus: UNREGISTERED<br/>identificationNumber: 7a736361-6c65-7200-7363-696d005d7d1a<br/>email: testy.testerson@sailpoint.com<br/>lastname: testy.testerson@sailpoint.com | {'id': '2c918084740346d5017408d7922a489f', 'name': 'testy.testerson@sailpoint.com', 'accountId': '7a736361-6c65-7200-7363-696d005d7d1a', 'source': {'id': '2c91808a737cf404017408d28c1e77a2', 'name': 'ZIA', 'type': 'SCIM 2.0'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-19T22:29:39.498Z'},<br/>{'id': '2c918084740346d601740c98765a306e', 'name': 'testy.testerson@sailpoint.com', 'accountId': 'testy.testerson@sailpoint.com', 'source': {'id': '2c91808563f9f8b40163fa9734d3029f', 'name': 'IdentityNow', 'type': 'IdentityNowConnector'}, 'disabled': False, 'locked': False, 'privileged': False, 'manuallyCorrelated': False, 'entitlementAttributes': {}, 'created': '2020-08-20T15:59:12.475Z'} | 2 | 0 | 0 | 0 | 0 | 0 | stg-uswest | sailpoint-idn | identity |
 
 
 
@@ -135,7 +135,7 @@ Get accounts by search/filter parameters (id, name, native_identity).
 ### Account(s)
 |id|name|identityId|nativeIdentity|sourceId|created|modified|attributes|authoritative|disabled|locked|systemAccount|uncorrelated|manuallyCorrelated|hasEntitlements|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c918084740346d30174088afa6d625e | Testy.Testerson |  | 41263 | 2c918084737cf3fe01740875ebac75cd | 2020-08-19T21:05:59.917Z | 2020-08-19T21:06:01.269Z | externalId: null</br>IIQDisabled: true</br>id: 41263</br>userName: Testy.Testerson</br>idNowDescription: f74806c7011b760457c914ef5ea254b8752496a441a92475b910ded9eb5ec487 | false | true | false | false | true | false | false |
+| 2c918084740346d30174088afa6d625e | Testy.Testerson |  | 41263 | 2c918084737cf3fe01740875ebac75cd | 2020-08-19T21:05:59.917Z | 2020-08-19T21:06:01.269Z | externalId: null<br/>IIQDisabled: true<br/>id: 41263<br/>userName: Testy.Testerson<br/>idNowDescription: f74806c7011b760457c914ef5ea254b8752496a441a92475b910ded9eb5ec487 | false | true | false | false | true | false | false |
 
 
 
@@ -189,7 +189,7 @@ Get account activities by search/filter parameters (requested_for, requested_by,
 ### Account Activity(Account Activities)
 |id|name|created|modified|completed|completionStatus|type|requesterIdentitySummary|targetIdentitySummary|items|executionStatus|cancelable|cancelComment|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c8f2907b336043be8570676b270965a9 | c8f2907b336043be8570676b270965a9 | 2020-02-20T15:28:47.051Z | 2020-02-20T15:29:10.735Z | 2020-02-20T15:29:10.735Z | INCOMPLETE | appRequest | id: 2c91808363f06ad80163fb690fae55b8</br>name: adam.kennedy | id: 2c91808a6fca28a6016fd7f5ec3f5228</br>name: jack.brown | {} | VERIFYING | false |  |
+| c8f2907b336043be8570676b270965a9 | c8f2907b336043be8570676b270965a9 | 2020-02-20T15:28:47.051Z | 2020-02-20T15:29:10.735Z | 2020-02-20T15:29:10.735Z | INCOMPLETE | appRequest | id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | id: 2c91808a6fca28a6016fd7f5ec3f5228<br/>name: jack.brown | {} | VERIFYING | false |  |
 
 
 
@@ -243,7 +243,7 @@ Total: 1
 ### Access Profile(s)
 |id|name|description|source|entitlements|entitlementCount|created|modified|synced|enabled|requestable|requestCommentsRequired|owner|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c91808874feffbc01750a4d06560370 | Basic Users | Basic Users | id: 2c9180876ff2de9601700b99e5fb51c6</br>name: Direct Access Profile | {'hasPermissions': False, 'description': None, 'attribute': 'Roles', 'value': 'Basic Users', 'schema': 'group', 'privileged': False, 'id': '2c91808a6fede9c401700ba9c4d43ef9', 'name': 'Basic Users'} | 1 | 2020-10-08T22:20:21Z | 2020-11-17T15:12:41Z | 2021-03-01T06:30:18.772Z | true | true | false | email: adam.kennedy@sailpoint.com</br>type: IDENTITY</br>id: 2c91808363f06ad80163fb690fae55b8</br>name: adam.kennedy | stg-uswest | sailpoint-idn | accessprofile |
+| 2c91808874feffbc01750a4d06560370 | Basic Users | Basic Users | id: 2c9180876ff2de9601700b99e5fb51c6<br/>name: Direct Access Profile | {'hasPermissions': False, 'description': None, 'attribute': 'Roles', 'value': 'Basic Users', 'schema': 'group', 'privileged': False, 'id': '2c91808a6fede9c401700ba9c4d43ef9', 'name': 'Basic Users'} | 1 | 2020-10-08T22:20:21Z | 2020-11-17T15:12:41Z | 2021-03-01T06:30:18.772Z | true | true | false | email: adam.kennedy@sailpoint.com<br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | accessprofile |
 
 
 
@@ -296,7 +296,7 @@ Total: 1
 ### Role(s)
 |id|name|description|accessProfiles|accessProfileCount|created|modified|synced|enabled|requestable|requestCommentsRequired|owner|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c9180846ff9c50201700beb2e9000da | Basic | Basic Users | {'id': '2c9180846ff9c50201700becb01e00db', 'name': 'Basic'} | 1 | 2020-02-03T16:38:47Z | 2020-02-03T16:40:42Z | 2021-03-01T05:30:09.434Z | true | true | false | email: adam.kennedy@sailpoint.com</br>type: IDENTITY</br>id: 2c91808363f06ad80163fb690fae55b8</br>name: adam.kennedy | stg-uswest | sailpoint-idn | role |
+| 2c9180846ff9c50201700beb2e9000da | Basic | Basic Users | {'id': '2c9180846ff9c50201700becb01e00db', 'name': 'Basic'} | 1 | 2020-02-03T16:38:47Z | 2020-02-03T16:40:42Z | 2021-03-01T05:30:09.434Z | true | true | false | email: adam.kennedy@sailpoint.com<br/>type: IDENTITY<br/>id: 2c91808363f06ad80163fb690fae55b8<br/>name: adam.kennedy | stg-uswest | sailpoint-idn | role |
 
 
 
@@ -349,7 +349,7 @@ Total: 1
 ### Entitlement(s)
 |id|name|displayName|description|modified|synced|source|privileged|identityCount|attribute|value|schema|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2c9180846ff7e56b01700bb399f60eaa | BASIC_DIRECT | BASIC_DIRECT |  | 2020-10-21T19:58:39Z | 2021-03-01T04:30:40.632Z | id: 2c9180876ff2de9601700b99e5fb51c6</br>name: Basic Direct | false |  | Roles | BASIC_DIRECT | group | stg-uswest | sailpoint-idn | entitlement |
+| 2c9180846ff7e56b01700bb399f60eaa | BASIC_DIRECT | BASIC_DIRECT |  | 2020-10-21T19:58:39Z | 2021-03-01T04:30:40.632Z | id: 2c9180876ff2de9601700b99e5fb51c6<br/>name: Basic Direct | false |  | Roles | BASIC_DIRECT | group | stg-uswest | sailpoint-idn | entitlement |
 
 
 
@@ -404,7 +404,7 @@ Total: 1
 ### Event(s)
 |id|name|stack|created|synced|objects|ipAddress|technicalName|target|actor|action|attributes|operation|status|pod|org|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2bd61299-d986-4c27-bd37-408b9c9ba118 | Delete Task Result Passed | sweep | 2020-02-24T22:07:03.793Z | 2020-02-24T22:07:03.831Z | TASK,</br>RESULT |  | TASK_RESULT_DELETE_PASSED |  | name: unknown | taskResultsPruned | hostName: 24</br>sourceName: null | DELETE | PASSED | stg-uswest | sailpoint-idn | SYSTEM_CONFIG |
+| 2bd61299-d986-4c27-bd37-408b9c9ba118 | Delete Task Result Passed | sweep | 2020-02-24T22:07:03.793Z | 2020-02-24T22:07:03.831Z | TASK,<br/>RESULT |  | TASK_RESULT_DELETE_PASSED |  | name: unknown | taskResultsPruned | hostName: 24<br/>sourceName: null | DELETE | PASSED | stg-uswest | sailpoint-idn | SYSTEM_CONFIG |
 
 
 
