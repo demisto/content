@@ -612,9 +612,6 @@ script:
       description: The ID of this software product variant in QRadar's catalog of
         products.
       type: Number
-    - contextPath: QRadar.Asset.Products.ip_addresses.created
-      description: Date when this product was most recently scanned for.
-      type: Date
     - contextPath: QRadar.Asset.Products.first_seen_scanner
       description: Date when product was first seen during a vulnerability scan.
       type: Date
