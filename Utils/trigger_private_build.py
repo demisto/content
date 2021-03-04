@@ -108,15 +108,16 @@ def main():
     args = arg_parser.parse_args()
 
     github_token = args.github_token
+    commit_sha1 = args.commit_sha1
     branch_name = os.environ.get('CIRCLE_BRANCH')
 
-    if branch_has_private_build_infra_change():
+    if branch_has_private_build_infra_change(commit_sha1):
         # get the workflows ids before triggering the build
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                   'client_payload': {'commit_sha1': args.commit_sha1, 'is_infra_build': 'True'}}
+                   'client_payload': {'commit_sha1': commit_sha1, 'is_infra_build': 'True'}}
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
@@ -125,8 +126,8 @@ def main():
                             verify=False)
 
         if res.status_code != 204:
-            logging.error(f'Failed to trigger private repo build, request to '
-                          f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
+            logging.critical(f'Failed to trigger private repo build, request to '
+                             f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
             sys.exit(1)
 
         workflow_ids_diff = []
@@ -142,8 +143,8 @@ def main():
 
         if len(workflow_ids_diff) == 1:
             workflow_id = workflow_ids_diff[0]
-            logging.info(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
-                         f' {WORKFLOW_HTML_URL}/{workflow_id}')
+            logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
+                            f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
             # write the workflow id to text file to use it in get_private_build_status.py
             with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:
@@ -151,7 +152,7 @@ def main():
             sys.exit(0)
 
         else:
-            logging.error('Could not found the private repo workflow')
+            logging.critical('Could not found the private repo workflow')
             sys.exit(1)
 
     else:

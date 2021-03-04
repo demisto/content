@@ -32,7 +32,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
                        headers={'Authorization': f'Bearer {github_token}'},
                        verify=False)
     if res.status_code != 200:
-        logging.error(
+        logging.critical(
             f'Failed to gets private repo workflow, request to {workflow_url} failed with error: {str(res.content)}')
         sys.exit(1)
 
@@ -47,7 +47,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> (str, str, str):
     jobs = workflow.get('jobs', [])
 
     if not jobs:
-        logging.error(f'Failed to gets private repo workflow jobs, build url: {WORKFLOW_HTML_URL}/{workflow_id}')
+        logging.critical(f'Failed to gets private repo workflow jobs, build url: {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
 
     curr_job = jobs[0]
@@ -95,17 +95,17 @@ def main():
         elapsed = time.time() - start
 
     if elapsed >= GET_WORKFLOWS_TIMEOUT_THRESHOLD:
-        logging.error(f'Timeout reached while waiting for private content build to complete, build url:'
-                      f' {WORKFLOW_HTML_URL}/{workflow_id}')
+        logging.critical(f'Timeout reached while waiting for private content build to complete, build url:'
+                         f' {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
 
     logging.info(f'Workflow {workflow_id} conclusion is {conclusion}')
     if conclusion != 'success':
-        logging.error(
+        logging.critical(
             f'Private repo build failed,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
 
-    logging.info('Build private repo finished successfully')
+    logging.success('Build private repo finished successfully')
     sys.exit(0)
 
 
