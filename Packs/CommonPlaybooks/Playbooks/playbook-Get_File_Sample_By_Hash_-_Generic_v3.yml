@@ -141,10 +141,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 0a215172-facb-4097-8795-7c1142f29941
+    taskid: 9c2c0ffb-724a-40eb-8069-a8beb5de0775
     type: playbook
     task:
-      id: 0a215172-facb-4097-8795-7c1142f29941
+      id: 9c2c0ffb-724a-40eb-8069-a8beb5de0775
       version: -1
       name: Code42 File Download
       description: This playbook downloads a file via Code42 by either MD5 or SHA256
@@ -157,7 +157,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      Filename: {}
+      Filename:
+        complex:
+          root: inputs.NewFilename
       MD5:
         complex:
           root: inputs.MD5
@@ -209,6 +211,12 @@ inputs:
   value: {}
   required: false
   description: The SHA256 hash value for the file to retrieve.
+  playbookInputQuery:
+- key: NewFilename
+  value: {}
+  required: false
+  description: A new name for the retrieved file. If left empty, the filename will
+    not change.
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
