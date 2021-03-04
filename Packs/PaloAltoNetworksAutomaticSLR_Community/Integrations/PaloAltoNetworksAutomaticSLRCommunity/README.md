@@ -5,7 +5,7 @@ Use the Palo Alto Networks NGFW API to automatically generate a Security Lifecyc
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Utilities__.
-2. Search for "Palo Alto Networks Automatic SLR (Community).
+2. Search for "Palo Alto Networks Automatic SLR.
 3. Click __Add instance__ to create and configure a new integration instance.
 
     | Parameter | Description |

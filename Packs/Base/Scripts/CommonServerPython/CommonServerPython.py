@@ -211,6 +211,7 @@ class DBotScoreType(object):
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
+    DBotScoreType.EMAIL
     :return: None
     :rtype: ``None``
     """
@@ -224,6 +225,7 @@ class DBotScoreType(object):
     DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
+    EMAIL = 'email'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -244,6 +246,7 @@ class DBotScoreType(object):
             DBotScoreType.DOMAINGLOB,
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
+            DBotScoreType.EMAIL,
         )
 
 
@@ -1116,6 +1119,9 @@ class IntegrationLogger(object):
         for (k, v) in dict_obj.items():
             if isinstance(v, dict):  # credentials object case. recurse into the object
                 self._iter_sensistive_dict_obj(v, sensitive_params)
+                if v.get('identifier') and v.get('password'):  # also add basic auth case
+                    basic_auth = '{}:{}'.format(v.get('identifier'), v.get('password'))
+                    self.add_replace_strs(b64_encode(basic_auth))
             elif isinstance(v, STRING_OBJ_TYPES):
                 k_lower = k.lower()
                 for p in sensitive_params:
@@ -2569,6 +2575,42 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            return ret_value
+
+    class EMAIL(Indicator):
+        """
+        EMAIL indicator class
+        :type address ``str``
+        :param address: The email's address.
+        :type domain: ``str``
+        :param domain: The domain of the Email.
+        :type blocked: ``bool``
+        :param blocked: Whether the email address is blocked.
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, dbot_score, domain=None, blocked=None):
+            # type (str, str, bool) -> None
+            self.address = address
+            self.domain = domain
+            self.blocked = blocked
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            email_context = {
+                'Address': self.address
+            }
+            if self.domain:
+                email_context['Domain'] = self.domain
+            if self.blocked:
+                email_context['Blocked'] = self.blocked
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
             return ret_value
 
     class URL(Indicator):
@@ -5492,6 +5534,9 @@ if 'requests' in sys.modules:
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                # in case the "Trust any certificate" is already checked
+                if not self._verify:
+                    raise
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
@@ -5888,7 +5933,6 @@ class GetRemoteDataResponse:
         :rtype: ``list``
         """
         if self.mirrored_object:
-            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <Services transactionid="">
+    <Name>unitest2</Name>
+    <Type>IP</Type>
+    <ServiceDetails>
+      <ServiceDetail>
+        <ProtocolName>ARGUS</ProtocolName>
+      </ServiceDetail>
+    </ServiceDetails>
+  </Services>
+</Response>

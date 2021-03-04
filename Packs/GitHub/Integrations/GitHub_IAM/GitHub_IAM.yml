@@ -7,11 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: token
+- display: Token
   name: token
   required: true
   type: 4
-- display: organization name
+- display: Organization name
   name: org
   required: true
   type: 0

@@ -44,7 +44,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: '(MSSP accounts only) Sub account ID:'
+- display: Sub Account ID (MSSP accounts only)
   name: mssp_sub_account_id
   required: false
   type: 0

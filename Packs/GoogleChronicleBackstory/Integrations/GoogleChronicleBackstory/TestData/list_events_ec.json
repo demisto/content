@@ -37,7 +37,7 @@
       }
     },
     {
-      "eventTimestamp": "2020-01-01T00:02:00Z",
+      "eventTimestamp": "2020-01-01T00:02:00.499Z",
       "collectedTimestamp": "2020-01-01T00:02:00Z",
       "eventType": "NETWORK_DNS",
       "productName": "ExtraHop",

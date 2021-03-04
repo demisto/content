@@ -14,10 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: |-
-    ______________ Basic Authentication _____________
-
-    Username
+- display: Username (Basich Authentication)
   name: username
   defaultvalue: ""
   type: 0
@@ -32,10 +29,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: |-
-    __________________ OAuth 1.0 __________________
-
-    ConsumerKey
+- display: Consumer Key (OAuth 1.0)
   name: consumerKey
   defaultvalue: OauthKey
   type: 0
@@ -123,6 +117,25 @@ script:
     - contextPath: Ticket.Status
       description: The status of the ticket.
     description: Queries Jira issues.
+  - name: jira-get-id-by-attribute
+    arguments:
+    - name: attribute
+      required: true
+      description: The user's attribute value. Can be Username or Email address.
+    - name: max_results
+      defaultValue: 50
+      description: The maximum number of users to pull when searching for a matching user (default is 50). The maximum
+        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
+        If you specify a value that is higher than this number, your search results
+        will be truncated.
+    outputs:
+    - contextPath: Jira.User.Attribute
+      description: The user's attribute.
+      type: string
+    - contextPath: Jira.User.AccountID
+      description: The user's Account ID.
+      type: string
+    description: Gets the Account ID for a given user's attribute.
   - name: jira-get-issue
     arguments:
     - name: issueId
@@ -193,7 +206,9 @@ script:
     - name: dueDate
       description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
-      description: The account ID of the assignee.
+      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, please provide the assignee_id argument instead.
+    - name: assignee_id
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
     - name: reporter
       description: The account ID of the reporter.
     - name: parentIssueKey
@@ -272,7 +287,9 @@ script:
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
-      description: The account ID of the assignee.
+      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead.
+    - name: assignee_id
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
     - name: status
       description: The name of the status.
     outputs:

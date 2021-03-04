@@ -5,8 +5,8 @@ from IncidentsCheck_Widget_PlaybookNames import main, random
 
 @pytest.mark.parametrize('list_, expected', [
     ([{'Contents': 'AutoFocusPolling,Account Enrichment - Generic v2.1'}],
-     ('[{"data": [1], "name": "AutoFocusPolling", "color": "#3e8"}, {"data": [1], '
-      '"name": "Account Enrichment - Generic v2.1", "color": "#3e8"}]')),
+     ('[{"data": [1], "name": "AutoFocusPolling", "color": "#0003e8"}, {"data": [1], '
+      '"name": "Account Enrichment - Generic v2.1", "color": "#0003e8"}]')),
     ([{'Contents': ''}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
     ([{}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
 ])
