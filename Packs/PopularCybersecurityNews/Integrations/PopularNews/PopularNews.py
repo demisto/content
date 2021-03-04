@@ -72,40 +72,44 @@ def aggregate(feed, source):
         TABLE.append({"Article": elem[0], "Link": elem[1][0], "Date": elem[1][1], "Source": source})
 
 
-if demisto.command() == 'get-news-KrebsOnSecurity':
-    kos = scrape_kos()
-    aggregate(kos, "Krebs on Security")
+def main():
+  if demisto.command() == 'get-news-KrebsOnSecurity':
+      kos = scrape_kos()
+      aggregate(kos, "Krebs on Security")
+  
+  elif demisto.command() == 'get-news-Threatpost':
+      tp = scrape_tp()
+      aggregate(tp, "Threatpost")
+  
+  elif demisto.command() == 'get-news-TheHackerNews':
+      thn = scrape_thn()
+      aggregate(thn, "The Hacker News")
+      # # The command demisto.command() holds the command sent from the user.
+  
+  elif demisto.command() == 'test-module':
+      # This is the call made when pressing the integration test button.
+      test_response = requests.get("https://thehackernews.com/", verify=VERIFY)
+      if str(test_response.status_code) == "200":
+          demisto.results('ok')
+      else:
+          demisto.results(test_response)
+  
+  
+  elif demisto.command() == 'get-news-generic-all':
+      tp = scrape_tp()
+      thn = scrape_thn()
+      kos = scrape_kos()
+      aggregate(kos, "Krebs on Security")
+      aggregate(thn, "The Hacker News")
+      aggregate(tp, "Threatpost")
+  
+  demisto.results({
+      'ContentsFormat': formats['table'],
+      'Type': entryTypes['note'],
+      'Contents': TABLE,
+      'EntryContext': {"News": TABLE},
+      'IgnoreAutoExtract': True
+  })
 
-elif demisto.command() == 'get-news-Threatpost':
-    tp = scrape_tp()
-    aggregate(tp, "Threatpost")
-
-elif demisto.command() == 'get-news-TheHackerNews':
-    thn = scrape_thn()
-    aggregate(thn, "The Hacker News")
-    # # The command demisto.command() holds the command sent from the user.
-
-elif demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    test_response = requests.get("https://thehackernews.com/", verify=VERIFY)
-    if str(test_response.status_code) == "200":
-        demisto.results('ok')
-    else:
-        demisto.results(test_response)
-
-
-elif demisto.command() == 'get-news-generic-all':
-    tp = scrape_tp()
-    thn = scrape_thn()
-    kos = scrape_kos()
-    aggregate(kos, "Krebs on Security")
-    aggregate(thn, "The Hacker News")
-    aggregate(tp, "Threatpost")
-
-demisto.results({
-    'ContentsFormat': formats['table'],
-    'Type': entryTypes['note'],
-    'Contents': TABLE,
-    'EntryContext': {"News": TABLE},
-    'IgnoreAutoExtract': True
-})
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
