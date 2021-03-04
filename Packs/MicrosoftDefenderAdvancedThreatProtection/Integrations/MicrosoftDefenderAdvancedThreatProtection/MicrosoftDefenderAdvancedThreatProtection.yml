@@ -207,6 +207,7 @@ script:
       isArray: false
       required: false
       secret: false
+      defaultValue: '50'
     - default: false
       description: The last machine IP to access the internet.
       isArray: false
