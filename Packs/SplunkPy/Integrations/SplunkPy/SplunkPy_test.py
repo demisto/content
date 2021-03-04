@@ -474,30 +474,6 @@ def test_create_mapping_dict():
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
-@pytest.mark.parametrize('cache_object, output', [
-    (splunk.Cache(not_yet_submitted_notables=[splunk.Notable({'event_id': '1'})]), False),
-    (splunk.Cache(not_yet_submitted_notables=[]), True),
-    (splunk.Cache(), True)
-])
-def test_is_done_submitting(cache_object, output):
-    """
-    Scenario: New fetch is possible if we have done submitting all fetched notables to Splunk.
-
-    Given:
-    - List of one fetched notable that haven't been submitted yet.
-    - An empty list of fetched notables
-    - An empty Cache object
-
-    When:
-    - Testing whether we've done submitting all fetched notables to Splunk or not.
-
-    Then:
-    - Return the expected result
-    """
-    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT]
-    assert splunk.is_done_submitting(cache_object) is output
-
-
 @pytest.mark.parametrize('integration_context, output', [
     ({splunk.INCIDENTS: ['incident']}, ['incident']),
     ({splunk.INCIDENTS: []}, []),

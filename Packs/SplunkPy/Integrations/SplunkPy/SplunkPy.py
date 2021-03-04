@@ -287,6 +287,12 @@ class Cache:
     def num_fetched_notables(self, num_fetched_notables):
         self.num_fetched_notables = num_fetched_notables
 
+    def done_submitting(self):
+        return not self.not_yet_submitted_notables
+
+    def done_handling(self):
+        return not self.submitted_notables
+
     def organize(self):
         """ This function is designated to handle unexpected behaviors in the enrichment mechanism.
          E.g. Connection error, instance disabling, etc...
@@ -1799,10 +1805,7 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
         incidents (list): The incident to be submitted at the end of the run.
         cache_object (Cache): The enrichment mechanism cache object
 
-    Returns (bool): True if we finished handling all open enrichments, False otherwise
-
     """
-    done_handling = False
     handled_notables = []
     notables = cache_object.submitted_notables
     demisto.info("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
@@ -1820,10 +1823,6 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
 
     if cache_object.submitted_notables:
         demisto.info("{} notables left to handle.".format(len(cache_object.submitted_notables)))
-    else:
-        done_handling = True
-
-    return done_handling
 
 
 def store_incidents_for_mapping(incidents, integration_context):
@@ -1968,9 +1967,8 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        done_handling = handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
-        done_submitting = is_done_submitting(cache_object)
-        if done_handling and done_submitting:
+        handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
+        if cache_object.done_submitting() and cache_object.done_handling():
             handle_last_run(cache_object)
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
         submit_notables(service, incidents, num_enrichment_events, cache_object)
@@ -1986,18 +1984,6 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
         cache_object.dump_to_integration_context(integration_context)
         incidents += [notable.to_incident() for notable in handled_but_not_created_incidents]
         demisto.incidents(incidents)
-
-
-def is_done_submitting(cache_object):
-    """ Indicates whether we've finished to submit all fetched notables to enrichment or not
-
-    Args:
-        cache_object (Cache): The enrichment mechanism cache object
-
-    Returns (bool): True if we finished, False otherwise
-
-    """
-    return not cache_object.not_yet_submitted_notables
 
 
 def fetch_incidents_for_mapping(integration_context):
