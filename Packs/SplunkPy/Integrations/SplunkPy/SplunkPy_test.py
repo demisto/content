@@ -475,6 +475,18 @@ def test_fetch_incidents(mocker):
 
 
 def test_remove_old_incident_ids():
+    """
+    Given:
+    - An array containing an ID of an incident that occurred less than an hour ago,
+    and one that occurred more than an hour ago
+
+    When:
+    - Running "remove_old_incident_ids" to remove the IDs of older incidents
+
+    Then:
+    - The ID of the incident that occurred less than an hour ago remained.
+    - The ID of the incident that occurred more than an hour ago was removed.
+    """
     from SplunkPy import remove_old_incident_ids
     cur_time = int(time.time())
     incident_ids = {
@@ -503,7 +515,18 @@ second_incident = {
     'occurred': occurred_time
 }
 
+
 def test_create_incident_custom_id_creates_different_ids():
+    """
+    Given:
+    - Two different incidents
+
+    When:
+    - Creating a custom ID for the incidents using "create_incident_custom_id"
+
+    Then:
+    - The IDs of the two incidents are unique.
+    """
     from SplunkPy import create_incident_custom_id
     first_incident_custom_id = create_incident_custom_id(first_incident)
     second_incident_custom_id = create_incident_custom_id(second_incident)
@@ -511,6 +534,16 @@ def test_create_incident_custom_id_creates_different_ids():
 
 
 def test_create_incident_custom_id_length():
+    """
+    Given:
+    - An incident.
+
+    When:
+    - Creating a custom ID for the incident.
+
+    Then:
+    - The length of the ID is relatively small and will not take up too much space.
+    """
     from SplunkPy import create_incident_custom_id
     first_incident_custom_id = create_incident_custom_id(first_incident)
     assert len(first_incident_custom_id) < 100
@@ -529,6 +562,21 @@ get_next_start_time_test_data = [
 
 @pytest.mark.parametrize('same_start_time_count, were_new_incidents_found, expected', get_next_start_time_test_data)
 def test_get_next_start_time_over_20_minutes(same_start_time_count, were_new_incidents_found, expected):
+    """
+    Given:
+    - Over 20 minutes have passed since the last incident was found, no incidents were found on this fetch
+    - Less than 20 minutes have passed since the last incident was found, no incidents were found on this fetch
+    - Over 20 minutes have passed since the last incident was found, some incidents were found on this fetch
+
+    When:
+    - Using "get_next_start_time" to calculate the start time of the next fetch.
+
+    Then:
+    - The next start time will be one minute later than the current start time.
+    - The next start time will be the same as the current start time.
+    - The next start time will be one minute earlier than the time supplied to the function,
+    which is the time of the latest incident found.
+    """
     from SplunkPy import get_next_start_time
     last_run = '2020-08-04T05:45:16.000-07:00'
     next_run = get_next_start_time(last_run, same_start_time_count, were_new_incidents_found)
@@ -565,12 +613,26 @@ get_latest_incident_time_test_data = [
     incidents_with_seconds_difference
 ]
 
+
 @pytest.mark.parametrize('test_incidents, expected', get_latest_incident_time_test_data)
 def test_get_latest_incident_time(test_incidents, expected):
+    """
+    Given:
+    - Two different incidents, one of which occurred later than the other by a few minutes
+    - Two different incidents, one of which occurred later than the other by a few seconds
+    - Two different incidents, one of which occurred later than the other by a few days
+
+    When:
+    - Using "get_latest_incident_time" to get the time of the latest incident.
+
+    Then:
+    - The time of the most recent incident is retrieved.
+    """
     from SplunkPy import get_latest_incident_time
 
     latest_time = get_latest_incident_time(test_incidents)
     assert latest_time == expected
+
 
 response_with_early_incident = [{
     '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
@@ -674,7 +736,20 @@ response_with_late_incident = [{
     'urgency': 'low'
 }]
 
-def test_fetch_incidents_pre_indexing(mocker):
+
+def test_fetch_incidents_pre_indexing_scenario(mocker):
+    """
+    Given:
+    - Two different incidents, one of which occurred seconds earlier than the other,
+    but was indexed later so was not fetched on the first run.
+
+    When:
+    - Running "Fetch Incidents" and the more recent incident returns.
+
+    Then:
+    - The next fetch will start from a time that will allow getting the earlier incident as well,
+    even though it was indexed later.
+    """
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -692,6 +767,16 @@ def test_fetch_incidents_pre_indexing(mocker):
 
 
 def test_fetch_incidents_deduping(mocker):
+    """
+    Given:
+    - An incident is returned from SplunkPy on two subsequent "Fetch Incidents" runs.
+
+    When:
+    - Returning incidents on the second run.
+
+    Then:
+    - The incident is not returned again, thus it was effectively deduped.
+    """
     from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
@@ -712,7 +797,17 @@ def test_fetch_incidents_deduping(mocker):
     assert len(incidents) == 0
 
 
-def test_fetch_incidents_deduping(mocker):
+def test_fetch_incidents_next_fetch_start_update_count(mocker):
+    """
+    Given:
+    - A new incident is found when "Fetch Incidents" runs.
+
+    When:
+    - The next run's "last run" values are set.
+
+    Then:
+    - The "fetch_start_update_count" is equal to zero, since an incident was found.
+    """
     from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
@@ -730,6 +825,18 @@ def test_fetch_incidents_deduping(mocker):
 
 
 def test_fetch_incidents_time_relapse(mocker):
+    """
+    Given:
+    - No new incidents were found on a "Fetch Incidents" run.
+
+    When:
+    - The next run's "last run" values are set.
+
+    Then:
+    - No incidents are returned.
+    - The next run's start time will be the same as the current run's start time.
+    - The "fetch_start_update_count" was increased by one.
+    """
     from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
@@ -744,9 +851,20 @@ def test_fetch_incidents_time_relapse(mocker):
     incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 0
     assert next_run["time"] == '2018-10-24T14:13:20'
+    assert next_run["fetch_start_update_count"] == 1
 
 
-def test_fetch_incidents_time_relapse(mocker):
+def test_fetch_incidents_incident_next_run_calculation(mocker):
+    """
+    Given:
+    - A new incident is found when "Fetch Incidents" runs.
+
+    When:
+    - The next run's "last run" values are set.
+
+    Then:
+    - The next run's start time will be the the occurrence time of the new incident, minus one minute.
+    """
     from SplunkPy import create_incident_custom_id
     from SplunkPy import occurred_to_datetime
 
