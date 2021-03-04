@@ -1,14 +1,15 @@
-id: QRadar_v3 Search Polling
+id: QRadar_v3 Full Search
 version: -1
-name: QRadar_v3 Search Polling
+name: QRadar_v3 Full Search
+description: This playbook runs a QRadar query and return its results to the context.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3143855c-a6ac-409d-871d-29d2f09b478f
+    taskid: 3ec8570f-2cc0-4442-83fd-53007bbe8483
     type: start
     task:
-      id: 3143855c-a6ac-409d-871d-29d2f09b478f
+      id: 3ec8570f-2cc0-4442-83fd-53007bbe8483
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 03a00e3a-db12-460c-8e2d-f113544f88c6
+    taskid: 808e9101-5e6f-4f7d-84fe-5d5d293a620c
     type: regular
     task:
-      id: 03a00e3a-db12-460c-8e2d-f113544f88c6
+      id: 808e9101-5e6f-4f7d-84fe-5d5d293a620c
       version: -1
       name: Create QRadar Search
       description: Create a new asynchronous Ariel search. Returns search ID. Search
@@ -48,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     scriptarguments:
       query_expression:
         simple: ${inputs.query_expression}
@@ -69,10 +70,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a00291e2-decd-4b65-8694-083d9f0d1c55
+    taskid: 32c50d18-45e1-4d26-88e6-bb1aa080d756
     type: playbook
     task:
-      id: a00291e2-decd-4b65-8694-083d9f0d1c55
+      id: 32c50d18-45e1-4d26-88e6-bb1aa080d756
       version: -1
       name: GenericPolling
       playbookName: GenericPolling
@@ -108,8 +109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 152.5,
+          "y": 720
         }
       }
     note: false
@@ -119,10 +120,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 038a780e-3a78-4d2c-8d5b-0df33f8a657e
+    taskid: d66c7cb8-7dd8-409b-86a2-8810a3387c3e
     type: regular
     task:
-      id: 038a780e-3a78-4d2c-8d5b-0df33f8a657e
+      id: d66c7cb8-7dd8-409b-86a2-8810a3387c3e
       version: -1
       name: Get QRadar Search Results
       description: Retrieves search results.
@@ -144,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -154,10 +155,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 0c56c66b-e937-439a-8882-581d48e91b03
+    taskid: 0230e8b0-c494-4871-8273-770bfdc70d99
     type: condition
     task:
-      id: 0c56c66b-e937-439a-8882-581d48e91b03
+      id: 0230e8b0-c494-4871-8273-770bfdc70d99
       version: -1
       name: Check If Search Was Returned
       description: Checks if the given search have been completed before calling GenericPolling
@@ -183,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -193,10 +194,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 791f8eb2-83e1-448b-8879-bcf12192bb5e
+    taskid: e8bc431c-526a-4792-8318-f219dd6d304a
     type: title
     task:
-      id: 791f8eb2-83e1-448b-8879-bcf12192bb5e
+      id: e8bc431c-526a-4792-8318-f219dd6d304a
       version: -1
       name: Done
       type: title
@@ -207,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 910
+          "x": 480,
+          "y": 1260
         }
       }
     note: false
@@ -218,10 +219,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e26d3db4-ee9e-4529-832d-15e9d668b73e
+    taskid: b02cf2d9-93ab-4677-8b16-4dd3af24a497
     type: regular
     task:
-      id: e26d3db4-ee9e-4529-832d-15e9d668b73e
+      id: b02cf2d9-93ab-4677-8b16-4dd3af24a497
       version: -1
       name: Print Error Message
       description: Prints an error entry with a given message
@@ -236,8 +237,82 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b9283f37-b8d4-4956-8418-445e058fed38
+    type: regular
+    task:
+      id: b9283f37-b8d4-4956-8418-445e058fed38
+      version: -1
+      name: QRadar Get Search Status
+      description: Retrieve status information for a search, based on the search ID
+        parameter.
+      script: '|||qradar-search-status-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      search_id:
+        simple: ${QRadar.Search.Status}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 19a0d530-c16b-460f-8308-dcc38a3fc73f
+    type: condition
+    task:
+      id: 19a0d530-c16b-460f-8308-dcc38a3fc73f
+      version: -1
+      name: 'Was Search Completed Immediately? '
+      type: condition
+      description: Check if QRadar search was completed immediately.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Search.Status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -250,7 +325,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 940,
+        "height": 1290,
         "width": 810,
         "x": 50,
         "y": 50
@@ -286,4 +361,3 @@ tests:
 - QRadar Indicator Hunting Test
 - test playbook - QRadarCorrelations
 fromversion: 6.0.0
-description: This playbook runs a QRadar query and return its results to the context.
