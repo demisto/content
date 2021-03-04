@@ -1,21 +1,21 @@
 args:
 - default: false
-  description: Update the canvas to the incident ID. If not specified - update the
+  description: Incident ID of the incident with which to update the canvas. If not specified, updates the
     current incident.
   isArray: false
   name: incidentID
   required: false
   secret: false
 - default: false
-  description: Incident IDs to draw in the canvas and relate to the main incident.
-    List of IDs or comman separate.
+  description: Incident IDs to draw on the canvas and relate to the main incident.
+    The format can be a list of IDs or comma-separated values.
   isArray: true
   name: relatedIncidentsIDs
   required: false
   secret: false
 - default: false
-  description: Indicators to draw in the canvas. The format is a list of indicator
-    objecs.
+  description: Indicators to draw on the canvas. The format is a list of indicator
+    objects.
   isArray: true
   name: indicators
   required: false
@@ -23,7 +23,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: multipartite
-  description: The canvas layout
+  description: The canvas layout. Can be "multipartite.shell", "spring", "kamada_kawai", or "circular".
   isArray: false
   name: layout
   predefined:
@@ -36,7 +36,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Override canvas if exists
+  description: Override the canvas if it exists.
   isArray: false
   name: overrideUserCanvas
   predefined:
@@ -44,7 +44,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Draw incidents and indicators on canvas to visualize their connections.
+comment: Draw incidents and indicators on the canvas to map and visualize their connections.
 commonfields:
   id: DrawRelatedIncidentsCanvas
   version: -1
