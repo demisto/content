@@ -107,6 +107,8 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'partnerId': metadata.get('partnerId'),
+                    'partnerName': metadata.get('partnerName'),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
