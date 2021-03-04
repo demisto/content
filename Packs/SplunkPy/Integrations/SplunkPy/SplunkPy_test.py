@@ -1,4 +1,3 @@
-import json
 import time
 from copy import deepcopy
 import pytest
@@ -872,7 +871,6 @@ def test_fetch_incidents_deduping(mocker):
     Then:
     - The incident is not returned again, thus it was effectively deduped.
     """
-    from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -901,7 +899,6 @@ def test_fetch_incidents_next_fetch_start_update_count(mocker):
     Then:
     - The "fetch_start_update_count" is equal to zero, since an incident was found.
     """
-    from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -928,7 +925,6 @@ def test_fetch_incidents_time_relapse(mocker):
     - The next run's start time will be the same as the current run's start time.
     - The "fetch_start_update_count" was increased by one.
     """
-    from SplunkPy import create_incident_custom_id
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -954,7 +950,6 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     Then:
     - The next run's start time will be the the occurrence time of the new incident, minus one minute.
     """
-    from SplunkPy import create_incident_custom_id
     from SplunkPy import occurred_to_datetime
 
     from datetime import timedelta
