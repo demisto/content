@@ -36,18 +36,25 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-  additionalinfo: Fields to be fetched
+  additionalinfo: Fields to be fetched. The Fields specify columns that you can see
+    in the arcsight logger interface. The fields that you select will be fetched as
+    data.
 - display: Aggregate events into one incident
   name: aggregate
   defaultvalue: "false"
   type: 8
   required: false
+  additionalinfo: By enabling this you take all the events that happened in the last
+    minute and aggregate them into one Events key. This will result in having all
+    the data for the last minute fetched into one incident.
 - display: Fetch limit
   name: fetchlimit
   defaultvalue: "100"
   type: 0
   required: false
-  additionalinfo: maximum number of events to fetch
+  additionalinfo: This parameter limits the maximum number of events that can be
+    fetched at once. In case the aggregate parameter is checked this parameter will
+    limit the number of events in the aggregated Events key.
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
