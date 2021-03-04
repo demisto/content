@@ -24,7 +24,7 @@ inputs:
   required: false
   value:
     simple: "true"
-name: 'JOB - Popular News '
+name: JOB - Popular News
 outputs: []
 quiet: true
 starttaskid: "0"
