@@ -23,7 +23,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | Listen Port | By default HTTP, Will run the *External Dynamic List* on this port from within Cortex XSOAR | True |
 | Certificate (Required for HTTPS) | Configure a certificate for the EDL instance. The certificate is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
 | Private Key (Required for HTTPS) | Configure a private key. The private key is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
-| Credintials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
+| Credentials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 | XSOAR Indicator Page Size | Internal page size used when querying XSOAR for the EDL. By default, this value shouldn't be changed | False |
 

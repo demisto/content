@@ -178,16 +178,9 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
   description: Security and compliance search Tenant ID.
   type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Location
-  description: Security and compliance search result location.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.ItemsCount
-  description: The number of security and compliance search results in the location.
-  type: Number
-- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size
-  description: The byte size of the security and compliance search results in the
-    location.
-  type: Number
+- contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults
+  description: Security and compliance search results.
+  type: unknown
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
   type: String
@@ -260,27 +253,9 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion
   description: Security and compliance search action public folder locations to exclude.
   type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location
-  description: Security and compliance search action result location.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender
-  description: Security and compliance search action result mail sender.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Subject
-  description: Security and compliance search action result subject.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Type
-  description: Security and compliance search action result type.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Size
-  description: Security and compliance search action result size.
-  type: String
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ReceivedTime
-  description: Security and compliance search action result received time.
-  type: Date
-- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.DataLink
-  description: Security and compliance search action data link.
-  type: String
+- contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results
+  description: Security and compliance search action results.
+  type: unknown
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Retry
   description: Whether to retry if the search action failed.
   type: Boolean
@@ -915,3 +890,4 @@ view: |-
 fromversion: 5.5.0
 tests:
 - O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-ContextResults-Test

@@ -1,6 +1,7 @@
 id: Detonate URL - WildFire v2.1 - Test
 version: -1
 name: Detonate URL - WildFire v2.1 - Test
+fromversion: 5.0.0
 description: |-
   test pb of:
   Detonate URL - WildFire-v2.1
@@ -8,12 +9,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1a768224-0f47-4939-8fa0-daec2589fa97
+    taskid: 5a8a5d68-7366-4752-83b7-6240bf9355a7
     type: start
     task:
-      id: 1a768224-0f47-4939-8fa0-daec2589fa97
+      id: 5a8a5d68-7366-4752-83b7-6240bf9355a7
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -23,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -34,12 +36,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: f602d4b5-6d13-494c-8752-63d59fb7b79d
+    taskid: 671a85e7-a1bc-4c97-85f1-f4f93dd44237
     type: regular
     task:
-      id: f602d4b5-6d13-494c-8752-63d59fb7b79d
+      id: 671a85e7-a1bc-4c97-85f1-f4f93dd44237
       version: -1
-      name: set url
+      name: set remote file url and URLs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -54,13 +56,72 @@ tasks:
         simple: URL.Data
       stringify: {}
       value:
-        simple: http://www.demisto.com
+        simple: http://www.software995.net/bin/pdf995s.exe, https://www.demisto.com,
+          https://www.paloaltonetworks.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e660d077-a2d1-44b4-8b1f-ffc579c96d80
+    type: condition
+    task:
+      id: e660d077-a2d1-44b4-8b1f-ffc579c96d80
+      version: -1
+      name: Check that the amount of reports == amount of inputs
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: WildFire.Report.Status
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: WildFire.Report.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Success
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+                transformers:
+                - operator: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -70,12 +131,13 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 22ac5ac5-ea32-4bbc-8b68-799992a3d8f8
+    taskid: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
     type: title
     task:
-      id: 22ac5ac5-ea32-4bbc-8b68-799992a3d8f8
+      id: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -83,8 +145,37 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4836a7a8-2df7-4d5f-82c8-3bbefbed0f09
+    type: regular
+    task:
+      id: 4836a7a8-2df7-4d5f-82c8-3bbefbed0f09
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Missing WF Report for URLs/Remote Files.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -94,44 +185,24 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 420bcc87-fa7d-4d79-88d9-d21d167cfda7
+    taskid: 9fa68cca-1b07-47ba-8ac1-c04d6a2a12d3
     type: playbook
     task:
-      id: 420bcc87-fa7d-4d79-88d9-d21d167cfda7
+      id: 9fa68cca-1b07-47ba-8ac1-c04d6a2a12d3
       version: -1
       name: Detonate URL - WildFire v2.1
-      description: |-
-        The webpage detonation is only supported in US cloud.
-        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
       playbookName: Detonate URL - WildFire v2.1
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
-    scriptarguments:
-      Interval:
-        simple: "1"
-      ReportFileType: {}
-      Timeout:
-        simple: "60"
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      - "5"
+    separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -142,10 +213,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 2a3e8ca2-8ea5-4b4b-8db0-1df8a1e3e821
+    taskid: 91c21fd5-0631-485d-86c9-80a232f04344
     type: regular
     task:
-      id: 2a3e8ca2-8ea5-4b4b-8db0-1df8a1e3e821
+      id: 91c21fd5-0631-485d-86c9-80a232f04344
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -167,7 +238,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -181,8 +252,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 940,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -190,4 +261,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
