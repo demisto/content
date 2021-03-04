@@ -3606,6 +3606,22 @@
             },
             "demisto/taxii2": {
                 "pid_threshold": 11
+            },
+            "demisto/pwsh-infocyte": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/pwsh-exchange": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/powershell": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/powershell-ubuntu": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
             }
         }
     }
