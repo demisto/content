@@ -1086,7 +1086,8 @@ def main():
         'app': demisto.params().get('app', '-'),
         'username': demisto.params()['authentication']['identifier'],
         'password': demisto.params()['authentication']['password'],
-        'verify': VERIFY_CERTIFICATE
+        'verify': VERIFY_CERTIFICATE,
+        'basic': True
     }
 
     if use_requests_handler:
