@@ -11,7 +11,7 @@ def parse_data(list_json):
     if isinstance(list_json, list):
         for instance in list_json:
             list_table.append({
-                'Incident Creation Date': instance.get('creationdate', '').split('.')[0],
+                'Incident Creation Date': instance.get('creationdate', '').split('.')[0].replace('T', ' '),
                 'Incident ID': instance.get('incidentid'),
                 'Incident Owner': instance.get('owner'),
                 'Number of Errors': instance.get('numberoferrors'),
