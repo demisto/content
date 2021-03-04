@@ -2633,5 +2633,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    print(get_time_parameter(1612292712138, iso_format=True))
     main()
