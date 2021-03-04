@@ -1,4 +1,4 @@
-"""HelloWorld Integration for Cortex XSOAR (aka Demisto)
+"""HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
 
 This feed integration is a good example on you can build a Cortex XSOAR feed
 using Python 3. Please follow the documentation links below and make sure that

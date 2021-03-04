@@ -26,7 +26,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: B - Usually reliable
+  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -114,7 +114,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of results to return. The default value is 10.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
