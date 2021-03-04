@@ -195,6 +195,18 @@ script:
       name: hostname
       required: false
       secret: false
+    - name: next_link
+      default: false
+      description: The link for the next page of results, if it exists.
+      isArray: false
+      required: false
+      secret: false
+    - name: page_size
+      default: false
+      description: Page size. default set to 50.
+      isArray: false
+      required: false
+      secret: false
     - default: false
       description: The last machine IP to access the internet.
       isArray: false
@@ -286,6 +298,9 @@ script:
       type: String
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags
+      type: String
+    - contextPath: MicrosoftATP.Machine.NextLink
+      description: Url of the next link
       type: String
   - arguments:
     - default: false
@@ -3477,7 +3492,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-  dockerimage: demisto/crypto:1.0.0.14297
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: true
   longRunning: false

@@ -222,15 +222,19 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def get_machines(self, filter_req):
+    def get_machines(self, filter_req, next_link, page_size):
         """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
 
         Returns:
             dict. Machine's info
         """
-        cmd_url = '/machines'
+        cmd_url = f'/machines?$top={int(page_size)}'
         params = {'$filter': filter_req} if filter_req else None
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        if next_link:  # pagination
+            machines = self.ms_client.http_request(method='GET', full_url=next_link,  params=params)
+        else:
+            machines = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return machines
 
     def get_file_related_machines(self, file):
         """Retrieves a collection of Machines related to a given file hash.
@@ -898,7 +902,10 @@ def get_machines_command(client: MsClient, args: dict):
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
-
+    next_link = args.get('next_link', '')
+    page_size = args.get('page_size', '50')
+    next_link_response = ''
+    metadata = ''
     fields_to_filter_by = {
         'computerDnsName': hostname,
         'lastIpAddress': ip,
@@ -907,14 +914,19 @@ def get_machines_command(client: MsClient, args: dict):
         'osPlatform': os_platform
     }
     filter_req = reformat_filter(fields_to_filter_by)
-    machines_response = client.get_machines(filter_req)
+    machines_response = client.get_machines(filter_req, next_link, page_size)
     machines_list = get_machines_list(machines_response)
 
+    if '@odata.nextLink' in machines_response:
+        next_link_response = machines_response.get('@odata.nextLink')
+        metadata = "To get further results, enter this to the next_link parameter:\n" + str(next_link_response)
+
     entry_context = {
-        'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list
-    }
+        'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list,
+        'MicrosoftATP.Machine(val.ID === obj.ID).NextLink': next_link_response,
+                         }
     human_readable = tableToMarkdown('Microsoft Defender ATP Machines:', machines_list, headers=headers,
-                                     removeNull=True)
+                                     removeNull=True, metadata=metadata)
     return human_readable, entry_context, machines_response
 
 

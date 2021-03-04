@@ -205,6 +205,26 @@ def test_get_machine_data(mocker):
     assert res['HealthStatus'] == 'Active'
 
 
+def test_get_machine(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import get_machines_command
+    mocker.patch.object(client_mocker, 'get_machines', return_value=MACHINE_RESPONSE_API)
+    hr, entry, res = get_machines_command(client_mocker, {})
+    assert entry['MicrosoftATP.Machine(val.ID === obj.ID).NextLink'] ==\
+           'https://api.securitycenter.windows.com/api/machines?$skip=10000'
+    assert entry['MicrosoftATP.Machine(val.ID === obj.ID)'][0]['ID'] == '123'
+
+
+def test_get_machine_paging(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import get_machines_command
+    mocker.patch.object(client_mocker, 'get_machines', return_value=MACHINE_RESPONSE_API)
+    hr, entry, res = get_machines_command(client_mocker,
+                                          {'next_link': 'https://api.securitycenter.windows.com/api/machines?$skip'
+                                                        '=10000'})
+    assert entry['MicrosoftATP.Machine(val.ID === obj.ID).NextLink'] ==\
+           'https://api.securitycenter.windows.com/api/machines?$skip=10000'
+    assert entry['MicrosoftATP.Machine(val.ID === obj.ID)'][0]['ID'] == '123'
+
+
 def test_get_ip_alerts_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
     from MicrosoftDefenderAdvancedThreatProtection import get_ip_alerts_command
@@ -585,6 +605,8 @@ ALERT_DATA = {
 
 }
 MACHINE_RESPONSE_API = {
+    '@odata.context': "https://api.securitycenter.windows.com/api/$metadata#Machines",
+    '@odata.nextLink': "https://api.securitycenter.windows.com/api/machines?$skip=10000",
     'value': [{
         "id": "123",
         "computerDnsName": "test",
