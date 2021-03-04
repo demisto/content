@@ -21,7 +21,7 @@ This integration was integrated and tested with version 1 of xMatters
 | incidentType | Incident type | False |
 | property_name |  | False |
 | property_value |  | False |
-| first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | max_fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -51,7 +51,7 @@ sends the event to xMatters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| request_id | string | Request ID from xMatters | 
+| xMatters.Workflow.request_id | string | Request ID from xMatters | 
 
 
 #### Command Example

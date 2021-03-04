@@ -2,21 +2,25 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 from collections import defaultdict
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, List
 import httplib2
 import urllib.parse
 from oauth2client import service_account
+from copy import deepcopy
+import dateparser
+from hashlib import sha256
 
 # A request will be tried 3 times if it fails at the socket/connection level
 httplib2.RETRIES = 3
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
 
 BACKSTORY_API_V1_URL = 'https://backstory.googleapis.com/v1'
+BACKSTORY_API_V2_URL = 'https://backstory.googleapis.com/v2'
 
 ISO_DATE_REGEX = (r'^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):'
                   r'([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?Z$')
@@ -28,7 +32,10 @@ CHRONICLE_OUTPUT_PATHS = {
     'Ip': 'GoogleChronicleBackstory.IP(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Domain': 'GoogleChronicleBackstory.Domain(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
-    'Events': 'GoogleChronicleBackstory.Events'
+    'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
+    'Events': 'GoogleChronicleBackstory.Events',
+    'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
+    'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)'
 }
 
 ARTIFACT_NAME_DICT = {
@@ -235,6 +242,16 @@ def validate_configuration_parameters(param: Dict[str, Any]):
     service_account_json = param.get('service_account_credential', '')
     fetch_days = param.get('first_fetch', '3 days').lower()
     page_size = param.get('max_fetch', '10')
+    time_window = param.get('time_window', '15')
+
+    detection_by_ids = param.get('fetch_detection_by_ids') or ""
+    detection_by_id = [r_v_id.strip() for r_v_id in detection_by_ids.split(',')]
+
+    if param.get('backstory_alert_type', 'ioc domain matches').lower() == 'detection alerts' and not \
+            param.get('fetch_all_live_detections', False) and not get_unique_value_from_list(detection_by_id):
+        raise ValueError('Please enter one or more Rule ID(s) or Version ID(s) as value of "Detections to '
+                         'fetch by Rule ID or Version ID" or check the checkbox "Fetch all live rules '
+                         'detections" to fetch detections.')
 
     try:
         # validate service_account_credential configuration parameter
@@ -243,6 +260,15 @@ def validate_configuration_parameters(param: Dict[str, Any]):
         # validate max_fetch configuration parameter
         if not page_size.isdigit():
             raise ValueError('Incidents fetch limit must be a number')
+
+        invalid_time_window_error_message = 'Time window(in minutes) should be in the numeric range from 1 to 60.'
+        if not time_window:
+            time_window = '15'
+        if not time_window.isdigit():
+            raise ValueError(invalid_time_window_error_message)
+        time_window = int(time_window)
+        if time_window > 60:
+            raise ValueError(invalid_time_window_error_message)
 
         # validate first_fetch parameter
         range_split = fetch_days.split(' ')
@@ -288,40 +314,37 @@ def validate_start_end_date(start_date, end_date=None, reference_time=None):
     :param reference_time: date
 
     :return: raise ValueError if validation fails, else return None
-    :rtype: None
+    :rtype: str, str, Optional[str]
     """
+    if start_date.isdigit():
+        raise ValueError("Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
+
     # checking date format
-    try:
-        datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%SZ')
-    except Exception:
+    start_date = dateparser.parse(start_date, settings={'STRICT_PARSING': True})
+    if not start_date:
         raise ValueError('Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
 
-    # checking future date
-    today = datetime.utcnow().strftime(DATE_FORMAT)
-    if start_date > today:
-        raise ValueError('Invalid start time, can not be greater than current UTC time')
+    start_date = str(datetime.strftime(start_date, DATE_FORMAT))
 
     if end_date:
+        if end_date.isdigit():
+            raise ValueError("Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
         # checking date format
-        try:
-            datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%SZ')
-        except Exception:
+        end_date = dateparser.parse(end_date, settings={'STRICT_PARSING': True})
+        if not end_date:
             raise ValueError('Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
 
-        # checking future date
-        if end_date > today:
-            raise ValueError('Invalid end time, can not be greater than current UTC time')
-
-        # checking end date must be lower than start date
-        if start_date > end_date:
-            raise ValueError('End time must be later than Start time')
+        end_date = str(datetime.strftime(end_date, DATE_FORMAT))
 
     if reference_time:
         # checking date format
-        try:
-            datetime.strptime(reference_time, '%Y-%m-%dT%H:%M:%SZ')
-        except Exception:
+        reference_time = dateparser.parse(reference_time, settings={'STRICT_PARSING': True})
+        if not reference_time:
             raise ValueError('Invalid reference time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
+
+        reference_time = str(datetime.strftime(reference_time, DATE_FORMAT))
+
+    return start_date, end_date, reference_time
 
 
 def validate_page_size(page_size):
@@ -490,6 +513,7 @@ def get_default_command_args_value(args: Dict[str, Any], date_range=None):
     :rtype : datetime, datetime, int̥
     """
     preset_time_range = args.get('preset_time_range', None)
+    reference_time = None
     if preset_time_range:
         preset_time_range = validate_preset_time_range(preset_time_range)
         start_time, end_time = get_chronicle_default_date_range(preset_time_range)
@@ -502,11 +526,12 @@ def get_default_command_args_value(args: Dict[str, Any], date_range=None):
     page_size = args.get('page_size', 10000)
     validate_page_size(page_size)
     if args.get('reference_time', ''):
-        validate_start_end_date(start_time, end_time, args.get('reference_time', ''))
+        start_time, end_time, reference_time = validate_start_end_date(start_time, end_time,
+                                                                       args.get('reference_time', ''))
     else:
-        validate_start_end_date(start_time, end_time)
+        start_time, end_time, _ = validate_start_end_date(start_time, end_time)
 
-    return start_time, end_time, page_size
+    return start_time, end_time, page_size, reference_time
 
 
 def parse_error_message(error):
@@ -906,6 +931,8 @@ def get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity)
     """
     request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
                                                                                       end_time, max_fetch)
+    demisto.debug("[CHRONICLE] Request URL for fetching alerts: {}".format(request_url))
+
     json_response = validate_response(client_obj, request_url)
 
     alerts = []
@@ -1108,6 +1135,916 @@ def get_list_events_hr(events):
     return hr
 
 
+def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[str, str]:
+    """
+    Returns and validates detection_start_time and detection_end_time as per Chronicle Backstory or
+     raises a ValueError if the given inputs are invalid.
+
+    :type args: dict
+    :param args: contains all arguments for command
+
+    :return : detection_start_time, detection_end_time: Detection start and end time in the format API accepts
+    :rtype : Tuple[str, str]
+    """
+    detection_start_time = args.get('detection_start_time')
+    detection_end_time = args.get('detection_end_time')
+
+    invalid_time_error_message = 'Invalid {} time. Some supported formats are ISO date format and relative time.' \
+                                 ' e.g. 2019-10-17T00:00:00Z, 3 days'
+    if detection_start_time:
+        if detection_start_time.isdigit():
+            raise ValueError(invalid_time_error_message.format('start'))
+        detection_start_time = dateparser.parse(detection_start_time, settings={'STRICT_PARSING': True})
+
+        if not detection_start_time:
+            raise ValueError(invalid_time_error_message.format('start'))
+
+        detection_start_time = str(datetime.strftime(detection_start_time, DATE_FORMAT))
+
+    if detection_end_time:
+        if detection_end_time.isdigit():
+            raise ValueError(invalid_time_error_message.format('end'))
+
+        detection_end_time = dateparser.parse(detection_end_time, settings={'STRICT_PARSING': True})
+        if not detection_end_time:
+            raise ValueError(invalid_time_error_message.format('end'))
+
+        detection_end_time = str(datetime.strftime(detection_end_time, DATE_FORMAT))
+
+    return detection_start_time, detection_end_time
+
+
+def validate_and_parse_list_detections_args(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validates and returns page_size, detection_start_time and detection_end_time.
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for list-detections command
+
+    :return: Dictionary containing values of page_size, detection_start_time and detection_end_time
+     or raise ValueError if the arguments are invalid
+    :rtype: Dict[str, Any]
+    """
+
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    if int(page_size) > 1000:
+        raise ValueError('Page size should be in the range from 1 to 1000.')
+
+    detection_start_time, detection_end_time = validate_and_parse_detection_start_end_time(args)
+
+    valid_args = {'page_size': page_size, 'detection_start_time': detection_start_time,
+                  'detection_end_time': detection_end_time}
+
+    return valid_args
+
+
+def get_hr_for_event_in_detection(event: Dict[str, Any]) -> str:
+    """
+    Returns a string containing event information for an event
+
+    :param event: event for which hr is to be prepared
+    :return: event information in human readable format
+    """
+    event_info = []
+
+    # Get queried domain, process command line, file use by process information
+    more_info = get_more_information(event)
+
+    event_timestamp = event.get('metadata', {}).get('eventTimestamp', '')
+    event_type = event.get('metadata', {}).get('eventType', '')
+    principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
+    target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+    queried_domain = more_info[0][:-1]
+    process_command_line = more_info[1]
+    file_in_use_by_process = more_info[2]
+    if event_timestamp:
+        event_info.append('**Event Timestamp:** {}'.format(event_timestamp))
+    if event_type:
+        event_info.append('**Event Type:** {}'.format(event_type))
+    if principal_asset_identifier:
+        event_info.append('**Principal Asset Identifier:** {}'.format(principal_asset_identifier))
+    if target_asset_identifier:
+        event_info.append('**Target Asset Identifier:** {}'.format(target_asset_identifier))
+    if queried_domain:
+        event_info.append('**Queried Domain:** {}'.format(queried_domain))
+    if process_command_line:
+        event_info.append('**Process Command Line:** {}'.format(process_command_line))
+    if file_in_use_by_process:
+        event_info.append('**File In Use By Process:** {}'.format(file_in_use_by_process))
+    return '\n'.join(event_info)
+
+
+def get_events_hr_for_detection(events: List[Dict[str, Any]]) -> str:
+    """
+    Converts events response related to the specified detection into human readable.
+
+    :param events: list of events
+    :type events: list
+
+    :return: returns human readable string for the events related to the specified detection
+    :rtype: str
+    """
+    events_hr = []
+    for event in events:
+        events_hr.append(get_hr_for_event_in_detection(event))
+
+    return '\n\n'.join(events_hr)
+
+
+def get_event_list_for_detections_hr(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Converts events response related to the specified detection into list of events for command's human readable.
+
+    :param result_events: List having dictionary containing list of events
+    :type result_events: List[Dict[str, Any]]
+
+    :return: returns list of the events related to the specified detection
+    :rtype: List[Dict[str,Any]]
+    """
+    events = []
+    if result_events:
+        for element in result_events:
+            for event in element.get('references', []):
+                events.append(event.get('event', {}))
+    return events
+
+
+def get_event_list_for_detections_context(result_events: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Converts events response related to the specified detection into list of events for command's context.
+
+    :param result_events: Dictionary containing list of events
+    :type result_events: Dict[str, Any]
+
+    :return: returns list of the events related to the specified detection
+    :rtype: List[Dict[str,Any]]
+    """
+    events = []
+    if result_events:
+        for event in result_events.get('references', []):
+            events.append(event.get('event', {}))
+    return events
+
+
+def get_list_detections_hr(detections: List[Dict[str, Any]]) -> str:
+    """
+    Converts detections response into human readable.
+
+    :param detections: list of detections
+    :type detections: list
+
+    :return: returns human readable string for gcb-list-detections command
+    :rtype: str
+    """
+
+    hr_dict = []
+    for detection in detections:
+        events = get_event_list_for_detections_hr(detection.get('collectionElements', []))
+        detection_details = detection.get('detection', {})
+        hr_dict.append({
+            'Detection ID': "[{}]({})".format(detection.get('id', ''),
+                                              detection_details[0].get('urlBackToProduct', '')),
+            'Detection Type': detection.get('type', ''),
+            'Detection Time': detection.get('detectionTime', ''),
+            'Events': get_events_hr_for_detection(events),
+            'Alert State': detection_details[0].get('alertState', '')
+        })
+    rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
+    if rule_uri:
+        rule_uri = rule_uri.split('&', maxsplit=2)
+        rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
+    hr_title = 'Detection(s) Details For Rule: [{}]({})'. \
+        format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    hr = tableToMarkdown(hr_title, hr_dict, ['Detection ID', 'Detection Type', 'Detection Time', 'Events',
+                                             'Alert State'], removeNull=True)
+    return hr
+
+
+def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Convert events in response into Context data for events associated with a detection
+
+    :param result_events: List of Dictionary containing list of events
+    :type result_events: List[Dict[str, Any]]
+
+    :return: list of events to populate in the context
+    :rtype: List[Dict[str, Any]]
+    """
+    events_ec = []
+    for collection_element in result_events:
+        reference = []
+        events = get_event_list_for_detections_context(collection_element)
+        for event in events:
+            event_dict = {}
+            if 'metadata' in event.keys():
+                event_dict.update(event.pop('metadata'))
+            principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
+            target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+            if principal_asset_identifier:
+                event_dict.update({'principalAssetIdentifier': principal_asset_identifier})
+            if target_asset_identifier:
+                event_dict.update({'targetAssetIdentifier': target_asset_identifier})
+            event_dict.update(event)
+            reference.append(event_dict)
+        collection_element_dict = {'references': reference, 'label': collection_element.get('label', '')}
+        events_ec.append(collection_element_dict)
+
+    return events_ec
+
+
+def get_context_for_detections(detection_resp: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
+    """
+    Convert detections response into Context data
+
+    :param detection_resp: Response fetched from the API call for detections
+    :type detection_resp: Dict[str, Any]
+
+    :return: list of detections and token to populate context data
+    :rtype: Tuple[List[Dict[str, Any]], Dict[str, str]]
+    """
+    detections_ec = []
+    token_ec = {}
+    next_page_token = detection_resp.get('nextPageToken')
+    if next_page_token:
+        token_ec = {'name': 'gcb-list-detections', 'nextPageToken': next_page_token}
+    detections = detection_resp.get('detections', [])
+    for detection in detections:
+        detection_dict = detection
+        result_events = detection.get('collectionElements', [])
+        if result_events:
+            detection_dict['collectionElements'] = get_events_context_for_detections(result_events)
+
+        detection_details = detection.get('detection', {})
+        if detection_details:
+            detection_dict.update(detection_details[0])
+            detection_dict.pop('detection')
+
+        time_window_details = detection.get('timeWindow', {})
+        if time_window_details:
+            detection_dict.update({'timeWindowStartTime': time_window_details.get('startTime'),
+                                   'timeWindowEndTime': time_window_details.get('endTime')})
+            detection_dict.pop('timeWindow')
+        detections_ec.append(detection_dict)
+
+    return detections_ec, token_ec
+
+
+def get_detections(client_obj, rule_or_version_id: str, page_size: str, detection_start_time: str,
+                   detection_end_time: str, page_token: str, alert_state: str) \
+        -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Returns context data and raw response for gcb-list-detections command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+    :type rule_or_version_id: str
+    :param rule_or_version_id: rule_id or version_id to fetch the detections for.
+    :type page_size: str
+    :param page_size: Number of detections to fetch at a time.
+    :type detection_start_time: str
+    :param detection_start_time: The time to start listing detections from.
+    :type detection_end_time: str
+    :param detection_end_time: The time to start listing detections to.
+    :type page_token: str
+    :param page_token: The token for the page from which the detections should be fetched.
+    :type alert_state: str
+    :param alert_state: Alert state for the detections to fetch.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the fetched detections
+    """
+    # Make a request URL
+    request_url = '{}/detect/rules/{}/detections?pageSize={}' \
+        .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
+
+    # Append parameters if specified
+    if detection_start_time:
+        request_url += '&detectionStartTime={}'.format(detection_start_time)
+
+    if detection_end_time:
+        request_url += '&detectionEndTime={}'.format(detection_end_time)
+
+    if alert_state:
+        request_url += '&alertState={}'.format(alert_state)
+
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + request_url)
+    # get list of detections from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+    raw_resp = deepcopy(json_data)
+    parsed_ec, token_ec = get_context_for_detections(json_data)
+    ec: Dict[str, Any] = {
+        CHRONICLE_OUTPUT_PATHS['Detections']: parsed_ec
+    }
+    if token_ec:
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, raw_resp
+
+
+def list_all_rules(client_obj, page_size: str = '100', page_token: str = None) -> Dict[str, Any]:
+    """
+    Returns all the rules by making the API call according to the passed parameters.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+    :type page_size: str
+    :param page_size: Number of rules to fetch at a time
+    :type page_token: str
+    :param page_token: The token for the page from which the rules should be fetched
+
+    :rtype: raw_resp: Dict[str, Any]
+    :return: raw_resp: Response received by making the API call
+    """
+    request_url = '{}/detect/rules?pageSize={}'.format(BACKSTORY_API_V2_URL, page_size)
+
+    # Append parameters if specified
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+
+    # get list of rules from Chronicle Backstory
+    raw_resp = validate_response(client_obj, request_url)
+    return raw_resp
+
+
+def get_all_live_rules(client_obj, max_live_rules: int = 50) -> List[str]:
+    """
+    Returns a list of rule_ids containing max_live_rules number of live rules from the list of all the rules.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+    :type max_live_rules: int
+    :param max_live_rules: Maximum number of live rules to be fetched
+
+    :rtype: max_live_rule_ids: List[str]
+    :return: max_live_rule_ids: List of live rule_ids
+    """
+    all_rules_info = list_all_rules(client_obj, '1000')
+    all_live_rule_ids = [rule.get('ruleId') for rule in all_rules_info.get('rules', []) if rule.get('liveRuleEnabled')]
+    max_live_rule_ids = all_live_rule_ids[:max_live_rules]
+    return max_live_rule_ids
+
+
+def generate_delayed_start_time(time_window: str, start_time: str) -> str:
+    """
+    Generates the delayed start time according after validating the time window provided by user.
+
+    :type time_window: str
+    :param time_window: Time window to delay the start time.
+    :type start_time: str
+    :param start_time: Initial start time calculated by fetch_incidents method
+
+    :rtype: delayed_start_time: str
+    :return: delayed_start_time: Returns generated delayed start time or raises error if invalid value
+     is provided for time window configuration parameter
+    """
+    if not time_window:
+        time_window = '15'
+    delayed_start_time = dateparser.parse(start_time, settings={'STRICT_PARSING': True})
+    delayed_start_time = delayed_start_time - timedelta(minutes=int(time_window))
+    delayed_start_time = datetime.strftime(delayed_start_time, DATE_FORMAT)
+
+    return delayed_start_time
+
+
+def deduplicate_events_and_create_incidents(contexts: List, event_identifiers: List[str], user_alert: bool = False):
+    """
+    De-duplicates the fetched events and creates a list of actionable incidents.
+
+    :type contexts: List
+    :param contexts: Context of the events fetched.
+    :type event_identifiers: List[str]
+    :param event_identifiers: List of hashes generated for the events fetched in previous call.
+    :type user_alert: bool
+    :param user_alert: if enable creates user alerts incidents otherwise create asset alerts incidents
+
+    :rtype: new_event_hashes, incidents
+    :return: Returns updated list of event hashes and unique incidents that should be created.
+    """
+    incidents: List[Dict[str, Any]] = []
+    new_event_hashes = []
+    for event in contexts:
+        try:
+            event_hash = sha256(str(event).encode()).hexdigest()
+            new_event_hashes.append(event_hash)
+        except Exception as e:
+            demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
+                          " Hash for the event {}. Error: {}".format(event, str(e)))
+            continue
+        if event_identifiers and event_hash in event_identifiers:
+            demisto.info("[CHRONICLE] Skipping insertion of current event since it already exists."
+                         " Event: {}".format(event))
+            continue
+        if user_alert:
+            event["IncidentType"] = "UserAlert"
+            incidents.append({
+                'name': '{} for {}'.format(event['AlertName'], event['User']),
+                'details': json.dumps(event),
+                'rawJSON': json.dumps(event)
+            })
+        else:
+            severity = SEVERITY_MAP.get(event['Severities'].lower(), 0)
+            event["IncidentType"] = "AssetAlert"
+            unique_incident = {
+                'name': '{} for {}'.format(event['AlertName'], event['Asset']),
+                'details': json.dumps(event),
+                'severity': severity,
+                'rawJSON': json.dumps(event)
+            }
+            incidents.append(unique_incident)
+    return new_event_hashes, incidents
+
+
+def deduplicate_detections(detection_context: List[Dict[str, Any]], detection_identifiers: List[Dict[str, Any]]):
+    """
+    De-duplicates the fetched detections and creates a list of unique detections to be created.
+
+    :type detection_context: Dict[str, Any]
+    :param detection_context: Raw response of the detections fetched.
+    :type detection_identifiers: List[str]
+    :param detection_identifiers: List of dictionaries containing id and ruleVersion of detections.
+
+    :rtype: new_detection_identifiers, incidents
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    unique_detections = []
+    new_detection_identifiers = []
+    for detection in detection_context:
+        current_detection_identifier = {'id': detection.get('id', ''),
+                                        'ruleVersion': detection.get('detection', [])[0].get('ruleVersion', '')}
+        new_detection_identifiers.append(current_detection_identifier)
+        if detection_identifiers and current_detection_identifier in detection_identifiers:
+            demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
+                         " Detection: {}".format(detection))
+            continue
+        unique_detections.append(detection)
+    return new_detection_identifiers, unique_detections
+
+
+def convert_events_to_actionable_incidents(events: list) -> list:
+    """
+    Convert event to incident.
+
+    :type events: List
+    :param events: List of events
+
+    :rtype: list
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    incidents = []
+    for event in events:
+        event["IncidentType"] = "DetectionAlert"
+        incident = {
+            'name': event['detection'][0]['ruleName'],
+            'details': json.dumps(event),
+            'rawJSON': json.dumps(event)
+        }
+        incidents.append(incident)
+
+    return incidents
+
+
+def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
+                     pending_rule_or_version_id: list, alert_state):
+    """Fetch detections in given time slot."""
+
+    if not pending_rule_or_version_id and not detection_to_process and not detection_to_pull:
+        return [], detection_to_process, detection_to_pull, pending_rule_or_version_id
+
+    # get detections using API call.
+    detection_to_process, detection_to_pull, pending_rule_or_version_id \
+        = get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
+                                   pending_rule_or_version_id, alert_state)
+
+    if len(detection_to_process) > max_fetch:
+        events, detection_to_process = detection_to_process[:max_fetch], detection_to_process[max_fetch:]
+    else:
+        events = detection_to_process
+        detection_to_process = []
+
+    return events, detection_to_process, detection_to_pull, pending_rule_or_version_id
+
+
+def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
+                             pending_rule_or_version_id, alert_state):
+    """Get list of detection using detection_to_pull and pending_rule_or_version_id."""
+
+    while len(detection_incidents) < max_fetch and (len(pending_rule_or_version_id) != 0 or detection_to_pull):
+
+        next_page_token = ''
+        if detection_to_pull:
+            rule_id = detection_to_pull.get('rule_id')
+            next_page_token = detection_to_pull.get('next_page_token')
+        else:
+            rule_id = pending_rule_or_version_id.pop(0)
+
+        try:
+            _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
+                                         alert_state)
+        except ValueError as e:
+            demisto.info("Error while fetching incidents: " + str(e))
+            pending_rule_or_version_id.insert(0, rule_id)
+            break
+
+        if not raw_resp:
+            continue
+
+        detections: List[Dict[str, Any]] = raw_resp.get('detections', [])
+
+        # Add found detection in incident list.
+        add_detections_in_incident_list(detections, detection_incidents)
+
+        if raw_resp.get('nextPageToken'):
+            next_page_token = str(raw_resp.get('nextPageToken'))
+            detection_to_pull = {'rule_id': rule_id, 'next_page_token': next_page_token}
+
+        # when exact size is returned but no next_page_token
+        if len(detections) <= max_fetch and not raw_resp.get('nextPageToken'):
+            detection_to_pull = {}
+
+    return detection_incidents, detection_to_pull, pending_rule_or_version_id
+
+
+def add_detections_in_incident_list(detections: List, detection_incidents: List) -> None:
+    """
+    Add found detection in incident list.
+
+    :type detections: list
+    :param detections: list of detection
+    :type detection_incidents: list
+    :param detection_incidents: list of incidents
+
+    :rtype: None
+    """
+
+    if detections and len(detections) > 0:
+        for detection in detections:
+            events_ec = get_events_context_for_detections(detection.get('collectionElements', []))
+            detection['collectionElements'] = events_ec
+        detection_incidents.extend(detections)
+
+
+def get_unique_value_from_list(data: List) -> List:
+    """
+    Return unique value of list with preserving order.
+
+    :type data: list
+    :param data: list of value
+
+    :rtype: list
+    :return: list of unique value
+    """
+    output = []
+
+    for value in data:
+        if value and value not in output:
+            output.append(value)
+
+    return output
+
+
+def fetch_incidents_asset_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of asset alerts type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+    assets_alerts_identifiers: List = []
+    last_run = demisto.getLastRun()
+    filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
+    if last_run:
+        start_time = last_run.get('start_time') or start_time
+        assets_alerts_identifiers = last_run.get('assets_alerts_identifiers', assets_alerts_identifiers)
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    events = get_gcb_alerts(client_obj, delayed_start_time, end_time, max_fetch, filter_severity)
+    _, contexts = group_infos_by_alert_asset_name(events)
+
+    # Converts event alerts into  actionable incidents
+    new_event_hashes, incidents = deduplicate_events_and_create_incidents(list(contexts.values()),
+                                                                          assets_alerts_identifiers)
+
+    # Updates the event hashes in last run with the new event hashes
+    if contexts:
+        assets_alerts_identifiers = new_event_hashes
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'assets_alerts_identifiers': assets_alerts_identifiers
+    })
+
+    return incidents
+
+
+def fetch_incidents_user_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of user alerts type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+    user_alerts_identifiers: List = []
+    last_run = demisto.getLastRun()
+
+    if last_run:
+        start_time = last_run.get('start_time') or start_time
+        user_alerts_identifiers = last_run.get('user_alerts_identifiers', user_alerts_identifiers)
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    events = get_user_alerts(client_obj, delayed_start_time, end_time, max_fetch)
+    _, contexts = group_infos_by_alert_user_name(events)
+
+    # Converts user alerts into  actionable incidents
+    new_event_hashes, incidents = deduplicate_events_and_create_incidents(contexts, user_alerts_identifiers,
+                                                                          user_alert=True)
+
+    # Updates the event hashes in last run with the new event hashes
+    if contexts:
+        user_alerts_identifiers = new_event_hashes
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'user_alerts_identifiers': user_alerts_identifiers
+    })
+
+    return incidents
+
+
+def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of detection alert type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+
+    # list of detections that were pulled but not processed due to max_fetch.
+    detection_to_process: List[Dict[str, Any]] = []
+    # detections that are larger than max_fetch and had a next page token for fetch incident.
+    detection_to_pull: Dict[str, Any] = {}
+    # rule_id or version_id and alert_state for which detections are yet to be fetched.
+    pending_rule_or_version_id_with_alert_state: Dict[str, Any] = {}
+    detection_identifiers: List = []
+    rule_first_fetched_time = None
+
+    last_run = demisto.getLastRun()
+    incidents = []
+
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time') or start_time
+        detection_identifiers = last_run.get('detection_identifiers', detection_identifiers)
+        detection_to_process = last_run.get('detection_to_process', detection_to_process)
+        detection_to_pull = last_run.get('detection_to_pull', detection_to_pull)
+        pending_rule_or_version_id_with_alert_state = last_run.get('pending_rule_or_version_id_with_alert_state',
+                                                                   pending_rule_or_version_id_with_alert_state)
+
+        end_time = last_run.get('rule_first_fetched_time') or end_time
+
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
+
+    # giving priority to comma separated detection ids over check box of fetch all live detections
+    if not pending_rule_or_version_id_with_alert_state.get("rule_id") and \
+            not detection_to_pull and not detection_to_process:
+        fetch_detection_by_ids = params.get('fetch_detection_by_ids') or ""
+        fetch_detection_by_ids = get_unique_value_from_list(
+            [r_v_id.strip() for r_v_id in fetch_detection_by_ids.split(',')])
+
+        fetch_detection_by_alert_state = params.get('fetch_detection_by_alert_state',
+                                                    fetch_detection_by_alert_state)
+        if not fetch_detection_by_ids:
+            fetch_detection_by_ids = get_all_live_rules(client_obj, max_live_rules=50)
+
+        fetch_detection_by_ids = get_unique_value_from_list(fetch_detection_by_ids)
+
+        # when 1st time fetch or when pending_rule_or_version_id got emptied in last sync.
+        # when detection_to_pull has some rule ids
+        pending_rule_or_version_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
+                                                            'alert_state': fetch_detection_by_alert_state})
+
+    events, detection_to_process, detection_to_pull, pending_rule_or_version_id \
+        = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
+                           detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
+                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''))
+
+    # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
+    # so updating the end_time to the start time when considered for current batch
+    if pending_rule_or_version_id or detection_to_pull:
+        rule_first_fetched_time = end_time
+        end_time = start_time
+
+    pending_rule_or_version_id_with_alert_state.update({'rule_id': pending_rule_or_version_id,
+                                                        'alert_state': fetch_detection_by_alert_state})
+
+    detection_identifiers, unique_detections = deduplicate_detections(events, detection_identifiers)
+
+    if unique_detections:
+        incidents = convert_events_to_actionable_incidents(unique_detections)
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'detection_identifiers': detection_identifiers,
+        'rule_first_fetched_time': rule_first_fetched_time,
+        'detection_to_process': detection_to_process,
+        'detection_to_pull': detection_to_pull,
+        'pending_rule_or_version_id_with_alert_state': pending_rule_or_version_id_with_alert_state
+    })
+
+    return incidents
+
+
+def convert_events_to_chronicle_event_incident_field(events: List) -> None:
+    """Convert Chronicle event into Chronicle Event incident field.
+
+    :type events: list
+    :param events: list of Chronicle UDM events
+
+    :rtype: list
+    :return: list of incidents
+    """
+    for event in events:
+        event["principalAssetIdentifier"] = get_asset_identifier_details(event.get('principal', {}))
+        event["targetAssetIdentifier"] = get_asset_identifier_details(event.get('target', {}))
+
+
+def get_user_alerts(client_obj, start_time, end_time, max_fetch):
+    """
+    Get user alerts and parse response.
+
+    :type client_obj: Client
+    :param client_obj: client object
+    :type start_time: str
+    :param start_time: starting time of request
+    :type end_time: str
+    :param end_time: end time of request
+    :type max_fetch: str
+    :param max_fetch: number of records will be returned
+
+    :rtype: list
+    :return: list of alerts
+    """
+    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
+                                                                                      end_time, max_fetch)
+    demisto.debug("[CHRONICLE] Request URL for fetching user alerts: {}".format(request_url))
+
+    json_response = validate_response(client_obj, request_url)
+
+    alerts = []
+    for user_alert in json_response.get('userAlerts', []):
+
+        # parsing each alert infos
+        infos = []
+        for alert_info in user_alert['alertInfos']:
+            info = {
+                'Name': alert_info.get('name', ''),
+                'SourceProduct': alert_info.get('sourceProduct', ''),
+                'Timestamp': alert_info.get('timestamp', ''),
+                'Uri': alert_info.get('uri', [''])[0],
+                'RawLog': base64.b64decode(alert_info.get('rawLog', '')).decode(),  # decode base64 raw log
+                'UdmEvent': alert_info.get('udmEvent', {})
+            }
+            infos.append(info)
+        user_identifier = list(user_alert.get("user", {}).values())
+        asset_alert = {
+            'User': user_identifier[0] if user_identifier else "",
+            'AlertCounts': len(infos),
+            'AlertInfo': infos
+        }
+        alerts.append(asset_alert)
+    return alerts
+
+
+def group_infos_by_alert_user_name(user_alerts):
+    """
+    Group user alerts with combination of user identifier and alert name
+
+    :type user_alerts: list
+    :param user_alerts: list of user alerts
+
+    :rtype: str, list
+    :return: human readable and incident context data
+    """
+    user_alerts = deepcopy(user_alerts)
+
+    hr = []
+    incident_context = []
+    unique_alert = defaultdict(list)
+    for user_alert in user_alerts:
+        user = user_alert.get("User", "")
+        for alert_info in user_alert["AlertInfo"]:
+            alert_info["User"] = user
+            unique_alert[user + " - " + alert_info["Name"]].append(alert_info)
+
+    for _, value in unique_alert.items():
+        occurrences = []
+        events = []
+        raw_logs = []
+        for info in value:
+            occurrences.append(info.get("Timestamp", ""))
+            events.append(info.get("UdmEvent", ""))
+            raw_logs.append(info.get("RawLog", ""))
+        occurrences.sort()
+        events = get_context_for_events(events)
+        convert_events_to_chronicle_event_incident_field(events)
+
+        hr.append({
+            "User": '[{}]({})'.format(value[0]["User"], value[0]["Uri"]),
+            'Alerts': len(value),
+            'Alert Names': value[0].get("Name", ""),
+            'First Seen': get_informal_time(occurrences[0]),
+            'Last Seen': get_informal_time(occurrences[-1]),
+            'Sources': value[0].get("SourceProduct", ""),
+        })
+        incident_context.append({
+            "User": value[0]["User"],
+            'Alerts': len(value),
+            'AlertName': value[0].get("Name", ""),
+            'Occurrences': occurrences,
+            'FirstSeen': occurrences[0],
+            'LastSeen': occurrences[-1],
+            'Sources': value[0].get("SourceProduct", ""),
+            'UdmEvents': events,
+            'RawLogs': raw_logs
+        })
+
+    return hr, incident_context
+
+
+def get_user_alert_hr_and_ec(client_obj: Client, start_time: str, end_time: str, page_size: str):
+    """
+    Get and parse HR, EC and raw response.
+
+    :type client_obj: Client
+    :param client_obj: client object
+    :type start_time: str
+    :param start_time: start time
+    :type end_time: str
+    :param end_time: end time
+    :type page_size: str
+    :param page_size: maximum number of records to be fetch
+
+    :rtype: str, dict, dict
+    :return: human readable. entry context and raw response
+    """
+    alerts = get_user_alerts(client_obj, start_time, end_time, page_size)
+    if not alerts:
+        hr = '### User Alert(s): '
+        hr += 'No Records Found'
+        return hr, {}, {}
+
+    # prepare alerts into human readable
+    data, _ = group_infos_by_alert_user_name(alerts)
+    hr = tableToMarkdown('User Alert(s)', data, ['Alerts', 'User', 'Alert Names', 'First Seen', 'Last Seen', 'Sources'],
+                         removeNull=True)
+
+    for alert in alerts:
+        for alert_info in alert.get('AlertInfo', []):
+            alert_info.pop('Uri', None)
+            alert_info.pop('UdmEvent', None)
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['UserAlert']: alerts
+    }
+
+    return hr, ec, alerts
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -1147,7 +2084,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     """
     # retrieve arguments and validate it
 
-    start_time, _, page_size = get_default_command_args_value(args)
+    start_time, _, page_size, _ = get_default_command_args_value(args)
 
     # Make a request
     request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
@@ -1190,7 +2127,7 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
     artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
-    start_time, end_time, page_size = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args)
 
     request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
         BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
@@ -1390,44 +2327,41 @@ def domain_command(client_obj, domain_name: str):
 def fetch_incidents(client_obj, params: Dict[str, Any]):
     """
     fetches alerts or IoC domain matches and convert them into actionable incidents.
-    :param client_obj:
-    :param params:
+
+    :type client_obj: Client
+    :param client_obj: object of the client class
+
+    :type params: dict
+    :param params: configuration parameter of fetch incidents
     :return:
     """
     first_fetch_in_days = params.get('first_fetch', '3 days').lower()  # 3 days as default
     max_fetch = params.get('max_fetch', 10)  # default page size
-    filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
+    time_window = params.get('time_window', '15')
 
     # getting numeric value from string representation
     start_time, end_time = parse_date_range(first_fetch_in_days, date_format=DATE_FORMAT)
 
-    last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time', start_time)
-
     # backstory_alert_type will create actionable incidents based on input selection in configuration
-    backstory_alert_type = params.get('backstory_alert_type', 'ioc domain matches')
+    backstory_alert_type = params.get('backstory_alert_type', 'ioc domain matches').lower()
 
     incidents = []
-    if 'ioc domain matches' != backstory_alert_type.lower():
-        events = get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity)
 
-        _, contexts = group_infos_by_alert_asset_name(events)
-
-        # Converts event alerts into  actionable incidents
-        for event in list(contexts.values()):
-            severity = SEVERITY_MAP.get(event['Severities'].lower(), 0)
-            incident = {
-                'name': '{} for {}'.format(event['AlertName'], event['Asset']),
-                'details': json.dumps(event),
-                'severity': severity,
-                'rawJSON': json.dumps(event)
-            }
-            incidents.append(incident)
+    if "assets with alerts" == backstory_alert_type:
+        incidents = fetch_incidents_asset_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
+    elif "user alerts" == backstory_alert_type:
+        incidents = fetch_incidents_user_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
+    elif 'detection alerts' == backstory_alert_type:
+        incidents = fetch_incidents_detection_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
     else:
+        last_run = demisto.getLastRun()
+        if last_run:
+            start_time = last_run.get('start_time') or start_time
+
         events = get_ioc_domain_matches(client_obj, start_time, max_fetch)
         # Converts IoCs into actionable incidents
         for event in events:
+            event["IncidentType"] = "IocDomainMatches"
             incident = {
                 'name': 'IOC Domain Match: {}'.format(event['Artifact']),
                 'details': json.dumps(event),
@@ -1435,10 +2369,7 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
             }
             incidents.append(incident)
 
-    # Saving last_run
-    demisto.setLastRun({
-        'start_time': end_time
-    })
+        demisto.setLastRun({'start_time': end_time})
 
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
@@ -1454,30 +2385,39 @@ def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
     :param args: inputs to fetch alerts from a specified date range. start_time, end_time, and page_size are
         considered for pulling the data.
     """
-    start_time, end_time, page_size = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args)
 
-    severity_filter = args.get('severity', 'ALL')
+    alert_type = args.get('alert_type', 'Asset Alerts').lower()
 
-    # gathering all the alerts from Backstory
-    alerts = get_gcb_alerts(client_obj, start_time, end_time, page_size, severity_filter)
-    if not alerts:
-        hr = '### Security Alert(s):'
-        hr += 'No Records Found'
-        return hr, {}, {}
+    if alert_type not in ["asset alerts", "user alerts"]:
+        raise ValueError('Allowed value for alert type should be either "Asset Alerts" or "User Alerts".')
 
-    # prepare alerts into human readable
-    hr = convert_alerts_into_hr(alerts)
+    if alert_type == 'asset alerts':
+        severity_filter = args.get('severity', 'ALL')
 
-    # Remove Url key in context data
-    for alert in alerts:
-        for alert_info in alert.get('AlertInfo', []):
-            if 'Uri' in alert_info.keys():
-                del alert_info['Uri']
-    ec = {
-        CHRONICLE_OUTPUT_PATHS['Alert']: alerts
-    }
+        # gathering all the alerts from Backstory
+        alerts = get_gcb_alerts(client_obj, start_time, end_time, page_size, severity_filter)
+        if not alerts:
+            hr = '### Security Alert(s): '
+            hr += 'No Records Found'
+            return hr, {}, {}
 
-    return hr, ec, alerts
+        # prepare alerts into human readable
+        hr = convert_alerts_into_hr(alerts)
+
+        # Remove Url key in context data
+        for alert in alerts:
+            for alert_info in alert.get('AlertInfo', []):
+                if 'Uri' in alert_info.keys():
+                    del alert_info['Uri']
+        ec = {
+            CHRONICLE_OUTPUT_PATHS['Alert']: alerts
+        }
+
+        return hr, ec, alerts
+    else:
+        hr, ec, raw_alert = get_user_alert_hr_and_ec(client_obj, start_time, end_time, page_size)
+        return hr, ec, raw_alert
 
 
 def gcb_list_events_command(client_obj, args: Dict[str, str]):
@@ -1499,7 +2439,7 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
 
     # retrieve arguments and validate it
-    start_time, end_time, _ = get_default_command_args_value(args, '2 hours')
+    start_time, end_time, _, _ = get_default_command_args_value(args, '2 hours')
 
     page_size = args.get('page_size', '100')
 
@@ -1528,16 +2468,63 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     hr += '[View events in Chronicle]({})'.format(json_data.get('uri', [''])[0])
 
     if json_data.get('moreDataAvailable', False):
-        last_event_timestamp = datetime.strptime(events[-1].get('metadata', {}).get('eventTimestamp', ''), DATE_FORMAT)
-        hr += '\n\nMaximum number of events specified in page_size has been returned. There might still be more ' \
-              'events in your Chronicle account. To fetch the next set of events, execute the command with the start ' \
-              'time as {}'.format(last_event_timestamp.strftime(DATE_FORMAT))
+        last_event_timestamp = events[-1].get('metadata', {}).get('eventTimestamp', '')
+        hr += '\n\nMaximum number of events specified in page_size has been returned. There might' \
+              ' still be more events in your Chronicle account.'
+        if not dateparser.parse(last_event_timestamp, settings={'STRICT_PARSING': True}):
+            demisto.error('Event timestamp of the last event: {} is invalid.'.format(last_event_timestamp))
+            hr += ' An error occurred while fetching the start time that could have been used to' \
+                  ' fetch next set of events.'
+        else:
+            hr += ' To fetch the next set of events, execute the command with the start time as {}.' \
+                .format(last_event_timestamp)
 
     parsed_ec = get_context_for_events(json_data.get('events', []))
 
     ec = {
         CHRONICLE_OUTPUT_PATHS["Events"]: parsed_ec
     }
+
+    return hr, ec, json_data
+
+
+def gcb_list_detections_command(client_obj, args: Dict[str, str]):
+    """
+    Return the Detections for a specified Rule Version.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-detections command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+
+    # retrieve arguments and validate it
+    valid_args = validate_and_parse_list_detections_args(args)
+
+    ec, json_data = get_detections(client_obj, args.get('id', ''), valid_args.get('page_size', ''),
+                                   valid_args.get('detection_start_time', ''), valid_args.get('detection_end_time', ''),
+                                   args.get('page_token', ''), args.get('alert_state', ''))
+
+    detections = json_data.get('detections', [])
+    if not detections:
+        hr = 'No Detections Found'
+        return hr, {}, {}
+
+    # prepare alerts into human readable
+    hr = get_list_detections_hr(detections)
+    hr += '\nView all detections for this rule in Chronicle by clicking on {} and to view individual detection' \
+          ' in Chronicle click on its respective Detection ID.\n\nNote: If a specific version of the rule is provided' \
+          ' then detections for that specific version will be fetched.'.format(detections[0].
+                                                                               get('detection')[0].get('ruleName'))
+
+    next_page_token = json_data.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
+              ' detections, execute the command with the page token as {}.'.format(next_page_token)
 
     return hr, ec, json_data
 
@@ -1552,7 +2539,8 @@ def main():
         'gcb-assets': gcb_assets_command,
         'gcb-ioc-details': gcb_ioc_details_command,
         'gcb-list-alerts': gcb_list_alerts_command,
-        'gcb-list-events': gcb_list_events_command
+        'gcb-list-events': gcb_list_events_command,
+        'gcb-list-detections': gcb_list_detections_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

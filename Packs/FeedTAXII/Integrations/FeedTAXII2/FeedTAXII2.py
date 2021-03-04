@@ -29,6 +29,12 @@ def try_parse_integer(
     return res
 
 
+def assert_incremental_feed_params(fetch_full_feed, is_incremental_feed):
+    if fetch_full_feed == is_incremental_feed:
+        toggle_value = 'enabled' if fetch_full_feed else 'disabled'
+        raise DemistoException(f"'Full Feed Fetch' cannot be {toggle_value} when 'Incremental Feed' is {toggle_value}.")
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -221,12 +227,14 @@ def main():
 
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
+    is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
     try:
+        assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
         client = Taxii2FeedClient(
             url=url,
             collection_to_fetch=collection_to_fetch,

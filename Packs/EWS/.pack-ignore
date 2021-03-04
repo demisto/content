@@ -9,3 +9,6 @@ ignore=IN126
 
 [file:EWSv2.yml]
 ignore=IN126,IN135
+
+[file:README.md]
+ignore=RM102
