@@ -5,7 +5,7 @@ args:
   isArray: false
   name: incidentId
   predefined:
-    - ''
+  - ''
   required: false
   secret: false
 - default: false
@@ -71,17 +71,6 @@ args:
   description: Fields to add in the table of incident
   isArray: false
   name: fieldsIncidentToDisplay
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'True'
-  description: Aggregate similar incidents
-  isArray: false
-  name: aggregateIncidents
-  predefined:
-    - 'True'
-    - ' False'
   required: false
   secret: false
 comment: Find similar incidents based on indicators similarity. Indicators contribution

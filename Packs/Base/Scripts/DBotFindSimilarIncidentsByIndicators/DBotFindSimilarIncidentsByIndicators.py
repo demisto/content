@@ -92,15 +92,22 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
 
 
 TRANSFORMATION = {
-    'indicators': {'transformer': FrequencyIndicators,
-                   'normalize': None,
-                   'scoring_function': identity_score
-                   }
+    'frequency_indicators': {'transformer': FrequencyIndicators,
+                             'normalize': None,
+                             'scoring_function': identity_score
+                             }
 }
 
 
 class Transformer():
     def __init__(self, p_transformer_type, incident_field, p_incidents_df, p_current_incident, p_params):
+        """
+        :param p_transformer_type: One of the key value of TRANSFORMATION dict
+        :param incident_field: incident field used in this transformation
+        :param p_incidents_df: DataFrame of incident (should contains one columns which same name than incident_field)
+        :param p_current_incident: DataFrame of the current incident
+        :param p_params: Dictionary of all the transformation - TRANSFORMATION
+        """
         self.transformer_type = p_transformer_type
         self.incident_field = incident_field
         self.current_incident = p_current_incident
@@ -125,12 +132,21 @@ class Transformer():
 
 class Model:
     def __init__(self, p_transformation):
+        """
+        :param p_transformation: Dict with the transformers parameters - TRANSFORMATION
+        """
         self.transformation = p_transformation
 
-    def init_prediction(self, p_incident_to_match, p_incidents_df, p_fields_indicators_transformation=[]):
+    def init_prediction(self, p_incident_to_match, p_incidents_df, p_fields_for_frequencyIndicators=[]):
+        """
+        :param p_incident_to_match: Dataframe with one incident
+        :param p_incidents_df: Dataframe with all the incidents
+        :param p_fields_indicators_transformation: list of incident fields that for the transformer 'indicators'
+        :return:
+        """
         self.incident_to_match = p_incident_to_match
         self.incidents_df = p_incidents_df
-        self.fields_indicators_transformation = p_fields_indicators_transformation
+        self.fields_for_frequencyIndicators = p_fields_for_frequencyIndicators
 
     def predict(self):
         self.remove_empty_field()
@@ -140,18 +156,19 @@ class Model:
 
     def remove_empty_field(self):
         remove_list = []
-        for field in self.fields_indicators_transformation:
+        for field in self.fields_for_frequencyIndicators:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
                     self.incident_to_match[field].values[0] == 'None' or \
                     self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
-        self.fields_indicators_transformation = [x for x in self.fields_indicators_transformation if
-                                                 x not in remove_list]
+        self.fields_for_frequencyIndicators = [x for x in self.fields_for_frequencyIndicators if
+                                               x not in remove_list]
 
     def get_score(self):
-        for field in self.fields_indicators_transformation:
-            t = Transformer('indicators', field, self.incidents_df, self.incident_to_match, self.transformation)
+        for field in self.fields_for_frequencyIndicators:
+            t = Transformer('frequency_indicators', field, self.incidents_df, self.incident_to_match,
+                            self.transformation)
             t.get_score()
 
     def prepare_for_display(self):
@@ -336,14 +353,13 @@ def join(my_list: List) -> str:
     return ' '.join(my_list)
 
 
-def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], aggregate: bool, threshold: float,
+def organize_data(similar_incidents: pd.DataFrame, indicators_map: Dict[str, Dict], threshold: float,
                   max_incidents_to_display: int) \
         -> pd.DataFrame:
     """
     Clean and organize dataframe before displaying
     :param similar_incidents: DataFrame of incident
     :param indicators_map: Dict of indicators
-    :param aggregate:  boolean if we want to aggregate (disabled for now)
     :param threshold: threshold for similarity score
     :param max_incidents_to_display:  Max number of incidents we want to display
     :return: Clean DataFrame of incident
@@ -491,7 +507,6 @@ def organize_current_incident(current_incident_df, indicators_map):
 
 def main():
     max_indicators_for_white_list = int(demisto.args()['maxIncidentsInIndicatorsForWhiteList'])
-    aggregate = demisto.args().get('aggregateIncidents')
     min_nb_of_indicators = int(demisto.args()['minNumberOfIndicators'])
     threshold = float(demisto.args()['threshold'])
     indicators_types = demisto.args().get('indicatorsTypes')
@@ -549,7 +564,7 @@ def main():
 
     # Display and enriched incidents data
     current_incident_df = organize_current_incident(current_incident_df, indicators_map)
-    similar_incidents = organize_data(similar_incidents, indicators_map, aggregate, threshold, max_incidents_to_display)
+    similar_incidents = organize_data(similar_incidents, indicators_map, threshold, max_incidents_to_display)
     similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display)
 
     incident_found_bool = (len(similar_incidents) > 0)
