@@ -72,6 +72,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: The status according to which the incidents will be filtered
+  display: Incident status
+  hidden: false
+  name: status
+  options:
+  - new
+  - under_investigation
+  - resolved_threat_handled
+  - resolved_known_issue
+  - resolved_false_positive
+  - resolved_other
+  - resolved_auto
+  required: false
+  type: 16
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
@@ -162,6 +176,21 @@ script:
         maximum is 100.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filters returned incidents that are in the specified status
+      isArray: true
+      name: status
+      predefined:
+      - new
+      - under_investigation
+      - resolved_threat_handled
+      - resolved_known_issue
+      - resolved_false_positive
+      - resolved_other
+      - resolved_auto
       required: false
       secret: false
     deprecated: false

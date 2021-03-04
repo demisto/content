@@ -125,7 +125,7 @@ class Client(BaseClient):
         self.get_incidents(lte_creation_time=last_one_day, limit=1)
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, sort_by_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
                       sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
         """
         Filters and returns incidents
@@ -135,6 +135,7 @@ class Client(BaseClient):
         :param gte_modification_time: string of time format "2019-12-31T23:59:00"
         :param lte_creation_time: string of time format "2019-12-31T23:59:00"
         :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param status: string of status
         :param sort_by_modification_time: optional - enum (asc,desc)
         :param sort_by_creation_time: optional - enum (asc,desc)
         :param page_number: page number
@@ -205,6 +206,13 @@ class Client(BaseClient):
                 'field': 'creation_time',
                 'operator': 'gte',
                 'value': gte_creation_time_milliseconds
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
             })
 
         if len(filters) > 0:
@@ -1226,6 +1234,8 @@ def get_incidents_command(client, args):
     if since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
 
+    statuses = args.get('status', '').split(',')
+
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
 
@@ -1234,21 +1244,42 @@ def get_incidents_command(client, args):
 
     # If no filters were given, return a meaningful error message
     if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
-                                 and not lte_creation_time and not gte_creation_time and not since_creation_time):
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses):
         raise ValueError("Specify a query for the incidents.\nFor example:"
                          " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
-    raw_incidents = client.get_incidents(
-        incident_id_list=incident_id_list,
-        lte_modification_time=lte_modification_time,
-        gte_modification_time=gte_modification_time,
-        lte_creation_time=lte_creation_time,
-        gte_creation_time=gte_creation_time,
-        sort_by_creation_time=sort_by_creation_time,
-        sort_by_modification_time=sort_by_modification_time,
-        page_number=page,
-        limit=limit
-    )
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status
+            )
+
+        while len(raw_incidents) > limit:
+            raw_incidents.pop()
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+        )
 
     return (
         tableToMarkdown('Incidents', raw_incidents),
@@ -2473,11 +2504,13 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
+                    statuses: List = []):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
+
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -2486,8 +2519,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
     else:
-        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                             limit=max_fetch, sort_by_creation_time='asc')
+        if len(statuses) > 0:
+            raw_incidents = []
+            for status in statuses:
+                raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
+                                                      limit=max_fetch, sort_by_creation_time='asc')
+        else:
+            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+                                                 sort_by_creation_time='asc')
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -2496,6 +2535,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     non_created_incidents: list = raw_incidents.copy()
     next_run = dict()
     try:
+        # The count of incidents, so as not to pass the limit
+        count_incidents = 0
+
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
 
@@ -2527,11 +2569,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
+            count_incidents += 1
+            if count_incidents == max_fetch:
+                break
+
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
                          f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
-
         else:
             raise
 
@@ -2935,6 +2980,8 @@ def main():
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
+    statuses = demisto.params().get('status')
+
     try:
         timeout = int(demisto.params().get('timeout', 120))
     except ValueError as e:
@@ -2977,7 +3024,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
-                                                  max_fetch)
+                                                  max_fetch, statuses)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
