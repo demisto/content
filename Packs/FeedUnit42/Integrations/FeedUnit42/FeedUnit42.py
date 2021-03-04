@@ -438,7 +438,7 @@ def create_course_of_action_field(courses_of_action: dict) -> str:
             tmp_table.append(row)
 
         md_table = tableToMarkdown(relationship_product, tmp_table, removeNull=True,
-                                   headerTransform=string_to_table_header, headers=COURSE_OF_ACTION_HEADERS[:])
+                                   headerTransform=string_to_table_header, headers=COURSE_OF_ACTION_HEADERS)
         markdown = f'{markdown}\n{md_table}'
     return markdown
 
