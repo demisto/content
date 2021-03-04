@@ -23,11 +23,12 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: multipartite
-  description: The canvas layout. Can be "multipartite.shell", "spring", "kamada_kawai", or "circular".
+  description: The canvas layout. Can be "multipartite", "shell", "spring", "kamada_kawai", or "circular".
   isArray: false
   name: layout
   predefined:
-  - multipartite.shell
+  - multipartite
+  - shell
   - spring
   - kamada_kawai
   - circular
