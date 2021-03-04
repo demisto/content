@@ -19,5 +19,6 @@ For more information, please refer to the [Identity Lifecycle Management article
 | mapper_in | Mapper \(incoming\) | False |
 | first_run | Sync user profiles on first run | False |
 | fetch_samples | Fetch Samples | False |
+| workday_date_format | Date Format in Workday Report | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
