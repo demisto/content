@@ -427,6 +427,8 @@ class Pack(object):
 
             for dependency_integration in dependency_integration_images:
                 dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_integration['name'] = Pack.remove_contrib_suffix_from_name(
+                    dependency_integration.get('name', ''))
                 dependency_pack_name = os.path.basename(
                     os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
 
@@ -639,10 +641,12 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        if 'vendorId' in user_metadata:
+        if 'partnerId' in user_metadata:
             pack_metadata['premium'] = True
-            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
+            pack_metadata['partnerId'] = user_metadata.get('partnerId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            pack_metadata['partnerName'] = user_metadata.get('partnerName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
