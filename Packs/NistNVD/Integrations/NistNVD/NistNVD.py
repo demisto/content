@@ -1,17 +1,10 @@
-# import datetime
 import sys
 from datetime import datetime, timedelta
 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-# from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-# !/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-# disable insecure warnings
-# requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -20,10 +13,6 @@ VERIFY_SSL = not demisto.params().get('insecure', False)
 
 if not demisto.params().get('proxy', False):
     handle_proxy()
-    # del os.environ['HTTP_PROXY']
-    # del os.environ['HTTPS_PROXY']
-    # del os.environ['http_proxy']
-    # del os.environ['https_proxy']
 
 
 def test_module() -> str:
@@ -64,9 +53,7 @@ def extractVulnDetails(requestfromconnection):
             for k in i['cve']['description']['description_data']:
                 pretty_dict['Description'] = k['value']
             reference_data = []
-            # reference_string = ''
             for j in i['cve']['references']['reference_data']:
-                # reference_string += j['url'] + '\n'
                 reference_data.append(j['url'])
             pretty_dict['References'] = reference_data
             if (('impact') in i and ('baseMetricV3') in i['impact']):
@@ -152,9 +139,7 @@ def keywordSearch():
     resultsPerPage = demisto.args().get('resultsPerPage')
     additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&keyword=' + keyword + \
         '&isExactMatch=' + isExactMatch + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
-    # additional_parameters = '?keyword=' + keyword + '&isExactMatch=' + isExactMatch
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -189,7 +174,6 @@ def cvssSearch():
     additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&' + searchParameters + \
         '=' + value + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -220,7 +204,6 @@ def cweSearch():
     additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cweId=' + \
         cweId + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -251,7 +234,6 @@ def cpeSearch():
     additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cpeMatchString=' + \
         cpeMatchString + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -302,7 +284,6 @@ def main() -> None:
     :rtype:
     """
     ''' EXECUTION '''
-    # LOG('command is %s' % (demisto.command(), ))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     ''' EXECUTION '''
