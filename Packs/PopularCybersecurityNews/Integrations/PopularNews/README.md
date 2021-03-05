@@ -1,5 +1,11 @@
-Popular News integration fetches 
-This integration was integrated and tested with version xx of Popular News
+How to use this integration ?
+
+1. Enable the "Popular News" integration.
+2. Create a Job that creates an incident of - "News Type" included along with the Popular Cybersecurity News Pack.
+3. The News Type incident will run the "JOB Popular News" playbook automatically and populate the "News Tab" where the links can be looked at.
+4. Additionally, the playbook allows the user to configure to choose between the three sources using the Playbook inputs.
+
+This integration was integrated and tested with version 1.0.0 of Popular News
 ## Configure Popular News on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
