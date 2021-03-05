@@ -6,19 +6,19 @@ description: Playbook can be run ad-hoc or as a Job to fetch results from Popula
   News sites
 id: JOB - Popular News
 inputs:
-- description: ""
+- description: "Set to false or leave empty to ignore fetching news from site"
   key: KrebsOnSecurity
   playbookInputQuery:
   required: false
   value:
     simple: "true"
-- description: ""
+- description: "Set to false or leave empty to ignore fetching news from site"
   key: ThreatPost
   playbookInputQuery:
   required: false
   value:
     simple: "true"
-- description: ""
+- description: "Set to false or leave empty to ignore fetching news from site"
   key: TheHackerNews
   playbookInputQuery:
   required: false
@@ -185,7 +185,7 @@ tasks:
       name: Done
       type: title
       version: -1
-      description: ''
+      description: 'Done'
     taskid: d9209834-4e51-4e8f-897f-fa13f55750e3
     timertriggers: []
     type: title
@@ -209,6 +209,7 @@ tasks:
               simple: "true"
       label: Get News from vendor
     id: "5"
+    description: Check vendor - Krebs on Security
     ignoreworker: false
     nexttasks:
       '#default#':
@@ -238,6 +239,7 @@ tasks:
       }
   "6":
     id: "6"
+    description: Get News from Krebs on Security
     ignoreworker: false
     nexttasks:
       '#none#':
@@ -278,6 +280,7 @@ tasks:
               simple: "true"
       label: Get News from vendor
     id: "7"
+    description: Check vendor The Hacker News
     ignoreworker: false
     nexttasks:
       '#default#':
@@ -292,7 +295,7 @@ tasks:
       brand: ""
       id: 831c2fe7-529b-4b03-8f10-ad818dbd54fd
       iscommand: false
-      name: Get Vendor - The Hacker News
+      name: Check Vendor - The Hacker News
       type: condition
       version: -1
     taskid: 831c2fe7-529b-4b03-8f10-ad818dbd54fd
@@ -318,6 +321,7 @@ tasks:
               simple: "true"
       label: Get News from vendor
     id: "8"
+    description: Check Vendor - Threatpost
     ignoreworker: false
     nexttasks:
       '#default#':
@@ -354,6 +358,7 @@ tasks:
     note: false
     quietmode: 0
     reputationcalc: 1
+    description: Gets news from Threatpost
     separatecontext: false
     skipunavailable: false
     task:
@@ -382,6 +387,7 @@ tasks:
       - "1"
     note: false
     quietmode: 0
+    description: Get news from The Hacker News
     reputationcalc: 1
     separatecontext: false
     skipunavailable: false
@@ -420,7 +426,7 @@ tasks:
       name: Skip Vendor
       type: title
       version: -1
-      description: ''
+      description: 'Skips the vendor based on playbook input'
     taskid: 43bb5429-654b-47b7-814d-a75b5e169294
     timertriggers: []
     type: title
