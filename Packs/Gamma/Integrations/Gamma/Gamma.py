@@ -25,7 +25,7 @@ class Client(BaseClient):
         api_key = demisto.params()['api_key']
         headers = {'X-API-Key': api_key}
         base_url = urljoin(demisto.params()['url'], '/api/discovery/v1/')
-        verify_certificate = not(demisto.params().get('insecure', False))
+        verify_certificate = not (demisto.params().get('insecure', False))
         proxy = demisto.params().get('proxy', False)
 
         super().__init__(
@@ -231,7 +231,8 @@ class Command:
             return ValueError("Invalid command")
 
 
-def fetch_incidents(client: Client, last_run_violation: dict, str_first_fetch_violation: str, str_max_results: str):
+def fetch_incidents(client: Client, last_run_violation: dict,
+                    str_first_fetch_violation: str, str_max_results: str):
     """ This function will run each interval (default 1 minute)
 
     :type client: client
@@ -244,7 +245,8 @@ def fetch_incidents(client: Client, last_run_violation: dict, str_first_fetch_vi
     :param str_first_fetch_violation: if last_violation is None, then begin from this violation ID
 
     :type str_max_results: str
-    :param str_first_fetch_violation: the max number of violations to pull, bound by MAX_INCIDENTS_TO_FETCH
+    :param str_first_fetch_violation: the max number of violations to pull, bound by
+    MAX_INCIDENTS_TO_FETCH
     """
 
     try:
@@ -303,11 +305,11 @@ def get_human_readable(violation: Dict[str, Any]) -> str:
 
     def violation_to_str(response):
         return f'### Violation {response["violation_id"]} \r' \
-                 f'|Violation ID|Status|Timestamp|Dashboard URL|User|App Name| \r' \
-                 f'|---|---|---|---|---|---| \r' \
-                 f'| {response["violation_id"]} | {response["violation_status"]} | ' \
-                 f'{timestamp_to_datestring(response["violation_event_timestamp"] * 1000)} | ' \
-                 f'{response["dashboard_url"]} | {response["user"]} | {response["app_name"]} | \r'
+               f'|Violation ID|Status|Timestamp|Dashboard URL|User|App Name| \r' \
+               f'|---|---|---|---|---|---| \r' \
+               f'| {response["violation_id"]} | {response["violation_status"]} | ' \
+               f'{timestamp_to_datestring(response["violation_event_timestamp"] * 1000)} | ' \
+               f'{response["dashboard_url"]} | {response["user"]} | {response["app_name"]} | \r'
 
     return '\r'.join(violation_to_str(v) for v in violation['response'])
 
