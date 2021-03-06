@@ -124,7 +124,7 @@ class Command:
 
         if int(minimum_violation) < 1:
             raise ValueError("minimum_violation must be greater than 0")
-        if int(limit) < 1 or not int(limit) > 100:
+        if int(limit) < 1 or int(limit) > 100:
             raise ValueError("limit must be between 1 and 100")
 
         v_list = client.get_violation_list(minimum_violation, limit)

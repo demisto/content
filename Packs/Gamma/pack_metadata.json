@@ -8,11 +8,10 @@
     "email": "developer@gammanet.com",
     "created": "2020-12-23T20:46:43Z",
     "categories": [
-        "DLP"
+        "Network Security"
     ],
     "tags": [
-        "Security", "SaaS", "Compliance",
-        "GDPR", "HIPAA", "PII", "IT", "Machine Learning"
+        "Security", "Compliance", "GDPR", "HIPAA", "PII", "IT", "Machine Learning"
     ],
     "useCases": [
         "Compliance", "Employee Offboarding", "GDPR Breach Notification",
