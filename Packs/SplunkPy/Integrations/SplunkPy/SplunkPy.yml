@@ -129,7 +129,7 @@ configuration:
   name: extensive_logs
   required: false
   type: 8
-- additionalinfo: Whennever no incidents are found, the next search will start from
+- additionalinfo: When ever no incidents are found, the next search will start from
     the same start time, up to a window of the size specified here.
   defaultvalue: '20'
   display: Fetch backwardss window
