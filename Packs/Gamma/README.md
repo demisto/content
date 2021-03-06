@@ -1,10 +1,11 @@
 Gamma Enterprise DLP provides 1-click automatic discovery and remediation of data loss instances
- across enterprise sanctioned SaaS applications (cloud and on-prem) such as: Slack, Github, GSuite (Gmail, GDrive), Atlassian Suite (Jira, Confluence), Microsoft Office 365 (Outlook, Teams, OneDrive)
-, ServiceNow, ZenDesk and many more.
+ across enterprise sanctioned SaaS applications (cloud and on-prem) such as: Slack, Github
+ , GSuite (Gmail, GDrive), Atlassian Suite (Jira, Confluence, BitBucket), Microsoft Office 365
+  (Outlook, Teams, OneDrivex), ServiceNow, ZenDesk, Salesforce and many more.
 
 ### Acknowledgements
-Special Thanks to the **Upstart team** (Ines, Chris) for their ideas, support and significant
- code contribution in developing this content pack.
+Special Thanks to the **Upstart team** (Ines Kim, Chris Schafer) for their ideas, support and
+ significant code contribution in developing this content pack.
 
 ### What does this pack do?
 
@@ -14,22 +15,31 @@ Special Thanks to the **Upstart team** (Ines, Chris) for their ideas, support an
 - Update and Resolve status of all DLP incidents in Gamma 
 
 ### About Gamma.AI:
-Gamma.AI is an AI powered enterprise ready cloud data discovery, data classification and data loss prevention platform. 
-Gamma is agentless, deploys across all users and SaaS applications with 
-one-click, continuously monitors all employee actions across all devices and 
-instantly detects and remediates any data loss activity with less than 0.1% 
-false positive rate.
+Gamma.AI is an AI-powered enterprise-ready cloud data discovery, data classification and data
+ loss prevention platform. Gamma conducts deep contextual introspection of all your enterprise
+  data across cloud applications to understand its true meaning from a sensitivity, criticality
+   and privacy point of view with less than 0.1% false positive rate. Gamma helps answer
+    questions like "where all is my confidential data located","who has access to read, modify or
+     share it", "which keys or secrets have been exposed" and allows you to fully customize the
+      remediation of any data loss instance across cloud applications.
 
-**Visibility**: Comprehensive real-time and historical visibility into all data loss and data leak instances.
+### Gamma Deployment & Integrations
+Gamma is readily available as a plugin for deployment across cloud collaboration applications
+ including but not limited to Slack, Servicenow, Github, Jira, Confluence, Suite, O365, etc. The
+  deployment takes less than a minute and works horizontally for all end users without needing
+   any change management or their approval. Additionally, Gamma can be configured to work with
+    your SIEM/SOAR/CASB/EDR platforms for streamlining the SOC efforts.
 
-**Remediation**: Instant remediation using automated workflows (built-in or XSOAR) such as
- quarantine, auto-delete, user coaching etc.
-
-**Compliance with regulations**: Automated technology controls to ensure continuous compliance (PII
-, PCI, HIPAA, GDPR, CCPA etc.).
-
-**Continuous Training**: Build a culture of security by training or coaching employees when they
- violate Information security violations using Gamma Bot.
-
-**Proactive Policy Enforcement**: Enforce organization's security policies for proactive
- prevention of threats.
+### Gamma Differentiators
+Gamma does not require complex rules or complex network/endpoint integration. Solution can be
+ deployed within 5 minutes and is complementary to existing network/cloud DLP. Gamma offers an
+  industry leading 99.5% accuracy on alerts. Gamma's AI based detectors greatly enhance PII / PHI
+   / PCI / IP / Secrets loss prevention beyond the limited capabilities of legacy RegEx based
+    solutions. Gamma's AI/NLP increases classification using the following capabilities:
+- Can detect sensitive data in images (including handwritten)
+- Can identify complex data (Financial Statements, Passports, Intellectual Property etc).
+- Derive meaningful context and use it to detect previously undetectable data classes (without
+ need for RegEx rules)
+- Uses context to distinguish sensitive vs non sensitive use of data (reducing false positives)
+- Understand natural language flow to discover instances of sensitive information exchange (eg
+ prod creds and secrets shared over multiple comments or Slack messages)
