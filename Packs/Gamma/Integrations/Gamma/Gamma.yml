@@ -108,6 +108,6 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
