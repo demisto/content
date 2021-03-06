@@ -2,7 +2,7 @@
   "defaultIncidentType": "Armis Alert - Anomaly Detection",
   "description": "",
   "feed": false,
-  "id": "947edc29-f0b5-4289-8c1e-208a9d975f26_custom-mapper",
+  "id": "Armis Alert - Anomaly Detection",
   "mapping": {
     "Armis Alert": {
       "dontMapEventToLabels": false,

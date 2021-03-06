@@ -20,7 +20,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: ACTIVE
+- defaultvalue: UNHANDLED
   display: Fetch alerts with status (UNHANDLED,SUPPRESSED,RESOLVED)
   name: alert_status
   options:
@@ -30,7 +30,7 @@ configuration:
   required: false
   type: 16
 - additionalinfo: The types of Alerts are Policy Violation, System Policy Violation,
-    Anomaly Detection
+    Anomaly Detection. If no type is chosen, all will be fetched
   display: Fetch alerts with type
   name: alert_type
   options:
@@ -69,45 +69,19 @@ configuration:
   name: free_fetch_string
   required: false
   type: 0
-description: Integration with Armis
+- additionalinfo: Whether to use the System proxy
+  display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: Use the Armis Integration to search alerts and devices, to tag and untag
+  devices and set Alert statuses
 display: Armis
 name: Armis
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert severity. Comma-separated value (Low,Medium,High)
-      isArray: true
-      name: severity
-      predefined:
-      - High
-      - Medium
-      - Low
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: true
-      name: status
-      predefined:
-      - UNHANDLED
-      - SUPPRESSED
-      - RESOLVED
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert type
-      isArray: true
-      name: alert_type
-      predefined:
-      - Policy Violation
-      - System Policy Violation
-      - Anomaly Detection
-      required: false
-      secret: false
     - default: false
       defaultValue: '50'
       description: The Maximum number of results to get
@@ -116,6 +90,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: 3 days
       description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
         \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
       isArray: false
@@ -128,42 +103,61 @@ script:
       name: alert_id
       required: false
       secret: false
+    - default: false
+      description: Filter by alert severity. Comma-separated value (Low,Medium,High)
+      isArray: true
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alert status. Comma-separated value (UNHANDLED,SUPPRESSED,RESOLVED)
+      isArray: true
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alert type. Comma-separated value (Policy Violation,System
+        Policy Violation,Anomaly Detection)
+      isArray: true
+      name: alert_type
+      required: false
+      secret: false
     deprecated: false
     description: Search Armis Alerts.
     execution: false
     name: armis-search-alerts
     outputs:
-    - contextPath: Armis.SearchAlerts.activityIds
+    - contextPath: Armis.Alert.activityIds
       description: The activity ids of the alert
       type: Number
-    - contextPath: Armis.SearchAlerts.activityUUIDs
+    - contextPath: Armis.Alert.activityUUIDs
       description: The activity UUIDs of the alert
       type: String
-    - contextPath: Armis.SearchAlerts.alertId
+    - contextPath: Armis.Alert.alertId
       description: The ID of the Alert
       type: Number
-    - contextPath: Armis.SearchAlerts.connectionIds
+    - contextPath: Armis.Alert.connectionIds
       description: The connection ids of the alert
-      type: Unknown
-    - contextPath: Armis.SearchAlerts.description
+      type: Number
+    - contextPath: Armis.Alert.description
       description: A text description of the Alert
       type: String
-    - contextPath: Armis.SearchAlerts.deviceIds
+    - contextPath: Armis.Alert.deviceIds
       description: The device ids of the alert
       type: Number
-    - contextPath: Armis.SearchAlerts.severity
+    - contextPath: Armis.Alert.severity
       description: The Severity of the Alert
       type: String
-    - contextPath: Armis.SearchAlerts.status
+    - contextPath: Armis.Alert.status
       description: The Status of the Alert
       type: String
-    - contextPath: Armis.SearchAlerts.time
+    - contextPath: Armis.Alert.time
       description: The date and time the Alert occured
       type: Date
-    - contextPath: Armis.SearchAlerts.title
+    - contextPath: Armis.Alert.title
       description: The title of the Alert
       type: String
-    - contextPath: Armis.SearchAlerts.type
+    - contextPath: Armis.Alert.type
       description: The type of the Alert
       type: String
   - arguments:
@@ -207,37 +201,37 @@ script:
     execution: false
     name: armis-search-alerts-by-aql-string
     outputs:
-    - contextPath: Armis.SearchAlertsByAQLString.activityIds
+    - contextPath: Armis.Armis.activityIds
       description: The activity ids of the alert
       type: Number
-    - contextPath: Armis.SearchAlertsByAQLString.activityUUIDs
+    - contextPath: Armis.Armis.activityUUIDs
       description: The activity UUIDs of the alert
       type: String
-    - contextPath: Armis.SearchAlertsByAQLString.alertId
+    - contextPath: Armis.Armis.alertId
       description: The ID of the Alert
       type: Number
-    - contextPath: Armis.SearchAlertsByAQLString.connectionIds
+    - contextPath: Armis.Armis.connectionIds
       description: The connection ids of the alert
-      type: Unknown
-    - contextPath: Armis.SearchAlertsByAQLString.description
+      type: Number
+    - contextPath: Armis.Armis.description
       description: The description of the Alert
       type: String
-    - contextPath: Armis.SearchAlertsByAQLString.deviceIds
+    - contextPath: Armis.Armis.deviceIds
       description: The device ids of the alert
       type: Number
-    - contextPath: Armis.SearchAlertsByAQLString.severity
+    - contextPath: Armis.Armis.severity
       description: The Severity of the Alert
       type: String
-    - contextPath: Armis.SearchAlertsByAQLString.status
+    - contextPath: Armis.Armis.status
       description: The Status of the Alert
       type: String
-    - contextPath: Armis.SearchAlertsByAQLString.time
+    - contextPath: Armis.Armis.time
       description: The date and time the Alert occured
       type: Date
-    - contextPath: Armis.SearchAlertsByAQLString.title
+    - contextPath: Armis.Armis.title
       description: The title of the Alert
       type: String
-    - contextPath: Armis.SearchAlertsByAQLString.type
+    - contextPath: Armis.Armis.type
       description: The type of the Alert
       type: String
   - arguments:
@@ -294,27 +288,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: The risk level of the device
-      isArray: false
-      name: risk_level
-      required: false
-      secret: false
-    - default: false
       description: The IP Address of the device
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
-      isArray: false
-      name: device_type
       description: The device type
+      isArray: true
+      name: device_type
       required: false
       secret: false
     - default: false
+      description: The time frame
       isArray: false
       name: time_frame
-      description: The time frame
       required: false
       secret: false
     - default: false
@@ -324,78 +312,84 @@ script:
       name: max_results
       required: false
       secret: false
+    - default: false
+      description: Filter by device risk level. Comma-separated value (Low,Medium,High)
+      isArray: true
+      name: risk_level
+      required: false
+      secret: false
     deprecated: false
     description: Search Devices by identifiers
     execution: false
     name: armis-search-devices
     outputs:
-    - contextPath: Armis.SearchDevices.accessSwitch
+    - contextPath: Armis.Device.accessSwitch
       description: The access switch of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.category
+      type: String
+    - contextPath: Armis.Device.category
       description: The category of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.firstSeen
+      type: String
+    - contextPath: Armis.Device.firstSeen
       description: The first time the device was seen
-      type: Unknown
-    - contextPath: Armis.SearchDevices.id
+      type: Date
+    - contextPath: Armis.Device.id
       description: The id of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.ipaddress
+      type: Number
+    - contextPath: Armis.Device.ipaddress
       description: The ip address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.ipv6
+      type: String
+    - contextPath: Armis.Device.ipv6
       description: The ipv6 address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.lastSeen
+      type: String
+    - contextPath: Armis.Device.lastSeen
       description: The last time the device was seen
-      type: Unknown
-    - contextPath: Armis.SearchDevices.macAddress
+      type: Date
+    - contextPath: Armis.Device.macAddress
       description: The mac address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.manufacturer
+      type: String
+    - contextPath: Armis.Device.manufacturer
       description: The manufacturer of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.model
+      type: String
+    - contextPath: Armis.Device.model
       description: The model of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.name
+      type: String
+    - contextPath: Armis.Device.name
       description: The name of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.operatingSystem
+      type: String
+    - contextPath: Armis.Device.operatingSystem
       description: The operating system of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.operatingSystemVersion
+      type: String
+    - contextPath: Armis.Device.operatingSystemVersion
       description: The operating system version of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.purdueLevel
+      type: String
+    - contextPath: Armis.Device.purdueLevel
       description: The purdue level of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.riskLevel
+      type: String
+    - contextPath: Armis.Device.riskLevel
       description: The risk level of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.sensor
+      type: String
+    - contextPath: Armis.Device.sensor
       description: The sensor of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.site
+      type: String
+    - contextPath: Armis.Device.site
       description: The site of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.tags
+      type: String
+    - contextPath: Armis.Device.tags
       description: The tags of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.type
+      type: String
+    - contextPath: Armis.Device.type
       description: The type of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.user
+      type: String
+    - contextPath: Armis.Device.user
       description: The user of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevices.visibility
+      type: String
+    - contextPath: Armis.Device.visibility
       description: The visibility of the device
-      type: Unknown
+      type: String
   - arguments:
     - default: false
-      isArray: false
       description: The AQL string
+      isArray: false
       name: aql_string
       required: true
       secret: false
@@ -411,69 +405,69 @@ script:
     execution: false
     name: armis-search-devices-by-aql
     outputs:
-    - contextPath: Armis.SearchDevicesByAql.accessSwitch
+    - contextPath: Armis.Device.accessSwitch
       description: The access switch of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.category
+      type: String
+    - contextPath: Armis.Device.category
       description: The category of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.firstSeen
+      type: String
+    - contextPath: Armis.Device.firstSeen
       description: The first time the device was seen
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.id
+      type: Date
+    - contextPath: Armis.Device.id
       description: The id of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.ipAddress
+      type: Number
+    - contextPath: Armis.Device.ipaddress
       description: The ip address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.ipv6
+      type: String
+    - contextPath: Armis.Device.ipv6
       description: The ipv6 address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.lastSeen
+      type: String
+    - contextPath: Armis.Device.lastSeen
       description: The last time the device was seen
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.macAddress
+      type: Date
+    - contextPath: Armis.Device.macAddress
       description: The mac address of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.manufacturer
+      type: String
+    - contextPath: Armis.Device.manufacturer
       description: The manufacturer of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.model
+      type: String
+    - contextPath: Armis.Device.model
       description: The model of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.name
+      type: String
+    - contextPath: Armis.Device.name
       description: The name of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.operatingSystem
+      type: String
+    - contextPath: Armis.Device.operatingSystem
       description: The operating system of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.operatingSystemVersion
+      type: String
+    - contextPath: Armis.Device.operatingSystemVersion
       description: The operating system version of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.purdueLevel
+      type: String
+    - contextPath: Armis.Device.purdueLevel
       description: The purdue level of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.riskLevel
+      type: String
+    - contextPath: Armis.Device.riskLevel
       description: The risk level of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.sensor
+      type: String
+    - contextPath: Armis.Device.sensor
       description: The sensor of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.site
+      type: String
+    - contextPath: Armis.Device.site
       description: The site of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.tags
+      type: String
+    - contextPath: Armis.Device.tags
       description: The tags of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.type
+      type: String
+    - contextPath: Armis.Device.type
       description: The type of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.user
+      type: String
+    - contextPath: Armis.Device.user
       description: The user of the device
-      type: Unknown
-    - contextPath: Armis.SearchDevicesByAql.visibility
+      type: String
+    - contextPath: Armis.Device.visibility
       description: The visibility of the device
-      type: Unknown
+      type: String
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
@@ -483,9 +477,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage45: demisto/python3:3.8.6.12176
+tests:
+- No tests (auto formatted)
 defaultmapperin: Armis_mapper-incoming
 defaultclassifier: classifier-armis-alerts
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

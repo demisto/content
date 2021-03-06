@@ -8,6 +8,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import requests
 import dateparser
 import urllib3
 
@@ -32,12 +33,12 @@ class AccessToken:
 
 
 class Client(BaseClient):
-    def __init__(self, secret: str, base_url, verify):
-        super().__init__(base_url, verify=verify)
+    def __init__(self, secret: str, base_url: str, verify: bool, proxy):
+        super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
         self._token: AccessToken = AccessToken('', datetime.now())
 
-    def _get_token(self, force_new=False):
+    def _get_token(self, force_new: bool = False):
         """
         Returns an existing access token if a valid one is available and creates one if not
         Args:
@@ -54,7 +55,11 @@ class Client(BaseClient):
             self._token = AccessToken(token, dateparser.parse(expiration))
         return self._token
 
-    def search_by_aql_string(self, aql_string, order_by=None, max_results=None, page_from=None):
+    def search_by_aql_string(self,
+                             aql_string: str,
+                             order_by: str = None,
+                             max_results: int = None,
+                             page_from: int = None):
         """
         Search with an AQL string and return the results.
         This function exists to allow a more advanced search than is provided for
@@ -132,7 +137,10 @@ class Client(BaseClient):
         aql_string = ' '.join(aql_string)
         return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results, page_from=page_from)
 
-    def free_string_search_alerts(self, aql_string, order_by=None, max_results=None, page_from=None):
+    def free_string_search_alerts(self, aql_string: str,
+                                  order_by: str = None,
+                                  max_results: int = None,
+                                  page_from: int = None):
         """
         Search Alerts using a custom AQL String
         Args:
@@ -149,7 +157,7 @@ class Client(BaseClient):
             max_results=max_results,
             page_from=page_from)
 
-    def update_alert_status(self, alert_id, status: str):
+    def update_alert_status(self, alert_id: str, status: str):
         """
         Update the status of an Alert
         Args:
@@ -165,7 +173,7 @@ class Client(BaseClient):
                                   },
                                   data={'status': status})
 
-    def tag_device(self, device_id, tags: List[str]):
+    def tag_device(self, device_id: str, tags: List[str]):
         """
         Add tags to a Device
         Args:
@@ -176,7 +184,7 @@ class Client(BaseClient):
         return self._http_request('POST', f'/devices/{device_id}/tags/', json_data={'tags': tags},
                                   headers={'accept': 'application/json', 'Authorization': str(token)})
 
-    def untag_device(self, device_id, tags):
+    def untag_device(self, device_id: str, tags: List[str]):
         """
         Remove tags from a Device
         Args:
@@ -188,12 +196,12 @@ class Client(BaseClient):
                                   headers={'accept': 'application/json', 'Authorization': str(token)})
 
     def search_devices(self,
-                       name=None,
-                       device_id=None,
-                       mac_address=None,
-                       risk_level=None,
-                       ip_address=None,
-                       device_type=None,
+                       name: str = None,
+                       device_id: str = None,
+                       mac_address: str = None,
+                       risk_level: List[str] = None,
+                       ip_address: str = None,
+                       device_type: List[str] = None,
                        time_frame: str = None,
                        order_by: str = None,
                        max_results: int = None):
@@ -233,7 +241,7 @@ class Client(BaseClient):
         aql_string = ' '.join(aql_string)
         return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)
 
-    def free_string_search_devices(self, aql_string, order_by: str = None, max_results: int = None):
+    def free_string_search_devices(self, aql_string: str, order_by: str = None, max_results: int = None):
         """
         Search Devices using commonly used search parameters
         Args:
@@ -246,7 +254,7 @@ class Client(BaseClient):
         return self.search_by_aql_string(f'in:devices {aql_string}', order_by=order_by, max_results=max_results)
 
 
-def test_module(client):
+def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     This test works by using a Client instance to create a temporary access token using the provided secret key,
@@ -278,19 +286,19 @@ def _ensure_timezone(date: datetime):
     return date
 
 
-def fetch_incidents(client,
-                    last_run,
-                    first_fetch_time,
-                    minimum_severity,
-                    alert_type,
-                    alert_status,
-                    free_search_string,
-                    max_results):
+def fetch_incidents(client: Client,
+                    last_run: dict,
+                    first_fetch_time: str,
+                    minimum_severity: str,
+                    alert_type: List[str],
+                    alert_status: List[str],
+                    free_search_string: str,
+                    max_results: int):
     """
     This function will execute each interval (default is 1 minute).
     Args:
         client (Client): Armis client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
+        last_run (dict): The greatest incident created_time we fetched from last fetch
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
         minimum_severity (str): the minimum severity of alerts to fetch
         alert_type (List[str]): the type of alerts to fetch
@@ -310,12 +318,14 @@ def fetch_incidents(client,
         last_fetch = _ensure_timezone(dateparser.parse(last_fetch))
     else:
         last_fetch = _ensure_timezone(dateparser.parse(first_fetch_time))
-    # use the last fetch time to build a time frame in which to search for alerts
+    # use the last fetch time to build a time frame in which to search for alerts.
+    # This is rounded to seconds because Armis does not support searching with a timeFrame of milliseconds
     time_frame = f'{round((_ensure_timezone(datetime.now()) - last_fetch).total_seconds())} seconds'
 
     latest_created_time = _ensure_timezone(last_fetch)
 
     # get a list of severities from the minimum specified and upward
+    # for example if min_severity is Medium requested_severities will be ['Medium', 'High']
     severities_in_order = ['Low', 'Medium', 'High']
     requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
     incidents = []
@@ -338,7 +348,7 @@ def fetch_incidents(client,
             page_from=page_from
         )
 
-    for alert in data.get('results'):
+    for alert in data.get('results', []):
         incident_created_time = dateparser.parse(alert.get('time'))
         incident = {
             'name': alert.get('description'),
@@ -361,7 +371,7 @@ def fetch_incidents(client,
     return next_run, incidents
 
 
-def untag_device_command(client, args):
+def untag_device_command(client: Client, args: dict):
     """
     armis-untag-device command: Remove tags from a Device
     Args:
@@ -375,7 +385,7 @@ def untag_device_command(client, args):
     return f'Successfully Untagged device: {device_id} with tags: {tags}'
 
 
-def tag_device_command(client, args):
+def tag_device_command(client: Client, args: dict):
     """
     armis-tag-device command: Add the given tags to a device
     Args:
@@ -388,7 +398,7 @@ def tag_device_command(client, args):
     return f'Successfully Tagged device: {device_id} with tags: {tags}'
 
 
-def update_alert_status_command(client, args):
+def update_alert_status_command(client: Client, args: dict):
     """
     armis-update-alert-status command: Update the status of an Alert to the given status
     Args:
@@ -401,7 +411,7 @@ def update_alert_status_command(client, args):
     return f'Successfully Updated Alert: {alert_id} to status: {status}'
 
 
-def search_alerts_command(client: Client, args):
+def search_alerts_command(client: Client, args: dict):
     """
     armis-search-alerts command: Returns results for searching Alerts by common parameters
     Args:
@@ -430,7 +440,7 @@ def search_alerts_command(client: Client, args):
     results = response.get('results')
     if results:
         return CommandResults(
-            outputs_prefix='Armis.SearchAlerts',
+            outputs_prefix='Armis.Alert',
             outputs_key_field='alertId',
             outputs=results,
             raw_response=response,
@@ -446,23 +456,24 @@ def search_alerts_command(client: Client, args):
                 'alertId',
                 'connectionIds',
                 'deviceIds'
-            ], removeNull=True)
+            ], removeNull=True,
+                headerTransform=pascalToSpace)
         )
     return 'No results found'
 
 
-def search_devices_command(client: Client, args):
+def search_devices_command(client: Client, args: dict):
     """
     armis-search-devices command: Returns results for searching Devices by common parameters
     Args:
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    risk_level = demisto.args().get('risk_level')
+    risk_level = args.get('risk_level')
     if risk_level is not None:
         risk_level = argToList(risk_level)
 
-    device_type = demisto.args().get('device_type')
+    device_type = args.get('device_type')
     if device_type is not None:
         device_type = argToList(device_type)
 
@@ -483,39 +494,27 @@ def search_devices_command(client: Client, args):
                                      max_results=max_results)
     results = response.get('results')
     if results:
+        headers = [
+            'riskLevel',
+            'name',
+            'type',
+            'ipAddress',
+            'tags',
+            'user',
+            'id',
+        ]
         return CommandResults(
-            outputs_prefix='Armis.SearchDevices',
+            outputs_prefix='Armis.Device',
             outputs_key_field='deviceId',
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Devices', results, headers=[
-                'riskLevel',
-                'name',
-                'dataSources',
-                'category',
-                'type',
-                'model',
-                'manufacturer',
-                'macAddress',
-                'ipAddress',
-                'site',
-                'tags',
-                'operatingSystem',
-                'operatingSystemVersion',
-                'sensor',
-                'user',
-                'accessSwitch',
-                'firstSeen',
-                'id',
-                'ipv6',
-                'lastSeen',
-                'visibility',
-            ], removeNull=True)
+            readable_output=tableToMarkdown('Devices', results, headers=headers, removeNull=True,
+                                            headerTransform=pascalToSpace)
         )
     return 'No devices found'
 
 
-def search_devices_by_aql_command(client: Client, args):
+def search_devices_by_aql_command(client: Client, args: dict):
     """
     armis-search-devices-by-aql command: Returns results for searching Devices using a free AQL string
     Args:
@@ -528,39 +527,27 @@ def search_devices_by_aql_command(client: Client, args):
     response = client.free_string_search_devices(aql_string, max_results=max_results)
     results = response.get('results')
     if results:
+        headers = [
+            'riskLevel',
+            'name',
+            'type',
+            'ipAddress',
+            'tags',
+            'user',
+            'id',
+        ]
         return CommandResults(
-            outputs_prefix='Armis.SearchDevicesByAql',
+            outputs_prefix='Armis.Device',
             outputs_key_field='deviceId',
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Devices', results, headers=[
-                'riskLevel',
-                'name',
-                'dataSources',
-                'category',
-                'type',
-                'model',
-                'manufacturer',
-                'macAddress',
-                'ipAddress',
-                'site',
-                'tags',
-                'operatingSystem',
-                'operatingSystemVersion',
-                'sensor',
-                'user',
-                'accessSwitch',
-                'firstSeen',
-                'id',
-                'ipv6',
-                'lastSeen',
-                'visibility',
-            ], removeNull=True)
+            readable_output=tableToMarkdown('Devices', results, headers=headers, removeNull=True,
+                                            headerTransform=pascalToSpace)
         )
     return 'No devices found'
 
 
-def search_alerts_by_aql_command(client: Client, args):
+def search_alerts_by_aql_command(client: Client, args: dict):
     """
    armis-search-alerts-by-aql command: Returns results for searching Alerts using a free AQL string
     Args:
@@ -574,23 +561,28 @@ def search_alerts_by_aql_command(client: Client, args):
     results = response.get('results')
     if results:
         return CommandResults(
-            outputs_prefix='Armis.SearchAlertsByAql',
+            outputs_prefix='Armis.Alert',
             outputs_key_field='alertId',
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Alerts', results, headers=[
-                'severity',
-                'type',
-                'time',
-                'status',
-                'title',
-                'description',
-                'activityIds',
-                'activityUUIDs',
-                'alertId',
-                'connectionIds',
-                'deviceIds',
-            ], removeNull=True)
+            readable_output=tableToMarkdown(
+                'Alerts',
+                results,
+                headers=[
+                    'alertId',
+                    'description',
+                    'type',
+                    'title',
+                    'severity',
+                    'status',
+                    'time',
+                    'activityIds',
+                    'activityUUIDs',
+                    'connectionIds',
+                    'deviceIds',
+                ],
+                removeNull=True,
+                headerTransform=pascalToSpace)
         )
     return 'No alerts found'
 
@@ -599,29 +591,35 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    secret = demisto.params().get('secret')
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+
+    secret = params.get('secret')
 
     # get the service API url
-    base_url = demisto.params().get('url')
-    verify = not demisto.params().get('insecure', False)
+    base_url = params.get('url')
+    verify = params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
 
-    LOG(f'Command being called is {demisto.command()}')
+    proxy = params.get('proxy', False)
+
+    demisto.info(f'Command being called is {command}')
     try:
-        client = Client(secret, base_url=base_url, verify=verify)
+        client = Client(secret, base_url=base_url, verify=verify, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
-            minimum_severity = demisto.params().get('min_severity')
-            alert_status = demisto.params().get('alert_status')
-            alert_type = demisto.params().get('alert_type')
-            free_search_string = demisto.params().get('free_fetch_string')
+        elif command == 'fetch-incidents':
+            minimum_severity = params.get('min_severity')
+            alert_status = params.get('alert_status')
+            alert_type = params.get('alert_type')
+            free_search_string = params.get('free_fetch_string')
 
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
@@ -632,37 +630,37 @@ def main():
                 alert_status=alert_status,
                 minimum_severity=minimum_severity,
                 free_search_string=free_search_string,
-                max_results=int(demisto.params().get('max_fetch'))
+                max_results=int(params.get('max_fetch'))
             )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'armis-search-alerts':
-            return_results(search_alerts_command(client, demisto.args()))
+        elif command == 'armis-search-alerts':
+            return_results(search_alerts_command(client, args))
 
-        elif demisto.command() == 'armis-update-alert-status':
-            return_results(update_alert_status_command(client, demisto.args()))
+        elif command == 'armis-update-alert-status':
+            return_results(update_alert_status_command(client, args))
 
-        elif demisto.command() == 'armis-tag-device':
-            return_results(tag_device_command(client, demisto.args()))
+        elif command == 'armis-tag-device':
+            return_results(tag_device_command(client, args))
 
-        elif demisto.command() == 'armis-untag-device':
-            return_results(untag_device_command(client, demisto.args()))
+        elif command == 'armis-untag-device':
+            return_results(untag_device_command(client, args))
 
-        elif demisto.command() == 'armis-search-devices':
-            return_results(search_devices_command(client, demisto.args()))
+        elif command == 'armis-search-devices':
+            return_results(search_devices_command(client, args))
 
-        elif demisto.command() == 'armis-search-devices-by-aql':
-            return_results(search_devices_by_aql_command(client, demisto.args()))
+        elif command == 'armis-search-devices-by-aql':
+            return_results(search_devices_by_aql_command(client, args))
 
-        elif demisto.command() == 'armis-search-alerts-by-aql-string':
-            return_results(search_alerts_by_aql_command(client, demisto.args()))
+        elif command == 'armis-search-alerts-by-aql-string':
+            return_results(search_alerts_by_aql_command(client, args))
 
     # Log exceptions
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

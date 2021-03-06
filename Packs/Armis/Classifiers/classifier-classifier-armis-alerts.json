@@ -1,19 +1,19 @@
 {
-    "defaultIncidentType": "Armis Alert",
-    "description": "",
-    "feed": false,
-    "id": "947edc29-f0b5-4289-8c1e-208a9d975f26_custom",
-    "keyTypeMap": {
-        "Anomaly Detection": "Armis Alert",
-        "Policy Violation": "Armis Alert",
-        "System Policy Violation": "Armis Alert"
-    },
-    "name": "classifier-armis-alerts",
-    "transformer": {
-        "complex": null,
-        "simple": "type"
-    },
-    "type": "classification",
-    "version": -1,
-    "fromVersion": "6.0.0"
+  "defaultIncidentType": "Armis Alert",
+  "description": "",
+  "feed": false,
+  "id": "Armis Alert",
+  "keyTypeMap": {
+    "Anomaly Detection": "Armis Alert",
+    "Policy Violation": "Armis Alert",
+    "System Policy Violation": "Armis Alert"
+  },
+  "name": "classifier-armis-alerts",
+  "transformer": {
+    "complex": null,
+    "simple": "type"
+  },
+  "type": "classification",
+  "version": -1,
+  "fromVersion": "6.0.0"
 }
