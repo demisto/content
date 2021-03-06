@@ -20,7 +20,7 @@ def test_untag_device_success(requests_mock):
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     result = untag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
     assert result == "Successfully Untagged device: 1 with tags: ['test-tag']"
 
@@ -37,7 +37,7 @@ def test_untag_device_failure(requests_mock):
 
     requests_mock.delete('https://test.com/api/v1/devices/1/tags/', json={}, status_code=400)
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     with pytest.raises(CommonServerPython.DemistoException):
         untag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
 
@@ -54,7 +54,7 @@ def test_tag_device(requests_mock):
 
     requests_mock.post('https://test.com/api/v1/devices/1/tags/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     result = tag_device_command(client, {'device_id': '1', 'tags': 'test-tag'})
     assert result == "Successfully Tagged device: 1 with tags: ['test-tag']"
 
@@ -71,7 +71,7 @@ def test_update_alert_status(requests_mock):
 
     requests_mock.patch('https://test.com/api/v1/alerts/1/', json={})
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     args = {'alert_id': '1', 'status': 'UNHANDLED'}
     assert update_alert_status_command(client, args) == "Successfully Updated Alert: 1 to status: UNHANDLED"
 
@@ -104,7 +104,7 @@ def test_search_alerts(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     args = {
         'severity': 'High,Medium',
         'status': 'UNHANDLED,RESOLVED',
@@ -191,7 +191,7 @@ def test_search_alerts_by_aql(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     args = {
         'aql_string': 'timeFrame:"3 days" riskLevel:High,Medium status:UNHANDLED,RESOLVED type:"Policy Violation"'
     }
@@ -265,7 +265,7 @@ def test_search_devices(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     args = {
         'device_id': '1',
         'time_frame': '3 days'
@@ -343,7 +343,7 @@ def test_search_devices_by_aql(requests_mock):
 
     requests_mock.get(url, json=mock_results)
 
-    client = Client('secret-example', 'https://test.com/api/v1', verify=False)
+    client = Client('secret-example', 'https://test.com/api/v1', verify=False, proxy=False)
     args = {
         'aql_string': 'timeFrame:"3 days" deviceId:(1)'
     }
