@@ -1,7 +1,12 @@
 ''' IMPORTS '''
 
 import json
+import urllib3
 from typing import Any, Dict
+from CommonServerPython import *
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
@@ -99,9 +104,9 @@ def fetch_incidents(client: Client, last_run_violation: dict, first_fetch_violat
     except:
         raise ValueError("first_fetch_violation and max_limit must be integers")
 
-    if not first_fetch_violation > 0:
+    if first_fetch_violation <= 0:
         raise ValueError("first_fetch_violation must be equal to 1 or higher")
-    if not max_results > 0:
+    if max_results <= 0:
         max_results = 10
     elif max_results > MAX_INCIDENTS_TO_FETCH:
         max_results = MAX_INCIDENTS_TO_FETCH
@@ -154,9 +159,9 @@ def get_violation_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     minimum_violation = args.get("minimum_violation", 1)
     limit = args.get("limit", 10)
 
-    if not int(minimum_violation) >= 1:
+    if int(minimum_violation) < 1:
         raise ValueError("minimum_violation must be greater than 0")
-    if not int(limit) >= 1 or not int(limit) <= 100:
+    if int(limit) < 1 or int(limit) > 100:
         raise ValueError("limit must be between 1 and 100")
 
     v_list = client.get_violation_list(minimum_violation, limit)
@@ -198,7 +203,7 @@ def get_violation_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     violation_id = args["violation"]
 
-    if not int(violation_id) >= 1:
+    if int(violation_id) < 1:
         raise ValueError("violation must be greater than 0")
 
     violation = client.get_violation(violation_id)
@@ -238,9 +243,9 @@ def update_violation_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     violation = args["violation"]
     status = args["status"].upper()
-    notes = args["notes"]
+    notes = args.get("notes", "")
 
-    if not int(violation) >= 1:
+    if int(violation) < 1:
         raise ValueError("violation must be greater than 0")
     if status not in VALID_VIOLATION_STATUSES:
         raise ValueError("status must be one of the following: OPEN, RESOLVED, IGNORED")

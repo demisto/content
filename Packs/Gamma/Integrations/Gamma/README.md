@@ -10,6 +10,11 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | api_key | Gamma Discovery API Key | True |
+| url | URL of the Gamma API | True |
+| first_fetch_violation | The violation ID (offset) to begin fetching from | False |
+| max_results | Max results to return | False |
+| insecure | Trust any certificate (not secure) | False |
+| proxy | Use system proxy settings | False |
 
 Click **Test** to validate the URLs, token, and connection.
 
@@ -17,19 +22,20 @@ Click **Test** to validate the URLs, token, and connection.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### fetch-incidents
+### gamma-get-violation-list
 ***
 Fetch DLP violations found across SaaS applications monitored by Gamma 
 
 #### Base Command
 
-`fetch-incidents`
+`gamma-get-violation-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| first_fetch_violation | Violation id offset. | Optional | 
-| max_results | Default is "10". | Optional | 
+| minimum_violation | Violation ID to begin pulling from. Defaults to the earliest existing
+        violation for your account. | Required |
+| limit | Default is "10". | Required |
 
 
 #### Context Output
@@ -47,7 +53,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 | response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
 
 #### Command Example
-```!fetch-incidents first_fetch_violation=998 max_results=1```
+```!gamma-get-violation-list minimum_violation=998 limit=1```
 
 #### Raw JSON Output
 ```json
@@ -75,12 +81,13 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
             },
             "dashboard_url": "https://prod-iab12.gamma.ai/dashboard/slack/monitor/violationId/999",
             "app_name": "slack"
-        }
+        }]
+}
 ```
 
 ### gamma-get-violation
 ***
-Fetches a single DLP violation. This command is the same as fetch-incidents except that this
+Fetches a single DLP violation. This command is the same as gamma-get-violation-list except that this
  command only returns the DLP violation details of the given violation id.  
 
 #### Base Command
@@ -95,7 +102,7 @@ Fetches a single DLP violation. This command is the same as fetch-incidents exce
 
 
 #### Context Output
-Same response format as the fetch-incidents command above
+Same response format as the gamma-get-violation-list command above
 
 ### gamma-update-violation
 ***

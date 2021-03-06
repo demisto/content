@@ -21,7 +21,7 @@ configuration:
   name: first_fetch_violation
   required: false
   type: 0
-- additionalinfo: Etner a number of results for each fetch to return. The number must
+- additionalinfo: Enter a number of results for each fetch to return. The number must
     be between 1 and 100.
   defaultvalue: '10'
   display: Results per fetch
@@ -29,6 +29,14 @@ configuration:
   name: max_results
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Query and update violations in Gamma
 display: Gamma
 name: Gamma
@@ -48,8 +56,6 @@ script:
       description: 'Upper limit for retrieving violations (max: 100)'
       isArray: false
       name: limit
-      predefined:
-      - ''
       required: true
       secret: false
     deprecated: false
