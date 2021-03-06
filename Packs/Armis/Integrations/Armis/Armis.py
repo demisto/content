@@ -8,7 +8,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import requests
 import dateparser
 import urllib3
 
