@@ -102,7 +102,7 @@ script:
     description: Update a specific violation
     execution: false
     name: gamma-update-violation
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
@@ -111,3 +111,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
