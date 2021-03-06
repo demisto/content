@@ -5,8 +5,10 @@ $global:ProgressPreference = 'SilentlyContinue'
 
 $script:INTEGRATION_NAME = "PowerShell Remoting"
 $script:COMMAND_PREFIX = "ps-remote"
-$script:INTEGRATION_ENTRY_CONTEX = "PsRemote"
+$script:INTEGRATION_ENTRY_CONTEXT = "PsRemote(val.FQDN === obj.FQDN && (val.CommandName && val.CommandName === obj.CommandName))"
+$script:MFT_ENTRY_CONTEXT = "PsRemote"
 $script:INSECURE_WARNING = "Unix does not currently support CA or CN checks."
+$script:ValidIpAddressRegex = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
 #### HELPER FUNCTIONS ####
 
@@ -14,7 +16,7 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
-    param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure, [bool]$ssl, [string]$auth_method)
+    param([string]$fqdn, [string]$username, [string]$password, [bool]$insecure, [bool]$ssl, [string]$auth_method)
 
     $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
     $ps_credential = New-Object System.Management.Automation.PSCredential($username, $credential)
@@ -26,7 +28,7 @@ function CreateNewSession {
     $session_options = New-PSSessionOption @session_option_params
 
     $sessions_params = @{
-        "ComputerName" = $fqdn_list.split(" ")
+        "ComputerName" = $fqdn
         "Credential" = $ps_credential
         "SessionOption" = $session_options
         "Authentication" = $auth_method
@@ -51,8 +53,8 @@ function CreateNewSession {
         .DESCRIPTION
         Creates new pssession using Negotiate authentication.
 
-        .PARAMETER fqdn_list
-        List of Fully qualified domain name (FQDN) to connect.
+        .PARAMETER fqdn
+        Fully qualified domain name (FQDN) to connect.
 
         .PARAMETER username
         Username is the name of a system user.
@@ -76,7 +78,8 @@ function CreateNewSession {
 
 class RemotingClient
 {
-    [string]$fqdn_list
+    [string]$host
+    [string]$fqdn
     [string]$username
     [string]$password
     [string]$domain
@@ -89,8 +92,8 @@ class RemotingClient
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '', Scope='Function')]
-    RemotingClient([System.Collections.ArrayList]$hostname, [string]$username, [string]$password, [string]$domain, [string]$dns,
-                   [System.Collections.ArrayList]$ip_hosts, [string]$auth_method, [bool]$insecure, [bool]$ssl, [bool]$proxy)
+    RemotingClient([string]$hosts, [string]$username, [string]$password, [string]$domain, [string]$dns,
+                   [string]$auth_method, [bool]$insecure, [bool]$ssl, [bool]$proxy)
     {
         # set the container's resolv.conf to use to provided dns
         # http://manpages.ubuntu.com/manpages/xenial/man5/resolv.conf.5.html
@@ -100,25 +103,15 @@ class RemotingClient
         }
 
         $this.domain = If ($domain) {".$domain"} Else {""}
-        # handle 0-* hosts fqdn
-        $fqdn = if ([string]::IsNullOrEmpty($hostname)) {[System.Collections.ArrayList]::new()} else {$hostname | ForEach-Object -Process { $_ + $domain }}
-        if ($ip_hosts)
-        {
-            # single fqdn
-            if ($fqdn -and ($fqdn.GetType().fullname -eq 'System.String'))
-            {
-                $fqdn_lst = [System.Collections.ArrayList]::new() + $fqdn
-                $fqdn = $fqdn_lst + $ip_hosts
-            }
-            # no / multiple fqdn
-            else
-            {
-                $fqdn += $ip_hosts
-            }
-
+        if (! ($hosts -match $script:ValidIpAddressRegex)) {
+            # if not IP add the domain to the host
+            $this.host = $hosts
+            $this.fqdn = $hosts + $domain
+        } else {
+            $this.host = $hosts
+            $this.fqdn = $hosts
         }
 
-        $this.fqdn_list = $fqdn
         $this.username = $username
         $this.password = $password
         $this.insecure = $insecure
@@ -160,7 +153,7 @@ class RemotingClient
 
     CreateSession()
     {
-        $this.session = CreateNewSession -fqdn_list $this.fqdn_list -username $this.username -password $this.password -insecure $this.insecure -ssl $this.ssl $this.auth_method
+        $this.session = CreateNewSession -fqdn $this.fqdn -username $this.username -password $this.password -insecure $this.insecure -ssl $this.ssl $this.auth_method
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to the remote hosts.
@@ -461,22 +454,53 @@ function TestModuleCommand {
     param([RemotingClient]$client)
 
     if ($client.ssl) {
-        $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn_list -ErrorAction Stop
+        $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn -ErrorAction Stop
         if (-not $res) {
-            throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5986.'
+            throw 'Could not create connection for host ' + $client.fqdn + ' via port 5986.'
         }
     }
     else {
-        $res = Test-Connection -TcpPort 5985 -TargetName $client.fqdn_list -ErrorAction Stop
+        $res = Test-Connection -TcpPort 5985 -TargetName $client.fqdn -ErrorAction Stop
         if (-not $res) {
-            throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5985.'
+            throw 'Could not create connection for host ' + $client.fqdn + ' via port 5985.'
         }
     }
     $tmp = $client.InvokeCommandInSession('$PSVersionTable')
+    $client.CloseSession()
 
     $human_readable = "ok"
 
     return $human_readable, $null, $null
+}
+
+function CreatResultsMap {
+    param([System.Array]$raw_result, [string]$command, [string]$fqdn, [string]$hosts)
+    $now = Get-Date -Format "o"
+    $results_map = @{
+        Host = $hosts
+        FQDN = $fqdn
+        CommandName = $command
+        UTCTime = $now
+        CommandResult = [System.Collections.ArrayList]::new()
+    }
+    For ($i=0; $i -lt $raw_result.Length; $i++) {
+        # base name
+        if($raw_result[$i].GetType().Fullname -eq 'System.Management.Automation.PSObject') {
+                $item = ($raw_result[$i] | select-object -ExcludeProperty PSComputerName,PSShowComputerName,RunspaceId)
+        }
+        elseif ($raw_result[$i].GetType().Fullname -eq 'System.String') {
+            if ([string]::IsNullOrEmpty($raw_result[$i])) {
+                continue
+            }
+            $item = ($raw_result[$i] | out-string)
+        }
+        $results_map['CommandResult'] += $item
+    }
+    return $results_map
+    <#
+        .DESCRIPTION
+        Create result map from single computer result
+    #>
 }
 
 function InvokeCommandCommand {
@@ -486,15 +510,11 @@ function InvokeCommandCommand {
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $results_map = CreatResultsMap $raw_result $command
+    $results_map = CreatResultsMap $raw_result $command $client.fqdn $client.host
     # extract command results per computer
     if ($results_map) {
-        $context_result = [System.Collections.ArrayList]::new()
-        foreach ($computer_result in $results_map.GetEnumerator()) {
-            $tmp = $context_result.Add($computer_result.value)
-        }
         $entry_context = @{
-            $script:INTEGRATION_ENTRY_CONTEX = $context_result
+            $script:INTEGRATION_ENTRY_CONTEXT = $results_map
         }
         $human_readable = $title + $raw_result
 
@@ -509,54 +529,8 @@ function InvokeCommandCommand {
     #>
 }
 
-function CreatResultsMap {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
-    param([System.Array]$raw_result, [string]$command)
-    $results_map = @{}
-    For ($i=0; $i -lt $raw_result.Length; $i++) {
-        # base name
-        $fqdn = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
-        $computer_name = $fqdn -match "[^\.]*"  # load basename to $matches
-        $computer_name = $matches[0]
-        if($raw_result[$i].GetType().Fullname -eq 'System.Management.Automation.PSObject') {
-                $item = ($raw_result[$i] | select-object -ExcludeProperty PSComputerName,PSShowComputerName,RunspaceId)
-        }
-        elseif ($raw_result[$i].GetType().Fullname -eq 'System.String') {
-            if ([string]::IsNullOrEmpty($raw_result[$i])) {
-                continue
-            }
-            $item = ($raw_result[$i] | out-string)
-        }
-        # existing key
-        if ([bool]($results_map.Keys -match $computer_name)) {
-            $results_map[$computer_name]['Command']['Result'] += $item
-        }
-        # new key
-        else {
-            $results_map[$computer_name] = @{
-                FQDN = $fqdn
-                Host = $computer_name
-                Command = @{
-                    Name = $command
-                    Result = [System.Collections.ArrayList]::new()}
-            }
-            $tmp = $results_map[$computer_name]['Command']['Result'].Add($item)
-        }
-    }
-    return $results_map
-        # existing key
-    <#
-        .DESCRIPTION
-        Create result map from singlie/multi computer result with the computer as a key
-    #>
-}
-
-function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash, [bool]$host_as_prefix, [string]$hosts, [string]$ip)
+function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash, [bool]$host_as_prefix)
 {
-    # replace host with ip if ip was used instead of host
-    if ( $null-eq $hosts) {
-        $hosts = $ip
-    }
     $temp = $script:Demisto.UniqueFile()
     $file_name = $script:Demisto.Investigation().id + "_$temp"
 
@@ -610,8 +584,8 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
 
     $entry_context = @{
         PsRemoteDownloadedFile = @{
-            FQDN = $client.fqdn_list
-            Host = $hosts
+            FQDN = $client.fqdn
+            Host = $client.host
             FileName = $file_name_leaf
             FileSize = Get-Item $file_name | ForEach-Object { [math]::ceiling($_.length / 1kb) }
             FileSHA1 = (Get-FileHash $file_name -Algorithm SHA1).Hash
@@ -622,7 +596,7 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
     }
 
     if ($host_as_prefix) {
-        $file_name_leaf = $hosts + '_' + $file_name_leaf
+        $file_name_leaf = $client.host + '_' + $file_name_leaf
     }
 
     $demisto_results = @{
@@ -642,17 +616,12 @@ function StartETLCommand {
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $results_map = CreatResultsMap $raw_result $command
-    # extract command results per computer
+    $results_map = CreatResultsMap $raw_result $command $client.fqdn $client.host
     if ($results_map) {
-        $context_result = [System.Collections.ArrayList]::new()
-        foreach ($computer_result in $results_map.GetEnumerator()) {
-            $computer_result.value['Command']['EtlFilePath'] = $etl_path
-            $computer_result.value['Command']['EtlFileName'] = Split-Path $etl_path -leaf
-            $tmp = $context_result.Add($computer_result.value)
-        }
+        $results_map['EtlFilePath'] = $etl_path
+        $results_map['EtlFileName'] = Split-Path $etl_path -leaf
         $entry_context = @{
-            $script:INTEGRATION_ENTRY_CONTEX = $context_result
+            $script:INTEGRATION_ENTRY_CONTEXT = $results_map
         }
         $human_readable = $title + $raw_result
 
@@ -663,12 +632,8 @@ function StartETLCommand {
     }
 }
 
-function StopETLCommand([RemotingClient]$client, [string]$hosts, [string]$ip)
+function StopETLCommand([RemotingClient]$client)
 {
-    # replace host with ip if ip was used instead of host
-    if ($null -eq $hosts) {
-        $hosts = $ip
-    }
     $command = 'netsh trace stop'
     $raw_results = $client.InvokeCommandInSession($command)
     $client.CloseSession()
@@ -688,15 +653,14 @@ function StopETLCommand([RemotingClient]$client, [string]$hosts, [string]$ip)
         $raw_results = [string]$raw_results
     }
     $entry_context = @{
-        $script:INTEGRATION_ENTRY_CONTEX = @{
-            FQDN = $client.fqdn_list
-            Host = $hosts
-            Command = @{
-                Name = $command
-                Result = $raw_results
-                EtlFilePath = $etl_path
-                EtlFileName = if ($etl_path) {Split-Path $etl_path -leaf} else {""}}
-            }
+        $script:INTEGRATION_ENTRY_CONTEXT = @{
+            FQDN = $client.fqdn
+            Host = $client.host
+            CommandName = $command
+            CommandResult = $raw_results
+            EtlFilePath = $etl_path
+            EtlFileName = if ($etl_path) {Split-Path $etl_path -leaf} else {""}
+        }
     }
 
     $human_readable = $raw_results
@@ -704,12 +668,8 @@ function StopETLCommand([RemotingClient]$client, [string]$hosts, [string]$ip)
     return $human_readable, $entry_context, $raw_result
 }
 
-function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [string]$output_file_path, [string]$hosts, [string]$ip)
+function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [string]$output_file_path)
 {
-    # replace host with ip if ip was used instead of host
-    if ($null -eq $hosts) {
-        $hosts = $ip
-    }
     $command = if ($reg_key_hive -eq 'all') {"regedit /e $output_file_path"} else {"reg export $reg_key_hive $output_file_path"}
     $raw_results = $client.InvokeCommandInSession($command)
     Start-Sleep -Seconds 30
@@ -717,29 +677,23 @@ function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [
     $title = "Ran Export Registry. `n"
 
     $entry_context = @{
-        $script:INTEGRATION_ENTRY_CONTEX = @{
-            FQDN = $client.fqdn_list
-            Host = $hosts
-            Command = @{
-                Name = $command
-                Result = $raw_results
-                RegistryFilePath = $output_file_path
-                RegistryFileName = Split-Path $output_file_path -leaf
-            }
+        $script:INTEGRATION_ENTRY_CONTEXT = @{
+            FQDN = $client.fqdn
+            Host = $client.host
+            CommandResult = $raw_results
+            CommandName = $command
+            RegistryFilePath = $output_file_path
+            RegistryFileName = Split-Path $output_file_path -leaf
         }
     }
 
-    $human_readable = $title + $raw_results
+    $human_readable = $title + "Registry file expected path: $output_file_path"
 
     return $human_readable, $entry_context, $raw_results
 }
 
-function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$dst_path, [string]$zip_file, [string]$check_hash, [string]$hosts, [string]$ip)
+function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$dst_path, [string]$zip_file, [string]$check_hash)
 {
-    # replace host with ip if ip was used instead of host
-    if ($null -eq $hosts) {
-        $hosts = $ip
-    }
     $src_path = $script:Demisto.GetFilePath($entry_id).path
     $file_exists = Test-Path $src_path -PathType Leaf
     if (-Not $file_exists)
@@ -777,14 +731,14 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
 
     $entry_context = @{
         PsRemoteUploadedFile = @{
-            FQDN = $client.fqdn_list
-            Host = $hosts
+            FQDN = $client.fqdn
+            Host = $client.host
             FilePath = $dst_path
-            FileName = $file_name_leaf;
-            FileSize = Get-Item $src_path | ForEach-Object { [math]::ceiling($_.length / 1kb) };
-            FileSHA1 = (Get-FileHash $src_path -Algorithm SHA1).Hash;
-            FileSHA256 = (Get-FileHash $src_path -Algorithm SHA256).Hash;
-            FileMD5 = (Get-FileHash $src_path -Algorithm MD5).Hash;
+            FileName = $file_name_leaf
+            FileSize = Get-Item $src_path | ForEach-Object { [math]::ceiling($_.length / 1kb) }
+            FileSHA1 = (Get-FileHash $src_path -Algorithm SHA1).Hash
+            FileSHA256 = (Get-FileHash $src_path -Algorithm SHA256).Hash
+            FileMD5 = (Get-FileHash $src_path -Algorithm MD5).Hash
             FileExtension = $file_ext
         }
     }
@@ -793,20 +747,15 @@ function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$
     return $human_readable, $entry_context, $null
 }
 
-function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$output_file_path, [string]$hosts, [string]$ip)
+function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$output_file_path)
 {
-    # replace host with ip if ip was used instead of host
-    if ($null -eq $hosts) {
-        $hosts = $ip
-    }
     $raw_response = $client.ExportMFT($volume, $output_file_path)
     $client.CloseSession()
 
-    $raw_response = $raw_response | Add-Member -NotePropertyMembers @{Host=($client.fqdn_list)} -PassThru
     $entry_context = @{
-        $script:INTEGRATION_ENTRY_CONTEX = @{
-            FQDN = $client.fqdn_list
-            Host = $hosts
+        $script:MFT_ENTRY_CONTEXT = @{
+            FQDN = $client.fqdn
+            Host = $client.host
             ExportMFT = $raw_response
         }
     }
@@ -830,22 +779,13 @@ function Main
 
     try
     {
-        $hosts = if ($command -eq 'test-module') {ArgToList $params.hostname } else {ArgToList $command_args.host}
-        # ip_hosts is expected as an optional input for every command other than test-module
-        $ip_hosts = ArgToList $command_args.ip
-        if (-not($hosts -or $ip_hosts)) {
-            throw 'Please provide argument "hostname" or "ip"".'
+        $hosts = if ($command -eq 'test-module') {ArgToList $params.host } else {ArgToList $command_args.host}
+        if ($hosts.Length > 1) {
+            throw "too many hosts were provided. please provide just a single host"
         }
-        # allow to run multi hosts only in commands that can handle it
-        $multi_host_commands = @("test-module", "$script:COMMAND_PREFIX-command", "$script:COMMAND_PREFIX-etl-create-start")
-        if (($ip_hosts.Length + $hosts.Length) -gt 1 -and (-not $multi_host_commands.Contains($command))) {
-            throw "$command does not support Array hosts, please run the command with a single host."
-        }
-        # add domain path
         $domain = if ($params.domain) {"." + $params.domain} else {""}
-        # Creating Remoting client
         $client = [RemotingClient]::new($hosts, $params.credentials.identifier, $params.credentials.password,
-                                        $domain, $params.dns, $ip_hosts, $params.auth_method, $insecure, $ssl, $no_proxy)
+                                        $domain, $params.dns, $params.auth_method, $insecure, $ssl, $no_proxy)
         # Executing command
         $Demisto.Debug("Command being called is $command")
         switch ($command)
@@ -857,24 +797,24 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $client $command_args.command
             }
             "$script:COMMAND_PREFIX-download-file" {
-                DownloadFileCommand -client $client -path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash -host_as_prefix (ConvertTo-Boolean $command_args.host_prefix) -hosts $hosts -ip $ip_hosts
+                DownloadFileCommand -client $client -path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash -host_as_prefix (ConvertTo-Boolean $command_args.host_prefix)
                 return
             }
             "$script:COMMAND_PREFIX-etl-create-start" {
                 ($human_readable, $entry_context, $raw_response) = StartETLCommand -client $client -etl_path $command_args.etl_path -etl_filter $command_args.etl_filter -etl_max_size $command_args.etl_max_size -overwrite $command_args.overwrite
             }
             "$script:COMMAND_PREFIX-etl-create-stop" {
-                ($human_readable, $entry_context, $raw_response) = StopETLCommand $client  -hosts $hosts -ip $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = StopETLCommand $client
             }
             "$script:COMMAND_PREFIX-export-registry" {
-                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand -client $client -reg_key_hive $command_args.reg_key_hive -output_file_path $command_args.file_path -hosts $hosts -ip $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand -client $client -reg_key_hive $command_args.reg_key_hive -output_file_path $command_args.file_path
             }
             "$script:COMMAND_PREFIX-upload-file" {
                 # to be tested
-                ($human_readable, $entry_context, $raw_response) = UploadFileCommand -client $client -entry_id $command_args.entry_id -dst_path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash -hosts $hosts -ip $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = UploadFileCommand -client $client -entry_id $command_args.entry_id -dst_path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash
             }
             "$script:COMMAND_PREFIX-export-mft" {
-                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand -client $client -volume $command_args.volume -output_file_path $command_args.output_path -hosts $hosts -ip $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand -client $client -volume $command_args.volume -output_file_path $command_args.output_path
             }
             Default {
                 $Demisto.Error("Unsupported command was entered: $command.")

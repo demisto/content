@@ -17,9 +17,9 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Hostname to use as a test for the integration connectivity.
-  display: Test Hostname
-  name: hostname
+- additionalinfo: Hostname or IP address to use as a test for the integration connectivity.
+  display: Test Host
+  name: host
   required: false
   type: 0
 - defaultvalue: Negotiate
@@ -51,16 +51,14 @@ name: PowerShell Remoting
 script:
   commands:
   - arguments:
-    - description: 'A comma-separated list of hostnames on which to run the command. For example: myhost,host1.'
-      isArray: true
+    - description: 'Hostname or the IP address on which to run the command.'
+      isArray: false
       name: host
+      required: true
     - description: PowerShell commands (can be single or multiple in order of execution)
         to run on the target machine.
       name: command
       required: true
-    - description: A comma-separated list of IP addresses of the host on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: true
-      name: ip
     description: Executes remote PowerShell commands on hosts.
     execution: true
     name: ps-remote-command
@@ -71,19 +69,20 @@ script:
     - contextPath: PsRemote.FQDN
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
-    - contextPath: PsRemote.Command.Result
+    - contextPath: PsRemote.CommandResult
       description: The result of the command run from the target machine.
       type: list
-    - contextPath: PsRemote.Command.Name
+    - contextPath: PsRemote.CommandName
       description: The command sent to the target machine, used as an ID of that query.
       type: string
+    - contextPath: PsRemote.UTCTime
+      description: Time the command finished execution in UTC time.
+      type: string
   - arguments:
-    - description: A comma-separated list of hostnames from which to download a file. For example myhost,hostA.
+    - description: 'Hostname or the IP address on which to run the command.'
       isArray: false
       name: host
-    - description: A comm-separated list of IP addresses of the host on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: false
-      name: ip
+      required: true
     - description: The path of the file to download.
       name: path
       required: true
@@ -170,10 +169,9 @@ script:
       description: 'The file extension, for example: "txt".'
       type: String
   - arguments:
-    - description: A comma-separated list of hostnames on which to upload the file. For example myhost,hostA.
+    - description: 'Hostname or the IP address on which to run the command.'
       name: host
-    - description: A comma-separated list of IP addresses of the hosts on which to upload the file. For example 1.1.1.1,20.20.20.20.
-      name: ip
+      required: true
     - description: The path of the file to upload.
       name: path
       required: true
@@ -226,12 +224,10 @@ script:
       description: The Fully Qualified Domain Name of the host the file was uploaded to.
       type: string
   - arguments:
-    - description: A comma-separated list of hostnames on which to create the ETL file. For example myhost,hostA.
-      isArray: true
+    - description: 'Hostname or the IP address on which to run the command.'
+      isArray: false
       name: host
-    - description: A comma-separated list of IP addresses of the host on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: true
-      name: ip
+      required: true
     - description: The path on the hostname on which to create the ETL file. For example
         c:\temp\myhost.etl. Default is "C:\Users\<username>\AppData\Local\Temp\NetTraces\NetTrace.etl".
       name: etl_path
@@ -255,19 +251,16 @@ script:
       An ETL file is just like a PCAP file which is created by the Windows Netsh command.
     name: ps-remote-etl-create-start
     outputs:
-    - contextPath: PsRemote.Command.Result
+    - contextPath: PsRemote.CommandResult
       description: The start ETL command results.
       type: string
-    - contextPath: PsRemote.Command.EtlFileName
+    - contextPath: PsRemote.EtlFileName
       description: The name of the ETL file.
       type: string
-    - contextPath: PsRemote.Command.EtlFilePath
+    - contextPath: PsRemote.EtlFilePath
       description: The path and name of the ETL file.
-    - contextPath: PsRemote.Command.Name
+    - contextPath: PsRemote.CommandName
       description: The name of the command that ran on the host.
-      type: string
-    - contextPath: PsRemote.Fqdn
-      description: The Full Qualified Domain Name of the host.
       type: string
     - contextPath: PsRemote.FQDN
       description: The Full Qualified Domain Name of the host.
@@ -276,17 +269,18 @@ script:
       description: The name of the host.
       type: string
   - arguments:
-    - description: A comma-separated list of hostnames on which to create the ETL file. For example myhost,hostA.
+    - description: 'Hostname or the IP address on which to run the command.'
       isArray: false
       name: host
-    - description: A comma-separated list of IP addresses of the hosts on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: false
-      name: ip
+      required: true
     description: Ends the recording of an ETL file on a Windows endpoint.
     name: ps-remote-etl-create-stop
     outputs:
       - contextPath: PsRemote.CommandResult
         description: The stop ETL command results.
+        type: string
+      - contextPath: PsRemote.CommandName
+        description: The name of the command that ran on the host.
         type: string
       - contextPath: PsRemote.EtlFileName
         description: The name of the ETL file.
@@ -300,12 +294,10 @@ script:
         description: The Fully Qualified Domain Name of the host on which the command was invoked.
         type: string
   - arguments:
-    - description: A comma-separated list of hostnames on which to create the ETL file. For example myhost,hostA.
+    - description: 'Hostname or the IP address on which to run the command.'
       isArray: false
       name: host
-    - description: A comma-separated list of IP addresses of the host on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: false
-      name: ip
+      required: true
     - defaultValue: all
       description: The registry key or hive to export. For example, reg_key_hive=`HKEY_LOCAL_MACHINE`.
         If the user specifies "all", the entire registry will be exported.
@@ -318,13 +310,13 @@ script:
     description: Exports the specified registry of hive to a file.
     name: ps-remote-export-registry
     outputs:
-    - contextPath: PsRemote.Command.Result
+    - contextPath: PsRemote.CommandResult
       description: The command results in the remote host - regedit for all or reg export.
       type: string
-    - contextPath: PsRemote.Command.RegFilePath
+    - contextPath: PsRemote.RegistryFilePath
       description: The path and name of the registry file.
       type: string
-    - contextPath: PsRemote.Command.RegFileName
+    - contextPath: PsRemote.RegistryFileName
       description: The name of the registry file.
       type: string
     - contextPath: PsRemote.Command.Name
@@ -340,12 +332,10 @@ script:
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
   - arguments:
-    - description: The host(s) from which to retrieve the data.
+    - description: 'Hostname or the IP address on which to run the command.'
       isArray: false
       name: host
-    - description: A comma-separated list of hosts on which to run the command. For example 1.1.1.1,20.20.20.20.
-      isArray: false
-      name: ip
+      required: true
     - description: The volume from which to retrieve its master file table.
       name: volume
     - description: The path in which the MFT file is to be created.
@@ -362,7 +352,7 @@ script:
       - contextPath: PsRemote.FQDN
         description: The Fully Qualified Domain Name of the host on which the command was invoked.
         type: string
-  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
   runonce: false
   script: ''
   type: powershell
