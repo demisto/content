@@ -125,7 +125,7 @@ configuration:
   name: use_cim
   required: false
   type: 8
-- display: Extensive logging (for debugging  purposes)
+- display: Extensive logging (for debugging purposes)
   name: extensive_logs
   required: false
   type: 8
