@@ -11,11 +11,11 @@
         "DLP"
     ],
     "tags": [
-        "Gamma", "DLP", "Data loss", "Security", "SaaS", "Compliance",
+        "Security", "SaaS", "Compliance",
         "GDPR", "HIPAA", "PII", "IT", "Machine Learning"
     ],
     "useCases": [
-        "Compliance", "Data Loss Prevention", "Employee Offboarding", "GDPR Breach Notification",
+        "Compliance", "Employee Offboarding", "GDPR Breach Notification",
         "HIPAA Breach Notification", "Hunting"
     ],
     "keywords": [
