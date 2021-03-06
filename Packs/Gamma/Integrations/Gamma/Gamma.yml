@@ -37,6 +37,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
 description: Query and update violations in Gamma
 display: Gamma
 name: Gamma
