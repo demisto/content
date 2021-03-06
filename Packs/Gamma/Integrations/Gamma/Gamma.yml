@@ -1,0 +1,107 @@
+category: DLP
+commonfields:
+  id: Gamma
+  version: -1
+configuration:
+- additionalinfo: URL of the Gamma API to query
+  defaultvalue: https://app.gamma.ai
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Gamma API Key
+  hidden: false
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Enter the violation ID to begin fetching from. If empty, the API
+    will default to your first violation
+  display: Starting Violation
+  hidden: false
+  name: first_fetch_violation
+  required: false
+  type: 0
+- additionalinfo: Etner a number of results for each fetch to return. The number must
+    be between 1 and 100.
+  defaultvalue: '10'
+  display: Results per fetch
+  hidden: false
+  name: max_results
+  required: false
+  type: 0
+description: Query and update violations in Gamma
+display: Gamma
+name: Gamma
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '1'
+      description: Violation ID to begin pulling from. Defaults to the earliest existing
+        violation for your account.
+      isArray: false
+      name: minimum_violation
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: 'Upper limit for retrieving violations (max: 100)'
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a list of violations
+    execution: false
+    name: gamma-get-violation-list
+  - arguments:
+    - default: false
+      description: Violation ID to retrieve
+      isArray: false
+      name: violation
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific violation
+    execution: false
+    name: gamma-get-violation
+  - arguments:
+    - default: false
+      description: Violation ID to update
+      isArray: false
+      name: violation
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the violation
+      isArray: false
+      name: status
+      predefined:
+      - OPEN
+      - RESOLVED
+      - IGNORED
+      required: true
+      secret: false
+    - default: true
+      defaultValue: None
+      description: Any notes to add to a violation. It will overwrite existing notes.
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a specific violation
+    execution: false
+    name: gamma-update-violation
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
