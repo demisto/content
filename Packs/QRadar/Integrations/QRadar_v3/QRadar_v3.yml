@@ -755,6 +755,10 @@ script:
       required: false
       description: The saved search ID to retrieve its details. Specify saved_search_id
         if you want to get details about certain saved search.
+    - name: timeout
+      required: false
+      defaultValue: 30
+      description: Number of seconds until timeout for command is given.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49

@@ -47,6 +47,7 @@ RESET_KEY = 'reset'
 LAST_FETCH_KEY = 'id'
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
+DEFAULT_TIMEOUT_VALUE = '30'
 DEFAULT_LIMIT_VALUE = 50
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
@@ -308,7 +309,8 @@ class Client(BaseClient):
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
-                     json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None):
+                     json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None,
+                     timeout: Optional[int] = None):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         return self._http_request(
             method=method,
@@ -317,7 +319,7 @@ class Client(BaseClient):
             json_data=json_data,
             headers=headers,
             error_handler=qradar_error_handler,
-            timeout=40  # TODO DELETE
+            timeout=timeout
         )
 
     def offenses_list(self, range_: str, offense_id: Optional[int] = None, filter_: Optional[str] = None,
@@ -403,14 +405,15 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def saved_searches_list(self, range_: str, saved_search_id: Optional[str] = None, filter_: Optional[str] = None,
-                            fields: Optional[str] = None):
+    def saved_searches_list(self, range_: str, timeout: int, saved_search_id: Optional[str] = None,
+                            filter_: Optional[str] = None, fields: Optional[str] = None):
         id_suffix = f'/{saved_search_id}' if saved_search_id else ''
         return self.http_request(
             method='GET',
             url_suffix=f'/ariel/saved_searches{id_suffix}',
             additional_headers={'Range': range_} if not saved_search_id else None,
-            params=assign_params(filter=filter_, fields=fields)
+            params=assign_params(filter=filter_, fields=fields),
+            timeout=timeout
         )
 
     def searches_list(self, range_: str, filter_: Optional[str] = None):
@@ -1770,11 +1773,12 @@ def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandRes
         CommandResults.
     """
     saved_search_id = args.get('saved_search_id')
+    timeout: int = arg_to_number(args.get('timeout'), DEFAULT_TIMEOUT_VALUE)  # type: ignore
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
 
-    response = client.saved_searches_list(range_, saved_search_id, filter_, fields)
+    response = client.saved_searches_list(range_, timeout, saved_search_id, filter_, fields)
     outputs = sanitize_outputs(response, SAVED_SEARCH_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_OLD_NEW_MAP.values()))
 
