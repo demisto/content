@@ -23,7 +23,7 @@ WRITER_CREDENTIALS = demisto.params().get('writer_credentials', None)
 LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/welcome")
 FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
-URLLIB_PARSE = demisto.params().get('special_character', False)
+URLLIB_PARSE = argToBoolean(demisto.params().get('special_characters', "false"))
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
 RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
@@ -391,7 +391,7 @@ def get_alerts_command():
     timestamp_to = demisto.args().get('to', None)
     alert_filters = demisto.args().get('filters', None)
     write_context = demisto.args()['writeToContext'].lower()
-    urllib_parse = demisto.args().get('special_character', False)
+    urllib_parse = argToBoolean(demisto.args().get('special_characters', "false"))
     alert_query = ALERTS_QUERY
 
     time_range = get_time_range(timestamp_from, timestamp_to)
