@@ -201,13 +201,6 @@ script:
       isArray: false
       required: false
       secret: false
-    - name: page_size
-      default: false
-      description: Page size. default set to 50.
-      isArray: false
-      required: false
-      secret: false
-      defaultValue: '50'
     - default: false
       description: The last machine IP to access the internet.
       isArray: false

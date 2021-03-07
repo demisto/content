@@ -222,18 +222,14 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def get_machines(self, filter_req, next_link, page_size):
+    def get_machines(self, filter_req, next_link):
         """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
 
         Returns:
             dict. Machine's info
         """
         cmd_url = '/machines'
-        params = {}
-        if filter_req:
-            params.update({'$filter': filter_req})
-        if page_size:
-            params.update({'$top': page_size})
+        params = {'$filter': filter_req} if filter_req else None
         if next_link:  # pagination
             machines = self.ms_client.http_request(method='GET', full_url=next_link,  params=params)
         else:
@@ -907,7 +903,6 @@ def get_machines_command(client: MsClient, args: dict):
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
     next_link = args.get('next_link', '')
-    page_size = args.get('page_size', '50')
     next_link_response = ''
     metadata = ''
     fields_to_filter_by = {
@@ -918,7 +913,7 @@ def get_machines_command(client: MsClient, args: dict):
         'osPlatform': os_platform
     }
     filter_req = reformat_filter(fields_to_filter_by)
-    machines_response = client.get_machines(filter_req, next_link, page_size)
+    machines_response = client.get_machines(filter_req, next_link)
     machines_list = get_machines_list(machines_response)
 
     if '@odata.nextLink' in machines_response:
@@ -928,7 +923,7 @@ def get_machines_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list,
         'MicrosoftATP.Machine(val.ID === obj.ID).NextLink': next_link_response,
-                         }
+    }
     human_readable = tableToMarkdown('Microsoft Defender ATP Machines:', machines_list, headers=headers,
                                      removeNull=True, metadata=metadata)
     return human_readable, entry_context, machines_response
