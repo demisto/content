@@ -1,5 +1,4 @@
 {
-    "close": null,
     "details": {
         "sections": [{
                 "description": "More information on the access attempts ",
@@ -272,7 +271,6 @@
         ]
     },
     "detailsV2": {
-        "TypeName": "",
         "tabs": [{
                 "id": "summary",
                 "name": "Legacy Summary",
@@ -982,22 +980,9 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
     "id": "Cyberint Incident Layout",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "1.2.2",
-    "locked": false,
-    "mobile": null,
     "name": "Cyberint Incident Layout",
-    "packID": "",
-    "propagationLabels": [],
-    "quickView": null,
-    "sortValues": null,
-    "system": false,
-    "toServerVersion": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "description": "Cyberint incident layout"
