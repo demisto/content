@@ -1179,7 +1179,7 @@ def create_attachment(raw_response, user_id):
     # Documentation about the different attachment types
     # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
     if 'itemAttachment' in attachment_type:
-        return item_result_creator(raw_response, user_id)
+        return_results(item_result_creator(raw_response, user_id))
     if 'fileAttachment' in attachment_type:
         return demisto.results(file_result_creator(raw_response))
     return {}
