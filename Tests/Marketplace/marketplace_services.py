@@ -427,6 +427,8 @@ class Pack(object):
 
             for dependency_integration in dependency_integration_images:
                 dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
+                dependency_integration['name'] = Pack.remove_contrib_suffix_from_name(
+                    dependency_integration.get('name', ''))
                 dependency_pack_name = os.path.basename(
                     os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
 
@@ -639,10 +641,12 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        if 'vendorId' in user_metadata:
+        if 'partnerId' in user_metadata:
             pack_metadata['premium'] = True
-            pack_metadata['vendorId'] = user_metadata.get('vendorId')
+            pack_metadata['vendorId'] = user_metadata.get('vendorId', "")
+            pack_metadata['partnerId'] = user_metadata.get('partnerId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            pack_metadata['partnerName'] = user_metadata.get('partnerName')
             pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
@@ -1810,6 +1814,24 @@ class Pack(object):
         finally:
             return task_status, exists_in_index
 
+    @staticmethod
+    def remove_contrib_suffix_from_name(display_name: str) -> str:
+        """ Removes the contribution details suffix from the integration's display name
+        Args:
+            display_name (str): The integration display name.
+
+        Returns:
+            str: The display name without the contrib details suffix
+
+        """
+        contribution_suffixes = ('(Partner Contribution)', '(Developer Contribution)', '(Community Contribution)')
+        for suffix in contribution_suffixes:
+            index = display_name.find(suffix)
+            if index != -1:
+                display_name = display_name[:index].rstrip(' ')
+                break
+        return display_name
+
     def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
 
@@ -1853,8 +1875,13 @@ class Pack(object):
                 else:
                     image_gcs_path = pack_image_blob.public_url
 
+                integration_name = image_data.get('display_name', '')
+
+                if self.support_type != Metadata.XSOAR_SUPPORT:
+                    integration_name = self.remove_contrib_suffix_from_name(integration_name)
+
                 uploaded_integration_images.append({
-                    'name': image_data.get('display_name', ''),
+                    'name': integration_name,
                     'imagePath': image_gcs_path
                 })
 

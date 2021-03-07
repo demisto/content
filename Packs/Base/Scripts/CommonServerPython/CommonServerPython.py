@@ -211,6 +211,7 @@ class DBotScoreType(object):
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
+    DBotScoreType.EMAIL
     :return: None
     :rtype: ``None``
     """
@@ -224,6 +225,7 @@ class DBotScoreType(object):
     DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
+    EMAIL = 'email'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -244,6 +246,7 @@ class DBotScoreType(object):
             DBotScoreType.DOMAINGLOB,
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
+            DBotScoreType.EMAIL,
         )
 
 
@@ -1590,9 +1593,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
     if removeNull:
         headers_aux = headers[:]
-        for header in headers_aux:
+        for header in headers:
             if all(obj.get(header) in ('', None, [], {}) for obj in t):
-                headers.remove(header)
+                headers_aux.remove(header)
+        headers = headers_aux
 
     if t and len(headers) > 0:
         newHeaders = []
@@ -2572,6 +2576,42 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            return ret_value
+
+    class EMAIL(Indicator):
+        """
+        EMAIL indicator class
+        :type address ``str``
+        :param address: The email's address.
+        :type domain: ``str``
+        :param domain: The domain of the Email.
+        :type blocked: ``bool``
+        :param blocked: Whether the email address is blocked.
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, dbot_score, domain=None, blocked=None):
+            # type (str, str, bool) -> None
+            self.address = address
+            self.domain = domain
+            self.blocked = blocked
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            email_context = {
+                'Address': self.address
+            }
+            if self.domain:
+                email_context['Domain'] = self.domain
+            if self.blocked:
+                email_context['Blocked'] = self.blocked
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
             return ret_value
 
     class URL(Indicator):

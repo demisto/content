@@ -1,9 +1,9 @@
-comment: Data output script for populating the dashboard table graph widget with the information
-  about failing integrations.
+comment: Data output script for populating the dashboard table graph widget with the
+  information about failing integrations.
 commonfields:
   id: IntegrationsCheck-Widget-IntegrationsErrorsInfo
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: IntegrationsCheck-Widget-IntegrationsErrorsInfo
 runas: DBotWeakRole

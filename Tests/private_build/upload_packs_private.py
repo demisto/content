@@ -95,8 +95,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
 
-            # TODO: switch to debug log after issue is resolved
-            logging.info(f'is_changed_private_pack: {is_changed_private_pack}')
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 new_metadata_file_path = os.path.join(extract_destination_path, pack_id, "pack_metadata.json")
                 logging.info(f'reloading metadata using {new_metadata_file_path}')
@@ -104,13 +102,13 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     metadata = json.load(metadata_file)
 
             if metadata:
-                # TODO: switch to debug log after issue is resolved
-                logging.info(f'adding pack with id "{metadata.get("id")}" and name "{metadata.get("name")}"')
                 private_packs.append({
-                    'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
+                    'id': pack_id,
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'partnerId': metadata.get('partnerId'),
+                    'partnerName': metadata.get('partnerName'),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
