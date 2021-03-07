@@ -1893,15 +1893,14 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     result_key = list(response.keys())[0]
     outputs = sanitize_outputs(response.get(result_key))
     # outputs = []
-    # for i in range(1000000):
+    # for i in range(50000):
     #     outputs.append({'a': i})
-    # TODO add file naming (shown in integration design)
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Results For Search ID {search_id}', outputs),
         outputs_prefix=output_path if output_path else 'QRadar.SearchStatus',
         outputs=outputs,
-        raw_response=response
+        raw_response='response'
     )
 
 
