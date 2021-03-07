@@ -9,18 +9,6 @@
   "Cymulate": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "Agentless": {
-     "complex": null,
-     "simple": "Agentless"
-    },
-    "Analysis": {
-     "complex": null,
-     "simple": "analysis"
-    },
-    "Attack Vector": {
-     "complex": null,
-     "simple": "AttackVector"
-    },
     "Cymulate Agentless": {
      "complex": null,
      "simple": "agentless"
@@ -81,10 +69,6 @@
      "complex": null,
      "simple": "url"
     },
-    "Description": {
-     "complex": null,
-     "simple": "description"
-    },
     "Email Source": {
      "complex": null,
      "simple": "Source_Email_Address"
@@ -93,15 +77,11 @@
      "complex": null,
      "simple": "module"
     },
-    "Last Action": {
-     "complex": null,
-     "simple": "lastAction"
-    },
     "MD5": {
      "complex": null,
      "simple": "md5"
     },
-    "Recommandation": {
+    "Cymulate Mitigation Details": {
      "complex": null,
      "simple": "Mitigation_Details"
     },
@@ -117,14 +97,6 @@
      "complex": null,
      "simple": "cymulateStatus"
     },
-    "Template Name": {
-     "complex": null,
-     "simple": "templateName"
-    },
-    "Test Case": {
-     "complex": null,
-     "simple": "testCase"
-    },
     "name": {
      "complex": null,
      "simple": "name"
@@ -132,10 +104,6 @@
     "source": {
      "complex": null,
      "simple": "source"
-    },
-    "url": {
-     "complex": null,
-     "simple": "url"
     }
    }
   },
@@ -166,7 +134,7 @@
      "complex": null,
      "simple": "md5"
     },
-    "Recommandation": {
+    "Cymulate Mitigation Details": {
      "complex": null,
      "simple": "Mitigation_Details"
     },
