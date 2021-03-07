@@ -116,7 +116,6 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-
         response = super()._http_request(   # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
