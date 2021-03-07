@@ -3,24 +3,72 @@ commonfields:
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: script-JiraChangeTransition
-script: |+
-  import json
+script: |-
   def main():
-      incident = demisto.incidents()[0]
+      output = {}
+      try:
+          incident = demisto.incidents()[0]
+          incident_id = incident.get('dbotMirrorId')
+          if incident_id:
+              custom_fields = incident.get('CustomFields')
+              if custom_fields:
+                  chosen_transition = custom_fields.get("jiratransitions")
+                  if chosen_transition:
+                      demisto.executeCommand('jira-edit-issue',
+                      {'issueId': incident_id, "transition": chosen_transition})
+                      # jira_status = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})[0]["Contents"]["fields"]["status"]["name"]
+                      res = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})
+                      if isinstance(res, list):
+                          res = res[0]
+                          incident_content = res.get("Contents")
+                          if incident_content:
+                              if not isError(res):
+                                  incident_fields = incident_content.get("fields")
+                                  if incident_fields:
+                                      jira_status = incident_fields.get("status", {}).get("name")
+                                      if jira_status:
+                                          demisto.executeCommand('setIncident', {'jirastatus': jira_status})
+                                          demisto.executeCommand('setIncident', {'jiratransitions': 'Select'})
+                                      else:
+                                          demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                                    "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find: the issue's status name. The issue returned is: {incident_fields}"})
 
-      custom_fields = incident.get('CustomFields')
-      chosen_transition = custom_fields.get("jiratransitions")
-      incident_id = incident.get('dbotMirrorId')
-      demisto.executeCommand('jira-edit-issue',
-      {'issueId': incident_id, "transition": chosen_transition})
-      jira_status = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})[0]["Contents"]["fields"]["status"]["name"]
-      demisto.executeCommand('setIncident', {'jirastatus': jira_status})
-      demisto.executeCommand('setIncident', {'jiratransitions': 'Select'})
+                                  else:
+                                      output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                                "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"fields\" as key. The issue returned is: {incident_content}"}
+                              else:
+                                  output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                            "Contents": f"Error occurred while running jira-get-issue. The response is: {incident_content}"}
+
+                          else:
+                              output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                        "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"Content\" as key. The response is: {res}"}
+
+                      else:
+                          output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                    "Contents": f"Error occurred while running script-JiraChangeTransition. expected a list as response but got: {type(res)}. The response is: {res}"}
+                  else:
+                      output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                "Contents": f"Failed to get \"jiratransitions\" incident field from incident with {incident_id} dbotMirrorId."}
+              else:
+                  output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                            "Contents": f"Failed to get \"CustomFields\" of incident with {incident_id} dbotMirrorId. The incident is:\n {incident}"}
+          else:
+              output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                        "Contents": f"Failed to get a list of transaction because could not get \"dbotMirrorId\" from incident."}
+
+      except Exception as ex:
+          output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                    "Contents": "Error occurred while running script-JiraChangeTransition. got the next error:\n" + str(
+                        ex)}
+      finally:
+          if output:
+              demisto.results(output)
+
 
 
   if __name__ in ["__main__", "builtin", "builtins"]:
     main()
-
 type: python
 tags:
 - field-change-triggered

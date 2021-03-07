@@ -1083,22 +1083,27 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
     try:
         # Get raw response on issue ID
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
+        demisto.info('get remote data')
 
         # Timestamp - Issue last modified in jira server side
         jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
         # Timestamp - Issue last sync in demisto server side
         incident_modified_date: datetime = parse(parsed_args.last_update)
         # Update incident only if issue modified in Jira server-side after the last sync
+        demisto.info(f"jira_modified_date{jira_modified_date}")
+        demisto.info(f"incident_modified_date{incident_modified_date}")
         if jira_modified_date > incident_modified_date:
+            demisto.info('updating remote data')
             incident_update = issue_raw_response
 
-            demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+            demisto.info(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                           f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
                           f"\n\tRemote last updated time: {jira_modified_date}\n")
+            demisto.info(f"\n raw incident: {issue_raw_response}\n")
 
             closed_issue = handle_incoming_closing_incident(incident_update)
             if closed_issue:
-                demisto.debug(
+                demisto.info(
                     f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
                 return GetRemoteDataResponse(incident_update, [closed_issue])
 
@@ -1115,7 +1120,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
             for attachment in entries['attachments']:
                 parsed_entries.append(attachment)
         if parsed_entries:
-            demisto.debug(f'Update the next entries: {parsed_entries}')
+            demisto.info(f'Update the next entries: {parsed_entries}')
         return GetRemoteDataResponse(incident_update, parsed_entries)
 
     except Exception as e:
@@ -1225,3 +1230,4 @@ def main():
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
+
