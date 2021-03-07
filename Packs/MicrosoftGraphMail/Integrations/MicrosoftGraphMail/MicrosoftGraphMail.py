@@ -1165,14 +1165,20 @@ def item_result_creator(raw_response, user_id):
             mail_context,
             headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
         )
-        return_outputs(
-            human_readable,
-            entry_context,
-            raw_response=raw_response
-        )
+        return CommandResults(outputs_prefix='MSGraphMail',
+                              outputs_key_field='ID',
+                              outputs=mail_context,
+                              readable_output=human_readable,
+                              raw_response=raw_response)
+        # return_outputs(
+        #     human_readable,
+        #     entry_context,
+        #     raw_response=raw_response
+        # )
     else:
         human_readable = f'Integration does not support  attachments from type {item_type}'
-        return_outputs(human_readable, raw_response=raw_response)
+        return CommandResults(readable_output=human_readable, raw_response=raw_response)
+        # return_outputs(human_readable, raw_response=raw_response)
 
 
 def create_attachment(raw_response, user_id):
