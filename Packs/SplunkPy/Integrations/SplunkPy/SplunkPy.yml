@@ -16,7 +16,10 @@ configuration:
   name: port
   required: true
   type: 0
-- defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+- defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name)
+    | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
+    | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
+    | eval security_domain=if(isnull(security_domain),source,security_domain)
   display: Fetch notable events ES query
   name: fetchQuery
   required: false
@@ -38,7 +41,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only if different than Demisto server). Relevant only for fetching notable events.
+- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3,
+    set +180 (set only if different than Demisto server). Relevant only for fetching
+    notable events.
   name: timezone
   required: false
   type: 0
@@ -47,7 +52,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -66,12 +71,14 @@ configuration:
   required: false
   type: 8
 - defaultvalue: earliest_time
-  display: Earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch)
+  display: Earliest time to fetch (the name of the Splunk field whose value defines
+    the query's earliest time to fetch)
   name: earliest_fetch_time_fieldname
   required: false
   type: 0
 - defaultvalue: latest_time
-  display: Latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch)
+  display: Latest time to fetch (the name of the Splunk field whose value defines
+    the query's latest time to fetch)
   name: latest_fetch_time_fieldname
   required: false
   type: 0
@@ -110,12 +117,26 @@ configuration:
   name: type_field
   required: false
   type: 0
-- defaultvalue: 'false'
+- additionalinfo: If selected, when creating a mapper using the `Select Schema` feature
+    (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+    for more info.
+  defaultvalue: 'false'
   display: Use CIM Schemas for Mapping
   name: use_cim
   required: false
   type: 8
-  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
+- display: Extensive logging (for debugging purposes)
+  name: extensive_logs
+  required: false
+  type: 8
+- additionalinfo: When ever no incidents are found, the next search will start from
+    the same start time, up to a window of the size specified here.
+  defaultvalue: '20'
+  display: Fetch backwardss window
+  hidden: false
+  name: backwards_fetch_window
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -130,43 +151,59 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended).
+      description: The maximum number of returned results per search. To retrieve
+        all results, enter "0" (Not recommended).
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
+    description: Returns the results of a previous Splunk search. You can use this
+      command in conjunction with the splunk-job-create command.
     execution: false
     name: splunk-results
   - arguments:
     - default: true
-      description: 'The Splunk search language string to execute. For example: "index=* | head 3". '
+      description: 'The Splunk search language string to execute. For example: "index=*
+        | head 3". '
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: 'Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. Default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00"'
+      description: 'Specifies the earliest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string. Default is 1 week ago, in the format
+        "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00"'
       isArray: false
       name: earliest_time
       required: false
       secret: false
     - default: false
-      description: ' Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for time 3 days before now)'
+      description: ' Specifies the latest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00"
+        or "-3d" (for time 3 days before now)'
       isArray: false
       name: latest_time
       required: false
       secret: false
     - default: false
-      description: Maximum number of events to return. Default is 100. If "0", all results are returned.
+      description: Maximum number of events to return. Default is 100. If "0", all
+        results are returned.
       isArray: false
       name: event_limit
       required: false
       secret: false
     - default: false
       defaultValue: '25000'
-      description: The maximum number of returned results to  process at a time. For example, if 100 results are returned, and you specify a batch_limit of 10, the results will be processed 10 at a time over 10 iterations. This does not effect the search or the context and outputs returned. In some cases, specifying a batch_size enhances search performance. If you think that the search execution is suboptimal, we recommend trying several batch_size values to determine which works best for your search. Default is 25,000.
+      description: The maximum number of returned results to  process at a time. For
+        example, if 100 results are returned, and you specify a batch_limit of 10,
+        the results will be processed 10 at a time over 10 iterations. This does not
+        effect the search or the context and outputs returned. In some cases, specifying
+        a batch_size enhances search performance. If you think that the search execution
+        is suboptimal, we recommend trying several batch_size values to determine
+        which works best for your search. Default is 25,000.
       isArray: false
       name: batch_limit
       required: false
@@ -183,7 +220,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that contains the application namespace in which to restrict searches.
+      description: A string that contains the application namespace in which to restrict
+        searches.
       isArray: false
       name: app
       required: false
@@ -194,11 +232,13 @@ script:
     name: splunk-search
     outputs:
     - contextPath: Splunk.Result
-      description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+      description: The results of the Splunk search. The results are a JSON array,
+        in which each item is a Splunk event.
       type: Unknown
   - arguments:
     - default: false
-      description: Splunk index to which to push data. Run the splunk-get-indexes command to get all indexes.
+      description: Splunk index to which to push data. Run the splunk-get-indexes
+        command to get all indexes.
       isArray: false
       name: index
       required: true
@@ -262,7 +302,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
+      description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress,
+        3 - Pending, 4 - Resolved, 5 - Closed.
       isArray: false
       name: status
       required: false
@@ -273,13 +314,15 @@ script:
     name: splunk-notable-event-edit
   - arguments:
     - default: false
-      description: The Splunk search language string to execute. For example :"index=* | head 3".
+      description: The Splunk search language string to execute. For example :"index=*
+        | head 3".
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: A string that contains the application namespace in which to restrict searches.
+      description: A string that contains the application namespace in which to restrict
+        searches.
       isArray: false
       name: app
       required: false
@@ -318,7 +361,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma separated, fields.
+      description: Fields for indexing that do not occur in the event payload itself.
+        Accepts multiple, comma separated, fields.
       isArray: false
       name: fields
       required: false
@@ -354,7 +398,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
+    description: Sends events to an HTTP Event Collector using the Splunk platform
+      JSON event protocol.
     execution: false
     name: splunk-submit-event-hec
   - arguments:
@@ -384,7 +429,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      description: The name of the Splunk application in which to create the KV store.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -409,7 +455,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -420,7 +467,9 @@ script:
     name: splunk-kv-store-collection-config
   - arguments:
     - default: false
-      description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}'
+      description: 'The data to add to the KV store collection, according to the collection
+        JSON format, e.g., {"name": "Splunk HQ", "id": 123, "address": { "street":
+        "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}'
       isArray: false
       name: kv_store_data
       required: true
@@ -439,7 +488,8 @@ script:
       secret: false
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -451,7 +501,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application in which to create the KV store. The default is "search".
+      description: The name of the Splunk application in which to create the KV store.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -467,7 +518,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -491,12 +543,15 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an
+        array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the
+        data in the collection).
       type: Unknown
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. For example, "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        For example, "search".
       isArray: false
       name: app_name
       required: true
@@ -514,7 +569,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store. The default is "store".
+      description: The name of the Splunk application that contains the KV store.
+        The default is "store".
       isArray: false
       name: app_name
       required: true
@@ -532,7 +588,8 @@ script:
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The default is "search".
       isArray: false
       name: app_name
       required: true
@@ -544,36 +601,42 @@ script:
       required: true
       secret: false
     - default: false
-      description: The key name to search in the store. If the query argument is used, this argument will be ignored.
+      description: The key name to search in the store. If the query argument is used,
+        this argument will be ignored.
       isArray: false
       name: key
       required: false
       secret: false
     - default: false
-      description: The value to search in the store. If the query argument is used, this argument will be ignored.
+      description: The value to search in the store. If the query argument is used,
+        this argument will be ignored.
       isArray: false
       name: value
       required: false
       secret: false
     - default: false
-      description: |-
-        Complex query to search in the store with operators such as "and", "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore
+      description: 'Complex query to search in the store with operators such as "and",
+        "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore'
       isArray: false
       name: query
       required: false
       secret: false
     deprecated: false
-    description: Searches for specific objects in a store. Search can be basic key value or a full query.
+    description: Searches for specific objects in a store. Search can be basic key
+      value or a full query.
     execution: false
     name: splunk-kv-store-collection-search-entry
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an
+        array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the
+        data in the collection).
       type: Unknown
   - arguments:
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The deafult is "search".
+      description: The name of the Splunk application that contains the KV store collection.
+        The deafult is "search".
       isArray: false
       name: app_name
       required: true
@@ -591,13 +654,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The key name to search in the store. If the query argument is used, this argument will be ignored.
+      description: The key name to search in the store. If the query argument is used,
+        this argument will be ignored.
       isArray: false
       name: key
       required: false
       secret: false
     - default: false
-      description: The value to search in the store. If the query argument is used, this argument will be ignored.
+      description: The value to search in the store. If the query argument is used,
+        this argument will be ignored.
       isArray: false
       name: value
       required: false
@@ -611,7 +676,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Deletes the specified object in store. Search can be basic key value or a full query.
+    description: Deletes the specified object in store. Search can be basic key value
+      or a full query.
     execution: false
     name: splunk-kv-store-collection-delete-entry
   - deprecated: false
@@ -633,6 +699,6 @@ tests:
 - SplunkPy-Test-V2
 - SplunkPy KV commands
 - SplunkPy parse-raw - Test
-defaultclassifier: SplunkPy
 defaultmapperin: SplunkPy-mapper
+defaultclassifier: SplunkPy
 fromversion: 5.0.0

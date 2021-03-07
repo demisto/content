@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Tuple, Dict, List, Callable
+from typing import Any, Tuple, Dict, List, Callable, Optional
 import sqlalchemy
 import pymysql
 import traceback
