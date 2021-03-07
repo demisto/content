@@ -1159,7 +1159,6 @@ def item_result_creator(raw_response, user_id):
         message_id = raw_response.get('id')
         item['id'] = message_id
         mail_context = build_mail_object(item, user_id=user_id, get_body=True)
-        entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
         human_readable = tableToMarkdown(
             f'Attachment ID {message_id} \n **message details:**',
             mail_context,
@@ -1170,15 +1169,9 @@ def item_result_creator(raw_response, user_id):
                               outputs=mail_context,
                               readable_output=human_readable,
                               raw_response=raw_response)
-        # return_outputs(
-        #     human_readable,
-        #     entry_context,
-        #     raw_response=raw_response
-        # )
     else:
         human_readable = f'Integration does not support  attachments from type {item_type}'
         return CommandResults(readable_output=human_readable, raw_response=raw_response)
-        # return_outputs(human_readable, raw_response=raw_response)
 
 
 def create_attachment(raw_response, user_id):
