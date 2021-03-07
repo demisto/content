@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from Devo_v2 import fetch_incidents, run_query_command, get_alerts_command,\
     multi_table_query_command, write_to_table_command, write_to_lookup_table_command,\
-    check_configuration, get_time_range, prepare_filter_alerts
+    check_configuration, get_time_range, prepare_filter_alerts, ALERTS_QUERY
 
 MOCK_READER_ENDPOINT = "https://fake.devo.com/query"
 MOCK_LINQ_LINK_BASE = "https://devo.com"
@@ -202,10 +202,10 @@ def test_prepare_filter_alerts():
     When: '@' which is a special character is included as part of the value
     Then: Validate that when the special_character is set true the @ in part of the query, otherwise encoded to %40
     """
-    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, True)
-    assert alerts_filter == ' where username = "test@test.com"'
-    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, False)
-    assert alerts_filter == ' where username = "test%40test.com"'
+    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, ALERTS_QUERY, True)
+    assert ' where username = "test@test.com"' in alerts_filter
+    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, ALERTS_QUERY, False)
+    assert ' where username = "test%40test.com"' in alerts_filter
 
 
 @patch('Devo_v2.READER_ENDPOINT', MOCK_READER_ENDPOINT, create=True)

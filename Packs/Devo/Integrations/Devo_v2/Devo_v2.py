@@ -74,9 +74,8 @@ SEVERITY_LEVELS_MAP = {
 ''' HELPER FUNCTIONS '''
 
 
-def prepare_filter_alerts(alert_filters, special_characters):
+def prepare_filter_alerts(alert_filters, alert_query, special_characters):
     filter_string = ''
-    alert_query = ''
     if alert_filters['type'] == 'AND':
         filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} '
                                     f'"{str(filt["value"]) if special_characters else urllib.parse.quote(filt["value"])}"'
@@ -286,7 +285,7 @@ def fetch_incidents():
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
-        alert_query = prepare_filter_alerts(alert_filters, SPECIAL_CHARACTERS)
+        alert_query = prepare_filter_alerts(alert_filters, alert_query, SPECIAL_CHARACTERS)
 
     from_time = to_time - 3600
     if 'from_time' in last_run:
@@ -393,13 +392,11 @@ def get_alerts_command():
     write_context = demisto.args()['writeToContext'].lower()
     special_characters = argToBoolean(demisto.args().get('special_characters', "false"))
     alert_query = ALERTS_QUERY
-
     time_range = get_time_range(timestamp_from, timestamp_to)
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
-        alert_query = prepare_filter_alerts(alert_filters, special_characters)
-
+        alert_query = prepare_filter_alerts(alert_filters, alert_query, special_characters)
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                    .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
