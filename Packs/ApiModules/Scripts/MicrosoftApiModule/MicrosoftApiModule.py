@@ -108,7 +108,6 @@ class MicrosoftClient(BaseClient):
             Response from api according to resp_type. The default is `json` (dict or list).
         """
         token = self.get_access_token(resource=resource, scope=scope)
-        demisto.debug(f"Access token is:{token}")
         default_headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
@@ -117,14 +116,9 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-        demisto.debug(f"Headers are:{default_headers}")
-
-        demisto.debug(f"Sending request with suffix: {args}")
 
         response = super()._http_request(   # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
-
-        demisto.debug(f"Response from api: {response}")
 
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
