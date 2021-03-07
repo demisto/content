@@ -8,6 +8,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+
 import dateparser
 import urllib3
 
@@ -76,9 +77,9 @@ class Client(BaseClient):
         if order_by is not None:
             params['orderBy'] = order_by
         if max_results is not None:
-            params['length'] = max_results
+            params['length'] = str(max_results)
         if page_from is not None:
-            params['from'] = page_from
+            params['from'] = str(page_from)
 
         response = self._http_request('GET', '/search/', params=params,
                                       headers={'accept': 'application/json', 'Authorization': str(token)})
@@ -87,7 +88,7 @@ class Client(BaseClient):
             results: list = response.get('data', {}).get('results')
             while response.get('data', {}).get('next') is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
-                params['from'] = len(results)
+                params['from'] = str(len(results))
                 response = self._http_request('GET', '/search/', params=params,
                                               headers={'accept': 'application/json', 'Authorization': str(token)})
                 results.extend(response.get('data', {}).get('results', []))
@@ -378,7 +379,7 @@ def untag_device_command(client: Client, args: dict):
         args (dict): A dict object containing the arguments for this command
     """
 
-    device_id = args.get('device_id')
+    device_id = str(args.get('device_id'))
     tags = argToList(args.get('tags'))
     client.untag_device(device_id, tags)
     return f'Successfully Untagged device: {device_id} with tags: {tags}'
@@ -391,7 +392,7 @@ def tag_device_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    device_id = args.get('device_id')
+    device_id = str(args.get('device_id'))
     tags = argToList(args.get('tags'))
     client.tag_device(device_id, tags)
     return f'Successfully Tagged device: {device_id} with tags: {tags}'
@@ -404,8 +405,8 @@ def update_alert_status_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    alert_id = args.get('alert_id')
-    status = args.get('status')
+    alert_id = str(args.get('alert_id'))
+    status = str(args.get('status'))
     client.update_alert_status(alert_id, status)
     return f'Successfully Updated Alert: {alert_id} to status: {status}'
 
@@ -443,19 +444,23 @@ def search_alerts_command(client: Client, args: dict):
             outputs_key_field='alertId',
             outputs=results,
             raw_response=response,
-            readable_output=tableToMarkdown('Alerts', results, headers=[
-                'severity',
-                'type',
-                'time',
-                'status',
-                'title',
-                'description',
-                'activityIds',
-                'activityUUIDs',
-                'alertId',
-                'connectionIds',
-                'deviceIds'
-            ], removeNull=True,
+            readable_output=tableToMarkdown(
+                'Alerts',
+                results,
+                headers=[
+                    'severity',
+                    'type',
+                    'time',
+                    'status',
+                    'title',
+                    'description',
+                    'activityIds',
+                    'activityUUIDs',
+                    'alertId',
+                    'connectionIds',
+                    'deviceIds'
+                ],
+                removeNull=True,
                 headerTransform=pascalToSpace)
         )
     return 'No results found'
@@ -520,7 +525,7 @@ def search_devices_by_aql_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    aql_string = args.get('aql_string')
+    aql_string = str(args.get('aql_string'))
     max_results = int(args.get('max_results', 50))
 
     response = client.free_string_search_devices(aql_string, max_results=max_results)
@@ -553,7 +558,7 @@ def search_alerts_by_aql_command(client: Client, args: dict):
         client (Client): An Armis client object
         args (dict): A dict object containing the arguments for this command
     """
-    aql_string = args.get('aql_string')
+    aql_string = str(args.get('aql_string'))
     max_results = int(args.get('max_results', 50))
 
     response = client.free_string_search_alerts(aql_string, max_results=max_results)
