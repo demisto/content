@@ -110,14 +110,6 @@
   "dbot_classification_incident_type_all": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "Agentless": {
-     "complex": null,
-     "simple": "Agentless"
-    },
-    "Analysis": {
-     "complex": null,
-     "simple": "analysis"
-    },
     "Email Source": {
      "complex": null,
      "simple": "Source_Email_Address"
@@ -125,10 +117,6 @@
     "Event Type": {
      "complex": null,
      "simple": "module"
-    },
-    "Last Action": {
-     "complex": null,
-     "simple": "lastAction"
     },
     "MD5": {
      "complex": null,
@@ -149,14 +137,6 @@
     "State": {
      "complex": null,
      "simple": "cymulateStatus"
-    },
-    "Test Case": {
-     "complex": null,
-     "simple": "testCase"
-    },
-    "url": {
-     "complex": null,
-     "simple": "url"
     }
    }
   }
