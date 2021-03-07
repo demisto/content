@@ -1093,7 +1093,8 @@ def file_result_creator(raw_response: dict) -> dict:
         data = base64.b64decode(data)  # type: ignore
         return fileResult(name, data)
     except binascii.Error:
-        raise Exception('Attachment could not be decoded')
+        return_error('Attachment could not be decoded')
+        return {}  # return_error will exit
 
 
 def parse_folders_list(folders_list):
@@ -1151,13 +1152,14 @@ def delete_mail_command(client: MsGraphClient, args):
     return_outputs(human_readable, entry_context)
 
 
-def item_result_creator(raw_response: dict, user_id: str) -> CommandResults:
+def item_result_creator(raw_response, user_id):
     item = raw_response.get('item', {})
     item_type = item.get('@odata.type', '')
     if 'message' in item_type:
         message_id = raw_response.get('id')
         item['id'] = message_id
         mail_context = build_mail_object(item, user_id=user_id, get_body=True)
+        entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
         human_readable = tableToMarkdown(
             f'Attachment ID {message_id} \n **message details:**',
             mail_context,
@@ -1168,23 +1170,29 @@ def item_result_creator(raw_response: dict, user_id: str) -> CommandResults:
                               outputs=mail_context,
                               readable_output=human_readable,
                               raw_response=raw_response)
+        # return_outputs(
+        #     human_readable,
+        #     entry_context,
+        #     raw_response=raw_response
+        # )
     else:
-        human_readable = f'Integration does not support attachments from type {item_type}'
+        human_readable = f'Integration does not support  attachments from type {item_type}'
         return CommandResults(readable_output=human_readable, raw_response=raw_response)
+        # return_outputs(human_readable, raw_response=raw_response)
 
 
-def create_attachment(raw_response: dict, user_id: str):
+def create_attachment(raw_response, user_id):
     attachment_type = raw_response.get('@odata.type', '')
     # Documentation about the different attachment types
     # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
     if 'itemAttachment' in attachment_type:
-        return_results(item_result_creator(raw_response, user_id))
+        return item_result_creator(raw_response, user_id)
     if 'fileAttachment' in attachment_type:
         return demisto.results(file_result_creator(raw_response))
-    raise Exception('Gat attachment command supports only item and file type attachments')
+    return {}
 
 
-def get_attachment_command(client: MsGraphClient, args: dict):
+def get_attachment_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     user_id = args.get('user_id')
     folder_id = args.get('folder_id')
