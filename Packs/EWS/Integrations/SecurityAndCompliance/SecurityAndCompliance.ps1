@@ -1329,7 +1329,7 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     }
     # Results file export
     if ($export) {
-        $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit -1 -all_results $true
+        $parsed_results_all = ParseSuccessResults -success_results $raw_response.SuccessResults -limit $kwargs.limit -all_results $all_results
         if ($parsed_results_all.Count -ne 0){
             $file_entry = FileResult "$($kwargs.search_name)_search.json" $($parsed_results_all | ConvertTo-Json)
         }
@@ -1411,7 +1411,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     }
     # Results file export
     if ($export) {
-        $parsed_results_all = ParseResults -results $raw_response.Results -limit -1
+        $parsed_results_all = ParseResults -results $raw_response.Results -limit $kwargs.limit
         if ($parsed_results_all.Count -ne 0){
             $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json)
         }
