@@ -1175,6 +1175,8 @@ def item_result_creator(raw_response: dict, user_id: str) -> CommandResults:
 
 def create_attachment(raw_response: dict, user_id: str):
     attachment_type = raw_response.get('@odata.type', '')
+    # Documentation about the different attachment types
+    # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
     if 'itemAttachment' in attachment_type:
         return_results(item_result_creator(raw_response, user_id))
     if 'fileAttachment' in attachment_type:
