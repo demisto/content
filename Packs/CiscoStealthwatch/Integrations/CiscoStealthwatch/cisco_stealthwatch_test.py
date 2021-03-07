@@ -45,7 +45,7 @@ def test_cisco_stealthwatch_query_flows_results_command(requests_mock):
     response = cisco_stealthwatch_query_flows_results_command(client, '', '')
 
     assert response.outputs_prefix == 'CiscoStealthwatch.FlowResults'
-    assert response.outputs_key_field == ['id', 'tenantId']
+    assert response.outputs_key_field == 'id'
     assert len(response.outputs) == 1
     assert response.outputs[0].get('id') == 876742
 
@@ -184,6 +184,6 @@ def test_cisco_stealthwatch_list_security_events_results_command(requests_mock):
     response = cisco_stealthwatch_list_security_events_results_command(client, '', 'x', 2)
 
     assert response.outputs_prefix == 'CiscoStealthwatch.SecurityEventResults'
-    assert response.outputs_key_field == ['id', 'domainId']
+    assert response.outputs_key_field == 'id'
     assert len(response.outputs) == 2
     assert response.outputs[0].get('id') == 5223
