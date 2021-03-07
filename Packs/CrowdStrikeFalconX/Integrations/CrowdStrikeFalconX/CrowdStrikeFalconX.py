@@ -214,6 +214,7 @@ class Client:
         :param comment: a descriptive comment to identify the file for other users
         :return: http response
         """
+        file_bytes = None
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
         file_name = get_file_path_res["name"]
