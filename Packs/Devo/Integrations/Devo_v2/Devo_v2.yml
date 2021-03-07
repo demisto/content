@@ -26,12 +26,6 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Should use urllib parse
-  hidden: false
-  name: urllib_parse
-  required: false
-  defaultvalue: true
-  type: 8
 - display: Devo base domain
   name: linq_link_base
   defaultvalue: https://us.devo.com/welcome
@@ -50,6 +44,14 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
+- display: Filter with special characters
+  additionalinfo: "When using special characters such as ';' | '/' | '?' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '~'
+  as part of the value of the filter."
+  hidden: false
+  name: special_characters
+  required: false
+  defaultvalue: false
+  type: 8
 - display: Deduplication parameters JSON if required
   name: fetch_incidents_deduplication
   defaultvalue: ""
@@ -99,6 +101,10 @@ script:
     - name: filters
       description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
       isArray: true
+    - description: "When using special characters such as ';' | '/' | '?' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '~'
+      as part of the value of the filter."
+      name: special_characters
+      defaultvalue: false
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false". The default value is "true".
       defaultValue: "true"
