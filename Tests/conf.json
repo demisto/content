@@ -803,10 +803,6 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest",
-            "toversion": "4.5.9"
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
@@ -1439,19 +1435,6 @@
             "timeout": 240
         },
         {
-            "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "FalconHost Test"
-        },
-        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
@@ -1864,10 +1847,6 @@
             "timeout": 240
         },
         {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
             "fromversion": "5.5.0",
@@ -2066,10 +2045,6 @@
             "nightly": true
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
-            "toversion": "3.6.0"
-        },
-        {
             "playbookID": "STIXParserTest"
         },
         {
@@ -2089,17 +2064,6 @@
                 "VxStream",
                 "Lastline v2"
             ]
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                "carbonblackprotection",
-                "carbonblack"
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500,
-            "toversion": "4.4.9"
         },
         {
             "integrations": [
@@ -2371,20 +2335,12 @@
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
-            "timeout": 300,
-            "fromversion": "4.1.0",
-            "toversion": "4.4.9"
-        },
-        {
-            "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
             "timeout": 350,
             "fromversion": "4.5.0"
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
-                "FalconHost",
                 "Cylance Protect v2",
                 "carbonblack-v2",
                 "epo",
@@ -2567,14 +2523,6 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": [
-                "Rasterize",
-                "Image OCR"
-            ],
-            "playbookID": "Rasterize 4.5 Test",
-            "toversion": "4.5.9"
         },
         {
             "integrations": "Rasterize",
