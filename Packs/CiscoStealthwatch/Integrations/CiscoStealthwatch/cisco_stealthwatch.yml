@@ -407,4 +407,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - Cisco Stealthwatch Test
 fromversion: 5.5.0

@@ -1,7 +1,7 @@
-id: Cisco Stealthwatch
+id: Cisco Stealthwatch Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Cisco Stealthwatch
+name: Cisco Stealthwatch Test
 starttaskid: "0"
 tasks:
   "0":

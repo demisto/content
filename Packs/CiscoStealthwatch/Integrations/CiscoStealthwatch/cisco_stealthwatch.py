@@ -159,7 +159,8 @@ def cisco_stealthwatch_query_flows_initialize_command(client: Client, tenant_id:
     response = client.initialize_flow_search(tenant_id, data)
     outputs = dict_safe_get(response, ['data', 'query'])
     table = tableToMarkdown('Query Flows Initializing Information:', outputs,
-                            headers=['id', 'status', 'percentComplete'], removeNull=True)
+                            headers=['id', 'status', 'percentComplete'], removeNull=True,
+                            headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.FlowStatus',
         outputs_key_field='id',
@@ -184,7 +185,8 @@ def cisco_stealthwatch_query_flows_status_command(client: Client, tenant_id: str
     outputs = dict_safe_get(response, ['data', 'query'])
     outputs['id'] = search_id
     table = tableToMarkdown('Query Flows Status Information:', outputs,
-                            headers=['id', 'percentComplete'], removeNull=True)
+                            headers=['id', 'percentComplete'], removeNull=True,
+                            headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.FlowStatus',
         outputs_key_field='id',
@@ -212,10 +214,10 @@ def cisco_stealthwatch_query_flows_results_command(client: Client, tenant_id: st
     headers = ['id', 'tenantId', 'flowCollectorId', 'protocol', 'serviceId', 'statistics', 'peer',
                'subject']
     table = tableToMarkdown('Query Flows Results Information:', outputs, headers=headers,
-                            removeNull=True)
+                            removeNull=True, headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.FlowResults',
-        outputs_key_field=['id', 'tenantId'],
+        outputs_key_field='id',
         raw_response=response,
         outputs=outputs,
         readable_output=table
@@ -239,8 +241,9 @@ def cisco_stealthwatch_list_tags_command(client: Client, tenant_id: str) -> Comm
 
     outputs = sorted(outputs, key=lambda x: x.get('id'))
 
-    table = tableToMarkdown(f'Tags (for tenant_id: {tenant_id}):', outputs,
-                            headers=['displayName', 'id'], removeNull=True)
+    table = tableToMarkdown(f'Tags for tenant_id: {tenant_id}:', outputs,
+                            headers=['displayName', 'id'], removeNull=True,
+                            headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.Tag',
@@ -266,9 +269,9 @@ def cisco_stealthwatch_get_tag_command(client: Client, tenant_id: str, tag_id: s
     response = client.get_tag(tenant_id, tag_id)
     outputs = response.get('data', {})
 
-    table = tableToMarkdown(f'Tag (tenant_id: {tenant_id}, tag_id: {tag_id}):', outputs,
+    table = tableToMarkdown(f'Tag {tag_id} with tenant id {tenant_id} results:', outputs,
                             headers=['id', 'name', 'location', 'domainId'],
-                            removeNull=True)
+                            removeNull=True, headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.Tag',
@@ -294,8 +297,9 @@ def cisco_stealthwatch_list_tenants_command(client: Client,
         response = client.get_tenant(tenant_id)
         outputs = response.get('data', [])
 
-        table = tableToMarkdown(f'Tenant (tenant_id: {tenant_id})', outputs,
-                                headers=['id', 'displayName'], removeNull=True)
+        table = tableToMarkdown(f'Tenant {tenant_id}:', outputs,
+                                headers=['id', 'displayName'], removeNull=True,
+                                headerTransform=pascalToSpace)
 
         command_results = CommandResults(
             outputs_prefix='CiscoStealthwatch.Tenant',
@@ -310,7 +314,8 @@ def cisco_stealthwatch_list_tenants_command(client: Client,
         for tenant in response.get('data', []):
             outputs.append(tenant)
 
-        table = tableToMarkdown('Tenants:', outputs, headers=['id', 'displayName'], removeNull=True)
+        table = tableToMarkdown('Tenants:', outputs, headers=['id', 'displayName'], removeNull=True,
+                                headerTransform=pascalToSpace)
 
         command_results = CommandResults(
             outputs_prefix='CiscoStealthwatch.Tenant',
@@ -346,8 +351,9 @@ def cisco_stealthwatch_get_tag_hourly_traffic_report_command(client: Client, ten
             outputs.append(report)
 
     headers = ['timestamp', 'inboundByteCount', 'outboundByteCount', 'withinByteCount']
-    title = f'Hourly Tag Traffic Report (tenant_id: {tenant_id}, tag_id: {tag_id}):'
-    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True)
+    title = f'Hourly Tag Traffic Report for tenant id {tenant_id} and tag id {tag_id}:'
+    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True,
+                            headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.TagHourlyTraffic',
@@ -377,8 +383,9 @@ def cisco_stealthwatch_get_top_alarming_tags_command(client: Client,
         outputs.append(alarm)
 
     headers = ['hostGroupIds', 'ipAddress', 'sourceCategoryEvents']
-    title = f'Top Alarming Tags (tenant_id: {tenant_id}):'
-    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True)
+    title = f'Top Alarming Tags for tenant id {tenant_id}:'
+    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True,
+                            headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.AlarmingTag',
@@ -425,7 +432,8 @@ def cisco_stealthwatch_list_security_events_initialize_command(client: Client, t
     response = client.initialize_security_events_search(tenant_id, data)
     outputs = dict_safe_get(response, ['data', 'searchJob'])
     table = tableToMarkdown('Security Events Initializing Information:', outputs,
-                            headers=['id', 'searchJobStatus', 'percentComplete'], removeNull=True)
+                            headers=['id', 'searchJobStatus', 'percentComplete'], removeNull=True,
+                            headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.SecurityEventStatus',
         outputs_key_field='id',
@@ -450,7 +458,8 @@ def cisco_stealthwatch_list_security_events_status_command(client: Client, tenan
     outputs = response.get('data')
     outputs['id'] = search_id
     table = tableToMarkdown('Security Events Status Information:', outputs,
-                            headers=['id', 'percentComplete'], removeNull=True)
+                            headers=['id', 'percentComplete'], removeNull=True,
+                            headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.SecurityEventStatus',
         outputs_key_field='id',
@@ -484,11 +493,12 @@ def cisco_stealthwatch_list_security_events_results_command(client: Client, tena
     headers = ['id', 'domainId', 'deviceId', 'securityEventType', 'firstActiveTime',
                'lastActiveTime', 'source', 'target', 'details', 'hitCount']
     title = f'Showing {len(outputs)} Security Events:'
-    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True)
+    table = tableToMarkdown(title, outputs, headers=headers, removeNull=True,
+                            headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='CiscoStealthwatch.SecurityEventResults',
-        outputs_key_field=['id', 'domainId'],
+        outputs_key_field='id',
         raw_response=response,
         outputs=outputs,
         readable_output=table
