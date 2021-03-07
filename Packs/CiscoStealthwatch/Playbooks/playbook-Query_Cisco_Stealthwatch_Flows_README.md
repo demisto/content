@@ -37,4 +37,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Setup Account](./../../doc_files/CiscoStealthWatch-Query-Flows-Playbook.png.png)
+![Setup Account](./../../doc_files/CiscoStealthWatch-Query-Flows-Playbook.png)
