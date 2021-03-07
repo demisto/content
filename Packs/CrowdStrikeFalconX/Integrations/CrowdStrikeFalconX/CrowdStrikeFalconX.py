@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
-import shutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
