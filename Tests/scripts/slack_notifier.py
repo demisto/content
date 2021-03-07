@@ -9,7 +9,7 @@ import requests
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs, PackStatus
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -147,20 +147,19 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         if successful_packs:
             steps_fields += [{
                 "title": "Successful Packs:",
-                "value": "\n".join([pack_name for pack_name in {*successful_packs}]),
+                "value": "\n".join(sorted([pack_name for pack_name in {*successful_packs}])),
                 "short": False
             }]
         if failed_packs:
             steps_fields += [{
                 "title": "Failed Packs:",
-                "value": "\n".join([f"{pack_name}: {PackStatus[pack_data.get(BucketUploadFlow.STATUS)].value}"
-                                    for pack_name, pack_data in failed_packs.items()]),
+                "value": "\n".join(sorted([pack_name for pack_name in {*failed_packs}])),
                 "short": False
             }]
         if successful_private_packs_dict:
             steps_fields += [{
                 "title": "Successful Private Packs:",
-                "value": "\n".join([pack_name for pack_name in {*successful_private_packs_dict}]),
+                "value": "\n".join(sorted([pack_name for pack_name in {*successful_private_packs_dict}])),
                 "short": False
             }]
 
