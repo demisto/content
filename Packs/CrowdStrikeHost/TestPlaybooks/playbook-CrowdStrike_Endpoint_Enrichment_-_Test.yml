@@ -2,6 +2,7 @@ id: CrowdStrike Endpoint Enrichment - Test
 version: -1
 rolename: []
 name: CrowdStrike Endpoint Enrichment - Test
+description: Deprecated.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

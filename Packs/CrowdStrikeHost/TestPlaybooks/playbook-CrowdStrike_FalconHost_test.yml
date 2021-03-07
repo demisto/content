@@ -2,6 +2,7 @@ id: FalconHost Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: FalconHost Test
+description: Deprecated.
 starttaskid: "0"
 tasks:
   "0":
