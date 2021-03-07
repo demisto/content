@@ -23,7 +23,7 @@ WRITER_CREDENTIALS = demisto.params().get('writer_credentials', None)
 LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/welcome")
 FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
-URLLIB_PARSE = argToBoolean(demisto.params().get('special_characters', "false"))
+SPECIAL_CHARACTERS = argToBoolean(demisto.params().get('special_characters', "false"))
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
 RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
@@ -74,16 +74,16 @@ SEVERITY_LEVELS_MAP = {
 ''' HELPER FUNCTIONS '''
 
 
-def prepare_filter_alerts(alert_filters, urllib_parse):
+def prepare_filter_alerts(alert_filters, special_characters):
     filter_string = ''
     alert_query = ''
     if alert_filters['type'] == 'AND':
         filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} '
-                                    f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
+                                    f'"{str(filt["value"]) if special_characters else urllib.parse.quote(filt["value"])}"'
                                     for filt in alert_filters['filters']])
     elif alert_filters['type'] == 'OR':
         filter_string = ' or '.join([f'{filt["key"]} {filt["operator"]} '
-                                     f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
+                                     f'"{str(filt["value"]) if special_characters else urllib.parse.quote(filt["value"])}"'
                                      for filt in alert_filters['filters']])
 
     return f'{alert_query} where {filter_string}'
@@ -286,7 +286,7 @@ def fetch_incidents():
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
-        alert_query = prepare_filter_alerts(alert_filters, URLLIB_PARSE)
+        alert_query = prepare_filter_alerts(alert_filters, SPECIAL_CHARACTERS)
 
     from_time = to_time - 3600
     if 'from_time' in last_run:
@@ -391,14 +391,14 @@ def get_alerts_command():
     timestamp_to = demisto.args().get('to', None)
     alert_filters = demisto.args().get('filters', None)
     write_context = demisto.args()['writeToContext'].lower()
-    urllib_parse = argToBoolean(demisto.args().get('special_characters', "false"))
+    special_characters = argToBoolean(demisto.args().get('special_characters', "false"))
     alert_query = ALERTS_QUERY
 
     time_range = get_time_range(timestamp_from, timestamp_to)
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
-        alert_query = prepare_filter_alerts(alert_filters, urllib_parse)
+        alert_query = prepare_filter_alerts(alert_filters, special_characters)
 
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                    .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),
