@@ -206,7 +206,7 @@ def search_user(query: str, max_results: str = '50'):
 
 def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
     """
-    https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-picker-get
+    https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
     Args:
         attribute (str): Username or Email address of a user.
