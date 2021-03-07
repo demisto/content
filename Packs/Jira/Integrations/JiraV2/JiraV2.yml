@@ -1,8 +1,8 @@
 commonfields:
-  id: jira-v2_test
+  id: jira-v2
   version: -1
-name: jira-v2_test
-display: Atlassian Jira v2 test
+name: jira-v2
+display: Atlassian Jira v2
 fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents
