@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from Devo_v2 import fetch_incidents, run_query_command, get_alerts_command,\
     multi_table_query_command, write_to_table_command, write_to_lookup_table_command,\
-    check_configuration, get_time_range
+    check_configuration, get_time_range, prepare_filter_alerts
 
 MOCK_READER_ENDPOINT = "https://fake.devo.com/query"
 MOCK_LINQ_LINK_BASE = "https://devo.com"
@@ -29,6 +29,16 @@ MOCK_FETCH_INCIDENTS_FILTER = {
             "key": "baz",
             "operator": "or",
             "value": "bar"
+        }
+    ]
+}
+FILTER_SPECIAL_CHARACTERS = {
+    "type": "OR",
+    "filters": [
+        {
+            "key": "username",
+            "operator": "=",
+            "value": "test@test.com"
         }
     ]
 }
@@ -184,6 +194,18 @@ def test_command(mock_query_results, mock_write_args):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_write_args.return_value = MOCK_WRITER_ARGS
     assert check_configuration()
+
+
+def test_prepare_filter_alerts():
+    """
+    Given: Filter dict includes 'type' and 'filters' keys
+    When: '@' which is a special character is included as part of the value
+    Then: Validate that when the special_character is set true the @ in part of the query, otherwise encoded to %40
+    """
+    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, True)
+    assert alerts_filter == ' where username = "test@test.com"'
+    alerts_filter = prepare_filter_alerts(FILTER_SPECIAL_CHARACTERS, False)
+    assert alerts_filter == ' where username = "test%40test.com"'
 
 
 @patch('Devo_v2.READER_ENDPOINT', MOCK_READER_ENDPOINT, create=True)

@@ -74,6 +74,21 @@ SEVERITY_LEVELS_MAP = {
 ''' HELPER FUNCTIONS '''
 
 
+def prepare_filter_alerts(alert_filters, urllib_parse):
+    filter_string = ''
+    alert_query = ''
+    if alert_filters['type'] == 'AND':
+        filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} '
+                                    f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
+                                    for filt in alert_filters['filters']])
+    elif alert_filters['type'] == 'OR':
+        filter_string = ' or '.join([f'{filt["key"]} {filt["operator"]} '
+                                     f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
+                                     for filt in alert_filters['filters']])
+
+    return f'{alert_query} where {filter_string}'
+
+
 def alert_to_incident(alert):
     alert_severity = float(1)
     alert_name = alert['context'].split('.')[-1]
@@ -271,17 +286,7 @@ def fetch_incidents():
 
     if FETCH_INCIDENTS_FILTER:
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
-
-        if alert_filters['type'] == 'AND':
-            filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} '
-                                        f'"{str(filt["value"]) if URLLIB_PARSE else urllib.parse.quote(filt["value"])}"'
-                                       for filt in alert_filters['filters']])
-        elif alert_filters['type'] == 'OR':
-            filter_string = ' or '.join([f'{filt["key"]} {filt["operator"]} '
-                                        f'"{str(filt["value"]) if URLLIB_PARSE else urllib.parse.quote(filt["value"])}"'
-                                        for filt in alert_filters['filters']])
-
-        alert_query = f'{alert_query} where {filter_string}'
+        alert_query = prepare_filter_alerts(alert_filters, URLLIB_PARSE)
 
     from_time = to_time - 3600
     if 'from_time' in last_run:
@@ -393,17 +398,7 @@ def get_alerts_command():
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
-        if alert_filters['type'] == 'AND':
-            filter_string = ', '\
-                .join([f'{filt["key"]} {filt["operator"]} '
-                       f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
-                      for filt in alert_filters['filters']])
-        elif alert_filters['type'] == 'OR':
-            filter_string = ' or '\
-                .join([f'{filt["key"]} {filt["operator"]} '
-                       f'"{str(filt["value"]) if urllib_parse else urllib.parse.quote(filt["value"])}"'
-                      for filt in alert_filters['filters']])
-        alert_query = f'{alert_query} where {filter_string}'
+        alert_query = prepare_filter_alerts(alert_filters, urllib_parse)
 
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                    .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),

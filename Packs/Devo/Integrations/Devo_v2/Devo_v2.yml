@@ -104,7 +104,7 @@ script:
     - description: "When using special characters such as ';' | '/' | '?' | ':' | '@' | '&' | '=' | '+' | '$' | ',' | '~'
       as part of the value of the filter."
       name: special_characters
-      defaultvalue: false
+      defaultValue: "false"
     - name: writeToContext
       description: Whether to write results to context. Can be "true" or "false". The default value is "true".
       defaultValue: "true"
@@ -173,7 +173,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.13898
+  dockerimage: demisto/devo:1.0.0.15869
   isfetch: true
   runonce: false
   subtype: python3
