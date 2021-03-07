@@ -2,7 +2,7 @@
   "defaultIncidentType": "Armis Alert - Anomaly Detection",
   "description": "",
   "feed": false,
-  "id": "Armis Alert - Anomaly Detection",
+  "id": "Armis - Incoming Mapper",
   "mapping": {
     "Armis Alert": {
       "dontMapEventToLabels": false,
@@ -326,7 +326,7 @@
       }
     }
   },
-  "name": "Armis_mapper-incoming",
+  "name": "Armis - Incoming Mapper",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0"

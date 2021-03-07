@@ -120,7 +120,7 @@ class Client(BaseClient):
         Returns:
             dict: A JSON containing a list of matching Alerts represented by JSON objects
         """
-        time_frame = '30 Days' if time_frame is None else time_frame
+        time_frame = '3 Days' if time_frame is None else time_frame
         aql_string = ['in:alerts', f'timeFrame:"{time_frame}"']
         if severity:
             severity_string = ','.join([severity_option for severity_option in severity])
@@ -221,7 +221,7 @@ class Client(BaseClient):
             dict: A JSON containing a list of matching Devices represented by JSON objects
         """
 
-        time_frame = '30 Days' if time_frame is None else time_frame
+        time_frame = '3 Days' if time_frame is None else time_frame
         aql_string = ['in:devices', f'timeFrame:"{time_frame}"']
         if name is not None:
             aql_string.append(f'name:({name})')
@@ -286,6 +286,21 @@ def _ensure_timezone(date: datetime):
     return date
 
 
+def _create_time_frame_string(last_fetch: datetime):
+    """
+    The function receives the last_fetch time and returns a string formatted to Armis' requirements
+    Armis' smallest unit is seconds so the function rounds the result to seconds
+    Args:
+        last_fetch (datetime): The date object of the last fetch
+    Returns:
+        time_frame_string: An Armis' compatible time frame string based on the last_fetch time
+    """
+    current_time = _ensure_timezone(datetime.now())
+    time_frame_seconds = round((current_time - last_fetch).total_seconds())
+    time_frame_string = f'{time_frame_seconds} seconds'
+    return time_frame_string
+
+
 def fetch_incidents(client: Client,
                     last_run: dict,
                     first_fetch_time: str,
@@ -319,8 +334,7 @@ def fetch_incidents(client: Client,
     else:
         last_fetch = _ensure_timezone(dateparser.parse(first_fetch_time))
     # use the last fetch time to build a time frame in which to search for alerts.
-    # This is rounded to seconds because Armis does not support searching with a timeFrame of milliseconds
-    time_frame = f'{round((_ensure_timezone(datetime.now()) - last_fetch).total_seconds())} seconds'
+    time_frame = _create_time_frame_string(last_fetch)
 
     latest_created_time = _ensure_timezone(last_fetch)
 
@@ -603,7 +617,7 @@ def main():
 
     # get the service API url
     base_url = params.get('url')
-    verify = params.get('insecure', False)
+    verify = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = params.get('fetch_time', '3 days').strip()

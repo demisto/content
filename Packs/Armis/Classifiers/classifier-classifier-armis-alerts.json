@@ -2,13 +2,13 @@
   "defaultIncidentType": "Armis Alert",
   "description": "",
   "feed": false,
-  "id": "Armis Alert",
+  "id": "Armis - Classifier",
   "keyTypeMap": {
     "Anomaly Detection": "Armis Alert",
     "Policy Violation": "Armis Alert",
     "System Policy Violation": "Armis Alert"
   },
-  "name": "classifier-armis-alerts",
+  "name": "Armis - Classifier",
   "transformer": {
     "complex": null,
     "simple": "type"

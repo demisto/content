@@ -200,37 +200,37 @@ script:
     execution: false
     name: armis-search-alerts-by-aql-string
     outputs:
-    - contextPath: Armis.Armis.activityIds
+    - contextPath: Armis.Alert.activityIds
       description: The activity IDs of the alert.
       type: Number
-    - contextPath: Armis.Armis.activityUUIDs
+    - contextPath: Armis.Alert.activityUUIDs
       description: The activity UUIDs of the alert.
       type: String
-    - contextPath: Armis.Armis.alertId
+    - contextPath: Armis.Alert.alertId
       description: The ID of the alert.
       type: Number
-    - contextPath: Armis.Armis.connectionIds
+    - contextPath: Armis.Alert.connectionIds
       description: The connection IDs of the alert.
       type: Number
-    - contextPath: Armis.Armis.description
+    - contextPath: Armis.Alert.description
       description: The description of the alert.
       type: String
-    - contextPath: Armis.Armis.deviceIds
+    - contextPath: Armis.Alert.deviceIds
       description: The device IDs of the alert.
       type: Number
-    - contextPath: Armis.Armis.severity
+    - contextPath: Armis.Alert.severity
       description: The severity of the alert.
       type: String
-    - contextPath: Armis.Armis.status
+    - contextPath: Armis.Alert.status
       description: The status of the alert.
       type: String
-    - contextPath: Armis.Armis.time
+    - contextPath: Armis.Alert.time
       description: The date and time the alert occurred.
       type: Date
-    - contextPath: Armis.Armis.title
+    - contextPath: Armis.Alert.title
       description: The title of the alert.
       type: String
-    - contextPath: Armis.Armis.type
+    - contextPath: Armis.Alert.type
       description: The type of the alert.
       type: String
   - arguments:
