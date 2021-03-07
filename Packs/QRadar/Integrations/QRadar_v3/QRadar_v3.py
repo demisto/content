@@ -1892,9 +1892,9 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     response = client.search_results_get(search_id, range_)
     result_key = list(response.keys())[0]
     outputs = sanitize_outputs(response.get(result_key))
-    outputs = []
-    for i in range(1000000):
-        outputs.append({'a': i})
+    # outputs = []
+    # for i in range(1000000):
+    #     outputs.append({'a': i})
     # TODO add file naming (shown in integration design)
 
     return CommandResults(

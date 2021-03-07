@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3ec8570f-2cc0-4442-83fd-53007bbe8483
+    taskid: 7f567a1b-1caa-4e8f-8d64-6588d9b0efa5
     type: start
     task:
-      id: 3ec8570f-2cc0-4442-83fd-53007bbe8483
+      id: 7f567a1b-1caa-4e8f-8d64-6588d9b0efa5
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 808e9101-5e6f-4f7d-84fe-5d5d293a620c
+    taskid: 8950e4e9-abd6-49dd-868f-1b25858b5fe8
     type: regular
     task:
-      id: 808e9101-5e6f-4f7d-84fe-5d5d293a620c
+      id: 8950e4e9-abd6-49dd-868f-1b25858b5fe8
       version: -1
       name: Create QRadar Search
       description: Create a new asynchronous Ariel search. Returns search ID. Search
@@ -70,36 +70,42 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 32c50d18-45e1-4d26-88e6-bb1aa080d756
+    taskid: 70ba0e2e-a80c-4046-8284-e1bf3de8287a
     type: playbook
     task:
-      id: 32c50d18-45e1-4d26-88e6-bb1aa080d756
+      id: 70ba0e2e-a80c-4046-8284-e1bf3de8287a
       version: -1
       name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${QRadar.Search.ID}
       Interval:
-        simple: "1"
+        simple: ${inputs.interval}
       PollingCommandArgName:
-        simple: ids
+        simple: search_id
       PollingCommandName:
         simple: qradar-search-status-get
       Timeout:
-        simple: "10"
+        simple: ${inputs.timeout}
       dt:
-        simple: QRadar.SearchStatus(val.Status != 'CANCELED' && val.Status != 'ERROR'
-          && val.Status != 'COMPLETED').ID
+        simple: QRadar.Search(val.Status!=='COMPLETED').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -109,7 +115,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 60,
           "y": 720
         }
       }
@@ -120,10 +126,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d66c7cb8-7dd8-409b-86a2-8810a3387c3e
+    taskid: c15a37f1-8324-4655-8d96-8c8e68e3f0c6
     type: regular
     task:
-      id: d66c7cb8-7dd8-409b-86a2-8810a3387c3e
+      id: c15a37f1-8324-4655-8d96-8c8e68e3f0c6
       version: -1
       name: Get QRadar Search Results
       description: Retrieves search results.
@@ -133,19 +139,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       output_path:
         simple: ${inputs.output_path}
-      range: {}
+      range:
+        simple: ${inputs.range}
       search_id:
         simple: ${QRadar.Search.ID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -155,12 +162,12 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 0230e8b0-c494-4871-8273-770bfdc70d99
+    taskid: 5f590290-8d38-4183-8485-ea4f5842ce5f
     type: condition
     task:
-      id: 0230e8b0-c494-4871-8273-770bfdc70d99
+      id: 5f590290-8d38-4183-8485-ea4f5842ce5f
       version: -1
-      name: Check If Search Was Returned
+      name: Check If Search Was Completed
       description: Checks if the given search have been completed before calling GenericPolling
         sub playbook.
       type: condition
@@ -170,20 +177,23 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "5"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: QRadar.Search.Result
+              simple: QRadar.Search.Status
             iscontext: true
+          right:
+            value:
+              simple: COMPLETED
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 60,
           "y": 1070
         }
       }
@@ -194,10 +204,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e8bc431c-526a-4792-8318-f219dd6d304a
+    taskid: 503913e8-6918-478b-8116-483e9e7687bf
     type: title
     task:
-      id: e8bc431c-526a-4792-8318-f219dd6d304a
+      id: 503913e8-6918-478b-8116-483e9e7687bf
       version: -1
       name: Done
       type: title
@@ -209,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1260
+          "y": 1420
         }
       }
     note: false
@@ -219,10 +229,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b02cf2d9-93ab-4677-8b16-4dd3af24a497
+    taskid: 80e8ecaf-af37-4b12-84b7-900be4486318
     type: regular
     task:
-      id: b02cf2d9-93ab-4677-8b16-4dd3af24a497
+      id: 80e8ecaf-af37-4b12-84b7-900be4486318
       version: -1
       name: Print Error Message
       description: Prints an error entry with a given message
@@ -248,10 +258,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b9283f37-b8d4-4956-8418-445e058fed38
+    taskid: 8187e1d4-3811-401c-8f5c-abb7d92654bb
     type: regular
     task:
-      id: b9283f37-b8d4-4956-8418-445e058fed38
+      id: 8187e1d4-3811-401c-8f5c-abb7d92654bb
       version: -1
       name: QRadar Get Search Status
       description: Retrieve status information for a search, based on the search ID
@@ -265,7 +275,7 @@ tasks:
       - "8"
     scriptarguments:
       search_id:
-        simple: ${QRadar.Search.Status}
+        simple: ${QRadar.Search.ID}
     separatecontext: false
     view: |-
       {
@@ -281,14 +291,14 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 19a0d530-c16b-460f-8308-dcc38a3fc73f
+    taskid: cc77ab2e-2f07-421e-8a9e-2d4b8e93cee7
     type: condition
     task:
-      id: 19a0d530-c16b-460f-8308-dcc38a3fc73f
+      id: cc77ab2e-2f07-421e-8a9e-2d4b8e93cee7
       version: -1
       name: 'Was Search Completed Immediately? '
-      type: condition
       description: Check if QRadar search was completed immediately.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
@@ -320,12 +330,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "9":
+    id: "9"
+    taskid: 79b1902f-c4c9-4f41-8c83-a850dacddcf0
+    type: regular
+    task:
+      id: 79b1902f-c4c9-4f41-8c83-a850dacddcf0
+      version: -1
+      name: Check Search Status
+      description: Retrieve status information for a search, based on the search ID
+        parameter.
+      script: '|||qradar-search-status-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1435,
         "width": 810,
         "x": 50,
         "y": 50
@@ -344,12 +387,30 @@ inputs:
   description: Saved search ID to execute. Mutually exclusive with query_expression.
     Saved search ID is 'id' field returned by command 'qradar-saved-searches-list'.
   playbookInputQuery:
+- key: range
+  value: {}
+  required: false
+  description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
+  playbookInputQuery:
 - key: output_path
   value: {}
   required: false
   description: Replaces the default context output path for the query result (QRadar.Search.Result).
     e.g. for output_path=QRadar.Correlations the result will be under the key 'QRadar.Correlations'
     in the context data.
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: Frequency that the polling command will run (in minutes).
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: Number of times that the polling command will run until declaring a
+    timeout and resuming the playbook.
   playbookInputQuery:
 outputs: []
 tests:
