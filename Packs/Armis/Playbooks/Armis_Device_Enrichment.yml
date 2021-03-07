@@ -1,7 +1,7 @@
 id: Armis Alert Enrichment
 version: -1
 name: Armis Alert Enrichment
-description: Enrich Armis Alert with Device in context details
+description: Enrich Armis alerts with the devices in the context details.
 starttaskid: "0"
 tasks:
   "0":
@@ -64,7 +64,7 @@ tasks:
       id: b7400f40-5cf0-4846-8048-599cd1ab739a
       version: -1
       name: Get device information from Armis and update incident fields
-      description: Search Devices by identifiers
+      description: Search devices by identifiers.
       script: Armis|||armis-search-devices
       type: regular
       iscommand: true
@@ -92,7 +92,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Device properties collected by Armis
+        simple: Device properties collected by Armis.
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -131,26 +131,26 @@ inputs:
   value:
     simple: ${incident.armisdeviceid}
   required: true
-  description: Getting the device ID which is associated in the alert
+  description: Get the device ID that is associated with the alert.
   playbookInputQuery:
 outputs:
 - contextPath: Device ID
   description: Device ID
   type: string
 - contextPath: Armis.SearchDevices.name
-  description: Device Name
+  description: Device name.
   type: string
 - contextPath: Armis.SearchDevices.riskLevel
-  description: Device Risk Level by Armis
+  description: Device risk level defined by Armis.
   type: number
 - contextPath: Armis.SearchDevices.ipaddress
-  description: IPv4 Address
+  description: IPv4 address.
   type: string
 - contextPath: Armis.SearchDevices.site
   description: Site name
   type: string
 - contextPath: Armis.SearchDevices.tags
-  description: 'Tags '
+  description: Tags.
   type: string
 tests:
 - No tests (auto formatted)
