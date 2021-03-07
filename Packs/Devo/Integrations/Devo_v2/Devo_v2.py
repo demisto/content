@@ -23,6 +23,7 @@ WRITER_CREDENTIALS = demisto.params().get('writer_credentials', None)
 LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/welcome")
 FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
+URLLIB_PARSE = demisto.params().get('urllib_parse', True)
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
 RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
@@ -272,10 +273,12 @@ def fetch_incidents():
         alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
 
         if alert_filters['type'] == 'AND':
-            filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
+            filter_string = ' , '.join([f'{filt["key"]} {filt["operator"]} '
+                                        f'"{urllib.parse.quote(filt["value"]) if URLLIB_PARSE else str(filt["value"])}"'
                                        for filt in alert_filters['filters']])
         elif alert_filters['type'] == 'OR':
-            filter_string = ' or '.join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
+            filter_string = ' or '.join([f'{filt["key"]} {filt["operator"]} '
+                                        f'"{urllib.parse.quote(filt["value"]) if URLLIB_PARSE else str(filt["value"])}"'
                                         for filt in alert_filters['filters']])
 
         alert_query = f'{alert_query} where {filter_string}'
@@ -391,11 +394,13 @@ def get_alerts_command():
         alert_filters = check_type(alert_filters, dict)
         if alert_filters['type'] == 'AND':
             filter_string = ', '\
-                .join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
+                .join([f'{filt["key"]} {filt["operator"]} '
+                       f'"{urllib.parse.quote(filt["value"]) if URLLIB_PARSE else str(filt["value"])}"'
                       for filt in alert_filters['filters']])
         elif alert_filters['type'] == 'OR':
             filter_string = ' or '\
-                .join([f'{filt["key"]} {filt["operator"]} "{urllib.parse.quote(filt["value"])}"'
+                .join([f'{filt["key"]} {filt["operator"]} '
+                       f'"{urllib.parse.quote(filt["value"]) if URLLIB_PARSE else str(filt["value"])}"'
                       for filt in alert_filters['filters']])
         alert_query = f'{alert_query} where {filter_string}'
 

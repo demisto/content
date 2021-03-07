@@ -26,6 +26,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: Should use urllib parse
+  hidden: false
+  name: urllib_parse
+  required: false
+  defaultvalue: true
+  type: 8
 - display: Devo base domain
   name: linq_link_base
   defaultvalue: https://us.devo.com/welcome
