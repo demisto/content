@@ -1,7 +1,6 @@
 commonfields:
   id: script-JiraListTransition
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: script-JiraListTransition
 script: |-
   def main():
@@ -46,7 +45,9 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.2.17246
+fromversion: 5.0.0
+comment: |-
+  This script lists all possible transitions for a given issue.
 runas: DBotWeakRole

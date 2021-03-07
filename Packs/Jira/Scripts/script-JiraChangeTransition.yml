@@ -1,7 +1,6 @@
 commonfields:
   id: script-JiraChangeTransition
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: script-JiraChangeTransition
 script: |-
   def main():
@@ -19,30 +18,32 @@ script: |-
                       # jira_status = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})[0]["Contents"]["fields"]["status"]["name"]
                       res = demisto.executeCommand('jira-get-issue', {'issueId': incident_id})
                       if isinstance(res, list):
-                          res = res[0]
-                          incident_content = res.get("Contents")
-                          if incident_content:
-                              if not isError(res):
-                                  incident_fields = incident_content.get("fields")
-                                  if incident_fields:
-                                      jira_status = incident_fields.get("status", {}).get("name")
-                                      if jira_status:
-                                          demisto.executeCommand('setIncident', {'jirastatus': jira_status})
-                                          demisto.executeCommand('setIncident', {'jiratransitions': 'Select'})
+                          for entry in res:
+                              if entry.get("Type") == 1:
+                                  incident_content = entry.get("Contents")
+                                  if incident_content:
+                                      if not isError(entry):
+                                          incident_fields = incident_content.get("fields")
+                                          if incident_fields:
+                                              jira_status = incident_fields.get("status", {}).get("name")
+                                              if jira_status:
+                                                  demisto.executeCommand('setIncident', {'jirastatus': jira_status})
+                                                  demisto.executeCommand('setIncident', {'jiratransitions': 'Select'})
+                                                  break
+                                              else:
+                                                  demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                                            "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find: the issue's status name. The issue returned is: {incident_fields}"})
+
+                                          else:
+                                              output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                                        "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"fields\" as key. The issue returned is: {incident_content}"}
                                       else:
-                                          demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                                    "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find: the issue's status name. The issue returned is: {incident_fields}"})
+                                          output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                                    "Contents": f"Error occurred while running jira-get-issue. The response is: {incident_content}"}
 
                                   else:
                                       output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                                "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"fields\" as key. The issue returned is: {incident_content}"}
-                              else:
-                                  output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                            "Contents": f"Error occurred while running jira-get-issue. The response is: {incident_content}"}
-
-                          else:
-                              output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                                        "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"Content\" as key. The response is: {res}"}
+                                                "Contents": f"Error occurred while running script-JiraChangeTransition. Could not find:\"Content\" as key. The response is: {res}"}
 
                       else:
                           output = {"Type": entryTypes["error"], "ContentsFormat": formats["text"],
@@ -75,7 +76,11 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.2.17246
 runas: DBotWeakRole
+fromversion: 5.0.0
+comment: |-
+  This script changes an issue's transition, gets the new Jira status and update the issue's new status in its incident.
+tests:
+- Jira-v2-Test
