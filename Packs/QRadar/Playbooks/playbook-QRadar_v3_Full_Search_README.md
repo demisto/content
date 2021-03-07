@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![QRadar_v3 Full Search](Insert the link to your image here)
+![QRadar_v3 Full Search](https://raw.githubusercontent.com/demisto/content/63ef39300995a735e2d78e73b189a1106c8dbfe2/Packs/QRadar/doc_files/QRadar_v3_Full_Search.png)
