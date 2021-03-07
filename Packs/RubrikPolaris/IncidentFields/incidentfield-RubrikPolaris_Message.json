@@ -1,0 +1,60 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikpolarismessage",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "message",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "message",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 640
+        },
+        {
+            "displayName": "time",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "time",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 113
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikpolarismessage",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik Polaris Message",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

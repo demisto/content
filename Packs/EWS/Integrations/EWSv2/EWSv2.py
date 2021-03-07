@@ -949,7 +949,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': {header.name: header.value for header in item.headers},
+        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -2237,7 +2237,8 @@ def main():
         else:
             sub_main()
     except Exception as exc:
-        return_error("Found error in EWSv2", exc)
+        return_error("Found error in EWSv2: {}".format(exc),
+                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins

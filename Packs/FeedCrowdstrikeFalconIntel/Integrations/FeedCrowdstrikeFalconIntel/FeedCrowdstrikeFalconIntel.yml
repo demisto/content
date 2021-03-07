@@ -3,6 +3,11 @@ commonfields:
   id: Crowdstrike Falcon Intel Feed
   version: -1
 configuration:
+- defaultvalue: https://api.crowdstrike.com/
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
+  name: server_url
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
@@ -119,7 +124,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: 'For more information about custom filters and their structure,
-    see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+    see the Crowdstrike Falcon documentation at https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F.'
   display: 'A custom filter by which to filter the indicators. If you pass the custom_filter
     argument it will override the custom_filter parameter from the integration instance
     configuration.'
@@ -166,7 +171,7 @@ script:
       description: 'A custom filter by which to filter the indicators. If you pass
         the custom_filter argument it will override the custom_filter parameter from
         the integration instance configuration. For more information about custom
-        filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+        filters and their structure, see the Crowdstrike Falcon documentation at https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F.'
       isArray: false
       name: custom_filter
       required: false
@@ -175,7 +180,7 @@ script:
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false

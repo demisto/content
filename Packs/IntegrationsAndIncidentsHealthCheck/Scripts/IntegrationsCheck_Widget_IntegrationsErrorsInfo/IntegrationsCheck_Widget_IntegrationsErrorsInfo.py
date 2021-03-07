@@ -9,7 +9,10 @@ def main():
     list_table = []
 
     if list_content:
-        list_json = json.loads(list_content)
+        try:
+            list_json = json.loads(list_content)
+        except ValueError:
+            list_json = {}
     else:
         list_json = None
 

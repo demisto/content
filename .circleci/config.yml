@@ -5,12 +5,70 @@ commands:
     parameters:
       instance_role:
         type: string
+      instance_created:
+        type: string
+        default: ""
     steps:
       - run:
           name: Set INSTANCE_ROLE env variable
           command: |
             echo 'export INSTANCE_ROLE="<< parameters.instance_role >>"' >> $BASH_ENV
-            source $BASH_ENV
+            echo 'export INSTANCE_WAS_CREATED="<< parameters.instance_created >>"' >> $BASH_ENV
+  start-tunnel:
+    description: "Opens an ssh tunnel to the demisto servers and wait until the tunnels are established"
+    parameters:
+      timeout:
+        type: integer
+        default: 10
+    steps:
+      - run:
+          name: add ssh configurations
+          shell: /bin/bash
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Modifying ssh config file
+            echo "Host 10.0.*
+              StrictHostKeyChecking no
+              LogLevel ERROR
+              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
+             Host content-build-lb.demisto.works
+              UserKnownHostsFile /dev/null
+              StrictHostKeyChecking no
+              LogLevel ERROR" >> ~/.ssh/config
+      - run:
+          name: Open SSH Tunnel
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
+            IPS_AND_PORTS=$(cat ./env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+            # Handling the ip & port pairs line by line
+            echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
+            do
+              # Capturing the IP
+              IP=$(echo $IP_AND_PORT | grep -o -E "10\.0\.[0-9]{1,3}\.[0-9]{1,3}")
+              # Capturing the port
+              PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
+              echo "Opening a tunnel for ip $IP with port $PORT"
+              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              echo "Waiting for tunnel to be established"
+              until nc -z 127.0.0.1 $PORT -v; do
+                if [ $COUNT -ge << parameters.timeout >> ]; then
+                  echo "ssh tunnel set up timeout on instance with ip $IP";
+                  exit 1;
+                fi;
+                ((COUNT++))
+                sleep 1
+              done
+            done
+
 parameters:
   non_ami_run:
     type: string
@@ -54,21 +112,26 @@ parameters:
   bucket_upload:
     type: string
     default: ""
+  gcs_market_bucket:
+    type: string
+    default: "marketplace-dist"
+  slack_channel:
+    type: string
+    default: "dmst-content-team"
 
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "21.1.1"
-      SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
-      GIT_SHA1: "062422af3a16fdeca23c8b29a37f607cee84ebfe" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
       MEM_CHECK: << pipeline.parameters.mem_check >>
       CONTRIB_BRANCH: << pipeline.parameters.contrib_branch >>
       CONTRIB_PACK_NAME: << pipeline.parameters.contrib_pack_name >>
+      GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+      SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
@@ -115,6 +178,7 @@ references:
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
+        echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         if [ -n "${NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
@@ -173,7 +237,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD="
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
         python --version
         python3 --version
         node --version
@@ -229,8 +293,19 @@ references:
       name: Create Content Artifacts
       when: always
       command: |
-        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
-        python3 Utils/merge_content_new_zip.py -f "v4.5.0"
+        demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --content_version $CONTENT_VERSION
+
+        GCS_PATH=$(mktemp)
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
+
+        FEATURE_BRANCH_NAME="v4.5.0"
+        successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
 
   restore_cache: &restore_cache
     restore_cache:
@@ -270,6 +345,11 @@ references:
       name: Validate Files and Yaml
       when: always
       command: |
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+          echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
+          exit 0
+        fi
+
         # Run flake8 on all excluding Packs (Integraions and Scripts) - they will be handled in linting
         ./Tests/scripts/pyflake.sh *.py
         find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
@@ -282,6 +362,11 @@ references:
       when: always
       no_output_timeout: 5h
       command: |
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+          echo "Skipping validations when uploading to a test bucket."
+          exit 0
+        fi
+
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
         echo "flake8 py2 version: $(python2 -m flake8 --version)"
@@ -497,9 +582,11 @@ references:
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
       condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
+        and:
+          - or:
+            - << pipeline.parameters.force_pack_upload >>
+            - << pipeline.parameters.bucket_upload >>
+          - equal: [ marketplace-dist, << pipeline.parameters.gcs_market_bucket >> ]
       steps:
         - run:
             name: Check User Permissions to Upload Pack
@@ -586,7 +673,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             else
               ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
             fi
@@ -656,7 +743,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
 
@@ -699,7 +786,7 @@ jobs:
                     echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
                     exit 0
                   fi
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
                   echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
                 name: Zip Content Packs From GCS
@@ -727,7 +814,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
 
@@ -760,6 +847,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 5.0
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -809,6 +897,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 5.5
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -858,6 +947,7 @@ jobs:
             - set-instance-role-env-variable:
                 instance_role: Server 6.0
             - *check_if_instance_was_created
+            - start-tunnel
             - *wait_until_server_ready
             - *install_content_and_configure_integrations_on_server
             - run:
@@ -898,6 +988,7 @@ jobs:
       - set-instance-role-env-variable:
           instance_role: Server Master
       - *check_if_instance_was_created
+      - start-tunnel
       - *wait_until_server_ready
       - *install_content_and_configure_integrations_on_server
       - run:
@@ -949,9 +1040,10 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
-            GCS_MARKET_BUCKET="marketplace-dist"
-
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
+            if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+              STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+            fi
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
             rm $GCS_PATH
           when: on_success
       - *store_artifacts
@@ -967,10 +1059,15 @@ jobs:
       - *check_user_permissions_to_upload_packs
       - when:
           condition:
-            equal:
-              - master
-              - << pipeline.git.branch >>
+            or:
+              - equal: [ master , << pipeline.git.branch >> ]
+              - not:
+                  equal: [ marketplace-dist, << pipeline.parameters.gcs_market_bucket >> ]
           steps:
+            - set-instance-role-env-variable:
+                instance_role: Server Master
+                instance_created: "true"
+            - start-tunnel
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
@@ -983,9 +1080,11 @@ jobs:
                   echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  GCS_MARKET_BUCKET="marketplace-dist"
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
+                  fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
                   rm $GCS_PATH
             - run:
                 name: Validate Premium Packs
@@ -998,7 +1097,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *store_artifacts
@@ -1013,25 +1112,12 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server 5.5
-      - run:
-          name: Wait until server ready
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
-            python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
       - run:
           name: Instance Test
           command: |
-            if [ -z $INSTANCE_TESTS ]
-            then
-              echo "Skipping, contributor branch not given."
-              exit 0
-            fi
             ./Tests/scripts/instance_test.sh
             export RETVAL=$?
             cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
@@ -1082,20 +1168,18 @@ jobs:
       - *create_instance
       - set-instance-role-env-variable:
           instance_role: Server Master
-      - *wait_until_server_ready
-      - run:
-          name: Wait until server ready
-          command: |
-            python3 ./Tests/scripts/wait_until_server_ready.py "Server Master"
+          instance_created: "true"
+      - start-tunnel
       - run:
           name: Set Environment Variables
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://$(cat env_results.json | jq -r '.[0].InstanceDNS')\"" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat env_results.json | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
           command: pip3 install git+https://github.com/demisto/demisto-sdk.git
+      - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
           command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
@@ -1140,6 +1224,8 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server 6.0
+          instance_created: "true"
+      - start-tunnel
       - *wait_until_server_ready
       - run:
           name: Install Packs
@@ -1154,7 +1240,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *persist_to_workspace
@@ -1171,6 +1257,8 @@ jobs:
       - *prepare_environment
       - set-instance-role-env-variable:
           instance_role: Server Master
+          instance_created: "true"
+      - start-tunnel
       - *wait_until_server_ready
       - run:
           name: Install Packs
@@ -1185,7 +1273,7 @@ jobs:
           shell: /bin/bash
           command: |
             if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow'
+              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
       - *destroy_instances
@@ -1246,18 +1334,10 @@ workflows:
           context: bucket_upload_env
       - Create Instances:
           context: bucket_upload_env
-          filters:
-            branches:
-              only:
-                - master
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
           context: bucket_upload_env
-          filters:
-            branches:
-              only:
-                - master
           requires:
             - Create Instances
 
