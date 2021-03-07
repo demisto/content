@@ -107,7 +107,8 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        ok_codes = (200, 201, 202, 204, 206, 404)
+        if 'ok_codes' not in kwargs:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
@@ -117,8 +118,8 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-        response = super()._http_request(   # type: ignore[misc]
-            *args, resp_type="response", headers=default_headers, **kwargs, ok_codes=ok_codes)
+        response = super()._http_request(  # type: ignore[misc]
+            *args, resp_type="response", headers=default_headers, **kwargs)
 
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
