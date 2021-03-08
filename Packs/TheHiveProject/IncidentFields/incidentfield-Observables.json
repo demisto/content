@@ -103,7 +103,7 @@
   "editForm": true,
   "group": 0,
   "hidden": false,
-  "id": "incident_observables",
+  "id": "incident_thehiveobservables",
   "isReadOnly": true,
   "locked": false,
   "name": "Observables",
