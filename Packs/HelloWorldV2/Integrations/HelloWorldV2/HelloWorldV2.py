@@ -268,7 +268,6 @@ class Client(BaseClient):
     """Client class to interact with the service API
 
     This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld implementation, no special attributes defined
