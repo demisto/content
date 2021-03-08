@@ -168,7 +168,7 @@ class Command:
         violation = client.get_violation(violation_id)
 
         if violation['response'][0]['violation_id'] != int(violation_id):
-            return_error("Violation with this ID does not exist.")
+            raise ValueError("Violation with this ID does not exist.")
 
         human_readable = get_human_readable(violation)
 
@@ -228,7 +228,7 @@ class Command:
         elif command == 'gamma-update-violation':
             return Command.update_violation(client, args)
         else:
-            return ValueError("Invalid command")
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
 
 def fetch_incidents(client: Client, last_run_violation: dict,

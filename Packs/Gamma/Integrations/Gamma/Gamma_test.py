@@ -321,7 +321,9 @@ def test_main_get_bad_violation(mocker, requests_mock, capfd):
     with pytest.raises(SystemExit):
         with capfd.disabled():
             main()
-    assert demisto.results.call_args[0][0]['Contents'] == "Violation with this ID does not exist."
+    assert demisto.results.call_args[0][0]['Contents'] == "Failed to execute gamma-get-violation " \
+                                                          "command.\nError:\nViolation with this " \
+                                                          "ID does not exist."
 
 
 def test_main_get_violation(requests_mock, mocker, capfd):
@@ -363,5 +365,11 @@ def test_bad_command(mocker, capfd):
     args = {'violation': f"{test_violation}", 'status': 'resolved', 'notes': ''}
     command = 'gamma-violation-update'
     mock_demisto(mocker, args, command)
-    with pytest.raises(ValueError) and capfd.disabled():
-        main()
+    with pytest.raises(SystemExit):
+        with capfd.disabled():
+            main()
+    assert demisto.results.call_args[0][0]['Contents'] == "Failed to execute " \
+                                                          "gamma-violation-update " \
+                                                          "command.\nError:\nCommand " \
+                                                          "\"gamma-violation-update\" is not " \
+                                                          "implemented."

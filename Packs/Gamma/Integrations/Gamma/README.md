@@ -33,8 +33,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| minimum_violation | Violation ID to begin pulling from. Defaults to the earliest existing
-        violation for your account. | Required |
+| minimum_violation | Violation ID to begin pulling from. Defaults to the earliest existing violation for your account. | Required |
 | limit | Default is "10". | Required |
 
 
@@ -55,7 +54,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 #### Command Example
 ```!gamma-get-violation-list minimum_violation=998 limit=1```
 
-#### Raw JSON Output
+#### Context Example
 ```json
 {
     "response": [
