@@ -1,5 +1,4 @@
 USTA is an Cyber Intelligence Platform that responds directly and effectively to today's complex cyber threats. 
-This integration was integrated and tested with version xx of USTA
 ## Configure USTA on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
