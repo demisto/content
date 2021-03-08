@@ -21,7 +21,7 @@ script:
       the entry_id of the image file.
     name: goqr-read-qr-code-from-file
     outputs:
-    - contextPath: QRCode
+    - contextPath: GoQRCodeData
       description: QR Code data obtained
   dockerimage: demisto/python3:3.9.1.15759
   runonce: false
