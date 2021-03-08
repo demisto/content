@@ -119,8 +119,8 @@ configuration:
     name: importance_operator
     options:
       - =
-      - <
       - >
+      - <
     required: false
     type: 15
   - additionalinfo: Alert status to filter by. If none was chosen, all statuses will
@@ -134,7 +134,7 @@ configuration:
     required: false
     type: 15
 description: DDoS protection and network visibility.
-display: NetscoutArborSightline
+display: Netscout ArborSight line
 name: NetscoutArborSightline
 script:
   commands:
@@ -143,7 +143,7 @@ script:
         - name: alert_id
           required: true
           default: true
-          description: The alert ID to list the connections.
+          description: Alert ID to list the annotation for.
       outputs:
         - contextPath: BaseIntegration.Output
           description: NASightline.AlertAnnotations
@@ -153,7 +153,7 @@ script:
       arguments:
         - name: alert_id
           default: true
-          description: Alert ID.
+          description: Alert ID. If given, all other arguments will be ignored.
         - name: alert_class
           auto: PREDEFINED
           predefined:
@@ -227,9 +227,9 @@ script:
         - name: importance_operator
           auto: PREDEFINED
           predefined:
+            - <
             - '='
             - '>'
-            - '<'
           description: 'The operator to apply on the importance argument (''>'' is grater than, ''<'' is smaller than,
           ''=''is equal). For example: if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
           with importance grater than 1 will be fetched.'
@@ -238,7 +238,7 @@ script:
           predefined:
             - "true"
             - "false"
-          description: Alert status to filter by.
+          description: Alert status to filter by. If not set, all statuses will be pulled.
         - name: start_time
           description: Alert start time to filter by. For more complex operators use the
             'start_time_operator' argument.
@@ -279,7 +279,7 @@ script:
           default: true
           description: The mitigation ID to get.
         - name: page
-            description: The page to return starting from 1.
+          description: The page to return starting from 1.
         - name: limit
           description: Maximal number of mitigations to retrieve, will also set the size of the returned page.
       outputs:
@@ -299,17 +299,17 @@ script:
           predefined:
             - IPv4
             - IPv6
-          description: P version of the traffic that is being mitigated. This attribute
+          description: IP version of the traffic that is being mitigated. This attribute
             cannot be changed once it is set.
         - name: description
-          description: ' Description of the mitigation.'
+          description: Description of the mitigation.
         - name: ongoing
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
           description: Whether to start the mitigation (true) or not (false).
-          defaultValue: "false"
+          defaultValue: false
         - name: sub_type
           required: true
           auto: PREDEFINED

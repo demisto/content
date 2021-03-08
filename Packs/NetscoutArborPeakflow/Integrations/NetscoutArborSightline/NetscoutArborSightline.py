@@ -6,6 +6,7 @@ from copy import deepcopy
 import requests
 import traceback
 from typing import Dict
+from datetime import timezone
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -15,9 +16,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 API_VERSION = 'v7'
 IMPORTANCE_DICTIONARY = {
-    'Low': 1,
-    'Medium': 2,
-    'High': 3
+    'Low': '1',
+    'Medium': '2',
+    'High': '3'
 }
 ONGOING_DICTIONARY = {
     'Ongoing': 'true',
@@ -29,11 +30,11 @@ IP_DICTIONARY = {
 }
 
 ROUTERS_HR_HEADERS = [
-    'description',
     'id',
+    'name',
+    'description',
     'is_proxy',
     'license_type',
-    'name',
     'snmp_authprotocol',
     'snmp_priv_protocol',
     'snmp_security_level',
@@ -41,12 +42,12 @@ ROUTERS_HR_HEADERS = [
 ]
 
 MANAGED_OBJECTS_HR_HEADERS = [
-    'tags',
+    'id',
     'name',
+    'tags',
     'match_type',
     'match_enabled',
     'match',
-    'id',
     'family',
     'autodetected'
 ]
@@ -90,24 +91,78 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def _http_request(self, **kwargs):
-        try:
-            return super()._http_request(**kwargs)
+    def _http_request(self, method, url_suffix=None, params=None, json_data=None):
 
-        except DemistoException as error:
-            bad_request_message = 'Error in API call [400] - BAD REQUEST\n'
-            error_str = str(error)
-            if bad_request_message in error_str:
-                error_obg = json.loads(error_str.split(bad_request_message)[1])
-                demisto.info(json.dumps(error_obg))
-                error_list = []
-                for err in error_obg.get('errors'):
+        return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                     error_handler=self.error_handler)
+
+    @staticmethod
+    def error_handler(res: requests.Response):
+        """
+        Error handler for API calls
+        Args:
+            res (requests.Response): Response to handle error for
+
+        """
+        try:
+            demisto.info(json.dumps(demisto.args()))
+            # Try to parse json error response
+            error_entry = res.json()
+            error: str = f'Error in API call [{res.status_code}] - {res.reason}'
+            if res.status_code in (400, 422):
+                error_list: list = []
+                for err in error_entry.get('errors'):
+                    # Building the list of errors
                     new_error_source = err.get('source', {}).get('pointer', '').split('/')[-1]
                     new_error_details = err.get('detail')
                     new_error = f'{new_error_source}: {new_error_details}' if new_error_source else new_error_details
                     error_list.append(new_error)
-                error = ','.join(error_list)
+
+                # If we manged to build a list of errors use it otherwise use basic information
+                if error_list:
+                    error = f'{error}: \n' + '\n'.join(error_list)
+
+            if res.status_code in (500, 401):
+                message = error_entry.get('errors', [])[0].get('message')
+                if message:
+                    error = f'{error}\n{message}'
+
             raise DemistoException(error)
+
+        except ValueError:
+            raise DemistoException(f'Could not parse response from Netscout Arbor server:\n{res.content}')
+
+    def calculate_amount_of_incidents(self, start_time: str) -> int:
+        """
+        Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents(#pages will be equal to
+        #incidents).
+
+        Arguments:
+            start_time (str): Starting time to search by
+
+        Returns:
+            (int) The amount of pages (incidents) in total in the given query, 0 if none.
+        """
+        data_attribute_filter = self.build_data_attribute_filter(start_time=start_time,
+                                                                 start_time_operator='>', alert_class=self.alert_class,
+                                                                 alert_type=self.alert_type,
+                                                                 classification=self.classification,
+                                                                 importance=self.importance,
+                                                                 importance_operator=self.importance_operator,
+                                                                 ongoing=self.ongoing)
+        page_size = 1
+        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
+        last_page_link = results.get('links', {}).get('last')
+        if last_page_link:
+            last_page_number_matcher = re.match(r'.*&page=(\d+)', last_page_link)
+            if not last_page_number_matcher:
+                raise DemistoException(
+                    f'Could not calculate page size, last page number was not found:\n{last_page_link}')
+            last_page_number = last_page_number_matcher.group(1)
+        else:
+            last_page_number = 0
+
+        return last_page_number
 
     def build_relationships(self, **kwargs) -> dict:
         """
@@ -137,12 +192,26 @@ class NetscoutClient(BaseClient):
             if val:
                 # In some cases the name of the relationships is not the same as the type (most cases it is)
                 _type = self.RELATIONSHIP_TO_TYPE.get(key, key)
-                relationships[key] = {
-                    'data': {
-                        'type': _type,
-                        'id': val
+                if key == 'routers':
+                    relationships[key] = {
+                        'data': [{
+                            'type': _type,
+                            'id': val[0]
+                        }]
                     }
-                }
+                else:
+                    relationships[key] = {
+                        'data': {
+                            'type': _type,
+                            'id': val
+                        }
+                    }
+                # data = [{
+                #     'type': _type,
+                #     'id': element
+                # } for element in val]
+                #
+                # relationships[key] = {'data': data[0]} if len(data) == 1 else {'data': data}
         return relationships
 
     def build_data_attribute_filter(self, **kwargs) -> str:
@@ -160,7 +229,6 @@ class NetscoutClient(BaseClient):
             (str): Netscout data attribute filter string. For example:
             /data/attributes/importance>1 AND /data/attributes/ongoing=true
         """
-
         param_list = []
         operator_names = self.OPERATOR_NAME_DICTIONARY.values()
         for key, val in kwargs.items():
@@ -172,43 +240,65 @@ class NetscoutClient(BaseClient):
                 # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
                 # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
-                    operator = kwargs.get(operator_name, '=')
+                    operator = kwargs.get(operator_name) if kwargs.get(operator_name) else '='
 
                 param_list.append(f'/data/attributes/{key + operator + val}')
         return ' AND '.join(param_list)
 
     def fetch_incidents(self) -> (list, str):
+        """
+        Perform fetch incidents process.
+        1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
+        2.  We calculate the amount of incidents we need to fetch by performing a query for all incident newer
+            than last run (or first fetch), we do this by setting the page size to 1, which makes the amount of returned
+            pages to be equal to the amount of incidents.
+        3.  Then, to get the relevant incidents, we query for all incidents *older* then the time we sampled in the
+            step 1, with page size equal to the amount of incidents from step 2. This ensures that the first page in
+            this search will have all of the incidents created after the given start time and only them.
+        4.  Finally out of the relevant incidents we take the older ones (from the end of the list) and set the new
+            start time to the creation time of the first incidnt in the list.
+
+        Returns
+            (list, str): List of incidents to save and string representing the creation time of the latest incident to
+                be saved.
+        """
         last_run = demisto.getLastRun()
-        last_start_time = last_run.get('LastFetchTime', arg_to_datetime(self.first_fetch))
+        new_last_start_time = last_start_time = last_run.get('LastFetchTime', self.first_fetch)
         demisto.debug(f'Last fetch time to use is: {last_start_time}')
+
+        # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
+        # returned pages will equal to amount of incidents
+        now = datetime.now(timezone.utc).isoformat()
+        amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time)
         incidents: list = []
-        # Only on the first fetch we set the page size 10,0000 events, rest of the times it will be set to the max_fetch
-        # defined by the user (The amount of save incidents will be max_fetch in any case)
-        page_size = self.max_fetch if last_run.get('LastFetchTime') else self.MAX_ALERTS_FOR_FIRST_FETCH
 
-        data_attribute_filter = self.build_data_attribute_filter(start_time=last_start_time,
-                                                                 start_time_operator='>', alert_class=self.alert_class,
-                                                                 alert_type=self.alert_type,
-                                                                 classification=self.classification,
-                                                                 importance=self.importance,
-                                                                 importance_operator=self.importance_operator,
-                                                                 ongoing=self.ongoing)
-        demisto.debug(page_size=page_size, search_filter=data_attribute_filter)
+        if amount_of_incidents:
+            data_attribute_filter = self.build_data_attribute_filter(start_time=now, start_time_operator='<',
+                                                                     alert_class=self.alert_class,
+                                                                     alert_type=self.alert_type,
+                                                                     importance=self.importance,
+                                                                     classification=self.classification,
+                                                                     importance_operator=self.importance_operator,
+                                                                     ongoing=self.ongoing)
+            demisto.info(
+                f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
+                f'search_filter={data_attribute_filter}')
 
-        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
-        all_alerts = results.get('data')
-        short_alert_list = all_alerts[-self.max_fetch:]
-        new_last_start_time = short_alert_list[0].get('attributes').get('start_time')
+            results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter)
+            all_alerts = results.get('data')
+            short_alert_list = all_alerts[-self.max_fetch:]
+            if short_alert_list:
+                new_last_start_time = short_alert_list[0].get('attributes', {}).get('start_time')
 
-        for alert in short_alert_list:
-            start_time = alert.get('attributes').get('start_time')
-            incidents.append({
-                'name': alert.get('alert_title'),
-                'type': 'Netscout Arbor Sightline Alert',
-                'occurred': start_time,
-                'rawJSON': json.dumps(alert)
-            })
-
+                for alert in reversed(short_alert_list):
+                    start_time = alert.get('attributes', {}).get('start_time')
+                    alert_type = alert.get('attributes', {}).get('alert_type')
+                    incidents.append({
+                        'name': f"{alert_type}: {alert.get('id')}",
+                        'type': 'Netscout Arbor Sightline Alert',
+                        'occurred': start_time,
+                        'rawJSON': json.dumps(alert)
+                    })
         return incidents, new_last_start_time
 
     def list_alerts(self, page: int = None, page_size: int = None, search_filter: str = None):
@@ -302,13 +392,15 @@ def build_human_readable(data: dict) -> dict:
     """
     hr = deepcopy(data)
     if attributes := hr.get('attributes'):
-        for key, val in attributes:
+        for key, val in attributes.items():
             hr[key] = val
         del hr['attributes']
     if hr.get('relationships'):
         del hr['relationships']
     if hr.get('subobject'):
         del hr['subobject']
+    if hr.get('links'):
+        del hr['links']
     return hr
 
 
@@ -316,30 +408,8 @@ def build_human_readable(data: dict) -> dict:
 
 
 def test_module(client: NetscoutClient) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.fetch_incidents()
+    return 'ok'
 
 
 def fetch_incidents_command(client: NetscoutClient):
@@ -355,9 +425,9 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
     alert_class = args.get('alert_class')
     alert_type = args.get('alert_type')
     classification = args.get('classification')
-    importance = args.get('importance')
-    importance_operator = args.get('importance')
-    ongoing = args.get('ongoing')
+    importance = IMPORTANCE_DICTIONARY.get(args.get('importance'))
+    importance_operator = args.get('importance_operator')
+    ongoing = args.get('ongoing') if args.get('ongoing') else None
     start_time = args.get('start_time')
     start_time_operator = args.get('start_time_operator')
     stop_time = args.get('stop_time')
@@ -381,7 +451,7 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
 
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    hr = [build_human_readable(mitigation) for mitigation in data]
+    hr = [build_human_readable(alert) for alert in data]
     return CommandResults(outputs_prefix='NASightline.Alert',
                           outputs_key_field='id',
                           outputs=data,
@@ -389,7 +459,7 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def alert_annotations_list_command(client: NetscoutClient, args: dict):
+def alert_annotation_list_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id')
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
@@ -402,7 +472,7 @@ def alert_annotations_list_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigations_list_command(client: NetscoutClient, args: dict):
+def mitigation_list_command(client: NetscoutClient, args: dict):
     page = arg_to_number(args.get('page'))
     limit = arg_to_number(args.get('limit'))
     mitigation_id = args.get('mitigation_id')
@@ -417,27 +487,27 @@ def mitigations_list_command(client: NetscoutClient, args: dict):
                           raw_response=raw_result)
 
 
-def mitigations_create_command(client: NetscoutClient, args: dict):
+def mitigation_create_command(client: NetscoutClient, args: dict):
     ip_version = IP_DICTIONARY.get(args.get('ip_version'))
     if not ip_version:
         raise DemistoException(f'ip_version value can be one of the following: '
                                f'{",".join(list(IP_DICTIONARY.keys()))}. {args.get("ip_version")} was given.')
     description = args.get('description')
     name = args.get('name')
-    ongoing = argToBoolean(args.get('ongoing', 'false'))
+    ongoing = args.get('ongoing', 'false')
     sub_type = args.get('sub_type')
     sub_object = validate_json_arg(args.get('sub_object'), {})
     alert_id = args.get('alert_id')
     managed_object_id = args.get('managed_object_id')
     mitigation_template_id = args.get('mitigation_template_id')
-    router_ids = args.get('router_ids')
+    router_ids = argToList(args.get('router_ids'))
     tms_group_id = args.get('tms_group_id')
 
     relationships = client.build_relationships(alert=alert_id, managed_object=managed_object_id,
                                                mitigation_template=mitigation_template_id, routers=router_ids,
                                                tms_group=tms_group_id)
     attributes = assign_params(description=description, ip_version=ip_version, name=name, ongoing=ongoing,
-                               subtype=sub_type, sub_object=sub_object)
+                               subtype=sub_type, subobject=sub_object)
     data = {'relationships': relationships, 'attributes': attributes}
     raw_result = client.create_mitigation(data={'data': data})
     data = raw_result.get('data')
@@ -505,23 +575,25 @@ def tms_group_list(client: NetscoutClient):
 
 
 def main() -> None:
-    params = demisto.params()
-    api_token = params.get('api_token')
-    base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    first_fetch = arg_to_datetime(params.get('first_fetch', '3 days'))
-    max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
-    alert_class = params.get('alert_class')
-    alert_type = params.get('alert_type')
-    classification = params.get('classification')
-    importance = IMPORTANCE_DICTIONARY.get(params.get('importance'))
-    importance_operator = params.get('importance_operator', '=')
-    ongoing = ONGOING_DICTIONARY.get(params.get('ongoing'))
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-
     try:
+        command = demisto.command()
+        params = demisto.params()
+
+        api_token = params.get('api_token')
+        base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        first_fetch = arg_to_datetime(params.get('first_fetch', '3 days')).isoformat()
+        max_fetch = min(arg_to_number(params.get('max_fetch', 50)), 100)
+        alert_class = params.get('alert_class')
+        alert_type = params.get('alert_type')
+        classification = params.get('classification')
+        importance = IMPORTANCE_DICTIONARY.get(params.get('importance'))
+        importance_operator = params.get('importance_operator', '=')
+        ongoing = ONGOING_DICTIONARY.get(params.get('ongoing'))
+
+        demisto.debug(f'Command being called is {demisto.command()}')
+
         headers: Dict = {
             'X-Arbux-APIToken': api_token
         }
@@ -541,30 +613,37 @@ def main() -> None:
             ongoing=ongoing
         )
         args = demisto.args()
-        if demisto.command() == 'test-module':
-            result = test_module(client)
-        elif demisto.command() == 'na-sightline-alert-list':
-            result = list_alerts_commands(client, args)
-        elif demisto.command() == 'na-sightline-alert-annotation-list':
-            result = alert_annotations_list_command(client, args)
-        elif demisto.command() == 'na-sightline-mitigation-list':
-            result = mitigations_list_command(client, args)
-        elif demisto.command() == 'na-sightline-mitigation-create':
-            result = mitigations_create_command(client, args)
-        elif demisto.command() == 'na-sightline-mitigation-template-list':
-            result = mitigation_template_list_command(client, args)
-        elif demisto.command() == 'na-sightline-router-list':
-            result = router_list_command(client, args)
-        elif demisto.command() == 'na-sightline-managed-object-list':
-            result = managed_object_list_command(client, args)
-        elif demisto.command() == 'na-sightline-tms-group-list':
-            result = tms_group_list(client, args)
 
-        return_results(result)
+        result = ''
+        if command == 'test-module':
+            result = test_module(client)
+        elif command == 'fetch-incidents':
+            fetch_incidents_command(client)
+        elif command == 'na-sightline-alert-list':
+            result = list_alerts_commands(client, args)
+        elif command == 'na-sightline-alert-annotation-list':
+            result = alert_annotation_list_command(client, args)
+        elif command == 'na-sightline-mitigation-list':
+            result = mitigation_list_command(client, args)
+        elif command == 'na-sightline-mitigation-create':
+            result = mitigation_create_command(client, args)
+        elif command == 'na-sightline-mitigation-template-list':
+            result = mitigation_template_list_command(client, args)
+        elif command == 'na-sightline-router-list':
+            result = router_list_command(client, args)
+        elif command == 'na-sightline-managed-object-list':
+            result = managed_object_list_command(client, args)
+        elif command == 'na-sightline-tms-group-list':
+            result = tms_group_list(client)
+        else:
+            result = f'Command: {command} is not implemented'
+
+        if result:
+            return_results(result)
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
