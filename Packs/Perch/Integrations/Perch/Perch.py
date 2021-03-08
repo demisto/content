@@ -21,9 +21,18 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/v1'
+STATUSES_TO_FETCH = demisto.params().get('soc_status', [])
 
 # Remove proxy if not set to true in params
 handle_proxy()
+
+STATUSES = {
+    'Not Reviewed': '0',
+    'Investigating': '1',
+    'On hold': '2',
+    'False Positive': '3',
+    'Escalated': '4'
+}
 
 TLP_MAP = {
     'WHITE': 0,
@@ -433,8 +442,14 @@ def create_indicator_command():
 def fetch_alerts(last_run, headers):
     last_fetch = last_run.get('time')
     url = '/alerts'
-    res = http_request('GET', url, headers=headers)
-    items = res.get('results')
+    if STATUSES_TO_FETCH and len(STATUSES_TO_FETCH) > 0:
+        items = []
+        for status in STATUSES_TO_FETCH:
+            res = http_request('GET', url, headers=headers, params={'soc_status': STATUSES[status]})
+            items += res.get('results')
+    else:
+        res = http_request('GET', url, headers=headers)
+        items = res.get('results')
     items.sort(key=lambda r: r['created_at'])
     if last_fetch is None:
         last_fetch_raw = datetime.now() - timedelta(days=FETCH_TIME)

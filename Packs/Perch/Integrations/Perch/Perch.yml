@@ -37,15 +37,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Incidents soc status
+- display: Incident Soc Statuses to Fetch
   hidden: false
   name: soc_status
   options:
-  - '0'
-  - '1'
-  - '2'
-  - '3'
-  - '4'
+  - Not Reviewed
+  - Investigating
+  - On hold
+  - False Positive
+  - Escalated
   required: false
   type: 16
 description: Perch is a co-managed threat detection and response platform.
