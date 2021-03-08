@@ -288,18 +288,30 @@ references:
         fi
 
   trigger_private_build: &trigger_private_build
-    run:
-      name: Trigger Private Repo Build
-      when: always
-      command: |
-        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    when:
+      condition:
+        and:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        run:
+          name: Trigger Private Repo Build
+          when: always
+          command: |
+            python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
 
   get_private_build_status: &get_private_build_status
-    run:
-      name: Get Private Build Status
-      when: always
-      command: |
-        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    when:
+      condition:
+        and:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+      steps:
+        run:
+          name: Get Private Build Status
+          when: always
+          command: |
+            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
   create_artifact: &create_artifact
     run:
