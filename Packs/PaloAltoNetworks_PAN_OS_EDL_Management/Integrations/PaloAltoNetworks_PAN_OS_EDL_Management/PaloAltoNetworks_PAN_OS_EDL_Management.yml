@@ -1,4 +1,5 @@
 category: Utilities
+deprecated: true
 commonfields:
   id: palo_alto_networks_pan_os_edl_management
   version: -1
@@ -27,8 +28,8 @@ configuration:
   name: document_root
   required: false
   type: 0
-description: This integration enables you to manage and edit files located on a remote web server via SSH using integration context as Single Source of Truth.
-display: Palo Alto Networks PAN-OS EDL Management
+description: Deprecated. Use the Palo Alto Networks PAN-OS EDL Service integration instead.
+display: Palo Alto Networks PAN-OS EDL Management (Deprecated)
 name: palo_alto_networks_pan_os_edl_management
 script:
   commands:
