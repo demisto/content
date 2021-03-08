@@ -9,6 +9,13 @@ In order to connect to the Azure Network Security Group using either Cortex XSOA
 3. Follow the instructions that appear.
 4. Run the ***!azure-nsg-auth-complete*** command.
 
+At end of the process you'll see a message that you've logged in successfully. 
+
+Note that the application in use must have these permissions:
+1. user_impersonation
+2. offline_access
+3. user.read 
+
 #### Cortex XSOAR Azure App
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (d4736600-e3d5-4c97-8e65-57abd2b979fe).
