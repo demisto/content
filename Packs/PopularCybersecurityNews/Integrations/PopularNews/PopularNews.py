@@ -97,13 +97,15 @@ def main():
         aggregate(kos, "Krebs on Security")
         aggregate(thn, "The Hacker News")
         aggregate(tp, "Threatpost")
-        demisto.results({
-            'ContentsFormat': formats['table'],
-            'Type': entryTypes['note'],
-            'Contents': TABLE,
-            'EntryContext': {"News": TABLE},
-            'IgnoreAutoExtract': True
-            })
+    else:
+        raise NotImplementedError('Command %s was not implemented.' % demisto.command())
+    demisto.results({
+        'ContentsFormat': formats['table'],
+        'Type': entryTypes['note'],
+        'Contents': TABLE,
+        'EntryContext': {"News": TABLE},
+        'IgnoreAutoExtract': True
+        })
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
