@@ -179,6 +179,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#panorama-create-url-filtering-best-practice-profile)
 97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#panorama-create-file-blocking-best-practice-profile)
 98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#panorama-create-wildfire-best-practice-profile)
+99. [Shows the user ID interface configuration.](#panorama-show-user-id-interfaces-config)
+100. [Shows the zones configuration.](#panorama-show-zones-config)
+101. [Retrieves list of user-ID agents configured in the system.](#panorama-list-configured-user-id-agents)
 
 
 ### panorama
@@ -4431,3 +4434,192 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The profile test was created successfully.
+
+### panorama-show-user-id-interfaces-config
+***
+Shows the user ID interface configuration.
+
+
+#### Base Command
+
+`panorama-show-user-id-interfaces-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserInterfaces.Name | String | The name of the user interface. | 
+| Panorama.UserInterfaces.Zone | String | The zone to which the interface is connected | 
+| Panorama.UserInterfaces.EnableUserIdentification | String | Whether user identification is enabled. | 
+
+
+#### Command Example
+```!panorama-show-user-id-interfaces-config```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserInterfaces": {
+            "EnableUserIdentification": "no",
+            "Name": "ethernet1/1",
+            "Zone": "test_zone"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User Interface Configuration:
+>|Name|Zone|EnableUserIdentification|
+>|---|---|---|
+>| ethernet1/1 | test_zone | no |
+
+
+### panorama-show-zones-config
+***
+Shows the zones configuration.
+
+
+#### Base Command
+
+`panorama-show-zones-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Zone.Name | String | The name of the zone. | 
+| Panorama.Zone.Network | String | The network to which the zone connected | 
+| Panorama.Zone.EnableUserIdentification | String | Whether user identification is enabled. | 
+| Panorama.Zone.ZoneProtectionProfile | String | The zone protection profile. | 
+| Panorama.Zone.LogSetting | String | The log setting for the zone | 
+
+
+#### Command Example
+```!panorama-show-zones-config```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Zone": {
+            "EnableUserIdentification": "no",
+            "LogSetting": null,
+            "Name": "test_zone",
+            "Network": {
+                "tap": {
+                    "member": "ethernet1/1"
+                }
+            },
+            "ZoneProtectionProfile": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zone Configuration:
+>|Name|Network|EnableUserIdentification|
+>|---|---|---|
+>| test_zone | tap: {"member": "ethernet1/1"} | no |
+
+
+### panorama-list-configured-user-id-agents
+***
+Retrieves list of user-ID agents configured in the system.
+
+
+#### Base Command
+
+`panorama-list-configured-user-id-agents`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserIDAgents.Name | String | The user-ID Agent name. | 
+| Panorama.UserIDAgents.Host | String | The user-ID Agent host. | 
+| Panorama.UserIDAgents.Port | Number | The user-ID Agent port. | 
+| Panorama.UserIDAgents.LdapProxy | String | Whether LDAP proxy is used in the user-ID agent. | 
+| Panorama.UserIDAgents.NtlmAuth | String | Whether NLTM authentication is used in the user-ID agent. | 
+| Panorama.UserIDAgents.EnableHipCollection | String | Whether HIP collection is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.IpUserMapping | String | Whether IP user mapping is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.SerialNumber | Unknown | The serial number associated with the user-ID agent. | 
+| Panorama.UserIDAgents.CollectorName | String | The user-ID agent collector name. | 
+| Panorama.UserIDAgents.Secret | String | The user-ID agent secret. | 
+| Panorama.UserIDAgents.Disabled | String | Whether the user-ID agent is disbaled. | 
+
+
+#### Command Example
+```!panorama-list-configured-user-id-agents```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserIDAgents": [
+            {
+                "CollectorName": "demisto",
+                "Disabled": "yes",
+                "EnableHipCollection": null,
+                "Host": "mine",
+                "IpUserMapping": null,
+                "LdapProxy": "yes",
+                "Name": "testing",
+                "NtlmAuth": "yes",
+                "Port": "12",
+                "Secret": "secret",
+                "SerialNumber": null
+            },
+            {
+                "CollectorName": null,
+                "Disabled": null,
+                "EnableHipCollection": null,
+                "Host": null,
+                "IpUserMapping": null,
+                "LdapProxy": null,
+                "Name": "withSerial",
+                "NtlmAuth": null,
+                "Port": null,
+                "Secret": null,
+                "SerialNumber": "panorama"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User ID Agents:
+>|Name|SerialNumber|Host|Port|CollectorName|LdapProxy|NtlmAuth|
+>|---|---|---|---|---|---|---|
+>| testing |  | mine | 12 | demisto | yes | yes |
+>| withSerial | panorama |  |  |  |  |  |

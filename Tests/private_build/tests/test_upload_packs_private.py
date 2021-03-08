@@ -53,8 +53,10 @@ class TestPrivatePacks:
 
         assert private_packs == [{'id': 'ImpossibleTraveler',
                                   'price': 100,
-                                  'vendorId': None,
-                                  'vendorName': None,
+                                  'vendorId': 'vendorId',
+                                  'partnerId': 'partnerId',
+                                  'partnerName': 'partnerName',
+                                  'vendorName': 'vendorName',
                                   'contentCommitHash': "",
                                   }]
 
