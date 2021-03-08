@@ -39,7 +39,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 
 #### Context Output
 
-| **Field** | **Type** | **Description** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | response.violation_id | Integer | Violation ID | 
 | response.file_labels_map | Array | File in reference to the DLP violation | 
@@ -48,7 +48,7 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 | response.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds | 
 | response.text_labels | Array | Data classification labels |
 | response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
-| response.dashboard_url | Array | Gamma dashboard URL |
+| response.dashboard_url | String | Gamma dashboard URL |
 | response.app_name | String | Name of the application |
 
 #### Command Example

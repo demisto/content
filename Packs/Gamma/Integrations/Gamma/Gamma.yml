@@ -75,7 +75,10 @@ script:
         description: Violation ID
         type: Number
       - contextPath: response.file_labels_map
-        description: List of Files in reference to the DLP violation
+        description: List of Files and corresponding DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: response.text_labels
+        description: List of DLP labels in reference to the DLP violation
         type: Array
       - contextPath: response.violation_status
         description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
@@ -111,7 +114,10 @@ script:
         description: Violation ID
         type: Number
       - contextPath: response.file_labels_map
-        description: List of Files in reference to the DLP violation
+        description: List of Files and corresponding DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: response.text_labels
+        description: List of DLP labels in reference to the DLP violation
         type: Array
       - contextPath: response.violation_status
         description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
