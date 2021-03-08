@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import traceback
 
 """
 
@@ -2398,7 +2399,7 @@ def parse_alert_to_incident(alert):
     )
 
     incident = {
-        'name': incident_name,
+        'name': encode_string_results(incident_name),
         'rawJSON': json.dumps(alert)
     }
     return incident
@@ -2643,8 +2644,14 @@ def main():
             append_conditions()
         elif command == 'fireeye-hx-get-all-hosts-information':
             get_hosts_information()
-    except ValueError as e:
-        return_error(e)
+
+    except Exception as e:
+        demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
+        return_error(str(e))
+
+    # except ValueError as e:
+    #    return_error(e)
+
     finally:
         logout()
 
