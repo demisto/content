@@ -169,7 +169,6 @@ class Client(BaseClient):
 
     def get_tasks(self, case_id: str = ''):
         data = {"id": case_id}
-        tasks = list()
         res = self._http_request('POST', 'case/task/_search', data=data, ok_codes=[200, 201, 204, 404],
                                  resp_type='response')
         if res.status_code != 200:
