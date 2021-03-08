@@ -577,7 +577,7 @@ def encodeData(identities: list) -> list:
     return hashedList
 
 
-def timeToEpoch(time: str) -> str:
+def timeToEpoch(time: str):
     timeParameterList = time.split("-")
     if len(timeParameterList) != 5:
         error_message = "Time paremeter is wrong"
