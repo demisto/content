@@ -12,6 +12,7 @@ pytest-mock = "*"
 [packages]
 olefile = "*"
 chardet = "*"
+extract-msg = "*"
 
 [requires]
 python_version = "2.7"
