@@ -257,7 +257,7 @@ def test_get_mapping_fields():
     from JiraV2 import get_mapping_fields_command
     res = get_mapping_fields_command()
     assert list(res.scheme_types_mappings[0].fields.keys()) == ['issueId', 'summary', 'description', 'labels',
-                                                                'priority', 'dueDate', 'assignee', 'status']
+                                                                'priority', 'dueDate', 'assignee', 'status', 'assignee_id']
 
 
 def test_get_new_attachment_return_result(mocker):
