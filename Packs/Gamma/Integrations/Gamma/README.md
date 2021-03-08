@@ -11,8 +11,8 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 | --- | --- | --- |
 | api_key | Gamma Discovery API Key | True |
 | url | URL of the Gamma API | True |
-| first_fetch_violation | The violation ID (offset) to begin fetching from | False |
-| max_results | Max results to return | False |
+| first_fetch | The violation ID (offset) to begin fetching from | False |
+| max_fetch | Max results to return | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 
@@ -41,15 +41,15 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| response.violation_id | Integer | Violation ID | 
-| response.file_labels_map | Array | File in reference to the DLP violation | 
-| response.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' | 
-| response.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. | 
-| response.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds | 
-| response.text_labels | Array | Data classification labels |
-| response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
-| response.dashboard_url | String | Gamma dashboard URL |
-| response.app_name | String | Name of the application |
+| GammaViolation.violation_id | Integer | Violation ID | 
+| GammaViolation.file_labels_map | Array | File in reference to the DLP violation | 
+| GammaViolation.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' | 
+| GammaViolation.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. | 
+| GammaViolation.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds | 
+| GammaViolation.text_labels | Array | Data classification labels |
+| GammaViolation.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
+| GammaViolation.dashboard_url | String | Gamma dashboard URL |
+| GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
 ```!gamma-get-violation-list minimum_violation=998 limit=1```
@@ -103,15 +103,15 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| response.violation_id | Integer | Violation ID |
-| response.file_labels_map | Array | File in reference to the DLP violation |
-| response.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' |
-| response.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. |
-| response.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds |
-| response.text_labels | Array | Data classification labels |
-| response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
-| response.dashboard_url | String | Gamma dashboard URL |
-| response.app_name | String | Name of the application |
+| GammaViolation.violation_id | Integer | Violation ID |
+| GammaViolation.file_labels_map | Array | File in reference to the DLP violation |
+| GammaViolation.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' |
+| GammaViolation.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. |
+| GammaViolation.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds |
+| GammaViolation.text_labels | Array | Data classification labels |
+| GammaViolation.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
+| GammaViolation.dashboard_url | String | Gamma dashboard URL |
+| GammaViolation.app_name | String | Name of the application |
 
 #### Command Example
 ```!gamma-get-violation violation=998```
