@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Utilities
 commonfields:
   id: QR Code Reader - goqr.me
   version: -1
