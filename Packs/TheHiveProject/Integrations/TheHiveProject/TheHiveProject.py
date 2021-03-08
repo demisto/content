@@ -578,7 +578,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     return parsed_args.remote_incident_id
 
 
-def get_remote_data_command(client: Client, args: dict) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, args: dict):
     parsed_args = GetRemoteDataArgs(args)
 
     parsed_entries = []
