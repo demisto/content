@@ -1,7 +1,7 @@
 {
  "description": "Default outbound mapping for TheHive Project cases.",
  "feed": false,
- "id": "Hive_Outgoing",
+ "id": "Hive - Outgoing Mapper",
  "mapping": {
   "Hive": {
    "dontMapEventToLabels": false,
@@ -10,7 +10,7 @@
      "complex": null,
      "simple": "caseresolutionstatus"
     },
-    "status": {
+    "thehivecasestatus": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
@@ -103,7 +103,7 @@
      },
      "simple": ""
     },
-    "status": {
+    "thehivecasestatus": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
@@ -118,7 +118,7 @@
    }
   }
  },
- "name": "Hive_Outgoing",
+ "name": "Hive - Outgoing Mapper",
  "type": "mapping-outgoing",
  "version": -1,
  "fromVersion": "6.0.0"
