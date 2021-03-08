@@ -511,7 +511,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "casestatus",
+                "fieldId": "thehivecaseresolutionstatus",
                 "height": 22,
                 "id": "109be930-c6cd-11ea-bc54-f5cd04297de1",
                 "index": 1,
@@ -520,7 +520,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "caseresolutionstatus",
+                "fieldId": "thehivecaseresolutionstatus",
                 "height": 22,
                 "id": "12670c40-c6cd-11ea-bc54-f5cd04297de1",
                 "index": 2,
