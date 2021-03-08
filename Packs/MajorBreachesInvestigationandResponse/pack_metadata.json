@@ -42,6 +42,10 @@
         "PAN-OS": {
             "mandatory": false,
             "display_name": "PAN-OS"
-        }
+        },
+        "MicrosoftPolicyAndCompliance": {
+            "display_name": "Microsoft Policy And Compliance",
+            "mandatory": false
+            }
     }
 }
