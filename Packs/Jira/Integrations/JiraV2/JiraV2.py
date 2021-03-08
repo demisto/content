@@ -529,7 +529,7 @@ def create_issue_command():
     j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
 
     md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
-                                                      project_name=demisto.getArg('issueTypeName'))
+                                                      project_name=demisto.getArg('projectName'))
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], "")
     contents = j_res
     outputs = md_and_context['context']
