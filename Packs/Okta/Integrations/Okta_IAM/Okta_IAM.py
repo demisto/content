@@ -129,6 +129,18 @@ class Client(BaseClient):
         )
         return res
 
+    def list_user_apps(self, user_id):
+        uri = 'apps'
+        query_params = {
+            'filter': f'user.id eq "{user_id}"'
+        }
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri,
+            params=query_params
+        )
+        return res
+
     def list_apps(self, query, page, limit):
         query_params = {
             'q': query,
@@ -234,8 +246,8 @@ class Client(BaseClient):
 def get_query_filter(context):
     application_ids = []
 
-    query_filter = '(eventType eq "application.user_membership.add" ' \
-                   'or eventType eq "application.user_membership.remove") and'
+    query_filter = 'eventType eq "user.account.update_profile or ((eventType eq "application.user_membership.add" ' \
+                   'or eventType eq "application.user_membership.remove") and)'
 
     iam_configuration = context.get('IAMConfiguration', [])
     if not iam_configuration:
@@ -551,6 +563,28 @@ def list_apps_command(client, args):
     )
 
 
+def list_user_apps_command(client, args):
+    user_id = args.get('user_id')
+    applications = client.list_user_apps(user_id)
+    outputs = []
+
+    for app in applications:
+        outputs.append({
+            'ID': app.get('id'),
+            'Name': app.get('name'),
+            'Label': app.get('label'),
+            'Status': app.get('status')
+        })
+
+    title = 'Okta User Applications'
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='Okta.Application',
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown(title, outputs, headers=['ID', 'Name', 'Label', 'Status'])
+    )
+
+
 def get_configuration(context):
     iam_configuration = context.get('IAMConfiguration', [])
 
@@ -680,6 +714,9 @@ def main():
 
         elif command == 'okta-iam-list-applications':
             return_results(list_apps_command(client, args))
+
+        elif command == 'okta-iam-list-user-applications':
+            return_results(list_user_apps_command(client, args))
 
         elif command == 'okta-iam-get-configuration':
             return_results(get_configuration(context))
