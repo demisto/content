@@ -5,8 +5,7 @@ $global:ProgressPreference = 'SilentlyContinue'
 
 $script:INTEGRATION_NAME = "PowerShell Remoting"
 $script:COMMAND_PREFIX = "ps-remote"
-$script:INTEGRATION_ENTRY_CONTEXT = "PsRemote(val.FQDN === obj.FQDN && (val.CommandName && val.CommandName === obj.CommandName))"
-$script:MFT_ENTRY_CONTEXT = "PsRemote"
+$script:INTEGRATION_ENTRY_CONTEXT = "PsRemote"
 $script:INSECURE_WARNING = "Unix does not currently support CA or CN checks."
 $script:ValidIpAddressRegex = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
@@ -753,7 +752,7 @@ function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$out
     $client.CloseSession()
 
     $entry_context = @{
-        $script:MFT_ENTRY_CONTEXT = @{
+        $script:INTEGRATION_ENTRY_CONTEXT = @{
             FQDN = $client.fqdn
             Host = $client.host
             ExportMFT = $raw_response
