@@ -10,7 +10,7 @@
   "editForm": true,
   "group": 0,
   "hidden": false,
-  "id": "incident_casestatus",
+  "id": "incident_thehivecasestatus",
   "isReadOnly": false,
   "locked": false,
   "name": "Case Status",
