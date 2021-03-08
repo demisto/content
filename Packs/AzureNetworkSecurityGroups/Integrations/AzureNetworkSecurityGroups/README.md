@@ -11,7 +11,7 @@ In order to connect to the Azure Network Security Group using either Cortex XSOA
 
 At end of the process you'll see a message that you've logged in successfully. 
 
-Note that the application in use must have these permissions:
+## Required Permissions:
 1. user_impersonation
 2. offline_access
 3. user.read 
