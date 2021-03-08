@@ -18,7 +18,7 @@ configuration:
     will default to your first violation
   display: Starting Violation
   hidden: false
-  name: first_fetch_violation
+  name: first_fetch
   required: false
   type: 0
 - additionalinfo: Enter a number of results for each fetch to return. The number must
@@ -26,7 +26,7 @@ configuration:
   defaultvalue: '10'
   display: Results per fetch
   hidden: false
-  name: max_results
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
