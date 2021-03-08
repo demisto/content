@@ -86,6 +86,7 @@ def req(method, path, params={'api_key': API_KEY}):
     Send the request to ThreatGrid and return the JSON response
     """
     r = requests.request(method, URL + path, params=params, verify=VALIDATE_CERT)
+    demisto.debug("Status code is: {0}".format(r.status_code))
     if r.status_code != requests.codes.ok:
         return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
     return r
@@ -440,18 +441,33 @@ def get_video_by_id():
     sample_id = demisto.getArg('id')
     r = req('GET', SUB_API + 'samples/' + sample_id + '/video.webm')
     ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run Video File -\n'
-                             + 'Your sample run video file download request has been completed successfully for '
-                             + sample_id,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '.webm', r.content)
-    ])
+    contents = None
+    contents_format = None
+    try:
+        contents = r.json()
+        contents_format = formats['json']
+    except ValueError as error:
+        demisto.debug("Got the following exception: {0}".format(error))
+        demisto.debug("The full response is: {0}".format(r))
+        demisto.debug("The response text is: {0}".format(r.text))
+        demisto.debug("The response content is: {0}".format(r.content))
+        contents = r.text
+        contents_format = formats['text']
+    finally:
+        demisto.debug("contents is: {0}".format(contents))
+        demisto.debug("contents_format is: {0}".format(contents_format))
+        demisto.results([
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': ec,
+                'HumanReadable': '### ThreatGrid Sample Run Video File -\n'
+                                 + 'Your sample run video file download request has been completed successfully for '
+                                 + sample_id,
+                'Contents': contents,
+                'ContentsFormat': contents_format
+            },
+            fileResult(sample_id + '.webm', r.content)
+        ])
 
 
 def get_warnings_by_id():
@@ -940,13 +956,26 @@ def search_samples():
             'ID': demisto.get(sample, 'result'),
             'Details': demisto.get(sample, 'details')
         })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample': samples},
-        'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
+    contents = None
+    contents_format = None
+    try:
+        contents = r.json()
+        contents_format = formats['json']
+    except ValueError as error:
+        demisto.debug("Got the following exception: {0}".format(error))
+        demisto.debug("The full response is: {0}".format(r))
+        demisto.debug("The response text is: {0}".format(r.text))
+        demisto.debug("The response content is: {0}".format(r.content))
+        contents = r.text
+        contents_format = formats['text']
+    finally:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {'ThreatGrid.Sample': samples},
+            'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
+            'ContentsFormat': formats['json'],
+            'Contents': r.json()
+        })
 
 
 def search_submissions():
