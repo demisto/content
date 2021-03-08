@@ -18,14 +18,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via the entry_id of the image file.
 
-name: goqr-read-qr-code-from-file
-    outputs:
-    - contextPath: GoQRCodeData.data
-      description: QR Code data obtained
-    - contextPath: GoQRCodeData.error
-      description: Errors reading QR code
-    - contextPath: GoQRCodeData.seq
-      description: sequence numbers read from code
 #### Base Command
 
 `goqr-read-qr-code-from-file`
@@ -49,5 +41,4 @@ name: goqr-read-qr-code-from-file
 ``` ```
 
 #### Human Readable Output
-
 
