@@ -47,9 +47,9 @@ Fetch DLP violations found across SaaS applications monitored by Gamma
 | response.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. | 
 | response.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds | 
 | response.text_labels | Array | Data classification labels |
-| response.app_name | String | Name of the application |
-| response.dashboard_url | Array | Gamma dashboard URL |
 | response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
+| response.dashboard_url | Array | Gamma dashboard URL |
+| response.app_name | String | Name of the application |
 
 #### Command Example
 ```!gamma-get-violation-list minimum_violation=998 limit=1```

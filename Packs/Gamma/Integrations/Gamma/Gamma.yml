@@ -70,6 +70,31 @@ script:
     description: Get a list of violations
     execution: false
     name: gamma-get-violation-list
+    outputs:
+      - contextPath: response.violation_id
+        description: Violation ID
+        type: Number
+      - contextPath: response.file_labels_map
+        description: List of Files in reference to the DLP violation
+        type: Array
+      - contextPath: response.violation_status
+        description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+        type: String
+      - contextPath: response.violation_category
+        description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
+        type: String
+      - contextPath: response.violation_event_timestamp
+        description: Timestamp of violation in epoch milliseconds
+        type: Number
+      - contextPath: response.user
+        description: JSON field containing optional information about user
+        type: String
+      - contextPath: response.dashboard_url
+        description: Gamma dashboard URL
+        type: String
+      - contextPath: response.app_name
+        description: Name of the application where the violation is found
+        type: String
   - arguments:
     - default: false
       description: Violation ID to retrieve
@@ -81,6 +106,31 @@ script:
     description: Get a specific violation
     execution: false
     name: gamma-get-violation
+    outputs:
+      - contextPath: response.violation_id
+        description: Violation ID
+        type: Number
+      - contextPath: response.file_labels_map
+        description: List of Files in reference to the DLP violation
+        type: Array
+      - contextPath: response.violation_status
+        description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+        type: String
+      - contextPath: response.violation_category
+        description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
+        type: String
+      - contextPath: response.violation_event_timestamp
+        description: Timestamp of violation in epoch milliseconds
+        type: Number
+      - contextPath: response.user
+        description: JSON field containing optional information about user
+        type: String
+      - contextPath: response.dashboard_url
+        description: Gamma dashboard URL
+        type: String
+      - contextPath: response.app_name
+        description: Name of the application where the violation is found
+        type: String
   - arguments:
     - default: false
       description: Violation ID to update

@@ -231,6 +231,31 @@ class Command:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
 
+def test_module(client: Client) -> str:
+    """ Tests API connectivity and authentication
+
+    Returning 'ok' indicates that the integration works like it is supposed to and connection to
+    the service is successful.
+
+    Raises exceptions if something goes wrong.
+
+    :type client: Client
+    :param client: Gamma client
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    try:
+        client.get_violation_list(minimum_violation=1, limit=10)
+    except DemistoException as e:
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return 'ok'
+
+
 def fetch_incidents(client: Client, last_run_violation: dict,
                     str_first_fetch_violation: str, str_max_results: str):
     """ This function will run each interval (default 1 minute)
@@ -339,7 +364,9 @@ def main() -> None:
 
             demisto.setLastRun(next_run_violation)
             demisto.incidents(incidents)
-
+        elif demisto.command() == "test-module":
+            result = test_module(client)
+            return_results(result)
         else:
             return_results(Command.run(demisto.command(), client, demisto.args()))
 
