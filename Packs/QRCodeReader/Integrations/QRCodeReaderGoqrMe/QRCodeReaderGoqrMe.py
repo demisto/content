@@ -1,6 +1,5 @@
 import json
 import shutil
-from urllib.parse import urlencode
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -61,14 +60,14 @@ def main() -> None:
         result = test_qr_api(verify=verify_certificate)
         demisto.results(result)
 
-    elif demisto.command() == 'read-qr-code-from-file':
+    elif demisto.command() == 'goqr-read-qr-code-from-file':
         res = read_qr_code(verify=verify_certificate)
         demisto.results({
             "Contents": json.loads(res.text),
             "ContentsFormat": formats["markdown"],
             "Type": entryTypes["note"],
             "HumanReadable": tableToMarkdown("QR Reader", json.loads(res.text)[0]['symbol']),
-            "EntryContext": {"QRCode": json.loads(res.text)[0]['symbol']}
+            "EntryContext": {"GoQRCodeData": json.loads(res.text)[0]['symbol']}
         })
 
 
