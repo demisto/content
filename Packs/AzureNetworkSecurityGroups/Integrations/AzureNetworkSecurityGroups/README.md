@@ -22,7 +22,6 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 You only need to fill in your subscription ID and resource group name. 
 
-
 #### Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
