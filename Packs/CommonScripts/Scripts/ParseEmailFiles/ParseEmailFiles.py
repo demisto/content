@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-
+import extract_msg
 from email import message_from_string
 from email.header import decode_header
 import base64
@@ -3401,6 +3401,9 @@ def convert_to_unicode(s):
 
 
 def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
+    msg = extract_msg.Message(file_path)
+    message_body = msg.body
+
     if max_depth == 0:
         return None, []
 
@@ -3418,13 +3421,16 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'From': msg_dict['From'],
         'Subject': headers_map.get('Subject'),
         'HTML': msg_dict['HTML'],
-        'Text': msg_dict['Text'],
+        'Text': message_body,
         'Headers': headers,
         'HeadersMap': headers_map,
         'Attachments': '',
         'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }
+
+    if msg_dict['HTML'] == msg_dict['Text']:
+        email_data['HTML'] = email_data['Text']
 
     if parse_only_headers:
         return {"HeadersMap": email_data.get("HeadersMap")}, []
