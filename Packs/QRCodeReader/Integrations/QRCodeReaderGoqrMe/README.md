@@ -14,14 +14,21 @@ This integration was integrated and tested with version 1.0.0 of QR Code Reader 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### read-qr-code-from-file
+### goqr-read-qr-code-from-file
 ***
 Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via the entry_id of the image file.
 
-
+name: goqr-read-qr-code-from-file
+    outputs:
+    - contextPath: GoQRCodeData.data
+      description: QR Code data obtained
+    - contextPath: GoQRCodeData.error
+      description: Errors reading QR code
+    - contextPath: GoQRCodeData.seq
+      description: sequence numbers read from code
 #### Base Command
 
-`read-qr-code-from-file`
+`goqr-read-qr-code-from-file`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -33,7 +40,9 @@ Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via the entry_id o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRCode | unknown | QR Code data obtained | 
+| GoQRCodeData.data | unknown | QR Code data obtained | 
+| GoQRCodeData.error | unknown | Errors reading QR code | 
+| GoQRCodeData.seq | unknown | sequence numbers read from code | 
 
 
 #### Command Example
