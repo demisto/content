@@ -917,7 +917,7 @@ def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation
     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
-    assert splunk.is_enrichment_process_exceeding_timeout(notable, enrichment_timeout) is output
+    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
 
 
 INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
@@ -1009,7 +1009,7 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
 @pytest.mark.parametrize('notable_data, search, raw, expected_search', [
     ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
     ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
-    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, 'search a=$a|s$ c=$c$ suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
 ])
 def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
     """
@@ -1169,12 +1169,12 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
-     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
+     {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, True),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     4, True)
+     3, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
     mocker.patch.object(demisto, 'info')
