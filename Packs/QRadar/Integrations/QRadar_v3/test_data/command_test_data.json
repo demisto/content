@@ -1265,7 +1265,7 @@
     },
     "expected": {
       "outputs_prefix": "QRadar.SearchStatus",
-      "outputs_key_field": "events",
+      "outputs_key_field": null,
       "outputs": [
         {
           "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",

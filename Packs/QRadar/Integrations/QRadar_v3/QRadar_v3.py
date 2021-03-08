@@ -322,8 +322,8 @@ class Client(BaseClient):
             timeout=timeout
         )
 
-    def offenses_list(self, range_: str, offense_id: Optional[int] = None, filter_: Optional[str] = None,
-                      fields: Optional[str] = None, sort: Optional[str] = None):
+    def offenses_list(self, range_: Optional[str] = None, offense_id: Optional[int] = None,
+                      filter_: Optional[str] = None, fields: Optional[str] = None, sort: Optional[str] = None):
         id_suffix = f'/{offense_id}' if offense_id else ''
         return self.http_request(
             method='GET',
@@ -1895,16 +1895,13 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
 
     response = client.search_results_get(search_id, range_)
     result_key = list(response.keys())[0]
-    outputs = sanitize_outputs(response.get(result_key))
-    # outputs = []
-    # for i in range(50000):
-    #     outputs.append({'a': i})
+    outputs = response.get(result_key)
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Results For Search ID {search_id}', outputs),
         outputs_prefix=output_path if output_path else 'QRadar.SearchStatus',
         outputs=outputs,
-        raw_response='response'
+        raw_response=response
     )
 
 
@@ -2495,6 +2492,78 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     return fields
 
 
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
+    """
+    get-remote-data command: Returns an updated incident and entries
+
+    Args:
+        client (Client): QRadar client to perform the API calls.
+        args (Dict):
+            id: Offense id to retrieve.
+            lastUpdate: When was the last time we data was retrieved in Epoch.
+        params (Dict): Demisto params.
+
+    Returns:
+        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
+    """
+    offense_id = args.get('id')
+    last_update = get_time_parameter(args.get('lastUpdate'), epoch_format=True)
+    demisto.debug(f'Getting update for remote offense ID {offense_id}, last update: {last_update}')
+
+    offense = client.offenses_list(offense_id=offense_id)
+    offense_last_update = offense.get('last_updated_time')
+
+    demisto.debug(f'Offense last update was {offense_last_update}')
+
+    if last_update > offense_last_update:
+        demisto.debug('Nothing new in the ticket')
+        offense = dict()
+
+    # else:
+    #     demisto.debug(f'ticket is updated: {ticket}')
+    entries = []
+
+    if offense.get('status', '') == 'CLOSED':
+        if params.get('close_incident'):
+            demisto.debug(f'Offense is closed: {offense}')
+            if closing_reason := offense.get('closing_reason_id', ''):
+                closing_reason = client.closing_reasons_list(closing_reason).get('text')
+
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'From QRadar: {closing_reason}'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
+
+    demisto.debug(f'Pull result is {offense}')
+    return [offense] + entries
+
+
+def get_modified_remote_data_command(client: Client, args: Dict[str, str]) -> GetModifiedRemoteDataResponse:
+    """
+    Performs API calls to QRadar service, querying for offenses that were updated in QRadar later than
+    the last update time given in the argument 'lastUpdate'.
+    Args:
+        client (Client): QRadar client to perform the API calls.
+        args (Dict): Demisto arguments.
+
+    Returns:
+        (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
+
+    last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
+
+    offenses = client.offenses_list(filter_=f'id <= {highest_fetched_id} AND last_updated_time > {last_update}')
+    modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
+
+    return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -2623,6 +2692,12 @@ def main() -> None:
 
         elif command == 'get-mapping-fields':
             demisto.results(qradar_get_mapping_fields_command(client))
+
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args))
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
