@@ -69,7 +69,7 @@
   "editForm": true,
   "group": 0,
   "hidden": false,
-  "id": "incident_tasks",
+  "id": "incident_thehivetasks",
   "isReadOnly": true,
   "locked": false,
   "name": "Tasks",
