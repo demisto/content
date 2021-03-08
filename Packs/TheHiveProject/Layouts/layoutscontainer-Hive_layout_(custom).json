@@ -229,7 +229,7 @@
             "items": [
               {
                 "endCol": 2,
-                "fieldId": "thehivecasestatus",
+                "fieldId": "casestatus",
                 "height": 22,
                 "id": "03d2e300-cb61-11ea-bd56-e1bd9c9fbbdb",
                 "index": 0,
@@ -238,7 +238,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "thehivecaseresolutionstatus",
+                "fieldId": "caseresolutionstatus",
                 "height": 22,
                 "id": "04ca8970-cb61-11ea-bd56-e1bd9c9fbbdb",
                 "index": 1,
