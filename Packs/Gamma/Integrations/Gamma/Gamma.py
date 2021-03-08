@@ -352,8 +352,8 @@ def main() -> None:
         client = Client(demisto)
 
         if demisto.command() == 'fetch-incidents':
-            str_first_fetch_violation = demisto.params().get('first_fetch_violation', 1)
-            str_max_results = demisto.params().get('max_results', 10)
+            str_first_fetch_violation = demisto.params().get('first_fetch', 1)
+            str_max_results = demisto.params().get('max_fetch', 10)
 
             next_run_violation, incidents = fetch_incidents(
                 client=client,
