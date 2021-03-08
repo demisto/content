@@ -99,9 +99,52 @@ Fetches a single DLP violation. This command is the same as gamma-get-violation-
 | --- | --- | --- |
 | violation | Violation id | Required | 
 
-
 #### Context Output
-Same response format as the gamma-get-violation-list command above
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| response.violation_id | Integer | Violation ID |
+| response.file_labels_map | Array | File in reference to the DLP violation |
+| response.violation_status | String | one of 'OPEN', 'RESOLVED', 'IGNORED' |
+| response.violation_category | String | Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc. |
+| response.violation_event_timestamp | Integer | Timestamp of violation in epoch milliseconds |
+| response.text_labels | Array | Data classification labels |
+| response.user | JSON Object | a JSON field containing optional information (based on what the app allows us to access) like email address, name, atlassian account id, AD id, github login, etc. All these fields are nullable. |
+| response.dashboard_url | String | Gamma dashboard URL |
+| response.app_name | String | Name of the application |
+
+#### Command Example
+```!gamma-get-violation violation=998```
+
+#### Context Example
+```json
+{
+    "response": [
+        {
+            "violation_id": 999,
+            "file_labels_map": {
+                "svc-prod-account.json": [
+                    "cloud_db_credential"
+                ]
+            },
+            "violation_status": "OPEN",
+            "violation_category": "secrets",
+            "violation_event_timestamp": 1569550580,
+            "text_labels": [],
+            "user": {
+                "name": null,
+                "atlassian_account_id": null,
+                "email_address": "foo@example.com",
+                "active_directory_user_id": null,
+                "atlassian_server_user_key": null,
+                "slack_user_id": "USER9Aa2",
+                "github_handle": "markzuck"
+            },
+            "dashboard_url": "https://prod-iab12.gamma.ai/dashboard/slack/monitor/violationId/999",
+            "app_name": "slack"
+        }]
+}
+```
 
 ### gamma-update-violation
 ***
