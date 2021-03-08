@@ -19,7 +19,7 @@ script:
       required: true
     description: Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via
       the entry_id of the image file.
-    name: read-qr-code-from-file
+    name: goqr-read-qr-code-from-file
     outputs:
     - contextPath: QRCode
       description: QR Code data obtained
