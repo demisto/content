@@ -6,11 +6,11 @@
   "Hive": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "thehivecaseresolutionstatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecaseresolutionstatus"
     },
-    "thehivecasestatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
@@ -68,7 +68,7 @@
      "complex": null,
      "simple": "flag"
     },
-    "thehivecaseresolutionstatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecaseresolutionstatus"
     },
@@ -103,7 +103,7 @@
      },
      "simple": ""
     },
-    "thehivecasestatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
