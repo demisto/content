@@ -297,6 +297,7 @@ def main():
 
     verify_certificate = not demisto.params().get('insecure', False)
 
+    handle_proxy()
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
@@ -314,27 +315,27 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
-        elif demisto.command() == 'list-alerts':
+        elif demisto.command() == 'opsgenie-list-alerts':
             limit = demisto.args().get("limit", 20)
             sort = demisto.args().get("sort", "createdAt")
             return_results(list_alerts(client, limit, sort))
-        elif demisto.command() == 'list-schedules':
+        elif demisto.command() == 'opsgenie-list-schedules':
             limit = demisto.args().get("limit", 20)
             sort = demisto.args().get("sort", "createdAt")
             return_results(list_schedules(client, limit, sort))
-        elif demisto.command() == "get-on-call":
+        elif demisto.command() == "opsgenie-get-on-call":
             return_results(get_on_calls(client, demisto.args().get("schedule-id")))
-        elif demisto.command() == "get-schedule":
+        elif demisto.command() == "opsgenie-get-schedule":
             return_results(get_schedule(client, demisto.args().get("schedule-id")))
-        elif demisto.command() == "create-alert":
+        elif demisto.command() == "opsgenie-create-alert":
             return_results(create_alert(client, demisto.args()))
-        elif demisto.command() == "ack-alert":
+        elif demisto.command() == "opsgenie-ack-alert":
             return_results(ack_alert(client, demisto.args()))
-        elif demisto.command() == "close-alert":
+        elif demisto.command() == "opsgenie-close-alert":
             return_results(close_alert(client, demisto.args()))
-        elif demisto.command() == "get-alert":
+        elif demisto.command() == "opsgenie-get-alert":
             return_results(get_alert(client, demisto.args().get("alert-id")))
-        elif demisto.command() == "delete-alert":
+        elif demisto.command() == "opsgenie-delete-alert":
             return_results(delete_alert(client, demisto.args().get("alert-id")))
 
     # Log exceptions
