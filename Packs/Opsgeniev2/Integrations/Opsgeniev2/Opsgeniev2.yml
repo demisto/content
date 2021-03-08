@@ -46,10 +46,10 @@ script:
     deprecated: false
     description: List the current alerts from OpsGenie.
     execution: false
-    name: list-alerts
+    name: opsgenie-list-alerts
     outputs:
       - contextPath: OpsGenieV2.Alerts.acknowledged
-        description: 'State of Acknoweledgement'
+        description: State of Acknoweledgement
         type: Boolean
       - contextPath: OpsGenieV2.Alerts.alias
         description: Alert Alias
@@ -64,7 +64,7 @@ script:
         description: ID of alert
         type: String
       - contextPath: OpsGenieV2.Alerts.integration.id
-        description: 'ID of integration '
+        description: ID of integration
         type: String
       - contextPath: OpsGenieV2.Alerts.integration.name
         description: Integration name
@@ -173,7 +173,7 @@ script:
     description: Create an Alert in opsgenie
     deprecated: false
     execution: false
-    name: create-alert
+    name: opsgenie-create-alert
     outputs:
       - contextPath: OpsGenieV2.CreatedAlert.action
         description: Action of this Request
@@ -188,7 +188,7 @@ script:
         description: Integration of created Alert
         type: String
       - contextPath: OpsGenieV2.CreatedAlert.isSuccess
-        description: 'If the request was successful '
+        description: If the request was successful
         type: Boolean
       - contextPath: OpsGenieV2.CreatedAlert.processedAt
         description: When the request was processed
@@ -213,7 +213,7 @@ script:
     deprecated: false
     description: Delete an Alert from OpsGenie
     execution: false
-    name: delete-alert
+    name: opsgenie-delete-alert
     outputs:
       - contextPath: OpsGenieV2.DeletedAlert.action
         description: Action of this Request
@@ -228,7 +228,7 @@ script:
         description: Integration of created Alert
         type: String
       - contextPath: OpsGenieV2.DeletedAlert.isSuccess
-        description: 'If the request was successful '
+        description: If the request was successful
         type: Boolean
       - contextPath: OpsGenieV2.DeletedAlert.processedAt
         description: When the request was processed
@@ -253,10 +253,10 @@ script:
     deprecated: false
     description: Delete an Alert from OpsGenie
     execution: false
-    name: get-alert
+    name: opsgenie-get-alert
     outputs:
       - contextPath: OpsGenieV2.Alert.acknowledged
-        description: 'State of Acknoweledgement '
+        description: State of Acknoweledgement
         type: Boolean
       - contextPath: OpsGenieV2.Alert.alias
         description: Alert Alias
@@ -271,7 +271,7 @@ script:
         description: ID of alert
         type: String
       - contextPath: OpsGenieV2.Alert.integration.id
-        description: 'ID of integration '
+        description: ID of integration
         type: String
       - contextPath: OpsGenieV2.Alert.integration.name
         description: Integration name
@@ -347,7 +347,7 @@ script:
     deprecated: false
     description: Acknowledge an alert in OpsGenie
     execution: false
-    name: ack-alert
+    name: opsgenie-ack-alert
     outputs:
       - contextPath: OpsGenieV2.AckedAlert.action
         description: Action of this Request
@@ -362,7 +362,7 @@ script:
         description: Integration of created Alert
         type: String
       - contextPath: OpsGenieV2.AckedAlert.isSuccess
-        description: 'If the request was successful '
+        description: If the request was successful
         type: Boolean
       - contextPath: OpsGenieV2.AckedAlert.processedAt
         description: When the request was processed
@@ -387,7 +387,7 @@ script:
     deprecated: false
     description: Retrieve the provided Schedule (by ID) from LR
     execution: false
-    name: get-schedule
+    name: opsgenie-get-schedule
     outputs:
       - contextPath: OpsGenieV2.Schedule.description
         description: Description of Schedule
@@ -451,7 +451,7 @@ script:
     deprecated: false
     description: List Schedules
     execution: false
-    name: list-schedules
+    name: opsgenie-list-schedules
     outputs:
       - contextPath: OpsGenieV2.Schedules.description
         description: Description of Schedule
@@ -509,7 +509,7 @@ script:
     deprecated: false
     description: Get the on-call users for the provided schedule
     execution: false
-    name: get-on-call
+    name: opsgenie-get-on-call
     outputs:
       - contextPath: OpsGenieV2.OnCall._parent.enabled
         description: If this OnCall is Enabled
@@ -540,7 +540,7 @@ script:
     deprecated: false
     description: Close an OpsGenie Alert
     execution: false
-    name: close-alert
+    name: opsgenie-close-alert
     outputs:
       - contextPath: OpsGenieV2.CloseAlert.action
         description: Action of this Request
@@ -555,7 +555,7 @@ script:
         description: Integration of created Alert
         type: String
       - contextPath: OpsGenieV2.CloseAlert.isSuccess
-        description: 'If the request was successful '
+        description: If the request was successful
         type: Boolean
       - contextPath: OpsGenieV2.CloseAlert.processedAt
         description: When the request was processed
