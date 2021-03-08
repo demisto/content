@@ -1,4 +1,4 @@
-Hello World Automation v2.
+test description new
 
 ## Script Data
 ---
@@ -13,8 +13,8 @@ Hello World Automation v2.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| dummy |  |
-| dummier |  |
+| field |  |
+| hey2 |  |
 
 ## Outputs
 ---

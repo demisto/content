@@ -12,6 +12,7 @@ This integration was integrated and tested with version xx of HelloWorld V2
     | API Key | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

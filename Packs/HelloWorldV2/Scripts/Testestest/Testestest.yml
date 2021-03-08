@@ -1,15 +1,16 @@
 args:
-- name: dummy
+- name: field
   required: true
-- name: dummier
+- defaultValue: "7"
+  name: hey2
   required: true
-comment: Hello World Automation v2.
+comment: test description new
 commonfields:
-  id: HelloWorldAutomationV2
+  id: testestest
   version: -1
 dockerimage: demisto/python3:3.9.2.17246
 enabled: true
-name: HelloWorldAutomationV2
+name: testestest
 runas: DBotWeakRole
 runonce: false
 script: ''

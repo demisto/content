@@ -57,13 +57,13 @@ tasks:
     task:
       brand: ""
       description: Retrieve alert extra data by ID.
-      id: 67728417-114e-4247-8ca8-23adbb17a43b
+      id: 92bfbbe9-0e30-4b5b-8d08-0b8ec0efcca3
       iscommand: true
-      name: Get alert details
+      name: Get alert details v2
       script: '|||helloworld-get-alert-new'
       type: regular
       version: -1
-    taskid: 67728417-114e-4247-8ca8-23adbb17a43b
+    taskid: 92bfbbe9-0e30-4b5b-8d08-0b8ec0efcca3
     timertriggers: []
     type: regular
     view: |-

@@ -33,14 +33,14 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following command function
+# TODO: REMOVE the following dummy command function
 def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', 'example dummy')
-
     if not dummy:
-        raise ValueError('dummy was not specified')
+        raise ValueError('dummy not specified')
 
+    # Call the standalone function and get the raw response
     result = basescript_dummy(dummy)
 
     return CommandResults(
@@ -52,6 +52,8 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 
 ''' MAIN FUNCTION '''
+
+# test
 
 
 def main():

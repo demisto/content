@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""HelloWorld new Integration for Cortex XSOAR (aka Demisto)
+"""HelloWorld v2 Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
 using Python 3. Please follow the documentation links below and make sure that
@@ -18,7 +18,7 @@ Example Design document for the this Integration (HelloWorld):
 https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0
 
 
-HelloWorld API
+HelloWorld v2 API
 --------------
 
 The HelloWorld API is a simple API that shows a realistic use case for an XSOAR
@@ -278,7 +278,7 @@ class Client(BaseClient):
         """Gets a specific HelloWorld alert by id
 
         :type alert_id: ``str``
-        :param alert_id: id of the alert to return
+        :param alert_id: id of the alert to return.
 
         :return: dict containing the alert as returned from the API
         :rtype: ``Dict[str, Any]``
