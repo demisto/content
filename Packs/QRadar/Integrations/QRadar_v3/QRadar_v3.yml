@@ -56,8 +56,8 @@ configuration:
   - None
   required: true
   type: 15
-  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense to IP
-    values. Asset enrichment adds correlated assets to the fetched offenses.
+  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+    Asset enrichment adds correlated assets to the fetched offenses.
 - defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
     CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
     destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
@@ -73,8 +73,8 @@ configuration:
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
-- additionalinfo: Comma-separated configuration for advanced parameters values.
-    e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+- additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
+    EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
   name: adv_params
   required: false
@@ -188,8 +188,8 @@ script:
       - IPs
       - IPs And Assets
       - None
-      description: IPs enrichment transforms IDs of the IPs of the offense to IP
-        values. Asset enrichment adds correlated assets to the fetched offenses.
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+        Asset enrichment adds correlated assets to the fetched offenses.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -302,8 +302,8 @@ script:
       - IPs
       - IPs And Assets
       - None
-      description: IPs enrichment transforms IDs of the IPs of the offense to IP
-        values. Asset enrichment adds correlated assets to the fetched offenses.
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+        Asset enrichment adds correlated assets to the fetched offenses.
     - name: protected
       description: Whether the offense should be protected.
       auto: PREDEFINED
@@ -367,16 +367,16 @@ script:
       defaultValue: "false"
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: include_deleted
       required: false
       description: If true, deleted closing reasons are included in the response.
       defaultValue: "false"
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -927,7 +927,8 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to be created. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
+      description: The name of the reference set to be created. Reference names can
+        be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: element_type
       auto: PREDEFINED
       required: true
@@ -965,7 +966,8 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to be deleted. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
+      description: The name of the reference set to be deleted. Reference names can
+        be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: purge_only
       description: Indicates if the reference set should have its contents purged
         (true), keeping the reference set structure. If the value is 'false', or not
@@ -1013,7 +1015,8 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to add or update an element in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
+      description: The name of the reference set to add or update an element in. Reference
+        names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: value
       required: true
       description: "Comma separated list. The values to add or update in the reference\
@@ -1043,7 +1046,8 @@ script:
     arguments:
     - name: ref_name
       required: true
-      description: The name of the reference set to remove a value from. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
+      description: The name of the reference set to remove a value from. Reference
+        names can be found by 'Name' field in 'qradar-reference-sets-list' command.
     - name: value
       required: true
       description: "The value to remove from the reference set. If value chosen is\
@@ -1157,7 +1161,8 @@ script:
       type: String
     arguments:
     - name: ref_name
-      description: The name of set to add or update data in. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command.
+      description: The name of set to add or update data in. Reference names can be
+        found by 'Name' field in 'qradar-reference-sets-list' command.
       required: true
     - name: query
       description: The query for getting indicators from Demisto.
@@ -1183,20 +1188,22 @@ script:
       description: Name of the continent that is associated with IP address.
       type: String
     - contextPath: QRadar.GeoForIP.LocationAccuracyRadius
-      description: The approximate accuracy radius in kilometers around the latitude and
-        longitude for the IP address.
+      description: The approximate accuracy radius in kilometers around the latitude
+        and longitude for the IP address.
       type: Number
     - contextPath: QRadar.GeoForIP.LocationAverageIncome
       description: The average income associated with the IP address.
       type: Number
     - contextPath: QRadar.GeoForIP.LocationLatitude
-      description: The approximate latitude of the location associated with the IP address.
+      description: The approximate latitude of the location associated with the IP
+        address.
       type: Number
     - contextPath: QRadar.GeoForIP.LocationTimezone
       description: Timezone of the location.
       type: String
     - contextPath: QRadar.GeoForIP.LocationLongitude
-      description: The approximate longitude of the location associated with the IP address.
+      description: The approximate longitude of the location associated with the IP
+        address.
       type: Number
     - contextPath: QRadar.GeoForIP.LocationMetroCode
       description: The metro code associated with the IP address. These are only available
@@ -1219,7 +1226,8 @@ script:
       description: Name of the country that ISP have registered the IP address.
       type: String
     - contextPath: QRadar.GeoForIP.RepresentedCountryIsoCode
-      description: ISO code of the country that is represented by users of the IP address.
+      description: ISO code of the country that is represented by users of the IP
+        address.
       type: String
     - contextPath: QRadar.GeoForIP.RepresentedCountryName
       description: Name of the country that is represented by users of the IP address.
@@ -1235,14 +1243,15 @@ script:
       description: The autonomous system number associated with the IP address.
       type: Number
     - contextPath: QRadar.GeoForIP.Traits.autonomous_system_organization
-      description: The organization associated with the registered autonomous system number
-        for the IP address.
+      description: The organization associated with the registered autonomous system
+        number for the IP address.
       type: String
     - contextPath: QRadar.GeoForIP.Traits.domain
       description: The second level domain associated with the IP address.
       type: String
     - contextPath: QRadar.GeoForIP.Traits.internet_service_provider
-      description: The name of the Internet Service Provider associated with the IP address.
+      description: The name of the Internet Service Provider associated with the IP
+        address.
       type: String
     - contextPath: QRadar.GeoForIP.Traits.organization
       description: The name of the organization associated with the IP address.
@@ -1257,8 +1266,8 @@ script:
       description: The postal code associated with the IP address.
       type: String
     - contextPath: QRadar.GeoForIP.PostalCodeConfidence
-      description: Value between 0-100 that represents MaxMind's confidence that the postal
-        code is correct.
+      description: Value between 0-100 that represents MaxMind's confidence that the
+        postal code is correct.
       type: Number
     arguments:
     - name: ips
@@ -1417,15 +1426,16 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false
+  isremotesyncin: true
   longRunning: true
   longRunningPort: false
   isFetchSamples: true
   ismappable: true
 fromversion: 6.0.0
-defaultmapperin: QRadar-mapper
+defaultmapperin: QRadar - Generic Incoming Mapper
 defaultclassifier: QRadar
 tests:
 - No tests (auto formatted)

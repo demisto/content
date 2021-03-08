@@ -802,7 +802,6 @@ Retrieves assets list.
 | QRadar.Asset.Interfaces.ip_addresses.last_seen_profiler | Date | Date when IP address was most recently seen in event or flow traffic. | 
 | QRadar.Asset.Products.id | Number | The ID of this software product instance in QRadar's asset model. | 
 | QRadar.Asset.Products.product_variant_id | Number | The ID of this software product variant in QRadar's catalog of products. | 
-| QRadar.Asset.Products.ip_addresses.created | Date | Date when this product was most recently scanned for. | 
 | QRadar.Asset.Products.first_seen_scanner | Date | Date when product was first seen during a vulnerability scan. | 
 | QRadar.Asset.Products.first_seen_profiler | Date | Date when product was first seen in event or flow traffic. | 
 | QRadar.Asset.Products.last_seen_scanner | Date | Date when product was most recently seen seen during a vulnerability scan. | 
