@@ -216,6 +216,11 @@ def extract_credentials_from_secret(secret_path: str) -> (str, str):
 
 
 def main():
+
+
+
+
+
     install_logging("Validate Premium Packs.log")
     options = options_handler()
     exit_code = 0
