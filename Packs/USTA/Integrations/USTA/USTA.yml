@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://usta.prodaft.com
-  display: Server URL (e.g. https://usta.prodaft.com/api/)
+  display: Server URL (e.g. https://usta.prodaft.com)
   name: url
   required: true
   type: 0
