@@ -48,9 +48,9 @@
           },
           "simple": ""
         },
-        "thehivetasks": {
+        "Tasks": {
           "complex": null,
-          "simple": "thehivetasks"
+          "simple": "Tasks"
         },
         "Observables": {
           "complex": {
@@ -96,9 +96,9 @@
     "The Hive Case": {
       "dontMapEventToLabels": false,
       "internalMapping": {
-        "thehivetasks": {
+        "Tasks": {
           "complex": null,
-          "simple": "thehivetasks"
+          "simple": "Tasks"
         }
       }
     },
