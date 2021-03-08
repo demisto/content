@@ -8,7 +8,7 @@
       "internalMapping": {
         "Case Resolution Status": {
           "complex": null,
-          "simple": "resolutionStatus"
+          "simple": "thehivecaseresolutionstatus"
         },
         "Case Status": {
           "complex": null,

@@ -6,9 +6,9 @@
   "Hive": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-    "resolutionStatus": {
+    "thehivecaseresolutionstatus": {
      "complex": null,
-     "simple": "caseresolutionstatus"
+     "simple": "thehivecaseresolutionstatus"
     },
     "thehivecasestatus": {
      "complex": null,
@@ -68,9 +68,9 @@
      "complex": null,
      "simple": "flag"
     },
-    "resolutionStatus": {
+    "thehivecaseresolutionstatus": {
      "complex": null,
-     "simple": "caseresolutionstatus"
+     "simple": "thehivecaseresolutionstatus"
     },
     "severity": {
      "complex": {
