@@ -973,8 +973,8 @@ def search_samples():
             'Type': entryTypes['note'],
             'EntryContext': {'ThreatGrid.Sample': samples},
             'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
-            'ContentsFormat': formats['json'],
-            'Contents': r.json()
+            'ContentsFormat': contents_format,
+            'Contents': contents
         })
 
 
