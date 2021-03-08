@@ -34,7 +34,7 @@ script:
     - description: The name of whom you want to say hello to.
       name: name
     description: Hello command - prints hello to anyone.
-    name: helloworld-say-hello-new
+    name: helloworld-say-hello
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here.
