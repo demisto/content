@@ -10,7 +10,7 @@
      "complex": null,
      "simple": "caseresolutionstatus"
     },
-    "casestatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
@@ -103,7 +103,7 @@
      },
      "simple": ""
     },
-    "casestatus": {
+    "state": {
      "complex": null,
      "simple": "thehivecasestatus"
     },
