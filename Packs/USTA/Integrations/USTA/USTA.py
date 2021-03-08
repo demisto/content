@@ -1,4 +1,4 @@
-# import datetime
+import datetime
 import hashlib
 import json
 import os
@@ -195,8 +195,6 @@ def search_malicious_urls(client: Client, args: Dict[str, Any]) -> CommandResult
         startDate = timeToEpoch(start)
     else:
         startDate = start
-
-    print(startDate)
 
     if end:
         endDate = timeToEpoch(end)
