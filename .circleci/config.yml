@@ -298,6 +298,11 @@ references:
           name: Trigger Private Repo Build
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ]
+              then
+                echo "Skipping - not running in contribution instance"
+                exit 0
+            fi
             python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
 
   get_private_build_status: &get_private_build_status
@@ -311,6 +316,11 @@ references:
           name: Get Private Build Status
           when: always
           command: |
+            if [ -n "${CONTRIB_BRANCH}" ]
+              then
+                echo "Skipping - not running in contribution instance"
+                exit 0
+            fi
             python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
   create_artifact: &create_artifact
