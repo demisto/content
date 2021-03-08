@@ -1,5 +1,5 @@
 Read QR Code from image file.
-This integration was integrated and tested with version xx of QR Code Reader - goqr.me
+This integration was integrated and tested with version 1.0.0 of QR Code Reader - goqr.me
 ## Configure QR Code Reader - goqr.me on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
