@@ -155,6 +155,24 @@ class TestMetadataParsing:
         assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'New'}
         assert parsed_metadata['searchRank'] == 20
 
+    def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given a certified pack that was created more than 30 days ago
+        Then: remove "New" tag and make sure the searchRank is reduced
+        """
+        dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
+        if 'New' not in dummy_pack_metadata['tags']:
+            dummy_pack_metadata['tags'].append('New')
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
+        assert parsed_metadata['searchRank'] == 10
+
     def test_section_tags_added(self, dummy_pack_metadata, dummy_pack):
         """
         Given:
@@ -181,24 +199,6 @@ class TestMetadataParsing:
 
         assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'Featured'}
         assert parsed_metadata['searchRank'] == 20
-
-    def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
-        """
-        Given a certified pack that was created more than 30 days ago
-        Then: remove "New" tag and make sure the searchRank is reduced
-        """
-        dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
-        if 'New' not in dummy_pack_metadata['tags']:
-            dummy_pack_metadata['tags'].append('New')
-        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                          pack_id='test_pack_id', integration_images=[],
-                                                          author_image="", dependencies_data={},
-                                                          server_min_version="5.5.0", build_number="dummy_build_number",
-                                                          commit_hash="dummy_commit", downloads_count=10,
-                                                          is_feed_pack=False)
-
-        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
-        assert parsed_metadata['searchRank'] == 10
 
     def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
         """
@@ -303,7 +303,7 @@ class TestMetadataParsing:
                                                           build_number="dummy_build_number", commit_hash="dummy_commit",
                                                           downloads_count=10, is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
 
     @pytest.mark.parametrize('is_feed_pack, tags',
                              [(True, ["tag number one", "Tag number two", 'TIM']),
