@@ -677,10 +677,10 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-#      - *trigger_private_build
+      - *trigger_private_build
       - *infrastructure_testing
       - *run_unit_testing_and_lint
-#      - *get_private_build_status
+      - *get_private_build_status
       - store_test_results:
           path: ./unit-tests
       - run:
