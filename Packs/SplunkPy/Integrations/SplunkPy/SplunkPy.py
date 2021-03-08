@@ -3,12 +3,14 @@ from splunklib.binding import HTTPError, namespace
 import demistomock as demisto
 from CommonServerPython import *
 import splunklib.client as client
+
 import splunklib.results as results
 import json
 from datetime import timedelta, datetime
 import pytz
 import dateparser
 import urllib2
+import hashlib
 import ssl
 from StringIO import StringIO
 import requests
@@ -33,24 +35,26 @@ FETCH_TIME = demisto.params().get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
+
+
+# ===== Mirroring Mechanism =====
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+
+# ===== Enrichment Mechanism =====
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
 
-# ===== Enrichment Mechanism Constants =====
 DRILLDOWN_ENRICHMENT = 'Drilldown'
 ASSET_ENRICHMENT = 'Asset'
 IDENTITY_ENRICHMENT = 'Identity'
 SUBMITTED_NOTABLES = 'submitted_notables'
 EVENT_ID = 'event_id'
 JOB_CREATION_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
-LAST_RUN_OVER_FETCH = 'last_run_over_fetch'
-LAST_RUN_REGULAR_FETCH = 'last_run_regular_fetch'
-NUM_FETCHED_NOTABLES = 'num_fetched_notables'
+LAST_RUN_OBJECT = 'last_run_object'
 NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
 INFO_MIN_TIME = "info_min_time"
 INFO_MAX_TIME = "info_max_time"
@@ -66,6 +70,7 @@ DATA = 'data'
 TYPE = 'type'
 ID = 'id'
 CREATION_TIME = 'creation_time'
+INCIDENT_CREATED = 'incident_created'
 
 DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
 
@@ -74,6 +79,12 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     ASSET_ENRICHMENT: 'successful_asset_enrichment',
     IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
 }
+
+# ===== Not Missing Events Mechanism =====
+CUSTOM_ID = 'custom_id'
+OCCURRED = 'occurred'
+INDEX_TIME = 'index_time'
+TIME_IS_MISSING = 'time_is_missing'
 
 
 class Enrichment:
@@ -136,27 +147,23 @@ class Notable:
         id (str): The notable's id.
         enrichments (list): The list of all enrichments that needs to handle.
         incident_created (bool): Whether an incident created or not.
+        occurred (str): The occurred time of the notable
+        custom_id (str): The custom ID of the notable (used in the fetch function)
+        time_is_missing (bool): Whether the `_time` field has no an empty value or not
+        index_time (str): The time the notable have been indexed.
 
     """
 
-    def __init__(self, data, enrichments=None, notable_id=None):
+    def __init__(self, data, enrichments=None, notable_id=None, occurred=None, custom_id=None, index_time=None,
+                 time_is_missing=None, incident_created=None):
         self.data = data
+        self.id = notable_id if notable_id else self.get_id()
         self.enrichments = enrichments if enrichments else []
-        self.incident_created = False
-        if notable_id:
-            self.id = notable_id
-        else:
-            if EVENT_ID in data:
-                self.id = data[EVENT_ID]
-            else:
-                if ENABLED_ENRICHMENTS:
-                    raise Exception('When using the enrichment mechanism, an event_id field is needed, and thus, '
-                                    'one must use a fetch query of the following format: search `notable` .......\n'
-                                    'Please re-edit the fetchQuery parameter in the integration configuration, reset '
-                                    'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
-                                    'run the fetch again.')
-                else:
-                    self.id = None
+        self.incident_created = incident_created if incident_created else False
+        self.time_is_missing = time_is_missing if time_is_missing else False
+        self.index_time = index_time if index_time else self.data.get('_indextime')
+        self.occurred = occurred if occurred else self.get_occurred()
+        self.custom_id = custom_id if custom_id else self.create_custom_id()
 
     @property
     def id(self):
@@ -174,13 +181,28 @@ class Notable:
     def data(self, data):
         self.data = data
 
+    def get_id(self):
+        if EVENT_ID in self.data:
+            return self.data[EVENT_ID]
+        else:
+            if ENABLED_ENRICHMENTS:
+                raise Exception('When using the enrichment mechanism, an event_id field is needed, and thus, '
+                                'one must use a fetch query of the following format: search `notable` .......\n'
+                                'Please re-edit the fetchQuery parameter in the integration configuration, reset '
+                                'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+                                'run the fetch again.')
+            else:
+                return None
+
     def to_incident(self):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
+
         for e in self.enrichments:
             self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
-        return notable_to_incident(self.data)
+
+        return notable_to_incident(self.data, self.occurred)
 
     def submitted(self):
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
@@ -200,6 +222,7 @@ class Notable:
     def get_submitted_enrichments(self):
         """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
         submitted_drilldown, submitted_asset, submitted_identity = False, False, False
+
         for enrichment in self.enrichments:
             if enrichment.type == DRILLDOWN_ENRICHMENT:
                 submitted_drilldown = True
@@ -207,7 +230,36 @@ class Notable:
                 submitted_asset = True
             elif enrichment.type == IDENTITY_ENRICHMENT:
                 submitted_identity = True
+
         return submitted_drilldown, submitted_asset, submitted_identity
+
+    def get_occurred(self):
+        """ Returns the occurred time, if not exists in data, returns the current fetch time """
+        if '_time' in self.data:
+            notable_occurred = self.data['_time']
+        else:
+            # Use-cases where fetching non-notables from Splunk
+            notable_occurred = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+            self.time_is_missing = True
+            extensive_log('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
+
+        return notable_occurred
+
+    def create_custom_id(self):
+        """ Generates a custom ID for a given notable """
+        if self.id:
+            return self.id
+
+        notable_raw_data = self.data.get('_raw', '')
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()
+
+        if self.time_is_missing and self.index_time:
+            notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
+            extensive_log('Creating notable custom id using the index time')
+        else:
+            notable_custom_id = '{}_{}'.format(self.occurred, raw_hash)
+
+        return notable_custom_id
 
     @classmethod
     def from_json(cls, notable_dict):
@@ -223,7 +275,12 @@ class Notable:
         return cls(
             data=notable_dict.get(DATA),
             enrichments=list(map(Enrichment.from_json, notable_dict.get(ENRICHMENTS))),
-            notable_id=notable_dict.get(ID)
+            notable_id=notable_dict.get(ID),
+            custom_id=notable_dict.get(CUSTOM_ID),
+            occurred=notable_dict.get(OCCURRED),
+            time_is_missing=notable_dict.get(TIME_IS_MISSING),
+            index_time=notable_dict.get(INDEX_TIME),
+            incident_created=notable_dict.GET(INCIDENT_CREATED)
         )
 
 
@@ -233,19 +290,14 @@ class Cache:
     Attributes:
         not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
         submitted_notables (list): The list of all submitted notables that needs to be handled.
-        last_run_regular_fetch (dict): The last run object to set in case of regular fetch (num_incidents < FETCH_LIMIT)
-        last_run_over_fetch (dict): The last run object to set in case of over fetch (num_incidents >= FETCH_LIMIT)
-        num_fetched_notables (int): The number of fetched notables from Splunk.
+        last_run_object (dict): The last run object
 
     """
 
-    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, last_run_regular_fetch=None,
-                 last_run_over_fetch=None, num_fetched_notables=0):
+    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, last_run_object=None):
         self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
         self.submitted_notables = submitted_notables if submitted_notables else []
-        self.last_run_regular_fetch = last_run_regular_fetch if last_run_regular_fetch else {}
-        self.last_run_over_fetch = last_run_over_fetch if last_run_over_fetch else {}
-        self.num_fetched_notables = num_fetched_notables
+        self.last_run_object = last_run_object if last_run_object else {}
 
     @property
     def not_yet_submitted_notables(self):
@@ -264,28 +316,12 @@ class Cache:
         self.submitted_notables = submitted_notables
 
     @property
-    def last_run_regular_fetch(self):
-        return self.last_run_regular_fetch
+    def last_run_object(self):
+        return self.last_run_object
 
-    @last_run_regular_fetch.setter
-    def last_run_regular_fetch(self, last_run_regular_fetch):
-        self.last_run_regular_fetch = last_run_regular_fetch
-
-    @property
-    def last_run_over_fetch(self):
-        return self.last_run_over_fetch
-
-    @last_run_over_fetch.setter
-    def last_run_over_fetch(self, last_run_over_fetch):
-        self.last_run_over_fetch = last_run_over_fetch
-
-    @property
-    def num_fetched_notables(self):
-        return self.num_fetched_notables
-
-    @num_fetched_notables.setter
-    def num_fetched_notables(self, num_fetched_notables):
-        self.num_fetched_notables = num_fetched_notables
+    @last_run_object.setter
+    def last_run_object(self, last_run_object):
+        self.last_run_object = last_run_object
 
     def done_submitting(self):
         return not self.not_yet_submitted_notables
@@ -343,9 +379,7 @@ class Cache:
         return cls(
             not_yet_submitted_notables=list(map(Notable.from_json, cache_dict.get(NOT_YET_SUBMITTED_NOTABLES, []))),
             submitted_notables=list(map(Notable.from_json, cache_dict.get(SUBMITTED_NOTABLES, []))),
-            last_run_regular_fetch=cache_dict.get(LAST_RUN_REGULAR_FETCH, {}),
-            last_run_over_fetch=cache_dict.get(LAST_RUN_OVER_FETCH, {}),
-            num_fetched_notables=cache_dict.get(NUM_FETCHED_NOTABLES, 0)
+            last_run_object=cache_dict.get(LAST_RUN_OBJECT, {})
         )
 
     @classmethod
@@ -529,10 +563,17 @@ def parse_notable(notable, to_dict=False):
     return dict(notable) if to_dict else notable
 
 
-def notable_to_incident(event):
+def notable_to_incident(event, occurred):
     incident = {}  # type: Dict[str,Any]
     rule_title = ''
     rule_name = ''
+
+    if isinstance(event, results.Message):
+        if "Error in" in event.message:
+            raise ValueError(event.message)
+        else:
+            extensive_log('message in notable_to_incident is: {}'.format(convert_to_str(event.message)))
+
     if demisto.get(event, 'rule_title'):
         rule_title = event['rule_title']
     if demisto.get(event, 'rule_name'):
@@ -542,10 +583,8 @@ def notable_to_incident(event):
         incident["severity"] = severity_to_level(event['urgency'])
     if demisto.get(event, 'rule_description'):
         incident["details"] = event["rule_description"]
-    if demisto.get(event, "_time"):
-        incident["occurred"] = event["_time"]
-    else:
-        incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+
+    incident["occurred"] = occurred
 
     event = parse_notable(event)
 
@@ -730,15 +769,48 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def fetch_notables(service, cache_object=None, enrich_notables=False):
-    demisto.debug("Fetching new notables")
-    last_run = demisto.getLastRun()
-    last_run = last_run and 'time' in last_run and last_run['time']
-    search_offset = demisto.getLastRun().get('offset', 0)
+def occurred_to_datetime(notable_occurred_time):
+    notable_occurred_time_without_timezone = notable_occurred_time.split('.')[0]
+    notable_occurred_time_datetime = datetime.strptime(notable_occurred_time_without_timezone, SPLUNK_TIME_FORMAT)
+    return notable_occurred_time_datetime
 
-    incidents = []
+
+def get_latest_notable_occurred_time(notables):
+    latest_notable = max(notables, key=lambda n: occurred_to_datetime(n.occurred))
+    return latest_notable.occurred
+
+
+def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_notables_found=True, max_window=20):
+    last_run_datetime = occurred_to_datetime(last_run)
+    if were_new_notables_found:
+        # Decreasing one minute to avoid missing notables that were indexed late
+        last_run_datetime = last_run_datetime - timedelta(minutes=1)
+
+    # keep last time max 20 minutes before current time, to avoid timeout
+    if fetches_with_same_start_time_count >= max_window and not were_new_notables_found:
+        last_run_datetime = last_run_datetime + timedelta(minutes=1)
+
+    next_run_without_milliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
+    next_run = next_run_without_milliseconds_and_tz
+    return next_run
+
+
+def extensive_log(message):
+    if demisto.params().get('extensive_logs', False):
+        demisto.info(message)
+
+
+def remove_old_notable_ids(last_run_fetched_ids, current_epoch_time):
+    new_last_run_fetched_ids = {}
+    for notable_custom_id, time in last_run_fetched_ids.items():
+        if current_epoch_time - time < 3600:
+            new_last_run_fetched_ids[notable_custom_id] = time
+
+    return new_last_run_fetched_ids
+
+
+def get_last_run_time(dem_params, service, last_run):
     current_time_for_fetch = datetime.utcnow()
-    dem_params = demisto.params()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
@@ -753,69 +825,105 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
 
+    return last_run, now
+
+
+def build_fetch_kwargs(dem_params, last_run_time, now, search_offset):
     earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
     latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
 
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time,
                       latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    return kwargs_oneshot
 
-    searchquery_oneshot = dem_params['fetchQuery']
+
+def build_fetch_query(dem_params):
+    fetch_query = dem_params['fetchQuery']
 
     if demisto.get(dem_params, 'extractFields'):
         extractFields = dem_params['extractFields']
         extra_raw_arr = extractFields.split(',')
         for field in extra_raw_arr:
             field_trimmed = field.strip()
-            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    return fetch_query
+
+
+def fetch_notables(service, cache_object=None, enrich_notables=False):
+    last_run_data = demisto.getLastRun()
+    last_run_time = last_run_data and 'time' in last_run_data and last_run_data['time']
+    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
+
+    search_offset = demisto.getLastRun().get('offset', 0)
+
+    dem_params = demisto.params()
+    last_run_time, now = get_last_run_time(dem_params, service, last_run_time)
+    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
+
+    kwargs_oneshot = build_fetch_kwargs(dem_params, last_run_time, now, search_offset)
+    fetch_query = build_fetch_query(dem_params)
+
+    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
-    last_run_regular_fetch = {'time': now, 'offset': 0}
-    last_run_over_fetch = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
+    last_run_fetched_custom_ids = last_run_data.get('found_incidents_ids', {})
+    current_epoch_time = int(time.time())
+
+    notables = []
+    for item in reader:
+        notable = Notable(data=item)
+        if notable.custom_id not in last_run_fetched_custom_ids:
+            last_run_fetched_custom_ids[notable.custom_id] = current_epoch_time
+            notables.append(notable)
+        else:
+            extensive_log('SplunkPy - Dropped notable {} due to duplication.'.format(notable.custom_id))
+
+    last_run_fetched_custom_ids = remove_old_notable_ids(last_run_fetched_custom_ids, current_epoch_time)
+    extensive_log('SplunkPy - notables fetched on last run = {}'.format(last_run_fetched_custom_ids))
+    extensive_log(
+        'SplunkPy - total number of notables found: from {}\n to {}\n with the ' 'query: {} is: {}.\n notables '
+        'found: {}'.format(last_run_time, now, fetch_query, len(notables), [n.data for n in notables])
+    )
+    fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
+    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"])
 
     if not enrich_notables:
-        demisto.info("Creating incidents from fetched notables without enrichment")
-        for item in reader:
-            notable = Notable(data=item)
-            incidents.append(notable.to_incident())
-
+        incidents = [n.to_incident() for n in notables]
         demisto.incidents(incidents)
-        if len(incidents) < FETCH_LIMIT:
-            demisto.setLastRun(last_run_regular_fetch)
-        else:
-            demisto.setLastRun(last_run_over_fetch)
+        extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
     else:
-        handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch, cache_object)
+        cache_object.not_yet_submitted_notables += notables
+        extensive_log("Fetched {} notables.".format(len(notables)))
 
+    if len(notables) == 0:
+        next_run = get_next_start_time(last_run_time, fetches_with_same_start_time_count, False, max_window)
+        extensive_log('SplunkPy - Next run time with no notables found: {}'.format(next_run))
+        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
+                           'fetch_start_update_count': fetches_with_same_start_time_count}
+    elif len(notables) < FETCH_LIMIT:
+        next_run = get_next_start_time(
+            get_latest_notable_occurred_time(notables), fetches_with_same_start_time_count, max_window=max_window
+        )
+        extensive_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
+        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
+                           'fetch_start_update_count': 0}
+    else:
+        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run_time))
+        last_run_object = {'time': last_run_time, 'offset': search_offset + FETCH_LIMIT,
+                           'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_custom_ids}
 
-def handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch, cache_object):
-    """ Maintains all data for the enriching fetch mechanism
-
-    Args:
-        reader: The Splunk results reader
-        last_run_regular_fetch: The last run object in regular case (len(incident) < FETCH_LIMIT)
-        last_run_over_fetch: The last run object in over fetch case (len(incident) >= FETCH_LIMIT)
-        cache_object (Cache): The enrichment mechanism cache object
-
-    """
-
-    last_run = demisto.getLastRun()
-    if DUMMY not in last_run:
-        # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
-        # fetch-incidents running as part of "Pull from instance" in Classification & Mapping
-        last_run.update({DUMMY: DUMMY})
-        demisto.setLastRun(last_run)
-
-    for item in reader:
-        cache_object.not_yet_submitted_notables.append(Notable(data=item))
-
-    # maintaining last run metadata to be set when we finish handling all notables
-    cache_object.num_fetched_notables = len(cache_object.not_yet_submitted_notables)
-    cache_object.last_run_regular_fetch = last_run_regular_fetch
-    cache_object.last_run_over_fetch = last_run_over_fetch
-    demisto.info("Fetched {} notables.".format(cache_object.num_fetched_notables))
+    if not enrich_notables:
+        demisto.setLastRun(last_run_object)
+    else:
+        if DUMMY not in last_run_object:
+            # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
+            # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
+            # want to add data to the integration context (which will ruin the logic of the cache object)
+            last_run_object.update({DUMMY: DUMMY})
+        cache_object.last_run_object = last_run_object
 
 
 def splunk_search_command(service):
@@ -1371,8 +1479,8 @@ def get_mapping_fields_command(service):
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
-        inc = notable_to_incident(item)
-        total_parsed_results.append(inc)
+        notable = Notable(data=item)
+        total_parsed_results.append(notable.to_incident())
 
     types_map = create_mapping_dict(total_parsed_results, type_field)
     demisto.results(types_map)
@@ -1501,30 +1609,30 @@ def submit_notables(service, incidents, num_enrichment_events, cache_object):
     failed_notables, submitted_notables = [], []
     notables = cache_object.not_yet_submitted_notables
     if notables:
-        demisto.info('Enriching {} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES])))
+        extensive_log('Enriching {} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES])))
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
         task_status = submit_notable(service, notable, num_enrichment_events)
         if task_status:
             cache_object.submitted_notables.append(notable)
             submitted_notables.append(notable)
-            demisto.info('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
+            extensive_log('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
         else:
             incidents.append(notable.to_incident())
             failed_notables.append(notable)
-            demisto.info('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
+            extensive_log('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
 
     cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
 
     if submitted_notables:
-        demisto.info('Submitted {} notables successfully.'.format(len(submitted_notables)))
+        extensive_log('Submitted {} notables successfully.'.format(len(submitted_notables)))
 
     if cache_object.not_yet_submitted_notables:
-        demisto.info('{} notables left to submit.'.format(len(cache_object.not_yet_submitted_notables)))
+        extensive_log('{} notables left to submit.'.format(len(cache_object.not_yet_submitted_notables)))
 
     if failed_notables:
-        demisto.info('The following {} notables failed the enrichment process: {}, creating incidents without '
-                     'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
+        extensive_log('The following {} notables failed the enrichment process: {}, creating incidents without '
+                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
 def submit_notable(service, notable, num_enrichment_events):
@@ -1720,13 +1828,13 @@ def get_drilldown_timeframe(notable_data, raw):
         if info_min_time:
             earliest_offset = info_min_time
         else:
-            demisto.info("Failed retrieving info min time")
+            extensive_log("Failed retrieving info min time")
             task_status = False
     if not latest_offset or latest_offset == "${}$".format(INFO_MAX_TIME):
         if info_max_time:
             latest_offset = info_max_time
         else:
-            demisto.info("Failed retrieving info max time")
+            extensive_log("Failed retrieving info max time")
             task_status = False
 
     return task_status, earliest_offset, latest_offset
@@ -1808,7 +1916,7 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
     """
     handled_notables = []
     notables = cache_object.submitted_notables
-    demisto.info("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
+    extensive_log("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
@@ -1819,10 +1927,10 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
     cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
 
     if handled_notables:
-        demisto.info("Handled {} notables.".format(len(handled_notables)))
+        extensive_log("Handled {} notables.".format(len(handled_notables)))
 
     if cache_object.submitted_notables:
-        demisto.info("{} notables left to handle.".format(len(cache_object.submitted_notables)))
+        extensive_log("{} notables left to handle.".format(len(cache_object.submitted_notables)))
 
 
 def store_incidents_for_mapping(incidents, integration_context):
@@ -1836,28 +1944,6 @@ def store_incidents_for_mapping(incidents, integration_context):
     """
     if incidents:
         integration_context[INCIDENTS] = incidents[:20]
-
-
-def handle_last_run(cache_object):
-    """ Handles the last run by the same logic as in regular fetch (no enrichment)
-
-    Args:
-        cache_object (Cache): The enrichment mechanism cache object
-
-    """
-
-    # first fetch check
-    if all([
-        cache_object.last_run_over_fetch,
-        cache_object.last_run_regular_fetch,
-        cache_object.num_fetched_notables
-    ]):
-        last_run = demisto.getLastRun()
-        if cache_object.num_fetched_notables < FETCH_LIMIT:
-            last_run.update(cache_object.last_run_regular_fetch)
-        else:
-            last_run.update(cache_object.last_run_over_fetch)
-        demisto.setLastRun(last_run)
 
 
 def handle_submitted_notable(service, notable, enrichment_timeout):
@@ -1875,7 +1961,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     task_status = False
 
     if not is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
-        demisto.info("Trying to handle open enrichment {}".format(notable.id))
+        extensive_log("Trying to handle open enrichment {}".format(notable.id))
         for enrichment in notable.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
                 job = client.Job(service=service, sid=enrichment.id)
@@ -1887,14 +1973,14 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
 
         if notable.handled():
             task_status = True
-            demisto.info("Handled open enrichment for notable {}.".format(notable.id))
+            extensive_log("Handled open enrichment for notable {}.".format(notable.id))
         else:
-            demisto.info("Did not finish handling open enrichment for notable {}".format(notable.id))
+            extensive_log("Did not finish handling open enrichment for notable {}".format(notable.id))
 
     else:
         task_status = True
-        demisto.info("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
-                     "the enrichment.".format(notable.id, enrichment_timeout))
+        extensive_log("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
+                      "the enrichment.".format(notable.id, enrichment_timeout))
 
     return task_status
 
@@ -1969,7 +2055,7 @@ def run_enrichment_mechanism(service, enrichment_timeout, integration_context, n
     try:
         handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
         if cache_object.done_submitting() and cache_object.done_handling():
-            handle_last_run(cache_object)
+            demisto.setLastRun(cache_object.last_run_object)
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
         submit_notables(service, incidents, num_enrichment_events, cache_object)
 
@@ -1994,7 +2080,7 @@ def fetch_incidents_for_mapping(integration_context):
 
     """
     incidents = integration_context.get(INCIDENTS, [])
-    demisto.info('Retrieving {} incidents for "Pull from instance" in Classification & Mapping.'.format(len(incidents)))
+    extensive_log('Retrieving {} incidents for "Pull from instance" in Classification & Mapping.'.format(len(incidents)))
     demisto.incidents(incidents)
 
 
@@ -2057,7 +2143,7 @@ def get_remote_data_command(service, args, close_incident):
             'ContentsFormat': EntryFormat.JSON
         })
 
-    demisto.info('Updated notable {}'.format(notable_id))
+    extensive_log('Updated notable {}'.format(notable_id))
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
