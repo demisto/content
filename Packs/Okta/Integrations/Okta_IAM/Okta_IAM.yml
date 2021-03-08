@@ -406,7 +406,7 @@ script:
     description: List all applications assigned to a user.
     execution: false
     name: okta-iam-list-user-applications
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false
