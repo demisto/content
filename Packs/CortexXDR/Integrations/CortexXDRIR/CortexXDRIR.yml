@@ -72,8 +72,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The status according to which the incidents will be filtered
-  display: Incident status
+- additionalinfo: 'The statuses of the incidents that will be fetched. Note: an incident whose status was changed to a filtered status after its creation time will not be fetched.'
+  display: Incident Statuses to Fetch
   hidden: false
   name: status
   options:
@@ -180,7 +180,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters returned incidents that are in the specified status
+      description: Filters only incidents in the specified status.
       isArray: true
       name: status
       predefined:
