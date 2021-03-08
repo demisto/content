@@ -1,8 +1,34 @@
-## BaseIntegration Help
+## Carbon Black Cloud Endpoint Standard
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+***Carbon Black Cloud Endpoint Standard is the new name for the product formerly called CB Defense.***
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+Set up Access Levels and API Keys in the Carbon Black Cloud Console.
 
+Your attention for policies unlike the rest all we use V3 because there is still no new version (for the rest we use V6), So you have to create custom api key
+& a custom api secret key in addition of the api & api secret keys
+[For more information about the versions](https://developer.carbonblack.com/reference/carbon-black-cloud/cb-defense/latest/rest-api) 
+
+**Creating a Custom Access Level**
+
+1. Go to your Carbon Black Cloud console, and open the “Add Access Level” panel from Settings > API Access > Access
+   Levels tab.
+2. Give the access level a unique name (you will need this for creating your API Key) and give it a description.
+3. From the table below, scroll down until you see your API Service Category. Some Service Categories have multiple
+   permissions that can be configured.
+
+**Creating an API Key**
+
+1. To create an API Key, go to Settings > API Access > API Keys tab in the Carbon Black Cloud console.
+2. Select “Add API Key” from the far right.
+3. Give the API Key a unique name, and select the appropriate access level provided in the table above. If you select
+   “Custom”, you will need to choose the Access Level you created in the prior section.
+4. Hit save, and you will be provided with your API Key Credentials:
+
+- API Secret Key
+- API Key
+
+[For more information about authentication](https://developer.carbonblack.com/reference/carbon-black-cloud/authentication) 
+##### Creating Carbon Black's Query:
+
+Carbon Black Cloud Endpoint Standard uses Advanced Search Queries to query for events and processes. Here's some more information
+about [Advanced Search Queries](https://developer.carbonblack.com/resources/query_overview.pdf).

@@ -4,24 +4,42 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://defense.conferdeploy.net/
-  display: Url
+  display: URL
   name: url
   required: true
   type: 0
-- display: Api Key
+- additionalinfo: This API key is required for the all use cases except the policy
+    use cases
+  display: Api Key
   hidden: false
   name: api_key
-  required: true
+  required: false
   type: 0
-- display: Api Secret Key
+- additionalinfo: This API secret key is required for the all use cases except the
+    use cases
+  display: Api Secret Key
   hidden: false
   name: api_secret_key
-  required: true
+  required: false
   type: 4
-- display: Organization Key
+- additionalinfo: This custom API key is required just for the policy use cases
+  display: Custom Api Key
+  hidden: false
+  name: policy_api_key
+  required: false
+  type: 0
+- additionalinfo: This custom API secret key is required just for the policy use cases
+  display: Custom Api Secret Key
+  hidden: false
+  name: policy_api_secret_key
+  required: false
+  type: 4
+- additionalinfo: The organization unique key. this is required for all use cases
+    (& for fetching incidents) except the policy use cases
+  display: Organization Key
   hidden: false
   name: organization_key
-  required: true
+  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -31,6 +49,70 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Type of alert to be fetched.
+  defaultvalue: all
+  display: The type of the alert
+  hidden: false
+  name: suffix_url_path
+  options:
+  - all
+  - cbanalytics
+  - devicecontrol
+  required: false
+  type: 15
+- additionalinfo: Category of alert to be fetched.
+  display: The category of the alert (THREAT, MONITORED).
+  hidden: false
+  name: category
+  options:
+  - THREAT
+  - MONITORED
+  required: false
+  type: 16
+- additionalinfo: The alerts related to a specific device represented by its ID.
+  display: Device id
+  hidden: false
+  name: device_id
+  required: false
+  type: 0
+- additionalinfo: The alerts related to a specific policy.
+  display: Policy id
+  hidden: false
+  name: policy_id
+  required: false
+  type: 0
+- additionalinfo: The alerts related to a process represented in sha256.
+  display: Process sha256
+  hidden: false
+  name: process_sha256
+  required: false
+  type: 0
+- additionalinfo: The alerts related to a specific device, represented by its username.
+  display: Device username
+  hidden: false
+  name: device_username
+  required: false
+  type: 0
+- additionalinfo: Query in lucene syntax and/or including value searches
+  display: Query
+  hidden: false
+  name: query
+  required: false
+  type: 0
+- additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year.
+  defaultvalue: 3 days
+  display: First fetch time
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- additionalinfo: The number of incidents to fetch at a time, the max is 50.
+  defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
 description: VMware Carbon Black Endpoint Standard (formerly known as Carbon Black
   Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that
   stops commodity malware, advanced malware, non-malware attacks and ransomware.
@@ -52,164 +134,164 @@ script:
     execution: false
     name: cbd-get-alert-details
     outputs:
-    - contextPath: CarbonBlackDefense.GetAlertDetails.type
-      description: Type of alert
+    - contextPath: CarbonBlackDefense.Alert.type
+      description: The type of the alert.
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.id
+    - contextPath: CarbonBlackDefense.Alert.id
       description: The ID of the alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.legacy_alert_id
+    - contextPath: CarbonBlackDefense.Alert.legacy_alert_id
       description: Unique short id for the alerts to support easier consumption in
         the UI console. Use the id for API requests
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.org_key
+    - contextPath: CarbonBlackDefense.Alert.org_key
       description: The unique identifier for the organization associated with the
         alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.create_time
+    - contextPath: CarbonBlackDefense.Alert.create_time
       description: The time the alert was created, The format is in ISO 8601 timestamp
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.last_update_time
+    - contextPath: CarbonBlackDefense.Alert.last_update_time
       description: The last time the alert was updated, The format is in ISO 8601
         timestamp
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.first_event_time
+    - contextPath: CarbonBlackDefense.Alert.first_event_time
       description: The time of the first event associated with the alert, The format
         is in ISO 8601 timestamp
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.last_event_time
+    - contextPath: CarbonBlackDefense.Alert.last_event_time
       description: The time of the latest event associated with the alert, The format
         is in ISO 8601 timestamp
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_id
+    - contextPath: CarbonBlackDefense.Alert.threat_id
       description: The identifier of a threat which this alert belongs. Threats are
         comprised of a combination of factors that can be repeated across devices.
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.severity
+    - contextPath: CarbonBlackDefense.Alert.severity
       description: The threat ranking of the alert
       type: Number
-    - contextPath: CarbonBlackDefense.GetAlertDetails.category
+    - contextPath: CarbonBlackDefense.Alert.category
       description: "The category of the alert\t"
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.device_id
+    - contextPath: CarbonBlackDefense.Alert.device_id
       description: The identifier assigned by Carbon Black Cloud to the device associated
         with the alert.
       type: Number
-    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os
+    - contextPath: CarbonBlackDefense.Alert.device_os
       description: The operating system of the device associated with the alert. (WINDOWS,
         MAC, LINUX, OTHER)
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.device_os_version
+    - contextPath: CarbonBlackDefense.Alert.device_os_version
       description: "The operating system and version on the device\t"
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.device_name
+    - contextPath: CarbonBlackDefense.Alert.device_name
       description: The hostname of the device associated with the alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.device_username
+    - contextPath: CarbonBlackDefense.Alert.device_username
       description: The username of the logged on user during the alert. If the user
         is not available then it may be populated with the device owner
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_id
+    - contextPath: CarbonBlackDefense.Alert.policy_id
       description: The identifier for the policy associated with the device at the
         time of the alert
       type: Number
-    - contextPath: CarbonBlackDefense.GetAlertDetails.policy_name
+    - contextPath: CarbonBlackDefense.Alert.policy_name
       description: The name of the policy associated with the device at the time of
         the alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.target_value
+    - contextPath: CarbonBlackDefense.Alert.target_value
       description: The priority of the device assigned by the policy. (LOW, MEDIUM,
         HIGH, MISSION_CRITICAL)
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.state
+    - contextPath: CarbonBlackDefense.Alert.workflow.state
       description: Tracking system for alerts as they are triaged and resolved
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.remediation
+    - contextPath: CarbonBlackDefense.Alert.workflow.remediation
       description: Tracking system for alerts as they are triaged and resolved
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.last_update_time
+    - contextPath: CarbonBlackDefense.Alert.workflow.last_update_time
       description: Tracking system for alerts as they are triaged and resolved
       type: Date
-    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.comment
+    - contextPath: CarbonBlackDefense.Alert.workflow.comment
       description: Tracking system for alerts as they are triaged and resolved
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.workflow.changed_by
+    - contextPath: CarbonBlackDefense.Alert.workflow.changed_by
       description: Tracking system for alerts as they are triaged and resolved
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.notes_present
+    - contextPath: CarbonBlackDefense.Alert.notes_present
       description: Indicates if notes are associated with the threat_id
       type: Boolean
-    - contextPath: CarbonBlackDefense.GetAlertDetails.tags
+    - contextPath: CarbonBlackDefense.Alert.tags
       description: Tags associated with the alert
       type: Unknown
-    - contextPath: CarbonBlackDefense.GetAlertDetails.reason
+    - contextPath: CarbonBlackDefense.Alert.reason
       description: Description of the alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.count
+    - contextPath: CarbonBlackDefense.Alert.count
       type: Number
-    - contextPath: CarbonBlackDefense.GetAlertDetails.report_id
+    - contextPath: CarbonBlackDefense.Alert.report_id
       description: The identifier of the report that contains the IOC
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.report_name
+    - contextPath: CarbonBlackDefense.Alert.report_name
       description: The name of the report that contains the IOC
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_id
+    - contextPath: CarbonBlackDefense.Alert.ioc_id
       description: The identifier of the IOC that cause the hit
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_field
+    - contextPath: CarbonBlackDefense.Alert.ioc_field
       description: The field the indicator of comprise (IOC) hit contains
       type: Unknown
-    - contextPath: CarbonBlackDefense.GetAlertDetails.ioc_hit
+    - contextPath: CarbonBlackDefense.Alert.ioc_hit
       description: IOC field value or IOC query that matches
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.id
+    - contextPath: CarbonBlackDefense.Alert.watchlists.id
       description: The ID of a watchlists associated with an alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.watchlists.name
+    - contextPath: CarbonBlackDefense.Alert.watchlists.name
       description: The name of a watchlists associated with an alert
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.process_guid
+    - contextPath: CarbonBlackDefense.Alert.process_guid
       description: The global unique identifier of the process that triggered the
         hit
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.process_name
+    - contextPath: CarbonBlackDefense.Alert.process_name
       description: "The name of the process that triggered the hit\t"
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.run_state
+    - contextPath: CarbonBlackDefense.Alert.run_state
       description: Run state is always RAN for watchlist alerts
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.process_name
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.process_name
       description: List of the threat indicators that make up the threat
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.sha256
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.sha256
       description: List of the threat indicators that make up the threat
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_indicators.ttps
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.ttps
       description: List of the threat indicators that make up the threat
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_sha256
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_sha256
       description: SHA256 of the threat cause actor
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_md5
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_md5
       description: MD5 of the threat cause actor
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_name
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_name
       description: Process name or IP address of the threat actor
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_reputation
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_reputation
       description: Reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
         PUP, NOT_LISTED, ADAPTIVE_WHITE_LIST, COMMON_WHITE_LIST, TRUSTED_WHITE_LIST,
         COMPANY_BLACK_LIST)
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_threat_category
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_threat_category
       description: Category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
         KNOWN_MALWARE, RISKY_PROGRAM)
       type: Unknown
-    - contextPath: CarbonBlackDefense.GetAlertDetails.threat_cause_vector
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_vector
       description: 'The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
         REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY) '
       type: String
-    - contextPath: CarbonBlackDefense.GetAlertDetails.document_guid
+    - contextPath: CarbonBlackDefense.Alert.document_guid
       description: Document id
       type: String
   - arguments:
@@ -257,73 +339,175 @@ script:
       name: end_time
       required: false
       secret: false
+    - default: false
+      description: The maximum number of rows to return. default is 20
+      isArray: false
+      name: rows
+      required: false
+      secret: false
     deprecated: false
     description: Search devices in your organization.
     execution: false
     name: cbd-device-search
+    outputs:
+    - contextPath: CarbonBlackDefense.Device.activation_code
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.activation_code_expiry_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.ad_group_id
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.appliance_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.appliance_uuid
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_ave_version
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_engine
+      type: String
+    - contextPath: CarbonBlackDefense.Device.av_last_scan_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_master
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.av_pack_version
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_product_version
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_status
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_update_servers
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.av_vdf_version
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.cluster_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.current_sensor_policy_name
+      type: String
+    - contextPath: CarbonBlackDefense.Device.datacenter_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.deployment_type
+      type: String
+    - contextPath: CarbonBlackDefense.Device.deregistered_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.key_name
+      type: String
+    - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.key_value
+      type: String
+    - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.position
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.device_owner_id
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.email
+      type: String
+    - contextPath: CarbonBlackDefense.Device.encoded_activation_code
+      type: String
+    - contextPath: CarbonBlackDefense.Device.esx_host_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.esx_host_uuid
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.first_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.id
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.last_contact_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.last_device_policy_changed_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.last_device_policy_requested_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.last_external_ip_address
+      type: String
+    - contextPath: CarbonBlackDefense.Device.last_internal_ip_address
+      type: String
+    - contextPath: CarbonBlackDefense.Device.last_location
+      type: String
+    - contextPath: CarbonBlackDefense.Device.last_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.last_policy_updated_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.last_reported_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.last_reset_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.last_shutdown_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.linux_kernel_version
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.login_user_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.mac_address
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.middle_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.name
+      type: String
+    - contextPath: CarbonBlackDefense.Device.organization_id
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.organization_name
+      type: String
+    - contextPath: CarbonBlackDefense.Device.os
+      type: String
+    - contextPath: CarbonBlackDefense.Device.os_version
+      type: String
+    - contextPath: CarbonBlackDefense.Device.passive_mode
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.policy_id
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.policy_name
+      type: String
+    - contextPath: CarbonBlackDefense.Device.policy_override
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.quarantined
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.registered_time
+      type: Date
+    - contextPath: CarbonBlackDefense.Device.scan_last_action_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.scan_last_complete_time
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.scan_status
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.sensor_kit_type
+      type: String
+    - contextPath: CarbonBlackDefense.Device.sensor_out_of_date
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.sensor_pending_update
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.sensor_states
+      type: String
+    - contextPath: CarbonBlackDefense.Device.sensor_version
+      type: String
+    - contextPath: CarbonBlackDefense.Device.status
+      type: String
+    - contextPath: CarbonBlackDefense.Device.target_priority
+      type: String
+    - contextPath: CarbonBlackDefense.Device.uninstall_code
+      type: String
+    - contextPath: CarbonBlackDefense.Device.vcenter_host_url
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vcenter_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vcenter_uuid
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vdi_base_device
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.virtual_machine
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Device.virtualization_provider
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vm_ip
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vm_name
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vm_uuid
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.vulnerability_score
+      type: Number
+    - contextPath: CarbonBlackDefense.Device.vulnerability_severity
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Device.windows_platform
+      type: Unknown
   - arguments:
     - default: false
-      isArray: false
-      name: device_id
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: status
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: device_os
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: end_time
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: ad_group_id
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: policy_id
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: target_priority
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: sort_field
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: sort_order
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
-    name: cbd-devices-search
-  - arguments:
-    - default: false
-      defaultValue: 'A Carbon Black Cloud classification for events tagged to an alert
-        indicating whether the event is a “threat” or “observed” '
       description: The A Carbon Black Cloud classification for events tagged to an
         alert indicating whether the event is a “threat” or “observed”.
       isArray: false
@@ -346,8 +530,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The ID assigned to the endpoint by Carbon Black Cloud; unique
-        across all Carbon Black Cloud environments.
       description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
         all Carbon Black Cloud environments.
       isArray: false
@@ -355,8 +537,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The IP address of the endpoint reported by the sensor; either
-        IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
       description: The IP address of the endpoint reported by the sensor; either IPv4
         (dotted decimal notation) or IPv6 (proprietary format, documented below).
       isArray: false
@@ -364,8 +544,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The Hostname of the endpoint recorded by the sensor when last
-        initialized
       description: The Hostname of the endpoint recorded by the sensor when last initialized.
       isArray: false
       name: device_name
@@ -478,7 +656,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Query in lucene syntax and/or including value searches.
+      description: The Query in lucene syntax and/or including value searches  query
+        or some of the other must be included.
       isArray: false
       name: query
       required: false
@@ -503,14 +682,17 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a process search job. The results for the search job may
-      be requested using the job_id returned.
+    description: 'Creates a process search job. The results for the search job may
+      be requested using the job_id returned, (at least one of the arguments (not
+      including: rows, start, timerange) is required).'
     execution: false
     name: cbd-find-processes
+    outputs:
+    - contextPath: CarbonBlackDefense.Process.Search.job_id
+      description: The job id os the processes search.
+      type: Unknown
   - arguments:
     - default: false
-      defaultValue: 'A Carbon Black Cloud classification for events tagged to an alert
-        indicating whether the event is a “threat” or “observed” '
       description: The A Carbon Black Cloud classification for events tagged to an
         alert indicating whether the event is a “threat” or “observed”.
       isArray: false
@@ -533,8 +715,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The ID assigned to the endpoint by Carbon Black Cloud; unique
-        across all Carbon Black Cloud environments.
       description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
         all Carbon Black Cloud environments.
       isArray: false
@@ -542,8 +722,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The IP address of the endpoint reported by the sensor; either
-        IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
       description: The IP address of the endpoint reported by the sensor; either IPv4
         (dotted decimal notation) or IPv6 (proprietary format, documented below).
       isArray: false
@@ -551,8 +729,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: The Hostname of the endpoint recorded by the sensor when last
-        initialized
       description: The Hostname of the endpoint recorded by the sensor when last initialized.
       isArray: false
       name: device_name
@@ -658,7 +834,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Query in lucene syntax and/or including value searches.
+      description: The Query in lucene syntax and/or including value searches query
+        or some of the other must be included.
       isArray: false
       name: query
       required: false
@@ -683,10 +860,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an enriched events search job. The results for the search
-      job may be requested using the job_id returned.
+    description: 'Creates an enriched events search job. The results for the search
+      job may be requested using the job_id returned, (at least one of the arguments
+      (not including: rows, start, timerange) is required).'
     execution: false
     name: cbd-find-events
+    outputs:
+    - contextPath: CarbonBlackDefense.Events.Search.job_id
+      description: The job id of the event search
+      type: Unknown
   - arguments:
     - default: false
       description: The job id.
@@ -694,30 +876,70 @@ script:
       name: job_id
       required: true
       secret: false
+    - default: false
+      description: The number of rows to request, can be paginated, default is 10.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves the results of a process search identified by a job_id.
     execution: false
     name: cbd-find-processes-results
+    outputs:
+    - contextPath: CarbonBlackDefense.Process.Results
+      description: The results of the process
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
+      description: The approximate unaggregated.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.completed
+      description: The completed results.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.contacted
+      description: The contacted results.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.num_aggregated
+      description: The num aggregated.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.num_available
+      description: The num available.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.num_found
+      description: The num found.
+      type: Number
+    - contextPath: CarbonBlackDefense.Process.Results.results
+      description: The results.
+      type: Number
   - deprecated: false
     description: Get the list of policies available in your organization.
     execution: false
     name: cbd-get-policies
     outputs:
-    - contextPath: CarbonBlackDefense.GetPolicies.Id
+    - contextPath: CarbonBlackDefense.Policy.id
       description: The policy id.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicies.PriorityLevel
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.priorityLevel
       description: The policy priority level.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicies.SystemPolicy
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.systemPolicy
       description: Is system policy (boolean).
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicies.LatestRevision
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Policy.latestRevision
       description: Policy latest revision.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicies.Policy
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.policy
       description: The policy object.
       type: Unknown
+    - contextPath: CarbonBlackDefense.Policy.name
+      description: The name of the policy (must be unique).
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.version
+      description: The version of the policy.
+      type: Number
   - arguments:
     - default: false
       description: The policy id.
@@ -730,24 +952,33 @@ script:
     execution: false
     name: cbd-get-policy
     outputs:
-    - contextPath: CarbonBlackDefense.GetPolicy.Id
+    - contextPath: CarbonBlackDefense.Policy.id
       description: The policy id.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicy.PriorityLevel
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.priorityLevel
       description: The policy priority level.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicy.SystemPolicy
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.systemPolicy
       description: Is system policy (boolean).
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicy.LatestRevision
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Policy.latestRevision
       description: Policy latest revision.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.GetPolicy.Policy
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.policy
       description: The policy object.
       type: Unknown
+    - contextPath: CarbonBlackDefense.Policy.name
+      description: The name of the policy (must be unique)
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.version
+      description: The version of the policy.
+      type: Number
   - arguments:
     - default: false
-      description: The policy to be set.
+      description: The policy id to be set.
       isArray: false
       name: policy
       required: true
@@ -763,6 +994,31 @@ script:
     description: Re-set policy fields.
     execution: false
     name: cbd-set-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.Policy.id
+      description: The policy id.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.priorityLevel
+      description: The policy priority level.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.systemPolicy
+      description: Is system policy (boolean).
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Policy.latestRevision
+      description: Policy latest revision.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.policy
+      description: The policy object.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Policy.name
+      description: The name of the policy (must be unique)
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.version
+      description: The version of the policy.
+      type: Number
   - arguments:
     - default: false
       description: A description of the policy (can be multiple lines)
@@ -771,16 +1027,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: A one-line name for the policy (shown in the UI)
+      description: A one-line name for the policy (must be unique, shown in the UI)
       isArray: false
       name: name
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The priority score associated with sensors assigned to this policy.
         (HIGH, MEDIUM or LOW )
       isArray: false
       name: priorityLevel
+      predefined:
+      - MISSION_CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
       required: true
       secret: false
     - default: false
@@ -797,9 +1059,30 @@ script:
     execution: false
     name: cbd-create-policy
     outputs:
-    - contextPath: CarbonBlackDefense.CreatePolicy.PolicyId
-      description: The new policy id.
+    - contextPath: CarbonBlackDefense.Policy.id
+      description: The policy id.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.priorityLevel
+      description: The policy priority level.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.systemPolicy
+      description: Is system policy (boolean).
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Policy.latestRevision
+      description: Policy latest revision.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.policy
+      description: The policy object.
       type: Unknown
+    - contextPath: CarbonBlackDefense.Policy.name
+      description: The name of the policy (must be unique).
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.version
+      description: The version of the policy.
+      type: Number
   - arguments:
     - default: false
       description: The policy id.
@@ -826,10 +1109,16 @@ script:
       name: name
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The priority score associated with sensors assigned to this policy.
       isArray: false
-      name: priorityLevl
+      name: priorityLevel
+      predefined:
+      - MISSION_CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
       required: true
       secret: false
     - default: false
@@ -839,11 +1128,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: The JSON object containing the policy details. The JSON object
-        containing the policy details. Make sure a valid policy object is passed.
-        You may use 'get-policy' in order to receive the policy object you wish to
-        update, then re-set some of the policy's fields with 'set-policy'. Finally
-        pass the mutated object.
+      description: 'The JSON object containing the policy details. Make sure a valid
+        policy object is passed. for example {"sensorSettings": [{"name": "SHOW_UI",
+        "value": "false" }]} You may use ''get-policy'' in order to receive the policy
+        object you wish to update, then re-set some of the policy''s fields with ''set-policy''.
+        Finally pass the mutated object.'
       isArray: false
       name: policy
       required: true
@@ -853,35 +1142,106 @@ script:
       policies cannot be modified.
     execution: false
     name: cbd-update-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.Policy.id
+      description: The policy id.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.priorityLevel
+      description: The policy priority level.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.systemPolicy
+      description: Is system policy (boolean).
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Policy.latestRevision
+      description: Policy latest revision.
+      type: Number
+    - contextPath: CarbonBlackDefense.Policy.policy
+      description: The policy object.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Policy.name
+      description: The name of the policy (must be unique)
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Policy.version
+      description: The version of the policy.
+      type: Number
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Rule action.
       isArray: false
       name: action
-      required: false
+      predefined:
+      - TERMINATE
+      - IGNORE
+      - TERMINATE_THREAD
+      - ALLOW
+      - DENY
+      - TERMINATE_PROCESS
+      required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Rule operation.
       isArray: false
       name: operation
+      predefined:
+      - MODIFY_SYSTEM_EXE
+      - PASSTHRU
+      - CRED
+      - RANSOM
+      - NETWORK_SERVER
+      - POL_INVOKE_NOT_TRUSTED
+      - IMPERSONATE
+      - MICROPHONE_CAMERA
+      - INVOKE_SYSAPP
+      - NETWORK_CLIENT
+      - BYPASS_REG
+      - BUFFER_OVERFLOW
+      - BYPASS_API
+      - USER_DOC
+      - CODE_INJECTION
+      - BYPASS_NET
+      - KEYBOARD
+      - BYPASS_ALL
+      - RUN
+      - INVOKE_CMD_INTERPRETER
+      - MODIFY_SYTEM_CONFIG
+      - ESCALATE
+      - BYPASS_FILE
+      - RUN_AS_ADMIN
+      - BYPASS_PROCESS
+      - NETWORK
+      - KERNEL_ACCESS
+      - NETWORK_PEER
+      - PACKED
+      - INVOKE_SCRIPT
+      - MEMORY_SCRAPE
+      - BYPASS_SELF_PROTECT
+      - TAMPER_API
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Rule required
       isArray: false
       name: required
+      predefined:
+      - 'true'
+      - 'false'
       required: true
       secret: false
-    - default: false
-      description: Rule id
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Application type.
       isArray: false
       name: type
+      predefined:
+      - REPUTATION
+      - SIGNED_BY
+      - NAME_PATH
       required: true
       secret: false
     - default: false
@@ -974,11 +1334,42 @@ script:
       name: job_id
       required: true
       secret: false
+    - default: false
+      description: The number of rows to request, can be paginated, default is 10.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves the result for an enriched events search request for a
-      given job_id.
+      given job_id (by default returns 10 rows).
     execution: false
     name: cbd-find-events-results
+    outputs:
+    - contextPath: CarbonBlackDefense.Events.Results
+      description: The results of the event
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Events.Results.approximate_unaggregated
+      description: The approximate unaggregated.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.completed
+      description: The completed results.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.contacted
+      description: The contacted results.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.num_aggregated
+      description: The num aggregated.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.num_available
+      description: The num available.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.num_found
+      description: The num found.
+      type: Number
+    - contextPath: CarbonBlackDefense.Events.Results.results
+      description: The results.
+      type: Number
   - arguments:
     - default: false
       description: The job id.
@@ -988,9 +1379,26 @@ script:
       secret: false
     deprecated: false
     description: Retrieves the status for an enriched events search request for a
-      given job_id.
+      given job_id. Confirm the search has completed by verifying that “contacted”
+      equals “completed”.
     execution: false
     name: cbd-find-events-status
+    outputs:
+    - contextPath: CarbonBlackDefense.Events.Status.completed
+      description: The completed events.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Events.Status.contacted
+      description: The contacted events.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Events.Status.connector_id
+      description: The connector id.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Events.Status.search_initiated_time
+      description: The initiated time of the search event.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Events.Status.query
+      description: The search query.
+      type: Unknown
   - arguments:
     - default: false
       description: A list of event ids to fetch. (comma separated)
@@ -1002,6 +1410,10 @@ script:
     description: Initiates a request to retrieve detail fields for enriched events.
     execution: false
     name: cbd-find-events-details
+    outputs:
+    - contextPath: CarbonBlackDefense.EventDetails.Search.job_id
+      description: The job id.
+      type: Unknown
   - arguments:
     - default: false
       description: The job id.
@@ -1014,6 +1426,13 @@ script:
       given job_id.
     execution: false
     name: cbd-find-events-details-status
+    outputs:
+    - contextPath: CarbonBlackDefense.EventDetails.Status.completed
+      description: The completed events.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Status.contacted
+      description: The contacted events.
+      type: Unknown
   - arguments:
     - default: false
       description: The job id.
@@ -1026,6 +1445,28 @@ script:
       given job_id.
     execution: false
     name: cbd-find-events-details-results
+    outputs:
+    - contextPath: CarbonBlackDefense.EventDetails.Results.approximate_unaggregated
+      description: The approximate unaggregated
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.completed
+      description: The completed results.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.contacted
+      description: The contacted results.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_aggregated
+      description: The num aggregated.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_available
+      description: The num available.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_found
+      description: The num found.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.EventDetails.Results.results
+      description: The results of the job id.
+      type: Unknown
   - arguments:
     - default: false
       description: The job id.
@@ -1045,7 +1486,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Quarantine the device
+    description: Quarantine the device.  Not supported on devices of OS type Linux.
     execution: false
     name: cbd-device-quarantine
   - arguments:
@@ -1056,7 +1497,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Unquarantine the device
+    description: Unquarantine the device. Not supported on devices of OS type Linux.
     execution: false
     name: cbd-device-unquarantine
   - arguments:
@@ -1067,7 +1508,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Start a background scan on the device
+    description: Start a background scan on the device. Not supported on devices of
+      OS type Linux.
     execution: false
     name: cbd-device-background-scan
   - arguments:
@@ -1078,11 +1520,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Stop a backgroun scan on the device
+    description: Stop a backgroun scan on the device. Not supported on devices of
+      OS type Linux.
     execution: false
     name: cbd-device-background-scan-stop
   - arguments:
     - default: false
+      description: The id of the device
       isArray: false
       name: device_id
       required: true
@@ -1093,6 +1537,7 @@ script:
     name: cbd-device-bypass
   - arguments:
     - default: false
+      description: The id of the device
       isArray: false
       name: device_id
       required: true
@@ -1115,9 +1560,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update a policy in a device by policy id
+    description: The devices will be updated to this policy ID.
     execution: false
     name: cbd-device-policy-update
+    outputs:
+    - contextPath: CarbonBlackDefense.Devices.PolicyUpdate
+      type: Unknown
   - arguments:
     - default: false
       description: The id of the device
@@ -1125,19 +1573,286 @@ script:
       name: device_id
       required: true
       secret: false
-    - default: false
-      description: The new version of the sensor
+    - auto: PREDEFINED
+      default: false
+      description: 'The new version of the sensor for example { "MAC": "1.2.3.4" }.
+        Supported Types: XP, WINDOWS, MAC, AV_SIG, OTHER, RHEL, UBUNTU, SUSE, AMAZON_LINUX,
+        MAC_OSX'
       isArray: false
       name: sensor_version
+      predefined:
+      - '{"XP":}'
+      - '{"WINDOWS":}'
+      - '{"MAC":}'
+      - '{"AV_SIG":}'
+      - '{"OTHER":}'
+      - '{"RHEL":}'
+      - '{"UBUNTU":}'
+      - '{"SUSE":}'
+      - '{"AMAZON_LINUX":}'
+      - '{"MAC_OSX":}'
       required: true
       secret: false
     deprecated: false
     description: Update the version of a sensor
     execution: false
     name: cbd-device-update-sensor-version
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of the alerts (CbAnalytics/devicecontrol/all).
+      isArray: false
+      name: type
+      predefined:
+      - cbanalytics
+      - devicecontrol
+      - all
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The category of the alert (THREAT, MONITORED).
+      isArray: false
+      name: category
+      predefined:
+      - THREAT
+      - MONITORED
+      required: false
+      secret: false
+    - default: false
+      description: The device id.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: 'The time of the first event associated with the alert. The syntax
+        is  {"end": "<dateTime>", "range": "<string>", "start": "<dateTime>" }. For
+        example: {"end": "2000-01-20T10:40:00.00Z", "start": "2010-09-25T00:10:50.277Z"}'
+      isArray: false
+      name: first_event_time
+      required: false
+      secret: false
+    - default: false
+      description: The policy id.
+      isArray: false
+      name: policy_id
+      required: false
+      secret: false
+    - default: false
+      description: The SHA256 Hash of the primary involved process.
+      isArray: false
+      name: process_sha256
+      required: false
+      secret: false
+    - default: false
+      description: Reputation of the primary involved process (KNOWN_MALWARE, NOT_LISTED,
+        etc.)
+      isArray: false
+      name: reputation
+      required: false
+      secret: false
+    - default: false
+      description: The tags associated with the alert.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: The username of the logged on user during the alert. If the user
+        is not available then it may be populated with the device owner.
+      isArray: false
+      name: device_username
+      required: false
+      secret: false
+    - default: false
+      description: The Query in lucene syntax and/or including value searches.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to be returned.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
+    - default: false
+      description: The number of the alert where to start retrieving results from.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Get details on the events that led to an alert. This includes retrieving
+      metadata around the alert as well as the event associated with the alert
+    execution: false
+    name: cbd-alerts-search
+    outputs:
+    - contextPath: CarbonBlackDefense.Alert.id
+      description: The identifier for the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.legacy_alert_id
+      description: The unique short id for the alerts to support easier consumption
+        in the UI console. Use the id for API requests.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.org_key
+      description: The unique identifier for the organization associated with the
+        alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.create_time
+      description: The time the alert was created.
+      type: Date
+    - contextPath: CarbonBlackDefense.Alert.last_update_time
+      description: The last time the alert was updated
+      type: Date
+    - contextPath: CarbonBlackDefense.Alert.first_event_time
+      description: The time of the first event associated with the alert.
+      type: Date
+    - contextPath: CarbonBlackDefense.Alert.last_event_time
+      description: The time of the latest event associated with the alert.
+      type: Date
+    - contextPath: CarbonBlackDefense.Alert.threat_id
+      description: The identifier of a threat which this alert belongs. Threats are
+        comprised of a combination of factors that can be repeated across devices.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.severity
+      description: The threat ranking of the alert.
+      type: Number
+    - contextPath: CarbonBlackDefense.Alert.category
+      description: The category of the alert (THREAT, MONITORED)
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.device_id
+      description: The identifier assigned by Carbon Black Cloud to the device associated
+        with the alert.
+      type: Number
+    - contextPath: CarbonBlackDefense.Alert.device_os
+      description: The operating system of the device associated with the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.device_os_version
+      description: The operating system and version on the device.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.device_name
+      description: The hostname of the device associated with the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.device_username
+      description: The username of the logged on user during the alert. If the user
+        is not available then it may be populated with the device owner.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.policy_id
+      description: The identifier for the policy associated with the device at the
+        time of the alert.
+      type: Number
+    - contextPath: CarbonBlackDefense.Alert.policy_name
+      description: The name of the policy associated with the device at the time of
+        the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.target_value
+      description: The priority of the device assigned by the policy.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.workflow.state
+      description: The state of the tracking system for alerts as they are triaged
+        and resolved. state supports OPEN or DISMISSED
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.workflow.remediation
+      description: The state of the workflow of the tracking system for alerts as
+        they are triaged and resolved. state supports OPEN or DISMISSED.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.workflow.last_update_time
+      description: The last update time.
+      type: Date
+    - contextPath: CarbonBlackDefense.Alert.workflow.comment
+      description: The comment abbout the workflow of the tracking system for alerts
+        as they are triaged and resolved.
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.workflow.changed_by
+      description: The name who changed the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.notes_present
+      description: Indicates if notes are associated with the threat_id
+      type: Boolean
+    - contextPath: CarbonBlackDefense.Alert.tags
+      description: Tags associated with the alert ([ "tag1", "tag2" ])
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.reason
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.count
+      type: Number
+    - contextPath: CarbonBlackDefense.Alert.report_id
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.report_name
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.ioc_id
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.ioc_field
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.ioc_hit
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.watchlists.id
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.watchlists.name
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.process_guid
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.process_name
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.run_state
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.process_name
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.sha256
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_indicators.ttps
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_sha256
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_md5
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_name
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_reputation
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_threat_category
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_vector
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.document_guid
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.type
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.reason_code
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.device_location
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.created_by_event_id
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_dlp
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_phish
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_c2
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_process_pid
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_process_guid
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_parent_guid
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_cause_event_id
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.blocked_threat_category
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.not_blocked_threat_category
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.kill_chain_status
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.sensor_action
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.policy_applied
+      type: String
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
@@ -1145,5 +1860,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- carbonBlackDefenseV2TestPlaybook
 fromversion: 5.0.0

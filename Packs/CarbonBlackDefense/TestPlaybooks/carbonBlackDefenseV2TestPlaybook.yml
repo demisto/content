@@ -1,0 +1,1131 @@
+id: carbonBlackDefenseV2TestPlaybook
+name: carbonBlackDefenseV2TestPlaybook
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'aecfb9f8-84c2-42c7-89e0-03134b4bdbdb'
+    type: start
+    task:
+      id: 'aecfb9f8-84c2-42c7-89e0-03134b4bdbdb'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '262248e3-b036-4a4d-8fe9-29e0ccd679cd'
+    type: regular
+    task:
+      id: '262248e3-b036-4a4d-8fe9-29e0ccd679cd'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '5702b0eb-6c38-48a0-8359-b2413bc1c2d3'
+    type: regular
+    task:
+      id: '5702b0eb-6c38-48a0-8359-b2413bc1c2d3'
+      version: -1
+      name: cbd-get-alert-details
+      description: ''
+      script: '|||cbd-get-alert-details'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '39bd27b7-46dd-41eb-b863-99a578507e93'
+    type: condition
+    task:
+      id: '39bd27b7-46dd-41eb-b863-99a578507e93'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.legacy_alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.org_key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.create_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.last_update_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.first_event_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.last_event_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.device_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.device_os_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.device_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.device_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.policy_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.policy_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.target_value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.workflow.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.workflow.remediation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.workflow.last_update_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.workflow.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.workflow.changed_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.notes_present
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.report_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.report_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.ioc_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.ioc_field
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.ioc_hit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.watchlists.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.watchlists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.process_guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.run_state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_indicators.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_indicators.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_indicators.ttps
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_actor_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_reputation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_threat_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.threat_cause_vector
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetAlertDetails.document_guid
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '29e9fe52-9648-47c3-8eb9-29c642133064'
+    type: regular
+    task:
+      id: '29e9fe52-9648-47c3-8eb9-29c642133064'
+      version: -1
+      name: cbd-device-search
+      description: ''
+      script: '|||cbd-device-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: 'aa4605ab-2d82-4ef1-ad47-cb0eaa0424fd'
+    type: regular
+    task:
+      id: 'aa4605ab-2d82-4ef1-ad47-cb0eaa0424fd'
+      version: -1
+      name: cbd-devices-search
+      description: ''
+      script: '|||cbd-devices-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '5fef2205-6783-4c23-be34-caeda22b6c61'
+    type: regular
+    task:
+      id: '5fef2205-6783-4c23-be34-caeda22b6c61'
+      version: -1
+      name: cbd-find-processes
+      description: ''
+      script: '|||cbd-find-processes'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '2fd09923-de12-4986-9e25-7c91740fda27'
+    type: regular
+    task:
+      id: '2fd09923-de12-4986-9e25-7c91740fda27'
+      version: -1
+      name: cbd-find-events
+      description: ''
+      script: '|||cbd-find-events'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 'ae710512-aca3-4345-9d0a-e6bbc2ee492d'
+    type: regular
+    task:
+      id: 'ae710512-aca3-4345-9d0a-e6bbc2ee492d'
+      version: -1
+      name: cbd-find-processes-results
+      description: ''
+      script: '|||cbd-find-processes-results'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '3c6c4ff9-86a2-4d48-a3bf-777b3e0dbe5f'
+    type: regular
+    task:
+      id: '3c6c4ff9-86a2-4d48-a3bf-777b3e0dbe5f'
+      version: -1
+      name: cbd-get-policies
+      description: ''
+      script: '|||cbd-get-policies'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '37f65de4-b26e-40ba-9b1a-8afce41a7898'
+    type: condition
+    task:
+      id: '37f65de4-b26e-40ba-9b1a-8afce41a7898'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicies.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicies.PriorityLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicies.SystemPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicies.LatestRevision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicies.Policy
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '703fc325-c955-4894-a95b-d517a714b746'
+    type: regular
+    task:
+      id: '703fc325-c955-4894-a95b-d517a714b746'
+      version: -1
+      name: cbd-get-policy
+      description: ''
+      script: '|||cbd-get-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '2f82539c-757c-47bf-a453-788010ce6ce0'
+    type: condition
+    task:
+      id: '2f82539c-757c-47bf-a453-788010ce6ce0'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicy.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicy.PriorityLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicy.SystemPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicy.LatestRevision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.GetPolicy.Policy
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '62363ef6-cfdd-4589-803d-b408f690eecd'
+    type: regular
+    task:
+      id: '62363ef6-cfdd-4589-803d-b408f690eecd'
+      version: -1
+      name: cbd-set-policy
+      description: ''
+      script: '|||cbd-set-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '7bbd7e45-a5cb-4f18-b222-783e77b63f76'
+    type: regular
+    task:
+      id: '7bbd7e45-a5cb-4f18-b222-783e77b63f76'
+      version: -1
+      name: cbd-create-policy
+      description: ''
+      script: '|||cbd-create-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '2de583c7-c8d3-41ec-b943-72deb161a036'
+    type: condition
+    task:
+      id: '2de583c7-c8d3-41ec-b943-72deb161a036'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefense.CreatePolicy.PolicyId
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '269e3426-48ea-41c6-b201-596264b21771'
+    type: regular
+    task:
+      id: '269e3426-48ea-41c6-b201-596264b21771'
+      version: -1
+      name: cbd-delete-policy
+      description: ''
+      script: '|||cbd-delete-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: 17
+    taskid: '7930f612-1d46-443d-b42b-84bd363b1a2e'
+    type: regular
+    task:
+      id: '7930f612-1d46-443d-b42b-84bd363b1a2e'
+      version: -1
+      name: cbd-update-policy
+      description: ''
+      script: '|||cbd-update-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'c2524a23-b416-4005-a41a-27b203808082'
+    type: regular
+    task:
+      id: 'c2524a23-b416-4005-a41a-27b203808082'
+      version: -1
+      name: cbd-add-rule-to-policy
+      description: ''
+      script: '|||cbd-add-rule-to-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: 19
+    taskid: '3857127d-0b9e-45aa-9358-c9f2a32a2518'
+    type: regular
+    task:
+      id: '3857127d-0b9e-45aa-9358-c9f2a32a2518'
+      version: -1
+      name: cbd-update-rule-in-policy
+      description: ''
+      script: '|||cbd-update-rule-in-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '5d169eea-0cb5-4fa0-bc67-c5d8999905b4'
+    type: regular
+    task:
+      id: '5d169eea-0cb5-4fa0-bc67-c5d8999905b4'
+      version: -1
+      name: cbd-delete-rule-from-policy
+      description: ''
+      script: '|||cbd-delete-rule-from-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: 21
+    taskid: 'dfce8120-1312-46d0-86f3-a605f666efd0'
+    type: regular
+    task:
+      id: 'dfce8120-1312-46d0-86f3-a605f666efd0'
+      version: -1
+      name: cbd-find-events-results
+      description: ''
+      script: '|||cbd-find-events-results'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '5416b9a5-2762-4e62-9ec0-61b82cf16db9'
+    type: regular
+    task:
+      id: '5416b9a5-2762-4e62-9ec0-61b82cf16db9'
+      version: -1
+      name: cbd-find-events-status
+      description: ''
+      script: '|||cbd-find-events-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: 23
+    taskid: 'cf8390aa-502d-4be7-aebf-fd0ebb914162'
+    type: regular
+    task:
+      id: 'cf8390aa-502d-4be7-aebf-fd0ebb914162'
+      version: -1
+      name: cbd-find-events-details
+      description: ''
+      script: '|||cbd-find-events-details'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '51d23b98-11a3-48a8-bdc4-3e4bd02ded00'
+    type: regular
+    task:
+      id: '51d23b98-11a3-48a8-bdc4-3e4bd02ded00'
+      version: -1
+      name: cbd-find-events-details-status
+      description: ''
+      script: '|||cbd-find-events-details-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: 25
+    taskid: '6958446e-c61a-4121-b89b-63b0a11e5d83'
+    type: regular
+    task:
+      id: '6958446e-c61a-4121-b89b-63b0a11e5d83'
+      version: -1
+      name: cbd-find-events-details-results
+      description: ''
+      script: '|||cbd-find-events-details-results'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: 'bb54fbda-129c-4be9-bf8d-8118a59e63a5'
+    type: regular
+    task:
+      id: 'bb54fbda-129c-4be9-bf8d-8118a59e63a5'
+      version: -1
+      name: cbd-find-processes-status
+      description: ''
+      script: '|||cbd-find-processes-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: 27
+    taskid: '98e93a97-3570-48e0-85c8-aefb43cf55a3'
+    type: regular
+    task:
+      id: '98e93a97-3570-48e0-85c8-aefb43cf55a3'
+      version: -1
+      name: cbd-device-quarantine
+      description: ''
+      script: '|||cbd-device-quarantine'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '61c766a6-d1c8-4674-b527-7f0626f40efa'
+    type: regular
+    task:
+      id: '61c766a6-d1c8-4674-b527-7f0626f40efa'
+      version: -1
+      name: cbd-device-unquarantine
+      description: ''
+      script: '|||cbd-device-unquarantine'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: 29
+    taskid: 'c1b425cd-8324-434f-a086-48929669b0ca'
+    type: regular
+    task:
+      id: 'c1b425cd-8324-434f-a086-48929669b0ca'
+      version: -1
+      name: cbd-device-background-scan
+      description: ''
+      script: '|||cbd-device-background-scan'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: 'a023ea64-2dc4-4368-a621-11fbb3fe59f8'
+    type: regular
+    task:
+      id: 'a023ea64-2dc4-4368-a621-11fbb3fe59f8'
+      version: -1
+      name: cbd-device-background-scan-stop
+      description: ''
+      script: '|||cbd-device-background-scan-stop'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: 31
+    taskid: 'a374d9ee-70d7-4586-b476-38772fbfaaf1'
+    type: regular
+    task:
+      id: 'a374d9ee-70d7-4586-b476-38772fbfaaf1'
+      version: -1
+      name: cbd-device-bypass
+      description: ''
+      script: '|||cbd-device-bypass'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '995b9ba8-88ab-4869-b671-2042f523cd2d'
+    type: regular
+    task:
+      id: '995b9ba8-88ab-4869-b671-2042f523cd2d'
+      version: -1
+      name: cbd-device-unbypass
+      description: ''
+      script: '|||cbd-device-unbypass'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '5372f9fe-5088-4f6b-83dc-9aaa03f3ebc1'
+    type: regular
+    task:
+      id: '5372f9fe-5088-4f6b-83dc-9aaa03f3ebc1'
+      version: -1
+      name: cbd-device-policy-update
+      description: ''
+      script: '|||cbd-device-policy-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '56f74cec-f866-4abb-9acb-1cbd91825166'
+    type: regular
+    task:
+      id: '56f74cec-f866-4abb-9acb-1cbd91825166'
+      version: -1
+      name: cbd-device-update-sensor-version
+      description: ''
+      script: '|||cbd-device-update-sensor-version'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: '342fa999-5501-4518-9f3c-27249acc2004'
+    type: title
+    task:
+      id: '342fa999-5501-4518-9f3c-27249acc2004'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Test playbook for CarbonBlack Defense V2
