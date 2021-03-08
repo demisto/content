@@ -757,7 +757,7 @@ script:
         if you want to get details about certain saved search.
     - name: timeout
       required: false
-      defaultValue: 30
+      defaultValue: 35
       description: Number of seconds until timeout for command is given.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'

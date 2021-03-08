@@ -971,7 +971,7 @@ Retrieves a list of Ariel saved searches.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_search_id | The saved search ID to retrieve its details. Specify saved_search_id if you want to get details about certain saved search. | Optional |
-| timeout | Number of seconds until timeout for command is given. Default is 30 | Optional |
+| timeout | Number of seconds until timeout for command is given. Default is 35 | Optional |
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query to filter saved searches. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
 | fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. For full list of available fields, consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html. | Optional | 

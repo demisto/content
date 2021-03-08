@@ -47,7 +47,7 @@ RESET_KEY = 'reset'
 LAST_FETCH_KEY = 'id'
 MINIMUM_API_VERSION = 10.1
 DEFAULT_RANGE_VALUE = '0-49'
-DEFAULT_TIMEOUT_VALUE = '30'
+DEFAULT_TIMEOUT_VALUE = '35'
 DEFAULT_LIMIT_VALUE = 50
 DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
@@ -588,7 +588,7 @@ def qradar_error_handler(res: Any):
         message = error_entry.get('message', '')
         if 'items=x-y' in message:
             message = 'Failed to parse Range argument. The syntax of the Range argument must follow this pattern: x-y'
-        elif 'unauthorized to access the requested resource' in err_msg or 'No SEC header present in request' in err_msg:
+        elif 'unauthorized to access' in err_msg or 'No SEC header present in request' in err_msg:
             message = 'Authorization Error: make sure credentials are correct.'
         err_msg += f'\n{message}'
         raise DemistoException(err_msg, res=res)

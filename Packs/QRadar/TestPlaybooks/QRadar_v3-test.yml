@@ -2058,6 +2058,7 @@ tasks:
     scriptarguments:
       fields: {}
       filter: {}
+      timeout: {}
       range:
         simple: 0-1
       saved_search_id: {}
