@@ -56,6 +56,34 @@ def executeCommand(command, args):
         return [{'Contents': indicator, 'Type': 'note'}]
 
 
+def test_keep_high_level_field():
+    pass
+
+def test_preprocess_incidents_field():
+    pass
+
+def test_check_list_of_dict():
+    pass
+
+def test_recursive_filter():
+    pass
+
+def test_match_one_regex():
+    pass
+
+def test_match_one_regex():
+    pass
+
+def test_normalize_command_line():
+    pass
+
+def test_cdist_new():
+    pass
+
+
+
+
+
 def test_score(mocker):
     normalize_function = TRANSFORMATION['indicators']['normalize']
     incident = pd.DataFrame({'indicators': ['1 2 3 4 5 6']})
