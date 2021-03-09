@@ -28,8 +28,6 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
 
 from typing import Dict, Callable
 
-# qradar_indicators_upload_command
-
 client = Client(
     server='https://192.168.0.1',
     verify=False,
