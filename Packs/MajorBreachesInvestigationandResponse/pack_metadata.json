@@ -11,7 +11,8 @@
     "tags": [
         "Breach",
         "TIM",
-        "Incident Response"
+        "Incident Response",
+        "Featured"
     ],
     "useCases": [
         "Hunting",
@@ -20,7 +21,12 @@
     "keywords": [
         "SolarStorm",
         "SunBurst",
-        "SolarWinds"
+        "SolarWinds",
+        "Hafnium",
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Exchange"
     ],
     "dependencies": {
         "CommonPlaybooks": {
