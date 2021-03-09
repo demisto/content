@@ -21,7 +21,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Host | The hostname from which to acquire the forensic data. For example, testpc01.  |  | Optional |
+| Host | A single hostname or IP address from which to acquire the forensic data. For example, testpc01. |  | Optional |
 
 ## Playbook Outputs
 ---

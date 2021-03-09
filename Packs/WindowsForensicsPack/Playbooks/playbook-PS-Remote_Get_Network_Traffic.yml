@@ -513,7 +513,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The hostname from which to create the ETL file. For example, testpc01.
+  description: A single hostname or IP address from which to create the ETL file. For example, testpc01.
   playbookInputQuery: null
 - key: EtlSizeLimit
   value:

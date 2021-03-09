@@ -198,7 +198,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: 'The host name from which to acquire the forensic data. For example,
+  description: 'A single hostname or IP address from which to acquire the forensic data. For example,
     testpc01. '
   playbookInputQuery:
 outputs: []

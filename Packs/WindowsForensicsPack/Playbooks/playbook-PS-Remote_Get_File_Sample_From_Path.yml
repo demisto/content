@@ -392,7 +392,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: Hostname of the machine on which the file is located. For example, testpc01
+  description: A single hostname or IP address of the machine on which the file is located. For example, testpc01
   playbookInputQuery:
 - key: FilePath
   value: {}

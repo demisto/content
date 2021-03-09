@@ -505,7 +505,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to export the registry file. For example, testpc01.
+  description: A single hostname or IP address for which to export the registry file. For example, testpc01.
   playbookInputQuery:
 outputs:
 - contextPath: PcapDetails

@@ -484,7 +484,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The hostname from which to export the registry file. For example, testpc01.
+  description: A single hostname or IP address from which to export the registry file. For example, testpc01.
   playbookInputQuery: null
 - key: RegistryHive
   value:

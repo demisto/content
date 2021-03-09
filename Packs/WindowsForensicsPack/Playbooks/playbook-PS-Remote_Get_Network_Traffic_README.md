@@ -27,7 +27,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Host | The hostname from which to create the ETL file. For example, testpc01. |  | Optional |
+| Host | A single hostname or IP address from which to create the ETL file. For example, testpc01. |  | Optional |
 | EtlSizeLimit | The maximum file size in MB for the ETL. Once the file reached this size the capute will stop. For example, 10MB. | 10 | Optional |
 | EtlPath | The path on the hostname on which to create the ETL file. The default path will be c:\\etl.etl.<br/>If the AddHostNameToFile input is "true", the file downloaded to XSOAR will contain the hostname. | c:\etl.etl | Optional |
 | EtlFilter | The filter to apply when creating the ETL file. For example, IPv4.Address=1.1.1.1 will capture traffic just from the 1.1.1.1 IP address. If no filter is specified, all traffic will be recorded. |  | Optional |

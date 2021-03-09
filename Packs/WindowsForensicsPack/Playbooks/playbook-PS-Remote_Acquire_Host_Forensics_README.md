@@ -25,7 +25,7 @@ This playbook does not use any commands.
 | GetNetworkTraffic | This input specifies whether to capture network traffic on the host. | true | Optional |
 | GetMft | This input specifies whether to acquire the MFT for the host. | true | Optional |
 | GetRegistry | This input specifies whether to export the registry on the host. | true | Optional |
-| Host | The host name for which to export the registry file. For example, testpc01. |  | Optional |
+| Host | A single hostname or IP address for which to export the registry file. For example, testpc01. |  | Optional |
 
 ## Playbook Outputs
 ---
