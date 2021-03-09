@@ -56,9 +56,9 @@
      "complex": null,
      "simple": "details"
     },
-    "flag": {
+    "thehiveflag": {
      "complex": null,
-     "simple": "flag"
+     "simple": "thehiveflag"
     },
     "severity": {
      "complex": {

@@ -146,7 +146,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "flag",
+                "fieldId": "thehiveflag",
                 "height": 22,
                 "id": "54fb2f10-cb63-11ea-bd56-e1bd9c9fbbdb",
                 "index": 5,
@@ -202,7 +202,7 @@
               {
                 "dropEffect": "move",
                 "endCol": 2,
-                "fieldId": "observables",
+                "fieldId": "thehiveobservables",
                 "height": 106,
                 "id": "a2e33f00-c759-11ea-be0d-f54894b1af53",
                 "index": 0,
