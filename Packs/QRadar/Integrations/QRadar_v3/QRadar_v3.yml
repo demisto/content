@@ -1470,4 +1470,4 @@ fromversion: 6.0.0
 defaultmapperin: QRadar - Generic Incoming Mapper
 defaultclassifier: QRadar
 tests:
-- No tests (auto formatted)
+- QRadar_v3-test

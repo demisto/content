@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 00b8ca70-3265-4da8-84d4-21fdfe88b727
+    taskid: 38ba0215-23ca-45d1-8692-4899122aae54
     type: start
     task:
-      id: 00b8ca70-3265-4da8-84d4-21fdfe88b727
+      id: 38ba0215-23ca-45d1-8692-4899122aae54
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 5b729172-ac53-4aad-81ad-f3db3b3070a6
+    taskid: 4c266e34-b3f2-4308-818a-aea2825f5e81
     type: regular
     task:
-      id: 5b729172-ac53-4aad-81ad-f3db3b3070a6
+      id: 4c266e34-b3f2-4308-818a-aea2825f5e81
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -70,10 +70,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 3415e77d-3ae9-4b80-897c-69633599a4d8
+    taskid: 393675d9-548b-4f84-899e-0d22435d6070
     type: regular
     task:
-      id: 3415e77d-3ae9-4b80-897c-69633599a4d8
+      id: 393675d9-548b-4f84-899e-0d22435d6070
       version: -1
       name: Offense List
       description: Gets offenses from QRadar.
@@ -107,10 +107,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: ef416ec3-3564-42fc-8eb2-aa311af925dd
+    taskid: 118656be-2058-447f-841e-e646adc798f7
     type: condition
     task:
-      id: ef416ec3-3564-42fc-8eb2-aa311af925dd
+      id: 118656be-2058-447f-841e-e646adc798f7
       version: -1
       name: Validate Outputs
       type: condition
@@ -265,10 +265,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 89f42aa3-a5c9-460e-8c42-197474ec5db4
+    taskid: 35f70463-99af-4d55-8a20-d0034f8fdfe9
     type: title
     task:
-      id: 89f42aa3-a5c9-460e-8c42-197474ec5db4
+      id: 35f70463-99af-4d55-8a20-d0034f8fdfe9
       version: -1
       name: Test Playbook Done
       type: title
@@ -290,10 +290,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: e3d82038-1657-43be-8cdc-408e5f09f767
+    taskid: c649f28c-2b5d-4f1e-8d19-eac462728157
     type: regular
     task:
-      id: e3d82038-1657-43be-8cdc-408e5f09f767
+      id: c649f28c-2b5d-4f1e-8d19-eac462728157
       version: -1
       name: Update Offense
       description: Update an offense.
@@ -332,10 +332,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f73dc6cd-51a1-4318-8d2f-c8f8d32aeab4
+    taskid: 73a24480-ba64-40f4-8713-640dae69dcc1
     type: regular
     task:
-      id: f73dc6cd-51a1-4318-8d2f-c8f8d32aeab4
+      id: 73a24480-ba64-40f4-8713-640dae69dcc1
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -368,10 +368,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5c1ba3fd-e11d-4dfb-8d4c-6bc954f8db2b
+    taskid: 18fd16ec-861c-44af-8622-2e4470d6f13c
     type: condition
     task:
-      id: 5c1ba3fd-e11d-4dfb-8d4c-6bc954f8db2b
+      id: 18fd16ec-861c-44af-8622-2e4470d6f13c
       version: -1
       name: Validate Outputs
       type: condition
@@ -448,10 +448,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: fe40585b-3da8-4952-8823-91665d5b6e75
+    taskid: 4dc1b0c8-8621-4d75-8392-0d9d7279d944
     type: regular
     task:
-      id: fe40585b-3da8-4952-8823-91665d5b6e75
+      id: 4dc1b0c8-8621-4d75-8392-0d9d7279d944
       version: -1
       name: Create Note To Offense
       description: Retrieve a list of notes for an offense.
@@ -483,10 +483,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 2228b887-0104-4ef9-81ae-c6095673c53d
+    taskid: 19ccb170-6394-4e64-8dfa-c2a7b749094a
     type: condition
     task:
-      id: 2228b887-0104-4ef9-81ae-c6095673c53d
+      id: 19ccb170-6394-4e64-8dfa-c2a7b749094a
       version: -1
       name: Validate Outputs
       type: condition
@@ -529,10 +529,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 878b3ecd-11b8-472a-8aef-03534e4cdcbf
+    taskid: 0f769d99-5cdc-44f9-8a95-15c925eaaa56
     type: regular
     task:
-      id: 878b3ecd-11b8-472a-8aef-03534e4cdcbf
+      id: 0f769d99-5cdc-44f9-8a95-15c925eaaa56
       version: -1
       name: Note List
       description: Create a note on an offense.
@@ -566,10 +566,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: a1a9291e-565b-4ac8-89fa-1581f318b78f
+    taskid: e5d0902f-58bc-4152-86de-b1db237bcb88
     type: condition
     task:
-      id: a1a9291e-565b-4ac8-89fa-1581f318b78f
+      id: e5d0902f-58bc-4152-86de-b1db237bcb88
       version: -1
       name: Validate Outputs
       type: condition
@@ -612,10 +612,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: f6670728-84f1-472b-8c44-f81eb830dd28
+    taskid: 22d3f8dd-51a5-4289-8543-f583e61af037
     type: regular
     task:
-      id: f6670728-84f1-472b-8c44-f81eb830dd28
+      id: 22d3f8dd-51a5-4289-8543-f583e61af037
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -648,10 +648,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 76786171-e71e-4052-8caf-cb0e8b7b0cb5
+    taskid: d128ad85-626b-4b55-8487-5e0fab3f35fd
     type: regular
     task:
-      id: 76786171-e71e-4052-8caf-cb0e8b7b0cb5
+      id: d128ad85-626b-4b55-8487-5e0fab3f35fd
       version: -1
       name: Get Closing Reasons List
       description: Retrieve a list of offense closing reasons.
@@ -685,10 +685,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 418e0a48-f733-4ed9-8795-22a3eeac13e3
+    taskid: ad09d66e-b707-4371-883a-c57081d46c0d
     type: condition
     task:
-      id: 418e0a48-f733-4ed9-8795-22a3eeac13e3
+      id: ad09d66e-b707-4371-883a-c57081d46c0d
       version: -1
       name: Validate Outputs
       type: condition
@@ -755,10 +755,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 2f40bb35-6d84-4270-862c-a4c3176d36c9
+    taskid: 5325d0dd-6462-4c30-82d6-edabdd664da8
     type: regular
     task:
-      id: 2f40bb35-6d84-4270-862c-a4c3176d36c9
+      id: 5325d0dd-6462-4c30-82d6-edabdd664da8
       version: -1
       name: Rules List
       description: Retrieves a list of rules.
@@ -792,10 +792,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 2201587c-1afa-44a8-8e76-7a92382320eb
+    taskid: e2b745da-c43b-4a3b-8184-5bd2e140a7a5
     type: condition
     task:
-      id: 2201587c-1afa-44a8-8e76-7a92382320eb
+      id: e2b745da-c43b-4a3b-8184-5bd2e140a7a5
       version: -1
       name: Validate Outputs
       type: condition
@@ -886,10 +886,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: acfcde04-3157-4b2e-858e-7e8c654aaddd
+    taskid: 3f6de7d1-8fea-484b-883a-62a13af12729
     type: regular
     task:
-      id: acfcde04-3157-4b2e-858e-7e8c654aaddd
+      id: 3f6de7d1-8fea-484b-883a-62a13af12729
       version: -1
       name: Group Rule List
       description: Retrieves a list of the rule groups.
@@ -922,10 +922,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 6f8839df-2239-4348-8f77-74c1805e8b31
+    taskid: 99127696-bf9a-4ffb-8fd4-e5b85ced04cb
     type: condition
     task:
-      id: 6f8839df-2239-4348-8f77-74c1805e8b31
+      id: 99127696-bf9a-4ffb-8fd4-e5b85ced04cb
       version: -1
       name: Validate Outputs
       type: condition
@@ -984,10 +984,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 15007c7a-0574-4847-864b-fff28ff4d783
+    taskid: 750f9e4f-9baf-4465-87c7-89f2083d5f0a
     type: regular
     task:
-      id: 15007c7a-0574-4847-864b-fff28ff4d783
+      id: 750f9e4f-9baf-4465-87c7-89f2083d5f0a
       version: -1
       name: Assets List
       description: Retrieves assets list.
@@ -1019,10 +1019,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 6d08b5b8-b507-453b-876c-b310b9c9bb42
+    taskid: a840dd09-790c-4412-8e9e-12caa518160d
     type: condition
     task:
-      id: 6d08b5b8-b507-453b-876c-b310b9c9bb42
+      id: a840dd09-790c-4412-8e9e-12caa518160d
       version: -1
       name: Validate Outputs
       type: condition
@@ -1062,14 +1062,6 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: QRadar.Asset.Properties.name
-            iscontext: true
-          right:
-            value:
-              simple: Unified Name
-      - - operator: containsGeneral
-          left:
-            value:
               simple: QRadar.Asset.Users.username
             iscontext: true
           right:
@@ -1105,10 +1097,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 3ad17647-1aa7-40d3-8e7e-4ed9b3d67389
+    taskid: a0770b9c-f286-424e-8cc4-28e95e4e9a60
     type: regular
     task:
-      id: 3ad17647-1aa7-40d3-8e7e-4ed9b3d67389
+      id: a0770b9c-f286-424e-8cc4-28e95e4e9a60
       version: -1
       name: Create Reference Set
       description: Create a new reference set.
@@ -1144,10 +1136,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c64ec459-2c51-4bb3-8325-a48862406af2
+    taskid: 5aa70137-f0e5-4233-84eb-5ae5666fcbe3
     type: condition
     task:
-      id: c64ec459-2c51-4bb3-8325-a48862406af2
+      id: 5aa70137-f0e5-4233-84eb-5ae5666fcbe3
       version: -1
       name: Validate Outputs
       type: condition
@@ -1214,10 +1206,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: db96a955-aca8-4605-8c21-73d1caf10594
+    taskid: e135d57b-9d98-469b-8ef9-d9ec43f64ea5
     type: regular
     task:
-      id: db96a955-aca8-4605-8c21-73d1caf10594
+      id: e135d57b-9d98-469b-8ef9-d9ec43f64ea5
       version: -1
       name: Get Reference Details
       description: Retrieve a list of reference sets.
@@ -1249,10 +1241,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 2fcc6f83-e178-447b-82bd-e95ff4bd9999
+    taskid: e6a1fbc7-675c-4319-8c4a-18ee4b5da9c4
     type: regular
     task:
-      id: 2fcc6f83-e178-447b-82bd-e95ff4bd9999
+      id: e6a1fbc7-675c-4319-8c4a-18ee4b5da9c4
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1285,10 +1277,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 990035a5-4f45-41c9-81ae-cdc185d33c16
+    taskid: 3ebd3b14-8332-4c50-8b00-2a11f1723227
     type: regular
     task:
-      id: 990035a5-4f45-41c9-81ae-cdc185d33c16
+      id: 3ebd3b14-8332-4c50-8b00-2a11f1723227
       version: -1
       name: Add Value To Reference
       description: Add or update an element in a reference set.
@@ -1323,10 +1315,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 9c44ad54-78a6-4f27-85fb-65df23dbe49b
+    taskid: e3e51cbb-e15b-4f72-8c11-8da995e0e40a
     type: condition
     task:
-      id: 9c44ad54-78a6-4f27-85fb-65df23dbe49b
+      id: e3e51cbb-e15b-4f72-8c11-8da995e0e40a
       version: -1
       name: Validate Outputs, With New Element Count
       type: condition
@@ -1385,10 +1377,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 25799118-fdd0-49d3-81a9-352394a4c2ac
+    taskid: b0c2b051-7a1b-4d25-80f7-9a076efeaade
     type: regular
     task:
-      id: 25799118-fdd0-49d3-81a9-352394a4c2ac
+      id: b0c2b051-7a1b-4d25-80f7-9a076efeaade
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1421,10 +1413,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 19801969-e09d-4136-8992-6ae52995eafb
+    taskid: b1cf1a58-c65a-4232-83dd-2e0a57ffbbe6
     type: regular
     task:
-      id: 19801969-e09d-4136-8992-6ae52995eafb
+      id: b1cf1a58-c65a-4232-83dd-2e0a57ffbbe6
       version: -1
       name: Delete Reference Set Value
       description: Remove a value from a reference set.
@@ -1457,10 +1449,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 7b28bc2c-77f2-453f-8ba2-de3e950ff5c6
+    taskid: c0dddc4d-58d4-48ed-834c-fbf486a2aee2
     type: regular
     task:
-      id: 7b28bc2c-77f2-453f-8ba2-de3e950ff5c6
+      id: c0dddc4d-58d4-48ed-834c-fbf486a2aee2
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1493,10 +1485,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 8309ad2d-bf33-4f90-851b-13e9e870e7ac
+    taskid: 5f8e1a42-f00e-4b80-8ae2-9271439e1d30
     type: regular
     task:
-      id: 8309ad2d-bf33-4f90-851b-13e9e870e7ac
+      id: 5f8e1a42-f00e-4b80-8ae2-9271439e1d30
       version: -1
       name: Get Reference With The Deleted Value
       description: Retrieve a list of reference sets.
@@ -1528,10 +1520,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 8ab5c543-5e2e-4831-8303-855058e55bb6
+    taskid: 256d94ea-cdd9-4907-8d2a-8438fb5315be
     type: condition
     task:
-      id: 8ab5c543-5e2e-4831-8303-855058e55bb6
+      id: 256d94ea-cdd9-4907-8d2a-8438fb5315be
       version: -1
       name: Validate Outputs, Validate Element Count Decreased
       type: condition
@@ -1566,10 +1558,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 92f58ec7-d5d5-4cb2-8f8d-abae05602636
+    taskid: ba276c79-bfda-498e-805d-89e41254978c
     type: regular
     task:
-      id: 92f58ec7-d5d5-4cb2-8f8d-abae05602636
+      id: ba276c79-bfda-498e-805d-89e41254978c
       version: -1
       name: Delete Reference Set
       description: Removes a reference set or purges its contents.
@@ -1599,10 +1591,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: b99019e9-4744-4bf4-8ebc-69cf5d5f5fe6
+    taskid: eedc23e7-e18a-43e4-8bdc-9b1d9ae62c51
     type: regular
     task:
-      id: b99019e9-4744-4bf4-8ebc-69cf5d5f5fe6
+      id: eedc23e7-e18a-43e4-8bdc-9b1d9ae62c51
       version: -1
       name: Get Domains List
       description: Gets the list of domains. You must have the System Administrator
@@ -1640,10 +1632,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 832cec95-79a1-43a5-85d4-2e1fc73dc25c
+    taskid: ac6dadb0-0244-436e-8860-a622aadf2a34
     type: condition
     task:
-      id: 832cec95-79a1-43a5-85d4-2e1fc73dc25c
+      id: ac6dadb0-0244-436e-8860-a622aadf2a34
       version: -1
       name: Validate Outputs
       type: condition
@@ -1678,10 +1670,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 342bcbdc-b330-4305-8c0e-40aef80b93b3
+    taskid: adf04bb6-6fea-4813-8e1f-e63702d55f94
     type: regular
     task:
-      id: 342bcbdc-b330-4305-8c0e-40aef80b93b3
+      id: adf04bb6-6fea-4813-8e1f-e63702d55f94
       version: -1
       name: Geolocations For IPs
       description: Retrieves the MaxMind geoip data for the given IP address.
@@ -1711,10 +1703,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 332eaf0c-37bd-494b-871a-873a4c376006
+    taskid: 93deba5b-39c7-4302-8310-5ce54df0b787
     type: condition
     task:
-      id: 332eaf0c-37bd-494b-871a-873a4c376006
+      id: 93deba5b-39c7-4302-8310-5ce54df0b787
       version: -1
       name: Validate Outputs
       type: condition
@@ -1805,10 +1797,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 9e380ee7-7829-43c4-88da-f150bb2b340e
+    taskid: a9f0ae71-fbc3-4c83-89dc-49ad8d56f94a
     type: regular
     task:
-      id: 9e380ee7-7829-43c4-88da-f150bb2b340e
+      id: a9f0ae71-fbc3-4c83-89dc-49ad8d56f94a
       version: -1
       name: Sources List
       description: Retrieves a list of log sources.
@@ -1842,10 +1834,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: bdf0afde-c816-46b2-8cdc-84c869edc36d
+    taskid: 3a41e2d5-4d7f-4c57-896d-97f2345cbdb5
     type: condition
     task:
-      id: bdf0afde-c816-46b2-8cdc-84c869edc36d
+      id: 3a41e2d5-4d7f-4c57-896d-97f2345cbdb5
       version: -1
       name: Validate Outputs
       type: condition
@@ -1906,10 +1898,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 934b8da7-8bb9-476c-809a-35d4f40a99a9
+    taskid: 95a8b2fd-bdb2-4830-8b0c-dfea2ab24f17
     type: regular
     task:
-      id: 934b8da7-8bb9-476c-809a-35d4f40a99a9
+      id: 95a8b2fd-bdb2-4830-8b0c-dfea2ab24f17
       version: -1
       name: Custom Properties
       description: Retrieves a list of event regex properties.
@@ -1941,10 +1933,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 0c6c4064-6706-40c7-8930-2e68cdaaaa65
+    taskid: 47f62cd5-110f-40a1-83c4-5452ed50067a
     type: condition
     task:
-      id: 0c6c4064-6706-40c7-8930-2e68cdaaaa65
+      id: 47f62cd5-110f-40a1-83c4-5452ed50067a
       version: -1
       name: Validate Outputs
       type: condition
@@ -1995,10 +1987,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: f9dab62e-b51c-480f-8e82-35c9494c547f
+    taskid: 9337702c-d159-436a-8e8f-6c12fd6a89a1
     type: playbook
     task:
-      id: f9dab62e-b51c-480f-8e82-35c9494c547f
+      id: 9337702c-d159-436a-8e8f-6c12fd6a89a1
       version: -1
       name: QRadar_v3 Full Search
       playbookName: QRadar_v3 Full Search
@@ -2041,10 +2033,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: fe3e7b7f-7b18-4f38-8da5-9e7b400970b7
+    taskid: 008b1284-0312-4540-8c4f-ce6c84f8fff8
     type: regular
     task:
-      id: fe3e7b7f-7b18-4f38-8da5-9e7b400970b7
+      id: 008b1284-0312-4540-8c4f-ce6c84f8fff8
       version: -1
       name: Get Saved Searches
       description: Retrieves a list of Ariel saved searches.
@@ -2058,10 +2050,10 @@ tasks:
     scriptarguments:
       fields: {}
       filter: {}
-      timeout: {}
       range:
         simple: 0-1
       saved_search_id: {}
+      timeout: {}
     separatecontext: false
     view: |-
       {
@@ -2077,10 +2069,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 983e9a02-512c-4fec-8c5a-2d3f4d565cad
+    taskid: a6c6e058-23f2-46e5-8899-a35926bcba42
     type: regular
     task:
-      id: 983e9a02-512c-4fec-8c5a-2d3f4d565cad
+      id: a6c6e058-23f2-46e5-8899-a35926bcba42
       version: -1
       name: Get Search IDs
       description: Retrieves the list of Ariel searches IDs. Search status and results

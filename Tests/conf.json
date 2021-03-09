@@ -3202,6 +3202,11 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
+        },
+        {
+            "integrations": "QRadar_v3",
+            "playbookID": "QRadar_v3-test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
