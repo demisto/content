@@ -1,0 +1,205 @@
+id: Cortex XDR - Run script kill process
+version: -1
+name: Cortex XDR - Run script kill process
+description: Use to Initiates a new endpoint script execution kill process and retrieve
+  the results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c921b006-b140-4aec-8f74-210ff1a2f843
+    type: start
+    task:
+      id: c921b006-b140-4aec-8f74-210ff1a2f843
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e1bd9a08-9050-4079-846f-15105514aac9
+    type: regular
+    task:
+      id: e1bd9a08-9050-4079-846f-15105514aac9
+      version: -1
+      name: Kill process
+      description: Initiates a new endpoint script execution kill process.
+      script: '|||xdr-run-script-kill-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_id
+      process_name:
+        complex:
+          root: inputs.process_name
+      timeout:
+        complex:
+          root: inputs.timeout
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7f127dac-78fc-490d-8d0e-4021b330f167
+    type: playbook
+    task:
+      id: 7f127dac-78fc-490d-8d0e-4021b330f167
+      version: -1
+      name: Cortex XDR - Check Action Status
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fd056a11-7a31-4c7a-84bc-e65a5384c47f
+    type: regular
+    task:
+      id: fd056a11-7a31-4c7a-84bc-e65a5384c47f
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7fff75ed-08b9-485f-88d7-9895681b63ad
+    type: title
+    task:
+      id: 7fff75ed-08b9-485f-88d7-9895681b63ad
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 380,
+        "x": 450,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: endpoint_id
+  value: {}
+  required: false
+  description: 'A comma-separated list of endpoint IDs. '
+  playbookInputQuery:
+- key: process_name
+  value: {}
+  required: false
+  description: Name of the process to kill.
+  playbookInputQuery:
+- key: timeout
+  value: {}
+  required: false
+  description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

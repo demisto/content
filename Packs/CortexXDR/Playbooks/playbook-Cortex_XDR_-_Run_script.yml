@@ -1,0 +1,222 @@
+id: Cortex XDR - Run script
+version: -1
+name: Cortex XDR - Run script
+description: Initiates a new endpoint script execution action using a provided script
+  unique id from Cortex XDR script library.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+    type: start
+    task:
+      id: 0a2f4a6b-3a8c-45f2-89ed-89eea47b1500
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: af14806d-8b59-4b6d-8f03-21c2045832c6
+    type: regular
+    task:
+      id: af14806d-8b59-4b6d-8f03-21c2045832c6
+      version: -1
+      name: Execute Cortex XDR Script
+      description: Initiates a new endpoint script execution action using a script
+        from the script library.
+      script: '|||xdr-run-script'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_ids
+      parameters:
+        complex:
+          root: inputs.parameters
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.parameters
+                iscontext: true
+      script_uid:
+        complex:
+          root: inputs.script_uid
+      timeout:
+        complex:
+          root: inputs.timeout
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8708453a-a427-402e-80ae-c6c932c5358b
+    type: playbook
+    task:
+      id: 8708453a-a427-402e-80ae-c6c932c5358b
+      version: -1
+      name: Cortex XDR - Check Action Status
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5487d7f4-691d-434e-828e-01190a697e56
+    type: regular
+    task:
+      id: 5487d7f4-691d-434e-828e-01190a697e56
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+    type: title
+    task:
+      id: 8de1f7d1-e21d-48a4-8760-0ed56299c77f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 450,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: endpoint_ids
+  value: {}
+  required: false
+  description: 'A comma-separated list of endpoint IDs. '
+  playbookInputQuery:
+- key: script_uid
+  value: {}
+  required: false
+  description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts
+    command.
+  playbookInputQuery:
+- key: parameters
+  value: {}
+  required: false
+  description: Dictionary contains the parameter name as key and its value for this
+    execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+  playbookInputQuery:
+- key: timeout
+  value: {}
+  required: false
+  description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

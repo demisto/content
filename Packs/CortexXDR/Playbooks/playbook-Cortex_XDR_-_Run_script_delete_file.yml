@@ -1,0 +1,206 @@
+id: Cortex XDR - Run script delete file
+version: -1
+name: Cortex XDR - Run script delete file
+description: Use to Initiates a new endpoint script execution to delete the specified
+  file and retrieve the results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+    type: start
+    task:
+      id: 2e8588ea-e14e-4a63-87e5-35bcb394c162
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 13fb1e81-faf0-425c-8efb-ddaa5174c87e
+    type: regular
+    task:
+      id: 13fb1e81-faf0-425c-8efb-ddaa5174c87e
+      version: -1
+      name: Run script delete file
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      script: '|||xdr-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_id
+      file_path:
+        complex:
+          root: inputs.file_path
+      timeout:
+        complex:
+          root: inputs.timeout
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: eaf294e5-bbf8-4591-89f2-e8a40efeb086
+    type: playbook
+    task:
+      id: eaf294e5-bbf8-4591-89f2-e8a40efeb086
+      version: -1
+      name: Cortex XDR - Check Action Status
+      playbookName: Cortex XDR - Check Action Status
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8034abda-d134-4b58-821b-54de3c774b29
+    type: regular
+    task:
+      id: 8034abda-d134-4b58-821b-54de3c774b29
+      version: -1
+      name: Get script execution results
+      description: Retrieve the results of a script execution action.
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_id:
+        complex:
+          root: PaloAltoNetworksXDR.ScriptRun
+          accessor: action_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 91e2d310-e3ac-4781-8866-d2a422edc8b6
+    type: title
+    task:
+      id: 91e2d310-e3ac-4781-8866-d2a422edc8b6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: endpoint_id
+  value: {}
+  required: false
+  description: 'A comma-separated list of endpoint IDs. '
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: false
+  description: Path of the file to delete.
+  playbookInputQuery:
+- key: timeout
+  value: {}
+  required: false
+  description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
