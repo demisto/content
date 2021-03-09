@@ -3210,6 +3210,11 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v2",
+            "playbookID": "CreateCertificate-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
