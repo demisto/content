@@ -1,8 +1,17 @@
 # Marketplace related
-/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold @guyfreund
-/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold @guyfreund
-/Tests/Marketplace/* @guyfreund
-/Tests/scripts/prepare_content_packs_for_testing.sh
+/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/upload_git_snapshot.py @guyfreund
+/Tests/Marketplace/install_packs.sh @guyfreund
+/Tests/Marketplace/normalize_gcs_paths.py @guyfreund
+/Tests/Marketplace/configure_and_install_packs.py @guyfreund
+/Tests/Marketplace/copy_and_upload_packs.py @guyfreund
+/Tests/Marketplace/marketplace_services.py @guyfreund
+/Tests/Marketplace/zip_packs.py @guyfreund
+/Tests/Marketplace/upload_packs.py @guyfreund
+/Tests/Marketplace/packs_dependencies.py @guyfreund
+/Tests/Marketplace/search_and_install_packs.py @guyfreund
+/Tests/scripts/prepare_content_packs_for_testing.sh @guyfreund
 /Utils/trigger_test_upload_flow.sh @guyfreund
 /Utils/trigger_upload_packs_to_production.sh @guyfreund
 
