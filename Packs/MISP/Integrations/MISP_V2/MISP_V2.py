@@ -394,7 +394,7 @@ def check_file(file_hash):
         return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
 
     # misp_response will remain the raw output of misp
-    misp_response = MISP.search(value=file_hash)
+    misp_response = MISP.search(controller="attributes",value=file_hash)
     if misp_response:
         dbot_list = list()
         file_list = list()
@@ -470,7 +470,7 @@ def check_ip(ip):
     if not is_ip_valid(ip):
         return_error("IP isn't valid")
 
-    misp_response = MISP.search(value=ip)
+    misp_response = MISP.search(controller="attributes",value=ip)
 
     if misp_response:
         dbot_list = list()
@@ -613,7 +613,7 @@ def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
     # add attribute
     add_attribute(event_id=event_id, internal=True)
 
-    event = MISP.search(eventid=event_id)
+    event = MISP.search(controller="events",eventid=event_id)
 
     md = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
     ec = {
@@ -673,7 +673,7 @@ def add_attribute(event_id: int = None, internal: bool = None):
     MISP.update_event(event=event)
     if internal:
         return
-    event = MISP.search(eventid=args.get('id'))
+    event = MISP.search(controller="events",eventid=args.get('id'))
     md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
     ec = {
         MISP_PATH: build_context(event)
@@ -731,7 +731,7 @@ def get_urls_events():
 
 
 def check_url(url):
-    response = MISP.search(value=url, type_attribute='url')
+    response = MISP.search(controller="attributes",value=url, type_attribute='url')
 
     if response:
         dbot_list = list()
@@ -852,7 +852,8 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'last',
         'eventid',
         'uuid',
-        'to_ids'
+        'to_ids',
+        'controller'
     ]
 
     args = dict()
@@ -869,6 +870,10 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     # build MISP complex filter
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
+
+    # default to 'attributes' as the controller to avoid dumping entire events into demisto
+    if not 'controller' in args or not args['controller']:
+        args['controller'] = 'attributes'
 
     response = MISP.search(**args)
     if response:
