@@ -879,5 +879,5 @@ def test_get_modified_remote_data_command(mocker):
     """
     expected = GetModifiedRemoteDataResponse(command_test_data['get_modified_remote_data']['outputs'])
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
-    result = get_modified_remote_data_command(client, command_test_data['get_modified_remote_data']['args'])
+    result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
     assert expected.modified_incident_ids == result.modified_incident_ids
