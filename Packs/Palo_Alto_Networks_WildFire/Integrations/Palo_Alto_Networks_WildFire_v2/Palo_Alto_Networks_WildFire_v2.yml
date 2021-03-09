@@ -444,7 +444,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to download as screenshots or as downloadable files.
+      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
       isArray: false
       name: types
       required: false
