@@ -606,7 +606,8 @@ class Pack(object):
         """
         Build the pack's tag list according to the user metadata and the landingPage sections file.
         Args:
-            user_tags: user metadata that was created in pack initialization.
+            user_tags (list): user metadata that was created in pack initialization.
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
 
         Returns:
             list: Pack's tags.
@@ -639,7 +640,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             downloads_count (int): number of packs downloads.
             is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
-
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
         Returns:
             dict: parsed pack metadata.
 
