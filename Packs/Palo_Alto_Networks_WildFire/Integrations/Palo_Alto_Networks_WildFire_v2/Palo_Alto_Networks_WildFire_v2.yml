@@ -308,7 +308,7 @@ script:
       description: Verdict of the detection.
       type: string
     - contextPath: WildFire.Report.detection_reasons.artifacts
-      description: Artifacts of the detection reasons.
+      description: Artifacts for detection reasons.
       type: unknown
     - contextPath: WildFire.Report.iocs
       description: IOCs associated.
