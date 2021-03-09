@@ -2500,10 +2500,10 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     Args:
         client (Client): QRadar client to perform the API calls.
+        params (Dict): Demisto params.
         args (Dict):
             id: Offense id to retrieve.
             lastUpdate: When was the last time we data was retrieved in Epoch.
-        params (Dict): Demisto params.
 
     Returns:
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
