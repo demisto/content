@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Run script kill process](Insert the link to your image here)
+![Cortex XDR - Run script kill process](https://github.com/demisto/content/blob/58ee96b17cf8578c61781f67063742116544dfff/Packs/CortexXDR/doc_files/Cortex_XDR_-_Run_script_kill_process.png?raw=true)
