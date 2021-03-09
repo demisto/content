@@ -13,4 +13,4 @@ This pack contains the response playbooks for the following breaches:
 
 
 ![SolarStorm and SUNBURST Hunting and Response Playbook](https://raw.githubusercontent.com/demisto/content/bb46740bed0452cd1c9e673e07567efa8236d76b/Packs/MajorBreachesInvestigationandResponse/doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_V6.png)
-![HAFNIUM - Exchange 0-day exploits](https://raw.githubusercontent.com/demisto/content/master/Packs/MajorBreachesInvestigationandResponse/doc_files/HAFNIUM_-_Exchange_0-day_exploits.png)
+![HAFNIUM - Exchange 0-day exploits](https://raw.githubusercontent.com/demisto/content/5e260b4541666936a241432c2a163049d9ffcfec/Packs/MajorBreachesInvestigationandResponse/doc_files/HAFNIUM_-_Exchange_0-day_exploits_6.png)
