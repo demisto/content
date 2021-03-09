@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import demistomock as demisto
 from CommonServerPython import *
 import extract_msg
@@ -3101,7 +3104,7 @@ class MsOxMessage(object):
 
         ole_file = None
         try:
-            ole_file = OleFileIO(msg_file_path)
+            ole_file = OleFileIO(msg_file_path, path_encoding=None)
 
             # process directory entries
             ole_root = ole_file.root
@@ -3401,8 +3404,8 @@ def convert_to_unicode(s):
 
 
 def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
-    msg = extract_msg.Message(file_path)
-    message_body = msg.body
+    # msg = extract_msg.Message(file_path)
+    # message_body = msg.body
 
     if max_depth == 0:
         return None, []
@@ -3421,7 +3424,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'From': msg_dict['From'],
         'Subject': headers_map.get('Subject'),
         'HTML': msg_dict['HTML'],
-        'Text': message_body,
+        'Text': unicode(str(msg_dict['Text']), 'utf-16-le'),
         'Headers': headers,
         'HeadersMap': headers_map,
         'Attachments': '',
@@ -3722,16 +3725,17 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_path = result[0]['Contents']['path']
-        file_name = result[0]['Contents']['name']
+        file_path = '/Users/cshayner/Downloads/Опрос.msg'
+        # file_path = '/Users/cshayner/dev/demisto/content/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/utf_subject.msg'
+        file_name = 'Опрос.msg'
         result = demisto.executeCommand('getEntry', {'id': entry_id})
         if is_error(result):
             return_error(get_error(result))
 
-        file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
-        if 'MIME entity text, ISO-8859 text' in file_type:
-            file_type = 'application/pkcs7-mime'
+        # file_metadata = result[0]['FileMetadata']
+        # file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        # if 'MIME entity text, ISO-8859 text' in file_type:
+        #     file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
         return_error(
@@ -3739,7 +3743,7 @@ def main():
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
     try:
-        file_type_lower = file_type.lower()
+        file_type_lower = 'cdfv2 microsoft outlook message'
         if 'composite document file v2 document' in file_type_lower \
                 or 'cdfv2 microsoft outlook message' in file_type_lower:
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
