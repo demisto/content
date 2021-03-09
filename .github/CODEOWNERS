@@ -1,6 +1,10 @@
 # Marketplace related
-/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
-/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold @guyfreund
+/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold @guyfreund
+/Tests/Marketplace/* @guyfreund
+/Tests/scripts/prepare_content_packs_for_testing.sh
+/Utils/trigger_test_upload_flow.sh @guyfreund
+/Utils/trigger_upload_packs_to_production.sh @guyfreund
 
 # Important integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
