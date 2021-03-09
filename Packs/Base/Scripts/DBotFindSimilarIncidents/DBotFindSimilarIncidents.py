@@ -31,12 +31,13 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
 
 REGEX_DATE_PATTERN = ["^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z", "(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"]
 REGEX_IP = r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 
 
 def keep_high_level_field(incidents_field: List[str]) -> List[str]:
     """
     Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
-    :param incidents_field: lis of incident fields
+    :param incidents_field: list of incident fields
     :return: Return list of fields
     """
     return [x.split('.')[0] if '.' in x else x for x in incidents_field]
@@ -140,16 +141,15 @@ def normalize_json(obj):
     return my_string
 
 
-def normalize_command_line(my_string):
-    if my_string and isinstance(my_string, str):
-        my_string = my_string.lower()
-        my_string = my_string.replace("=", " = ")
-        my_string = my_string.replace("\\", "/")
-        my_string = my_string.replace("[", "")
-        my_string = my_string.replace("]", "")
-        my_string = my_string.replace('"', "")
-        my_string = my_string.replace("'", "")
-
+def normalize_command_line(command: str) -> str:
+    """
+    Normalize command line
+    :param command: command line
+    :return: Normalized command line
+    """
+    if command and isinstance(command, str):
+        my_string = command.lower()
+        my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
         my_string = re.sub(REGEX_IP, 'IP', my_string)
         return my_string
     else:
@@ -172,6 +172,11 @@ def fill_nested_fields(incidents_df, incidents, *list_of_field_list):
 
 
 def normalize_identity(my_string):
+    """
+    Return identity if string
+    :param my_string: string
+    :return: my_string
+    """
     if my_string and isinstance(my_string, str):
         return my_string
     else:
@@ -628,11 +633,21 @@ def dumps_dict_current_incident(incident: Dict):
     return incident_df
 
 
-def return_outputs_summary(confidence, number_incident_fetched, incidents_found, fields_used, global_msg):
+def return_outputs_summary(confidence: float, number_incident_fetched: int, number_incidents_found: int,
+                           fields_used: List[str], global_msg: str) -> None:
+    """
+    Return entry for summary of the automation - Give information about the automation run
+    :param confidence: confidence level given by the user
+    :param number_incident_fetched: number of incident fetched from the instance
+    :param incidents_found: number of similar incident found
+    :param fields_used: Fields used to find similarity
+    :param global_msg: informative message
+    :return:
+    """
     summary = {
         'Confidence': str(confidence),
         'Incident fetched with exact match': number_incident_fetched,
-        'Number of similar incident found ': incidents_found,
+        'Number of similar incident found ': number_incidents_found,
         'Fields used for similarity (not empty)': ', '.join(fields_used),
         'Additional message': global_msg
     }
@@ -658,17 +673,34 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
     return context
 
 
-def return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, col, context):
+def return_outputs_similar_incidents(show_actual_incident: bool, current_incident: pd.DataFrame,
+                                     similar_incidents: pd.DataFrame, colums_to_display: List[str], context: Dict):
+    """
+    Return entry and context for similar incidents
+    :param show_actual_incident: Boolean if showing the current incident
+    :param current_incident: current incident
+    :param similar_incidents: DataFrame of the similar incidents
+    :param colums_to_display: List of columns we want to show in the tableToMarkdown
+    :param context: context for the entry
+    :return: None
+    """
     similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     similar_incidents_json = similar_incidents.to_dict(orient='records')
-    incident_json = incident_filter.to_dict(orient='records')
+    incident_json = current_incident.to_dict(orient='records')
     if show_actual_incident == 'True':
         return_outputs(readable_output=tableToMarkdown("Actual incident", incident_json))
-    return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col),
+    return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display),
                    outputs={'DBotFindSimilarIncidents': context})
 
 
-def find_incorrect_fields(populate_fields, incidents_df, global_msg):
+def find_incorrect_fields(populate_fields: List[str], incidents_df: pd.DataFrame, global_msg: str):
+    """
+    Check Field that appear in populate_fields but are not in the incidents_df and return message
+    :param populate_fields: List of fields
+    :param incidents_df: DataFrame of the incidents with fields in columns
+    :param global_msg: global_msg
+    :return: global_msg, incorrect_fields
+    """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
         global_msg += "%s \n" % "%s might not be corect spelling. Please correct or ignore this message" % ' , '.join(
@@ -677,22 +709,28 @@ def find_incorrect_fields(populate_fields, incidents_df, global_msg):
 
 
 def return_outputs_similar_incidents_empty():
+    """
+    Return entry and context for similar incidents if no similar incidents were found
+    :return:
+    """
     hr = '### Similar Incident' + '\n'
     hr += 'No Similar incident were found.'
     return_outputs(readable_output=hr,
                    outputs={'DBotFindSimilarIncidents': create_context_for_incidents()})
 
 
-def enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents):
+def enriched_with_indicators_similarity(full_args_indicators_script: Dict, similar_incidents: pd.DataFrame):
+    """
+    Take DataFrame of similar_incidents and args for indicators script and add information about indicators to similar_incidents
+    :param full_args_indicators_script: args for indicators script
+    :param similar_incidents: DataFrame of incidents
+    :return: similar_incidents enriched with indicators data
+    """
     indicators_similarity_json = get_similar_incidents_by_indicators(full_args_indicators_script)
     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
     keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
-    return similar_incidents.join(indicators_similarity_df[keep_columns])
-
-
-def add_indicators_data(full_args_indicators_script, similar_incidents):
-    similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
+    similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
     values = {'similarity indicators': 0, 'Identical indicators': "", 'type': ""}
     similar_incidents = similar_incidents.fillna(value=values)
     similar_incidents = similar_incidents.sort_values(by=ORDER_SCORE, ascending=False)
@@ -763,7 +801,7 @@ def main():
     # Get similarity based on indicators
     if include_indicators_similarity == "True":
         full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **demisto.args()}
-        similar_incidents = add_indicators_data(full_args_indicators_script, similar_incidents)
+        similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
 
     # Filter incident to investigate
     incident_filter = incident_df[[x for x in
