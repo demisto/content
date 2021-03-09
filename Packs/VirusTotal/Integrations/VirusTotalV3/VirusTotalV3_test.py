@@ -3,7 +3,7 @@ import json
 import pytest
 
 from VirusTotalV3 import encode_url_to_base64, raise_if_hash_not_valid, \
-    raise_if_ip_not_valid, ScoreCalculator
+    raise_if_ip_not_valid, ScoreCalculator, epoch_to_timestamp
 
 
 class TestScoreCalculator:
@@ -51,3 +51,11 @@ class TestHelpers:
     def test_raise_if_ip_not_valid_invalid_input(self):
         with pytest.raises(ValueError, match='is not valid'):
             raise_if_ip_not_valid('not ip at all')
+
+    @pytest.mark.parametrize('epoch_time, output', [
+        (0, '1970-01-01 00:00:00Z'),
+        (999113584, '2001-08-29 19:33:04Z'),
+        ('a string', None)
+    ])
+    def test_epoch_to_timestamp(self, epoch_time: int, output: str):
+        assert epoch_to_timestamp(epoch_time) == output

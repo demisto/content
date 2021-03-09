@@ -17,31 +17,29 @@ not exists.
     - VirusTotal.URLComments
     - VirusTotal.IPComments
     - VirusTotal.DomainComments
-- Removed output path: All previous outputpaths removed (breaks bc)
+- Removed output path: All previous output paths removed (breaks bc)
 
 ### vt-comments-add:
 - added argument: resource_type to distinguish between resourced type.
 - comment: will be the text field in the comment.
 
-### file-rescan -> vt-file-rescan (command name bc compatible):
+### file-rescan -> vt-file-rescan:
 - New output path: VirusTotal.FileSubmission.id
-- The old output path (vtScanID) is still preserved for bc
-- Removed output path: vtLink
+- Removed output path: vtLink, vtScanID
 
 
-### file-scan -> vt-file-scan (command name bc compatible):
+### file-scan -> vt-file-scan:
 - New output path: VirusTotal.FileSubmission.id
 - The old output path (vtScanID) is still preserved for bc
 - Removed output path: vtLink
 
 ### vt-file-scan-upload-url: 
 - New output path: VirusTotal.FileUploadURL.id
-- The old output path (vtUploadURL) is still preserved for bc
+- Removed output path: vtUploadURL
 
-### url-scan -> vt-url-scan (command name bc compatible):
+### url-scan -> vt-url-scan:
 - New output path: VirusTotal.UrlSubmission.id
-- The old output path (vtScanID) is still preserved for bc
-- Removed output path: vtLink
+- Removed output path: vtLink, vtScanID
 
 new commands:
 ---

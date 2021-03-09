@@ -1,10 +1,10 @@
-!domain domain=paloaltonetworks.com
-!url url=https://www.paloaltonetworks.com/about-us
+!domain domain=down.mykings.pw
+!url url=https://www.down.mykings.pw
 !ip ip=1.1.1.1
 !file file=17bb7bda507abc602bdf1b160d7f51edaccac39fd34f8dab1e793c3612cfc8c2
 !vt-analysis-get id=u-20694f234fbac92b1dcc16f424aa1c85e9dd7af75b360745df6484dcae410853-1613980758
 !vt-file-sandbox-report file=2b294b3499d1cce794badffc959b7618
-!vt-url-scan https://www.paloaltonetworks.com/about-us
+!vt-url-scan https://www.down.mykings.pw
 !vt-file-scan 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
 !vt-file-rescan 6bcae8ceb7f8b3a503c321085d59d7441c2ae87220f7e7170fec91098d99bb7e
 !vt-comments-add resource=paloaltonetworks.com resource_type=domain comment="A new comment"
