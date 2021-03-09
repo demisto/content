@@ -1183,6 +1183,7 @@ def create_attachment(raw_response, user_id):
     elif 'fileAttachment' in attachment_type:
         return demisto.results(file_result_creator(raw_response))
     else:
+        demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
         return {}
 
 
