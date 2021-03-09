@@ -46,7 +46,9 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: SailPoint IdentityNow
+description: The SailPoint Identity Security platform can be configured either on-prem/single
+  tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS,
+  multi-tenant solution, IdentityNow.
 display: SailPoint IdentityNow
 name: SailPointIdentityNow
 script:
@@ -692,7 +694,7 @@ script:
       for a single user.
     execution: false
     name: identitynow-request-revoke
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false

@@ -113,8 +113,10 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
             'Authorization': 'Bearer %s' % oauth_response.json().get('access_token', None),
             'Content-Type': 'application/json'
         }
+    elif oauth_response.json().get('error_description') is not None:
+        raise ConnectionError(oauth_response.json().get('error_description'))
     else:
-        return None
+        raise ConnectionError('Unable to fetch headers from IdentityNow!')
 
 
 def build_query_object(object_type: str, query: str):
@@ -161,33 +163,33 @@ def get_markdown(object_type: str, objects=None):
                    'protected', 'status', 'isManager', 'identityProfile', 'source', 'attributes', 'accounts',
                    'accountCount', 'appCount', 'accessCount', 'entitlementCount', 'roleCount', 'accessProfileCount',
                    'pod', 'org', 'type']
-        markdown = tableToMarkdown('Identity(Identities)', objects, headers=headers)
+        markdown = tableToMarkdown('Identity(Identities)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.Account':
         headers = ['id', 'name', 'identityId', 'nativeIdentity', 'sourceId', 'created', 'modified',
                    'attributes', 'authoritative', 'disabled', 'locked', 'systemAccount', 'uncorrelated',
                    'manuallyCorrelated', 'hasEntitlements']
-        markdown = tableToMarkdown('Account(s)', objects, headers=headers)
+        markdown = tableToMarkdown('Account(s)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.AccountActivity':
         headers = ['id', 'name', 'created', 'modified', 'completed', 'completionStatus', 'type',
                    'requesterIdentitySummary', 'targetIdentitySummary', 'items', 'executionStatus', 'cancelable',
                    'cancelComment']
-        markdown = tableToMarkdown('Account Activity(Account Activities)', objects, headers=headers)
+        markdown = tableToMarkdown('Account Activity(Account Activities)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.AccessProfile':
         headers = ['id', 'name', 'description', 'source', 'entitlements', 'entitlementCount', 'created', 'modified',
                    'synced', 'enabled', 'requestable', 'requestCommentsRequired', 'owner', 'pod', 'org', 'type']
-        markdown = tableToMarkdown('Access Profile(s)', objects, headers=headers)
+        markdown = tableToMarkdown('Access Profile(s)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.Role':
         headers = ['id', 'name', 'description', 'accessProfiles', 'accessProfileCount', 'created', 'modified', 'synced',
                    'enabled', 'requestable', 'requestCommentsRequired', 'owner', 'pod', 'org', 'type']
-        markdown = tableToMarkdown('Role(s)', objects, headers=headers)
+        markdown = tableToMarkdown('Role(s)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.Entitlement':
         headers = ['id', 'name', 'displayName', 'description', 'modified', 'synced', 'source', 'privileged',
                    'identityCount', 'attribute', 'value', 'schema', 'pod', 'org', 'type']
-        markdown = tableToMarkdown('Entitlement(s)', objects, headers=headers)
+        markdown = tableToMarkdown('Entitlement(s)', objects, headers=headers, removeNull=True)
     elif object_type == 'IdentityNow.Event':
         headers = ['id', 'name', 'stack', 'created', 'synced', 'objects', 'ipAddress', 'technicalName', 'target',
                    'actor', 'action', 'attributes', 'operation', 'status', 'pod', 'org', 'type']
-        markdown = tableToMarkdown('Event(s)', objects, headers=headers)
+        markdown = tableToMarkdown('Event(s)', objects, headers=headers, removeNull=True)
     return markdown
 
 
@@ -243,12 +245,11 @@ def test_connection(base_url: str, client_id: str, client_secret: str, grant_typ
 
     :return: HTTP connectivity status for test connection.
     """
-    header = get_headers(base_url, client_id, client_secret, grant_type)
-    if header is not None:
+    try:
+        get_headers(base_url, client_id, client_secret, grant_type)
         return 'ok'
-    else:
-        return 'Unable to connect to IdentityNow!'
-
+    except ConnectionError as error:
+        return error
 
 def search(client: Client, object_type: str, query: str, offset: int, limit: int):
     """
@@ -508,25 +509,24 @@ def main():
     client_secret = demisto.params().get('client_secret')
     grant_type = 'client_credentials'
 
-    # Convert the argument to an int or set to MAX_INCIDENTS_TO_FETCH
-    max_results = int(demisto.params().get('max_fetch'))
-    if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-        max_results = MAX_INCIDENTS_TO_FETCH
-
-    # first_fetch_str = demisto.params().get('first_fetch', '3 days')
-
     # Other configs
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     request_timeout = 10
 
-    headers = get_headers(base_url, client_id, client_secret, grant_type)
+    headers = None
+    try:
+        headers = get_headers(base_url, client_id, client_secret, grant_type)
+    except ConnectionError as error:
+        demisto.error(f'Error getting header : {error}')
+        return_error(f'Error getting header : {error}')
+
     client = Client(
         base_url=base_url,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        max_results=max_results,
+        max_results=MAX_INCIDENTS_TO_FETCH,
         request_timeout=request_timeout)
 
     demisto.debug(f'Command being called is {demisto.command()}')
