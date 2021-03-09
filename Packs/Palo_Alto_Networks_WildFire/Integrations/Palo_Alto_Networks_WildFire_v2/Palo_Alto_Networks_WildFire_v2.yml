@@ -453,9 +453,9 @@ script:
       - 'screenshot'
       secret: false
     deprecated: false
-    description: Get web artifacts for a URL webpage.
+    description: Get web artifacts for a URL webpage. Even if the URL does not contain webartifacts, a file will be downloaded.
     execution: false
-    name: wildfire-get-web-artifacts
+    name: wildfire-get-url-webartifacts
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false

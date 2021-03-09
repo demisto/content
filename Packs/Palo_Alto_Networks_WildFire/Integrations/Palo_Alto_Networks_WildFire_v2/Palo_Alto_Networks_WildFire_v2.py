@@ -495,7 +495,7 @@ def wildfire_get_verdicts_command():
 
 
 @logger
-def wildfire_get_web_artifacts(url: str, types: str) -> dict:
+def wildfire_get_url_webartifacts_command(url: str, types: str) -> dict:
     get_webartifacts_uri = f'{URL}{URL_DICT["webartifacts"]}'
     params = {
         'apikey': TOKEN,
@@ -882,8 +882,8 @@ def main():
         elif command == 'wildfire-get-verdicts':
             wildfire_get_verdicts_command()
 
-        elif command == 'wildfire-get-web-artifacts':
-            wildfire_get_web_artifacts_command()
+        elif command == 'wildfire-get-url-webartifacts':
+            wildfire_get_url_webartifacts_command()
 
     except Exception as err:
         return_error(str(err))
