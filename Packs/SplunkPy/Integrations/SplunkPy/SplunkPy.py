@@ -2,6 +2,1377 @@ from splunklib.binding import HTTPError, namespace
 import demistomock as demisto
 from CommonServerPython import *
 
+<<<<<<< Updated upstream
+=======
+import demistomock as demisto
+from CommonServerPython import *
+import splunklib.client as client
+
+import splunklib.results as results
+import json
+from datetime import timedelta, datetime
+import pytz
+import dateparser
+import urllib2
+import hashlib
+import ssl
+from StringIO import StringIO
+import requests
+import urllib3
+import io
+import re
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Define utf8 as default encoding
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
+params = demisto.params()
+SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
+FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
+FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
+REPLACE_WITH = '_'
+REPLACE_FLAG = params.get('replaceKeys', False)
+FETCH_TIME = demisto.params().get('fetch_time')
+PROXIES = handle_proxy()
+TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
+                        'year': 365 * 24 * 60}
+
+
+# =========== Mirroring Mechanism Globals ===========
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+# =========== Enrichment Mechanism Globals ===========
+ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
+
+DRILLDOWN_ENRICHMENT = 'Drilldown'
+ASSET_ENRICHMENT = 'Asset'
+IDENTITY_ENRICHMENT = 'Identity'
+SUBMITTED_NOTABLES = 'submitted_notables'
+EVENT_ID = 'event_id'
+JOB_CREATION_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+LAST_RUN_OBJECT = 'last_run_object'
+NOT_YET_SUBMITTED_NOTABLES = 'not_yet_submitted_notables'
+INFO_MIN_TIME = "info_min_time"
+INFO_MAX_TIME = "info_max_time"
+INCIDENTS = 'incidents'
+DUMMY = 'dummy'
+NOTABLE = 'notable'
+ENRICHMENTS = 'enrichments'
+MAX_HANDLE_NOTABLES = 20
+MAX_SUBMIT_NOTABLES = 30
+CACHE = 'cache'
+STATUS = 'status'
+DATA = 'data'
+TYPE = 'type'
+ID = 'id'
+CREATION_TIME = 'creation_time'
+INCIDENT_CREATED = 'incident_created'
+
+DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
+
+ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
+    DRILLDOWN_ENRICHMENT: 'successful_drilldown_enrichment',
+    ASSET_ENRICHMENT: 'successful_asset_enrichment',
+    IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
+}
+
+# =========== Not Missing Events Mechanism Globals ===========
+CUSTOM_ID = 'custom_id'
+OCCURRED = 'occurred'
+INDEX_TIME = 'index_time'
+TIME_IS_MISSING = 'time_is_missing'
+
+
+# =========== Mirroring Mechanism ===========
+
+def get_last_update_in_splunk_time(last_update):
+    """ Transforms the time to the corresponding time on the Splunk server
+
+    Args:
+        last_update (str): The time to be transformed, E.g 2021-02-09T16:41:30.589575+02:00
+
+    Returns (int): The corresponding timestamp on the Splunk server
+
+    """
+    last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    params = demisto.params()
+    splunk_timezone = params.get('timezone')
+    if not splunk_timezone:
+        raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
+                        'timezone of the Splunk server being used in the integration configuration.')
+    dt = last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))
+    return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
+
+
+def get_remote_data_command(service, args, close_incident):
+    """ get-remote-data command: Returns an updated notable and error entry (if needed)
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable has been
+        closed on Splunk end
+
+    Returns:
+        GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
+
+    """
+    entries = []
+    updated_notable = {}
+    remote_args = GetRemoteDataArgs(args)
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
+    notable_id = remote_args.remote_incident_id
+    search = '|`incident_review` ' \
+             '| eval last_modified_timestamp=_time ' \
+             '| where rule_id="{}" ' \
+             '| where last_modified_timestamp>{} ' \
+             '| fields - time ' \
+             '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
+    demisto.debug('Performing get-remote-data command with query: {}'.format(search))
+
+    for item in results.ResultsReader(service.jobs.oneshot(search)):
+        updated_notable = parse_notable(item, to_dict=True)
+
+    if updated_notable.get('status') == '5' and close_incident:
+        demisto.debug('Closing incident related to notable {}'.format(notable_id))
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': 'Notable event was closed on Splunk.'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
+
+    extensive_log('Updated notable {}'.format(notable_id))
+    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
+
+
+def get_modified_remote_data_command(service, args):
+    """ Gets the list of all notables ids that have change since a given time
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        args (dict): The command argumens
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
+
+    """
+    modified_notable_ids = []
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update)
+
+    search = '|`incident_review` ' \
+             '| eval last_modified_timestamp=_time ' \
+             '| where last_modified_timestamp>{} ' \
+             '| fields - time'.format(last_update_splunk_timestamp)
+    demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
+    for item in results.ResultsReader(service.jobs.oneshot(search)):
+        modified_notable_ids.append(item['rule_id'])
+
+    return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
+
+
+def update_remote_system_command(args, params, proxy):
+    """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
+
+    Args:
+        args (dict): Demisto args
+        params (dict): Demisto params
+        proxy (bool): Use system proxy settings or not
+
+    Returns:
+        notable_id (str): The notable id
+
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    notable_id = parsed_args.remote_incident_id
+
+    if parsed_args.incident_changed and delta:
+        demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
+                      '{}'.format(str(list(delta.keys())), notable_id))
+        changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
+        for field in delta:
+            if field in ('comment', 'status', 'owner', 'urgency'):
+                changed_data[field] = delta[field]
+
+        # Close notable if relevant
+        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
+            demisto.debug('Closing notable {}'.format(notable_id))
+            changed_data['status'] = '5'  # type: ignore
+
+        if any(changed_data.values()):
+            demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
+            base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+            try:
+                session_key = get_session_key(proxy, params, base_url)
+                response_info = updateNotableEvents(
+                    sessionKey=session_key, baseurl=base_url, comment=changed_data['comment'],
+                    status=changed_data['status'], urgency=changed_data['urgency'], owner=changed_data['owner'],
+                    eventIDs=[notable_id]
+                )
+                msg = response_info.get('message')
+                if 'success' not in response_info or not response_info['success']:
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                else:
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+
+            except Exception as e:
+                demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
+                              'Error message: {}'.format(notable_id, str(e)))
+        else:
+            demisto.debug("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
+
+    else:
+        demisto.debug('Incident corresponding to notable {} was not changed.'.format(notable_id))
+
+    return notable_id
+
+# =========== Mirroring Mechanism ===========
+
+
+# =========== Enriching Fetch Mechanism ===========
+
+class Enrichment:
+    """ A class to represent an Enrichment. Each notable has 3 possible enrichments: Drilldown, Asset & Identity
+
+    Attributes:
+        type (str): The enrichment type. Possible values are: Drilldown, Asset & Identity.
+        id (str): The enrichment's job id in Splunk server.
+        data (list): The enrichment's data list (events retrieved from the job's search).
+        creation_time (str): The enrichment's creation time in ISO format.
+        status (str): The enrichment's status.
+
+    """
+    FAILED = 'Enrichment failed'
+    EXCEEDED_TIMEOUT = 'Enrichment exceed the given timeout'
+    IN_PROGRESS = 'Enrichment is in progress'
+    SUCCESSFUL = 'Enrichment successfully handled'
+    HANDLED = (EXCEEDED_TIMEOUT, FAILED, SUCCESSFUL)
+
+    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None):
+        self.type = enrichment_type
+        self.id = enrichment_id
+        self.data = data if data else []
+        self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
+        self.status = status if status else Enrichment.IN_PROGRESS
+
+    @classmethod
+    def from_json(cls, enrichment_dict):
+        """ Deserialization method.
+
+        Args:
+            enrichment_dict (dict): The enrichment dict in JSON format.
+
+        Returns:
+            An instance of the Enrichment class constructed from JSON representation.
+
+        """
+        return cls(
+            enrichment_type=enrichment_dict.get(TYPE),
+            data=enrichment_dict.get(DATA),
+            status=enrichment_dict.get(STATUS),
+            enrichment_id=enrichment_dict.get(ID),
+            creation_time=enrichment_dict.get(CREATION_TIME)
+        )
+
+
+class Notable:
+    """ A class to represent a notable.
+
+    Attributes:
+        data (dict): The notable data.
+        id (str): The notable's id.
+        enrichments (list): The list of all enrichments that needs to handle.
+        incident_created (bool): Whether an incident created or not.
+        occurred (str): The occurred time of the notable.
+        custom_id (str): The custom ID of the notable (used in the fetch function).
+        time_is_missing (bool): Whether the `_time` field has an empty value or not.
+        index_time (str): The time the notable have been indexed.
+
+    """
+
+    def __init__(self, data, enrichments=None, notable_id=None, occurred=None, custom_id=None, index_time=None,
+                 time_is_missing=None, incident_created=None):
+        self.data = data
+        self.id = notable_id if notable_id else self.get_id()
+        self.enrichments = enrichments if enrichments else []
+        self.incident_created = incident_created if incident_created else False
+        self.time_is_missing = time_is_missing if time_is_missing else False
+        self.index_time = index_time if index_time else self.data.get('_indextime')
+        self.occurred = occurred if occurred else self.get_occurred()
+        self.custom_id = custom_id if custom_id else self.create_custom_id()
+
+    def get_id(self):
+        if EVENT_ID in self.data:
+            return self.data[EVENT_ID]
+        else:
+            if ENABLED_ENRICHMENTS:
+                raise Exception('When using the enrichment mechanism, an event_id field is needed, and thus, '
+                                'one must use a fetch query of the following format: search `notable` .......\n'
+                                'Please re-edit the fetchQuery parameter in the integration configuration, reset '
+                                'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+                                'run the fetch again.')
+            else:
+                return None
+
+    @staticmethod
+    def create_incident(notable_data, occurred):
+        incident = {}  # type: Dict[str,Any]
+        rule_title, rule_name = '', ''
+
+        if isinstance(notable_data, results.Message):
+            if "Error in" in notable_data.message:
+                raise ValueError(notable_data.message)
+            else:
+                extensive_log('message in notable_to_incident is: {}'.format(convert_to_str(notable_data.message)))
+
+        if demisto.get(notable_data, 'rule_title'):
+            rule_title = notable_data['rule_title']
+        if demisto.get(notable_data, 'rule_name'):
+            rule_name = notable_data['rule_name']
+        incident["name"] = "{} : {}".format(rule_title, rule_name)
+
+        if demisto.get(notable_data, 'urgency'):
+            incident["severity"] = severity_to_level(notable_data['urgency'])
+        if demisto.get(notable_data, 'rule_description'):
+            incident["details"] = notable_data["rule_description"]
+
+        incident["occurred"] = occurred
+        notable_data = parse_notable(notable_data)
+        notable_data.update({
+            'mirror_instance': demisto.integrationInstance(),
+            'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+        })
+        incident["rawJSON"] = json.dumps(notable_data)
+
+        labels = []
+        if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
+            isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
+            if isParseNotableEventsRaw:
+                rawDict = rawToDict(notable_data['_raw'])
+                for rawKey in rawDict:
+                    labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+        if demisto.get(notable_data, 'security_domain'):
+            labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
+        incident['labels'] = labels
+
+        return incident
+
+    def to_incident(self):
+        """ Gathers all data from all notable's enrichments and return an incident """
+        self.incident_created = True
+
+        for e in self.enrichments:
+            self.data[e.type] = e.data
+            self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
+
+        return self.create_incident(self.data, self.occurred)
+
+    def submitted(self):
+        """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
+        return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and \
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+
+    def failed_to_submit(self):
+        """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
+        return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and \
+            len(self.enrichments) == len(ENABLED_ENRICHMENTS)
+
+    def handled(self):
+        """ Returns an indicator on whether all notable's enrichments were handled or not """
+        return all(enrichment.status in Enrichment.HANDLED for enrichment in self.enrichments) or \
+            any(enrichment.status == Enrichment.EXCEEDED_TIMEOUT for enrichment in self.enrichments)
+
+    def get_submitted_enrichments(self):
+        """ Returns indicators on whether each enrichment was submitted/failed or not initiated """
+        submitted_drilldown, submitted_asset, submitted_identity = False, False, False
+
+        for enrichment in self.enrichments:
+            if enrichment.type == DRILLDOWN_ENRICHMENT:
+                submitted_drilldown = True
+            elif enrichment.type == ASSET_ENRICHMENT:
+                submitted_asset = True
+            elif enrichment.type == IDENTITY_ENRICHMENT:
+                submitted_identity = True
+
+        return submitted_drilldown, submitted_asset, submitted_identity
+
+    def get_occurred(self):
+        """ Returns the occurred time, if not exists in data, returns the current fetch time """
+        if '_time' in self.data:
+            notable_occurred = self.data['_time']
+        else:
+            # Use-cases where fetching non-notables from Splunk
+            notable_occurred = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
+            self.time_is_missing = True
+            extensive_log('\n\n occurred time in else: {} \n\n'.format(notable_occurred))
+
+        return notable_occurred
+
+    def create_custom_id(self):
+        """ Generates a custom ID for a given notable """
+        if self.id:
+            return self.id
+
+        notable_raw_data = self.data.get('_raw', '')
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()
+
+        if self.time_is_missing and self.index_time:
+            notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
+            extensive_log('Creating notable custom id using the index time')
+        else:
+            notable_custom_id = '{}_{}'.format(self.occurred, raw_hash)
+
+        return notable_custom_id
+
+    @classmethod
+    def from_json(cls, notable_dict):
+        """ Deserialization method.
+
+        Args:
+            notable_dict: The notable dict in JSON format.
+
+        Returns:
+            An instance of the Enrichment class constructed from JSON representation.
+
+        """
+        return cls(
+            data=notable_dict.get(DATA),
+            enrichments=list(map(Enrichment.from_json, notable_dict.get(ENRICHMENTS))),
+            notable_id=notable_dict.get(ID),
+            custom_id=notable_dict.get(CUSTOM_ID),
+            occurred=notable_dict.get(OCCURRED),
+            time_is_missing=notable_dict.get(TIME_IS_MISSING),
+            index_time=notable_dict.get(INDEX_TIME),
+            incident_created=notable_dict.GET(INCIDENT_CREATED)
+        )
+
+
+class Cache:
+    """ A class to represent the cache for the enriching fetch mechanism.
+
+    Attributes:
+        not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
+        submitted_notables (list): The list of all submitted notables that needs to be handled.
+        last_run_object (dict): The last run object
+
+    """
+
+    def __init__(self, not_yet_submitted_notables=None, submitted_notables=None, last_run_object=None):
+        self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
+        self.submitted_notables = submitted_notables if submitted_notables else []
+        self.last_run_object = last_run_object if last_run_object else {}
+
+    def done_submitting(self):
+        return not self.not_yet_submitted_notables
+
+    def done_handling(self):
+        return not self.submitted_notables
+
+    def organize(self):
+        """ This function is designated to handle unexpected behaviors in the enrichment mechanism.
+         E.g. Connection error, instance disabling, etc...
+         It re-organizes the cache object to the correct state of the mechanism when the exception was caught.
+         If there are notables that were handled but the mechanism didn't create an incident for them, it returns them.
+         This function is called in each "end" of execution of the enrichment mechanism.
+
+        Returns:
+            handled_not_created_incident (list): The list of all notables that have been handled but not created an
+             incident.
+
+        """
+        not_yet_submitted, submitted, handled_not_created_incident = [], [], []
+
+        for notable in self.not_yet_submitted_notables:
+            if notable.submitted():
+                if notable not in self.submitted_notables:
+                    submitted.append(notable)
+            elif notable.failed_to_submit():
+                if not notable.incident_created:
+                    handled_not_created_incident.append(notable)
+            else:
+                not_yet_submitted.append(notable)
+
+        for notable in self.submitted_notables:
+            if notable.handled():
+                if not notable.incident_created:
+                    handled_not_created_incident.append(notable)
+            else:
+                submitted.append(notable)
+
+        self.not_yet_submitted_notables = not_yet_submitted
+        self.submitted_notables = submitted
+
+        return handled_not_created_incident
+
+    @classmethod
+    def from_json(cls, cache_dict):
+        """ Deserialization method.
+
+        Args:
+            cache_dict: The cache dict in JSON format.
+
+        Returns:
+            An instance of the Cache class constructed from JSON representation.
+
+        """
+        return cls(
+            not_yet_submitted_notables=list(map(Notable.from_json, cache_dict.get(NOT_YET_SUBMITTED_NOTABLES, []))),
+            submitted_notables=list(map(Notable.from_json, cache_dict.get(SUBMITTED_NOTABLES, []))),
+            last_run_object=cache_dict.get(LAST_RUN_OBJECT, {})
+        )
+
+    @classmethod
+    def load_from_integration_context(cls, integration_context):
+        return Cache.from_json(json.loads(integration_context.get(CACHE, "{}")))
+
+    def dump_to_integration_context(self, integration_context):
+        integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
+        set_integration_context(integration_context)
+
+
+def submit_notables(service, incidents, num_enrichment_events, cache_object):
+    """ Submits fetched notables to Splunk for an enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        incidents (list): The incident to be submitted at the end of the run.
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+        cache_object (Cache): The enrichment mechanism cache object
+
+    """
+    failed_notables, submitted_notables = [], []
+    notables = cache_object.not_yet_submitted_notables
+    if notables:
+        extensive_log('Enriching {} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES])))
+
+    for notable in notables[:MAX_SUBMIT_NOTABLES]:
+        task_status = submit_notable(service, notable, num_enrichment_events)
+        if task_status:
+            cache_object.submitted_notables.append(notable)
+            submitted_notables.append(notable)
+            extensive_log('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
+        else:
+            incidents.append(notable.to_incident())
+            failed_notables.append(notable)
+            extensive_log('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
+
+    cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
+
+    if submitted_notables:
+        extensive_log('Submitted {} notables successfully.'.format(len(submitted_notables)))
+
+    if cache_object.not_yet_submitted_notables:
+        extensive_log('{} notables left to submit.'.format(len(cache_object.not_yet_submitted_notables)))
+
+    if failed_notables:
+        extensive_log('The following {} notables failed the enrichment process: {}, creating incidents without '
+                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
+
+
+def submit_notable(service, notable, num_enrichment_events):
+    """ Submits fetched notable to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
+     If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
+     integration context for the next fetch to handle the submitted notable.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable (Notable): The notable.
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns:
+        task_status (bool): True if any of the enrichment's succeeded to be submitted to Splunk, False otherwise
+
+    """
+    submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
+
+    if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
+        job = drilldown_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(DRILLDOWN_ENRICHMENT, job))
+    if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
+        job = asset_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(ASSET_ENRICHMENT, job))
+    if IDENTITY_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_identity:
+        job = identity_enrichment(service, notable.data, num_enrichment_events)
+        notable.enrichments.append(create_enrichment_from_job(IDENTITY_ENRICHMENT, job))
+
+    return notable.submitted()
+
+
+def create_enrichment_from_job(enrichment_type, job):
+    """ Creates an Enrichment object from Splunk Job object
+
+    Args:
+        enrichment_type (str): The enrichment type
+        job (splunklib.client.Job): The corresponding Splunk Job
+
+    Returns:
+        The created enrichment (Enrichment)
+
+    """
+    if job:
+        return Enrichment(enrichment_type, enrichment_id=job["sid"])
+    else:
+        return Enrichment(enrichment_type, status=Enrichment.FAILED)
+
+
+def get_fields_query_part(notable_data, prefix, fields, raw_dict=None):
+    """ Given the fields to search for in the notables and the prefix, creates the query part for splunk search.
+    For example: if fields are ["user"], and the value of the "user" fields in the notable is ["u1", "u2"], and the
+    prefix is "identity", the function returns: (identity="u1" OR identity="u2")
+
+    Args:
+        notable_data (dict): The notable.
+        prefix (str): The prefix to attach to each value returned in the query.
+        fields (list): The fields to search in the notable for.
+        raw_dict (dict): The raw dict
+
+    Returns: The query part
+
+    """
+    if not raw_dict:
+        raw_dict = rawToDict(notable_data.get('_raw', ''))
+    raw_list = []  # type: list
+    for field in fields:
+        raw_list += argToList(notable_data.get(field, "")) + argToList(raw_dict.get(field, ""))
+    raw_list = ['{}="{}"'.format(prefix, item.strip('"')) for item in raw_list]
+
+    if not raw_list:
+        return ""
+    elif len(raw_list) == 1:
+        return raw_list[0]
+    else:
+        return "({})".format(" OR ".join(raw_list))
+
+
+def drilldown_enrichment(service, notable_data, num_enrichment_events):
+    """ Performs a drilldown enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        notable_data (dict): The notable data
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: The Splunk Job
+
+    """
+    job = None
+    search = notable_data.get("drilldown_search", "")
+
+    if search:
+        raw_dict = rawToDict(notable_data.get("_raw", ""))
+        search = build_drilldown_search(notable_data, search, raw_dict)
+        status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
+        if status:
+            search += " earliest={} latest={}".format(earliest_offset, latest_offset)
+            kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+            query = build_search_query({"query": search})
+            demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
+            try:
+                job = service.jobs.create(query, **kwargs)
+            except Exception as e:
+                err = str(e)
+                demisto.error("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(err))
+                raise e
+        else:
+            demisto.error('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
+    else:
+        demisto.error("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
+
+    return job
+
+
+def build_drilldown_search(notable_data, search, raw_dict):
+    """ Replaces all needed fields in a drilldown search query
+
+    Args:
+        notable_data (dict): The notable data
+        search (str): The drilldown search query
+        raw_dict (dict): The raw dict
+
+    Returns (str): A searchable drilldown search query
+
+    """
+    searchable_search = []
+    start = 0
+
+    for match in re.finditer(DRILLDOWN_REGEX, search):
+        groups = match.groups()
+        prefix = groups[0]
+        raw_field = (groups[1] or groups[2]).strip('$')
+        field, replacement = get_notable_field_and_value(raw_field, notable_data, raw_dict)
+        if not field and not replacement:
+            demisto.error("Coldn't build search query for notable {} with the following drilldown "
+                          "search {}".format(notable_data[EVENT_ID], search))
+            return search
+        if prefix:
+            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+        end = match.start()
+        searchable_search.append(search[start:end])
+        searchable_search.append(str(replacement))
+        start = match.end()
+    searchable_search.append(search[start:])  # Handling the tail of the query
+
+    return ''.join(searchable_search)
+
+
+def get_notable_field_and_value(raw_field, notable_data, raw=None):
+    """ Gets the value by the name of the raw_field. We don't search for equivalence because raw field
+    can be "threat_match_field|s" while the field is "threat_match_field".
+
+    Args:
+        raw_field (str): The raw field
+        notable_data (dict): The notable data
+        raw (dict): The raw dict
+
+    Returns: The value in the notable which is associated with raw_field
+
+    """
+    if not raw:
+        raw = rawToDict(notable_data.get('_raw', ''))
+    for field in notable_data:
+        if field in raw_field:
+            return field, notable_data[field]
+    for field in raw:
+        if field in raw_field:
+            return field, raw[field]
+    demisto.error('Failed building drilldown search query. field {} was not found in the notable.'.format(raw_field))
+    return "", ""
+
+
+def get_drilldown_timeframe(notable_data, raw):
+    """ Sets the drilldown search timeframe data.
+
+    Args:
+        notable_data (dict): The notable
+        raw (dict): The raw dict
+
+    Returns:
+        task_status: True if the timeframe was retrieved successfully, False otherwise.
+        earliest_offset: The earliest time to query from.
+        latest_offset: The latest time to query to.
+
+    """
+    task_status = True
+    earliest_offset = notable_data.get("drilldown_earliest", "")
+    latest_offset = notable_data.get("drilldown_latest", "")
+    info_min_time = raw.get(INFO_MIN_TIME, "")
+    info_max_time = raw.get(INFO_MAX_TIME, "")
+
+    if not earliest_offset or earliest_offset == "${}$".format(INFO_MIN_TIME):
+        if info_min_time:
+            earliest_offset = info_min_time
+        else:
+            extensive_log("Failed retrieving info min time")
+            task_status = False
+    if not latest_offset or latest_offset == "${}$".format(INFO_MAX_TIME):
+        if info_max_time:
+            latest_offset = info_max_time
+        else:
+            extensive_log("Failed retrieving info max time")
+            task_status = False
+
+    return task_status, earliest_offset, latest_offset
+
+
+def identity_enrichment(service, notable_data, num_enrichment_events):
+    """ Performs an identity enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable_data (dict): The notable data
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: The Splunk Job
+
+    """
+    job = None
+    error_msg = "Failed submitting identity enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
+    users = get_fields_query_part(notable_data=notable_data, prefix="identity", fields=["user", "src_user"])
+
+    if users:
+        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        query = '| inputlookup identity_lookup_expanded where {}'.format(users)
+        demisto.debug("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
+        try:
+            job = service.jobs.create(query, **kwargs)
+        except Exception as e:
+            demisto.error("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(str(e)))
+            raise e
+    else:
+        demisto.error('No users were found in notable. {}'.format(error_msg))
+
+    return job
+
+
+def asset_enrichment(service, notable_data, num_enrichment_events):
+    """ Performs an asset enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable_data (dict): The notable data
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: The Splunk Job
+
+    """
+    job = None
+    error_msg = "Failed submitting asset enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
+    assets = get_fields_query_part(
+        notable_data=notable_data, prefix="asset", fields=["src", "dest", "src_ip", "dst_ip"]
+    )
+
+    if assets:
+        kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+        query = '| inputlookup append=T asset_lookup_by_str where {} | inputlookup append=t asset_lookup_by_cidr ' \
+                'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
+        demisto.debug("Asset query for notable {}: {}".format(notable_data[EVENT_ID], query))
+        try:
+            job = service.jobs.create(query, **kwargs)
+        except Exception as e:
+            demisto.error("Caught an exception in asset_enrichment function. Additional Info: {}".format(str(e)))
+            raise e
+    else:
+        demisto.error('No assets were found in notable. {}'.format(error_msg))
+
+    return job
+
+
+def handle_submitted_notables(service, enrichment_timeout, incidents, cache_object):
+    """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
+     it moves to the next submitted notable.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        enrichment_timeout (int): The timeout for the enrichment process.
+        incidents (list): The incident to be submitted at the end of the run.
+        cache_object (Cache): The enrichment mechanism cache object
+
+    """
+    handled_notables = []
+    notables = cache_object.submitted_notables
+    extensive_log("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
+
+    for notable in notables[:MAX_HANDLE_NOTABLES]:
+        task_status = handle_submitted_notable(service, notable, enrichment_timeout)
+        if task_status:
+            incidents.append(notable.to_incident())
+            handled_notables.append(notable)
+
+    cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
+
+    if handled_notables:
+        extensive_log("Handled {} notables.".format(len(handled_notables)))
+
+    if cache_object.submitted_notables:
+        extensive_log("{} notables left to handle.".format(len(cache_object.submitted_notables)))
+
+
+def store_incidents_for_mapping(incidents, integration_context):
+    """ Stores ready incidents in integration context to allow the mapping to pull the incidents from the instance.
+    We store at most 20 incidents.
+
+    Args:
+        incidents (list): The incidents
+        integration_context (dict): The integration context
+
+    """
+    if incidents:
+        integration_context[INCIDENTS] = incidents[:20]
+
+
+def handle_submitted_notable(service, notable, enrichment_timeout):
+    """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable (Notable): The notable
+        enrichment_timeout (int): The timeout for the enrichment process
+
+    Returns:
+        notable_status (str): The status of the notable
+
+    """
+    task_status = False
+
+    if not is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
+        extensive_log("Trying to handle open enrichment {}".format(notable.id))
+        for enrichment in notable.enrichments:
+            if enrichment.status == Enrichment.IN_PROGRESS:
+                job = client.Job(service=service, sid=enrichment.id)
+                if job.is_ready():
+                    demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
+                    for item in results.ResultsReader(job.results()):
+                        enrichment.data.append(item)
+                    enrichment.status = Enrichment.SUCCESSFUL
+
+        if notable.handled():
+            task_status = True
+            extensive_log("Handled open enrichment for notable {}.".format(notable.id))
+        else:
+            extensive_log("Did not finish handling open enrichment for notable {}".format(notable.id))
+
+    else:
+        task_status = True
+        extensive_log("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
+                      "the enrichment.".format(notable.id, enrichment_timeout))
+
+    return task_status
+
+
+def is_enrichment_process_exceeding_timeout(notable, enrichment_timeout):
+    """ Checks whether an enrichment process has exceeded timeout or not
+
+    Args:
+        notable (Notable): The enrichment
+        enrichment_timeout (int): The timeout for the enrichment process
+
+    Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
+
+    """
+    now = datetime.utcnow()
+    exceeding_timeout = False
+
+    for enrichment in notable.enrichments:
+        if enrichment.status == Enrichment.IN_PROGRESS:
+            creation_time_datetime = datetime.strptime(enrichment.creation_time, JOB_CREATION_TIME_FORMAT)
+            if now - creation_time_datetime > timedelta(minutes=enrichment_timeout):
+                exceeding_timeout = True
+                enrichment.status = Enrichment.EXCEEDED_TIMEOUT
+
+    return exceeding_timeout
+
+
+def reset_enriching_fetch_mechanism():
+    """ Resets all the fields regarding the enriching fetch mechanism & the last run object """
+
+    integration_context = get_integration_context()
+    for field in (INCIDENTS, CACHE):
+        if field in integration_context:
+            del integration_context[field]
+    set_integration_context(integration_context)
+    set_last_run({})
+    demisto.results("Enriching fetch mechanism was reset successfully.")
+
+
+def run_enrichment_mechanism(service, enrichment_timeout, integration_context, num_enrichment_events):
+    """ Execute the enriching fetch mechanism
+    1. We first handle submitted notables that have not been handled in the last fetch run
+    2. If we finished handling and submitting all fetched notables, we fetch new notables
+    3. After we finish to fetch new notables or if we have left notables that have not been submitted, we submit
+       them for an enrichment to Splunk
+    4. Finally and in case of an Exception, we store the current cache object state in the integration context
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        enrichment_timeout (int): The timeout for the enrichment process.
+        integration_context (dict): The integration context
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    """
+    incidents = []  # type: list
+    cache_object = Cache.load_from_integration_context(integration_context)
+
+    try:
+        handle_submitted_notables(service, enrichment_timeout, incidents, cache_object)
+        if cache_object.done_submitting() and cache_object.done_handling():
+            set_last_run(cache_object.last_run_object)
+            fetch_notables(service=service, cache_object=cache_object, enrich_notables=True)
+        submit_notables(service, incidents, num_enrichment_events, cache_object)
+
+    except Exception as e:
+        err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
+        demisto.error(err)
+        raise e
+
+    finally:
+        store_incidents_for_mapping(incidents, integration_context)
+        handled_but_not_created_incidents = cache_object.organize()
+        cache_object.dump_to_integration_context(integration_context)
+        incidents += [notable.to_incident() for notable in handled_but_not_created_incidents]
+        demisto.incidents(incidents)
+
+
+def fetch_incidents_for_mapping(integration_context):
+    """ Gets the stored incidents to the "Pull from instance" in Classification & Mapping (In case of enriched fetch)
+
+    Args:
+        integration_context (dict): The integration context
+
+    """
+    incidents = integration_context.get(INCIDENTS, [])
+    extensive_log('Retrieving {} incidents for "Pull from instance" in Classification & Mapping.'.format(len(incidents)))
+    demisto.incidents(incidents)
+
+# =========== Enriching Fetch Mechanism ===========
+
+
+# =========== Regular Fetch Mechanism ===========
+
+def occurred_to_datetime(notable_occurred_time):
+    notable_occurred_time_without_timezone = notable_occurred_time.split('.')[0]
+    notable_occurred_time_datetime = datetime.strptime(notable_occurred_time_without_timezone, SPLUNK_TIME_FORMAT)
+    return notable_occurred_time_datetime
+
+
+def get_latest_notable_occurred_time(notables):
+    latest_notable = max(notables, key=lambda n: occurred_to_datetime(n.occurred))
+    return latest_notable.occurred
+
+
+def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_notables_found=True, max_window=20):
+    last_run_datetime = occurred_to_datetime(last_run)
+    if were_new_notables_found:
+        # Decreasing one minute to avoid missing notables that were indexed late
+        last_run_datetime = last_run_datetime - timedelta(minutes=1)
+
+    # keep last time max 20 minutes before current time, to avoid timeout
+    if fetches_with_same_start_time_count >= max_window and not were_new_notables_found:
+        last_run_datetime = last_run_datetime + timedelta(minutes=1)
+
+    next_run_without_milliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
+    next_run = next_run_without_milliseconds_and_tz
+    return next_run
+
+
+def extensive_log(message):
+    if demisto.params().get('extensive_logs', False):
+        demisto.info(message)
+
+
+def remove_old_notable_ids(last_run_fetched_ids, current_epoch_time):
+    new_last_run_fetched_ids = {}
+    for notable_custom_id, time in last_run_fetched_ids.items():
+        if current_epoch_time - time < 3600:
+            new_last_run_fetched_ids[notable_custom_id] = time
+
+    return new_last_run_fetched_ids
+
+
+def get_last_run_time(dem_params, service, last_run):
+    current_time_for_fetch = datetime.utcnow()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    if not last_run:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        extensive_log('SplunkPy last run is None. Last run time is: {}'.format(last_run))
+
+    return last_run, now
+
+
+def build_fetch_kwargs(dem_params, last_run_time, now, search_offset):
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run_time,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    return kwargs_oneshot
+
+
+def build_fetch_query(dem_params):
+    fetch_query = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    return fetch_query
+
+
+def fetch_notables(service, cache_object=None, enrich_notables=False):
+    last_run_data = get_last_run()
+    last_run_time = last_run_data and 'time' in last_run_data and last_run_data['time']
+    extensive_log('SplunkPy last run is:\n {}'.format(last_run_data))
+
+    search_offset = last_run_data.get('offset', 0)
+
+    dem_params = demisto.params()
+    last_run_time, now = get_last_run_time(dem_params, service, last_run_time)
+    extensive_log('SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
+
+    kwargs_oneshot = build_fetch_kwargs(dem_params, last_run_time, now, search_offset)
+    fetch_query = build_fetch_query(dem_params)
+
+    oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+
+    last_run_fetched_custom_ids = last_run_data.get('found_incidents_ids', {})
+    current_epoch_time = int(time.time())
+
+    notables = []
+    for item in reader:
+        notable = Notable(data=item)
+        if notable.custom_id not in last_run_fetched_custom_ids:
+            last_run_fetched_custom_ids[notable.custom_id] = current_epoch_time
+            notables.append(notable)
+        else:
+            extensive_log('SplunkPy - Dropped notable {} due to duplication.'.format(notable.custom_id))
+
+    last_run_fetched_custom_ids = remove_old_notable_ids(last_run_fetched_custom_ids, current_epoch_time)
+    extensive_log('SplunkPy - notables fetched on last run = {}'.format(last_run_fetched_custom_ids))
+    extensive_log(
+        'SplunkPy - total number of notables found: from {}\n to {}\n with the ' 'query: {} is: {}.\n notables '
+        'found: {}'.format(last_run_time, now, fetch_query, len(notables), [n.data for n in notables])
+    )
+    fetches_with_same_start_time_count = last_run_data.get('fetch_start_update_count', 0) + 1
+    max_window = 20 if "backwards_fetch_window" not in params else int(params["backwards_fetch_window"])
+
+    if not enrich_notables:
+        incidents = [n.to_incident() for n in notables]
+        demisto.incidents(incidents)
+        extensive_log('SplunkPy - Found incidents at the end of this run: {}'.format(incidents))
+    else:
+        cache_object.not_yet_submitted_notables += notables
+        extensive_log("Fetched {} notables.".format(len(notables)))
+
+    if len(notables) == 0:
+        next_run = get_next_start_time(last_run_time, fetches_with_same_start_time_count, False, max_window)
+        extensive_log('SplunkPy - Next run time with no notables found: {}'.format(next_run))
+        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
+                           'fetch_start_update_count': fetches_with_same_start_time_count}
+    elif len(notables) < FETCH_LIMIT:
+        next_run = get_next_start_time(
+            get_latest_notable_occurred_time(notables), fetches_with_same_start_time_count, max_window=max_window
+        )
+        extensive_log('SplunkPy - Next run time with some incidents found: {}'.format(next_run))
+        last_run_object = {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_custom_ids,
+                           'fetch_start_update_count': 0}
+    else:
+        extensive_log('SplunkPy - Next run time with too many incidents:  {}'.format(last_run_time))
+        last_run_object = {'time': last_run_time, 'offset': search_offset + FETCH_LIMIT,
+                           'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_custom_ids}
+
+    if not enrich_notables:
+        set_last_run(last_run_object)
+    else:
+        if DUMMY not in last_run_object:
+            # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
+            # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
+            # want to add data to the integration context (which will ruin the logic of the cache object)
+            last_run_object.update({DUMMY: DUMMY})
+        cache_object.last_run_object = last_run_object
+
+
+def fetch_incidents(service, enrichment_timeout, num_enrichment_events):
+    if ENABLED_ENRICHMENTS:
+        integration_context = get_integration_context()
+        if not get_last_run() and integration_context:
+            # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
+            # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
+            # in the last run object to avoid entering this case
+            fetch_incidents_for_mapping(integration_context)
+        else:
+            run_enrichment_mechanism(service, enrichment_timeout, integration_context, num_enrichment_events)
+    else:
+        fetch_notables(service=service, enrich_notables=False)
+
+# =========== Regular Fetch Mechanism ===========
+
+
+# =========== Mapping Mechanism ===========
+
+def create_mapping_dict(total_parsed_results, type_field):
+    """
+    Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
+    Args:
+        total_parsed_results: list. the results from the splunk search query
+        type_field: str. the field that represents the type of the event or alert.
+
+    Returns:
+
+    """
+    types_map = {}
+    for result in total_parsed_results:
+        raw_json = json.loads(result.get('rawJSON', "{}"))
+        event_type_name = raw_json.get(type_field, '')
+        if event_type_name:
+            types_map[event_type_name] = raw_json
+
+    return types_map
+
+
+def get_mapping_fields_command(service):
+    # Create the query to get unique objects
+    # The logic is identical to the 'fetch_incidents' command
+    type_field = demisto.params().get('type_field', 'source')
+    total_parsed_results = []
+    search_offset = get_last_run().get('offset', 0)
+
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    fetch_time_in_minutes = parse_time_to_minutes()
+    start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+    last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+
+    searchquery_oneshot = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    searchquery_oneshot = searchquery_oneshot + ' | dedup ' + type_field
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+    for item in reader:
+        notable = Notable(data=item)
+        total_parsed_results.append(notable.to_incident())
+
+    types_map = create_mapping_dict(total_parsed_results, type_field)
+    demisto.results(types_map)
+
+
+def get_cim_mapping_field_command():
+    notable = {'rule_name': '', '': '', 'rule_title': '', 'security_domain': '', 'index': '', 'rule_description': '',
+               'risk_score': '', 'host': '', 'host_risk_object_type': '', 'dest_risk_object_type': '',
+               'dest_risk_score': '', 'splunk_server': '', '_sourcetype': '', '_indextime': '', '_time': '',
+               'src_risk_object_type': '', 'src_risk_score': '', '_raw': '', 'urgency': '', 'owner': '',
+               'info_min_time': '', 'info_max_time': '', 'comment': '', 'reviewer': '', 'rule_id': '', 'action': '',
+               'app': '', 'authentication_method': '', 'authentication_service': '', 'bugtraq': '', 'bytes': '',
+               'bytes_in': '', 'bytes_out': '', 'category': '', 'cert': '', 'change': '', 'change_type': '',
+               'command': '', 'comments': '', 'cookie': '', 'creation_time': '', 'cve': '', 'cvss': '', 'date': '',
+               'description': '', 'dest': '', 'dest_bunit': '', 'dest_category': '', 'dest_dns': '',
+               'dest_interface': '', 'dest_ip': '', 'dest_ip_range': '', 'dest_mac': '', 'dest_nt_domain': '',
+               'dest_nt_host': '', 'dest_port': '', 'dest_priority': '', 'dest_translated_ip': '',
+               'dest_translated_port': '', 'dest_type': '', 'dest_zone': '', 'direction': '', 'dlp_type': '', 'dns': '',
+               'duration': '', 'dvc': '', 'dvc_bunit': '', 'dvc_category': '', 'dvc_ip': '', 'dvc_mac': '',
+               'dvc_priority': '', 'dvc_zone': '', 'file_hash': '', 'file_name': '', 'file_path': '', 'file_size': '',
+               'http_content_type': '', 'http_method': '', 'http_referrer': '', 'http_referrer_domain': '',
+               'http_user_agent': '', 'icmp_code': '', 'icmp_type': '', 'id': '', 'ids_type': '', 'incident': '',
+               'ip': '', 'mac': '', 'message_id': '', 'message_info': '', 'message_priority': '', 'message_type': '',
+               'mitre_technique_id': '', 'msft': '', 'mskb': '', 'name': '', 'orig_dest': '', 'orig_recipient': '',
+               'orig_src': '', 'os': '', 'packets': '', 'packets_in': '', 'packets_out': '', 'parent_process': '',
+               'parent_process_id': '', 'parent_process_name': '', 'parent_process_path': '', 'password': '',
+               'payload': '', 'payload_type': '', 'priority': '', 'problem': '', 'process': '', 'process_hash': '',
+               'process_id': '', 'process_name': '', 'process_path': '', 'product_version': '', 'protocol': '',
+               'protocol_version': '', 'query': '', 'query_count': '', 'query_type': '', 'reason': '', 'recipient': '',
+               'recipient_count': '', 'recipient_domain': '', 'recipient_status': '', 'record_type': '',
+               'registry_hive': '', 'registry_key_name': '', 'registry_path': '', 'registry_value_data': '',
+               'registry_value_name': '', 'registry_value_text': '', 'registry_value_type': '', 'request_sent_time': '',
+               'request_payload': '', 'request_payload_type': '', 'response_code': '', 'response_payload_type': '',
+               'response_received_time': '', 'response_time': '', 'result': '', 'return_addr': '', 'rule': '',
+               'rule_action': '', 'sender': '', 'service': '', 'service_hash': '', 'service_id': '', 'service_name': '',
+               'service_path': '', 'session_id': '', 'sessions': '', 'severity': '', 'severity_id': '', 'sid': '',
+               'signature': '', 'signature_id': '', 'signature_version': '', 'site': '', 'size': '', 'source': '',
+               'sourcetype': '', 'src': '', 'src_bunit': '', 'src_category': '', 'src_dns': '', 'src_interface': '',
+               'src_ip': '', 'src_ip_range': '', 'src_mac': '', 'src_nt_domain': '', 'src_nt_host': '', 'src_port': '',
+               'src_priority': '', 'src_translated_ip': '', 'src_translated_port': '', 'src_type': '', 'src_user': '',
+               'src_user_bunit': '', 'src_user_category': '', 'src_user_domain': '', 'src_user_id': '',
+               'src_user_priority': '', 'src_user_role': '', 'src_user_type': '', 'src_zone': '', 'state': '',
+               'status': '', 'status_code': '', 'status_description': '', 'subject': '', 'tag': '', 'ticket_id': '',
+               'time': '', 'time_submitted': '', 'transport': '', 'transport_dest_port': '', 'type': '', 'uri': '',
+               'uri_path': '', 'uri_query': '', 'url': '', 'url_domain': '', 'url_length': '', 'user': '',
+               'user_agent': '', 'user_bunit': '', 'user_category': '', 'user_id': '', 'user_priority': '',
+               'user_role': '', 'user_type': '', 'vendor_account': '', 'vendor_product': '', 'vlan': '', 'xdelay': '',
+               'xref': ''}
+
+    drilldown = {
+        'Drilldown': {'action': '', 'app': '', 'authentication_method': '', 'authentication_service': '', 'bugtraq': '',
+                      'bytes': '', 'bytes_in': '', 'bytes_out': '', 'category': '', 'cert': '', 'change': '',
+                      'change_type': '', 'command': '', 'comments': '', 'cookie': '', 'creation_time': '', 'cve': '',
+                      'cvss': '', 'date': '', 'description': '', 'dest': '', 'dest_bunit': '', 'dest_category': '',
+                      'dest_dns': '', 'dest_interface': '', 'dest_ip': '', 'dest_ip_range': '', 'dest_mac': '',
+                      'dest_nt_domain': '', 'dest_nt_host': '', 'dest_port': '', 'dest_priority': '',
+                      'dest_translated_ip': '', 'dest_translated_port': '', 'dest_type': '', 'dest_zone': '',
+                      'direction': '', 'dlp_type': '', 'dns': '', 'duration': '', 'dvc': '', 'dvc_bunit': '',
+                      'dvc_category': '', 'dvc_ip': '', 'dvc_mac': '', 'dvc_priority': '', 'dvc_zone': '',
+                      'file_hash': '', 'file_name': '', 'file_path': '', 'file_size': '', 'http_content_type': '',
+                      'http_method': '', 'http_referrer': '', 'http_referrer_domain': '', 'http_user_agent': '',
+                      'icmp_code': '', 'icmp_type': '', 'id': '', 'ids_type': '', 'incident': '', 'ip': '', 'mac': '',
+                      'message_id': '', 'message_info': '', 'message_priority': '', 'message_type': '',
+                      'mitre_technique_id': '', 'msft': '', 'mskb': '', 'name': '', 'orig_dest': '',
+                      'orig_recipient': '', 'orig_src': '', 'os': '', 'packets': '', 'packets_in': '',
+                      'packets_out': '', 'parent_process': '', 'parent_process_id': '', 'parent_process_name': '',
+                      'parent_process_path': '', 'password': '', 'payload': '', 'payload_type': '', 'priority': '',
+                      'problem': '', 'process': '', 'process_hash': '', 'process_id': '', 'process_name': '',
+                      'process_path': '', 'product_version': '', 'protocol': '', 'protocol_version': '', 'query': '',
+                      'query_count': '', 'query_type': '', 'reason': '', 'recipient': '', 'recipient_count': '',
+                      'recipient_domain': '', 'recipient_status': '', 'record_type': '', 'registry_hive': '',
+                      'registry_key_name': '', 'registry_path': '', 'registry_value_data': '',
+                      'registry_value_name': '', 'registry_value_text': '', 'registry_value_type': '',
+                      'request_payload': '', 'request_payload_type': '', 'request_sent_time': '', 'response_code': '',
+                      'response_payload_type': '', 'response_received_time': '', 'response_time': '', 'result': '',
+                      'return_addr': '', 'rule': '', 'rule_action': '', 'sender': '', 'service': '', 'service_hash': '',
+                      'service_id': '', 'service_name': '', 'service_path': '', 'session_id': '', 'sessions': '',
+                      'severity': '', 'severity_id': '', 'sid': '', 'signature': '', 'signature_id': '',
+                      'signature_version': '', 'site': '', 'size': '', 'source': '', 'sourcetype': '', 'src': '',
+                      'src_bunit': '', 'src_category': '', 'src_dns': '', 'src_interface': '', 'src_ip': '',
+                      'src_ip_range': '', 'src_mac': '', 'src_nt_domain': '', 'src_nt_host': '', 'src_port': '',
+                      'src_priority': '', 'src_translated_ip': '', 'src_translated_port': '', 'src_type': '',
+                      'src_user': '', 'src_user_bunit': '', 'src_user_category': '', 'src_user_domain': '',
+                      'src_user_id': '', 'src_user_priority': '', 'src_user_role': '', 'src_user_type': '',
+                      'src_zone': '', 'state': '', 'status': '', 'status_code': '', 'subject': '', 'tag': '',
+                      'ticket_id': '', 'time': '', 'time_submitted': '', 'transport': '', 'transport_dest_port': '',
+                      'type': '', 'uri': '', 'uri_path': '', 'uri_query': '', 'url': '', 'url_domain': '',
+                      'url_length': '', 'user': '', 'user_agent': '', 'user_bunit': '', 'user_category': '',
+                      'user_id': '', 'user_priority': '', 'user_role': '', 'user_type': '', 'vendor_account': '',
+                      'vendor_product': '', 'vlan': '', 'xdelay': '', 'xref': ''}
+    }
+
+    asset = {
+        'Asset': {'asset': '', 'asset_id': '', 'asset_tag': '', 'bunit': '', 'category': '', 'city': '', 'country': '',
+                  'dns': '', 'ip': '', 'is_expected': '', 'lat': '', 'long': '', 'mac': '', 'nt_host': '', 'owner': '',
+                  'pci_domain': '', 'priority': '', 'requires_av': ''}
+    }
+
+    identity = {
+        'Identity': {'bunit': '', 'category': '', 'email': '', 'endDate': '', 'first': '', 'identity': '',
+                     'identity_tag': '', 'last': '', 'managedBy': '', 'nick': '', 'phone': '', 'prefix': '',
+                     'priority': '', 'startDate': '', 'suffix': '', 'watchlist': '', 'work_city': '', 'work_lat': '',
+                     'work_long': ''}
+    }
+
+    fields = {
+        'Notable Data': notable,
+        'Drilldown Data': drilldown,
+        'Asset Data': asset,
+        'Identity Data': identity
+    }
+
+    demisto.results(fields)
+>>>>>>> Stashed changes
 
 import splunklib.client as client
 import splunklib.results as results
@@ -1016,6 +2387,7 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+<<<<<<< Updated upstream
 def create_mapping_dict(total_parsed_results, type_field):
     """
     Create a {'field_name': 'fields_properties'} dict to be used as mapping schemas.
@@ -1193,6 +2565,34 @@ def get_cim_mapping_field_command():
     }
 
     demisto.results(fields)
+=======
+def set_last_run(last_run_object):
+    with open('last_run.json', "w") as f:
+        f.write(json.dumps(last_run_object, indent=4))
+def get_last_run():
+    try:
+        if os.path.exists('last_run.json'):
+            with open('last_run.json', 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
+def set_integration_context(last_run_object):
+    with open('integration_context.json', "w") as f:
+        f.write(json.dumps(last_run_object, indent=4))
+def get_integration_context():
+    try:
+        if os.path.exists('integration_context.json'):
+            with open('integration_context.json', 'r') as json_file:
+                result = json.load(json_file)
+        else:
+            result = {}
+        return result
+    except json.decoder.JSONDecodeError:
+        return {}
+>>>>>>> Stashed changes
 
 
 def main():
