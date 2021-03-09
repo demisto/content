@@ -2616,10 +2616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 449e0cd6-1000-4c8d-8ccb-953e983eddb0
+    taskid: 78c60edb-03de-423a-865e-d030de4ea2e4
     type: regular
     task:
-      id: 449e0cd6-1000-4c8d-8ccb-953e983eddb0
+      id: 78c60edb-03de-423a-865e-d030de4ea2e4
       version: -1
       name: Run Script With Empty Params
       description: Initiate a new endpoint script execution action using a script
@@ -2646,7 +2646,7 @@ tasks:
                     simple: WIN10X64
           accessor: endpoint_id
       parameters:
-        simple: '""'
+        simple: ${inputs.parameters}
       script_uid:
         simple: dc5815bb786f4cc095671f3150717fc8
       timeout: {}
@@ -2677,6 +2677,11 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+  - key: parameters
+    value: {}
+    required: false
+    description: ""
+    playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
