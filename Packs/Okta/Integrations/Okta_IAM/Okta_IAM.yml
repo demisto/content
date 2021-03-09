@@ -406,6 +406,19 @@ script:
     description: List all applications assigned to a user.
     execution: false
     name: okta-iam-list-user-applications
+    outputs:
+    - contextPath: Okta.Application.ID
+      description: ID of the application.
+      type: String
+    - contextPath: Okta.Application.Label
+      description: Label of the application.
+      type: String
+    - contextPath: Okta.Application.Name
+      description: Name of the application.
+      type: String
+    - contextPath: Okta.Application.Status
+      description: Status of the application.
+      type: String
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
