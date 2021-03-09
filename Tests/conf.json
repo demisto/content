@@ -1288,10 +1288,6 @@
             "playbookID": "exporttocsv_script_test"
         },
         {
-            "playbookID": "CreateCertificate-Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "Set - Test"
         },
         {
