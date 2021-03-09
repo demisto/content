@@ -103,23 +103,23 @@ args:
 - name: lh
   required: true
   default: true
-  description: left hand parameter
+  description: Left hand parameter.
 - name: rh
   required: true
-  description: right hand parameter
+  description: Right hand parameter.
 - name: action
   required: true
-  description: Math expression (+, -, >, <, ==, *, /, %)
+  description: Math expression (+, -, >, <, ==, *, /, %).
 - name: rhRegex
-  description: Regex to filter only a specific part of the right hand argument
+  description: Regex to filter only a specific part of the right hand argument.
 - name: lhRegex
-  description: Regex to filter only a specific part of the left hand argument
+  description: Regex to filter only a specific part of the left hand argument.
 - name: lhRadix
-  description: Radix for left hand value, defaults to 10
+  description: Radix for left hand value, defaults to 10.
 - name: rhRadix
-  description: Radix for right hand value, defaults to 10
+  description: Radix for right hand value, defaults to 10.
 - name: contextKey
-  description: Path where to store result
+  description: Path where to store result.
 outputs:
 - contextPath: MathResult
   description: The result of the *last* math action. Might be overriden by contextKey.
@@ -127,3 +127,5 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
