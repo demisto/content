@@ -108,10 +108,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      all:
-        simple: "yes"
+      all: {}
       index: {}
-      key: {}
+      key:
+        simple: News
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
