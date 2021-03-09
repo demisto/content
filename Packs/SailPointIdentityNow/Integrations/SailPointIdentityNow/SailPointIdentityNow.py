@@ -93,8 +93,8 @@ def get_headers(base_url: str, client_id: str, client_secret: str, grant_type: s
     :type grant_type: ``str``
     :param grant_type: Grant Type for OAuth 2.0. Defaulted to 'client_credentials' if not provided.
 
-    :return: Header with OAuth 2.0 information if client_id & client_secret are provided, else None.
-    This will return None if the client_id & client_secret were not valid (authorized).
+    :return: Header with OAuth 2.0 information if client_id & client_secret are provided, else ConnectionError(message).
+    This will return ConnectionError(message) if the client_id & client_secret were not valid (authorized).
     """
     if base_url is None or client_id is None or client_secret is None:
         return None
@@ -249,7 +249,8 @@ def test_connection(base_url: str, client_id: str, client_secret: str, grant_typ
         get_headers(base_url, client_id, client_secret, grant_type)
         return 'ok'
     except ConnectionError as error:
-        return error
+        return f'Error Connecting : {error}'
+
 
 def search(client: Client, object_type: str, query: str, offset: int, limit: int):
     """
@@ -514,7 +515,7 @@ def main():
     proxy = demisto.params().get('proxy', False)
     request_timeout = 10
 
-    headers = None
+    headers = {}
     try:
         headers = get_headers(base_url, client_id, client_secret, grant_type)
     except ConnectionError as error:

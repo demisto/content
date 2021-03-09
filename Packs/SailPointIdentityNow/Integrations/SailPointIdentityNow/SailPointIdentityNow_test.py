@@ -329,10 +329,18 @@ def test_build_results_2xx_status():
 
 @patch('SailPointIdentityNow.get_headers')
 def test_connection_fail(mock_header):
-    mock_header.return_value = None
+    mock_header.side_effect = ConnectionError('Unable to fetch headers from IdentityNow!')
     test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, 'test', 'test',
                                                            'client_credentials')
-    assert test_connection == 'Unable to connect to IdentityNow!'
+    assert test_connection == 'Error Connecting : Unable to fetch headers from IdentityNow!'
+
+
+@patch('SailPointIdentityNow.get_headers')
+def test_connection_unauthorized(mock_header):
+    mock_header.side_effect = ConnectionError('Bad client credentials')
+    test_connection = SailPointIdentityNow.test_connection(MOCK_IDENTITYNOW_BASE_URL, 'test', 'test',
+                                                           'client_credentials')
+    assert test_connection == 'Error Connecting : Bad client credentials'
 
 
 @patch('SailPointIdentityNow.get_headers')
