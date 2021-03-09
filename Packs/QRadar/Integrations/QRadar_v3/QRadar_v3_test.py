@@ -7,7 +7,7 @@ from datetime import datetime
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from CommonServerPython import DemistoException, set_integration_context, CommandResults
+from CommonServerPython import DemistoException, set_integration_context, CommandResults, GetModifiedRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP
@@ -24,7 +24,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values
+    flatten_nested_geolocation_values, get_modified_remote_data_command
 
 from typing import Dict, Callable
 
@@ -865,3 +865,21 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict],
     assert results.outputs_key_field == expected_command_results.outputs_key_field
     assert results.outputs == expected_command_results.outputs
     assert results.raw_response == expected_command_results.raw_response
+
+
+def test_get_modified_remote_data_command(mocker):
+    """
+    Given:
+     - QRadar client.
+     - Demisto arguments.
+
+    When:
+     - Command 'get-modified-remote-data' is being called.
+
+    Then:
+     - Ensure that command outputs the IDs of the offenses to update.
+    """
+    expected = GetModifiedRemoteDataResponse(command_test_data['get_modified_remote_data']['outputs'])
+    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
+    result = get_modified_remote_data_command(client, command_test_data['get_modified_remote_data']['args'])
+    assert expected.modified_incident_ids == result.modified_incident_ids
