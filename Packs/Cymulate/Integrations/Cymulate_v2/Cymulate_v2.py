@@ -295,19 +295,19 @@ def get_alerts_by_module(client: Client, module_name: str,
         timestamp_endpoint = 'Email_Received'
 
     elif module_name == 'waf':
-        id_data_list = client.list_attack_ids(module_name)
+        id_data = client.list_attack_ids(module_name)
 
         # Extracting the attack data for each site ID.
-        for cur_id in id_data_list:
+        for cur_id in id_data:
             raw_data.extend(client.get_attack_by_id(ENDPOINT_DICT.get(module_name),
                                                     cur_id.get('Id')))
 
     elif module_name == 'kill-chain':
-        id_data_list = client.list_attack_ids(ENDPOINT_DICT.get(module_name))
+        id_data = client.list_attack_ids(ENDPOINT_DICT.get(module_name))
 
         # Kill Chain endpoint returns IDs from all times so filter by time before creating incidents
         relevant_id_list = []
-        for cur_id in id_data_list:
+        for cur_id in id_data:
             alert_created_time = int(date_to_timestamp(cur_id.get('Timestamp'),
                                                        date_format=CY_GENERAL_DATE_FORMAT))
             if alert_created_time >= last_fetch:
@@ -319,28 +319,28 @@ def get_alerts_by_module(client: Client, module_name: str,
 
     elif module_name == 'immediate-threats':
         from_date = timestamp_to_datestring(last_fetch, '%Y-%m-%d')
-        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
+        id_data = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
 
         # Immediate threats endpoint returns IDs from all times so filter by time.
         relevant_id_list = []
-        for cur_id in id_data_list:
+        for cur_id in id_data:
             alert_created_time = int(date_to_timestamp(cur_id.get('Timestamp'),
                                                        date_format=CY_UNIQUE_DATE_FORMAT))
             if alert_created_time >= last_fetch:
                 relevant_id_list.append(cur_id.get('Id'))
 
         # Extracting the attack data for each site ID.
-        site_id_list = format_id_list(id_data_list)
+        site_id_list = format_id_list(id_data)
 
         for cur_id in site_id_list:
             raw_data.extend(client.get_immediate_threat_assessment(cur_id))
 
     elif module_name in ('phishing-awareness', 'lateral-movement'):
         from_date = timestamp_to_datestring(last_fetch, '%Y-%m-%d')
-        id_data_list = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
+        id_data = client.list_attack_ids_by_date(ENDPOINT_DICT.get(module_name), from_date)
 
         # Extracting the attack data for each site ID.
-        site_id_list = format_id_list(id_data_list)
+        site_id_list = format_id_list(id_data)
 
         for cur_id in site_id_list:
             raw_data.extend(client.get_attack_by_id(ENDPOINT_DICT.get(module_name), cur_id))
@@ -376,9 +376,9 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
                      timestamp_endpoint: str = None) -> Tuple[List[Any], int, int, int]:
     """
     This function loops over the alerts list and create incidents from different events.
-    For Endpoint Security and Kill Chain modules, if current event name is identical to previous
-    event name, then both are part of the same incident and we will only update the description
-    and won't create a new incident.
+    For `Endpoint Security` and `Kill Chain` modules, if current event name is identical to previous
+    event name, then both are part of the same incident and we will only update the existing
+    incident description and won't create a new incident.
 
     Args:
         events (list): Events list to create incidents from.
@@ -620,7 +620,8 @@ def convert_to_xsoar_severity(severity: Optional[Any]) -> int:
     """Maps Cymulate severity to Cortex XSOAR severity.
 
     Args:
-        severity(str): severity as returned from Cymulate API.
+        severity(str): severity as returned from Cymulate API. If API does not return severity,
+                       The function will return 0.
 
     Returns:
         int: Cortex XSOAR Severity (1 to 4)
@@ -1559,6 +1560,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     Retrieves new incidents every interval (default is 1 minute). The function will retrieve
     incidents from all selected modules chosen in the configuration page by the user.
     the next run will be calculated by the latest timestamp of all modules, to avoid duplications.
+    NOTE: We fetch only one module per fetch call.
 
     Args:
         client (Client): Cymulate client object
@@ -1582,12 +1584,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     current_module = context.get('current_module', None)
 
     if current_module:
-        incidents, offset, creation_time, total_incidents = get_alerts_by_module(client,
-                                                                                 current_module,
-                                                                                 last_fetch)
+        incidents, offset, creation_time, total_simulated_events \
+            = get_alerts_by_module(client, current_module, last_fetch)
 
     else:
-        incidents, offset, creation_time, total_incidents = [], 0, last_fetch, 0
+        incidents, offset, creation_time, total_simulated_events = [], 0, last_fetch, 0
 
     # current_time will help us save current's module time, and update next_run accordingly.
     if creation_time > context.get('current_time'):
@@ -1596,12 +1597,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         current_time = context.get('current_time')
 
     # There are alerts left to fetch
-    if total_incidents > offset:
+    if total_simulated_events > offset:
         integration_context = {'offset': offset,
                                'current_module': context.get('current_module'),
                                'modules': context.get('modules'),
                                'current_time': current_time}
-        demisto.info(f'Fetching {current_module} module. Offset: {offset}/{total_incidents}.')
+        demisto.info(f'Fetching {current_module} module. Offset: {offset}/{total_simulated_events}')
 
     # Finished fetching current module, checking if there are more modules to fetch.
     else:
@@ -1651,7 +1652,7 @@ def main() -> None:
     assert isinstance(first_fetch_timestamp, int)
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
 
     try:
         client = Client(

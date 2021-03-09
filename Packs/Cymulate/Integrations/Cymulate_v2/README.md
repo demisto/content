@@ -23,6 +23,15 @@ This integration was integrated and tested with API version 1 of cymulate_v2
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+
+## Fetch Incidents command
+Retrieves new incidents every interval (default is 1 minute).
+The fetch incident command will retrieve incidents from all selected modules chosen in the configuration page by the user.
+The next run will be calculated by the latest timestamp of all modules, to avoid duplications.
+NOTE: We fetch only one module per fetch call.
+
+
 ### cymulate-exfiltration-template-list
 ***
 Retrieve the exfiltration template list.
