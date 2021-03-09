@@ -89,6 +89,7 @@ class TestMetadataParsing:
         assert parsed_metadata['versionInfo'] == "dummy_build_number"
         assert parsed_metadata['commit'] == "dummy_commit"
         assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", "Use Case"}
+        assert len(parsed_metadata['tags']) == 3
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata
