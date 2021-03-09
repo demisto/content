@@ -73,6 +73,14 @@ configuration:
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
+- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
 - additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
     EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters

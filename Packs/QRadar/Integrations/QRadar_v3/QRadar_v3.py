@@ -33,7 +33,7 @@ ADVANCED_PARAMETER_NAMES = [
     'FETCH_SLEEP',
     'BATCH_SIZE',
     'OFF_ENRCH_LIMIT',
-    'LOCK_WAIT_TIME'
+    'LOCK_WAIT_TIME',
     'MAX_WORKERS',
     'DOMAIN_ENRCH_FLG',
     'RULES_ENRCH_FLG',
@@ -2359,12 +2359,13 @@ def qradar_reset_last_run_command() -> str:
 
 def qradar_get_mapping_fields_command(client: Client) -> Dict:
     """
-    Returns the list of fields for an incident type. This command should be used for debugging purposes.
+    Returns Dict object containing the list of fields for an incident type.
+    This command should be used for debugging purposes.
     Args:
         client (Client): Client to perform API calls.
 
     Returns:
-        Dict which contains all the mapping.
+        (Dict): Contains all the mapping.
     """
     offense = {
         'username_count': 'int',
@@ -2511,18 +2512,16 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     demisto.debug(f'Getting update for remote offense ID {offense_id}, last update: {last_update}')
 
     offense = client.offenses_list(offense_id=offense_id)
-    offense_last_update = offense.get('last_updated_time')
+    offense_last_update = get_time_parameter(offense.get('last_updated_time'))
 
     demisto.debug(f'Offense last update was {offense_last_update}')
 
     if last_update > offense_last_update:
         demisto.debug('Nothing new in the ticket')
-        offense = dict()
+        return [dict()]
 
-    # else:
-    #     demisto.debug(f'ticket is updated: {ticket}')
+    demisto.debug(f'Offense {offense_id} is being updated')
     entries = []
-
     if offense.get('status', '') == 'CLOSED':
         if params.get('close_incident'):
             demisto.debug(f'Offense is closed: {offense}')
@@ -2691,7 +2690,7 @@ def main() -> None:
             return_results(qradar_reset_last_run_command())
 
         elif command == 'get-mapping-fields':
-            demisto.results(qradar_get_mapping_fields_command(client))
+            return_results(qradar_get_mapping_fields_command(client))
 
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
