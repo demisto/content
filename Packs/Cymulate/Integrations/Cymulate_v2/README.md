@@ -452,6 +452,7 @@ Get the email gateway assessment status.
 | Cymulate.EmailGateway.success | Boolean | Whether the assessment was successful. | 
 | Cymulate.EmailGateway.inProgress | Boolean | Whether the assessment is in progress. | 
 | Cymulate.EmailGateway.progress | Number | Percentage of the progress of the assessment. | 
+| Cymulate.EmailGateway.addresses | String | Addresses connected to the assessment. | 
 
 
 #### Command Example
@@ -1464,8 +1465,7 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cymulate.LateralMovement.data | String | Lateral movement assessment stopping data. | 
-| Cymulate.LateralMovement.status | Boolean | Lateral movement assessment stopping success status. | 
-
+| Cymulate.LateralMovement.success | Boolean | Lateral Movement assessment creation success status. | 
 
 #### Command Example
 ```!cymulate-lateral-movement-stop```
@@ -1553,8 +1553,9 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cymulate.Agent.agentAddress | String | The agent's address. | 
-| Cymulate.Agent.addressMethod | String | The agent's methods. | 
+| Cymulate.Agent.agentMethod | String | The agent's methods. | 
 | Cymulate.Agent.agentName | String | Agent name. | 
+| Cymulate.Agent.comment | String | Comments. | 
 
 
 #### Command Example

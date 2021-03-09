@@ -12,11 +12,10 @@ configuration:
   name: base_url
   required: false
   type: 0
-- defaultvalue: https://api.app.cymulate.com/v1/
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
   required: false
-  type: 0
+  type: 8
 - additionalinfo: Choose one or more categories to fetch.
   display: Fetch category
   name: fetchCategory
@@ -644,7 +643,7 @@ script:
       description: Lateral movement assessment creation ID.
       type: String
     - contextPath: Cymulate.LateralMovement.success
-      description: New exfiltration assessment creation success status.
+      description: Lateral Movement assessment creation success status.
       type: Boolean
   - deprecated: false
     description: Stop a running lateral movement assessment.
@@ -673,7 +672,7 @@ script:
       description: Lateral movement assessment ID.
       type: String
     - contextPath: Cymulate.LateralMovement.inProgress
-      description: 'Indicates whether the assessment is in progress. '
+      description: Indicates whether the assessment is in progress.
       type: Boolean
   - deprecated: false
     description: Retrieve all agents.
@@ -802,7 +801,7 @@ script:
       secret: false
     - default: false
       description: 'From which date to fetch data. Format: YYYY-MM-DD, for example:
-        March 1st 2021 should be written: 2021-03-01. '
+        March 1st 2021 should be written: 2021-03-01.'
       isArray: false
       name: from_date
       required: true
@@ -843,4 +842,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+fromversion: 6.0.0
