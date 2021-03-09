@@ -453,7 +453,7 @@ script:
       - 'screenshot'
       secret: false
     deprecated: false
-    description: Get web artifacts for a URL webpage. Even if the URL does not contain webartifacts, a file will be downloaded.
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
   dockerimage: demisto/python3:3.9.2.17246
