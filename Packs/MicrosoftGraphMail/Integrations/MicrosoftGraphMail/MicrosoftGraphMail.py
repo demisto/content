@@ -1180,9 +1180,10 @@ def create_attachment(raw_response, user_id):
     # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
     if 'itemAttachment' in attachment_type:
         return_results(item_result_creator(raw_response, user_id))
-    if 'fileAttachment' in attachment_type:
+    elif 'fileAttachment' in attachment_type:
         return demisto.results(file_result_creator(raw_response))
-    return {}
+    else:
+        return {}
 
 
 def get_attachment_command(client: MsGraphClient, args):
