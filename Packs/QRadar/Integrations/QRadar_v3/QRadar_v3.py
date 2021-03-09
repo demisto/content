@@ -1895,7 +1895,7 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
 
     response = client.search_results_get(search_id, range_)
     result_key = list(response.keys())[0]
-    outputs = response.get(result_key)
+    outputs = sanitize_outputs(response.get(result_key))
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Results For Search ID {search_id}', outputs),
