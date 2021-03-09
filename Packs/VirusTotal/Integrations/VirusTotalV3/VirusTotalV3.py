@@ -1615,7 +1615,7 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def ip_passive_dns_data(client: Client, args: dict) -> CommandResults:
+def passive_dns_data(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
@@ -1720,8 +1720,8 @@ def main(params: dict, args: dict, command: str):
         results = domain_command(client, score_calculator, args)
     elif command == f'{COMMAND_PREFIX}-file-sandbox-report':
         results = file_sandbox_report_command(client, args)
-    elif command == f'{COMMAND_PREFIX}-ip-passive-dns-data':
-        results = ip_passive_dns_data(client, args)
+    elif command == f'{COMMAND_PREFIX}-passive-dns-data':
+        results = passive_dns_data(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-get':
         results = get_comments_command(client, args)
     elif command == f'{COMMAND_PREFIX}-comments-add':
@@ -1742,10 +1742,6 @@ def main(params: dict, args: dict, command: str):
         results = get_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
-    demisto.results(
-        json.dumps(results.to_context()['EntryContext'], indent=4)
-    )
-    return
     return_results(results)
 
 

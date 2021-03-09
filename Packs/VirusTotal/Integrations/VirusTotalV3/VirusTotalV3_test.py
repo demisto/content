@@ -24,7 +24,7 @@ class TestScoreCalculator:
                 'yaraRulesThreshold': 1,
                 'SigmaIDSThreshold': 1,
                 'domain_popularity_ranking': 1,
-                'relashionship_threshold': 1
+                'relationship_threshold': 1
             }
         )
 

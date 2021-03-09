@@ -107,8 +107,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: File.MD5
       description: Bad MD5 hash.
@@ -192,7 +192,7 @@ script:
       description: The file type.
       type: String
     - contextPath: VirusTotal.File.attributes.trid.probability
-      description:
+      description: The TRID probability
       type: Number
     - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.description
       description: Description of yara rule.
@@ -329,8 +329,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: IP.Address
       description: Bad IP address.
@@ -428,8 +428,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found.
@@ -553,8 +553,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: Domain.Name
       description: Bad domain found.
@@ -806,7 +806,7 @@ script:
         description: The type of the comment.
         type: String
       - contextPath: VirusTotal.Comments.comments.id
-        description:
+        description: ID of the commented.
         type: String
       - contextPath: VirusTotal.Comments.comments.links.self
         description: Link to the request
@@ -844,7 +844,7 @@ script:
         description: The type of the comment.
         type: String
       - contextPath: VirusTotal.Comments.comments.id
-        description:
+        description: ID of the comment.
         type: String
       - contextPath: VirusTotal.Comments.comments.links.self
         description: Link to the request
@@ -865,8 +865,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
     - name: limit
       description: Maximum results to fetch.
       defaultValue: 10
@@ -1083,7 +1083,7 @@ script:
         description: How many object were found in the attributes.
         type: Number
     description: Retrives a behavioural relationship of the given file hash.
-  - name: vt-ip-passive-dns-data
+  - name: vt-passive-dns-data
     description: Returns passive DNS records by indicator.
     arguments:
     - name: ip
@@ -1174,6 +1174,6 @@ script:
         type: String
     description: Retrives resolutions of the given ip.
   runonce: false
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
 tests:
 - VirusTotal-V3-test-playbook
