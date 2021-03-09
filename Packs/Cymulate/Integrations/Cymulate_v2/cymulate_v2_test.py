@@ -383,3 +383,11 @@ def test_format_endpoint_security_incidents():
                                        'Step 13:\\nTriggering execution of the service created on the remote target computer '
                                        'executing the payload.", "md5": "N/A", "sha256": "N/A", "sha1": "N/A"}'
                             }
+
+
+def test_extract_template_output():
+    from Cymulate_v2 import extract_template_output
+    raw_data = util_load_json('list_lateral_movement_templates.json')
+    output = extract_template_output(raw_data.get('data'))
+    assert raw_data.get('data')[0].get('_id') == '12345'
+    assert output[0].get('id') == '12345'

@@ -764,9 +764,7 @@ def get_exfiltration_assessment_status_command(client: Client,
 
     """
     raw_response = client.get_assessment_status(ENDPOINT_DICT.get('exfiltration'), assessment_id)
-    print(raw_response)
     outputs = extract_status_commands_output(raw_response)
-    print(outputs)
     readable_output = tableToMarkdown('Exfiltration assessment status:', outputs, removeNull=True)
 
     command_results = CommandResults(

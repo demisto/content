@@ -252,6 +252,7 @@ script:
       description: Percentage of the progress of the assessment.
       type: Number
     - contextPath: Cymulate.EmailGateway.addresses
+      description: Addresses connected to the assessment.
       type: String
   - deprecated: false
     description: Retrieve the endpoint security template list.
