@@ -350,7 +350,7 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
+        if [ -n "${CONTRIB_BRANCH}" ]
           then
             echo "Skipping - not running in contribution instance"
             exit 0
