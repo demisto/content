@@ -2555,7 +2555,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
-    limit = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
+    limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))    # type: ignore
     range_ = f'items=0-{limit - 1}'
 
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
