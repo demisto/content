@@ -81,6 +81,12 @@ configuration:
   name: close_incident
   required: false
   type: 8
+- additionalinfo: Maximum number of incidents  to mirror incoming each time.
+  defaultvalue: '100'
+  display: How many incidents to mirror incoming each time
+  name: mirror_limit
+  required: false
+  type: 0
 - additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
     EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
