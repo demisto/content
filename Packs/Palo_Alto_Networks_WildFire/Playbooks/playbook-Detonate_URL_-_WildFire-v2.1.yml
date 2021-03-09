@@ -779,7 +779,7 @@ outputs:
   description: Artifacts for the detection reasons.
   type: string
 - contextPath: WildFire.Report.iocs
-  description: IOCs associated.
+  description: Associated IOCs.
   type: string
 tests:
   - Detonate URL - WildFire v2.1 - Test

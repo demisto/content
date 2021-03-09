@@ -308,10 +308,10 @@ script:
       description: Verdict of the detection.
       type: string
     - contextPath: WildFire.Report.detection_reasons.artifacts
-      description: Artifacts for detection reasons.
+      description: Artifacts of the detection reasons.
       type: unknown
     - contextPath: WildFire.Report.iocs
-      description: IOCs associated.
+      description: Associated IOCs.
       type: unknown
     - contextPath: WildFire.Report.verdict
       description: The verdict of the report.
@@ -444,7 +444,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to download screenshots or as downloaded files.
+      description: Whether to download as screenshots or as downloadable files.
       isArray: false
       name: types
       required: false

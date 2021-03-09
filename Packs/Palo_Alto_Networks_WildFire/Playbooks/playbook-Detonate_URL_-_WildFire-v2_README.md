@@ -71,7 +71,7 @@ This playbook does not use any scripts.
 | WildFire.Report.detection_reasons.type | Type of the detection. | string |
 | WildFire.Report.detection_reasons.verdict | Verdict of the detection. | string |
 | WildFire.Report.detection_reasons.artifacts | Artifacts for the detection. | string |
-| WildFire.Report.iocs | IOCs associated. | string |
+| WildFire.Report.iocs | Associated IOCs. | string |
 
 ## Playbook Image
 ---
