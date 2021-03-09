@@ -785,7 +785,7 @@ def wildfire_get_report_command():
     for element in inputs:
         if url_report:
             url, report = wildfire_get_url_report(element)
-            headers = ['sha256', 'type', 'verdict']
+            headers = ['sha256', 'type', 'verdict', 'iocs']
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
                                              removeNull=True)
             entry_context = {"WildFire.Report(val.URL == obj.URL)": report}

@@ -204,8 +204,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Retrieves results for a URL using WildFire. Currently, this is only supported in US cloud.
-        The report format is in JSON.
+        Retrieves results for a URL using WildFire. The report format is in JSON.
       isArray: true
       name: url
       required: false
@@ -295,6 +294,27 @@ script:
       type: string
     - contextPath: WildFire.Report.Evidence.Text
       description: Submission evidence text.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.detection_reasons.iocs
+      description: IOCs associated.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
       type: string
   - arguments:
     - default: false
