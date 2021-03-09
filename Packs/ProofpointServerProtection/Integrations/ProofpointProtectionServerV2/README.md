@@ -29,7 +29,7 @@ The operations are accessed through port 10000.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(e.g., https://xxxxxxxx.pphosted.com:10000\) | True |
+    | url | Server URL (e.g., `https://xxxxxxxx.pphosted.com:10000`) | True |
     | credentials | Username | True |
     | unsecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |

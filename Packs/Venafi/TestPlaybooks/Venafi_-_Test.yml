@@ -1,0 +1,335 @@
+id: Venafi - Test
+version: -1
+name: Venafi - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9e80f8a0-c42e-49f4-8dcf-9ae80fc0305b
+    type: start
+    task:
+      id: 9e80f8a0-c42e-49f4-8dcf-9ae80fc0305b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 86e19fb9-d3ff-442a-8143-2f9320739d05
+    type: regular
+    task:
+      id: 86e19fb9-d3ff-442a-8143-2f9320739d05
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cd728e15-7371-4392-8db9-3ec8545fbc22
+    type: regular
+    task:
+      id: cd728e15-7371-4392-8db9-3ec8545fbc22
+      version: -1
+      name: Get Certificates
+      description: Get Venafi certificates query. All dates are in the 2016-11-12T00:00:00.0000000Z
+        format. Additional fields can be used in the query by adding them in a key=value
+        manner
+      script: '|||venafi-get-certificates'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      C: {}
+      CN: {}
+      CreatedOn: {}
+      CreatedOnGreater: {}
+      CreatedOnLess: {}
+      Disabled: {}
+      InError: {}
+      Issuer: {}
+      KeyAlgorithm: {}
+      KeySize: {}
+      KeySizeGreater: {}
+      KeySizeLess: {}
+      L: {}
+      Limit: {}
+      ManagementType: {}
+      Name: {}
+      NetworkValidationDisabled: {}
+      O: {}
+      ParentDn: {}
+      ParentDnRecursive: {}
+      PendingWorkflow: {}
+      S: {}
+      Serial: {}
+      SignatureAlgorithm: {}
+      Stage: {}
+      StageGreater: {}
+      StageLess: {}
+      ValidFrom: {}
+      ValidTo: {}
+      ValidToGreater: {}
+      ValidToLess: {}
+      ValidationDisabled: {}
+      ValidationState: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0352ee85-5ead-40fb-863a-0aa2dec081e6
+    type: condition
+    task:
+      id: 0352ee85-5ead-40fb-863a-0aa2dec081e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CreatedOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.DN
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.ParentDN
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.SchemaClass
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2e8cadf4-af1b-4096-86a7-dc8b6f80c095
+    type: regular
+    task:
+      id: 2e8cadf4-af1b-4096-86a7-dc8b6f80c095
+      version: -1
+      name: Get Certificate Details
+      description: Use a certificate guid to extract more details from the cert store.
+      script: '|||venafi-get-certificate-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      guid:
+        complex:
+          root: Venafi.Certificate
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: aa87490a-a37b-4f0d-807b-2e01d6507cad
+    type: condition
+    task:
+      id: aa87490a-a37b-4f0d-807b-2e01d6507cad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.Contact
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.AIAKeyIdentifier
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.Issuer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.Serial
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.Thumbprint
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.ValidFrom
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Venafi.Certificate.CertificateDetails.ValidTo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0d6eaacb-519e-4901-83fe-8e15f7bbf268
+    type: title
+    task:
+      id: 0d6eaacb-519e-4901-83fe-8e15f7bbf268
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,379 @@
+category: Utilities
+commonfields:
+  id: EWS Extension Online Powershell v2
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Online URL
+  name: url
+  required: true
+  type: 0
+- display: Certificate
+  name: certificate
+  type: 9
+  required: true
+  additionalinfo: A pfx certificate encoded in Base64.
+- display: The organization used in app-only authentication.
+  name: organization
+  required: true
+  type: 0
+- display: The application ID from the Azure portal
+  name: app_id
+  required: true
+  type: 0
+description: Use the EWS Extension Online Powershell v2 integration to get information
+  about mailboxes and users in your organization.
+display: O365 - EWS - Extension Online Powershell v2
+name: EWS Extension Online Powershell v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: identity
+      description: The identity of the mailbox you want to view.
+      required: false
+      secret: false
+    - default: false
+      isArray: true
+      name: property_sets
+      description: 'A comma-separated list of property sets to fetch. These property
+        sets will supplement the outputs of this integration.  Available properties
+        are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold",
+        "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention",
+        "SCL", "SoftDelete", "StatisticsSeed".'
+      required: false
+      secret: false
+      defaultValue: Minimum
+    - default: false
+      description: The object's location in Active Directory by which to filter the
+        results.
+      isArray: false
+      name: organizational_unit
+      required: false
+      secret: false
+    - default: false
+      description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
+      isArray: false
+      name: primary_smtp_address
+      required: false
+      secret: false
+    - default: false
+      description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      isArray: false
+      name: user_principal_name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to retrieve. Default is 10.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    deprecated: false
+    outputs:
+    - contextPath: EWS.Mailbox.EmailAddresses
+      description: Email addresses of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.AuditBypassEnabled
+      description: Whether audit bypass is enabled.
+      type: Boolean
+    - contextPath: EWS.Mailbox.DistinguishedName
+      description: Distinguished name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeObjectId
+      description: Exchange object ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ExchangeVersion
+      description: Exchange version of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Guid
+      description: GUID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Id
+      description: ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.Identity
+      description: Identity of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.IsValid
+      description: Whether the mailbox is valid.
+      type: Boolean
+    - contextPath: EWS.Mailbox.Name
+      description: Name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectCategory
+      description: Object category of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectClass
+      description: Object class of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectId
+      description: Object ID of the of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.ObjectState
+      description: Object state of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OrganizationId
+      description: Organization ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.OriginatingServer
+      description: Originating server of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSComputerName
+      description: PowerShell computer name of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.PSShowComputerName
+      description: PowerShell show computer name of the mailbox.
+      type: Boolean
+    - contextPath: EWS.Mailbox.RunspaceId
+      description: Run space ID of the mailbox.
+      type: String
+    - contextPath: EWS.Mailbox.WhenChanged
+      description: Local time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenChangedUTC
+      description: UTC time of when the mailbox was last changed.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreated
+      description: Local time of when the mailbox was created.
+      type: Date
+    - contextPath: EWS.Mailbox.WhenCreatedUTC
+      description: UTC time of when the mailbox was created.
+      type: Date
+    description: Displays mailbox objects and attributes, populate property pages,
+      or supplies mailbox information to other tasks.
+    execution: false
+    name: ews-mailbox-list
+  - arguments:
+    - default: false
+      isArray: false
+      name: identity
+      description: The identity of the mailbox you want to view.
+      required: false
+      secret: false
+    - default: false
+      description: The object's location in Active Directory by which to filter the
+        results.
+      isArray: false
+      name: organizational_unit
+      required: false
+      secret: false
+    - default: false
+      description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
+      isArray: false
+      name: primary_smtp_address
+      required: false
+      secret: false
+    - default: false
+      description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+      isArray: false
+      name: user_principal_name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to retrieve. Default is 10.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    outputs:
+    - contextPath: EWS.CASMailbox.ActiveSyncEnabled
+      description: Whether active sync is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.DisplayName
+      description: The display name of the mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ECPEnabled
+      description: Whether the Exchange Control Panel (ECP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.EmailAddresses
+      description: The email addresses retrieved.
+      type: String
+    - contextPath: EWS.CASMailbox.EwsEnabled
+      description: Whether the Exchange Web Services (EWS) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.ExchangeVersion
+      description: Exchange version of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ExternalDirectoryObjectId
+      description: External directory object ID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Guid
+      description: The GUID of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.Identity
+      description: Identity of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.ImapEnabled
+      description: Whether the Internet Message Access Protocol (IMAP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.MAPIEnabled
+      description: Whether the Messaging Application Programming Interface is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.Name
+      description: Name of the client access server mailbox.
+      type: String
+    - contextPath: EWS.CASMailbox.OWAEnabled
+      description: Whether Outlook on the web (OWA) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.OrganizationId
+      description: Organization ID
+      type: String
+    - contextPath: EWS.CASMailbox.PopEnabled
+      description: Whether Post Office Protocol (POP) is enabled.
+      type: Boolean
+    - contextPath: EWS.CASMailbox.PrimarySmtpAddress
+      description: Primary SMTP address.
+      type: String
+    - contextPath: EWS.CASMailbox.ServerLegacyDN
+      description: Server legacy distinguished name (DN).
+      type: String
+    deprecated: false
+    description: Displays Client Access settings that are configured on mailboxes.
+    execution: false
+    name: ews-cas-mailbox-list
+  - arguments:
+    - default: false
+      description: The identity of the mailbox you want to view.
+      isArray: false
+      name: identity
+      required: true
+      secret: false
+    outputs:
+    - contextPath: EWS.MailboxPermission.Identity
+      description: The specified identity of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.AccessRights
+      description: Access rights of the mailbox.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.Deny.IsPresent
+      description: Whether permission is denied.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.Identity
+      description: The permission identity.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.InheritanceType
+      description: Permission inheritance type.
+      type: String
+    - contextPath: EWS.MailboxPermission.Permission.IsInherited
+      description: Whether permission is inherited.
+      type: Boolean
+    - contextPath: EWS.MailboxPermission.Permission.User
+      description: The permission of the user.
+      type: String
+    deprecated: false
+    description: Retrieves permissions on a mailbox.
+    execution: false
+    name: ews-mailbox-permission-list
+  - arguments:
+    - default: false
+      description: The identity of the mailbox you want to view.
+      isArray: false
+      name: identity
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to retrieve. Default is 10.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    outputs:
+    - contextPath: EWS.RecipientPermission.AccessControlType
+      description: Access control type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.AccessRights
+      description: Access rights of the recipient permission.
+      type: Number
+    - contextPath: EWS.RecipientPermission.Identity
+      description: Identity of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.InheritanceType
+      description: Inheritance type of the recipient permission.
+      type: String
+    - contextPath: EWS.RecipientPermission.IsInherited
+      description: Whether the recipient permission is inherited.
+      type: Boolean
+    - contextPath: EWS.RecipientPermission.Trustee
+      description: Trustee of the recipient permission.
+      type: String
+    deprecated: false
+    description: Displays information about SendAs permissions that are configured
+      for users.
+    execution: false
+    name: ews-recipient-permission-list
+  - arguments:
+    - default: false
+      description: The identity of the mailbox you want to view.
+      isArray: false
+      name: identity
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to retrieve. Default is 10.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    outputs:
+    - contextPath: EWS.Recipient.Alias
+      description: Recipient alias.
+      type: String
+    - contextPath: EWS.Recipient.DisplayName
+      description: Recipient display name.
+      type: String
+    - contextPath: EWS.Recipient.DistinguishedName
+      description: Recipient distinguished name.
+      type: String
+    - contextPath: EWS.Recipient.EmailAddresses
+      description: Recipient email addresses.
+      type: String
+    - contextPath: EWS.Recipient.ExchangeVersion
+      description: Recipient exchange version.
+      type: String
+    - contextPath: EWS.Recipient.ExternalDirectoryObjectId
+      description: Recipient external directory object ID.
+      type: String
+    - contextPath: EWS.Recipient.Identity
+      description: Recipient identity.
+      type: String
+    - contextPath: EWS.Recipient.Name
+      description: Recipient name.
+      type: String
+    - contextPath: EWS.Recipient.OrganizationId
+      description: Recipient organization ID.
+      type: String
+    - contextPath: EWS.Recipient.PrimarySmtpAddress
+      description: Recipient primary SMTP address.
+      type: String
+    - contextPath: EWS.Recipient.RecipientType
+      description: Recipient type.
+      type: String
+    - contextPath: EWS.Recipient.RecipientTypeDetails
+      description: Recipient type details.
+      type: String
+    deprecated: false
+    description: Displays existing recipient objects in your organization. This command
+      returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts,
+      and distribution groups).
+    execution: false
+    name: ews-recipient-list
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: powershell
+  dockerimage: demisto/pwsh-exchange:1.0.0.16259
+fromversion: 5.5.0
+tests:
+- 'EWS Extension: Powershell Online V2 Test'

@@ -1,4 +1,4 @@
-Need to find if a user viewed a specific document or purged an item from their mailbox? If so, use the MicrosoftPolicyAndComplianceAuditLog integration to search the unified audit log to view user and administrator activity in your organization. 
+Need to find if a user viewed a specific document or purged an item from their mailbox? If so, use the Microsoft Policy And Compliance (Audit Log) integration to search the unified audit log to view user and administrator activity in your organization. 
 
 The unified audit log contains events from 
 - Exchange Online
@@ -31,4 +31,4 @@ You can search for the following types of user and admin activity in Microsoft 3
 - User and admin activity in Microsoft Forms
 - User and admin activity for sensitivity labels for sites that use SharePoint Online or Microsoft Teams
 
-This pack includes the [MicrosoftPolicyAndComplianceAuditLog](https://xsoar.pan.dev/docs/reference/integrations/microsoft-policy-and-compliance-audit-log) integration.
+This pack includes the [Microsoft Policy And Compliance (Audit Log)](https://xsoar.pan.dev/docs/reference/integrations/microsoft-policy-and-compliance-audit-log) integration.

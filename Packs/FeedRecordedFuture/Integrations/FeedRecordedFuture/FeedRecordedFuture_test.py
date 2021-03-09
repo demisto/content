@@ -32,49 +32,49 @@ def test_get_indicator_type(indicator_type, csv_item, answer):
 
 
 build_iterator_answer_domain = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_domain_glob = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '*domaintools.com',
         'Risk': '92',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_ip = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '192.168.1.1',
         'Risk': '50',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_hash = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '52483514f07eb14570142f6927b77deb7b4da99f',
         'Algorithm': 'SHA-1',
         'Risk': '0',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_url = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'www.securityadvisor.io',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 GET_INDICATOR_INPUTS = [
@@ -93,7 +93,8 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
         'indicator_type': indicator_type,
         'limit': 1
     }
-    mocker.patch('FeedRecordedFuture.Client.build_iterator', return_value=build_iterator_answer)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
     hr, _, entry_result = get_indicators_command(client, args)
     assert entry_result[0]['Value'] == value
     assert entry_result[0]['Type'] == type
@@ -147,9 +148,7 @@ def test_feed_tags(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
-    mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
-    )
-    indicators = fetch_indicators_command(client, 'ip')
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
+    indicators = next(fetch_indicators_command(client, 'ip'))
     assert tags == indicators[0]['fields']['tags']

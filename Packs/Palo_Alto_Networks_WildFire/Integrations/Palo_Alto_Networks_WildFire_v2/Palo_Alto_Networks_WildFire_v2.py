@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, Any
+from typing import Dict
 
 from CommonServerPython import *
 
@@ -238,15 +238,18 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
 def create_upload_entry(upload_body, title, result):
     pretty_upload_body = prettify_upload(upload_body)
     human_readable = tableToMarkdown(title, pretty_upload_body, removeNull=True)
+    entry_context = {
+        "WildFire.Report"
+        "(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)":
+            pretty_upload_body
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': result,
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': {
-            "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5 || val.URL == obj.URL)": pretty_upload_body
-        }
+        'EntryContext': entry_context
     })
 
 
@@ -417,7 +420,8 @@ def wildfire_get_verdict_command():
 
         dbot_score_list = create_dbot_score_from_verdict(pretty_verdict)
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
+            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                pretty_verdict,
             "DBotScore": dbot_score_list
         }
         demisto.results({
@@ -472,7 +476,8 @@ def wildfire_get_verdicts_command():
         dbot_score_list = create_dbot_score_from_verdicts(pretty_verdicts)
 
         entry_context = {
-            "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
+            "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                pretty_verdicts,
             "DBotScore": dbot_score_list
         }
 
@@ -695,7 +700,8 @@ def wildfire_get_file_report(file_hash: str):
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context,
+                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                    entry_context,
                 'DBotScore': dbot
             }
         })
@@ -714,7 +720,8 @@ def wildfire_get_file_report(file_hash: str):
             'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
-                "WildFire.Report(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": entry_context
+                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
+                    entry_context
             }
         })
         sys.exit(0)
