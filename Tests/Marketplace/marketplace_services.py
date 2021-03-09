@@ -29,6 +29,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full 
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
+LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
 
 
 class BucketUploadFlow(object):
@@ -601,9 +602,30 @@ class Pack(object):
 
         return search_rank
 
+    def _handle_pack_tags(self, landing_page_sections: dict, user_tags: list = None) -> list:
+        """
+        Build the pack's tag list according to the user metadata and the landingPage sections file.
+        Args:
+            user_tags (list): user metadata that was created in pack initialization.
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
+
+        Returns:
+            list: Pack's tags.
+
+        """
+
+        tags = set(input_to_list(input_data=user_tags))
+
+        sections = landing_page_sections.get('sections', []) if landing_page_sections else []
+
+        for section in sections:
+            if self._pack_name in landing_page_sections.get(section, []):
+                tags.add(section)
+        return list(tags)
+
     def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
-                             is_feed_pack=False):
+                             is_feed_pack=False, landing_page_sections=None):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -618,7 +640,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             downloads_count (int): number of packs downloads.
             is_feed_pack (bool): a flag that indicates if the pack is a feed pack.
-
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
         Returns:
             dict: parsed pack metadata.
 
@@ -655,7 +677,10 @@ class Pack(object):
         pack_metadata['versionInfo'] = build_number
         pack_metadata['commit'] = commit_hash
         pack_metadata['downloads'] = downloads_count
-        pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
+
+        # Setting a pack tags must come before calculating the pack's searchRank
+        pack_metadata['tags'] = self._handle_pack_tags(
+            user_tags=user_metadata.get('tags'), landing_page_sections=landing_page_sections)
         if is_feed_pack and 'TIM' not in pack_metadata['tags']:
             pack_metadata['tags'].append('TIM')
         if self._create_date:
@@ -1558,7 +1583,8 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified,
+                        landing_page_sections):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1573,6 +1599,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
             packs_statistic_df (pandas.core.frame.DataFrame): packs downloads statistics table.
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -1608,7 +1635,8 @@ class Pack(object):
                                                            server_min_version=self.server_min_version,
                                                            build_number=build_number, commit_hash=commit_hash,
                                                            downloads_count=self.downloads_count,
-                                                           is_feed_pack=self._is_feed)
+                                                           is_feed_pack=self._is_feed,
+                                                           landing_page_sections=landing_page_sections)
 
             with open(metadata_path, "w") as metadata_file:
                 json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
