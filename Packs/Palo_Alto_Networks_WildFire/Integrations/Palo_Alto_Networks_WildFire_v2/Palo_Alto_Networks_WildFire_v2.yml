@@ -310,7 +310,7 @@ script:
     - contextPath: WildFire.Report.detection_reasons.artifacts
       description: Artifacts of the detection reasons.
       type: unknown
-    - contextPath: WildFire.Report.detection_reasons.iocs
+    - contextPath: WildFire.Report.iocs
       description: IOCs associated.
       type: unknown
     - contextPath: WildFire.Report.verdict
