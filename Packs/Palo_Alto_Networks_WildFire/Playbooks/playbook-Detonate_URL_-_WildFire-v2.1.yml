@@ -776,7 +776,7 @@ outputs:
   description: Verdict of the detection.
   type: string
 - contextPath: WildFire.Report.detection_reasons.artifacts
-  description: Artifacts of the detection reasons.
+  description: Artifacts for the detection reasons.
   type: string
 - contextPath: WildFire.Report.iocs
   description: IOCs associated.
