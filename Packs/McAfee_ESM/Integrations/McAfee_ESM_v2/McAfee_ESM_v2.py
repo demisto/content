@@ -213,16 +213,21 @@ class McAfeeESMClient(BaseClient):
         :param raw: ignore the human outputs if True
         :return: list of all Users
         """
+        demisto.debug("In the function get_case_list")
         path = 'caseGetCaseList'
         since = self.args.get('since', '1 year')
+        demisto.debug(f"In the function get_case_list, since is {since}")
         context_entry = []
         human_readable: str = ''
         if not raw and not start_time:
             _, start_time, _ = set_query_times(since=since, difference=self.difference)
             start_time = convert_time_format(str(start_time), difference=self.difference)
         result: List = self.__request(path)
+        demisto.debug(f"In the function get_case_list, result is {result}")
         for case in result:
+            demisto.debug(f"In the function get_case_list, current case is {case}")
             case = dict_times_set(case, self.difference)
+            demisto.debug(f"In the function get_case_list, current case (after dict_times_set) is {case}")
             if not start_time or not start_time > case.get('openTime'):
                 temp_case = {
                     'ID': case.get('id'),
@@ -230,11 +235,15 @@ class McAfeeESMClient(BaseClient):
                     'OpenTime': case.get('openTime'),
                     'Severity': case.get('severity')
                 }
+                demisto.debug(f"temp_case is {temp_case}")
                 if 'statusId' in case:
                     status_id = case.get('statusId', {})
+                    demisto.debug(f"status_id is {status_id}")
                     if isinstance(status_id, dict):
                         status_id = status_id.get('value')
+                        demisto.debug(f"status_id is {status_id}")
                     temp_case['Status'] = self.__status_and_id(status_id=status_id).get('name')
+                    demisto.debug(f"temp_case['Status'] is {temp_case['Status']}")
                 context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
@@ -646,10 +655,15 @@ class McAfeeESMClient(BaseClient):
         return all_alarms, current_run
 
     def __cases_to_incidents(self, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
+        demisto.debug("In the function __cases_to_incidents")
         _, _, all_cases = self.get_case_list(raw=True)
+        demisto.debug(f"In the function __cases_to_incidents after get_case_list, all_cases is {all_cases}")
         all_cases = filtering_incidents(all_cases, start_id=start_id, limit=limit)
+        demisto.debug(f"In the function __cases_to_incidents after filtering_incidents, all_cases is {all_cases}")
         current_run = {'id': all_cases[0].get('id', start_id) if all_cases else start_id}
+        demisto.debug(f"In the function __cases_to_incidents current_run is {current_run}")
         all_cases = create_incident(all_cases, alarms=False)
+        demisto.debug(f"In the function __cases_to_incidents all_cases (after create_incident) is: {all_cases}")
         return all_cases, current_run
 
     def __get_watchlists(self, args):
@@ -806,11 +820,18 @@ def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
     :param limit: limit
     :return: the filtered incidents
     """
+    demisto.debug(
+        f"In filtering_incidents, incidents_list is {incidents_list}, start_id is {start_id}, limit is {limit}")
     incidents_list = [incident for incident in incidents_list if int(incident.get('id', 0)) > start_id]
+    demisto.debug(f"new incidents_list is {incidents_list}")
     incidents_list.sort(key=lambda case: int(case.get('id', 0)), reverse=True)
+    demisto.debug(f"sorted new incidents_list is {incidents_list}")
     if limit != 0:
+        demisto.debug("limit is not 0")
         cases_size = min(limit, len(incidents_list))
+        demisto.debug(f"cases size is {cases_size}")
         incidents_list = incidents_list[-cases_size:]
+        demisto.debug(f"incidents_list is : {incidents_list}")
     return incidents_list
 
 
