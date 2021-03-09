@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import warnings
+
 warnings.simplefilter("ignore")
 import numpy as np
 import re
@@ -12,14 +13,14 @@ import json
 import pandas as pd
 from scipy.spatial.distance import cdist
 
-FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name']
+FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name', 'final_score', 'similarity indicators']
 REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id']
 MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected -  2) Selected field are empty for this incident - 3) Fields are misspelled"
 MESSAGE_NO_INCIDENT_FETCHED = "No incident found with these exact match for the given date"
 MESSAGE_WARNING_TRUNCATED = "%s incidents fetched with exact match. Incident have been truncated due to query limit of %s. You will miss some incidents. Try to add exact matchs or increase limit argument"
 MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check"
 MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist"
-
+ORDER_SCORE = ['final_score', 'similarity indicators']
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -28,18 +29,36 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
                                       'maxIncidentsToDisplay': '3000'
                                       }
 
+REGEX_DATE_PATTERN = ["^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z", "(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"]
+REGEX_IP = r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
 
-def keep_high_level_field(incidents_field):
+
+def keep_high_level_field(incidents_field: List[str]) -> List[str]:
+    """
+    Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
+    :param incidents_field: lis of incident fields
+    :return: Return list of fields
+    """
     return [x.split('.')[0] if '.' in x else x for x in incidents_field]
 
 
-def wrapped_list(obj):
+def wrapped_list(obj: List) -> List:
+    """
+    Wrapped object into a list if not list
+    :param obj:
+    :return:
+    """
     if not isinstance(obj, list):
         return [obj]
     return obj
 
 
-def preprocess_incidents_field(incidents_field):
+def preprocess_incidents_field(incidents_field: str) -> str:
+    """
+    Remove prefixe from incident field
+    :param incidents_field: field
+    :return: field without prefix
+    """
     incidents_field = incidents_field.strip()
     for prefix in PREFIXES_TO_REMOVE:
         if incidents_field.startswith(prefix):
@@ -47,7 +66,12 @@ def preprocess_incidents_field(incidents_field):
     return incidents_field
 
 
-def check_list_of_dict(obj):
+def check_list_of_dict(obj) -> bool:
+    """
+    If object is list of dict
+    :param obj: any object
+    :return: boolean if object is list of dict
+    """
     return bool(obj) and all(isinstance(elem, dict) for elem in obj)
 
 
@@ -57,10 +81,14 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-regex_pattern = ["^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z", "(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"]
+def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *forbidden):
+    """
 
-
-def recursive_filter(item, regex_patterns, *forbidden):
+    :param item: Dict of list of Dict
+    :param regex_patterns: List of regex pattern to remove from the dict
+    :param forbidden: values to remove from the object
+    :return: Dict or List of Dict without unwanted values or regex pattern
+    """
     if isinstance(item, list):
         return [recursive_filter(entry, regex_patterns, *forbidden) for entry in item if entry not in forbidden]
     if isinstance(item, dict):
@@ -73,18 +101,29 @@ def recursive_filter(item, regex_patterns, *forbidden):
     return item
 
 
-def match_one_regex(string, pattern):
+def match_one_regex(string, patterns):
+    """
+    If string matches one or more from patterns
+    :param string: string
+    :param patterns: List of regex pattern
+    :return:
+    """
     if not isinstance(string, str):
         return False
-    if len(pattern) == 0:
+    if len(patterns) == 0:
         return False
-    if len(pattern) == 1:
-        return bool(re.match(pattern[0], string))
+    if len(patterns) == 1:
+        return bool(re.match(patterns[0], string))
     else:
-        return (match_one_regex(string, pattern[1:]) or bool(re.match(pattern[0], string)))
+        return (match_one_regex(string, patterns[1:]) or bool(re.match(patterns[0], string)))
 
 
 def normalize_json(obj):
+    """
+    Normalize json from removing unwantd regex pattern or stop word
+    :param obj:Dumps of a json or dict
+    :return:
+    """
     if isinstance(obj, float) or not obj:
         return " "
     if isinstance(obj, str):
@@ -93,7 +132,7 @@ def normalize_json(obj):
         obj = {k: v for k, v in enumerate(obj)}
     if not isinstance(obj, dict):
         return " "
-    my_dict = recursive_filter(obj, regex_pattern, "None", "N/A", None, "")
+    my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     my_string = json.dumps(my_dict)
     pattern = re.compile('([^\s\w]|_)+')
     my_string = pattern.sub(" ", my_string)
@@ -102,19 +141,16 @@ def normalize_json(obj):
 
 
 def normalize_command_line(my_string):
-    pattern_IP = r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
     if my_string and isinstance(my_string, str):
         my_string = my_string.lower()
-        my_string = my_string.replace("Program Files (x86)", "ProgramFiles(x86)")
         my_string = my_string.replace("=", " = ")
         my_string = my_string.replace("\\", "/")
         my_string = my_string.replace("[", "")
         my_string = my_string.replace("]", "")
-        # my_string = ' '.join([os.path.basename(x) for x in my_string.split(' ')])
         my_string = my_string.replace('"', "")
         my_string = my_string.replace("'", "")
 
-        my_string = re.sub(pattern_IP, 'IP', my_string)
+        my_string = re.sub(REGEX_IP, 'IP', my_string)
         return my_string
     else:
         return ''
@@ -143,40 +179,76 @@ def normalize_identity(my_string):
 
 
 def cdist_new(X, y):
+    """
+    Return max between 1 and euclidian distance between X and y
+    :param X: np.array n*m
+    :param y: np.array 1*m
+    :return: np.array of ditance 1*n
+    """
     return np.maximum(1 - cdist(X, y)[:, 0], 0)  # , metric='cosine'
 
 
 def identity(X, y):
+    """
+    Return np.nan if value is different and 1 if value is the same
+    :param X: np.array
+    :param y: np.array
+    :return; np.array
+    """
     z = (X.to_numpy() == y.to_numpy()).astype(float)
     z[z == 0] = np.nan
     return z
 
 
 class Tfidf(BaseEstimator, TransformerMixin):
-    def __init__(self, feature_names, tfidf_params, normalize_function, x):
-        self.feature_names = feature_names
+    """
+    TFIDF transformer
+    """
+
+    def __init__(self, incident_field: str, tfidf_params: dict, normalize_function, current_incident):
+        """
+        :param incident_field: incident on which we want to use the transformer
+        :param tfidf_params: parameters of TFIDF
+        :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
+        :param current_incident: current incident
+        """
+        self.incident_field = incident_field
         self.params = tfidf_params
         self.normalize_function = normalize_function
         if self.normalize_function:
-            x = x[self.feature_names].apply(self.normalize_function)
-        self.vocabulary = TfidfVectorizer(**self.params, use_idf=False).fit(x).vocabulary_
+            current_incident = current_incident[self.incident_field].apply(self.normalize_function)
+        self.vocabulary = TfidfVectorizer(**self.params, use_idf=False).fit(current_incident).vocabulary_
         self.vec = TfidfVectorizer(**self.params, vocabulary=self.vocabulary)
 
-    def fit(self, x, y=None):
+    def fit(self, x):
+        """
+        Fit TFIDF transformer
+        :param x: incident on which we want to fit the transfomer
+        :return: self
+        """
         if self.normalize_function:
-            x = x[self.feature_names].apply(self.normalize_function)
+            x = x[self.incident_field].apply(self.normalize_function)
         self.vec.fit(x)
         return self
 
-    def transform(self, x, y=None):
+    def transform(self, x):
+        """
+        Transform x with the trained vectorizer
+        :param x: DataFrame or np.array
+        :return:
+        """
         if self.normalize_function:
-            x = x[self.feature_names].apply(self.normalize_function)
+            x = x[self.incident_field].apply(self.normalize_function)
         else:
-            x = x[self.feature_names]
+            x = x[self.incident_field]
         return self.vec.transform(x).toarray()
 
 
 class Identity(BaseEstimator, TransformerMixin):
+    """
+    Identity transformer for Categorical field
+    """
+
     def __init__(self, feature_names, identity_params, normalize_function, x=None):
         self.feature_names = feature_names
         self.normalize_function = normalize_function
@@ -195,38 +267,53 @@ TRANSFORMATION = {
     'commandline': {'transformer': Tfidf,
                     'normalize': normalize_command_line,
                     'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
-                    'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+                    'scoring_function': cdist_new
                     },
 
     'url': {'transformer': Tfidf,
             'normalize': normalize_identity,
             'params': {'analyzer': 'char', 'max_features': 100, 'ngram_range': (1, 5)},
-            'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+            'scoring_function': cdist_new
             },
     'potentialMatch': {'transformer': Identity,
                        'normalize': None,
                        'params': {},
-                       'scoring': {'scoring_function': identity, 'min': 0.5}
+                       'scoring_function': identity
                        },
     'json': {'transformer': Tfidf,
              'normalize': normalize_json,
              'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
-             'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+             'scoring_function': cdist_new
              }
 
 }
 
 
 class Transformer():
-    def __init__(self, p_type, field, p_incidents_df, p_incident_to_match, p_params):
-        self.type = p_type
+    """
+    Class for Transformer
+    """
+
+    def __init__(self, p_transformer_type, field, p_incidents_df, p_incident_to_match, p_params):
+        """
+        :param p_transformer_type: One of the key value of TRANSFORMATION dict
+        :param field: incident field used in this transformation
+        :param p_incidents_df: DataFrame of incident (should contains one columns which same name than incident_field)
+        :param p_incident_to_match: DataFrame of the current incident
+        :param p_params: Dictionary of all the transformation - TRANSFORMATION
+        """
+        self.transformer_type = p_transformer_type
         self.field = field
         self.incident_to_match = p_incident_to_match
         self.incidents_df = p_incidents_df
         self.params = p_params
 
     def fit_transform(self):
-        transformation = self.params[self.type]
+        """
+        Fit self.incident_to_match and transform self.incidents_df and self.incident_to_match
+        :return:
+        """
+        transformation = self.params[self.transformer_type]
         transformer = transformation['transformer'](self.field, transformation['params'], transformation['normalize'],
                                                     self.incident_to_match)
         X_vect = transformer.fit_transform(self.incidents_df)
@@ -235,98 +322,127 @@ class Transformer():
         return X_vect, incident_vect
 
     def get_score(self):
-        scoring_function = self.params[self.type]['scoring']['scoring_function']
+        """
+        :return: Add one columns 'similarity %s' % self.field to self.incidents_df Dataframe with the score
+        """
+        scoring_function = self.params[self.transformer_type]['scoring_function']
         X_vect, incident_vect = self.fit_transform()
         dist = scoring_function(X_vect, incident_vect)
         self.incidents_df['similarity %s' % self.field] = np.round(dist, 2)
         return self.incidents_df
 
-    def filter(self):
-        return self.incidents_df[self.incidents_df.dist < self.params[self.type]['scoring']['min']]
-
 
 class Model:
     def __init__(self, p_transformation):
+        """
+        :param p_transformation: Dict with the transformers parameters - TRANSFORMATION
+        """
         self.transformation = p_transformation
 
-    def init_prediction(self, p_incident_to_match, p_incidents_df, p_command_line=[],
-                        p_potential_exact_match=[], p_display_fields_incidents=[], p_json_fields=[]):
+    def init_prediction(self, p_incident_to_match, p_incidents_df, p_field_for_command_line=[],
+                        p_field_for_potential_exact_match=[], p_field_for_display_fields_incidents=[],
+                        p_field_for_json=[]):
+        """
+
+        :param p_incident_to_match: Dataframe with one incident
+        :param p_incidents_df: Dataframe with all the incidents
+        :param p_field_for_command_line: list of incident fields that for the transformer 'command_line'
+        :param p_field_for_potential_exact_match: list of incident fields that for the transformer 'potential_exact_match'
+        :param p_field_for_display_fields_incidents: list of incident fields that for the transformer 'display_fields_incidents'
+        :param p_field_for_json: list of incident fields that for the transformer 'json'
+        :return:
+        """
         self.incident_to_match = p_incident_to_match
         self.incidents_df = p_incidents_df
-        self.command_line = p_command_line
-        self.potential_exact_match = p_potential_exact_match
-        self.display_fields_incidents = p_display_fields_incidents
-        self.json = p_json_fields
+        self.field_for_command_line = p_field_for_command_line
+        self.field_for_potential_exact_match = p_field_for_potential_exact_match
+        self.field_for_display_fields_incidents = p_field_for_display_fields_incidents
+        self.field_for_json = p_field_for_json
 
     def predict(self):
         self.remove_empty_field()
         self.get_score()
         self.compute_final_score()
-        return self.display(), self.command_line + self.potential_exact_match + self.json
+        return self.prepare_for_display(), self.field_for_command_line + self.field_for_potential_exact_match + self.field_for_json
 
     def remove_empty_field(self):
+        """
+        Remove field where value if empty or unusable or does not exist in the incident...
+        :return:
+        """
         remove_list = []
-        for field in self.command_line:
+        for field in self.field_for_command_line:
             if not field in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
                     self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
                 0] == 'N/A':
                 remove_list.append(field)
-        self.command_line = [x for x in self.command_line if x not in remove_list]
+        self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
 
         remove_list = []
-        for field in self.potential_exact_match:
+        for field in self.field_for_potential_exact_match:
             if not field in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
                     self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
                 0] == 'N/A':
                 remove_list.append(field)
-        self.potential_exact_match = [x for x in self.potential_exact_match if x not in remove_list]
+        self.field_for_potential_exact_match = [x for x in self.field_for_potential_exact_match if x not in remove_list]
 
         remove_list = []
-        for field in self.json:
+        for field in self.field_for_json:
             if not field in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
                 0] == 'N/A' or all(not x for x in self.incident_to_match[field].values[0]):
                 remove_list.append(field)
-        self.json = [x for x in self.json if x not in remove_list]
-
-        # remove_list = []
-        # for field in self.display_fields_incidents:
-        #     if not field in self.incident_to_match.columns or not self.incident_to_match[field].values[
-        #         0] or self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
-        #         0] == 'N/A' or all(not x for x in self.incident_to_match[field].values[0]):
-        #         remove_list.append(field)
-        # self.display_fields_incidents = [x for x in self.json if x not in remove_list]
+        self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
 
     def get_score(self):
-        for field in self.command_line:
+        """
+        Apply transformation for each field in possible transformer
+        :return:
+        """
+        for field in self.field_for_command_line:
             t = Transformer('commandline', field, self.incidents_df, self.incident_to_match, self.transformation)
             t.get_score()
-        for field in self.potential_exact_match:
+        for field in self.field_for_potential_exact_match:
             t = Transformer('potentialMatch', field, self.incidents_df, self.incident_to_match, self.transformation)
             t.get_score()
-        for field in self.json:
+        for field in self.field_for_json:
             t = Transformer('json', field, self.incidents_df, self.incident_to_match, self.transformation)
             t.get_score()
 
     def compute_final_score(self):
+        """
+        Compute final score based on average of similarity score for each field transformed
+        :return:
+        """
         col = self.incidents_df.loc[:,
-              ['similarity %s' % field for field in self.command_line + self.json]]
+              ['similarity %s' % field for field in self.field_for_command_line + self.field_for_json]]
         self.incidents_df['final_score'] = np.round(col.mean(axis=1), 2)
 
-    def display(self):
+    def prepare_for_display(self):
         self.compute_final_score()
         display_fields = remove_duplicates(
-            self.display_fields_incidents + self.command_line + self.potential_exact_match + [
+            self.field_for_display_fields_incidents + self.field_for_command_line + self.field_for_potential_exact_match + [
                 'similarity %s' % field for field in
-                self.command_line + self.json + self.potential_exact_match])
-        df_sorted = self.incidents_df[display_fields + ['final_score']]  # .sort_values(by=display_fields)
+                self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match])
+        df_sorted = self.incidents_df[display_fields + ['final_score']]
         return df_sorted
 
 
-def display_similar_incident(similar_incidents, confidence, show_distance, max_incidents, fields_used, confidence_dict,
-                             aggregate):
+def organize_data(similar_incidents: pd.DataFrame, confidence: float, show_distance: bool, max_incidents: int,
+                  fields_used: List[str],
+                  aggregate) -> pd.DataFrame:
+    """
+    Organize data
+    :param similar_incidents: DataFrame of incident
+    :param confidence: threshold for similarity score
+    :param show_distance: If wants to show distance for each of the field
+    :param max_incidents: max incidents in the results
+    :param fields_used: field used to compute final score
+    :param aggregate: if aggragate the data that are identical according to the field - False if used indicators
+    :return: Organized Dataframe
+    """
     similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
 
     if aggregate == 'True':
@@ -337,7 +453,6 @@ def display_similar_incident(similar_incidents, confidence, show_distance, max_i
                 'id': lambda x: ' , '.join(x)}
         )
 
-    similar_incidents.sort_values(by=['final_score'], ascending=False, inplace=True)
     if confidence:
         similar_incidents = similar_incidents[similar_incidents.final_score >= confidence]
     if show_distance == 'False':
@@ -347,8 +462,13 @@ def display_similar_incident(similar_incidents, confidence, show_distance, max_i
     return similar_incidents.head(max_incidents)
 
 
-# Get incident acording to incident id
-def get_incidents_to_predict(incident_id, populate_fields):
+def get_incidents_to_predict(incident_id: str, populate_fields: List[str]):
+    """
+    Get incident acording to incident id
+    :param incident_id:
+    :param populate_fields:
+    :return: Get incident acording to incident id
+    """
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:(%s)" % incident_id,
         'populateFields': ' , '.join(populate_fields)
@@ -362,14 +482,25 @@ def get_incidents_to_predict(incident_id, populate_fields):
         return incident[0]
 
 
-# Get incidents for a time window and exat match for somes fields
-def get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_fields, incident, from_date, to_date,
-                                                      query_sup, limit):
+def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[str], populate_fields: List[str],
+                                                      incident: Dict, from_date: str, to_date: str,
+                                                      query_sup: str, limit: int):
+    """
+    Get incidents for a time window and exact match for somes fields
+    :param exact_match_fields: List of field for exact match
+    :param populate_fields: List of field to populate
+    :param incident: json representing the current incident
+    :param from_date: from_date
+    :param to_date: to_date
+    :param query_sup: additional query
+    :param limit: limit of how many incidents we want to query
+    :return:
+    """
     msg = ""
     exact_match_fields_list = []
     for exact_match_field in exact_match_fields:
         if exact_match_field not in incident.keys():
-            msg+="%s \n" % MESSAGE_NO_FIELD % exact_match_field
+            msg += "%s \n" % MESSAGE_NO_FIELD % exact_match_field
         else:
             exact_match_fields_list.append('%s: "%s"' % (exact_match_field, incident[exact_match_field]))
     query = " AND ".join(exact_match_fields_list)
@@ -388,15 +519,19 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields, popula
         return_error(res)
     incidents = json.loads(res[0]['Contents'])
     if len(incidents) == 0:
-        msg +="%s \n" % MESSAGE_NO_INCIDENT_FETCHED
+        msg += "%s \n" % MESSAGE_NO_INCIDENT_FETCHED
         return None, msg
     if len(incidents) == limit:
-        msg +="%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))
+        msg += "%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))
         return None, msg
     return incidents, msg
 
 
 def get_args():
+    """
+    Gets argument of this automation
+    :return: Argument of this automation
+    """
     use_all_field = demisto.args().get('useAllFields')
     if use_all_field == 'True':
         similar_text_field = ['details', 'name']
@@ -431,14 +566,20 @@ def get_args():
     show_actual_incident = demisto.args().get('showActualIncident')
     incident_id = demisto.args().get('incidentId')
     include_indicators_similarity = demisto.args().get('includeIndicatorsSimilarity')
-    if include_indicators_similarity=='True':
+    if include_indicators_similarity == 'True':
         aggregate = 'False'
 
     return similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, \
            from_date, to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, incident_id, include_indicators_similarity
 
 
-def load_current_incident(incident_id, populate_fields):
+def load_current_incident(incident_id: str, populate_fields: List[str]):
+    """
+    Load current incident if incident_id given or load current incident investigated
+    :param incident_id: incident_id
+    :param populate_fields: populate_fields
+    :return:
+    """
     if not incident_id:
         incident = demisto.incidents()[0]
         cf = incident.pop('CustomFields', {}) or {}
@@ -453,17 +594,33 @@ def load_current_incident(incident_id, populate_fields):
 
 
 def remove_fields_not_in_incident(*args, incorrect_fields):
+    """
+    Return list without field in incorrect_fields
+    :param args: *List of fields
+    :param incorrect_fields: fields that we don't want
+    :return:
+    """
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]
 
 
-def get_similar_incidents_by_indicators(args):
+def get_similar_incidents_by_indicators(args: Dict):
+    """
+    Use DBotFindSimilarIncidentsByIndicators automation and return similars incident from the automation
+    :param args: argument for DBotFindSimilarIncidentsByIndicators automation
+    :return:  return similars incident from the automation
+    """
     res = demisto.executeCommand('DBotFindSimilarIncidentsByIndicators', args)
     if is_error(res):
         return_error(get_error(res))
     return res[1]['Contents']
 
 
-def dumps_dict_current_incident(incident):
+def dumps_dict_current_incident(incident: Dict):
+    """
+    Dumps value that are dict in for incident values
+    :param incident: json representing the incident
+    :return:
+    """
     for field in incident.keys():
         if isinstance(incident[field], dict):
             incident[field] = json.dumps(incident[field])
@@ -502,12 +659,11 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
 
 
 def return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, col, context):
+    similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     incident_json = incident_filter.to_dict(orient='records')
     if show_actual_incident == 'True':
         return_outputs(readable_output=tableToMarkdown("Actual incident", incident_json))
-    demisto.results(json.dumps(context))
-    demisto.results(json.dumps(similar_incidents_json))
     return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, col),
                    outputs={'DBotFindSimilarIncidents': context})
 
@@ -518,6 +674,7 @@ def find_incorrect_fields(populate_fields, incidents_df, global_msg):
         global_msg += "%s \n" % "%s might not be corect spelling. Please correct or ignore this message" % ' , '.join(
             incorrect_fields)
     return global_msg, incorrect_fields
+
 
 def return_outputs_similar_incidents_empty():
     hr = '### Similar Incident' + '\n'
@@ -531,12 +688,18 @@ def enriched_with_indicators_similarity(full_args_indicators_script, similar_inc
     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
     keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
-    demisto.results(similar_incidents.head(2))
-    demisto.results(indicators_similarity_df.head(2))
     return similar_incidents.join(indicators_similarity_df[keep_columns])
 
+
+def add_indicators_data(full_args_indicators_script, similar_incidents):
+    similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
+    values = {'similarity indicators': 0, 'Identical indicators': "", 'type': ""}
+    similar_incidents = similar_incidents.fillna(value=values)
+    similar_incidents = similar_incidents.sort_values(by=ORDER_SCORE, ascending=False)
+    return similar_incidents
+
+
 def main():
-    confidence_dict = {'HIGH': 0.2, 'MEDIUM': 0.4, 'LOW': 0.6, 'ALL': 100}
     similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, from_date, \
     to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, incident_id, include_indicators_similarity = get_args()
 
@@ -568,7 +731,6 @@ def main():
     incidents_df = pd.DataFrame(incidents)
     incidents_df.index = incidents_df.id
 
-
     incidents_df = fill_nested_fields(incidents_df, incidents, similar_text_field, similar_categorical_field)
 
     # Find given fields that does not exist in the incident
@@ -596,15 +758,12 @@ def main():
         return_outputs_similar_incidents_empty()
         return
 
-
-    similar_incidents = display_similar_incident(similar_incidents, confidence, show_distance, max_incidents,
-                                                 fields_used, confidence_dict, aggregate)
+    similar_incidents = organize_data(similar_incidents, confidence, show_distance, max_incidents,
+                                      fields_used, aggregate)
     # Get similarity based on indicators
     if include_indicators_similarity == "True":
         full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **demisto.args()}
-        similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
-    demisto.results(similar_incidents)
-    return_outputs(readable_output=tableToMarkdown("test", similar_incidents.to_dict(orient='records')))
+        similar_incidents = add_indicators_data(full_args_indicators_script, similar_incidents)
 
     # Filter incident to investigate
     incident_filter = incident_df[[x for x in
@@ -613,7 +772,8 @@ def main():
 
     # Columns to show for outputs
     col = similar_incidents.columns.tolist()
-    col = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col if (x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
+    col = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col if (
+            x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     # Return summary outputs of the automation
     number_incidents_found = len(similar_incidents)
@@ -622,8 +782,6 @@ def main():
     # Create context and outputs
     context = create_context_for_incidents(similar_incidents)
     return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, col, context)
-
-
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
