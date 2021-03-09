@@ -1,9 +1,5 @@
 Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
 
-## Prerequisites
-This integration requires root access in order to execute commands. 
-If you configured the server to run Docker images with a non-root internal user make sure to exclude the *demisto/pwsh-exchange* Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html).
-
 ## Script Data
 ---
 

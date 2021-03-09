@@ -3198,15 +3198,12 @@
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
-            "playbookID": "EWS Extension: Powershell Online V2 Test",
-            "instance_names": "ews_pwsh_module_v2",
+            "playbookID": "EWS Extension: Powershell Online V2 Test"
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
         },
         {
-            "integrations": "EWS Extension Online Powershell v2",
-            "instance_names": "HERE-TO-ADD-THE-DOCKER-RUN-IGNORE-DO-NOT-USE",
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
         }
