@@ -1,0 +1,735 @@
+id: G Suite Security Alert Center-Test
+version: -1
+name: G Suite Security Alert Center-Test
+description: This playbook uses the G Suite Security Alert Center integration and
+  tests all the commands of the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6bd5e634-2c0b-48ce-8029-d6e451ceb44e
+    type: start
+    task:
+      id: 6bd5e634-2c0b-48ce-8029-d6e451ceb44e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b7a41c6d-3576-444e-85e7-c2d3e26c9915
+    type: regular
+    task:
+      id: b7a41c6d-3576-444e-85e7-c2d3e26c9915
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7f71b1ff-a8cc-4d14-81d9-59eb933fff69
+    type: condition
+    task:
+      id: 7f71b1ff-a8cc-4d14-81d9-59eb933fff69
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.startTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.endTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.updateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.updateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.etag
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9163bb07-da1e-49ac-8ef0-2e38d461688c
+    type: condition
+    task:
+      id: 9163bb07-da1e-49ac-8ef0-2e38d461688c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.startTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.endTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.updateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.updateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Alert.metadata.etag
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0139d324-c3c2-4852-8518-d88e74fe71e0
+    type: condition
+    task:
+      id: 0139d324-c3c2-4852-8518-d88e74fe71e0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.customerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.feedbackId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Feedback.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 306caec1-328b-42fc-8d49-cf6a876459e9
+    type: condition
+    task:
+      id: 306caec1-328b-42fc-8d49-cf6a876459e9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Delete.successAlerts.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 93ce29cd-31cd-4e1f-8545-1fdad398efce
+    type: condition
+    task:
+      id: 93ce29cd-31cd-4e1f-8545-1fdad398efce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuiteSecurityAlert.Recover.successAlerts.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: cd9b625f-a67b-4d29-8b5c-cd3f4965f404
+    type: title
+    task:
+      id: cd9b625f-a67b-4d29-8b5c-cd3f4965f404
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 04defe93-fc13-4cac-850e-46ed8a96a108
+    type: regular
+    task:
+      id: 04defe93-fc13-4cac-850e-46ed8a96a108
+      version: -1
+      name: Set single Alert ID in context
+      description: Set a value of alert id in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: GSuiteSecurityAlertTestPlayBook.AlertId
+      stringify: {}
+      value:
+        simple: ${GSuiteSecurityAlert.Alert.[0].alertId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 8f62a584-9a78-41fb-84b9-c734e30b90b7
+    type: regular
+    task:
+      id: 8f62a584-9a78-41fb-84b9-c734e30b90b7
+      version: -1
+      name: DeleteContext GSuiteSecurityAlert
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GSuiteSecurityAlert
+      keysToKeep:
+        simple: GSuiteSecurityAlertTestPlayBook
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 2fd76170-8727-47fd-8c17-2581951ac84b
+    type: regular
+    task:
+      id: 2fd76170-8727-47fd-8c17-2581951ac84b
+      version: -1
+      name: DeleteContext GSuiteSecurityAlertTestPlayBook
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GSuiteSecurityAlertTestPlayBook
+      keysToKeep:
+        simple: GSuiteSecurityAlert
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: b178b851-e67c-4df6-8a81-24e9a905d2d2
+    type: regular
+    task:
+      id: b178b851-e67c-4df6-8a81-24e9a905d2d2
+      version: -1
+      name: gsac-alert-list
+      description: 'Lists the alerts. Use the filter to filter it by various alert
+        types. Note: The alerts that have been marked for deletion in the past 30
+        days will still be visible.'
+      script: G Suite Security Alert Center|||gsac-alert-list
+      type: regular
+      iscommand: true
+      brand: G Suite Security Alert Center
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      filter: {}
+      order_by: {}
+      page_size: {}
+      page_token: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: d8b2052a-8829-4e99-8fb5-37d67f4af4a8
+    type: regular
+    task:
+      id: d8b2052a-8829-4e99-8fb5-37d67f4af4a8
+      version: -1
+      name: gsac-alert-get
+      description: "Gets the specified alert. \nNote: To get the alert_id, execute\
+        \ gsac-alert-list  command."
+      script: G Suite Security Alert Center|||gsac-alert-get
+      type: regular
+      iscommand: true
+      brand: G Suite Security Alert Center
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: GSuiteSecurityAlertTestPlayBook
+          accessor: AlertId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: f5cafb66-46a4-45c3-81d2-70822cf870d3
+    type: regular
+    task:
+      id: f5cafb66-46a4-45c3-81d2-70822cf870d3
+      version: -1
+      name: gsac-alert-feedback-list
+      description: Lists all the feedback for an alert.
+      script: G Suite Security Alert Center|||gsac-alert-feedback-list
+      type: regular
+      iscommand: true
+      brand: G Suite Security Alert Center
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_id:
+        simple: '-'
+      filter: {}
+      page_size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 131295f7-82ca-42f2-881d-84593fb2eb7d
+    type: regular
+    task:
+      id: 131295f7-82ca-42f2-881d-84593fb2eb7d
+      version: -1
+      name: gsac-alert-delete
+      description: 'Performs delete operation on alerts. Note: The alerts that are
+        marked for deletion will be removed from Alert Center after 30 days.'
+      script: G Suite Security Alert Center|||gsac-alert-delete
+      type: regular
+      iscommand: true
+      brand: G Suite Security Alert Center
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: GSuiteSecurityAlertTestPlayBook
+          accessor: AlertId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e176a131-9c08-4fe6-88c3-508d4729be4c
+    type: regular
+    task:
+      id: e176a131-9c08-4fe6-88c3-508d4729be4c
+      version: -1
+      name: gsac-alert-recover
+      description: |-
+        Performs recover operation on alerts.
+        Note: Recovers the alerts that were marked for deletion within the past 30 days.
+      script: G Suite Security Alert Center|||gsac-alert-recover
+      type: regular
+      iscommand: true
+      brand: G Suite Security Alert Center
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: GSuiteSecurityAlertTestPlayBook
+          accessor: AlertId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_24_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2855,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
