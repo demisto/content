@@ -197,39 +197,34 @@ tasks:
         }
       }
   "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.KrebsOnSecurity
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: Get News from vendor
     id: "5"
-    description: Check vendor - Krebs on Security
-    ignoreworker: false
+    taskid: f48c44d8-3059-4972-8c00-51993d77c5ae
+    type: condition
+    task:
+      id: f48c44d8-3059-4972-8c00-51993d77c5ae
+      version: -1
+      name: Get Vendor - Krebs on Security
+      description: Gets the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "11"
       Get News from vendor:
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 76ed1385-ddba-4d11-831d-bfd864772cfa
-      iscommand: false
-      name: Get Vendor - Krebs on Security
-      type: condition
-      version: -1
-    taskid: 76ed1385-ddba-4d11-831d-bfd864772cfa
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.KrebsOnSecurity
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -237,29 +232,29 @@ tasks:
           "y": 160
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    description: Get News from Krebs on Security
-    ignoreworker: false
+    taskid: 1bf948d8-57f1-4700-81cb-7562f5caff39
+    type: regular
+    task:
+      id: 1bf948d8-57f1-4700-81cb-7562f5caff39
+      version: -1
+      name: Get News Krebs on Security
+      description: Gets news from Krebs on Security
+      script: Popular News|||get-news-KrebsOnSecurity
+      type: regular
+      iscommand: true
+      brand: Popular News
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Popular News
-      id: 7877930a-1419-4563-88a5-6b79f3666c0a
-      iscommand: true
-      name: Get News Krebs on Security
-      script: Popular News|||get-news-KrebsOnSecurity
-      type: regular
-      version: -1
-    taskid: 7877930a-1419-4563-88a5-6b79f3666c0a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -267,40 +262,40 @@ tasks:
           "y": 370
         }
       }
-  "7":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.TheHackerNews
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: Get News from vendor
-    id: "7"
-    description: Check vendor The Hacker News
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4fb05232-9b7e-4fab-8cc8-1ff6da08cd11
+    type: condition
+    task:
+      id: 4fb05232-9b7e-4fab-8cc8-1ff6da08cd11
+      version: -1
+      name: Get Vendor - The Hacker News
+      description: Gets  the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "11"
       Get News from vendor:
       - "10"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 831c2fe7-529b-4b03-8f10-ad818dbd54fd
-      iscommand: false
-      name: Check Vendor - The Hacker News
-      type: condition
-      version: -1
-    taskid: 831c2fe7-529b-4b03-8f10-ad818dbd54fd
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TheHackerNews
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -308,40 +303,40 @@ tasks:
           "y": 160
         }
       }
-  "8":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.ThreatPost
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: Get News from vendor
-    id: "8"
-    description: Check Vendor - Threatpost
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f99d1473-c3a2-40bc-86d2-2d9f779ba60a
+    type: condition
+    task:
+      id: f99d1473-c3a2-40bc-86d2-2d9f779ba60a
+      version: -1
+      name: Get Vendor - Threat Post
+      description: Gets  the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "11"
       Get News from vendor:
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 8016cdaf-b21b-47a0-8319-c4751750b2fb
-      iscommand: false
-      name: Get Vendor - Threat Post
-      type: condition
-      version: -1
-    taskid: 8016cdaf-b21b-47a0-8319-c4751750b2fb
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThreatPost
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -349,29 +344,29 @@ tasks:
           "y": 160
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 332045c7-c82d-4ac6-8e8f-22e4708a00cc
+    type: regular
+    task:
+      id: 332045c7-c82d-4ac6-8e8f-22e4708a00cc
+      version: -1
+      name: Get News Threat Post
+      description: Gets news from Threatpost
+      script: Popular News|||get-news-Threatpost
+      type: regular
+      iscommand: true
+      brand: Popular News
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     reputationcalc: 1
-    description: Gets news from Threatpost
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Popular News
-      id: 18e708ce-a0fd-443b-869a-5c2a5aa0cf2e
-      iscommand: true
-      name: Get News Threat Post
-      script: Popular News|||get-news-Threatpost
-      type: regular
-      version: -1
-    taskid: 18e708ce-a0fd-443b-869a-5c2a5aa0cf2e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -379,29 +374,29 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 6976b9b1-1409-4f8c-88ee-5a3abbe2e096
+    type: regular
+    task:
+      id: 6976b9b1-1409-4f8c-88ee-5a3abbe2e096
+      version: -1
+      name: Get News The Hacker News
+      description: Gets news from The Hacker News
+      script: Popular News|||get-news-TheHackerNews
+      type: regular
+      iscommand: true
+      brand: Popular News
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
-    description: Get news from The Hacker News
     reputationcalc: 1
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Popular News
-      id: 7c780329-33b7-4a2c-8678-608492338079
-      iscommand: true
-      name: Get News The Hacker News
-      script: Popular News|||get-news-TheHackerNews
-      type: regular
-      version: -1
-    taskid: 7c780329-33b7-4a2c-8678-608492338079
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -409,6 +404,11 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     ignoreworker: false
