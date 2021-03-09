@@ -13,8 +13,8 @@ from zipfile import ZipFile
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, IGNORED_PATHS, Metadata, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
-    store_successful_and_failed_packs_in_ci_artifacts
+    LANDING_PAGE_SECTIONS_PATH, get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, \
+    get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -243,7 +243,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
                             build_number: str, private_packs: list, current_commit_hash: str,
                             index_generation: int, is_private: bool = False, force_upload: bool = False,
-                            previous_commit_hash: str = None):
+                            previous_commit_hash: str = None, landing_page_sections: dict = None):
     """
     Upload updated index zip to cloud storage.
 
@@ -257,6 +257,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param is_private: Indicates if upload is private.
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
+    :param landing_page_sections: landingPage sections.
     :returns None.
 
     """
@@ -270,13 +271,17 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         commit = current_commit_hash
         logging.info('Updating production index commit hash to master last commit hash')
 
+    if not landing_page_sections:
+        landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
+
     logging.debug(f'commit hash is: {commit}')
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
-            'commit': commit
+            'commit': commit,
+            'landingPage': {'sections': landing_page_sections.get('sections', [])}
         }
         json.dump(index, index_file, indent=4)
 
@@ -895,6 +900,7 @@ def main():
     private_bucket_name = option.private_bucket_name
     circle_branch = option.circle_branch
     force_upload = option.force_upload
+    landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -977,7 +983,8 @@ def main():
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
-                                           pack_was_modified=pack_was_modified)
+                                           pack_was_modified=pack_was_modified,
+                                           landing_page_sections=landing_page_sections)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1056,7 +1063,8 @@ def main():
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload, previous_commit_hash=previous_commit_hash)
+                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
+                            landing_page_sections=landing_page_sections)
 
     # upload id_set.json to bucket
     upload_id_set(storage_bucket, id_set_path)
