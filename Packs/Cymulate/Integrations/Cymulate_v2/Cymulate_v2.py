@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Any, Dict, Tuple, Optional
 
+import copy
 import json
 import traceback
 import urllib3
@@ -38,11 +39,12 @@ class Client(BaseClient):
     Args:
           base_url (str): Cymulate server url.
           token (str): Cymulate access token.
+          verify (bool): Whether the request should verify the SSL certificate.
           proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, token: str, proxy: bool, **kwargs):
-        super().__init__(base_url=base_url, proxy=proxy, **kwargs)
+    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool, **kwargs):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
         self.headers = {'x-token': token,
                         'accept': '*/*',
                         'Content-Type': 'application/json'
@@ -65,7 +67,7 @@ class Client(BaseClient):
         return self._http_request(method='POST',
                                   url_suffix=f'{endpoint}/start',
                                   headers=self.headers,
-                                  data=build_data(data))
+                                  data=json.dumps(data))
 
     def stop_assessment(self, endpoint: Optional[str]):
         """ Stop a running assessment.
@@ -135,8 +137,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET',
                                       url_suffix=f'/{endpoint}/attacks/technical',
                                       headers=self.headers)
-        response = response.get('data') if response else response
-        return response
+        return response.get('data')
 
     def list_attack_ids_by_date(self, endpoint: Optional[str], from_date: Optional[str],
                                 to_date: Optional[str] = None):
@@ -145,7 +146,7 @@ class Client(BaseClient):
         Args:
             endpoint (str): Cymulate's endpoint to list attacks.
             from_date (str): From which date to fetch data.
-            to_date (str): End date to fetch data. If no argument is given, default is now.
+            to_date (str): End date to fetch data. If no argument is given, value will be now.
         """
         to_date = to_date if to_date else date.today().strftime("%Y-%m-%d")
         response = self._http_request(method='GET',
@@ -153,24 +154,21 @@ class Client(BaseClient):
                                       params={'fromDate': from_date,
                                               'toDate': to_date},
                                       headers=self.headers)
-        response = response.get('data') if response else response
-        response = response.get('attack') if response else response
-        return response
+        return dict_safe_get(dict_object=response, keys=['data', 'attack'], return_type=list)
 
     def list_immediate_threats_ids_by_date(self, from_date: Optional[str], to_date: Optional[str]):
         """Retrieves immediate threats attack IDs by their dates.
 
         Args:
             from_date (str): From which date to fetch data.
-            to_date (str): End date to fetch data. If no argument is given, default is now.
+            to_date (str): End date to fetch data. If no argument is given, value will be now.
         """
         response = self._http_request(method='GET',
                                       url_suffix='/immediate-threats/ids',
                                       params={'fromDate': from_date,
                                               'toDate': to_date},
                                       headers=self.headers)
-        response = response.get('data') if response else response
-        return response
+        return response.get('data')
 
     def list_attack_ids(self, endpoint: Optional[str]):
         """Retrieves all attack IDs.
@@ -181,8 +179,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET',
                                       url_suffix=f'/{endpoint}/ids',
                                       headers=self.headers)
-        response = response.get('data') if response else response
-        return response
+        return response.get('data')
 
     def get_attack_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
         """Retrieves data regarding an attack by the attack ID.
@@ -194,8 +191,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET',
                                       url_suffix=f'/{endpoint}/attack/technical/{attack_id}',
                                       headers=self.headers)
-        response = response.get('data') if response else response
-        return response
+        return response.get('data')
 
     def get_immediate_threat_assessment(self, attack_id: Optional[str]):
         """Retrieves data regarding immediate threats attack by the attack ID.
@@ -206,8 +202,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET',
                                       url_suffix=f'/immediate-threats/attack/technical/{attack_id}',
                                       headers=self.headers).get('data')
-        response = response.get('payloads') if response else response
-        return response
+        return response.get('payloads')
 
     def get_simulations_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
         """ Retrieves all event data."""
@@ -230,27 +225,25 @@ def extract_status_commands_output(result: dict) -> dict:
         'id': result.get('id') if result.get('id') else result.get('_id'),
         'inProgress': result.get('inProgress'),
         'progress': result.get('progress'),
-        'addresses': result.get('addresses'),
         'categories': result.get('categories'),
+        'addresses': result.get('addresses'),
     }
-    return output
+    return remove_empty_elements(output)
 
 
-def build_data(params: dict) -> str:
-    """ Helper function to build HTTP request parameters. Cymulate's API does not accept Python's
-     'True' and 'False' objects, it requires a true and false objects (lowercase t and f).
-     In addition this function converts the dictionary to a string.
+def extract_template_output(raw_response: dict):
+    """Helper function to replace all the `_id` key to `id`.
 
     Args:
-        params (dict): parameter dictionary send to the API.
+        raw_response (dict): Raw response returned from the API.
 
     Returns:
-        str: params as a string, with lower case boolean values.
+        list[Dict]: The raw response where the `_id` key has replaced with `id`.
     """
-    data = json.dumps(params).replace('False', 'false')
-    data.replace('False', 'false')
-    data.replace('True', 'true')
-    return data
+    outputs = copy.deepcopy(raw_response)
+    for dictionary in outputs:
+        dictionary['id'] = dictionary.pop('_id')
+    return outputs
 
 
 def validate_timestamp(timestamp: Any) -> bool:
@@ -265,7 +258,7 @@ def validate_timestamp(timestamp: Any) -> bool:
         bool: True if the input is in valid format, else False.
     """
     try:
-        if re.match('\\d{4}-\\d{2}-\\d{2}', timestamp):
+        if re.match(r'\d{4}-\d{2}-\d{2}', timestamp):
             return True
     except Exception:  # pylint: disable=broad-except
         return False
@@ -429,7 +422,7 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
             current_description = data.get('description')
             new_description = f"\nStep {step_num}:\n{extract_event_description(event)}"
 
-            data['description'] = f'{current_description}{new_description}' if current_description\
+            data['description'] = f'{current_description}{new_description}' if current_description \
                 else new_description
 
             # Insert new description to the previous incident.
@@ -656,13 +649,13 @@ def test_module(client: Client) -> str:
     try:
         response = client.validate()
         if not response.ok:
-            raise DemistoException('Authorization Error: make sure API Key is correctly set.')
-
+            raise DemistoException('Authorization Error: make sure API Key is correctly set.',
+                                   res=response)
     except DemistoException as err:
         if 'Unauthorized' in str(err):
             test_message = f'Authorization Error: make sure API Key is correctly set.\n\n{err}'
         else:
-            raise err
+            raise
 
     return test_message
 
@@ -679,15 +672,16 @@ def list_exfiltration_template_command(client: Client) -> CommandResults:
 
     """
     raw_response = client.list_templates(ENDPOINT_DICT.get('exfiltration'))
-    outputs = raw_response.get('data', None)
+    outputs = extract_template_output(raw_response.get('data'))
+
     readable_output = tableToMarkdown('Exfiltration templates list:', outputs, removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.Exfiltration.Templates',
-        outputs_key_field='_id',
+        outputs_prefix='Cymulate.Exfiltration.Template',
+        outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -724,11 +718,11 @@ def start_exfiltration_assessment_command(client: Client, template_id: str, agen
 
     readable_output = tableToMarkdown('Starting exfiltration assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.Exfiltration.Assessment',
+        outputs_prefix='Cymulate.Exfiltration',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -747,11 +741,11 @@ def stop_exfiltration_assessment_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('Stopping exfiltration assessment:', raw_response)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.Exfiltration.Assessment',
+        outputs_prefix='Cymulate.Exfiltration',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -770,15 +764,17 @@ def get_exfiltration_assessment_status_command(client: Client,
 
     """
     raw_response = client.get_assessment_status(ENDPOINT_DICT.get('exfiltration'), assessment_id)
-    output = extract_status_commands_output(raw_response)
-    readable_output = tableToMarkdown('Exfiltration assessment status:', output, removeNull=True)
+    print(raw_response)
+    outputs = extract_status_commands_output(raw_response)
+    print(outputs)
+    readable_output = tableToMarkdown('Exfiltration assessment status:', outputs, removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.Exfiltration.Assessment',
+        outputs_prefix='Cymulate.Exfiltration',
         outputs_key_field='id',
         readable_output=readable_output,
-        outputs=output,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -794,15 +790,16 @@ def list_email_gateway_template_command(client: Client) -> CommandResults:
                         containing the list of all email-gateway templates.
     """
     raw_response = client.list_templates(ENDPOINT_DICT.get('email-gateway'))
+    outputs = extract_template_output(raw_response)
     readable_output = tableToMarkdown('Email gateway templates list:',
-                                      raw_response,
+                                      outputs,
                                       removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EmailGateway.Templates',
-        outputs_key_field='_id',
+        outputs_prefix='Cymulate.EmailGateway.Template',
+        outputs_key_field='id',
         readable_output=readable_output,
-        outputs=raw_response,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -839,11 +836,11 @@ def start_email_gateway_assessment_command(client: Client, template_id: str, age
 
     readable_output = tableToMarkdown('Starting email gateway assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EmailGateway.Assessment',
+        outputs_prefix='Cymulate.EmailGateway',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -862,11 +859,11 @@ def stop_email_gateway_assessment_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('Stopping email gateway assessment:', raw_response)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EmailGateway.Assessment',
+        outputs_prefix='Cymulate.EmailGateway',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -885,18 +882,17 @@ def get_email_gateway_assessment_status_command(client: Client,
     """
     outputs = {}
     raw_response = client.get_assessment_status(ENDPOINT_DICT.get('email-gateway'), assessment_id)
-
-    output = raw_response.get('data')
+    output = copy.deepcopy(raw_response).get('data')
     if output:
         outputs = extract_status_commands_output(output[0])
 
     readable_output = tableToMarkdown('Email gateway assessment status:', outputs, removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EmailGateway.Assessment',
+        outputs_prefix='Cymulate.EmailGateway',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -912,16 +908,20 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
                         containing the list of all endpoint security templates.
     """
     raw_response = client.list_templates(ENDPOINT_DICT.get('endpoint-security'))
+    outputs = copy.deepcopy(raw_response)
+    for dictionary in outputs:
+        dictionary['id'] = dictionary.pop('_id')
+
     readable_output = tableToMarkdown('Endpoint security templates list:',
-                                      raw_response,
+                                      outputs,
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EndpointSecurity.Templates',
-        outputs_key_field='_id',
+        outputs_prefix='Cymulate.EndpointSecurity.Template',
+        outputs_key_field='id',
         readable_output=readable_output,
-        outputs=raw_response,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -959,11 +959,11 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
 
     readable_output = tableToMarkdown('Starting endpoint security assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EndpointSecurity.Assessment',
+        outputs_prefix='Cymulate.EndpointSecurity',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -984,11 +984,11 @@ def stop_endpoint_security_assessment_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('Stopping endpoint security assessment:', raw_response)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EndpointSecurity.Assessment',
+        outputs_prefix='Cymulate.EndpointSecurity',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1014,11 +1014,11 @@ def get_endpoint_security_assessment_status_command(client: Client,
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.EndpointSecurity.Assessment',
+        outputs_prefix='Cymulate.EndpointSecurity',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1036,15 +1036,16 @@ def list_waf_template_command(client: Client) -> CommandResults:
     """
 
     raw_response = client.list_templates(ENDPOINT_DICT.get('waf'))
-    output = raw_response.get('data')
-
+    output = copy.deepcopy(raw_response).get('data')
+    for dict in output:
+        dict['id'] = dict.pop('_id')
     readable_output = tableToMarkdown('WAF templates list:', output, removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.WAF.Templates',
-        outputs_key_field='_id',
+        outputs_prefix='Cymulate.WAF.Template',
+        outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1082,11 +1083,11 @@ def start_waf_assessment_command(client: Client, template_id: str, sites, schedu
 
     readable_output = tableToMarkdown('Starting WAF assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.WAF.Assessment',
+        outputs_prefix='Cymulate.WAF',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1107,11 +1108,11 @@ def stop_waf_assessment_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('Stopping WAF assessment:', raw_response)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.WAF.Assessment',
+        outputs_prefix='Cymulate.WAF',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1135,11 +1136,11 @@ def get_waf_assessment_status_command(client: Client, assessment_id: str) -> Com
     readable_output = tableToMarkdown('WAF assessment status:', output, removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.WAF.Assessment',
+        outputs_prefix='Cymulate.WAF',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1180,11 +1181,11 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
 
     readable_output = tableToMarkdown('Starting immediate-threats assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.ImmediateThreats.Assessment',
+        outputs_prefix='Cymulate.ImmediateThreats',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1203,11 +1204,11 @@ def stop_immediate_threat_assessment_command(client: Client) -> CommandResults:
 
     readable_output = tableToMarkdown('Stop immediate-threats assessment:', raw_response)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.ImmediateThreats.Assessment',
+        outputs_prefix='Cymulate.ImmediateThreats',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1233,11 +1234,11 @@ def get_immediate_threat_assessment_status_command(client: Client,
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.ImmediateThreats.Assessment',
+        outputs_prefix='Cymulate.ImmediateThreats',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1254,15 +1255,15 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
     """
 
     raw_response = client.list_templates(ENDPOINT_DICT.get('lateral-movement'))
-    output = raw_response.get('data')
+    outputs = extract_template_output(raw_response.get('data'))
 
-    readable_output = tableToMarkdown('Lateral movement templates list:', output, removeNull=True)
+    readable_output = tableToMarkdown('Lateral movement templates list:', outputs, removeNull=True)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.LateralMovement.Templates',
-        outputs_key_field='_id',
+        outputs_prefix='Cymulate.LateralMovement.Template',
+        outputs_key_field='id',
         readable_output=readable_output,
-        outputs=output,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1302,11 +1303,11 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
 
     readable_output = tableToMarkdown('Starting lateral movement assessment:', output)
     command_results = CommandResults(
-        outputs_prefix='Cymulate.LateralMovement.Assessment',
+        outputs_prefix='Cymulate.LateralMovement',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1327,11 +1328,11 @@ def stop_lateral_movement_assessment_command(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('Stopping lateral movement assessment:', raw_response)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.LateralMovement.Assessment',
+        outputs_prefix='Cymulate.LateralMovement',
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1352,15 +1353,16 @@ def get_lateral_movement_assessment_status_command(client: Client,
     endpoint = ENDPOINT_DICT.get('lateral-movement')
     raw_response = client.get_assessment_status(endpoint, assessment_id)
     output = extract_status_commands_output(raw_response.get('data'))
+
     readable_output = tableToMarkdown('Lateral movement assessment status:', output,
                                       removeNull=True)
 
     command_results = CommandResults(
-        outputs_prefix='Cymulate.LateralMovement.Assessment',
+        outputs_prefix='Cymulate.LateralMovement',
         outputs_key_field='id',
         readable_output=readable_output,
         outputs=output,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1377,15 +1379,17 @@ def list_phishing_awareness_contact_groups_command(client: Client) -> CommandRes
 
     """
     raw_response = client.list_phishing_contacts()
+    outputs = extract_template_output(raw_response)
+
     readable_output = tableToMarkdown('Phishing awareness contact groups:',
-                                      raw_response,
+                                      outputs,
                                       removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Cymulate.Phishing.Groups',
-        outputs_key_field='_id',
+        outputs_key_field='id',
         readable_output=readable_output,
-        outputs=raw_response,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1403,15 +1407,17 @@ def get_phishing_awareness_contact_groups_command(client: Client, group_id: str)
 
     """
     raw_response = client.get_phishing_contacts(group_id)
+    outputs = extract_template_output(raw_response)
+
     readable_output = tableToMarkdown('Phishing awareness contact groups:',
-                                      raw_response,
+                                      outputs,
                                       removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Cymulate.Phishing.Groups',
-        outputs_key_field='_id',
+        outputs_key_field='id',
         readable_output=readable_output,
-        outputs=raw_response,
-        raw_response=raw_response
+        outputs=outputs,
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1434,10 +1440,10 @@ def add_phishing_awareness_contact_groups_command(client: Client,
                                       removeNull=True)
     command_results = CommandResults(
         outputs_prefix='Cymulate.Phishing.Groups',
-        outputs_key_field='_id',
+        outputs_key_field='id',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1454,8 +1460,7 @@ def list_agents_command(client: Client) -> CommandResults:
 
     """
     raw_response = client.get_agents()
-
-    headers = ['agentAddress', 'agentMethod', 'agentName']
+    headers = ['agentAddress', 'agentMethod', 'agentName', 'comment']
     readable_output = tableToMarkdown('Agents list:', raw_response, headers=headers,
                                       removeNull=True)
 
@@ -1464,7 +1469,7 @@ def list_agents_command(client: Client) -> CommandResults:
         outputs_key_field='',
         readable_output=readable_output,
         outputs=raw_response,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1477,7 +1482,7 @@ def list_attack_simulations_command(client: Client, module: str, from_date: str,
         client (Client): Cymulate client.
         module (str): Module to retrieve simulations IDs to.
         from_date (str): From which date to fetch data.
-        to_date (str): End date to fetch data. If no argument is given, default is now.
+        to_date (str): End date to fetch data. If no argument is given, value will be now.
 
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
@@ -1505,7 +1510,7 @@ def list_attack_simulations_command(client: Client, module: str, from_date: str,
         outputs_key_field='ID',
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1544,7 +1549,7 @@ def list_simulations_command(client: Client, module: str, attack_id: str):
         outputs_key_field='Id',
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
     )
     return command_results
 
@@ -1575,8 +1580,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     last_fetch = last_run.get('last_fetch', None)
     last_fetch = int(last_fetch) if last_fetch else first_fetch_time * 1000
     next_run = last_fetch
-
-    current_module = get_integration_context().get('current_module', None)
+    context = get_integration_context()
+    current_module = context.get('current_module', None)
 
     if current_module:
         incidents, offset, creation_time, total_incidents = get_alerts_by_module(client,
@@ -1587,22 +1592,22 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         incidents, offset, creation_time, total_incidents = [], 0, last_fetch, 0
 
     # current_time will help us save current's module time, and update next_run accordingly.
-    if creation_time > get_integration_context().get('current_time'):
+    if creation_time > context.get('current_time'):
         current_time = creation_time
     else:
-        current_time = get_integration_context().get('current_time')
+        current_time = context.get('current_time')
 
     # There are alerts left to fetch
     if total_incidents > offset:
         integration_context = {'offset': offset,
-                               'current_module': get_integration_context().get('current_module'),
-                               'modules': get_integration_context().get('modules'),
+                               'current_module': context.get('current_module'),
+                               'modules': context.get('modules'),
                                'current_time': current_time}
         demisto.info(f'Fetching {current_module} module. Offset: {offset}/{total_incidents}.')
 
     # Finished fetching current module, checking if there are more modules to fetch.
     else:
-        modules = get_integration_context().get('modules', None)
+        modules = context.get('modules', None)
         if modules:
             integration_context = {'offset': 0,
                                    'current_module': modules[0],
@@ -1633,13 +1638,14 @@ def main() -> None:
     params = demisto.params()
 
     api_key = params.get('api_key')
-    base_url = 'https://api.app.cymulate.com/v1/'
+    base_url = params.get('base_url')
 
+    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('first_fetch', '3 days'),
+        arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True)
 
@@ -1653,6 +1659,7 @@ def main() -> None:
         client = Client(
             base_url=base_url,
             token=api_key,
+            verify=verify_certificate,
             proxy=proxy
         )
 
@@ -1780,10 +1787,10 @@ def main() -> None:
                          f' Key is correctly set.\n\nFull error message:\n{error}')
 
         if 'invalid attack id' in str(error):
-            return_error(f'Failed to execute {demisto.command()} command.\nPlease make sure you '
+            return_error(f'Failed to execute {command} command.\nPlease make sure you '
                          f'entered the correct assessment id.\n\nFull error message:\n{str(error)}')
 
-        return_error(f'Failed to execute {demisto.command()} command.\n\n'
+        return_error(f'Failed to execute {command} command.\n\n'
                      f'Full error message:\n{str(error)}')
 
 

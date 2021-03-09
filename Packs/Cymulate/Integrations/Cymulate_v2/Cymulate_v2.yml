@@ -7,10 +7,16 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: Fetch incidents
+- defaultvalue: https://api.app.cymulate.com/v1/
+  display: Base URL
+  name: base_url
+  required: false
+  type: 0
+- defaultvalue: https://api.app.cymulate.com/v1/
+  display: Fetch incidents
   name: isFetch
   required: false
-  type: 8
+  type: 0
 - additionalinfo: Choose one or more categories to fetch.
   display: Fetch category
   name: fetchCategory
@@ -42,6 +48,10 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -89,7 +99,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent.For example: to run the agent
+      description: 'Loop size of the scheduled agent. For example: to run the agent
         only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
@@ -184,7 +194,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent.For example: to run the agent
+      description: 'Loop size of the scheduled agent. For example: to run the agent
         only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
@@ -242,7 +252,6 @@ script:
       description: Percentage of the progress of the assessment.
       type: Number
     - contextPath: Cymulate.EmailGateway.addresses
-      description: Addresses.
       type: String
   - deprecated: false
     description: Retrieve the endpoint security template list.
@@ -282,7 +291,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent.For example: to run the agent
+      description: 'Loop size of the scheduled agent. For example: to run the agent
         only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
@@ -330,17 +339,14 @@ script:
     - contextPath: Cymulate.EndpointSecurity.id
       description: Endpoint security assessment ID.
       type: String
-    - contextPath: Cymulate.EndpointSecurity.success
-      description: Whether the assessment was successful.
-      type: Boolean
     - contextPath: Cymulate.EndpointSecurity.inProgress
       description: Whether the assessment is in progress.
       type: Boolean
     - contextPath: Cymulate.EndpointSecurity.progress
       description: Percentage of the progress of the assessment.
       type: Number
-    - contextPath: Cymulate.EndpointSecurity.addresses
-      description: Addresses.
+    - contextPath: Cymulate.EndpointSecurity.categories
+      description: Assessment categories.
       type: String
   - deprecated: false
     description: Retrieve the WAF template list.
@@ -380,7 +386,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent.For example: to run the agent
+      description: 'Loop size of the scheduled agent. For example: to run the agent
         only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
@@ -428,17 +434,14 @@ script:
     - contextPath: Cymulate.WAF.id
       description: Web application firewall assessment ID.
       type: String
-    - contextPath: Cymulate.WAF.success
-      description: Whether the assessment was successful.
-      type: Boolean
     - contextPath: Cymulate.WAF.inProgress
       description: Whether the assessment is in progress.
       type: Boolean
     - contextPath: Cymulate.WAF.progress
       description: Percentage of the progress of the assessment.
       type: Number
-    - contextPath: Cymulate.EndpointSecurity.addresses
-      description: Addresses.
+    - contextPath: Cymulate.WAF.categories
+      description: Assessment categories.
       type: String
   - arguments:
     - default: false
@@ -474,6 +477,9 @@ script:
     - contextPath: Cymulate.ImmediateThreats.id
       description: Immediate threats assessment creation ID.
       type: String
+    - contextPath: Cymulate.ImmediateThreats.success
+      description: New exfiltration assessment creation success status.
+      type: String
   - deprecated: false
     description: Stop a running immediate threats assessment.
     execution: false
@@ -481,6 +487,9 @@ script:
     outputs:
     - contextPath: Cymulate.ImmediateThreats.data
       description: Immediate threats assessment stopping data.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.success
+      description: Immediate threats assessment stopping success status.
       type: String
   - arguments:
     - default: false
@@ -497,6 +506,15 @@ script:
     - contextPath: Cymulate.ImmediateThreats.id
       description: Web application firewall assessment ID.
       type: String
+    - contextPath: Cymulate.ImmediateThreats.categories
+      description: Assessment categories.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.ImmediateThreats.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
   - deprecated: false
     description: Get a list of contact groups.
     execution: false
@@ -564,6 +582,9 @@ script:
     - contextPath: Cymulate.LateralMovement.Template.id
       description: Template ID.
       type: String
+    - contextPath: Cymulate.LateralMovement.Template.name
+      description: Template name.
+      type: String
   - arguments:
     - default: false
       description: Agent name to run the assessment with.
@@ -602,7 +623,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Loop size of the scheduled agent.For example: to run the agent
+      description: 'Loop size of the scheduled agent. For example: to run the agent
         only once, use the value ''one-time''.'
       isArray: false
       name: schedule_loop
@@ -621,6 +642,9 @@ script:
     - contextPath: Cymulate.LateralMovement.id
       description: Lateral movement assessment creation ID.
       type: String
+    - contextPath: Cymulate.LateralMovement.success
+      description: New exfiltration assessment creation success status.
+      type: Boolean
   - deprecated: false
     description: Stop a running lateral movement assessment.
     execution: false
@@ -629,8 +653,8 @@ script:
     - contextPath: Cymulate.LateralMovement.data
       description: Lateral movement assessment stopping data.
       type: String
-    - contextPath: Cymulate.LateralMovement.status
-      description: Lateral movement assessment stopping success status.
+    - contextPath: Cymulate.LateralMovement.success
+      description: New Lateral movement assessment creation success status.
       type: Boolean
   - arguments:
     - default: false
@@ -647,6 +671,9 @@ script:
     - contextPath: Cymulate.LateralMovement.id
       description: Lateral movement assessment ID.
       type: String
+    - contextPath: Cymulate.LateralMovement.inProgress
+      description: 'Indicates whether the assessment is in progress. '
+      type: Boolean
   - deprecated: false
     description: Retrieve all agents.
     execution: false
@@ -655,8 +682,14 @@ script:
     - contextPath: Cymulate.Agent.agentAddress
       description: The agent's address.
       type: String
-    - contextPath: Cymulate.Agent.addressMethod
+    - contextPath: Cymulate.Agent.agentMethod
       description: The agent's methods.
+      type: String
+    - contextPath: Cymulate.Agent.agentName
+      description: Agent name.
+      type: String
+    - contextPath: Cymulate.Agent.comment
+      description: Comments.
       type: String
   - arguments:
     - auto: PREDEFINED

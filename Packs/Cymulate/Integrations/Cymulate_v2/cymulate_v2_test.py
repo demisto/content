@@ -24,7 +24,7 @@ def test_cymulate_list_exfiltration_template_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.list_templates.return_value = util_load_json('list_exfiltration_template.json')
     result = list_exfiltration_template_command(mocked_client).outputs
-    assert result[0].get('_id') == '12345'
+    assert result[0].get('id') == '12345'
     assert result[0].get('name') == 'Cymulate Best Practice'
 
 
@@ -33,7 +33,7 @@ def test_cymulate_list_email_gateway_template_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.list_templates.return_value = util_load_json('list_email_gateway_templates.json')
     result = list_email_gateway_template_command(mocked_client).outputs
-    assert result[0].get('_id') == '12345'
+    assert result[0].get('id') == '12345'
     assert result[0].get('name') == 'free assessment'
 
 
@@ -42,7 +42,7 @@ def test_cymulate_list_endpoint_security_template_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.list_templates.return_value = util_load_json('list_endpoint_security_templates.json')
     result = list_endpoint_security_template_command(mocked_client).outputs
-    assert result[0].get('_id') == '12345'
+    assert result[0].get('id') == '12345'
     assert result[0].get('name') == 'Free Assessment'
 
 
@@ -51,7 +51,7 @@ def test_cymulate_list_waf_template_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.list_templates.return_value = util_load_json('list_waf_templates.json')
     result = list_waf_template_command(mocked_client).outputs
-    assert result[0].get('_id') == '12345'
+    assert result[0].get('id') == '12345'
     assert result[0].get('name') == 'free assessment'
 
 
@@ -60,7 +60,7 @@ def test_cymulate_list_lateral_movement_template_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.list_templates.return_value = util_load_json('list_lateral_movement_templates.json')
     result = list_lateral_movement_template_command(mocked_client).outputs
-    assert result[0].get('_id') == '12345'
+    assert result[0].get('id') == '12345'
     assert result[0].get('name') == 'SMB Pass The Hash'
 
 
@@ -220,7 +220,7 @@ def test_cymulate_list_phishing_awareness_contact_group_command(mocker):
     mocked_client.list_phishing_contacts.return_value = util_load_json('list_phishing_awareness_contact_group.json')
     result = list_phishing_awareness_contact_groups_command(mocked_client).outputs
     assert len(result) == 5
-    assert result[0].get('_id') == 'id_12345'
+    assert result[0].get('id') == 'id_12345'
     assert result[0].get('name') == 'new name'
 
 
@@ -230,7 +230,7 @@ def test_cymulate_get_phishing_awareness_contact_group_command(mocker):
     mocked_client.get_phishing_contacts.return_value = util_load_json('get_phishing_awareness_group.json')
     result = get_phishing_awareness_contact_groups_command(mocked_client, 'id_123').outputs
     assert len(result) == 3
-    assert result[0].get('_id') == 'id_12'
+    assert result[0].get('id') == 'id_12'
     assert result[0].get('firstName') == 'James'
     assert result[0].get('lastName') == 'Bonds'
 
