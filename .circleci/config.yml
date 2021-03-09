@@ -298,7 +298,7 @@ references:
           name: Trigger Private Repo Build
           when: always
           command: |
-            if [ -n "${CONTRIB_BRANCH}" ]
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
               then
                 echo "Skipping - not running in contribution instance"
                 exit 0
@@ -316,7 +316,7 @@ references:
           name: Get Private Build Status
           when: always
           command: |
-            if [ -n "${CONTRIB_BRANCH}" ]
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
               then
                 echo "Skipping - not running in contribution instance"
                 exit 0
@@ -350,7 +350,7 @@ references:
     run:
       name: Destroy Instances
       command: |
-        if [ -n "${CONTRIB_BRANCH}" ]
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
           then
             echo "Skipping - not running in contribution instance"
             exit 0
