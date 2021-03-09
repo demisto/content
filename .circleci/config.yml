@@ -288,9 +288,9 @@ references:
         fi
 
   trigger_private_build: &trigger_private_build
-    when:
+    unless:
       condition:
-        and:
+        or:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
       steps:
@@ -306,9 +306,9 @@ references:
             python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
 
   get_private_build_status: &get_private_build_status
-    when:
+    unless:
       condition:
-        and:
+        or:
           - << pipeline.parameters.force_pack_upload >>
           - << pipeline.parameters.bucket_upload >>
       steps:
