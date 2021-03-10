@@ -1170,7 +1170,7 @@ def item_result_creator(raw_response, user_id):
                               readable_output=human_readable,
                               raw_response=raw_response)
     else:
-        human_readable = f'Integration does not support  attachments from type {item_type}'
+        human_readable = f'Integration does not support attachments from type {item_type}'
         return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
