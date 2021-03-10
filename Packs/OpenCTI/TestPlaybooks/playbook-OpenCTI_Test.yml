@@ -1,6 +1,6 @@
-id: OpenCTI Feed v4 Test
+id: OpenCTI Test
 version: -1
-name: OpenCTI Feed v4 Test
+name: OpenCTI Test
 description: test playbook
 starttaskid: "0"
 tasks:

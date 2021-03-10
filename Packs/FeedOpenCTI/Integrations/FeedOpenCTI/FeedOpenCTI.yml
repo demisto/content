@@ -117,7 +117,7 @@ configuration:
   required: false
   type: 8
 description: Ingest indicator feeds from OpenCTI. Compatible with OpenCTI v3.* instances.
-display: OpenCTI Feed v3
+display: OpenCTI Feed 3.X
 name: OpenCTI Feed
 script:
   commands:
