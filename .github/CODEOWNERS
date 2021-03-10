@@ -1,6 +1,7 @@
 # Marketplace related
 /Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
 
 # Marketplace and Upload flow
 /Tests/Marketplace/upload_git_snapshot.py @guyfreund
