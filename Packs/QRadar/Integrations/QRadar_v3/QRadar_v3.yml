@@ -73,7 +73,7 @@ configuration:
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
+- additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -81,6 +81,17 @@ configuration:
   name: close_incident
   required: false
   type: 8
+- defaultvalue: No Mirroring
+  display: Mirroring Options
+  hidden: false
+  name: mirror_options
+  options:
+  - No Mirroring
+  - Mirror Offense
+  - Mirror Offense And Events
+  required: true
+  type: 15
+  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done. For mirroring, this option
 - additionalinfo: Maximum number of incidents  to mirror incoming each time.
   defaultvalue: '100'
   display: How many incidents to mirror incoming each time

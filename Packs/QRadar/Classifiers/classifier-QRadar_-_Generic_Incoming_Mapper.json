@@ -1096,6 +1096,18 @@
       ]
      },
      "simple": ""
+    },
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+        "complex": null,
+        "simple": "id"
+    },
+    "dbotMirrorInstance": {
+        "complex": null,
+        "simple": "mirror_instance"
     }
    }
   },

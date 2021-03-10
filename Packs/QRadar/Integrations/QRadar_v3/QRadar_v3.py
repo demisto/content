@@ -54,6 +54,11 @@ DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
 TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
+MIRROR_DIRECTION = {
+    'No Mirroring': None,
+    'Mirror Offense': 'In',
+    'Mirror Offense And Events': 'In'
+}
 EVENT_COLUMNS_DEFAULT_VALUE = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
     'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
@@ -1144,7 +1149,8 @@ def test_module_command(client: Client, params: Dict) -> str:
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
                 last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
-                incident_type=params.get('incident_type')
+                incident_type=params.get('incident_type'),
+                mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options'))
             )
         message = 'ok'
     except DemistoException as e:
@@ -1283,7 +1289,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         # retry to check if we got all the event (its not an error retry), see docstring
         search_response = create_search_with_retry(client, query_expression)
         if not search_response:
-            return offense
+            continue
 
         events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
         if len(events) >= min(offense.get('event_count', 0), events_limit):
@@ -1297,7 +1303,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
-                                         last_highest_id: int, incident_type: Optional[str]):
+                                         last_highest_id: int, incident_type: Optional[str],
+                                         mirror_direction: Optional[str]) -> Tuple[Optional[List[Dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
     Args:
@@ -1314,9 +1321,11 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         asset_enrich (bool): Whether to enrich offense with assets
         last_highest_id (int): The highest ID of all the offenses that have been fetched from QRadar service.
         incident_type (Optional[str]): Incident type.
+        mirror_direction (Optional[str]): Whether mirror in is activated or not.
 
     Returns:
         (List[Dict], int): List of the incidents, and the new highest ID for next fetch.
+        (None, None): if reset was triggered
     """
     offense_highest_id = get_minimum_id_to_fetch(last_highest_id, user_query)
 
@@ -1345,7 +1354,9 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     if is_reset_triggered(handle_reset=True):
         return None, None
 
-    enriched_offenses = enrich_offenses_result(client, offenses, ip_enrich, asset_enrich)
+    offenses_with_mirror = [dict(offense, mirror_direction=mirror_direction) for offense in
+                            offenses] if mirror_direction else offenses
+    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
@@ -1392,6 +1403,7 @@ def long_running_execution_command(client: Client, params: Dict):
     events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
     events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
     incident_type = params.get('incident_type')
+    mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options'))
     while True:
         is_reset_triggered(handle_reset=True)
         ctx = get_integration_context()
@@ -1406,7 +1418,8 @@ def long_running_execution_command(client: Client, params: Dict):
             ip_enrich=ip_enrich,
             asset_enrich=asset_enrich,
             last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
-            incident_type=incident_type
+            incident_type=incident_type,
+            mirror_direction=mirror_direction
         )
         # Reset was called during execution, skip creating incidents.
         if not incidents and not new_highest_id:
@@ -2509,6 +2522,10 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
     ctx = get_integration_context()
+    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+    mirror_option = params.get('mirror_options')
     offense_id = args.get('id')
 
     offense = client.offenses_list(offense_id=offense_id)
@@ -2536,7 +2553,12 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             'ContentsFormat': EntryFormat.JSON
         })
 
+    offense['mirror_instance'] = demisto.integrationInstance()
+
     demisto.debug(f'Pull result is {offense}')
+    if mirror_option == 'Mirror Offense And Events':
+        offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
+                                             events_columns=events_columns, events_limit=events_limit)
     return [offense] + entries
 
 
@@ -2555,7 +2577,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
-    limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))    # type: ignore
+    limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))  # type: ignore
     range_ = f'items=0-{limit - 1}'
 
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
