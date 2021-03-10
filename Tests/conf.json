@@ -3206,6 +3206,14 @@
         {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 1"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 2"
         }
     ],
     "skipped_tests": {

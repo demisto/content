@@ -1,0 +1,2381 @@
+id: LogPoint SIEM Playbook
+version: -1
+name: LogPoint SIEM Playbook
+description: LogPoint SIEM Playbook guides users on use cases like blocking IP and
+  domain and disabling users using products like CheckPoint Firewall, Active Directory,
+  and VirusTotal. The actions depicted in the playbook helps analysts create their
+  playbooks based on actual requirements and products deployed. (Available from Cortex
+  XSOAR 6.0.0).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c0673dbc-c694-469e-803c-5d6363b0da25
+    type: start
+    task:
+      id: c0673dbc-c694-469e-803c-5d6363b0da25
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": -970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: baa57499-1cef-4a25-859d-b19805b7904e
+    type: regular
+    task:
+      id: baa57499-1cef-4a25-859d-b19805b7904e
+      version: -1
+      name: Retrieve Data from Incident
+      description: Retrieves a Particular Incident's Data
+      script: LogPoint SIEM Integration|||lp-get-incident-data
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      date:
+        simple: ${incident.logpointdetectiontimestamp}
+      incident_id:
+        simple: ${incident.logpointincidentid}
+      incident_obj_id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 04f8aaae-2f2d-4944-8d37-f9f95e8b0e25
+    type: condition
+    task:
+      id: 04f8aaae-2f2d-4944-8d37-f9f95e8b0e25
+      version: -1
+      name: Is there a Source Address field?
+      description: Check if the given field is source/destination address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.source_address
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.destination_address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: dd205f58-d472-495f-8cdc-4ecb30ade61b
+    type: condition
+    task:
+      id: dd205f58-d472-495f-8cdc-4ecb30ade61b
+      version: -1
+      name: Is there a Domain field?
+      description: Check if there is a domain field in the incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 2f9d34a4-e311-4d43-882d-aee97d83acc6
+    type: condition
+    task:
+      id: 2f9d34a4-e311-4d43-882d-aee97d83acc6
+      version: -1
+      name: Is there a User field?
+      description: Check if there is a user field present in incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.user
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 75293e8c-867f-4492-87fe-cf1884df9fa2
+    type: regular
+    task:
+      id: 75293e8c-867f-4492-87fe-cf1884df9fa2
+      version: -1
+      name: Check for Malware Associated Domain
+      description: Checks the reputation of a domain.
+      script: VirusTotal|||domain
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      domain:
+        complex:
+          root: LogPoint.Incidents.data.domain
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 43d3cb4f-daa9-4fe1-8b06-368b5435beb5
+    type: regular
+    task:
+      id: 43d3cb4f-daa9-4fe1-8b06-368b5435beb5
+      version: -1
+      name: Assign Incident to Analyst
+      description: Assigning/Re-assigning Incidents
+      script: LogPoint SIEM Integration|||lp-assign-incidents
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      incident_obj_ids:
+        simple: ${incident.logpointobjectid}
+      new_assignee:
+        simple: ${incident.logpointassignedto}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 53e7cef1-6d76-4f9c-80d9-6ccb9395ff0a
+    type: regular
+    task:
+      id: 53e7cef1-6d76-4f9c-80d9-6ccb9395ff0a
+      version: -1
+      name: Add Comment about Incident Investigation
+      description: Add comments to the incidents
+      script: LogPoint SIEM Integration|||lp-add-incident-comment
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: Incident processed by LogPoint SIEM Playbook on XSOAR.
+      incident_obj_id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 829de437-3332-475f-888c-707a5e69e373
+    type: title
+    task:
+      id: 829de437-3332-475f-888c-707a5e69e373
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4130,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3ae60a8c-f539-4537-895b-737ad2af3f6f
+    type: condition
+    task:
+      id: 3ae60a8c-f539-4537-895b-737ad2af3f6f
+      version: -1
+      name: Is Domain Malicious?
+      description: Check if the domain is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 4e30d8e4-f177-4ff5-8d93-ec0e4726d0da
+    type: regular
+    task:
+      id: 4e30d8e4-f177-4ff5-8d93-ec0e4726d0da
+      version: -1
+      name: Check for Malware Associated Destination Address
+      description: Checks the reputation of an destination address.
+      script: VirusTotal|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        complex:
+          root: LogPoint.Incidents.data.destination_address
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold:
+        simple: "3"
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Malware Name
+      output:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          accessor: Indicator
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 36d6003d-062f-4695-8211-c9f84637da6e
+    type: condition
+    task:
+      id: 36d6003d-062f-4695-8211-c9f84637da6e
+      version: -1
+      name: Is Source Address Internal?
+      description: Checks the source address to determine it as internal/external.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "No":
+      - "40"
+      "YES":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.source_address
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.destination_address
+            iscontext: true
+    - label: "No"
+      condition:
+      - - operator: IsNotInCidrRanges
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.source_address
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 35d890a5-ea7d-413a-8c77-545743591965
+    type: condition
+    task:
+      id: 35d890a5-ea7d-413a-8c77-545743591965
+      version: -1
+      name: Is Destination Address Internal?
+      description: Checks the destination address to determine it as internal/external
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.destination_address
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: cc78756c-960d-43be-830b-2868f613ac76
+    type: condition
+    task:
+      id: cc78756c-960d-43be-830b-2868f613ac76
+      version: -1
+      name: Is Source Address Malicious?
+      description: Check if the IP is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident.malwarename
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: incident.malwarename
+                      iscontext: true
+                    right:
+                      value:
+                        simple: LogPoint.Incidents.data.source_address
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 5514b5e7-7c5a-46b8-808d-288882104b03
+    type: regular
+    task:
+      id: 5514b5e7-7c5a-46b8-808d-288882104b03
+      version: -1
+      name: Check for Malware Associated Source Address
+      description: Checks the reputation of an source address.
+      script: VirusTotal|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        complex:
+          root: LogPoint.Incidents.data
+          accessor: source_address
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Malware Name
+      output:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          accessor: Indicator
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 2ce6d477-b307-46d4-8c56-b6613a7c95f1
+    type: regular
+    task:
+      id: 2ce6d477-b307-46d4-8c56-b6613a7c95f1
+      version: -1
+      name: Calculate Entropy
+      description: Calculates the entropy for the given data.
+      scriptName: CalculateEntropy
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      data:
+        complex:
+          root: LogPoint.Incidents.data.domain
+      minimum_entropy: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2500,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Destination IP
+      output:
+        simple: ${Domain.VirusTotal.Resolutions.ip_address}
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 763483ad-49df-438e-8a1f-c572c75ac248
+    type: condition
+    task:
+      id: 763483ad-49df-438e-8a1f-c572c75ac248
+      version: -1
+      name: Is Entropy Higher?
+      description: Check if the entropy is higher than 4.0
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: EntropyResult.entropy
+            iscontext: true
+          right:
+            value:
+              simple: "4.0"
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 08a51a6a-65d1-43e9-8377-fbaa3af38d81
+    type: regular
+    task:
+      id: 08a51a6a-65d1-43e9-8377-fbaa3af38d81
+      version: -1
+      name: Check for User Detail
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          root: LogPoint.Incidents.data.user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: da81dcfa-6c55-4e1f-8c29-bdace3afe8a0
+    type: regular
+    task:
+      id: da81dcfa-6c55-4e1f-8c29-bdace3afe8a0
+      version: -1
+      name: Disable Account
+      description: Disables an Active Directory user account.
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: Account.Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2970,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: e42f50a6-0a7e-4f9b-897f-f7fa440b7601
+    type: regular
+    task:
+      id: e42f50a6-0a7e-4f9b-897f-f7fa440b7601
+      version: -1
+      name: Add Comment for Manager
+      description: Add comments about user disabled to the incidents
+      script: LogPoint SIEM Integration|||lp-add-incident-comment
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: Please Email User ${LogPoint.Incidents.data.user}  manager ${ActiveDirectory.Users.manager}
+          about the user being disabled.
+      incident_obj_id:
+        complex:
+          root: incident.logpointobjectid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3620,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 884bb242-4954-40cd-8051-ad6bcab9c6f5
+    type: condition
+    task:
+      id: 884bb242-4954-40cd-8051-ad6bcab9c6f5
+      version: -1
+      name: Check for Malicious User
+      description: "Check if the alert name refers to some malicious users. The following\
+        \ keyword on incident name would make the user malicious: \nBrute Force, Account/Credential\
+        \ Manipulation/compromise/misuse, privilege escalation, insider threat"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Malicious:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: (?i)brute\sforce|(account|credential) (manipulation|compromise|misuse)|insider
+                threat|privilege\sescalation
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 10b5dbf8-3ff8-4cab-8404-c4d01fd53262
+    type: condition
+    task:
+      id: 10b5dbf8-3ff8-4cab-8404-c4d01fd53262
+      version: -1
+      name: Is Destination Address Malicious?
+      description: Check if the IP is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident.malwarename
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: incident.malwarename
+                      iscontext: true
+                    right:
+                      value:
+                        simple: LogPoint.Incidents.data.destination_address
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2440,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: d362e45a-fa72-426d-8451-d298a50fc7d8
+    type: condition
+    task:
+      id: d362e45a-fa72-426d-8451-d298a50fc7d8
+      version: -1
+      name: Is there a Destination Address field?
+      description: Check if the given field is source/destination address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.source_address
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.destination_address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 3ee66bde-df6a-4468-84ad-553f92d4fb8d
+    type: condition
+    task:
+      id: 3ee66bde-df6a-4468-84ad-553f92d4fb8d
+      version: -1
+      name: Is Firewall enabled?
+      description: Check if Firewall is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: CheckPoint
+    view: |-
+      {
+        "position": {
+          "x": 4490,
+          "y": -525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: ce65c54d-41e1-478d-8701-a1491bf474bb
+    type: regular
+    task:
+      id: ce65c54d-41e1-478d-8701-a1491bf474bb
+      version: -1
+      name: checkpoint-login-and-get-session-id
+      description: Log in to CheckPoint and get the session ID.
+      script: CheckPointFirewall_v2|||checkpoint-login-and-get-session-id
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      domain: {}
+      session_timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4410,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 62317882-4615-43dd-8c21-870d1827413c
+    type: condition
+    task:
+      id: 62317882-4615-43dd-8c21-870d1827413c
+      version: -1
+      name: Is it URL or IP Block?
+      description: Check if it is URL Block or IP Block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      IP:
+      - "79"
+      URL:
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: IP
+      condition:
+      - - operator: StringContainsArray
+          left:
+            value:
+              complex:
+                root: incident.malwarename
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.destination_address
+            iscontext: true
+        - operator: StringContainsArray
+          left:
+            value:
+              complex:
+                root: incident.malwarename
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.source_address
+            iscontext: true
+    - label: URL
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5240,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 8eac26d8-0229-4370-8166-14b0369b29e4
+    type: regular
+    task:
+      id: 8eac26d8-0229-4370-8166-14b0369b29e4
+      version: -1
+      name: Check for application site category
+      description: Retrieve application site category object using object name or
+        UID.
+      script: CheckPointFirewall_v2|||checkpoint-application-site-category-get
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      identifier:
+        simple: Malware
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4710,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 34d920b7-a6f1-4dee-8c03-31162c4878d3
+    type: condition
+    task:
+      id: 34d920b7-a6f1-4dee-8c03-31162c4878d3
+      version: -1
+      name: Is application site category pre defined?
+      description: Check if application site category is pre defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint.ApplicationSiteCategory.name
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    view: |-
+      {
+        "position": {
+          "x": 4710,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 920a3473-ee16-43ee-80e9-6f3af24572ee
+    type: regular
+    task:
+      id: 920a3473-ee16-43ee-80e9-6f3af24572ee
+      version: -1
+      name: Check for Checkpoint objects
+      description: Retrieve data about objects.
+      script: CheckPointFirewall_v2|||checkpoint-show-objects
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      filter_search:
+        complex:
+          root: LogPoint.Incidents.data.domain
+      ip_only: {}
+      limit: {}
+      object_type:
+        simple: application-site
+      offset: {}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5150,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: cfaada97-862b-432f-8410-71cf53f46a03
+    type: condition
+    task:
+      id: cfaada97-862b-432f-8410-71cf53f46a03
+      version: -1
+      name: Is application site defined?
+      description: Check if application site is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint.Objects.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: CheckPoint.Objects.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5160,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 1cbe96b7-8546-43c3-8ec6-514530b4eb60
+    type: regular
+    task:
+      id: 1cbe96b7-8546-43c3-8ec6-514530b4eb60
+      version: -1
+      name: Add the URL
+      description: Adds an application site.
+      script: CheckPointFirewall_v2|||checkpoint-application-site-add
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      groups: {}
+      identifier:
+        complex:
+          root: LogPoint.Incidents.data.domain
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[A-Za-z0-9-\.]+'
+      name:
+        simple: domain-${LogPoint.Incidents.data.domain}
+      primary_category:
+        simple: Malware
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5010,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: fdee0bde-9fce-4ad0-8510-ff528e3a0f91
+    type: regular
+    task:
+      id: fdee0bde-9fce-4ad0-8510-ff528e3a0f91
+      version: -1
+      name: Logout from session
+      description: Log out from a given session.
+      script: CheckPointFirewall_v2|||checkpoint-logout
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5300,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: b4e3a32e-c1ff-4154-8f94-a81ec288e2f1
+    type: regular
+    task:
+      id: b4e3a32e-c1ff-4154-8f94-a81ec288e2f1
+      version: -1
+      name: Add URL catgeory
+      description: Adds new application site category.
+      script: CheckPointFirewall_v2|||checkpoint-application-site-category-add
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      groups: {}
+      identifier:
+        simple: Malware
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4450,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 333dc0d9-8c85-429c-8fde-07899bd6f007
+    type: condition
+    task:
+      id: 333dc0d9-8c85-429c-8fde-07899bd6f007
+      version: -1
+      name: Was category addition successful?
+      description: Check if category addition was successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint.ApplicationSiteCategory.name
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    view: |-
+      {
+        "position": {
+          "x": 4470,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: c83c1c87-7d88-4f5e-82c0-7abd4255ad69
+    type: regular
+    task:
+      id: c83c1c87-7d88-4f5e-82c0-7abd4255ad69
+      version: -1
+      name: Checkpoint Publish Configuration
+      description: Publishes changes.
+      script: CheckPointFirewall_v2|||checkpoint-publish
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4470,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 1adbe20b-4419-4541-847c-b9a07cae821b
+    type: regular
+    task:
+      id: 1adbe20b-4419-4541-847c-b9a07cae821b
+      version: -1
+      name: Add Comment for administrator
+      description: Add comments to the incidents
+      script: LogPoint SIEM Integration|||lp-add-incident-comment
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      comment:
+        simple: There is some issue due to which playbook is not able to take action.
+          Kindly review the issue.
+      incident_obj_id:
+        complex:
+          root: incident.logpointincidentid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4360,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 8dadb83a-c431-4608-8887-af23f64384e6
+    type: regular
+    task:
+      id: 8dadb83a-c431-4608-8887-af23f64384e6
+      version: -1
+      name: Check for Checkpoint object
+      description: Retrieve data about objects.
+      script: CheckPointFirewall_v2|||checkpoint-show-objects
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      filter_search:
+        complex:
+          root: incident.malwarename
+          filters:
+          - - operator: StringContainsArray
+              left:
+                value:
+                  simple: incident.malwarename
+                iscontext: true
+              right:
+                value:
+                  simple: LogPoint.Incidents.data.source_address
+                iscontext: true
+            - operator: StringContainsArray
+              left:
+                value:
+                  simple: incident.malwarename
+                iscontext: true
+              right:
+                value:
+                  simple: LogPoint.Incidents.data.destination_address
+                iscontext: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \d+\.\d+\.\d+\.\d+
+      ip_only:
+        simple: "true"
+      limit: {}
+      object_type:
+        simple: host
+      offset: {}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5650,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 0b557161-fc4e-4d62-8c2e-3297fab6c004
+    type: condition
+    task:
+      id: 0b557161-fc4e-4d62-8c2e-3297fab6c004
+      version: -1
+      name: Is IP already defined?
+      description: Check if IP is already defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "81"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint.Objects.ipv4-address
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CheckPoint.Objects.ipv4-address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.malwarename
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5730,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 8bfb6ddd-3813-423d-8b1d-263b2d250869
+    type: regular
+    task:
+      id: 8bfb6ddd-3813-423d-8b1d-263b2d250869
+      version: -1
+      name: Add Host
+      description: Adds a new host.
+      script: CheckPointFirewall_v2|||checkpoint-host-add
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      groups: {}
+      ip_address:
+        complex:
+          root: incident.malwarename
+      name:
+        simple: host-${incident.malwarename}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5560,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 8ddf662e-ace1-4a14-8f3d-3491ad1c62eb
+    type: condition
+    task:
+      id: 8ddf662e-ace1-4a14-8f3d-3491ad1c62eb
+      version: -1
+      name: Was the host addition successful?
+      description: Check if the host addition was successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint.Host.name
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CheckPoint.Host.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.malwarename
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5580,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: a4969d61-b7ce-4bc2-81ee-4fd5941f2f9e
+    type: regular
+    task:
+      id: a4969d61-b7ce-4bc2-81ee-4fd5941f2f9e
+      version: -1
+      name: Checkpoint publish configuration
+      description: Publishes changes.
+      script: CheckPointFirewall_v2|||checkpoint-publish
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6050,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 446501d9-6e10-4266-852e-d76748f86032
+    type: regular
+    task:
+      id: 446501d9-6e10-4266-852e-d76748f86032
+      version: -1
+      name: Add the policy
+      description: Creates a new access rule.
+      script: CheckPointFirewall_v2|||checkpoint-access-rule-add
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      action: {}
+      destination:
+        complex:
+          root: CheckPoint.Objects
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CheckPoint.Objects.ipv4-address
+                iscontext: true
+              right:
+                value:
+                  simple: incident.malwarename
+                iscontext: true
+          accessor: name
+      layer:
+        simple: network
+      name: {}
+      position:
+        simple: top
+      service: {}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+      source: {}
+      vpn: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6720,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 76dad7ba-7803-449e-8e61-419c5e31e302
+    type: regular
+    task:
+      id: 76dad7ba-7803-449e-8e61-419c5e31e302
+      version: -1
+      name: Publish the policy/access rule
+      description: Publishes changes.
+      script: CheckPointFirewall_v2|||checkpoint-publish
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 7490,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 6ee14afe-893c-4b87-89cd-75920c2311bf
+    type: regular
+    task:
+      id: 6ee14afe-893c-4b87-89cd-75920c2311bf
+      version: -1
+      name: Show task id
+      description: Show task progress and details.
+      script: CheckPointFirewall_v2|||checkpoint-show-task
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+      task_id:
+        complex:
+          root: CheckPoint.Publish.task-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 7570,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 03274a80-fbce-447a-8f7f-3e267cfa2581
+    type: regular
+    task:
+      id: 03274a80-fbce-447a-8f7f-3e267cfa2581
+      version: -1
+      name: Get the status
+      description: Show task progress and details.
+      script: CheckPointFirewall_v2|||checkpoint-show-task
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+      task_id:
+        complex:
+          root: CheckPoint.Publish.task-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6440,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: bfc8e3ec-fd3d-4427-8dea-4b19fa5c5647
+    type: condition
+    task:
+      id: bfc8e3ec-fd3d-4427-8dea-4b19fa5c5647
+      version: -1
+      name: Is publish successful?
+      description: Check if the publish is successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint.ShowTask.status
+            iscontext: true
+          right:
+            value:
+              simple: succeeded
+    view: |-
+      {
+        "position": {
+          "x": 5890,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 7f3a8a03-fce0-4fd9-8366-36fe5cde77e2
+    type: regular
+    task:
+      id: 7f3a8a03-fce0-4fd9-8366-36fe5cde77e2
+      version: -1
+      name: Show the gateways
+      description: Retrieve all gateways and servers.
+      script: CheckPointFirewall_v2|||checkpoint-gateways-list
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6170,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: c5840290-d0eb-4643-8674-1a7611bb4ec8
+    type: regular
+    task:
+      id: c5840290-d0eb-4643-8674-1a7611bb4ec8
+      version: -1
+      name: Install the policy
+      description: Intsalls an Access Control policy.
+      script: CheckPointFirewall_v2|||checkpoint-install-policy
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      access: {}
+      policy_package:
+        complex:
+          root: CheckPoint.Packages.name
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+      targets:
+        complex:
+          root: CheckPoint.Gateways.name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 7050,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: bd8a5802-4272-4469-8de1-53439b673aee
+    type: condition
+    task:
+      id: bd8a5802-4272-4469-8de1-53439b673aee
+      version: -1
+      name: Is the install initiated?
+      description: Show task progress and details.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint.InstallPolicy.task-id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 7540,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: c27f42a0-9eda-408d-8307-d418b168ddf8
+    type: regular
+    task:
+      id: c27f42a0-9eda-408d-8307-d418b168ddf8
+      version: -1
+      name: Waiting for the task to complete
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 7660,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 3721f1a8-99bc-42fd-8185-8421e37903d0
+    type: regular
+    task:
+      id: 3721f1a8-99bc-42fd-8185-8421e37903d0
+      version: -1
+      name: Waiting for the task to complete
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6970,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: 2c84c8b1-d6b5-4613-8c68-70006a97ab9a
+    type: regular
+    task:
+      id: 2c84c8b1-d6b5-4613-8c68-70006a97ab9a
+      version: -1
+      name: Get the status
+      description: Show task progress and details.
+      script: CheckPointFirewall_v2|||checkpoint-show-task
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+      task_id:
+        complex:
+          root: CheckPoint.InstallPolicy.task-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 7700,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: 8900604f-96c7-44fe-8f82-878e8799d2e8
+    type: condition
+    task:
+      id: 8900604f-96c7-44fe-8f82-878e8799d2e8
+      version: -1
+      name: Was the install process successful?
+      description: Check if the install process was successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "102"
+      "yes":
+      - "103"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CheckPoint.ShowTask.status
+            iscontext: true
+          right:
+            value:
+              simple: succeeded
+    view: |-
+      {
+        "position": {
+          "x": 7180,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: b8670abb-afe8-4d04-8c4d-1132c1e7bdcb
+    type: condition
+    task:
+      id: b8670abb-afe8-4d04-8c4d-1132c1e7bdcb
+      version: -1
+      name: Was the URL added?
+      description: Check if the URL was added.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint.ApplicationSite
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4890,
+          "y": 1555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: b1d9b24e-4c67-467f-8dca-9a918aaa45ca
+    type: regular
+    task:
+      id: b1d9b24e-4c67-467f-8dca-9a918aaa45ca
+      version: -1
+      name: Get the policy package
+      description: List all packages.
+      script: CheckPointFirewall_v2|||checkpoint-packages-list
+      type: regular
+      iscommand: true
+      brand: CheckPointFirewall_v2
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      limit: {}
+      offset: {}
+      session_id:
+        complex:
+          root: CheckPoint.Login.session-id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6700,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 5928c7f5-3ca7-4fc4-86eb-378c1885d90e
+    type: regular
+    task:
+      id: 5928c7f5-3ca7-4fc4-86eb-378c1885d90e
+      version: -1
+      name: Add comment for issues
+      description: Add comments to the incidents
+      script: LogPoint SIEM Integration|||lp-add-incident-comment
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: There is some issue due to which the playbook was unable to take action.
+          kindly review.
+      incident_obj_id:
+        complex:
+          root: incident.logpointincidentid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5610,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 44318c82-23c0-46f6-89ac-162cb8a2bf95
+    type: regular
+    task:
+      id: 44318c82-23c0-46f6-89ac-162cb8a2bf95
+      version: -1
+      name: Add successful comment
+      description: Add comments to the incidents
+      script: LogPoint SIEM Integration|||lp-add-incident-comment
+      type: regular
+      iscommand: true
+      brand: LogPoint SIEM Integration
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      comment:
+        simple: The blocking of IP has been successfully completed by the playbook.
+          Please verify.
+      incident_obj_id:
+        complex:
+          root: incident.logpointincidentid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 6020,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "100_87_yes": 0.84,
+      "30_41_#default#": 0.9,
+      "30_66_yes": 0.51,
+      "35_38_YES": 0.49,
+      "35_5_#default#": 0.19,
+      "38_5_yes": 0.52,
+      "39_12_#default#": 0.24,
+      "39_66_yes": 0.24,
+      "44_12_#default#": 0.1,
+      "44_66_yes": 0.19,
+      "59_12_#default#": 0.57,
+      "5_9_yes": 0.44,
+      "62_12_#default#": 0.13,
+      "65_38_yes": 0.58,
+      "65_5_#default#": 0.29,
+      "72_73_#default#": 0.48,
+      "7_12_#default#": 0.12,
+      "80_81_#default#": 0.46,
+      "80_86_yes": 0.49,
+      "91_102_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3565,
+        "width": 8120,
+        "x": -40,
+        "y": -970
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- LogPoint SIEM Integration - Test Playbook 2
+- LogPoint SIEM Integration - Test Playbook 1
+fromversion: 6.0.0
