@@ -2,6 +2,7 @@ import pytest
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command
+from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
 
@@ -133,6 +134,20 @@ def test_list_mails_command(mocker, client):
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
         assert '### No mails were found' in hr
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_page_limit_and_paged_to_pull(mocker, client):
+    args = {'user_id': 'test id', 'page_size': 1, 'pages_to_pull': 1}
+    with open('test_data/response_with_one_mail') as mail_json:
+        mail = json.load(mail_json)
+        mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
+        mocker.patch.object(demisto, 'results')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '1 mails received \nPay attention there are more results than shown. For more data please ' \
+               'increase "pages_to_pull" argument' in hr
 
 
 @pytest.fixture()
