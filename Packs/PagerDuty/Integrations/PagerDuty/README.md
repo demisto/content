@@ -14,7 +14,7 @@ This integration was integrated and tested with PagerDuty API v2.
     | Use system proxy settings | False |
     | Fetch incidents | False |
     | Incident type | False |
-    | Initial Fetch Interval(In minutes, used only for first fetch or after Reset last run) | False |
+    | Initial Fetch Interval (In minutes, used only for the first fetch or after Reset last run) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -169,7 +169,7 @@ Returns the names and details of on call users at a certain time or by specific 
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
 >| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
->| anotherid | demsito@mail.com | Another User | user | https://demisto.pagerduty.com/users/anotherid | Europe/Athens |
+>| anotherid | demisto@mail.com | Another User | user | https://demisto.pagerduty.com/users/anotherid | Europe/Athens |
 
 
 ### PagerDuty-get-users-on-call-now

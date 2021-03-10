@@ -189,7 +189,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Incident de-duplication key,
+      description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec
       isArray: false
       name: incident_key
       required: false
