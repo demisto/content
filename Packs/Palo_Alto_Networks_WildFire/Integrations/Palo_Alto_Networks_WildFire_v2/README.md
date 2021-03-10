@@ -358,7 +358,7 @@ Retrieves results for a file hash using WildFire.
                         "100": {
                             "artifact_ref": "99",
                             "type": "x-wf-url-resource"
-                        }
+                        },
                         "148": {
                             "extensions": {
                                 "x-wf-content-description": {
