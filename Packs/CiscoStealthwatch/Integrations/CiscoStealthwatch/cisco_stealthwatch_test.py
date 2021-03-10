@@ -137,11 +137,6 @@ def test_cisco_stealthwatch_get_top_alarming_tags_command(requests_mock):
     assert response.outputs[0].get('tenant_id') == 'x'
 
 
-# # def test_cisco_stealthwatch_list_alarms_command(requests_mock):
-# #     from cisco_stealthwatch import Client, cisco_stealthwatch_list_alarms_command
-# #     mock_response = util_load_json('test_data/list_alarms.json')
-#
-#
 def test_cisco_stealthwatch_list_security_events_initialize_command(requests_mock):
     from cisco_stealthwatch import Client, \
         cisco_stealthwatch_list_security_events_initialize_command

@@ -1,14 +1,5 @@
-## Configure Cisco Stealthwatch on Cortex XSOAR
+## Cisco Stealthwatch
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Stealthwatch.
-3. Click **Add instance** to create and configure a new integration instance.
+### Getting Credentials
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | Server URL for Cisco Stealthwatch console. e.g: https://ip:port/ | True |
-    | User Credentials |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+The username and password required by this integration are the same as the credentials used to login into the Cisco Stelathwatch console.

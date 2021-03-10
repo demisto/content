@@ -1,8 +1,6 @@
 {
-    "data": [
-        {
-            "displayName": "qmasters",
-            "id": 102
-        }
-    ]
+    "data": [{
+        "displayName": "companyname",
+        "id": 102
+    }]
 }

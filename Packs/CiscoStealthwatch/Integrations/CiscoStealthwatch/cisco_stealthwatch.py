@@ -455,7 +455,7 @@ def cisco_stealthwatch_list_security_events_status_command(client: Client, tenan
         CommandResults: Raw response, outputs and readable outputs
     """
     response = client.check_security_events_search_progress(tenant_id, search_id)
-    outputs = response.get('data')
+    outputs = response.get('data', {})
     outputs['id'] = search_id
     table = tableToMarkdown('Security Events Status Information:', outputs,
                             headers=['id', 'percentComplete'], removeNull=True,
@@ -559,7 +559,7 @@ def main():
 
     command = demisto.command()
 
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
