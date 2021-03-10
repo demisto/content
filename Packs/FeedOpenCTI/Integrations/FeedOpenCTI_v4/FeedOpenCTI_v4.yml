@@ -213,5 +213,5 @@ script:
   subtype: python3
   type: python
 tests:
-- OpenCTI Feed v4 Test
+- No Tests
 fromversion: 5.5.0

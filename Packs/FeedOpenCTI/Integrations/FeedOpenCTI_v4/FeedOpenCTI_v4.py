@@ -1,10 +1,8 @@
 from typing import List, Optional, Tuple
-from io import StringIO
-import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from pycti import OpenCTIApiClient, Identity
+from pycti import OpenCTIApiClient
 
 # Disable insecure warnings
 urllib3.disable_warnings()

@@ -1,5 +1,5 @@
 import copy
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from io import StringIO
 import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
@@ -112,13 +112,12 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: 
     return indicators
 
 
-def get_indicators_command(client: OpenCTIApiClient, args: dict, is_test: bool = False) -> CommandResults:
+def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResults:
     """ Gets indicator from opencti to readable output
 
     Args:
         client: OpenCTI Client object
         args: demisto.args()
-        is_test: is this command used for test module
 
     Returns:
         readable_output, raw_response
@@ -135,12 +134,17 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict, is_test: bool =
 
     last_run = raw_response.get('pagination').get('endCursor')
 
-    if indicators_list := copy.deepcopy(raw_response.get('entities')) and not is_test:
-        indicators = [{'type': indicator['type'],
-                       'value': indicator['value'],
-                       'id': indicator['id'],
-                       # TODO : todo
-                       'rawJSON': indicator['rawJSON']}
+    if indicators_list := copy.deepcopy(raw_response.get('entities')):
+        indicators = [{'type': indicator.get('entity_type'),
+                       'value': indicator.get('observable_value'),
+                       'id': indicator.get('id'),
+                       'createdBy': indicator.get('createdBy').get('id')
+                       if indicator.get('createdBy') else None,
+                       'score': indicator.get('x_opencti_score'),
+                       'description': indicator.get('x_opencti_description'),
+                       'labels': [label.get('value') for label in indicator.get('objectLabel')],
+                       'marking': [mark.get('definition') for mark in indicator.get('objectMarking')]
+                       }
                       for indicator in indicators_list]
 
         readable_output = tableToMarkdown('Indicators', indicators,
@@ -228,7 +232,10 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     value = args.get("value")
     data = {'type': XSOAR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type),
             'value': value}
-    # todo: add if
+    if indicator_type is 'Registry Key':
+        data['key'] = value
+    if indicator_type is 'Account':
+        data['account_login'] = value
 
     simple_observable_key = None
     simple_observable_value = None
@@ -603,11 +610,36 @@ def main():
         command = demisto.command()
         demisto.info(f"Command being called is {command}")
 
+        filters = [{
+            'key': 'x_opencti_score',
+            'values': ['50']
+        },
+        {
+             'key': 'entity_type',
+             'values': ['Domain-Name']
+        }
+            ,
+            {
+                'key': 'created_at',
+                'value': '2021-02-17T09:06:50.554Z'
+            }]
+        #     ,
+        #     {
+        #         'key': 'hasExternalReference',
+        #         'value': True
+        #     }
+
+        res = client.stix_cyber_observable.list(filters=filters,
+                                                #orderBy={'created_at': '2021.2.10'},
+                                                #orderMode='asc'
+                                                )
+        hi = "hi"
+
         # Switch case
         if command == "test-module":
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.
             and if not he immediately sends an error'''
-            get_indicators_command(client, args, is_test=True)
+            get_indicators_command(client, args)
             return_results('ok')
 
         elif command == "opencti-get-indicators":

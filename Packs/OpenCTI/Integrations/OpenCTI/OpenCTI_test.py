@@ -30,7 +30,7 @@ def test_get_indicators(mocker):
     client = Client
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
-    assert len(indicators) == 3
+    assert len(indicators) == 2
 
 
 def test_get_indicators_command(mocker):

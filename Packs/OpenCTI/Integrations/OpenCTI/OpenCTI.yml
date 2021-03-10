@@ -218,7 +218,6 @@ script:
     - contextPath: OpenCTI.Indicator.value
       description: New indicator value.
       type: String
-    - contextPath: OpenCTI.Indicator.type
       description: New indicator type.
       type: String
   - arguments:
@@ -436,7 +435,6 @@ script:
       description: the id of the last fetch to use pagination.
       type: String
   dockerimage: demisto/opencti-v4:1.0.0.16772
-  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
