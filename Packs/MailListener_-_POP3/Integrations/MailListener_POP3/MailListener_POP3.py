@@ -104,13 +104,13 @@ class TextExtractHtmlParser(HTMLParser):
         self._texts = []  # type: list
         self._ignore = False
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag, _):
         if tag in ('p', 'br') and not self._ignore:
             self._texts.append('\n')
         elif tag in ('script', 'style'):
             self._ignore = True
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, _):
         if tag in ('br', 'tr') and not self._ignore:
             self._texts.append('\n')
 
@@ -212,7 +212,7 @@ def parse_mail_parts(parts):
             attachments.extend(part_attachments)
         elif not is_attachment:
             if headers.get('content-transfer-encoding') == 'base64':
-                text = base64.b64decode(part._payload).decode('utf-8')
+                text = base64.b64decode(part._payload).decode('utf-8', 'replace')
             elif headers.get('content-transfer-encoding') == 'quoted-printable':
                 str_utf8 = part._payload.decode('cp1252')
                 str_utf8 = str_utf8.encode('utf-8')

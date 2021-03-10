@@ -88,13 +88,15 @@ class TestMetadataParsing:
         assert parsed_metadata['currentVersion'] == '2.3.0'
         assert parsed_metadata['versionInfo'] == "dummy_build_number"
         assert parsed_metadata['commit'] == "dummy_commit"
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", "Use Case"]
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", "Use Case"}
+        assert len(parsed_metadata['tags']) == 3
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['useCases'] == ["Some Use Case"]
         assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
+        assert parsed_metadata['searchRank'] == 10
         assert 'dependencies' in parsed_metadata
 
     def test_parsed_metadata_empty_input(self, dummy_pack):
@@ -119,6 +121,7 @@ class TestMetadataParsing:
         assert parsed_metadata['certification'] == Metadata.CERTIFIED
         assert parsed_metadata['price'] == 0
         assert parsed_metadata['serverMinVersion'] == "dummy_server_version"
+        assert parsed_metadata['searchRank'] == 10
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
@@ -139,8 +142,8 @@ class TestMetadataParsing:
 
     def test_new_tag_added(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a new pack (created less than 30 days ago)
-        Then: add "New" tag
+        Given a certified new pack (created less than 30 days ago)
+        Then: add "New" tag and raise the searchRank
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
         parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
@@ -150,12 +153,13 @@ class TestMetadataParsing:
                                                           commit_hash="dummy_commit", downloads_count=10,
                                                           is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
+        assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'New'}
+        assert parsed_metadata['searchRank'] == 20
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
-        Given a pack that was created more than 30 days ago
-        Then: remove "New" tag
+        Given a certified pack that was created more than 30 days ago
+        Then: remove "New" tag and make sure the searchRank is reduced
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         if 'New' not in dummy_pack_metadata['tags']:
@@ -167,7 +171,121 @@ class TestMetadataParsing:
                                                           commit_hash="dummy_commit", downloads_count=10,
                                                           is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
+        assert parsed_metadata['searchRank'] == 10
+
+    def test_section_tags_added(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given:
+            Pack
+        When:
+            Parsing a pack metadata
+        Then:
+            add the 'Featured' landingPage section tag and raise the searchRank
+        """
+        section_tags = {
+            "sections": ["Trending",
+                         "Featured",
+                         "Getting Started"],
+            "Featured": [
+                "Test Pack Name"
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False, landing_page_sections=section_tags)
+
+        assert set(parsed_metadata['tags']) == {'tag number one', 'Tag number two', 'Use Case', 'Featured'}
+        assert parsed_metadata['searchRank'] == 20
+
+    def test_deprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: All the integrations in it are deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                }
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == -40
+
+    def test_partdeprecated_pack_search_rank(self, dummy_pack_metadata, dummy_pack):
+        """
+        Given: a certified pack
+        When: Only one of the two integrations is deprecated.
+        Then: calculate the search rank
+        """
+        content_items = {
+            "integration": [
+                {
+                    "name": "packname (Deprecated)",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+                {
+                    "name": "packname2",
+                    "description": "packs description",
+                    "category": "Endpoint",
+                    "commands": [
+                        {
+                            "name": "command1",
+                            "description": "command 1 description"
+                        }
+                    ]
+                },
+
+            ],
+            "playbook": [
+                {
+                    "name": "test plakbook",
+                    "description": "test playbook description"
+                }
+            ]
+        }
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata,
+                                                          pack_content_items=content_items,
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="", dependencies_data={},
+                                                          server_min_version="5.5.0", build_number="dummy_build_number",
+                                                          commit_hash="dummy_commit", downloads_count=10,
+                                                          is_feed_pack=False)
+
+        assert parsed_metadata['searchRank'] == 10
 
     def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
@@ -186,7 +304,7 @@ class TestMetadataParsing:
                                                           build_number="dummy_build_number", commit_hash="dummy_commit",
                                                           downloads_count=10, is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", 'Use Case'}
 
     @pytest.mark.parametrize('is_feed_pack, tags',
                              [(True, ["tag number one", "Tag number two", 'TIM']),
@@ -281,6 +399,55 @@ class TestParsingInternalFunctions:
         result_certification = Pack._get_certification(support_type="partner", certification="certified")
 
         assert result_certification == Metadata.CERTIFIED
+
+    @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
+        ([], [], []),
+        ([], ["DummyPack"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}],
+         ["DummyPack", "DummyPack2"],
+         [{"name": "DummyIntegration", "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"},
+          {"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]),
+        ([{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}],
+         ["DummyPack2"],
+         [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
+    ])
+    def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
+        """
+           Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
+           and without the contribution details suffix if exists.
+           All test cases getting the same dependencies_data (all level pack's dependencies data) dictionary.
+           Given:
+               - Empty pack_integration_images, empty display_dependencies_images
+               - Empty pack_integration_images, display_dependencies_images with one pack
+               - pack_integration_images with DummyIntegration, display_dependencies_images DummyPack1 and DummyPack2
+               - pack_integration_images with DummyIntegration2 without contribution details suffix,
+                 display_dependencies_images DummyPack2
+
+           When:
+               - Getting all pack images when formatting pack's metadata.
+
+           Then:
+               - Validates that all_pack_images is empty.
+               - Validates that all_pack_images list was updated according to the packs dependencies.
+               - Validates that all_pack_images list was updated without duplications.
+               - Validates that all_pack_images list was updated without the contribution details suffix.
+       """
+
+        dependencies_data = {
+            "DummyPack": {
+                "integrations": [{
+                    "name": "DummyIntegration",
+                    "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]},
+            "DummyPack2": {
+                "integrations": [{
+                    "name": "DummyIntegration2 (Partner Contribution)",
+                    "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
+
+        all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
+                                                    dependencies_data)
+
+        assert expected == all_pack_images
 
 
 class TestHelperFunctions:
@@ -901,6 +1068,25 @@ class TestImagesUpload:
         assert task_status
         assert len(expected_result) == len(integration_images)
         assert integration_images == expected_result
+
+    @pytest.mark.parametrize("display_name", [
+        'Integration Name (Developer Contribution)',
+        'Integration Name (Community Contribution) ',
+        'Integration Name',
+        'Integration Name (Partner Contribution)',
+        'Integration Name(Partner Contribution)'
+    ])
+    def test_remove_contrib_suffix_from_name(self, dummy_pack, display_name):
+        """
+           Given:
+               - Integration name.
+           When:
+               - Uploading integrations images to gcs.
+           Then:
+               - Validates that the contribution details were removed
+       """
+
+        assert "Integration Name" == dummy_pack.remove_contrib_suffix_from_name(display_name)
 
     def test_copy_and_upload_integration_images(self, mocker, dummy_pack):
         """
