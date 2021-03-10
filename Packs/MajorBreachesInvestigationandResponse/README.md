@@ -1,3 +1,5 @@
+![Header Image](https://raw.githubusercontent.com/demisto/content/c1fc853921dd2777d7bfbdee97612541783e3d83/Packs/MajorBreachesInvestigationandResponse/doc_files/Espionage-r3d3.png)
+
 This pack has a collection of playbooks to rapidly respond to high profile breaches with existing deployed tools in your enterprise. 
 The playbooks in this pack can also be used as a template to hunt and block these indicators using additional tools in your environment.
 This pack contains the response playbooks for the following breaches:
