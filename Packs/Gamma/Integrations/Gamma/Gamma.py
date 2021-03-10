@@ -127,22 +127,23 @@ class Command:
         if int(limit) < 1 or int(limit) > 100:
             raise ValueError("limit must be between 1 and 100")
 
-        v_list = client.get_violation_list(minimum_violation, limit)
+        response = client.get_violation_list(minimum_violation, limit)
+        violations = response['response']
 
         note = ''
-        if v_list['response'][0]['violation_id'] != int(minimum_violation):
+        if violations[0]['violation_id'] != int(minimum_violation):
             note += "Violation with the minimum_violation ID does not exist. " \
                     "Showing violations pulled from the next available ID: " \
-                    f'{v_list["response"][0]["violation_id"]} \r'
+                    f'{violations[0]["violation_id"]} \r'
 
-        human_readable = get_human_readable(v_list)
+        human_readable = get_human_readable(violations)
 
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix="GammaViolation",
             outputs_key_field="violation_id",
-            outputs=v_list,
-            raw_response=v_list
+            outputs=violations,
+            raw_response=violations
         )
 
     @staticmethod
@@ -165,19 +166,20 @@ class Command:
         if int(violation_id) < 1:
             raise ValueError("Violation must be greater than 0")
 
-        violation = client.get_violation(violation_id)
+        response = client.get_violation(violation_id)
+        violations = response['response']
 
-        if violation['response'][0]['violation_id'] != int(violation_id):
+        if violations[0]['violation_id'] != int(violation_id):
             raise ValueError("Violation with this ID does not exist.")
 
-        human_readable = get_human_readable(violation)
+        human_readable = get_human_readable(violations)
 
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix="GammaViolation",
             outputs_key_field="violation_id",
-            outputs=violation,
-            raw_response=violation
+            outputs=violations,
+            raw_response=violations
         )
 
     @staticmethod
@@ -208,7 +210,8 @@ class Command:
 
         client.update_violation(violation, status, notes)
 
-        updated_violation = client.get_violation(violation)
+        response = client.get_violation(violation)
+        updated_violation = response['response']
         human_readable = get_human_readable(updated_violation)
 
         return CommandResults(
@@ -318,25 +321,25 @@ def fetch_incidents(client: Client, last_run_violation: dict,
     return next_run_violation, incidents
 
 
-def get_human_readable(violation: Dict[str, Any]) -> str:
+def get_human_readable(violation: List[Dict[str, Any]]) -> str:
     """ Parse results into human readable format
 
-    :type violation: dict
-    :param violation: dict object obtaining violation data
+    :type violation: List
+    :param violation: List object obtaining violation data
 
     :return: String with Markdown formatting
     :rtype: str
     """
 
-    def violation_to_str(response):
-        return f'### Violation {response["violation_id"]} \r' \
+    def violation_to_str(v):
+        return f'### Violation {v["violation_id"]} \r' \
                f'|Violation ID|Status|Timestamp|Dashboard URL|User|App Name| \r' \
                f'|---|---|---|---|---|---| \r' \
-               f'| {response["violation_id"]} | {response["violation_status"]} | ' \
-               f'{timestamp_to_datestring(response["violation_event_timestamp"] * 1000)} | ' \
-               f'{response["dashboard_url"]} | {response["user"]} | {response["app_name"]} | \r'
+               f'| {v["violation_id"]} | {v["violation_status"]} | ' \
+               f'{timestamp_to_datestring(v["violation_event_timestamp"] * 1000)} | ' \
+               f'{v["dashboard_url"]} | {v["user"]} | {v["app_name"]} | \r'
 
-    return '\r'.join(violation_to_str(v) for v in violation['response'])
+    return '\r'.join(violation_to_str(key) for key in violation)
 
 
 def main() -> None:

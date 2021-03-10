@@ -180,7 +180,7 @@ def test_get_violation_command(requests_mock, mocker, capfd):
     mock_demisto(mocker, args, 'gamma-get-violation')
     with capfd.disabled():
         main()
-    content = demisto.results.call_args[0][0]['Contents']['response'][0]['violation_id']
+    content = demisto.results.call_args[0][0]['Contents'][0]['violation_id']
     assert 2036 == content
 
 
@@ -206,7 +206,7 @@ def test_get_violation_list_command(demisto_args, output, requests_mock, mocker,
     mock_demisto(mocker, demisto_args, "gamma-get-violation-list")
     with capfd.disabled():
         main()
-    content = demisto.results.call_args[0][0]['Contents']['response'][0]['violation_id']
+    content = demisto.results.call_args[0][0]['Contents'][0]['violation_id']
     assert output == content
 
 
@@ -244,7 +244,7 @@ def test_update_violation_command(demisto_args, demisto_command, output,
     mock_demisto(mocker, demisto_args, demisto_command)
     with capfd.disabled():
         main()
-    contents = demisto.results.call_args[0][0]['Contents']['response'][0]['violation_status']
+    contents = demisto.results.call_args[0][0]['Contents'][0]['violation_status']
     assert output == contents
 
 
@@ -304,7 +304,7 @@ def test_main_get_violation_list(requests_mock, mocker, capfd):
     mock_demisto(mocker, args, command)
     with capfd.disabled():
         main()
-    response = demisto.results.call_args[0][0]["Contents"]["response"]
+    response = demisto.results.call_args[0][0]["Contents"]
     assert {2036, 5100} == {i["violation_id"] for i in response}
 
 
@@ -337,7 +337,7 @@ def test_main_get_violation(requests_mock, mocker, capfd):
     mock_demisto(mocker, args, command)
     with capfd.disabled():
         main()
-    assert 2036 == demisto.results.call_args[0][0]["Contents"]["response"][0]["violation_id"]
+    assert 2036 == demisto.results.call_args[0][0]["Contents"][0]["violation_id"]
 
 
 def test_main_update(requests_mock, mocker, capfd):
@@ -357,7 +357,7 @@ def test_main_update(requests_mock, mocker, capfd):
     with capfd.disabled():
         main()
 
-    assert test_violation == demisto.results.call_args[0][0]["Contents"]["response"][0]["violation_id"]
+    assert test_violation == demisto.results.call_args[0][0]["Contents"][0]["violation_id"]
 
 
 def test_bad_command(mocker, capfd):
