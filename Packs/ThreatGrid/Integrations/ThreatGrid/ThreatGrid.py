@@ -949,9 +949,18 @@ def search_samples():
     """
     Search samples with the given filters
     """
+    demisto.debug("In function search_samples")
     r = req('GET', SUB_API + 'search/samples', params=apply_search_filters())
+    demisto.debug("Got the following response: {0}".format(r))
+    demisto.debug("The response text is: {0}".format(r.text))
+    demisto.debug("The response content is: {0}".format(r.content))
     samples = []
-    for sample in demisto.get(r.json(), 'data.items'):
+    data = None
+    try:
+        data = r.json()
+    except ValueError as error:
+        demisto.debug("Got the following exception: {0}".format(error))
+    for sample in demisto.get(data, 'data.items'):
         samples.append({
             'ID': demisto.get(sample, 'result'),
             'Details': demisto.get(sample, 'details')
