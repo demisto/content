@@ -34,8 +34,9 @@ commands:
             echo "Host 10.0.*
               StrictHostKeyChecking no
               LogLevel ERROR
-              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
-             Host content-build-lb.demisto.works
+              ProxyJump content-build@LB-BastionContentBuild-Harden-4ad0a9134761c35b.elb.us-west-2.amazonaws.com  # disable-secrets-detection
+             Host LB-BastionContentBuild-Harden-4ad0a9134761c35b.elb.us-west-2.amazonaws.com
+              Port 43567
               UserKnownHostsFile /dev/null
               StrictHostKeyChecking no
               LogLevel ERROR" >> ~/.ssh/config
@@ -57,7 +58,7 @@ commands:
               # Capturing the port
               PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
               echo "Opening a tunnel for ip $IP with port $PORT"
-              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              ssh -4 -o "ServerAliveInterval=15" -f -N "content-build@LB-BastionContentBuild-Harden-4ad0a9134761c35b.elb.us-west-2.amazonaws.com" -L "$PORT:$IP:443"  # disable-secrets-detection
               echo "Waiting for tunnel to be established"
               until nc -z 127.0.0.1 $PORT -v; do
                 if [ $COUNT -ge << parameters.timeout >> ]; then
