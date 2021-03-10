@@ -2364,10 +2364,6 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "PAN OS EDL Management - Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management"
-        },
-        {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
@@ -3206,6 +3202,10 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
+        },
+        {
+            "playbookID": "CreateCertificate-Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Carbon Black Defense v2",
