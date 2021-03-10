@@ -21,7 +21,6 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
     demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/v1'
-STATUSES_TO_FETCH = demisto.params().get('soc_status', [])
 
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -442,10 +441,11 @@ def create_indicator_command():
 def fetch_alerts(last_run, headers):
     last_fetch = last_run.get('time')
     url = '/alerts'
-    if STATUSES_TO_FETCH and len(STATUSES_TO_FETCH) > 0:
+    statuses_to_fetch = demisto.params().get('soc_status', [])
+    if statuses_to_fetch:
         items = []
-        for status in STATUSES_TO_FETCH:
-            res = http_request('GET', url, headers=headers, params={'soc_status': STATUSES[status]})
+        for status in statuses_to_fetch:
+            res = http_request('GET', url, headers=headers, params=alerts_params({'soc_status': STATUSES[status]}))
             items += res.get('results')
     else:
         res = http_request('GET', url, headers=headers)
