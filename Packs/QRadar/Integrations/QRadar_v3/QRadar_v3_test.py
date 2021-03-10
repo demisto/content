@@ -10,7 +10,8 @@ import pytest
 import pytz
 
 import QRadar_v3  # import module separately for mocker
-from CommonServerPython import DemistoException, set_integration_context, CommandResults, GetModifiedRemoteDataResponse
+from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
+    GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat
@@ -886,10 +887,15 @@ def test_get_modified_remote_data_command(mocker):
 
 @pytest.mark.parametrize('params, args, expected',
                          [
-                             (dict(), {'lastUpdate': 1613399051537}, [dict()]),
-                             (dict(), dict(), [dict(command_test_data['get_remote_data']['response'])])
+                             (dict(), {'lastUpdate': 1613399051537,
+                                       'id': command_test_data['get_remote_data']['response']['id']},
+                              GetRemoteDataResponse(
+                                  {'id': command_test_data['get_remote_data']['response']['id'], 'in_mirror_error': ''},
+                                  [])),
+                             (dict(), {'id': command_test_data['get_remote_data']['response']['id']},
+                              GetRemoteDataResponse(dict(command_test_data['get_remote_data']['response']), []))
                          ])
-def test_get_remote_data_command_pre_6_1(mocker, params, args, expected):
+def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemoteDataResponse):
     """
     Given:
      - QRadar client.
@@ -903,46 +909,51 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected):
     """
     set_integration_context(dict())
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
-    assert get_remote_data_command(client, params, args) == expected
+    result = get_remote_data_command(client, params, args)
+    assert result.mirrored_object == expected.mirrored_object
+    assert result.entries == expected.entries
 
 
 @pytest.mark.parametrize('params, offense, expected',
                          [
                              (dict(), command_test_data['get_remote_data']['response'],
-                              [dict(command_test_data['get_remote_data']['response'])]),
+                              GetRemoteDataResponse(dict(command_test_data['get_remote_data']['response']), [])),
 
                              (dict(), command_test_data['get_remote_data']['closed'],
-                              [dict(command_test_data['get_remote_data']['closed'])]),
+                              GetRemoteDataResponse(dict(command_test_data['get_remote_data']['closed']), [])),
 
                              ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
-                              [dict(command_test_data['get_remote_data']['closed']), {
+                              GetRemoteDataResponse(dict(command_test_data['get_remote_data']['closed']), [{
                                   'Type': EntryType.NOTE,
                                   'Contents': {
                                       'dbotIncidentClose': True,
                                       'closeReason': 'From QRadar: False-Positive, Tuned'
                                   },
                                   'ContentsFormat': EntryFormat.JSON
-                              }]),
+                              }])),
 
                              ({'mirror_options': 'Mirror Offense And Events'},
-                              command_test_data['get_remote_data']['response'], [
+                              command_test_data['get_remote_data']['response'],
+                              GetRemoteDataResponse(
                                   dict(command_test_data['get_remote_data']['response'], events=sanitize_outputs(
-                                      command_test_data['search_results_get']['response']['events']))]),
+                                      command_test_data['search_results_get']['response']['events'])), [])),
 
                              ({'mirror_options': 'Mirror Offense And Events'},
                               command_test_data['get_remote_data']['closed'],
-                              [dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
-                                  command_test_data['search_results_get']['response']['events']))]),
+                              GetRemoteDataResponse(
+                                  dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
+                                      command_test_data['search_results_get']['response']['events'])), [])),
 
                              ({'mirror_options': 'Mirror Offense And Events', 'close_incident': True},
                               command_test_data['get_remote_data']['closed'],
-                              [dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
-                                  command_test_data['search_results_get']['response']['events'])),
-                               {'Type': EntryType.NOTE, 'Contents': {'dbotIncidentClose': True,
-                                                                     'closeReason': 'From QRadar: False-Positive, Tuned'},
-                                'ContentsFormat': EntryFormat.JSON}]),
+                              GetRemoteDataResponse(
+                                  dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
+                                      command_test_data['search_results_get']['response']['events'])),
+                                  [{'Type': EntryType.NOTE, 'Contents': {'dbotIncidentClose': True,
+                                                                         'closeReason': 'From QRadar: False-Positive, Tuned'},
+                                    'ContentsFormat': EntryFormat.JSON}]))
                          ])
-def test_get_remote_data_command_6_1_and_higher(mocker, params, offense, expected):
+def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, expected: GetRemoteDataResponse):
     """
     Given:
      - QRadar client.
@@ -974,4 +985,6 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense, expecte
         mocker.patch.object(QRadar_v3, 'enrich_offense_with_events',
                             return_value=dict(offense, events=sanitize_outputs(
                                 command_test_data['search_results_get']['response']['events'])))
-    assert get_remote_data_command(client, params, dict()) == expected
+    result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate':})
+    assert result.mirrored_object == expected.mirrored_object
+    assert result.entries == expected.entries

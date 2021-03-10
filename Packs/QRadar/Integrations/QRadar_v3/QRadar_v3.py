@@ -1175,7 +1175,7 @@ def fetch_incidents_command() -> List[Dict]:
     return get_integration_context().get('samples', [])
 
 
-def create_search_with_retry(client: Client, query_expression: str,
+def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
                              max_retries: int = EVENTS_FAILURE_LIMIT) -> Optional[Dict]:
     """
     Creates a search to retrieve events for an offense.
@@ -1184,13 +1184,27 @@ def create_search_with_retry(client: Client, query_expression: str,
     Therefore, 'max_retries' retries will be made, to try avoid such cases as much as possible.
     Args:
         client (Client): Client to perform the API calls.
-        query_expression (str): The query to retrieve events.
+        fetch_mode (str): Which enrichment mode was requested.
+                          Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
+        offense (Dict): Offense to enrich with events.
+        event_columns (str): Columns of the events to be extracted from query.
+        events_limit (int): Maximum number of events to enrich the offense.
         max_retries (int): Number of retries.
+
 
     Returns:
         (Dict): If search was created successfully.
         None: If reset was triggered or number of retries exceeded limit.
     """
+    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
+        if fetch_mode == FetchMode.correlations_events_only.value else ''
+    # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
+    offense_start_time = offense['start_time'] - 60 * 1000
+    offense_id = offense['id']
+    query_expression = (
+        f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
+        f'START {offense_start_time}'
+    )
     num_of_failures = 0
     while num_of_failures <= max_retries:
         if is_reset_triggered():
@@ -1277,22 +1291,14 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     if is_reset_triggered():
         return offense
 
-    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
-        if fetch_mode == FetchMode.correlations_events_only.value else ''
     # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
-    offense_start_time = offense['start_time'] - 60 * 1000
-    offense_id = offense['id']
-    query_expression = (
-        f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
-        f'START {offense_start_time}'
-    )
     for i in range(max_retries):
         # retry to check if we got all the event (its not an error retry), see docstring
-        search_response = create_search_with_retry(client, query_expression)
+        search_response = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
         if not search_response:
             continue
 
-        events = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
+        events = poll_offense_events_with_retry(client, search_response['search_id'], offense['id'])
         if len(events) >= min(offense.get('event_count', 0), events_limit):
             offense = dict(offense, events=events)
             break
@@ -2508,7 +2514,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     return fields
 
 
-def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
 
@@ -2520,23 +2526,23 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             lastUpdate: When was the last time we data was retrieved in Epoch.
 
     Returns:
-        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
+        GetRemoteDataResponse.
     """
     ctx = get_integration_context()
+    remote_args = GetRemoteDataArgs(args)
     fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
     events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
     events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
     mirror_option = params.get('mirror_options')
-    offense_id = args.get('id')
 
-    offense = client.offenses_list(offense_id=offense_id)
+    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
     offense_last_update = get_time_parameter(offense.get('last_updated_time'))
-    # Versions below 6.1 compatibility, checks if update occurred.
-    if 'last_update' not in ctx:
-        last_update = get_time_parameter(args.get('lastUpdate'))
-        if last_update and last_update > offense_last_update:
-            demisto.debug('Nothing new in the ticket')
-            return [dict()]
+
+    # versions below 6.1 compatibility
+    last_update = get_time_parameter(args.get('lastUpdate'))
+    if last_update and last_update > offense_last_update:
+        demisto.debug('Nothing new in the ticket')
+        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -2556,9 +2562,70 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     demisto.debug(f'Pull result is {offense}')
     if mirror_option == 'Mirror Offense And Events':
+        search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
+        offenses_pending_search = ctx.get('offenses_pending_search', [])
+
+
+
         offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
                                              events_columns=events_columns, events_limit=events_limit)
-    return [offense] + entries
+    return GetRemoteDataResponse(offense, entries)
+
+# def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
+#     """
+#     get-remote-data command: Returns an updated incident and entries
+#
+#     Args:
+#         client (Client): QRadar client to perform the API calls.
+#         params (Dict): Demisto params.
+#         args (Dict):
+#             id: Offense id to retrieve.
+#             lastUpdate: When was the last time we data was retrieved in Epoch.
+#
+#     Returns:
+#         GetRemoteDataResponse.
+#     """
+#     ctx = get_integration_context()
+#     remote_args = GetRemoteDataArgs(args)
+#     fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+#     events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+#     events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+#     mirror_option = params.get('mirror_options')
+#
+#     offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+#     offense_last_update = get_time_parameter(offense.get('last_updated_time'))
+#
+#     # versions below 6.1 compatibility
+#     last_update = get_time_parameter(args.get('lastUpdate'))
+#     if last_update and last_update > offense_last_update:
+#         demisto.debug('Nothing new in the ticket')
+#         return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
+#
+#     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
+#     entries = []
+#     if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
+#         demisto.debug(f'Offense is closed: {offense}')
+#         if closing_reason := offense.get('closing_reason_id', ''):
+#             closing_reason = client.closing_reasons_list(closing_reason).get('text')
+#
+#         entries.append({
+#             'Type': EntryType.NOTE,
+#             'Contents': {
+#                 'dbotIncidentClose': True,
+#                 'closeReason': f'From QRadar: {closing_reason}'
+#             },
+#             'ContentsFormat': EntryFormat.JSON
+#         })
+#
+#     demisto.debug(f'Pull result is {offense}')
+#     if mirror_option == 'Mirror Offense And Events':
+#         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
+#         x = ctx.get('offenses_pending_search', [])
+#
+#
+#         offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
+#                                              events_columns=events_columns, events_limit=events_limit)
+#     return GetRemoteDataResponse(offense, entries)
 
 
 def get_modified_remote_data_command(client: Client, params: Dict[str, str],
@@ -2574,23 +2641,28 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
+    ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
+    demisto.error(f'remote args are {remote_args}')
     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
     limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))  # type: ignore
     range_ = f'items=0-{limit - 1}'
+    mirror_options = params.get('mirror_options')
 
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
 
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND last_updated_time > {last_update}',
-                                    sort='%2Blast_updated_time')
-    if offenses:
-        ctx = get_integration_context()
-        set_integration_context(
-            {'samples': ctx.get('samples', []), 'last_update': offenses[-1].get('last_updated_time')})
-    modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
+                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
+                                    sort='+last_persisted_time')
+    new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
 
-    return GetModifiedRemoteDataResponse(modified_records_ids)
+    last_update = ctx.get('last_update') if not offenses else offenses[-1].get('last_persisted_time')
+    new_ctx = {'samples': ctx.get('samples', []), 'last_update': last_update}
+    if mirror_options == 'Mirror Offense And Events':
+        old_modified_ids = ctx.get('modified_ids', [])
+        new_ctx['modified_ids'] = old_modified_ids + new_modified_records_ids
+    set_integration_context(new_ctx)
+    return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
 ''' MAIN FUNCTION '''

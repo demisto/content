@@ -2302,3 +2302,22 @@ There is no context output for this command.
 #### Human Readable Output
 
 
+### get-remote-data
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ticket ID. | Required | 
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
