@@ -107,7 +107,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of returned emails. Usually shows partialy results, use the "page_size" and "pages_to_pull" arguments to get all results.
+    description: Gets the properties of returned emails. Usually shows partialy results,
+      use the "page_size" and "pages_to_pull" arguments to get all results.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
@@ -175,7 +176,8 @@ script:
       description: The ID of the user.
       type: String
     - contextPath: MSGraphMail.NextPage
-      description: A token to pass to the next list command to retrieve additional results.
+      description: A token to pass to the next list command to retrieve additional
+        results.
       type: String
   - arguments:
     - default: false
@@ -1026,7 +1028,7 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.16776
   feed: false
   isfetch: true
   longRunning: false

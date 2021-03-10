@@ -92,6 +92,7 @@ Gets the properties of returned emails.
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results.|
 
 
 ##### Command Example
@@ -102,6 +103,7 @@ Gets the properties of returned emails.
 {
     "MSGraphMail": [
         {
+            "NextPage": "link_to_next_page"
             "BCCRecipients": null,
             "CCRecipients": null,
             "Categories": [],
