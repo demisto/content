@@ -47,14 +47,6 @@ configuration:
   required: false
   additionalinfo: Limit on the number of incidents retrieved in a single fetch.  Must
     be an integer between 1 and 200 inclusive.
-- display: Digital Shadows Page Size
-  name: pageSize
-  defaultvalue: "500"
-  type: 0
-  required: false
-  additionalinfo: The maximum page size to request through the Digital Shadows API.  This
-    parameter is included for testing purposes and should not be updated.
-    Must be an integer between 1 and 500 inclusive.
 - display: Initial Fetch (Minutes)
   name: initialFetch
   defaultvalue: "1"
@@ -751,7 +743,7 @@ script:
 
 
     var sendRequest = function(url, method, body) {
-        logDebug('Request: ' + JSON.stringify(body));
+    
         var res = http(
             url,
             {
@@ -782,7 +774,7 @@ script:
         // Handles the edge case where the entire page of results on the previous fetch was published within the adjusted time window - see updateLastRun()
         // There may be more than the max page size of items published in that time window, so retrieve multiple pages to deduplciate
         offset = 0;
-        pageSize = parseInt(params.pageSize, 10);
+        pageSize = 500;
         total = 1;
 
         while (offset < total && incidents.length < fetchLimit) {
@@ -906,11 +898,9 @@ script:
 
     var validateParameters = function() {
         if(!params.fetchLimit) params.fetchLimit = 50;
-        if(!params.pageSize) params.pageSize = 500;
         if(!params.initialFetch) params.initialFetch = 1;
         
         if (isNaN(params.fetchLimit) || params.fetchLimit > 200 || params.fetchLimit < 1) throw 'Fetch limit must be an integer between 1 and 200';
-        if (isNaN(params.pageSize) || params.pageSize > 500 || params.pageSize < 1) throw 'Page size must be an integer between 1 and 500';
         if (isNaN(params.initialFetch) || params.initialFetch < 1) throw 'Initial fetch must be an integer greater than or equal to 1';
     };
     
