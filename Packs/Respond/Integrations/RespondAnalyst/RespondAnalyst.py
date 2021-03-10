@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 import json
 from datetime import datetime
 import dateparser
-import typing
+from typing import List, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -544,7 +544,7 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     assets = []
     external_systems = []
     lc_assets = []
-    lc_external_systems: typing.List[typing.Dict[str, str]] = []
+    lc_external_systems: List[Dict[str, str]] = []
     if raw_incident.get('allSystems'):
         assets = list(
             filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
@@ -790,7 +790,7 @@ def close_incident_command(rest_client, args):
     incident_id = int(args['incident_id'])
     internal_tenant_id, external_tenant_id = get_tenant_ids(rest_client, args)
 
-    feedback_status = args['incident_feedback']
+    feedback_status = args.get('incident_feedback')
     feedback_selected_options = args.get('feedback_selected_options')
     feedback_optional_text = args.get('feedback_optional_text')
     try:
@@ -1004,7 +1004,7 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def fetch_incidents(rest_client, last_run=dict()):
+def fetch_incidents(rest_client, last_run):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1081,7 +1081,6 @@ def main():
     rest_client = RestClient(
         base_url=BASE_URL,
         verify=VERIFY_CERT,
-        proxy=True
     )
 
     try:
@@ -1122,7 +1121,8 @@ def main():
             return_results(get_escalations_command(rest_client, demisto.args()))
 
     except Exception as err:
-        return_error(str(err))
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
