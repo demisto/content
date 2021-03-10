@@ -12,12 +12,11 @@ def assigned_synced_apps(args) -> CommandResults:
 
     for item in assigned_apps:
         content.append({
-            'App Name': item.get('Name', ''),
-            'App ID': item.get('ID', ''),
-            'App Label': item.get('Label')
+            'App Name': item.get('Label', ''),
+            'App ID': item.get('ID', '')
         })
 
-    output = tableToMarkdown('', content, ['App Name', 'App Label', 'App ID'], removeNull=True)
+    output = tableToMarkdown('', content, ['App Name', 'App ID'], removeNull=True)
     return CommandResults(readable_output=output)
 
 
