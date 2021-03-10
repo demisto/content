@@ -1,0 +1,11 @@
+!PagerDuty-acknowledge-event incident_key=8e42eeb6391a4a2abeda5d12e09bddec serviceKey=e18b825980164e03a85964679dcb4b2c
+!PagerDuty-get-all-schedules
+!PagerDuty-get-contact-methods UserID=PYFK82H
+!PagerDuty-get-incident-data incident_id=PLRTAAC
+!PagerDuty-get-service-keys
+!PagerDuty-get-users-notification UserID=PYFK82H
+!PagerDuty-get-users-on-call scheduleID=PFE1I5O
+!PagerDuty-get-users-on-call-now
+!PagerDuty-incidents
+!PagerDuty-resolve-event incident_key=8e42eeb6391a4a2abeda5d12e09bddec serviceKey=e18b825980164e03a85964679dcb4b2c
+!PagerDuty-submit-event action=trigger severity=info source=demisto summary="my new event"
