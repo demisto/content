@@ -1354,9 +1354,9 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
     if is_reset_triggered(handle_reset=True):
         return None, None
-
-    offenses_with_mirror = [dict(offense, mirror_direction=mirror_direction) for offense in
-                            offenses] if mirror_direction else offenses
+    offenses_with_mirror = [
+        dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance()) for offense in
+        offenses] if mirror_direction else offenses
     enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
@@ -2553,8 +2553,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             },
             'ContentsFormat': EntryFormat.JSON
         })
-
-    offense['mirror_instance'] = demisto.integrationInstance()
 
     demisto.debug(f'Pull result is {offense}')
     if mirror_option == 'Mirror Offense And Events':
