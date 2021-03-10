@@ -1,0 +1,19 @@
+comment: |-
+  This script converts the json recived from Okta Synced Apps indicator field to a human readable table in the User Profile layout.
+  This script is part of the ILM pack.
+commonfields:
+  id: AssignedAppsTableWidget
+  version: -1
+enabled: false
+name: AssignedAppsTableWidget
+script: '-'
+subtype: python3
+system: false
+tags:
+- Widget
+- ' IAM'
+- ' dynamic-indicator-section'
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.0.0
