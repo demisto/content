@@ -132,7 +132,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
         last_run_id=last_run_id
     )
 
-    last_run = raw_response.get('pagination').get('endCursor')
+    last_run = raw_response.get('pagination', {}).get('endCursor')
 
     if indicators_list := copy.deepcopy(raw_response.get('entities')):
         indicators = [{'type': indicator.get('entity_type'),
@@ -232,9 +232,9 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     value = args.get("value")
     data = {'type': XSOAR_TYPES_TO_OPENCTI.get(indicator_type.lower(), indicator_type),
             'value': value}
-    if indicator_type is 'Registry Key':
+    if indicator_type == 'Registry Key':
         data['key'] = value
-    if indicator_type is 'Account':
+    if indicator_type == 'Account':
         data['account_login'] = value
 
     simple_observable_key = None

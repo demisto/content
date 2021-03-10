@@ -156,13 +156,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
         readable_output = tableToMarkdown('Indicators', indicators,
                                           headers=["type", "value", "id"],
                                           removeNull=True)
-
-        outputs = {
-            'OpenCTI.Indicators(val.lastRunID)': {'lastRunID': last_run_id},
-            'OpenCTI.Indicators.IndicatorsList(val.id === obj.id)': indicators
-        }
         return CommandResults(
-            outputs=outputs,
             readable_output=readable_output,
             raw_response=indicators_list
         )

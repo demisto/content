@@ -218,6 +218,7 @@ script:
     - contextPath: OpenCTI.Indicator.value
       description: New indicator value.
       type: String
+    - contextPath: OpenCTI.Indicator.type
       description: New indicator type.
       type: String
   - arguments:

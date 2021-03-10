@@ -3206,6 +3206,11 @@
         {
             "playbookID": "CreateCertificate-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "OpenCTI",
+            "playbookID": "OpenCTI Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

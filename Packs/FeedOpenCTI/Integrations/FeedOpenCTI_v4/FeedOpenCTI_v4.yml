@@ -172,37 +172,6 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: opencti-get-indicators
-    outputs:
-    - contextPath: OpenCTI.Indicators.IndicatorsList.type
-      description: Indicator type.
-      type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.value
-      description: Indicator value.
-      type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.id
-      description: Indicator id.
-      type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.createdBy
-      description: The creator of indicator.
-      type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.score
-      description: Indicator score.
-      type: Number
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.description
-      description: Indicator Description.
-      type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.objectLabel
-      description: Indicator labels.
-      type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.objectMarking
-      description: Indicator marking definitions.
-      type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.externalReferences
-      description: Indicator external references.
-      type: Unknown
-    - contextPath: OpenCTI.Indicators.LastRunID
-      description: the id of the last fetch to use pagination.
-      type: String
   dockerimage: demisto/opencti-v4:1.0.0.16772
   feed: true
   isfetch: false
