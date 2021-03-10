@@ -11,7 +11,7 @@ from urlparse import urlparse
 from requests.utils import quote  # type: ignore
 
 
-""" POLLING FUNCTIONS"""
+""" POLLING FUNCTIONS """
 try:
     from Queue import Queue
 except ImportError:
