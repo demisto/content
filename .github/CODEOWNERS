@@ -1,9 +1,9 @@
-# Marketplace related
+# Marketplace Related
 /Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
 
-# Marketplace and Upload flow
+# Marketplace & Upload-Flow
 /Tests/Marketplace/upload_git_snapshot.py @guyfreund
 /Tests/Marketplace/install_packs.sh @guyfreund
 /Tests/Marketplace/normalize_gcs_paths.py @guyfreund
@@ -18,7 +18,7 @@
 /Utils/trigger_test_upload_flow.sh @guyfreund
 /Utils/trigger_upload_packs_to_production.sh @guyfreund
 
-# Important integrations
+# Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
@@ -29,6 +29,6 @@
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
 
-# Important scripts
+# Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
