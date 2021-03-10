@@ -1,0 +1,27 @@
+category: Utilities
+commonfields:
+  id: IndicatorsRelationIntegration
+  version: -1
+configuration: []
+description: 'Create relations from integration'
+display: IndicatorsRelationIntegration
+name: IndicatorsRelationIntegration
+script:
+  commands:
+  - arguments: []
+    deprecated: false
+    description: 'Create relation'
+    execution: false
+    name: create-relation-integration
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

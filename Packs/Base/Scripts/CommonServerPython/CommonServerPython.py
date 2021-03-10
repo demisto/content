@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import enum
 import json
 import logging
 import os
@@ -4095,6 +4096,54 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
+
+class EntityRelation:
+    def __init__(self, name: str, reverse_name: str, entity_a: str, relation_type: str, entity_a_family: str, object_type_a: str,
+                 entity_b: str, entity_b_family: str, object_type_b: str, fields: dict, source_reliability: str):
+        """
+
+        Args:
+            name:
+            reverse_name:
+            entity_a:
+            relation_type:
+            entity_a_family:
+            object_type_a:
+            entity_b:
+            entity_b_family:
+            object_type_b:
+            fields:
+            source_reliability:
+        """
+        self._name = name
+        self._reverse_name = reverse_name
+        self._relation_type = relation_type
+        self._entity_a = entity_a
+        self._entity_a_family = entity_a_family
+        self._object_type_a = object_type_a
+        self._entity_b = entity_b
+        self._entity_b_family = entity_b_family
+        self._object_type_b = object_type_b
+        self._fields = fields
+        self._source_reliability = source_reliability
+
+    def to_context(self):
+        return {
+            "name": self._name,
+            "reverseName": self._reverse_name,
+            "type": self._relation_type,
+            "entityA": self._entity_a,
+            "entityAFamily": self._entity_a_family,
+            "objectTypeA": self._object_type_a,
+            "entityB": self._entity_b,
+            "entityBFamily": self._entity_b_family,
+            "objectTypeB": self._object_type_b,
+            "fields": self._fields,
+            "reliability": self._source_reliability
+        }
+
+
+
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
 
@@ -4270,8 +4319,9 @@ class CommandResults:
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
+                 mark_as_note=False, relations=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -4302,8 +4352,10 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.relations = relations
 
     def to_context(self):
+        relations = [] # type: list
         outputs = {}  # type: dict
         if self.readable_output:
             human_readable = self.readable_output
@@ -4358,6 +4410,9 @@ class CommandResults:
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
 
+        if self.relations:
+            relations = [relation.to_context() for relation in self.relations]
+
         return_entry = {
             'Type': EntryType.NOTE,
             'ContentsFormat': content_format,
@@ -4366,6 +4421,7 @@ class CommandResults:
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
+            'Relationships': relations,
             'Note': mark_as_note
         }
 

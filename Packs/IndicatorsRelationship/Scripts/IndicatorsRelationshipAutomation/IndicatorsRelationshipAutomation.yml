@@ -1,0 +1,14 @@
+commonfields:
+  id: IndicatorsRelationshipAutomation
+  version: -1
+enabled: false
+name: create-relation
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.0.0
