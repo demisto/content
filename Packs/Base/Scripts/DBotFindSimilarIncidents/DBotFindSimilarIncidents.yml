@@ -1,31 +1,33 @@
 args:
 - default: false
   description: Incident id to get prediction, if empty - using the current incident
-    id
+    id.
   isArray: false
   name: incidentId
   required: false
   secret: false
 - default: false
-  description: Command line fields ordered by importance
+  description: 'Fields with short or long text that will be taken into account in
+    order to compute similarity - Example: commandline, URL...'
   isArray: false
   name: similarTextField
   required: false
   secret: false
 - default: false
-  description: Fields for which exact match is not necessary but will boost the score
+  description: Fields for which exact match is not necessary but will boost the score.
   isArray: false
   name: similarCategoricalField
   required: false
   secret: false
 - default: false
-  description: List of fields that will be displayed
+  description: Additional incident fields that will be displayed.
   isArray: false
   name: fieldsToDisplay
   required: false
   secret: false
 - default: false
-  description: Fields for which exact match is required
+  description: Fields for which exact match is required - help to make the query to
+    Demisto lighter.
   isArray: false
   name: fieldExactMatch
   required: false
@@ -50,9 +52,9 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: If displaying distance for each fields
+  description: If displaying similarity score for each fields.
   isArray: false
-  name: showDistance
+  name: showSimilarity
   predefined:
   - 'True'
   - 'False'
@@ -60,7 +62,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.2'
-  description: Confidence level for similarity.
+  description: Filter out incident with a lower score than confidence.
   isArray: false
   name: confidence
   required: false
@@ -81,7 +83,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Aggregate duplicate incidents within diffrerent dates
+  description: Aggregate duplicate incidents within diffrerent dates. If includeIndicatorsSimilarity
+    is Truee then iaggreagateIncidentsDifferentDate will be False.
   isArray: false
   name: aggreagateIncidentsDifferentDate
   predefined:
@@ -97,7 +100,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Host or domain fields ordered by importance
+  description: 'Fields with json will be taken into account in order to compute similarity
+    - Example: CustomFields'
   isArray: false
   name: similarJsonField
   required: false
@@ -105,7 +109,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Use a predefined set of fields
+  description: Use a predefined set of fields and CustomFields.
   isArray: false
   name: useAllFields
   predefined:
@@ -116,7 +120,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Show the incident you are investigating
+  description: Show the incident you are investigating.
   isArray: false
   name: showActualIncident
   predefined:
@@ -126,20 +130,20 @@ args:
   secret: false
 - default: false
   description: Minimun number of indicators required related to the incident before
-    running the model
+    running the model.
   isArray: false
   name: minNumberOfIndicators
   required: false
   secret: false
 - default: false
   description: Type of indicators we want to take into account  - If empty use all
-    indicators types
+    indicators types.
   isArray: false
   name: indicatorsTypes
   required: false
   secret: false
 - default: false
-  description: 'Help to filter out indicators that appear in many incidents '
+  description: Help to filter out indicators that appear in many incidents.
   isArray: false
   name: maxIncidentsInIndicatorsForWhiteList
   required: false
@@ -148,7 +152,7 @@ args:
   default: false
   defaultValue: 'False'
   description: Include similarity of indicators from DBotFindSimilarIncidentsByIndicators
-    in final score
+    in final score.
   isArray: false
   name: includeIndicatorsSimilarity
   predefined:
@@ -156,6 +160,8 @@ args:
   - ' False'
   required: false
   secret: false
+comment: Find similar incidents based on incident's fields similarity and indicators
+  similarity.
 commonfields:
   id: DBotFindSimilarIncidents
   version: -1
@@ -166,8 +172,9 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.14141
+dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: true
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,46 +1,36 @@
-import pandas as pd
 # from CommonServerPython import *
 # import pytest
-from DBotFindSimilarIncidents import *
+from DBotFindSimilarIncidents import Tfidf, normalize_command_line, cdist_new, Identity, normalize_identity, \
+    normalize_json, identity, main, demisto, keep_high_level_field, preprocess_incidents_field, PREFIXES_TO_REMOVE, \
+    check_list_of_dict, REGEX_IP, match_one_regex
+import json
+import numpy as np
 
+CURRENT_INCIDENT = [
+    {'id': '123', 'commandline': 'powershell IP=1.1.1.1', 'CustomFields': {"nested_field": 'value_nested_field'},
+     'empty_current_incident_field': None, 'empty_fetched_incident_field': 'empty_fetched_incident_field_1'}]
 
-def executeCommand(command, args):
-    indicator = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'URL'},
-                 {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'File'}]
+FETCHED_INCIDENT = [
+    {'id': '1', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
+     'CustomFields': {"nested_field": 'value_nested_field_1'},
+     'empty_current_incident_field': 'empty_current_incident_field_1', 'empty_fetched_incident_field': None,
+     "name": "incident_name_1"},
+    {'id': '2', 'created': "2021-01-30", 'commandline': 'powershell IP=2.2.2.2',
+     'CustomFields': {"nested_field": 'value_nested_field_2'},
+     'empty_current_incident_field': 'empty_current_incident_field2', 'empty_fetched_incident_field': "",
+     "name": "incident_name_2"},
+    {'id': '3', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
+     'CustomFields': {"nested_field": 'value_nested_field_3'},
+     'empty_current_incident_field': 'empty_current_incident_field_3', 'empty_fetched_incident_field': None,
+     "name": "incident_name_3"}
+]
 
-    indicators_list = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'File'},
-                       {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'Domain'},
-                       {'id': 'c', 'investigationIDs': ['3', '45'], 'value': 'value_c', 'indicator_type': 'Email'},
-                       {'id': 'd', 'investigationIDs': ['1', '45'], 'value': 'value_d', 'indicator_type': 'File'},
-                       {'id': 'c', 'investigationIDs': ['2', '45'], 'value': 'value_c', 'indicator_type': 'File'}
-                       ]
-
-    if command == 'DBotFindSimilarIncidentsByIndicators' and 'OR' in args['query']:
-        return [{'Contents': indicators_list, 'Type': 'note'}]
-    if command == 'GetIncidentsByQuery':
-        if 'limit' in args:
-            return [{'Contents': indicators_list, 'Type': 'note'}]
-        else:
-            return [{'Contents': indicators_list, 'Type': 'note'}]
-
-
-
-
-def test_get_prediction_for_incident(mocker):
-    mocker.patch.object(demisto, 'args',
-                        return_value={
-                            'incidentId': 12345,
-                            'maxIncidentsInIndicatorsForWhiteList': '150',
-                            'aggreagateIncidents': 'True',
-                            'minNumberOfIndicators': '0',
-                            'threshold': '0.1',
-                            'indicatorsTypes': 'File,  URL, IP, Domain, IPv6',
-                            'showActualIncident': "True",
-                            'maxIncidentsToDisplay': '150',
-                            'fieldsIncidentToDisplay': 'type'
-                        })
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-
+SIMILAR_INDICATORS = [
+    {"ID": "inc_1", "Identical indicators": "ind_1, ind_2", "created": "2021-01-30", "id": "1",
+     "name": "incident_name_1", "similarity indicators": 0.2},
+    {"ID": "inc_3", "Identical indicators": "ind_2", "created": "2021-01-30", "id": "3", "name": "incident_name_3",
+     "similarity indicators": 0.4},
+]
 
 TRANSFORMATION = {
     'commandline': {'transformer': Tfidf,
@@ -64,89 +54,153 @@ TRANSFORMATION = {
              'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
              'scoring': {'scoring_function': cdist_new, 'min': 0.5}
              }
-
 }
-
-indicator = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'URL'},
-             {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'File'}]
-
-indicators_list = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'File'},
-                   {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'Domain'},
-                   {'id': 'c', 'investigationIDs': ['3', '45'], 'value': 'value_c', 'indicator_type': 'Email'},
-                   {'id': 'd', 'investigationIDs': ['1', '45'], 'value': 'value_d', 'indicator_type': 'File'},
-                   {'id': 'c', 'investigationIDs': ['2', '45'], 'value': 'value_c', 'indicator_type': 'File'}
-                   ]
 
 
 def executeCommand(command, args):
-    indicator = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'URL'},
-                 {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'File'}]
+    if command == 'DBotFindSimilarIncidentsByIndicators':
+        return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note'}]
+    if command == 'GetIncidentsByQuery':
+        if 'limit' in args:
+            return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
+        else:
+            return [{'Contents': json.dumps(CURRENT_INCIDENT), 'Type': 'note'}]
 
-    indicators_list = [{'id': 'a', 'investigationIDs': ['1', '2', '10'], 'value': 'value_a', 'indicator_type': 'File'},
-                       {'id': 'b', 'investigationIDs': ['2', '10'], 'value': 'value_b', 'indicator_type': 'Domain'},
-                       {'id': 'c', 'investigationIDs': ['3', '45'], 'value': 'value_c', 'indicator_type': 'Email'},
-                       {'id': 'd', 'investigationIDs': ['1', '45'], 'value': 'value_d', 'indicator_type': 'File'},
-                       {'id': 'c', 'investigationIDs': ['2', '45'], 'value': 'value_c', 'indicator_type': 'File'}
-                       ]
 
-    if command == 'findIndicators' and 'OR' in args['query']:
-        return [{'Contents': indicators_list, 'Type': 'note'}]
-    else:
-        return [{'Contents': indicator, 'Type': 'note'}]
+def check_exist_dataframe_columns(*fields, df):
+    for field in fields:
+        if field not in df.columns.tolist():
+            return False
+    return True
+
+
+def test_main_regular(mocker):
+    mocker.patch.object(demisto, 'args',
+                        return_value={
+                            'incidentId': 12345,
+                            'similarTextField': 'incident.commandline, commandline, command, '
+                                                'empty_current_incident_field, empty_fetched_incident_field',
+                            'similarCategoricalField': 'signature, filehash',
+                            'similarJsonField': 'CustomFields',
+                            'limit': 10000,
+                            'fieldExactMatch': '',
+                            'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
+                            'showSimilarity': True,
+                            'confidence': 0.2,
+                            'maxIncidentsToDisplay': 100,
+                            'query': '',
+                            'aggreagateIncidentsDifferentDate': 'True',
+                            'includeIndicatorsSimilarity': 'True'
+                        })
+    mocker.patch.object(demisto, 'dt', return_value=None)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    res = main()
+    assert ('empty_current_incident_field' not in res.columns)
+    assert (res.loc['3', 'Identical indicators'] == 'ind_2')
+    assert (res.loc['2', 'Identical indicators'] == "")
+    assert check_exist_dataframe_columns('similarity indicators', 'final_score', 'ID', 'created', 'name', df=res)
+    assert res.loc['3', 'similarity indicators'] == 0.4
+    assert res.loc['2', 'similarity indicators'] == 0.0
+
+
+def test_main_no_indicators_found(mocker):
+    global SIMILAR_INDICATORS
+    SIMILAR_INDICATORS = []
+    mocker.patch.object(demisto, 'args',
+                        return_value={
+                            'incidentId': 12345,
+                            'similarTextField': 'incident.commandline, commandline, command,'
+                                                ' empty_current_incident_field, empty_fetched_incident_field',
+                            'similarCategoricalField': 'signature, filehash',
+                            'similarJsonField': 'CustomFields',
+                            'limit': 10000,
+                            'fieldExactMatch': '',
+                            'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
+                            'showSimilarity': True,
+                            'confidence': 0.2,
+                            'maxIncidentsToDisplay': 100,
+                            'query': '',
+                            'aggreagateIncidentsDifferentDate': 'True',
+                            'includeIndicatorsSimilarity': 'True'
+                        })
+    mocker.patch.object(demisto, 'dt', return_value=None)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    res = main()
+    assert ('empty_current_incident_field' not in res.columns)
+    assert (res['Identical indicators'] == ["", "", ""]).all()
+    assert check_exist_dataframe_columns('similarity indicators', 'final_score', 'ID', 'created', 'name', df=res)
+    assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
+
+
+def test_main_no_fetched_incidents_found(mocker):
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT
+    FETCHED_INCIDENT = []
+    mocker.patch.object(demisto, 'args',
+                        return_value={
+                            'incidentId': 12345,
+                            'similarTextField': 'incident.commandline, commandline, command, '
+                                                'empty_current_incident_field, empty_fetched_incident_field',
+                            'similarCategoricalField': 'signature, filehash',
+                            'similarJsonField': 'CustomFields',
+                            'limit': 10000,
+                            'fieldExactMatch': '',
+                            'fieldsToDisplay': 'filehash, destinationip, closeNotes, sourceip, alertdescription',
+                            'showSimilarity': True,
+                            'confidence': 0.2,
+                            'maxIncidentsToDisplay': 100,
+                            'query': '',
+                            'aggreagateIncidentsDifferentDate': 'True',
+                            'includeIndicatorsSimilarity': 'True'
+                        })
+    mocker.patch.object(demisto, 'dt', return_value=None)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    res = main()
+    assert (not res)
+
+
+# - Check if field does not exit
+# Check incident.commandline
+# Check nested fields
+# Check if not fetched incident is return
+# Check is no indicators is return
+# Check is field is NaN or empty so it will be remove
 
 
 def test_keep_high_level_field():
-    pass
+    incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
+    res = ['xdralerts', 'commandline', 'CustomsFields']
+    assert keep_high_level_field(incidents_field) == res
+
 
 def test_preprocess_incidents_field():
-    pass
+    assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
+    assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
+
 
 def test_check_list_of_dict():
-    pass
+    assert check_list_of_dict([{'test': 'value_test'}, {'test1': 'value_test1'}]) is True
+    assert check_list_of_dict({'test': 'value_test'}) is False
+
 
 def test_recursive_filter():
     pass
 
-def test_match_one_regex():
-    pass
 
 def test_match_one_regex():
-    pass
+    assert match_one_regex('123.123.123.123', [REGEX_IP]) is True
+    assert match_one_regex('123.123.123', [REGEX_IP]) is False
+    assert match_one_regex('abc', [REGEX_IP]) is False
+    assert match_one_regex(1, [REGEX_IP]) is False
+
 
 def test_normalize_command_line():
-    pass
+    assert normalize_command_line('cmd -k IP=1.1.1.1 [1.1.1.1]') == 'cmd -k ip = IP IP'
+    assert normalize_command_line('powershell "remove_quotes"') == 'powershell remove_quotes'
+
 
 def test_cdist_new():
-    pass
-
-
-
-
-
-def test_score(mocker):
-    normalize_function = TRANSFORMATION['indicators']['normalize']
-    incident = pd.DataFrame({'indicators': ['1 2 3 4 5 6']})
-    # Check if incident is rare then the score is higher
-    incidents_1 = pd.DataFrame({'indicators': ['1 2', '1 3', '1 3']})
-    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
-    tfidf.fit(incidents_1)
-    res = tfidf.transform(incidents_1)
-    scores = res.values.tolist()
-    assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
-    # Check if same rarity then same scores
-    incidents_1 = pd.DataFrame({'indicators': ['1 2', '3 4']})
-    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
-    tfidf.fit(incidents_1)
-    res = tfidf.transform(incidents_1)
-    scores = res.values.tolist()
-    assert (all(scores[i] == scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
-    # Check if more indicators in commun them better score
-    incidents_1 = pd.DataFrame({'indicators': ['1 2 3', '4 5', '6']})
-    tfidf = FrequencyIndicators('indicators', normalize_function, incident)
-    tfidf.fit(incidents_1)
-    res = tfidf.transform(incidents_1)
-    scores = res.values.tolist()
-    assert (all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)))
-    assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
+    x = np.array([[1, 1, 1], [2, 2, 2]])
+    y = np.array([[2.1, 2.1, 2.1]])
+    distance = cdist_new(x, y)
+    assert distance[0] == 0
+    assert distance[1] > 0

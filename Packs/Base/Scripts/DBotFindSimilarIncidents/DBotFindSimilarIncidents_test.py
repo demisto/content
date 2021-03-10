@@ -32,7 +32,7 @@ def test_get_prediction_for_incident(mocker):
                             'confidence': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'Fals',
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
 

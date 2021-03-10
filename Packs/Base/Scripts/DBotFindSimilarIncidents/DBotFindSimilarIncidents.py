@@ -18,8 +18,8 @@ MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons
                          " 2) Selected field are empty for this incident - 3) Fields are misspelled"
 MESSAGE_NO_INCIDENT_FETCHED = "No incident found with these exact match for the given date"
 MESSAGE_WARNING_TRUNCATED = "%s incidents fetched with exact match. Incident have been truncated due to query " \
-                                "limit of %s. You will miss some incidents. Try to add exact matchs or increase " \
-                                "limit argument"
+                            "limit of %s. You will miss some incidents. Try to add exact matchs or increase " \
+                            "limit argument"
 MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check"
 MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist"
 ORDER_SCORE_WITH_INDICATORS = ['final_score', 'similarity indicators']
@@ -57,14 +57,15 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def preprocess_incidents_field(incidents_field: str) -> str:
+def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]) -> str:
     """
-    Remove prefixe from incident field
+    Remove prefixe from incident fields
     :param incidents_field: field
+    :param prefix_to_remove: prefix_to_remove
     :return: field without prefix
     """
     incidents_field = incidents_field.strip()
-    for prefix in PREFIXES_TO_REMOVE:
+    for prefix in prefix_to_remove:
         if incidents_field.startswith(prefix):
             incidents_field = incidents_field[len(prefix):]
     return incidents_field
@@ -76,16 +77,16 @@ def check_list_of_dict(obj) -> bool:
     :param obj: any object
     :return: boolean if object is list of dict
     """
-    return bool(obj) and all(isinstance(elem, dict) for elem in obj)
+    return bool(obj) and all(isinstance(elem, dict) for elem in obj)  # type: ignore
 
 
 def remove_duplicates(seq):
-    seen = set()
+    seen = set()  # type: ignore
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *forbidden):
+def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List[str], *forbidden):
     """
 
     :param item: Dict of list of Dict
@@ -154,6 +155,7 @@ def normalize_command_line(command: str) -> str:
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
         my_string = re.sub(REGEX_IP, 'IP', my_string)
+        my_string = my_string.strip()
         return my_string
     else:
         return ''
@@ -164,12 +166,13 @@ def fill_nested_fields(incidents_df, incidents, *list_of_field_list):
         for field in field_type:
             if '.' in field:
                 if isinstance(incidents, list):
-                    value_list = [wrapped_list(demisto.dt(incidents, field)) for incident in incidents]
+                    value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     value_list = [' '.join(list(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in
                                   value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
-                    value_list = ' '.join(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))
+                    value_list = ' '.join(  # type: ignore
+                        list(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 
@@ -294,7 +297,6 @@ TRANSFORMATION = {
              'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
              'scoring_function': cdist_new
              }
-
 }
 
 
@@ -373,7 +375,7 @@ class Model:
         self.get_score()
         self.compute_final_score()
         return self.prepare_for_display(), self.field_for_command_line + self.field_for_potential_exact_match + \
-               self.field_for_json
+            self.field_for_json
 
     def remove_empty_field(self):
         """
@@ -426,17 +428,17 @@ class Model:
         Compute final score based on average of similarity score for each field transformed
         :return:
         """
-        col = self.incidents_df.loc[:,
-              ['similarity %s' % field for field in self.field_for_command_line + self.field_for_json]]
+        col = self.incidents_df.loc[:, ['similarity %s' % field for field in self.field_for_command_line
+                                        + self.field_for_json]]
         self.incidents_df['final_score'] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
         self.compute_final_score()
         display_fields = remove_duplicates(
-            self.field_for_display_fields_incidents + self.field_for_command_line +
-                    self.field_for_potential_exact_match + [
-                    'similarity %s' % field for field in
-                    self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match])
+            self.field_for_display_fields_incidents + self.field_for_command_line
+            + self.field_for_potential_exact_match + [
+                'similarity %s' % field for field in
+                self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match])
         df_sorted = self.incidents_df[display_fields + ['final_score']]
         return df_sorted
 
@@ -556,24 +558,33 @@ def get_args():
         exact_match_fields = ['type']
     else:
         similar_text_field = demisto.args().get('similarTextField', '').split(',')
-        similar_text_field = [preprocess_incidents_field(x.strip()) for x in similar_text_field if x]
+        similar_text_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in similar_text_field if
+                              x]
+        similar_text_field = list(dict.fromkeys(similar_text_field))
 
         similar_categorical_field = demisto.args().get('similarCategoricalField', '').split(',')
-        similar_categorical_field = [preprocess_incidents_field(x.strip()) for x in similar_categorical_field if x]
+        similar_categorical_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in
+                                     similar_categorical_field if x]
+        similar_categorical_field = list(dict.fromkeys(similar_categorical_field))
 
         similar_json_field = demisto.args().get('similarJsonField', '').split(',')
-        similar_json_field = [preprocess_incidents_field(x.strip()) for x in similar_json_field if x]
+        similar_json_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in similar_json_field if
+                              x]
+        similar_json_field = list(dict.fromkeys(similar_json_field))
 
         exact_match_fields = demisto.args().get('fieldExactMatch', '').split(',')
-        exact_match_fields = [preprocess_incidents_field(x.strip()) for x in exact_match_fields if x]
+        exact_match_fields = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in exact_match_fields if
+                              x]
+        exact_match_fields = list(dict.fromkeys(exact_match_fields))
 
     display_fields = demisto.args().get('fieldsToDisplay', '').split(',')
     display_fields = [x.strip() for x in display_fields if x]
     display_fields = list(set(['id', 'created', 'name'] + display_fields))
+    display_fields = list(dict.fromkeys(display_fields))
 
     from_date = demisto.args().get('fromDate')
     to_date = demisto.args().get('toDate')
-    show_distance = demisto.args().get('showDistance')
+    show_similarity = demisto.args().get('showSimilarity')
     confidence = float(demisto.args().get('confidence'))
     max_incidents = int(demisto.args().get('maxIncidentsToDisplay'))
     query = demisto.args().get('query')
@@ -586,7 +597,7 @@ def get_args():
         aggregate = 'False'
 
     return similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, \
-        from_date, to_date, show_distance, confidence, max_incidents, query, aggregate, limit, \
+        from_date, to_date, show_similarity, confidence, max_incidents, query, aggregate, limit, \
         show_actual_incident, incident_id, include_indicators_similarity
 
 
@@ -741,6 +752,8 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
     """
     indicators_similarity_json = get_similar_incidents_by_indicators(full_args_indicators_script)
     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
+    if indicators_similarity_df.empty:
+        indicators_similarity_df = pd.DataFrame(columns=['similarity indicators', 'Identical indicators', 'type', 'id'])
     keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
     similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
@@ -763,18 +776,19 @@ def main():
     incident, incident_id = load_current_incident(incident_id, populate_high_level_fields)
     if not incident:
         global_msg += "%s \n" % MESSAGE_NO_CURRENT_INCIDENT
-        return_outputs_summary(confidence, 0, 0, "", global_msg)
+        return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return
 
     # load the related incidents
-    populate_fields = display_fields + similar_text_field + similar_json_field + similar_categorical_field + exact_match_fields
+    populate_fields = display_fields + similar_text_field + similar_json_field + similar_categorical_field \
+        + exact_match_fields
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
                                                                        incident,
                                                                        from_date, to_date, query, limit)
     if not incidents:
         global_msg += "%s \n" % msg
-        return_outputs_summary(confidence, 0, 0, "", global_msg)
+        return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return
     number_incident_fetched = len(incidents)
@@ -825,7 +839,7 @@ def main():
     # Columns to show for outputs
     col = similar_incidents.columns.tolist()
     col = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col if (
-            x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
+        x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     # Return summary outputs of the automation
     number_incidents_found = len(similar_incidents)
@@ -834,6 +848,7 @@ def main():
     # Create context and outputs
     context = create_context_for_incidents(similar_incidents)
     return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, col, context)
+    return similar_incidents[col]
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
