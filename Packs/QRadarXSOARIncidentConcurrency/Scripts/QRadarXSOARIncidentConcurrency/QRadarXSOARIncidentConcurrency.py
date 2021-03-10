@@ -19,7 +19,7 @@ def getQRadarOffenses():
     else:
         data = demisto.get(resp[0], 'Contents')
         if not data:
-            error_messages = "Data don't exist for this query"
+            error_messages = "Data don't exist for this query on QRadar"
             return_error(error_messages)
 
     qradar_offenses = []
@@ -43,7 +43,7 @@ def getXSOARIncidents():
     else:
         incident_from_demisto = demisto.get(respmatched_incidentsent[0], 'Contents')
         if not incident_from_demisto:
-            error_messages = "Data don't exist for this query"
+            error_messages = "Data don't exist for this query on XSOAR"
             return_error(error_messages)
         else:
             incident_from_demisto = incident_from_demisto if isinstance(incident_from_demisto, list) else [incident_from_demisto]
@@ -92,17 +92,17 @@ def controlQRadarXSOAR(qradar_offenses, mismatched_incidents, matched_incidents)
         i = i + 1
         k = k + 1
 
-    mach_incident_count = 'Match-up incidents count : ' + str(len(match_incidents_list))
+    mach_incident_count = 'Count of matching events between QRadar and SOAR : ' + str(len(match_incidents_list))
     demisto.results(mach_incident_count)
-    mismatched_incident_count = "Mismatched incident count : " + str(len(difference_incident))
+    mismatched_incident_count = "Number of incidents inconsistent between QRadar and XSOAR : " +  str(len(difference_incident))
     demisto.results(mismatched_incident_count)
 
     if len(difference_incident) > 0:
-        mismatched_incident = "Mismatched Incident : " + str(difference_incident)
+        mismatched_incident = "Incidents that are inconsistent between QRadar and XSOAR(XSOAR incident IDs) : " +  str(difference_incident)
         demisto.results(mismatched_incident)
         return difference_incident
     else:
-        return_messages = "No inconsistencies"
+        return_messages = "No inconsistencies between QRadar and XSOAR"
         return_results(return_messages)
         sys.exit(1)
 
@@ -119,7 +119,7 @@ def synchronizationQRadarXSOAR(difference_incident):
         inc_id_demisto = will_close_inc
         closematched_incidentsents_args['id'] = inc_id_demisto
         demisto.executeCommand('closeInvestigation', closematched_incidentsents_args)
-    result_process = "Synchronization completed."
+    result_process = "Synchronization completed between QRadar and SOAR."
     demisto.results(result_process)
 
 
