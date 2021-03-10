@@ -157,6 +157,7 @@ def test_main_no_fetched_incidents_found(mocker):
     res = main()
     assert (not res)
 
+
 def test_keep_high_level_field():
     incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
     res = ['xdralerts', 'commandline', 'CustomsFields']
