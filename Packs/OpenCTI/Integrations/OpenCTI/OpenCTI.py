@@ -611,31 +611,6 @@ def main():
         command = demisto.command()
         demisto.info(f"Command being called is {command}")
 
-        filters = [{
-            'key': 'x_opencti_score',
-            'values': ['50']
-        },
-        {
-             'key': 'entity_type',
-             'values': ['Domain-Name']
-        }
-            ,
-            {
-                'key': 'created_at',
-                'value': '2021-02-17T09:06:50.554Z'
-            }]
-        #     ,
-        #     {
-        #         'key': 'hasExternalReference',
-        #         'value': True
-        #     }
-
-        # res = client.stix_cyber_observable.list(filters=filters,
-                                                #orderBy={'created_at': '2021.2.10'},
-                                                #orderMode='asc'
-        #                                        )
-        hi = "hi"
-
         # Switch case
         if command == "test-module":
             '''When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.

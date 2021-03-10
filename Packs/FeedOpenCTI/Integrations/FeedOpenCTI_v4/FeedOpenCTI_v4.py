@@ -94,7 +94,11 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], limit: 
                 "description": item.get('x_opencti_description')
             }
         }
-        if tlp_color:
+        if tlp_color == 'According to indicator':
+            if object_marking := item.get('objectMarking', []):
+                new_tlp_color = object_marking[0].get('definition', '').split(':')
+                indicator['fields']['trafficlightprotocol'] = new_tlp_color[1]
+        elif tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
         indicators.append(indicator)
     return new_last_run, indicators
