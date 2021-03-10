@@ -641,8 +641,8 @@ def find_events_command(client: Client, args: dict):
     process_username = argToList(args.get('process_username'))
     sensor_action = argToList(args.get('sensor_action'))
     query = args.get('query')
-    rows = args.get('rows')
-    start = args.get('start')
+    rows = arg_to_number(args.get('rows'))
+    start = arg_to_number(args.get('start'))
     time_range = args.get('timerange')
 
     if time_range:
@@ -775,8 +775,8 @@ def find_processes_command(client: Client, args: dict):
     process_username = argToList(args.get('process_username'))
     sensor_action = argToList(args.get('sensor_action'))
     query = args.get('query')
-    rows = args.get('rows')
-    start = args.get('start')
+    rows = arg_to_number(args.get('rows'))
+    start = arg_to_number(args.get('start'))
     time_range = args.get('time_range')
 
     if time_range:
