@@ -5,6 +5,7 @@ import pytz
 from CommonServerPython import *
 
 # Disable insecure warnings
+# validate
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
