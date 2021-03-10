@@ -130,7 +130,7 @@ def get_url_data(client: Client, url: str):
     return current_data_url, url
 
 
-def url_data_to_dbot_score(url_data: dict, url: str):
+def url_data_to_dbot_score(url_data: dict, url: str, reliability: DBotScoreReliability):
     if url_data["verified"] == "yes":
         dbot_score = 3
     else:
@@ -148,14 +148,14 @@ def create_verified_markdown(url_data: dict, url: str):
     return markdown
 
 
-def url_command(client: Client, url_list: list) -> List[CommandResults]:
+def url_command(client: Client, url_list: list, reliability: DBotScoreReliability) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for url in url_list:
         markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
         url_data_is_valid = url_data and "verified" in url_data.keys()
         if url_data_is_valid:
-            dbot = url_data_to_dbot_score(url_data, url)
+            dbot = url_data_to_dbot_score(url_data, url, reliability=reliability)
             markdown += create_verified_markdown(url_data, url)
         else:
             markdown += f'#### No matches for URL {url} \n'
@@ -309,6 +309,12 @@ def main() -> None:
     proxy = params.get('proxy')
     verify = not params.get('insecure')
     fetch_interval_hours = params.get('fetchIntervalHours')
+    reliability = demisto.params().get('integrationReliability')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("PhishTankV2 error: Please provide a valid value for source reliability")
 
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
@@ -326,7 +332,7 @@ def main() -> None:
 
         elif command == 'url':
             url = argToList(demisto.args().get("url"))
-            return_results(url_command(client, url))
+            return_results(url_command(client, url, reliability))
 
         elif command == 'phishtank-reload':
             return_results(phishtank_reload_command(client))

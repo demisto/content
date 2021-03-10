@@ -6,6 +6,8 @@ from PhishTankV2 import is_number, Client
 from PhishTankV2 import remove_last_slash, is_reload_needed, reload
 from PhishTankV2 import phishtank_status_command, url_command
 
+from CommonServerPython import DBotScoreReliability
+
 
 def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1"):
     return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False)
@@ -227,7 +229,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     client = create_client(False, False, "1")
     mocker.patch.object(demisto, "results")
     mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
-    command_results = url_command(client, url)
+    command_results = url_command(client, url, DBotScoreReliability.C)
 
     # validate score
     output = command_results[0].to_context().get('EntryContext', {})
