@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import traceback
-from typing import Dict, Any, Tuple, cast
+from typing import Dict, Any, Tuple
 import json
 
 # Disable insecure warnings
@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_INCIDENTS_TO_FETCH = 50
 CURRENT_VERSION_OF_THE_POLICY_API = 2  # this is the current version of the policy api
+COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 
 ''' CLIENT CLASS '''
 
@@ -44,14 +45,14 @@ class Client(BaseClient):
         return self._http_request('POST', url_suffix=suffix_url, headers=self.headers, json_data={})
 
     def policy_test_module_request(self):
-        suffix_url = f'integrationServices/v3/policy'
+        suffix_url = 'integrationServices/v3/policy'
         return self._http_request('GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def search_alerts_request(self, suffix_url_path, minimum_severity: int = None, create_time: Dict = None,
+    def search_alerts_request(self, suffix_url_path: str = None, minimum_severity: int = None, create_time: Dict = None,
                               policy_id: List = None, device_username: List = None, device_id: List = None,
                               process_sha256: List = None, alert_type: List = None, query: str = None,
-                              alert_category: List = None, sort_field: str = "first_event_time", sort_order: str = "ASC",
-                              limit: str = 10) -> Dict:
+                              alert_category: List = None, sort_field: str = "first_event_time",
+                              sort_order: str = "ASC", limit: int = 50) -> Dict:
         if suffix_url_path == "all":
             suffix_url = f'appservices/v6/orgs/{self.organization_key}/alerts/_search'
         else:
@@ -80,8 +81,8 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, headers=self.headers, json_data=body)
 
     # Policies API
-    def create_new_policy(self, name: str, description: str, priority_level: str, policy: object):
-        suffix_url = f'integrationServices/v3/policy'
+    def create_new_policy(self, name: str, description: str, priority_level: str, policy: dict):
+        suffix_url = 'integrationServices/v3/policy'
         body = {
             "policyInfo": assign_params(
                 name=name,
@@ -98,16 +99,16 @@ class Client(BaseClient):
         suffix_url = 'integrationServices/v3/policy'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def get_policy_by_id(self, policy_id):
+    def get_policy_by_id(self, policy_id: int):
         suffix_url = f'integrationServices/v3/policy/{policy_id}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def set_policy(self, policy_id, policy_info):
+    def set_policy(self, policy_id: int, policy_info: dict):
         suffix_url = f'integrationServices/v3/policy/{policy_id}'
         return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers,
                                   json_data=policy_info)
 
-    def update_policy(self, policy_id, description, name, priority_level, policy: object):
+    def update_policy(self, policy_id: int, description: str, name: str, priority_level: str, policy: dict):
         suffix_url = f'integrationServices/v3/policy/{policy_id}'
         body = assign_params(
             policyInfo=assign_params(
@@ -122,11 +123,12 @@ class Client(BaseClient):
         return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers,
                                   json_data=body)
 
-    def delete_policy(self, policy_id):
+    def delete_policy(self, policy_id: int):
         suffix_url = f'integrationServices/v3/policy/{policy_id}'
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def add_rule_to_policy(self, policy_id, action, operation, required, rule_id, type, value):
+    def add_rule_to_policy(self, policy_id: int, action: str, operation: str, required: str, rule_id: int, type: str,
+                           value: str):
         suffix_url = f'integrationServices/v3/policy/{policy_id}/rule'
         body = {
             'ruleInfo': assign_params(
@@ -142,7 +144,8 @@ class Client(BaseClient):
         }
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
-    def update_rule_in_policy(self, policy_id, action, operation, required, rule_id, type, value):
+    def update_rule_in_policy(self, policy_id: int, action: str, operation: str, required: str, rule_id: int, type: str,
+                              value: str):
         suffix_url = f'integrationServices/v3/policy/{policy_id}/rule/{rule_id}'
         body = {
             'ruleInfo': assign_params(
@@ -158,16 +161,19 @@ class Client(BaseClient):
         }
         return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
-    def delete_rule_from_policy(self, policy_id, rule_id):
+    def delete_rule_from_policy(self, policy_id: int, rule_id: int):
         suffix_url = f'integrationServices/v3/policy/{policy_id}/rule/{rule_id}'
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
     # The events API
-    def get_events(self, alert_category, blocked_hash, device_external_ip, device_id, device_internal_ip,
-                   device_name, device_os, event_type, parent_hash, parent_name,
-                   parent_reputation, process_cmdline, process_guid, process_hash, process_name,
-                   process_pid, process_reputation, process_start_time, process_terminated,
-                   process_username, sensor_action, query, start, time_range, rows=10):
+    def get_events(self, alert_category: list[str], blocked_hash: list[str], device_external_ip: list[str],
+                   device_id: list[int], device_internal_ip: list[int], device_name: list[str], device_os: list[str],
+                   event_type: list[str], parent_hash: list[str], parent_name: list[str], parent_reputation: list[str],
+                   process_cmdline: list[str], process_guid: list[str], process_hash: list[str],
+                   process_name: list[str], process_pid: list[int], process_reputation: list[str],
+                   process_start_time: list[str], process_terminated: list[str], process_username: list[str],
+                   sensor_action: list[str], query: str = None, start: int = None, time_range: dict = None,
+                   rows: int = None):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs'
         body = assign_params(
             criteria=assign_params(  # one of the arguments (query or criteria) is required
@@ -196,42 +202,37 @@ class Client(BaseClient):
             query=query,  # one of the arguments (query or criteria/exclusion) is required
             rows=rows,
             start=start,
-            timerange=time_range
+            time_range=time_range
         )
         if not body.get('criteria') and not body.get('query'):
             return "One of the required arguments is missing"
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_events_status(self, job_id):
-        suffix_url = f'api/investigate/v1/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
-
-    def get_events_results(self, job_id, rows=10):
+    def get_events_results(self, job_id: str, rows: int = 10):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs/{job_id}/results' \
                      f'?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
-    def get_events_details(self, job_ids):
+    def get_events_details(self, event_ids: list[str]):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/detail_jobs'
         body = assign_params(
-            event_ids=job_ids
+            event_ids=event_ids
         )
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_events_details_status(self, job_id):
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/detail_jobs/{job_id}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
-
-    def get_events_details_results(self, job_id):
+    def get_events_details_results(self, job_id: str):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/detail_jobs/{job_id}/results'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Processes API
-    def get_processes(self, alert_category, blocked_hash, device_external_ip, device_id, device_internal_ip,
-                      device_name, device_os, device_timestamp, event_type, parent_hash, parent_name,
-                      parent_reputation, process_cmdline, process_guid, process_hash, process_name,
-                      process_pid, process_reputation, process_start_time, process_terminated,
-                      process_username, sensor_action, query, start, time_range, rows=10):
+    def get_processes(self, alert_category: list[str], blocked_hash: list[str], device_external_ip: list[str],
+                      device_id: list[int], device_internal_ip: list[int], device_name: list[str], device_os: list[str],
+                      device_timestamp: list[str], event_type: list[str], parent_hash: list[str],
+                      parent_name: list[str], parent_reputation: list[str], process_cmdline: list[str],
+                      process_guid: list[str], process_hash: list[str], process_name: list[str], process_pid: list[int],
+                      process_reputation: list[str], process_start_time: list[str], process_terminated: list[str],
+                      process_username: list[str], sensor_action: list[str], query: str = None, start: int = None,
+                      time_range: str = None, rows: int = None):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs'
         body = assign_params(
             criteria=assign_params(
@@ -261,30 +262,26 @@ class Client(BaseClient):
             query=query,
             rows=rows,
             start=start,
-            timerange=time_range
+            time_range=time_range
         )
         if not body.get('criteria') and not body.get('query'):
             return "One of the required arguments is missing"
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_process_status(self, job_id):
-        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}'
-        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
-
-    def get_process_results(self, job_id, rows=10):
-        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}"
+    def get_process_results(self, job_id: str, rows: int = 10):
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows=" \
+                     f"{rows}"
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Alerts API
-    def get_alerts(self, alert_type, category: Optional[str], device_id: Optional[str],
-                   first_event_time: Optional[dict],
-                   policy_id: Optional[str], process_sha256: Optional[str], reputation: Optional[str],
-                   tag: Optional[str], device_username: Optional[str], query: Optional[str], rows: Optional[str],
-                   start: Optional[str]):
+    def get_alerts(self, alert_type: str, category: list[str] = None, device_id: List[int] = None,
+                   first_event_time: dict = None, policy_id: List[int] = None, process_sha256: List[str] = None,
+                   reputation: List[str] = None, tag: List[str] = None, device_username: List[str] = None,
+                   query: str = None, rows: int = None, start: int = None):
         if alert_type == "all":
             suffix_url = f'appservices/v6/orgs/{self.organization_key}/alerts/_search'
         else:
-            suffix_url = f'appservices/v6/orgs/{self.organization_key}/alerts/{alert_type.lower()}/_search',
+            suffix_url = f'appservices/v6/orgs/{self.organization_key}/alerts/{alert_type.lower()}/_search'
         body = assign_params(
             criteria=assign_params(
                 category=category,
@@ -305,7 +302,7 @@ class Client(BaseClient):
                                   headers=self.headers,
                                   json_data=body)
 
-    def get_alert_by_id(self, alert_id) -> dict:
+    def get_alert_by_id(self, alert_id: str) -> dict:
         res = self._http_request(method='GET',
                                  url_suffix=f'appservices/v6/orgs/{self.organization_key}/alerts/{alert_id}',
                                  headers=self.headers)
@@ -313,8 +310,8 @@ class Client(BaseClient):
 
     # Devices API
     def get_devices(self, device_id: List = None, status: List = None, device_os: List = None,
-                    last_contact_time: Dict[str, Optional[Any]] = None,
-                    target_priority: List = None, query: str = None, rows: int = None) -> Dict:
+                    last_contact_time: Dict[str, Optional[Any]] = None, target_priority: List = None, query: str = None,
+                    rows: int = None) -> Dict:
         suffix_url = f'/appservices/v6/orgs/{self.organization_key}/devices/_search'
         body = assign_params(
             criteria=assign_params(
@@ -329,8 +326,7 @@ class Client(BaseClient):
         )
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def execute_an_action_on_the_device(self, device_id: list = None, action_type: str = None,
-                                        options: dict = None) -> str:
+    def execute_an_action_on_the_device(self, device_id: list[int], action_type: str, options: dict) -> str:
         suffix_url = f'appservices/v6/orgs/{self.organization_key}/device_actions'
         body = assign_params(
             action_type=action_type,
@@ -341,7 +337,7 @@ class Client(BaseClient):
                                   resp_type='text')
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -354,9 +350,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     try:
-        params = demisto.params()
         api_key = params.get('api_key')
         api_secret_key = params.get('api_secret_key')
         policy_api_key = params.get('policy_api_key')
@@ -375,7 +369,7 @@ def test_module(client: Client) -> str:
                 client.policy_test_module_request()
                 message = 'ok'
         else:
-            message = 'there is missing required parameters'
+            message = 'Missing required parameters'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
@@ -384,8 +378,8 @@ def test_module(client: Client) -> str:
     return message
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict, filters: Dict) -> Tuple[
-    List, Dict]:
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, filters: dict) -> Tuple[List,
+                                                                                                               Dict]:
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -427,20 +421,25 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        latest_alert_create_date = datetime.strftime(dateparser.parse(alert_create_date) + timedelta(seconds=1),
-                                                     '%Y-%m-%dT%H:%M:%S.000Z')
+
+        datetime_type_alert_create_date = dateparser.parse(alert_create_date)
+        if datetime_type_alert_create_date:
+            latest_alert_create_date = datetime.strftime(datetime_type_alert_create_date + timedelta(seconds=1),
+                                                         '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
 
     res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
     return incidents, res
 
 
-def create_policy_command(client, args):
+def create_policy_command(client: Client, args: dict):
     name = args.get('name')
     description = args.get('description')
     priority_level = args.get('priorityLevel')
     policy = args.get('policy')
 
+    if not name or not description or not priority_level or not policy:
+        return "Missing required arguments."
     res = client.create_new_policy(name, description, priority_level, json.loads(policy))
 
     if res.get('message') == 'Success':
@@ -451,7 +450,7 @@ def create_policy_command(client, args):
     )
 
 
-def get_policies_command(client, args):
+def get_policies_command(client: Client, args: dict):
     res = client.get_policies()
     human_readable = []
     policies = res.get('results', [])
@@ -483,9 +482,12 @@ def get_policies_command(client, args):
     )
 
 
-def get_policy_command(client, args):
+def get_policy_command(client: Client, args: dict):
     policy_id = args.get('policyId')
     headers = ["id", "description", "name", "latestRevision", "version", "priorityLevel", "systemPolicy"]
+
+    if not policy_id:
+        return "Missing required arguments."
     res = client.get_policy_by_id(policy_id)
 
     policy_info = dict(res.get('policyInfo'))
@@ -494,14 +496,14 @@ def get_policy_command(client, args):
     del policy_info['policy']
     policy_info['latestRevision'] = timestamp_to_datestring(policy_info['latestRevision'])
 
-    readable_output = tableToMarkdown('Carbon Black Defense Policy By Id',
+    readable_output = tableToMarkdown('Carbon Black Defense Policy',
                                       policy_info,
                                       headers=headers,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'CarbonBlackDefense.Policy',
+        outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
         outputs=res.get('policyInfo'),
         readable_output=readable_output,
@@ -509,10 +511,12 @@ def get_policy_command(client, args):
     )
 
 
-def set_policy_command(client, args):
+def set_policy_command(client: Client, args: dict):
     policy_id = args.get('policy')
     policy_info = args.get('keyValue')
 
+    if not policy_id or not policy_info:
+        return "Missing required arguments."
     res = client.set_policy(policy_id, json.loads(policy_info))
 
     if res.get('message') == 'Success':
@@ -523,13 +527,15 @@ def set_policy_command(client, args):
     )
 
 
-def update_policy_command(client, args):
+def update_policy_command(client: Client, args: dict):
     policy_id = args.get('id')
-    description = args.get('description')
     name = args.get('name')
+    description = args.get('description')
     priority_level = args.get('priorityLevel')
     policy = args.get('policy')
 
+    if not policy_id or not name or not description or not priority_level or not policy:
+        return "Missing required arguments."
     res = client.update_policy(policy_id, description, name, priority_level, json.loads(policy))
 
     if res.get('message') == 'Success':
@@ -540,8 +546,11 @@ def update_policy_command(client, args):
     )
 
 
-def delete_policy_command(client, args):
+def delete_policy_command(client: Client, args: dict):
     policy_id = args.get('policyId')
+
+    if not policy_id:
+        return "Missing required arguments."
     res = client.delete_policy(policy_id)
 
     return CommandResults(
@@ -550,7 +559,7 @@ def delete_policy_command(client, args):
     )
 
 
-def add_rule_to_policy_command(client, args):
+def add_rule_to_policy_command(client: Client, args: dict):
     policy_id = args.get('policyId')
     action = args.get('action')
     operation = args.get('operation')
@@ -559,6 +568,8 @@ def add_rule_to_policy_command(client, args):
     type = args.get('type')
     value = args.get('value')
 
+    if not policy_id or not action or not operation or not required or not rule_id or not type or not value:
+        return "Missing required arguments."
     res = client.add_rule_to_policy(policy_id, action, operation, required, rule_id, type, value)
 
     if res.get('message') == 'Success':
@@ -569,7 +580,7 @@ def add_rule_to_policy_command(client, args):
     )
 
 
-def update_rule_in_policy_command(client, args):
+def update_rule_in_policy_command(client: Client, args: dict):
     policy_id = args.get('policyId')
     action = args.get('action')
     operation = args.get('operation')
@@ -578,6 +589,8 @@ def update_rule_in_policy_command(client, args):
     type = args.get('type')
     value = args.get('value')
 
+    if not policy_id or not action or not operation or not required or not rule_id or not type or not value:
+        return "Missing required arguments."
     res = client.update_rule_in_policy(policy_id, action, operation, required, rule_id, type, value)
 
     if res.get('message') == 'Success':
@@ -588,11 +601,13 @@ def update_rule_in_policy_command(client, args):
     )
 
 
-def delete_rule_from_policy_command(client, args):
+def delete_rule_from_policy_command(client: Client, args: dict):
     policy_id = args.get('policyId')
     rule_id = args.get('ruleId')
 
-    res = client.delete_rule_from_policy(policy_id, rule_id)
+    if not policy_id or not rule_id:
+        return "Missing required arguments."
+    res = client.delete_rule_from_policy(int(policy_id), int(rule_id))
     readable_output = tableToMarkdown("Carbon Black Defense Delete Rule From Policy",
                                       res,
                                       headerTransform=string_to_table_header)
@@ -603,7 +618,7 @@ def delete_rule_from_policy_command(client, args):
     )
 
 
-def find_events_command(client, args):
+def find_events_command(client: Client, args: dict):
     alert_category = argToList(args.get('alert_category'))
     blocked_hash = argToList(args.get('blocked_hash'))
     device_external_ip = argToList(args.get('device_external_ip'))
@@ -626,9 +641,12 @@ def find_events_command(client, args):
     process_username = argToList(args.get('process_username'))
     sensor_action = argToList(args.get('sensor_action'))
     query = args.get('query')
-    rows = arg_to_number(args.get('rows', 10))
-    start = arg_to_number(args.get('start', 0))
-    time_range = argToList(args.get('timerange'))
+    rows = args.get('rows')
+    start = args.get('start')
+    time_range = args.get('timerange')
+
+    if time_range:
+        time_range = json.loads(time_range)
 
     res = client.get_events(alert_category, blocked_hash, device_external_ip, device_id, device_internal_ip,
                             device_name, device_os, event_type, parent_hash, parent_name,
@@ -652,15 +670,16 @@ def find_events_command(client, args):
     )
 
 
-def find_events_results_command(client, args):
+def find_events_results_command(client: Client, args: dict):
     job_id = args.get('job_id')
-    rows = arg_to_number(args.get('rows', 10))
+    rows = args.get('rows')
     if not job_id:
         return CommandResults(
             readable_output="The job id can't be empty",
             raw_response="The job id can't be empty"
         )
-
+    if not rows:
+        rows = 10
     res = client.get_events_results(job_id, rows)
 
     headers = ['event_id', 'device_id', 'event_network_remote_port', 'event_network_remote_ipv4',
@@ -682,9 +701,9 @@ def find_events_results_command(client, args):
     )
 
 
-def find_events_details_command(client, args):
+def find_events_details_command(client: Client, args: dict):
     event_ids = argToList(args.get('event_ids'))
-    if not event_ids:
+    if not event_ids or len(event_ids) == 0:
         return CommandResults(
             readable_output="The event id can't be empty",
             raw_response="The event id can't be empty"
@@ -704,7 +723,7 @@ def find_events_details_command(client, args):
     )
 
 
-def find_events_details_results_command(client, args):
+def find_events_details_results_command(client: Client, args: dict):
     job_id = args.get('job_id')
     if not job_id:
         return CommandResults(
@@ -732,7 +751,7 @@ def find_events_details_results_command(client, args):
     )
 
 
-def find_processes_command(client, args):
+def find_processes_command(client: Client, args: dict):
     alert_category = argToList(args.get('alert_category'))
     blocked_hash = argToList(args.get('blocked_hash'))
     device_external_ip = argToList(args.get('device_external_ip'))
@@ -756,9 +775,12 @@ def find_processes_command(client, args):
     process_username = argToList(args.get('process_username'))
     sensor_action = argToList(args.get('sensor_action'))
     query = args.get('query')
-    rows = arg_to_number(args.get('rows', 10))
-    start = arg_to_number(args.get('start', 0))
-    time_range = argToList(args.get('time_range'))
+    rows = args.get('rows')
+    start = args.get('start')
+    time_range = args.get('time_range')
+
+    if time_range:
+        time_range = json.loads(time_range)
 
     res = client.get_processes(alert_category, blocked_hash, device_external_ip, device_id, device_internal_ip,
                                device_name, device_os, device_timestamp, event_type, parent_hash, parent_name,
@@ -780,9 +802,9 @@ def find_processes_command(client, args):
     )
 
 
-def find_processes_results_command(client, args):
+def find_processes_results_command(client: Client, args: dict):
     job_id = args.get('job_id')
-    rows = arg_to_number(args.get('rows', 10))
+    rows = args.get('rows')
 
     if not job_id:
         return CommandResults(
@@ -790,6 +812,8 @@ def find_processes_results_command(client, args):
             raw_response="The job id can't be empty"
         )
 
+    if not rows:
+        rows = 10
     res = client.get_process_results(job_id, rows)
     headers = ['device_id', 'device_name', 'process_name', 'device_policy_id', 'enriched_event_type']
 
@@ -809,7 +833,7 @@ def find_processes_results_command(client, args):
     )
 
 
-def alerts_search_command(client, args):
+def alerts_search_command(client: Client, args: dict):
     alert_type = args.get('type', 'all')
     category = argToList(args.get('category'))
     device_id = argToList(args.get('device_id'))
@@ -820,13 +844,14 @@ def alerts_search_command(client, args):
     tag = argToList(args.get('tag'))
     device_username = args.get('device_username')
     query = args.get('query')
-    rows = arg_to_number(args.get('rows', 20))
-    start = arg_to_number(args.get('start', 0))
+    rows = args.get('rows')
+    start = args.get('start')
     headers = ['id', 'category', 'device_id', 'device_name', 'device_username', 'create_time', 'ioc_hit', 'policy_name',
                'process_name', 'type', 'severity']
     human_readable = []
 
-    first_event_time = json.loads(first_event_time) if first_event_time else first_event_time
+    if first_event_time:
+        first_event_time = json.loads(first_event_time)
     res = client.get_alerts(alert_type, category, device_id, first_event_time, policy_id, process_sha256, reputation,
                             tag, device_username, query, rows, start)
 
@@ -850,7 +875,6 @@ def alerts_search_command(client, args):
 
     readable_output = tableToMarkdown('Carbon Black Defense Alerts List Results', human_readable, headers,
                                       headerTransform=string_to_table_header, removeNull=True)
-
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Alert',
         outputs_key_field='id',
@@ -860,15 +884,18 @@ def alerts_search_command(client, args):
     )
 
 
-def get_alert_details_command(client, args):
+def get_alert_details_command(client: Client, args: dict):
     alert_id = args.get('alertId')
-    headers = ['id', 'category', 'device_id', 'device_name', 'device_username', 'create_time', 'ioc_hit', 'policy_name',
-               'process_name', 'type', 'severity']
+
+    if not alert_id:
+        return "Missing required arguments."
     res = client.get_alert_by_id(alert_id)
 
     if 'id' not in res.keys():
         return 'The alert you requested was not found'
 
+    headers = ['id', 'category', 'device_id', 'device_name', 'device_username', 'create_time', 'ioc_hit', 'policy_name',
+               'process_name', 'type', 'severity']
     readable_output = tableToMarkdown('Carbon Black Defense Get Alert Details',
                                       res,
                                       headers,
@@ -884,7 +911,7 @@ def get_alert_details_command(client, args):
     )
 
 
-def device_search_command(client, args):
+def device_search_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     device_os = argToList(args.get('os'))
     device_status = argToList(args.get('status'))
@@ -894,7 +921,7 @@ def device_search_command(client, args):
     }
     target_priority = argToList(args.get('target_priority'))
     query = args.get('query')
-    rows = arg_to_number(args.get('rows', 20))
+    rows = args.get('rows')
     human_readable = []
     headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority', 'LastInternalIpAddress',
                'LastExternalIpAddress', 'LastContactTime', 'LastLocation']
@@ -930,19 +957,24 @@ def device_search_command(client, args):
     )
 
 
-def device_quarantine_command(client, args):
+def device_quarantine_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "ON"})
+
     return CommandResults(
         readable_output="Device quarantine successfully",
         raw_response="Device quarantine successfully"
     )
 
 
-def device_unquarantine_command(client, args):
+def device_unquarantine_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "OFF"})
 
     return CommandResults(
@@ -951,9 +983,11 @@ def device_unquarantine_command(client, args):
     )
 
 
-def device_background_scan_command(client, args):
+def device_background_scan_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "ON"})
 
     return CommandResults(
@@ -962,9 +996,11 @@ def device_background_scan_command(client, args):
     )
 
 
-def device_background_scan_stop_command(client, args):
+def device_background_scan_stop_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "OFF"})
 
     return CommandResults(
@@ -973,9 +1009,11 @@ def device_background_scan_stop_command(client, args):
     )
 
 
-def device_bypass_command(client, args):
+def device_bypass_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "ON"})
 
     return CommandResults(
@@ -984,9 +1022,11 @@ def device_bypass_command(client, args):
     )
 
 
-def device_unbypass_command(client, args):
+def device_unbypass_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
 
+    if not device_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "OFF"})
 
     return CommandResults(
@@ -995,10 +1035,12 @@ def device_unbypass_command(client, args):
     )
 
 
-def device_policy_update_command(client, args):
+def device_policy_update_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     policy_id = args.get('policy_id')
 
+    if not device_id or not policy_id:
+        return "Missing required arguments"
     client.execute_an_action_on_the_device(device_id, 'UPDATE_POLICY', {"policy_id": policy_id})
 
     return CommandResults(
@@ -1007,10 +1049,12 @@ def device_policy_update_command(client, args):
     )
 
 
-def device_update_sensor_version_command(client, args):
+def device_update_sensor_version_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     sensor_version = args.get('sensor_version')
 
+    if not device_id or not sensor_version:
+        return "Missing required parameters"
     client.execute_an_action_on_the_device(device_id, 'UPDATE_SENSOR_VERSION',
                                            {"sensor_version": json.loads(sensor_version)})
     return CommandResults(
@@ -1028,6 +1072,7 @@ def main() -> None:
     :return:
     :rtype:
     """
+    command = demisto.command()
 
     # Get the parameters
     params = demisto.params()
@@ -1041,15 +1086,15 @@ def main() -> None:
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
+
     try:
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -1089,13 +1134,12 @@ def main() -> None:
             'cbd-device-policy-update': device_policy_update_command,
             'cbd-device-update-sensor-version': device_update_sensor_version_command
         }
-        command = demisto.command()
 
         if command == 'test-module':
-            demisto.results(test_module(client))
-        elif demisto.command() == 'fetch-incidents':
-            fetch_time = demisto.params().get('fetch_time', '3 days')
-            fetch_limit = demisto.params().get('fetch_limit', '10')
+            return_results(test_module(client, params))
+        elif command == 'fetch-incidents':
+            fetch_time = demisto.params().get('first_fetch', '7 days')
+            fetch_limit = demisto.params().get('max_fetch', 50)
             filters = {
                 'suffix_url_path': params.get('suffix_url_path', 'all'),
                 'category': argToList(params.get('category')),
@@ -1113,11 +1157,13 @@ def main() -> None:
         elif command in commands:
             command_results = commands[command](client, demisto.args())
             return_results(command_results)
+        else:
+            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {command}')
 
     # Log exceptions and return error
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

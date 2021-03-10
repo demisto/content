@@ -3206,6 +3206,10 @@
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
+        },
+        {
+            "integrations": "Carbon Black Defense v2",
+            "playbookID": "carbonBlackDefenseV2TestPlaybook"
         }
     ],
     "skipped_tests": {

@@ -3,10 +3,10 @@ PROCESS_CASES = [
     (
         'get_alert_by_id',
         'get_alert_details_command',
-        {'alertId': '1234'},
+        {'alertId': 1234},
         {'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'},
         {
-            'CarbonBlackDefense.GetAlertDetails(val.id == obj.id)': {
+            'CarbonBlackDefense.Alert(val.id == obj.id)': {
                 'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'
             }
         }
@@ -31,13 +31,13 @@ PROCESS_CASES = [
         'find_events_command',
         {},
         {'job_id': '123456'},
-        {'CarbonBlackDefense.Events(val.job_id == obj.job_id)': {'job_id': '123456'}}
+        {'CarbonBlackDefense.Events.Search(val.job_id == obj.job_id)': {'job_id': '123456'}}
     ),
     (
         'get_processes',
-        'processes_search_command',
+        'find_processes_command',
         {},
         {'job_id': '123456'},
-        {'CarbonBlackDefense.Process(val.job_id == obj.job_id)': {'job_id': '123456'}}
+        {'CarbonBlackDefense.Process.Search(val.job_id == obj.job_id)': {'job_id': '123456'}}
     )
 ]

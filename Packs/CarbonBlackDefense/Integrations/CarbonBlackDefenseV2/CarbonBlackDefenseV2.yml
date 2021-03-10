@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Carbon Black Defense V2
+  id: Carbon Black Defense v2
   version: -1
 configuration:
 - defaultvalue: https://defense.conferdeploy.net/
@@ -39,6 +39,23 @@ configuration:
   display: Organization Key
   hidden: false
   name: organization_key
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -99,25 +116,11 @@ configuration:
   name: query
   required: false
   type: 0
-- additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year.
-  defaultvalue: 3 days
-  display: First fetch time
-  hidden: false
-  name: fetch_time
-  required: false
-  type: 0
-- additionalinfo: The number of incidents to fetch at a time, the max is 50.
-  defaultvalue: '10'
-  display: Maximum number of incidents per fetch
-  hidden: false
-  name: fetch_limit
-  required: false
-  type: 0
 description: VMware Carbon Black Endpoint Standard (formerly known as Carbon Black
   Defense) is a next-generation antivirus + EDR in one cloud-delivered platform that
   stops commodity malware, advanced malware, non-malware attacks and ransomware.
-display: Carbon Black Defense V2
-name: Carbon Black Defense V2
+display: Carbon Black Defense v2
+name: Carbon Black Defense v2
 script:
   commands:
   - arguments:
@@ -134,165 +137,220 @@ script:
     execution: false
     name: cbd-get-alert-details
     outputs:
-    - contextPath: CarbonBlackDefense.Alert.type
-      description: The type of the alert.
-      type: String
     - contextPath: CarbonBlackDefense.Alert.id
-      description: The ID of the alert
+      description: The identifier for the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.legacy_alert_id
-      description: Unique short id for the alerts to support easier consumption in
-        the UI console. Use the id for API requests
+      description: The unique short id for the alerts to support easier consumption
+        in the UI console. Use the id for API requests.
       type: String
     - contextPath: CarbonBlackDefense.Alert.org_key
       description: The unique identifier for the organization associated with the
-        alert
+        alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.create_time
-      description: The time the alert was created, The format is in ISO 8601 timestamp
-      type: String
+      description: The time the alert was created.
+      type: Date
     - contextPath: CarbonBlackDefense.Alert.last_update_time
-      description: The last time the alert was updated, The format is in ISO 8601
-        timestamp
-      type: String
+      description: The last time the alert was updated
+      type: Date
     - contextPath: CarbonBlackDefense.Alert.first_event_time
-      description: The time of the first event associated with the alert, The format
-        is in ISO 8601 timestamp
-      type: String
+      description: The time of the first event associated with the alert.
+      type: Date
     - contextPath: CarbonBlackDefense.Alert.last_event_time
-      description: The time of the latest event associated with the alert, The format
-        is in ISO 8601 timestamp
-      type: String
+      description: The time of the latest event associated with the alert.
+      type: Date
     - contextPath: CarbonBlackDefense.Alert.threat_id
       description: The identifier of a threat which this alert belongs. Threats are
         comprised of a combination of factors that can be repeated across devices.
       type: String
     - contextPath: CarbonBlackDefense.Alert.severity
-      description: The threat ranking of the alert
+      description: The threat ranking of the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.category
-      description: "The category of the alert\t"
+      description: The category of the alert (THREAT, MONITORED)
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_id
       description: The identifier assigned by Carbon Black Cloud to the device associated
         with the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.device_os
-      description: The operating system of the device associated with the alert. (WINDOWS,
-        MAC, LINUX, OTHER)
+      description: The operating system of the device associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_os_version
-      description: "The operating system and version on the device\t"
-      type: String
+      description: The operating system and version on the device.
+      type: Unknown
     - contextPath: CarbonBlackDefense.Alert.device_name
-      description: The hostname of the device associated with the alert
+      description: The hostname of the device associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_username
       description: The username of the logged on user during the alert. If the user
-        is not available then it may be populated with the device owner
+        is not available then it may be populated with the device owner.
       type: String
     - contextPath: CarbonBlackDefense.Alert.policy_id
       description: The identifier for the policy associated with the device at the
-        time of the alert
+        time of the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.policy_name
       description: The name of the policy associated with the device at the time of
-        the alert
+        the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.target_value
-      description: The priority of the device assigned by the policy. (LOW, MEDIUM,
-        HIGH, MISSION_CRITICAL)
+      description: The priority of the device assigned by the policy.
       type: String
     - contextPath: CarbonBlackDefense.Alert.workflow.state
-      description: Tracking system for alerts as they are triaged and resolved
+      description: The state of the tracking system for alerts as they are triaged
+        and resolved. state supports OPEN or DISMISSED
       type: String
     - contextPath: CarbonBlackDefense.Alert.workflow.remediation
-      description: Tracking system for alerts as they are triaged and resolved
-      type: String
+      description: The state of the workflow of the tracking system for alerts as
+        they are triaged and resolved. state supports OPEN or DISMISSED.
+      type: Unknown
     - contextPath: CarbonBlackDefense.Alert.workflow.last_update_time
-      description: Tracking system for alerts as they are triaged and resolved
+      description: The last update time.
       type: Date
     - contextPath: CarbonBlackDefense.Alert.workflow.comment
-      description: Tracking system for alerts as they are triaged and resolved
-      type: String
+      description: The comment abbout the workflow of the tracking system for alerts
+        as they are triaged and resolved.
+      type: Unknown
     - contextPath: CarbonBlackDefense.Alert.workflow.changed_by
-      description: Tracking system for alerts as they are triaged and resolved
+      description: The name who changed the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.notes_present
       description: Indicates if notes are associated with the threat_id
       type: Boolean
     - contextPath: CarbonBlackDefense.Alert.tags
-      description: Tags associated with the alert
+      description: Tags associated with the alert ([ "tag1", "tag2" ])
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.reason
-      description: Description of the alert
+      description: "The Description of the alert.\t"
       type: String
     - contextPath: CarbonBlackDefense.Alert.count
+      description: The count of the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.report_id
-      description: The identifier of the report that contains the IOC
+      description: The identifier of the report that contains the IOC.
       type: String
     - contextPath: CarbonBlackDefense.Alert.report_name
-      description: The name of the report that contains the IOC
+      description: The name of the report that contains the IOC.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_id
-      description: The identifier of the IOC that cause the hit
+      description: The identifier of the IOC that cause the hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_field
-      description: The field the indicator of comprise (IOC) hit contains
+      description: The field the indicator of comprise (IOC) hit contains.
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.ioc_hit
-      description: IOC field value or IOC query that matches
+      description: IOC field value or IOC query that matches.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.id
-      description: The ID of a watchlists associated with an alert
+      description: The id of list of watchlists associated with an alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.name
-      description: The name of a watchlists associated with an alert
+      description: "The name of list of watchlists associated with an alert\t"
       type: String
     - contextPath: CarbonBlackDefense.Alert.process_guid
       description: The global unique identifier of the process that triggered the
-        hit
+        hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.process_name
-      description: "The name of the process that triggered the hit\t"
+      description: The name of the process that triggered the hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.run_state
-      description: Run state is always RAN for watchlist alerts
+      description: Run state is always RAN for watchlist alerts.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.process_name
-      description: List of the threat indicators that make up the threat
+      description: The name of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.sha256
-      description: List of the threat indicators that make up the threat
+      description: The sha256 of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.ttps
-      description: List of the threat indicators that make up the threat
+      description: The ttps of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_sha256
-      description: SHA256 of the threat cause actor
+      description: The SHA256 of the threat cause actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_md5
-      description: MD5 of the threat cause actor
+      description: The SHA256 of the threat cause actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_name
-      description: Process name or IP address of the threat actor
+      description: Process name or IP address of the threat actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_reputation
-      description: Reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
+      description: The reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
         PUP, NOT_LISTED, ADAPTIVE_WHITE_LIST, COMMON_WHITE_LIST, TRUSTED_WHITE_LIST,
-        COMPANY_BLACK_LIST)
+        COMPANY_BLACK_LIST).
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_threat_category
-      description: Category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
-        KNOWN_MALWARE, RISKY_PROGRAM)
+      description: The category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
+        KNOWN_MALWARE, RISKY_PROGRAM).
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.threat_cause_vector
-      description: 'The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
-        REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY) '
+      description: The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
+        REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY)
       type: String
     - contextPath: CarbonBlackDefense.Alert.document_guid
-      description: Document id
+      description: The document guid.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.type
+      description: The type of alert. (CB_ANALYTICS, DEVICE_CONTROL).
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.reason_code
+      description: The shorthand enum for the full-text reason
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.device_location
+      description: Whether the device was on or off premise when the alert started.
+        (ONSITE, OFFSITE, UNKNOWN)
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.created_by_event_id
+      description: Event identifier that initiated the alert.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_dlp
+      description: Whether the alert involved data loss prevention (DLP). (NOT_ATTEMPTED,
+        ATTEMPTED, SUCCEEDED)
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_phish
+      description: Whether the alert involved phishing. (NOT_ATTEMPTED, ATTEMPTED,
+        SUCCEEDED)
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_activity_c2
+      description: Whether the alert involved a command and control (c2) server. (NOT_ATTEMPTED,
+        ATTEMPTED, SUCCEEDED).
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_process_pid
+      description: The process identifier (PID) of the actor process.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_process_guid
+      description: The guid o fthe process.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_parent_guid
+      description: The parent guid of the process.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.threat_cause_cause_event_id
+      description: The threat cause cause event id.
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.blocked_threat_category
+      description: The category of threat which we were able to take action on. (UNKNOWN,
+        NON_MALWARE, NEW_MALWARE, KNOWN_MALWARE, RISKY_PROGRAM)
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.not_blocked_threat_category
+      description: Other potentially malicious activity involved in the threat that
+        we weren’t able to take action on (either due to policy config, or not having
+        a relevant rule). (UNKNOWN, NON_MALWARE, NEW_MALWARE, KNOWN_MALWARE, RISKY_PROGRAM).
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.kill_chain_status
+      description: The stage within the Cyber Kill Chain sequence most closely associated
+        with the attributes of the alert. (RECONNAISSANCE, WEAPONIZE, DELIVER_EXPLOIT,
+        INSTALL_RUN, COMMAND_AND_CONTROL, EXECUTE_GOAL, BREACH). Foe example [ "EXECUTE_GOAL",
+        "BREACH" ].
+      type: String
+    - contextPath: CarbonBlackDefense.Alert.sensor_action
+      description: The action taken by the sensor, according to the rule of the policy.
+        (POLICY_NOT_APPLIED, ALLOW, ALLOW_AND_LOG, TERMINATE, DENY).
+      type: Unknown
+    - contextPath: CarbonBlackDefense.Alert.policy_applied
+      description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
   - arguments:
     - default: false
@@ -351,167 +409,297 @@ script:
     name: cbd-device-search
     outputs:
     - contextPath: CarbonBlackDefense.Device.activation_code
-      type: Unknown
+      description: The device activation code to register the sensor with a specific
+        org.
+      type: String
     - contextPath: CarbonBlackDefense.Device.activation_code_expiry_time
+      description: The time when the activation code expires and cannot be used to
+        register a device. (ISO 8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.ad_group_id
+      description: The active Directory group ID to match.
       type: Number
     - contextPath: CarbonBlackDefense.Device.appliance_name
+      description: The name of the Appliance the Virtual Machine (VM) is associated
+        with.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.appliance_uuid
+      description: The Uuid of the appliance the VM is associated with.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_ave_version
+      description: The AVE version (part of AV Version).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_engine
+      description: The current anti virus (AV) version. (4.3.0.203-ave.8.3.42.106:avpack.8.4.2.36:vdf.8.12.142.100).
       type: String
     - contextPath: CarbonBlackDefense.Device.av_last_scan_time
+      description: The last time a local scan completed. (ISO 8601 timestamp in UTC).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_master
+      description: Whether the device is an AV Master.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.av_pack_version
+      description: The pack version (part of AV Version).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_product_version
+      description: The product version (part of AV Version).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_status
-      type: Unknown
+      description: The status of the local scan. For example [ "AV_ACTIVE", "AV_REGISTERED"
+        ]. (AV_NOT_REGISTERED, AV_REGISTERED, AV_DEREGISTERED, AV_ACTIVE, AV_BYPASS,
+        SIGNATURE_UPDATE_DISABLED, ONACCESS_SCAN_DISABLED, ONDEMAND_SCAN_DISABLED,
+        PRODUCT_UPDATE_DISABLED).
+      type: String
     - contextPath: CarbonBlackDefense.Device.av_update_servers
+      description: A list of device’s AV servers. For example [ "string", "string"
+        ].
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_vdf_version
+      description: VDF version (part of AV Version).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.cluster_name
+      description: Name of the cluster. A cluster is a group of hosts.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.current_sensor_policy_name
+      description: The name of the policy currently configured on the sensor.
       type: String
     - contextPath: CarbonBlackDefense.Device.datacenter_name
+      description: 'The name of the underlying datacenter. The datacenter managed
+        object provides the interface to the common container object for hosts, virtual
+        machines, networks, and datastores. '
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.deployment_type
+      description: The device’s deployment type, a classification that is determined
+        by its lifecycle management policy. (ENDPOINT, WORKLOAD).
       type: String
     - contextPath: CarbonBlackDefense.Device.deregistered_time
-      type: Unknown
+      description: The time when the deregister request was received. (ISO 8601 timestamp
+        in UTC).
+      type: Date
     - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.key_name
+      description: The key name that describe the device.
       type: String
     - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.key_value
+      description: The key value that describe the device.
       type: String
     - contextPath: CarbonBlackDefense.Device.device_meta_data_item_list.position
+      description: The position that describe the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.device_owner_id
+      description: The identifier for the device owner associated with the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.email
+      description: The email address for the device owner.
       type: String
     - contextPath: CarbonBlackDefense.Device.encoded_activation_code
+      description: Thr encoded activation code.
       type: String
     - contextPath: CarbonBlackDefense.Device.esx_host_name
+      description: Ther name of the ESX host on which the VM is deployed.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.esx_host_uuid
+      description: The uuid of the ESX host on which VM is deployed.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.first_name
+      description: The first name of the device owner.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.id
+      description: The id of the device
       type: Number
     - contextPath: CarbonBlackDefense.Device.last_contact_time
+      description: The last time the sensor contacted the Carbon Black Cloud. (ISO
+        8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.last_device_policy_changed_time
+      description: The last time the sensor changed from one policy to another. (ISO
+        8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.last_device_policy_requested_time
+      description: The last time the sensor checked for changes to the policy. (ISO
+        8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.last_external_ip_address
+      description: 'The last IP address of the device according to the Carbon Black
+        Cloud; can differ from last_internal_ip_address due to network proxy or NAT.
+        (Format: IPv4 or IPv6).'
       type: String
     - contextPath: CarbonBlackDefense.Device.last_internal_ip_address
+      description: 'The last IP address of the device reported by the sensor. (Format:
+        IPv4 or IPv6).'
       type: String
     - contextPath: CarbonBlackDefense.Device.last_location
+      description: The device’s current location relative to the organization’s network,
+        based on the current IP address and the device’s registered DNS domain suffix.
+        (UNKNOWN, ONSITE, OFFSITE).
       type: String
     - contextPath: CarbonBlackDefense.Device.last_name
+      description: The last name of the device owner.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.last_policy_updated_time
+      description: The last time the current policy received an update. (ISO 8601
+        timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.last_reported_time
+      description: The last time when the Carbon Black Cloud received one or more
+        events reported by the sensor. (ISO 8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.last_reset_time
+      description: The last time the device was reset. (ISO 8601 timestamp in UTC).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.last_shutdown_time
+      description: The last time the device was shutdown. (ISO 8601 timestamp in UTC).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.linux_kernel_version
+      description: Not implemented.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.login_user_name
-      type: Unknown
+      description: The last user logged in on the device. (Requires Windows Carbon
+        Black Cloud sensor)
+      type: String
     - contextPath: CarbonBlackDefense.Device.mac_address
-      type: Unknown
+      description: The media access control (MAC) address for the device’s primary
+        interface (Requires Windows CBC sensor version 3.6.0.1941 or later, or macOS
+        CBC sensor)
+      type: String
     - contextPath: CarbonBlackDefense.Device.middle_name
+      description: The middle name of the device owner.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.name
+      description: The hostname of the endpoint recorded by the sensor when last initialized.
       type: String
     - contextPath: CarbonBlackDefense.Device.organization_id
+      description: The Organization identifier.
       type: Number
     - contextPath: CarbonBlackDefense.Device.organization_name
+      description: The Organization name.
       type: String
     - contextPath: CarbonBlackDefense.Device.os
+      description: Ther Operating System. (WINDOWS, MAC, LINUX, OTHER).
       type: String
     - contextPath: CarbonBlackDefense.Device.os_version
+      description: The operating system and version of the endpoint.
       type: String
     - contextPath: CarbonBlackDefense.Device.passive_mode
+      description: Whether the device is in bypass.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.policy_id
+      description: The policy identifier assigned to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.policy_name
+      description: The policy name assigned to the device. May not match current_sensor_policy_name
+        until the sensor checks back in.
       type: String
     - contextPath: CarbonBlackDefense.Device.policy_override
+      description: Whether the policy was manually assigned to override mass sensor
+        management.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.quarantined
+      description: The indicator that the device is in quarantine mode.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.registered_time
+      description: The time when the device was registered with the Carbon Black Cloud.
+        (ISO 8601 timestamp in UTC).
       type: Date
     - contextPath: CarbonBlackDefense.Device.scan_last_action_time
+      description: The last time the background scan was started or stopped. (ISO
+        8601 timestamp in UTC).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.scan_last_complete_time
+      description: The time the last background scan completed. (ISO 8601 timestamp
+        in UTC).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.scan_status
+      description: The status of the background scan. (NEVER_RUN, STOPPED, IN_PROGRESS,
+        COMPLETED).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.sensor_kit_type
+      description: The type of sensor installed on the device. (XP, WINDOWS, MAC,
+        AV_SIG, OTHER, RHEL, UBUNTU, SUSE, AMAZON_LINUX, MAC_OSX).
       type: String
     - contextPath: CarbonBlackDefense.Device.sensor_out_of_date
+      description: Whether there is a new version available to be installed.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.sensor_pending_update
+      description: Whether the sensor is marked by the Sensor Update Service for a
+        sensor upgrade.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.sensor_states
+      description: The states the sensor is in. For example [ "ACTIVE", "LIVE_RESPONSE_ENABLED"
+        ]. (ACTIVE, PANICS_DETECTED, LOOP_DETECTED, DB_CORRUPTION_DETECTED, CSR_ACTION,
+        REPUX_ACTION, DRIVER_INIT_ERROR, REMGR_INIT_ERROR, UNSUPPORTED_OS, SENSOR_UPGRADE_IN_PROGRESS,
+        SENSOR_UNREGISTERED, WATCHDOG, SENSOR_RESET_IN_PROGRESS, DRIVER_INIT_REBOOT_REQUIRED,
+        DRIVER_LOAD_NOT_GRANTED, SENSOR_SHUTDOWN, SENSOR_MAINTENANCE, FULL_DISK_ACCESS_NOT_GRANTED,
+        DEBUG_MODE_ENABLED, AUTO_UPDATE_DISABLED, SELF_PROTECT_DISABLED, VDI_MODE_ENABLED,
+        POC_MODE_ENABLED, SECURITY_CENTER_OPTLN_DISABLED, LIVE_RESPONSE_RUNNING, LIVE_RESPONSE_NOT_RUNNING,
+        LIVE_RESPONSE_KILLED, LIVE_RESPONSE_NOT_KILLED, LIVE_RESPONSE_ENABLED, LIVE_RESPONSE_DISABLED,
+        DRIVER_KERNEL, DRIVER_USERSPACE).
       type: String
     - contextPath: CarbonBlackDefense.Device.sensor_version
+      description: 'The version of the installed sensor. (Format: #.#.#.#).'
       type: String
     - contextPath: CarbonBlackDefense.Device.status
+      description: The status of the device. (PENDING, REGISTERED, DEREGISTERED, BYPASS
+        Additional searchable statuses that are not returnable ACTIVE, INACTIVE, ERROR,
+        ALL, BYPASS_ON, LIVE, SENSOR_PENDING_UPDATE).
       type: String
     - contextPath: CarbonBlackDefense.Device.target_priority
+      description: Device target priorities to match. (LOW, MEDIUM, HIGH, MISSION_CRITICAL).
       type: String
     - contextPath: CarbonBlackDefense.Device.uninstall_code
+      description: The code to enter when uninstalling the sensor.
       type: String
     - contextPath: CarbonBlackDefense.Device.vcenter_host_url
+      description: The vcenter host url.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vcenter_name
+      description: The name of the vcenter the vm is associated with.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vcenter_uuid
+      description: The 128-bit SMBIOS UUID of a vcenter represented as a hexadecimal
+        string
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vdi_base_device
+      description: The identifier of the device from which this device was cloned/re-registered.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.virtual_machine
+      description: Whether this device is a Virtual Machine (VMware AppDefense integration).
+        Deprecated for deployment_type.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.virtualization_provider
-      type: Unknown
+      description: The ame of the VM Virtualization Provider.
+      type: String
     - contextPath: CarbonBlackDefense.Device.vm_ip
+      description: The VM’s Ip.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vm_name
+      description: The name of the Virtual Machine that the sensor is deployed on.
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vm_uuid
+      description: 'The 128-bit SMBIOS UUID of a virtual machine represented as a
+        hexadecimal string. (Format: 12345678-abcd-1234-cdef-123456789abc).'
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.vulnerability_score
+      description: The score, a score from 0 to 100 indicating the workload’s level
+        of vulnerability with 100 being highly vulnerable.
       type: Number
     - contextPath: CarbonBlackDefense.Device.vulnerability_severity
+      description: The severity level indicating the workload’s vulnerability. (CRITICAL,
+        MODERATE, IMPORTANT, LOW).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.windows_platform
+      description: Deprecated for os_version. (CLIENT_X86, CLIENT_X64, SERVER_X86,
+        SERVER_X64, CLIENT_ARM64, SERVER_ARM64).
       type: Unknown
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The A Carbon Black Cloud classification for events tagged to an
         alert indicating whether the event is a “threat” or “observed”.
       isArray: false
       name: alert_category
+      predefined:
+      - THREAT
+      - OBSERVED
       required: false
       secret: false
     - default: false
@@ -549,10 +737,15 @@ script:
       name: device_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The operating system of the endpoint.
       isArray: false
       name: device_os
+      predefined:
+      - WINDOWS
+      - MAC
+      - LINUX
       required: false
       secret: false
     - default: false
@@ -562,10 +755,20 @@ script:
       name: device_timestamp
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Type of enriched event observed.
       isArray: false
       name: event_type
+      predefined:
+      - filemod
+      - netconn
+      - regmod
+      - modload
+      - crossproc
+      - childproc
+      - scriptload
+      - fileless_scriptload
       required: false
       secret: false
     - default: false
@@ -580,11 +783,27 @@ script:
       name: parent_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Reputation of the parent process; applied by the Carbon Black
         Cloud when the event is initially processed.
       isArray: false
       name: parent_reputation
+      predefined:
+      - ADAPTIVE_WHITE_LIST
+      - ADWARE
+      - COMMON_WHITE_LIST
+      - COMPANY_BLACK_LIST
+      - COMPANY_WHITE_LIST
+      - HEURISTIC
+      - IGNORE
+      - KNOWN_MALWARE
+      - LOCAL_WHITE
+      - NOT_LISTED
+      - PUP
+      - RESOLVING
+      - SUSPECT_MALWARE
+      - TRUSTED_WHITE_LIST
       required: false
       secret: false
     - default: false
@@ -619,11 +838,27 @@ script:
       name: process_pid
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Reputation of the actor process; applied when event is processed
         by the Carbon Black Cloud.
       isArray: false
       name: process_reputation
+      predefined:
+      - ADAPTIVE_WHITE_LIST
+      - ADWARE
+      - COMMON_WHITE_LIST
+      - COMPANY_BLACK_LIST
+      - COMPANY_WHITE_LIST
+      - HEURISTIC
+      - IGNORE
+      - KNOWN_MALWARE
+      - LOCAL_WHITE
+      - NOT_LISTED
+      - PUP
+      - RESOLVING
+      - SUSPECT_MALWARE
+      - TRUSTED_WHITE_LIST
       required: false
       secret: false
     - default: false
@@ -633,11 +868,15 @@ script:
       name: process_start_time
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: “True” indicates the process has terminated; always “false” for
         enriched events (process termination not recorded).
       isArray: false
       name: process_terminated
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -649,10 +888,15 @@ script:
       name: process_username
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The action performed by the sensor on the process.
       isArray: false
       name: sensor_action
+      predefined:
+      - TERMINATE
+      - DENY
+      - SUSPEND
       required: false
       secret: false
     - default: false
@@ -675,8 +919,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time window to restrict the search to match using device_timestamp
+      description: 'The time window to restrict the search to match using device_timestamp
         as the reference. Window will take priority over start and end if provided.
+        For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z",
+        "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute,
+        s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp'
       isArray: false
       name: time_range
       required: false
@@ -692,11 +939,15 @@ script:
       description: The job id os the processes search.
       type: Unknown
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The A Carbon Black Cloud classification for events tagged to an
         alert indicating whether the event is a “threat” or “observed”.
       isArray: false
       name: alert_category
+      predefined:
+      - THREAT
+      - OBSERVED
       required: false
       secret: false
     - default: false
@@ -734,16 +985,31 @@ script:
       name: device_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The operating system of the endpoint.
       isArray: false
       name: device_os
+      predefined:
+      - WINDOWS
+      - MAC
+      - LINUX
       required: false
       secret: false
-    - default: false
-      description: The Type of enriched event observed.
+    - auto: PREDEFINED
+      default: false
+      description: The type of enriched event observed. (Requires Endpoint Standard).
       isArray: false
       name: event_type
+      predefined:
+      - filemod
+      - netconn
+      - regmod
+      - modload
+      - crossproc
+      - childproc
+      - scriptload
+      - fileless_scriptload
       required: false
       secret: false
     - default: false
@@ -758,11 +1024,27 @@ script:
       name: parent_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Reputation of the parent process; applied by the Carbon Black
         Cloud when the event is initially processed.
       isArray: false
       name: parent_reputation
+      predefined:
+      - ADAPTIVE_WHITE_LIST
+      - ADWARE
+      - COMMON_WHITE_LIST
+      - COMPANY_BLACK_LIST
+      - COMPANY_WHITE_LIST
+      - HEURISTIC
+      - IGNORE
+      - KNOWN_MALWARE
+      - LOCAL_WHITE
+      - NOT_LISTED
+      - PUP
+      - RESOLVING
+      - SUSPECT_MALWARE
+      - TRUSTED_WHITE_LIST
       required: false
       secret: false
     - default: false
@@ -797,11 +1079,27 @@ script:
       name: process_pid
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The Reputation of the actor process; applied when event is processed
         by the Carbon Black Cloud.
       isArray: false
       name: process_reputation
+      predefined:
+      - ADAPTIVE_WHITE_LIST
+      - ADWARE
+      - COMMON_WHITE_LIST
+      - COMPANY_BLACK_LIST
+      - COMPANY_WHITE_LIST
+      - HEURISTIC
+      - IGNORE
+      - KNOWN_MALWARE
+      - LOCAL_WHITE
+      - NOT_LISTED
+      - PUP
+      - RESOLVING
+      - SUSPECT_MALWARE
+      - TRUSTED_WHITE_LIST
       required: false
       secret: false
     - default: false
@@ -811,11 +1109,15 @@ script:
       name: process_start_time
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: “True” indicates the process has terminated; always “false” for
         enriched events (process termination not recorded).
       isArray: false
       name: process_terminated
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -827,10 +1129,15 @@ script:
       name: process_username
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The action performed by the sensor on the process.
       isArray: false
       name: sensor_action
+      predefined:
+      - TERMINATE
+      - DENY
+      - SUSPEND
       required: false
       secret: false
     - default: false
@@ -853,8 +1160,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time window to restrict the search to match using device_timestamp
+      description: 'The time window to restrict the search to match using device_timestamp
         as the reference. Window will take priority over start and end if provided.
+        For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z",
+        "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute,
+        s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp'
       isArray: false
       name: time_range
       required: false
@@ -1372,35 +1682,6 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The job id.
-      isArray: false
-      name: job_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieves the status for an enriched events search request for a
-      given job_id. Confirm the search has completed by verifying that “contacted”
-      equals “completed”.
-    execution: false
-    name: cbd-find-events-status
-    outputs:
-    - contextPath: CarbonBlackDefense.Events.Status.completed
-      description: The completed events.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.Events.Status.contacted
-      description: The contacted events.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.Events.Status.connector_id
-      description: The connector id.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.Events.Status.search_initiated_time
-      description: The initiated time of the search event.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.Events.Status.query
-      description: The search query.
-      type: Unknown
-  - arguments:
-    - default: false
       description: A list of event ids to fetch. (comma separated)
       isArray: false
       name: event_ids
@@ -1413,25 +1694,6 @@ script:
     outputs:
     - contextPath: CarbonBlackDefense.EventDetails.Search.job_id
       description: The job id.
-      type: Unknown
-  - arguments:
-    - default: false
-      description: The job id.
-      isArray: false
-      name: job_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieves the status for an enriched events detail request for a
-      given job_id.
-    execution: false
-    name: cbd-find-events-details-status
-    outputs:
-    - contextPath: CarbonBlackDefense.EventDetails.Status.completed
-      description: The completed events.
-      type: Unknown
-    - contextPath: CarbonBlackDefense.EventDetails.Status.contacted
-      description: The contacted events.
       type: Unknown
   - arguments:
     - default: false
@@ -1467,17 +1729,6 @@ script:
     - contextPath: CarbonBlackDefense.EventDetails.Results.results
       description: The results of the job id.
       type: Unknown
-  - arguments:
-    - default: false
-      description: The job id.
-      isArray: false
-      name: job_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns the status of a search job.
-    execution: false
-    name: cbd-find-processes-status
   - arguments:
     - default: false
       description: The id of the device
@@ -1563,9 +1814,6 @@ script:
     description: The devices will be updated to this policy ID.
     execution: false
     name: cbd-device-policy-update
-    outputs:
-    - contextPath: CarbonBlackDefense.Devices.PolicyUpdate
-      type: Unknown
   - arguments:
     - default: false
       description: The id of the device
@@ -1775,82 +2023,136 @@ script:
       description: Tags associated with the alert ([ "tag1", "tag2" ])
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.reason
+      description: "The Description of the alert.\t"
       type: String
     - contextPath: CarbonBlackDefense.Alert.count
+      description: The count of the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.report_id
+      description: The identifier of the report that contains the IOC.
       type: String
     - contextPath: CarbonBlackDefense.Alert.report_name
+      description: The name of the report that contains the IOC.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_id
+      description: The identifier of the IOC that cause the hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_field
+      description: The field the indicator of comprise (IOC) hit contains.
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.ioc_hit
+      description: IOC field value or IOC query that matches.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.id
+      description: The id of list of watchlists associated with an alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.name
+      description: "The name of list of watchlists associated with an alert\t"
       type: String
     - contextPath: CarbonBlackDefense.Alert.process_guid
+      description: The global unique identifier of the process that triggered the
+        hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.process_name
+      description: The name of the process that triggered the hit.
       type: String
     - contextPath: CarbonBlackDefense.Alert.run_state
+      description: Run state is always RAN for watchlist alerts.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.process_name
+      description: The name of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.sha256
+      description: The sha256 of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_indicators.ttps
+      description: The ttps of the threat indicators that make up the threat.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_sha256
+      description: The SHA256 of the threat cause actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_md5
+      description: The SHA256 of the threat cause actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_name
+      description: Process name or IP address of the threat actor.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_reputation
+      description: The reputation of the threat cause. (KNOWN_MALWARE, SUSPECT_MALWARE,
+        PUP, NOT_LISTED, ADAPTIVE_WHITE_LIST, COMMON_WHITE_LIST, TRUSTED_WHITE_LIST,
+        COMPANY_BLACK_LIST).
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_threat_category
+      description: The category of the threat cause. (UNKNOWN, NON_MALWARE, NEW_MALWARE,
+        KNOWN_MALWARE, RISKY_PROGRAM).
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.threat_cause_vector
+      description: The source of the threat cause. (EMAIL, WEB, GENERIC_SERVER, GENERIC_CLIENT,
+        REMOTE_DRIVE, REMOVABLE_MEDIA, UNKNOWN, APP_STORE, THIRD_PARTY)
       type: String
     - contextPath: CarbonBlackDefense.Alert.document_guid
+      description: The document guid.
       type: String
     - contextPath: CarbonBlackDefense.Alert.type
+      description: The type of alert. (CB_ANALYTICS, DEVICE_CONTROL).
       type: String
     - contextPath: CarbonBlackDefense.Alert.reason_code
+      description: The shorthand enum for the full-text reason
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_location
+      description: Whether the device was on or off premise when the alert started.
+        (ONSITE, OFFSITE, UNKNOWN)
       type: String
     - contextPath: CarbonBlackDefense.Alert.created_by_event_id
+      description: Event identifier that initiated the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_activity_dlp
+      description: Whether the alert involved data loss prevention (DLP). (NOT_ATTEMPTED,
+        ATTEMPTED, SUCCEEDED)
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_activity_phish
+      description: Whether the alert involved phishing. (NOT_ATTEMPTED, ATTEMPTED,
+        SUCCEEDED)
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_activity_c2
+      description: Whether the alert involved a command and control (c2) server. (NOT_ATTEMPTED,
+        ATTEMPTED, SUCCEEDED).
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_actor_process_pid
+      description: The process identifier (PID) of the actor process.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_process_guid
+      description: The guid o fthe process.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_parent_guid
+      description: The parent guid of the process.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_cause_cause_event_id
+      description: The threat cause cause event id.
       type: String
     - contextPath: CarbonBlackDefense.Alert.blocked_threat_category
+      description: The category of threat which we were able to take action on. (UNKNOWN,
+        NON_MALWARE, NEW_MALWARE, KNOWN_MALWARE, RISKY_PROGRAM)
       type: String
     - contextPath: CarbonBlackDefense.Alert.not_blocked_threat_category
+      description: Other potentially malicious activity involved in the threat that
+        we weren’t able to take action on (either due to policy config, or not having
+        a relevant rule). (UNKNOWN, NON_MALWARE, NEW_MALWARE, KNOWN_MALWARE, RISKY_PROGRAM).
       type: String
     - contextPath: CarbonBlackDefense.Alert.kill_chain_status
+      description: The stage within the Cyber Kill Chain sequence most closely associated
+        with the attributes of the alert. (RECONNAISSANCE, WEAPONIZE, DELIVER_EXPLOIT,
+        INSTALL_RUN, COMMAND_AND_CONTROL, EXECUTE_GOAL, BREACH). Foe example [ "EXECUTE_GOAL",
+        "BREACH" ].
       type: String
     - contextPath: CarbonBlackDefense.Alert.sensor_action
+      description: The action taken by the sensor, according to the rule of the policy.
+        (POLICY_NOT_APPLIED, ALLOW, ALLOW_AND_LOG, TERMINATE, DENY).
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.policy_applied
+      description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false
