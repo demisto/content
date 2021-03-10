@@ -136,7 +136,7 @@ def url_data_to_dbot_score(url_data: dict, url: str, reliability: DBotScoreRelia
     else:
         dbot_score = 2
     return Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", dbot_score,
-                            "Match found in PhishTankV2 database")
+                            "Match found in PhishTankV2 database", reliability)
 
 
 def create_verified_markdown(url_data: dict, url: str):
@@ -155,7 +155,7 @@ def url_command(client: Client, url_list: list, reliability: DBotScoreReliabilit
         url_data, url = get_url_data(client, url)
         url_data_is_valid = url_data and "verified" in url_data.keys()
         if url_data_is_valid:
-            dbot = url_data_to_dbot_score(url_data, url, reliability=reliability)
+            dbot = url_data_to_dbot_score(url_data, url, reliability)
             markdown += create_verified_markdown(url_data, url)
         else:
             markdown += f'#### No matches for URL {url} \n'
