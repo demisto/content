@@ -4,13 +4,16 @@
 import io
 import json
 from datetime import datetime
-import QRadar_v3  # import module separately for mocker
+from typing import Dict, Callable
+
 import pytest
 import pytz
+
+import QRadar_v3  # import module separately for mocker
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, GetModifiedRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, EVENT_COLUMNS_DEFAULT_VALUE, RESET_KEY, FetchMode, ASSET_PROPERTIES_NAME_MAP, \
-    FULL_ASSET_PROPERTIES_NAMES_MAP
+    FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events_with_retry, sanitize_outputs, \
@@ -25,8 +28,6 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command
-
-from typing import Dict, Callable
 
 client = Client(
     server='https://192.168.0.1',
@@ -886,9 +887,9 @@ def test_get_modified_remote_data_command(mocker):
 @pytest.mark.parametrize('params, args, expected',
                          [
                              (dict(), {'lastUpdate': 1613399051537}, [dict()]),
-                             (dict(), dict(), dict(command_test_data['get_remote_data']['response']))
+                             (dict(), dict(), [dict(command_test_data['get_remote_data']['response'])])
                          ])
-def test_get_remote_data_command(mocker, params, args, expected):
+def test_get_remote_data_command_pre_6_1(mocker, params, args, expected):
     """
     Given:
      - QRadar client.
@@ -900,5 +901,77 @@ def test_get_remote_data_command(mocker, params, args, expected):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
+    set_integration_context(dict())
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
     assert get_remote_data_command(client, params, args) == expected
+
+
+@pytest.mark.parametrize('params, offense, expected',
+                         [
+                             (dict(), command_test_data['get_remote_data']['response'],
+                              [dict(command_test_data['get_remote_data']['response'])]),
+
+                             (dict(), command_test_data['get_remote_data']['closed'],
+                              [dict(command_test_data['get_remote_data']['closed'])]),
+
+                             ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              [dict(command_test_data['get_remote_data']['closed']), {
+                                  'Type': EntryType.NOTE,
+                                  'Contents': {
+                                      'dbotIncidentClose': True,
+                                      'closeReason': 'From QRadar: False-Positive, Tuned'
+                                  },
+                                  'ContentsFormat': EntryFormat.JSON
+                              }]),
+
+                             ({'mirror_options': 'Mirror Offense And Events'},
+                              command_test_data['get_remote_data']['response'], [
+                                  dict(command_test_data['get_remote_data']['response'], events=sanitize_outputs(
+                                      command_test_data['search_results_get']['response']['events']))]),
+
+                             ({'mirror_options': 'Mirror Offense And Events'},
+                              command_test_data['get_remote_data']['closed'],
+                              [dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
+                                  command_test_data['search_results_get']['response']['events']))]),
+
+                             ({'mirror_options': 'Mirror Offense And Events', 'close_incident': True},
+                              command_test_data['get_remote_data']['closed'],
+                              [dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
+                                  command_test_data['search_results_get']['response']['events'])),
+                               {'Type': EntryType.NOTE, 'Contents': {'dbotIncidentClose': True,
+                                                                     'closeReason': 'From QRadar: False-Positive, Tuned'},
+                                'ContentsFormat': EntryFormat.JSON}]),
+                         ])
+def test_get_remote_data_command_6_1_and_higher(mocker, params, offense, expected):
+    """
+    Given:
+     - QRadar client.
+     - Demisto params.
+     - Demisto arguments.
+
+    When:
+     - Case a: Offense updated, not closed, no events.
+     - Case b: Offense updated, closed, no events, close_incident is false.
+     - Case c: Offense updated, closed, no events, close_incident is true.
+     - Case d: Offense updated, not closed, events.
+     - Case e: Offense updated, closed, events, close_incident is false.
+     - Case f: Offense updated, closed, events, close_incident is true.
+
+    Then:
+     - Case a: Ensure that offense is returned as is.
+     - Case b: Ensure that offense is returned as is.
+     - Case c: Ensure that offense is returned, along with expected entries.
+     - Case d: Ensure that offense is returned with events.
+     - Case e: Ensure that offense is returned with events.
+     - Case f: Ensure that offense is returned with events, along with expected entries.
+    """
+    set_integration_context({'last_update': 1})
+    mocker.patch.object(client, 'offenses_list', return_value=offense)
+    if 'close_incident' in params:
+        mocker.patch.object(client, 'closing_reasons_list',
+                            return_value=command_test_data['closing_reasons_list']['response'][0])
+    if 'mirror_options' in params:
+        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events',
+                            return_value=dict(offense, events=sanitize_outputs(
+                                command_test_data['search_results_get']['response']['events'])))
+    assert get_remote_data_command(client, params, dict()) == expected

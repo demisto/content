@@ -2533,7 +2533,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     offense_last_update = get_time_parameter(offense.get('last_updated_time'))
     # Versions below 6.1 compatibility, checks if update occurred.
     if 'last_update' not in ctx:
-        last_update = get_time_parameter(args.get('lastUpdate'), epoch_format=True)
+        last_update = get_time_parameter(args.get('lastUpdate'))
         if last_update and last_update > offense_last_update:
             demisto.debug('Nothing new in the ticket')
             return [dict()]
