@@ -1,9 +1,9 @@
 This pack has a collection of playbooks to rapidly respond to high profile breaches with existing deployed tools in your enterprise. 
 The playbooks in this pack can also be used as a template to hunt and block these indicators using additional tools in your environment.
 This pack contains the response playbooks for the following breaches:
-- Sunburst and SolarStorm hunting.
-- FireEye Red Team Tools Investigation and Response.
-- HAFNIUM - Exchange 0-day exploits
+- [Sunburst and SolarStorm Hunting and Response](https://xsoar.pan.dev/docs/reference/playbooks/solar-storm-and-sunburst-hunting-and-response-playbook)
+- [FireEye Red Team Tools Investigation and Response](https://xsoar.pan.dev/docs/reference/playbooks/fire-eye-red-team-tools-investigation-and-response)
+- [HAFNIUM - Exchange 0-day Exploits](https://xsoar.pan.dev/docs/reference/playbooks/hafnium---exchange-0-day-exploits)
 
 ##### How to enable it?
 
