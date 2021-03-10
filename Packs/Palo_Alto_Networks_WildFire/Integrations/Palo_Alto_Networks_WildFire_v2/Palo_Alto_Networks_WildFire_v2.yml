@@ -456,6 +456,25 @@ script:
     description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the webartifacts.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: Extension of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the webartifacts.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The webartifacts file type.
+      type: string
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false

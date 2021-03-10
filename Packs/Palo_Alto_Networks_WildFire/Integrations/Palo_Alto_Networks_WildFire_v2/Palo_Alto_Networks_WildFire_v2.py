@@ -495,7 +495,7 @@ def wildfire_get_verdicts_command():
 
 
 @logger
-def wildfire_get_url_webartifacts_command(url: str, types: str) -> dict:
+def wildfire_get_webartifacts(url: str, types: str) -> dict:
     get_webartifacts_uri = f'{URL}{URL_DICT["webartifacts"]}'
     params = {
         'apikey': TOKEN,
@@ -514,13 +514,13 @@ def wildfire_get_url_webartifacts_command(url: str, types: str) -> dict:
 
 
 @logger
-def wildfire_get_web_artifacts_command():
+def wildfire_get_url_webartifacts_command():
     urls = argToList(demisto.args().get('url'))
     types = demisto.args().get('types', '')
 
     for url in urls:
         try:
-            result = wildfire_get_web_artifacts(url, types)
+            result = wildfire_get_webartifacts(url, types)
             file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
             demisto.results(file_entry)
         except NotFoundError:
