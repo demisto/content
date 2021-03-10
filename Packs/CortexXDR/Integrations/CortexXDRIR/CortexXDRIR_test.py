@@ -37,6 +37,42 @@ def test_get_incident_list(requests_mock):
     assert expected_output == outputs
 
 
+def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                           lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
+                           sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+    """
+        The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
+        and for the test_get_incident_list_by_status.
+        The function got the status as a string, and return from the json file only the incidents
+        that are in the given status.
+    """
+    incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
+    return [incident for incident in incidents_list if incident['status'] == status]
+
+
+def test_get_incident_list_by_status(mocker):
+    from CortexXDRIR import get_incidents_command, Client
+
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'incident_id_list': '1 day',
+        'status': 'under_investigation,new'
+    }
+    mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
+
+    _, outputs, _ = get_incidents_command(client, args)
+
+    expected_output = {
+        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
+            get_incidents_list_response.get('reply').get('incidents')
+    }
+    assert expected_output == outputs
+
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
@@ -74,18 +110,6 @@ def test_fetch_incidents(requests_mock, mocker):
         assert False
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
-
-
-def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                           lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
-                           sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
-    """
-        The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status.
-        The function got the status as a string, and return from the json file only the incidents
-        that are in the given status.
-    """
-    incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
-    return [incident for incident in incidents_list if incident['status'] == status]
 
 
 @freeze_time("1993-06-17 11:00:00 GMT")

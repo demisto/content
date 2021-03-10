@@ -1234,7 +1234,7 @@ def get_incidents_command(client, args):
     if since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
 
-    statuses = args.get('status', '').split(',')
+    statuses = argToList(args.get('status', ''))
 
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
@@ -1266,8 +1266,8 @@ def get_incidents_command(client, args):
                 status=status
             )
 
-        while len(raw_incidents) > limit:
-            raw_incidents.pop()
+        if len(raw_incidents) > limit:
+            raw_incidents[:limit]
     else:
         raw_incidents = client.get_incidents(
             incident_id_list=incident_id_list,
@@ -2519,7 +2519,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
     else:
-        if len(statuses) > 0:
+        if statuses:
             raw_incidents = []
             for status in statuses:
                 raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
