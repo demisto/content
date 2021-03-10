@@ -400,9 +400,17 @@ def get_threat_summary_by_id():
     """
     Get threat summary information for a sample given the id
     """
+    demisto.debug("Start get_threat_summary_by_id")
+
     sample_id = demisto.getArg('id')
+    demisto.debug("sample_id: {0}".format(sample_id))
+
     request = req('GET', SUB_API + 'samples/' + sample_id + '/threat')
+    demisto.debug("request: {0}".format(request))
+
     r = request.json()
+    demisto.debug("r: {0}".format(r))
+
     sample = {
         'ID': sample_id,
         'MaxSeverity': demisto.get(r, 'data.max-severity'),
