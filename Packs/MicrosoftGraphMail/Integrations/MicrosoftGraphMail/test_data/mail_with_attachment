@@ -17,7 +17,7 @@
     "receivedDateTime":"2017-07-21T00:19:55Z",
     "sentDateTime":"2017-07-21T00:19:52Z",
     "hasAttachments":false,
-    "internetMessageId":"<BY2PR15MB05189A084C01F466709E414F9CA40@BY2PR15MB0518.namprd15.prod.outlook.com>",
+    "internetMessageId":"<example>",
     "subject":"Test it",
     "bodyPreview": "PFA\r\n\r\nThanks,\r\nRob",
     "importance":"normal",

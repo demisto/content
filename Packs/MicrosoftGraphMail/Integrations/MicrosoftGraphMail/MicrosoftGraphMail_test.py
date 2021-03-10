@@ -319,9 +319,8 @@ def test_create_attachment(mocker, function_name, attachment_type):
         - item_result_creator and file_result_creator respectively
 
     """
-    mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}',  return_value={})
+    mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}', return_value={})
     raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
     user_id = 'ex@example.com'
     create_attachment(raw_response, user_id)
     assert mocked_function.called
-
