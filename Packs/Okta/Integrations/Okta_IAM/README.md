@@ -304,7 +304,7 @@ Returns a list of Okta applications data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | ID of the user for which to get information. | Required |
+| user_id | ID of the user for which to get the information. | Required |
 
 
 #### Context Output

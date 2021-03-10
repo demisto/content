@@ -68,7 +68,7 @@ configuration:
   required: false
   type: 13
 - additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta
-    apps you wish to sync to XSOAR. Further information about IAM configration is
+    apps you wish to sync to XSOAR. Further information about IAM configuration is
     detailed in the Help (the "?" icon).
   defaultvalue: 'true'
   display: Query only application events configured in IAM Configuration
@@ -397,7 +397,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the user for which to get information.
+      description: ID of the user for which to get the information.
       isArray: false
       name: user_id
       required: true
