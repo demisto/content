@@ -9,11 +9,13 @@ pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
-demisto-sdk = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
+vcrpy = "*"
 
 [packages]
-requests = "*"
-argus-api = ">=2.0.0,<3.0.0"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
