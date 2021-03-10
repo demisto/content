@@ -91,6 +91,8 @@ List alerts according to parameters
 | Cyberint.Alert.alert_data.repository_name | String | Repository name related to an event. | 
 | Cyberint.Alert.alert_data.mail_server | String | Mail server related to an event. | 
 | Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event. | 
+| Cyberint.Alert.alert_data.screenshot | String | Screenshot related to an event. | 
+| Cyberint.Alert.attachments | String | Attachments related to the alert. | 
 | Cyberint.Alert.ioc.type | String | Type of IOC related to the alert. | 
 | Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert. | 
 | Cyberint.Alert.ticket_id | String | Ticket ID of the alert. | 
