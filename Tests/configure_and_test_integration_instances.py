@@ -652,8 +652,8 @@ def set_integration_instance_parameters(integration_configuration,
     }
 
     # Add instance logging if applicable
-    if 'integrationLogLevel' in integration_params:
-        module_instance['integrationLogLevel'] = integration_params['integrationLogLevel']
+    if 'integration_log_level' in integration_params:
+        module_instance['integrationLogLevel'] = integration_params['integration_log_level']
 
     # set server keys
     __set_server_keys(client, integration_params, integration_configuration['name'])
