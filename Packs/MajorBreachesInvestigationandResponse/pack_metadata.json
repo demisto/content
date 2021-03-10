@@ -1,6 +1,6 @@
 {
     "name": "Rapid Breach Response",
-    "description": "This content pack helps you collect, investigate, and remediate incident relate to major breaches.",
+    "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
     "currentVersion": "1.4.1",
     "author": "Cortex XSOAR",
