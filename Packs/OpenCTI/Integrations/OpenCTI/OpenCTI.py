@@ -132,7 +132,7 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
         last_run_id=last_run_id
     )
 
-    last_run = raw_response.get('pagination', {}).get('endCursor')
+    last_run = raw_response.get('pagination', {}).get('endCursor')  # type: ignore
 
     if indicators_list := copy.deepcopy(raw_response.get('entities')):
         indicators = [{'type': indicator.get('entity_type'),
@@ -143,7 +143,8 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
                        'score': indicator.get('x_opencti_score'),
                        'description': indicator.get('x_opencti_description'),
                        'labels': [label.get('value') for label in indicator.get('objectLabel')],
-                       'marking': [mark.get('definition') for mark in indicator.get('objectMarking')]
+                       'marking': [mark.get('definition') for mark in indicator.get('objectMarking')],
+                       'externalReferences': indicator.get('externalReferences')
                        }
                       for indicator in indicators_list]
 
@@ -629,10 +630,10 @@ def main():
         #         'value': True
         #     }
 
-        res = client.stix_cyber_observable.list(filters=filters,
+        # res = client.stix_cyber_observable.list(filters=filters,
                                                 #orderBy={'created_at': '2021.2.10'},
                                                 #orderMode='asc'
-                                                )
+        #                                        )
         hi = "hi"
 
         # Switch case

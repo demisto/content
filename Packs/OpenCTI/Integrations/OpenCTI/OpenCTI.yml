@@ -75,22 +75,22 @@ script:
     - contextPath: OpenCTI.Indicators.IndicatorsList.id
       description: Indicator id.
       type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.createdBy
+    - contextPath: OpenCTI.Indicators.IndicatorsList.createdBy
       description: The creator of indicator.
       type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.score
+    - contextPath: OpenCTI.Indicators.IndicatorsList.score
       description: Indicator score.
       type: Number
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.description
+    - contextPath: OpenCTI.Indicators.IndicatorsList.description
       description: Indicator Description.
       type: String
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.objectLabel
+    - contextPath: OpenCTI.Indicators.IndicatorsList.labels
       description: Indicator labels.
       type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.objectMarking
+    - contextPath: OpenCTI.Indicators.IndicatorsList.marking
       description: Indicator marking definitions.
       type: Unknown
-    - contextPath: OpenCTI.Indicators.IndicatorsList.rawJSON.externalReferences
+    - contextPath: OpenCTI.Indicators.IndicatorsList.externalReferences
       description: Indicator external references.
       type: Unknown
     - contextPath: OpenCTI.Indicators.LastRunID
