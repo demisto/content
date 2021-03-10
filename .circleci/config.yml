@@ -361,7 +361,7 @@ references:
         zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
         zip -P $PSWD -j $CIRCLE_ARTIFACTS/InstanceLogs.zip $CIRCLE_ARTIFACTS/integration-instance*.log || ((($? > 0)) && echo "Didn’t find any instance logs, skipping this stage" && exit 0)
-                rm -f $CIRCLE_ARTIFACTS/integration-instance*.log
+        rm -f $CIRCLE_ARTIFACTS/integration-instance*.log
       when: always
 
   persist_to_workspace: &persist_to_workspace
