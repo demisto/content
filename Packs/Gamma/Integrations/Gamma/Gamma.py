@@ -249,8 +249,8 @@ def test_module(client: Client) -> str:
     try:
         client.get_violation_list(minimum_violation=1, limit=10)
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if 'UNAUTHORIZED' in str(e):
+            return 'Authorization Error: Make sure Gamma Discovery API Key is correctly set'
         else:
             raise e
     return 'ok'
