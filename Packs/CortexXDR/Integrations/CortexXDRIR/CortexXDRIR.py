@@ -2790,11 +2790,12 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
 def run_script_command(client: Client, args: Dict) -> CommandResults:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    timeout = arg_to_number(args.get('timeout', 600))
-    try:
-        parameters = json.loads(args.get('parameters', '{}'))
-    except json.decoder.JSONDecodeError as e:
-        raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    if parameters := args.get('parameters'):
+        try:
+            parameters = json.loads(parameters)
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return CommandResults(
@@ -2865,7 +2866,7 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
 
 def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    timeout = arg_to_number(args.get('timeout', 600))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
     parameters = {'commands_list': argToList(args.get('commands'))}
     response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
@@ -2880,7 +2881,7 @@ def run_script_execute_commands_command(client: Client, args: Dict) -> CommandRe
 
 def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    timeout = arg_to_number(args.get('timeout', 600))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
     parameters = {'file_path': args.get('file_path')}
     response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
@@ -2895,7 +2896,7 @@ def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults
 
 def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    timeout = arg_to_number(args.get('timeout', 600))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
     parameters = {'path': args.get('file_path')}
     response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
@@ -2910,7 +2911,7 @@ def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults
 
 def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    timeout = arg_to_number(args.get('timeout', 600))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
     parameters = {'process_name': args.get('process_name')}
     response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
     reply = response.get('reply')
