@@ -741,7 +741,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                 searchable_query += " earliest={} latest={}".format(earliest_offset, latest_offset)
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 query = build_search_query({"query": searchable_query})
-                demisto.info("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
+                demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
                     job = service.jobs.create(query, **kwargs)
                 except Exception as e:
@@ -752,7 +752,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                 demisto.info('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
             demisto.info("Coldn't build search query for notable {} with the following drilldown "
-                          "search {}".format(notable_data[EVENT_ID], search))
+                         "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.info("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
 
@@ -779,7 +779,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
     if users:
         kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
         query = '| inputlookup identity_lookup_expanded where {}'.format(users)
-        demisto.info("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
+        demisto.debug("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
@@ -812,7 +812,7 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
         kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
         query = '| inputlookup append=T asset_lookup_by_str where {} | inputlookup append=t asset_lookup_by_cidr ' \
                 'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
-        demisto.info("Asset query for notable {}: {}".format(notable_data[EVENT_ID], query))
+        demisto.debug("Asset query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
@@ -837,7 +837,8 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
     """
     handled_notables = []
     notables = cache_object.submitted_notables
-    demisto.info("Trying to handle {} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES])))
+    total = len(notables)
+    demisto.info("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
@@ -848,10 +849,7 @@ def handle_submitted_notables(service, enrichment_timeout, incidents, cache_obje
     cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
 
     if handled_notables:
-        demisto.info("Handled {} notables.".format(len(handled_notables)))
-
-    if cache_object.submitted_notables:
-        demisto.info("{} notables left to handle.".format(len(cache_object.submitted_notables)))
+        demisto.info("Handled {}/{} notables.".format(len(handled_notables), total))
 
 
 def handle_submitted_notable(service, notable, enrichment_timeout):
@@ -868,8 +866,8 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     """
     task_status = False
 
-    if notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
-        demisto.info("Trying to handle open enrichment {}".format(notable.id))
+    if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
+        demisto.debug("Trying to handle open enrichment {}".format(notable.id))
         for enrichment in notable.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
                 job = client.Job(service=service, sid=enrichment.id)
@@ -888,7 +886,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     else:
         task_status = True
         demisto.info("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
-                      "the enrichment.".format(notable.id, enrichment_timeout))
+                     "the enrichment.".format(notable.id, enrichment_timeout))
 
     return task_status
 
@@ -905,8 +903,9 @@ def submit_notables(service, incidents, num_enrichment_events, cache_object):
     """
     failed_notables, submitted_notables = [], []
     notables = cache_object.not_yet_submitted_notables
+    total = len(notables)
     if notables:
-        demisto.info('Enriching {} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES])))
+        demisto.info('Enriching {}/{} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES]), total))
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
         task_status = submit_notable(service, notable, num_enrichment_events)
@@ -922,14 +921,11 @@ def submit_notables(service, incidents, num_enrichment_events, cache_object):
     cache_object.not_yet_submitted_notables = [n for n in notables if n not in submitted_notables + failed_notables]
 
     if submitted_notables:
-        demisto.info('Submitted {} notables successfully.'.format(len(submitted_notables)))
-
-    if cache_object.not_yet_submitted_notables:
-        demisto.info('{} notables left to submit.'.format(len(cache_object.not_yet_submitted_notables)))
+        demisto.info('Submitted {}/{} notables successfully.'.format(len(submitted_notables), total))
 
     if failed_notables:
         demisto.info('The following {} notables failed the enrichment process: {}, creating incidents without '
-                      'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
+                     'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
 def submit_notable(service, notable, num_enrichment_events):
@@ -1088,8 +1084,9 @@ def get_remote_data_command(service, args, close_incident):
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
 
+    demisto.info('notable {} status: {}'.format(notable_id, updated_notable.get('status')))
     if updated_notable.get('status') == '5' and close_incident:
-        demisto.debug('Closing incident related to notable {}'.format(notable_id))
+        demisto.info('Closing incident related to notable {}'.format(notable_id))
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
@@ -1146,7 +1143,7 @@ def update_remote_system_command(args, params, proxy):
     notable_id = parsed_args.remote_incident_id
 
     if parsed_args.incident_changed and delta:
-        demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
+        demisto.info('Got the following delta keys {} to update incident corresponding to notable '
                       '{}'.format(str(list(delta.keys())), notable_id))
         changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
         for field in delta:
@@ -1155,11 +1152,11 @@ def update_remote_system_command(args, params, proxy):
 
         # Close notable if relevant
         if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
-            demisto.debug('Closing notable {}'.format(notable_id))
+            demisto.info('Closing notable {}'.format(notable_id))
             changed_data['status'] = '5'  # type: ignore
 
         if any(changed_data.values()):
-            demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
+            demisto.info('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
                 session_key = get_session_key(proxy, params, base_url)
@@ -1178,10 +1175,10 @@ def update_remote_system_command(args, params, proxy):
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
                               'Error message: {}'.format(notable_id, str(e)))
         else:
-            demisto.debug("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
+            demisto.info("Didn't find changed data to update incident corresponding to notable {}".format(notable_id))
 
     else:
-        demisto.debug('Incident corresponding to notable {} was not changed.'.format(notable_id))
+        demisto.info('Incident corresponding to notable {} was not changed.'.format(notable_id))
 
     return notable_id
 
