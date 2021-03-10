@@ -24,7 +24,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command
+    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command
 
 from typing import Dict, Callable
 
@@ -881,3 +881,28 @@ def test_get_modified_remote_data_command(mocker):
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
     assert expected.modified_incident_ids == result.modified_incident_ids
+
+
+@pytest.mark.parametrize('params, args, expected',
+                         [
+                             (dict(), {'lastUpdate': 1613399051537}, [dict()]),
+                             (dict(), dict(), dict(command_test_data['get_remote_data']['response'],))
+                         ])
+def test_get_remote_data_command(mocker, params, args, expected):
+    """
+    Given:
+     - QRadar client.
+     - Demisto arguments.
+
+    When:
+     - Command 'get-modified-remote-data' is being called.
+
+    Then:
+     - Ensure that command outputs the IDs of the offenses to update.
+    """
+    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
+    assert get_remote_data_command(client, params, args) == expected
+    # expected = GetModifiedRemoteDataResponse(command_test_data['get_modified_remote_data']['outputs'])
+    # mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
+    # result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
+    # assert expected.modified_incident_ids == result.modified_incident_ids

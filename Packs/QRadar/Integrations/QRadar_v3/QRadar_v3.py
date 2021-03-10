@@ -54,7 +54,8 @@ DEFAULT_EVENTS_LIMIT = 20
 MAXIMUM_OFFENSES_PER_FETCH = 50
 DEFAULT_OFFENSES_PER_FETCH = 20
 TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
-MIRROR_DIRECTION = {
+DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
+MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'No Mirroring': None,
     'Mirror Offense': 'In',
     'Mirror Offense And Events': 'In'
@@ -1150,7 +1151,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 asset_enrich=asset_enrich,
                 last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
                 incident_type=params.get('incident_type'),
-                mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options'))
+                mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
         message = 'ok'
     except DemistoException as e:
@@ -1403,7 +1404,7 @@ def long_running_execution_command(client: Client, params: Dict):
     events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
     events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
     incident_type = params.get('incident_type')
-    mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options'))
+    mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
         is_reset_triggered(handle_reset=True)
         ctx = get_integration_context()
