@@ -9,6 +9,7 @@ import csv
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
+''' GLOBALS '''
 VERBOSE = True
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
@@ -150,12 +151,15 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
                 'Description': 'The address was reported as Malicious by AbuseIPDB.'
 
             }
-        dbot_scores.append({
+        dbot_scores.append(Common.DBotScore(analysis.get("ipAddress"), DBotScoreType.IP, "AbuseIPDB",
+                                            dbot_score, "", reliability)
+        {
             "Score": dbot_score,
             "Vendor": "AbuseIPDB",
             "Indicator": analysis.get("ipAddress"),
             "Type": "ip"
         })
+
         context_ip.append(abuse_ec)
         context_ip_generic.append(ip_ec)
 
