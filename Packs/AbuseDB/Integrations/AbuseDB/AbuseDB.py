@@ -9,7 +9,6 @@ import csv
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
-''' GLOBALS '''
 VERBOSE = True
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
@@ -93,7 +92,12 @@ CATEGORIES_ID = {
 }
 
 session = requests.session()
+reliability = demisto.params().get('integrationReliability')
 
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    return_error("Please provide a valid value for the Source Reliability parameter.")
 
 ''' HELPER FUNCTIONS '''
 
@@ -151,13 +155,13 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
                 'Description': 'The address was reported as Malicious by AbuseIPDB.'
 
             }
-        dbot_scores.append(Common.DBotScore(analysis.get("ipAddress"), DBotScoreType.IP, "AbuseIPDB",
-                                            dbot_score, "", reliability)
+        dbot_scores.append(
         {
             "Score": dbot_score,
             "Vendor": "AbuseIPDB",
             "Indicator": analysis.get("ipAddress"),
-            "Type": "ip"
+            "Type": "ip",
+            "Reliability": reliability
         })
 
         context_ip.append(abuse_ec)
