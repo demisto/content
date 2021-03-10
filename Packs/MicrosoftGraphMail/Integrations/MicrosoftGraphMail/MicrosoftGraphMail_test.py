@@ -137,17 +137,28 @@ def test_list_mails_command(mocker, client):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_page_limit_and_paged_to_pull(mocker, client):
+def test_list_mails_with_page_limit(mocker, client):
+    """Unit test
+    Given
+    - list_mails command with page_size set to 1
+    - one mail returned on the response
+    When
+    - mock the MicrosoftClient.http_request function
+    Then
+    - run the list_mails_command using the Client
+    Validate that the http_request called properly with endpoint top=1
+    """
     args = {'user_id': 'test id', 'page_size': 1, 'pages_to_pull': 1}
     with open('test_data/response_with_one_mail') as mail_json:
         mail = json.load(mail_json)
-        mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
+        mock_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
         mocker.patch.object(demisto, 'results')
         mocker.patch.object(demisto, 'args', return_value=args)
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
         assert '1 mails received \nPay attention there are more results than shown. For more data please ' \
                'increase "pages_to_pull" argument' in hr
+        assert "top=1" in mock_request.call_args_list[0].args[1]
 
 
 @pytest.fixture()
