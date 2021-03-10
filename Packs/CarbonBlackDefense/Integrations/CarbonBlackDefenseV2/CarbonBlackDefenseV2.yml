@@ -430,7 +430,7 @@ script:
       description: The AVE version (part of AV Version).
       type: Unknown
     - contextPath: CarbonBlackDefense.Device.av_engine
-      description: The current anti virus (AV) version. (4.3.0.203-ave.8.3.42.106:avpack.8.4.2.36:vdf.8.12.142.100).
+      description: The current anti virus (AV) version.
       type: String
     - contextPath: CarbonBlackDefense.Device.av_last_scan_time
       description: The last time a local scan completed. (ISO 8601 timestamp in UTC).

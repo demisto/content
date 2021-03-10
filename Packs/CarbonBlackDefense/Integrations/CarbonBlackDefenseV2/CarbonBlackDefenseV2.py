@@ -166,13 +166,13 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
     # The events API
-    def get_events(self, alert_category: list[str], blocked_hash: list[str], device_external_ip: list[str],
-                   device_id: list[int], device_internal_ip: list[int], device_name: list[str], device_os: list[str],
-                   event_type: list[str], parent_hash: list[str], parent_name: list[str], parent_reputation: list[str],
-                   process_cmdline: list[str], process_guid: list[str], process_hash: list[str],
-                   process_name: list[str], process_pid: list[int], process_reputation: list[str],
-                   process_start_time: list[str], process_terminated: list[str], process_username: list[str],
-                   sensor_action: list[str], query: str = None, start: int = None, time_range: dict = None,
+    def get_events(self, alert_category: List[str], blocked_hash: List[str], device_external_ip: List[str],
+                   device_id: List[int], device_internal_ip: List[int], device_name: List[str], device_os: List[str],
+                   event_type: List[str], parent_hash: List[str], parent_name: List[str], parent_reputation: List[str],
+                   process_cmdline: List[str], process_guid: List[str], process_hash: List[str],
+                   process_name: List[str], process_pid: List[int], process_reputation: List[str],
+                   process_start_time: List[str], process_terminated: List[str], process_username: List[str],
+                   sensor_action: List[str], query: str = None, start: int = None, time_range: dict = None,
                    rows: int = None):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs'
         body = assign_params(
@@ -213,7 +213,7 @@ class Client(BaseClient):
                      f'?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
-    def get_events_details(self, event_ids: list[str]):
+    def get_events_details(self, event_ids: List[str]):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/enriched_events/detail_jobs'
         body = assign_params(
             event_ids=event_ids
@@ -225,13 +225,13 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Processes API
-    def get_processes(self, alert_category: list[str], blocked_hash: list[str], device_external_ip: list[str],
-                      device_id: list[int], device_internal_ip: list[int], device_name: list[str], device_os: list[str],
-                      device_timestamp: list[str], event_type: list[str], parent_hash: list[str],
-                      parent_name: list[str], parent_reputation: list[str], process_cmdline: list[str],
-                      process_guid: list[str], process_hash: list[str], process_name: list[str], process_pid: list[int],
-                      process_reputation: list[str], process_start_time: list[str], process_terminated: list[str],
-                      process_username: list[str], sensor_action: list[str], query: str = None, start: int = None,
+    def get_processes(self, alert_category: List[str], blocked_hash: List[str], device_external_ip: List[str],
+                      device_id: List[int], device_internal_ip: List[int], device_name: List[str], device_os: List[str],
+                      device_timestamp: List[str], event_type: List[str], parent_hash: List[str],
+                      parent_name: List[str], parent_reputation: List[str], process_cmdline: List[str],
+                      process_guid: List[str], process_hash: List[str], process_name: List[str], process_pid: List[int],
+                      process_reputation: List[str], process_start_time: List[str], process_terminated: List[str],
+                      process_username: List[str], sensor_action: List[str], query: str = None, start: int = None,
                       time_range: str = None, rows: int = None):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs'
         body = assign_params(
@@ -274,7 +274,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Alerts API
-    def get_alerts(self, alert_type: str, category: list[str] = None, device_id: List[int] = None,
+    def get_alerts(self, alert_type: str, category: List[str] = None, device_id: List[int] = None,
                    first_event_time: dict = None, policy_id: List[int] = None, process_sha256: List[str] = None,
                    reputation: List[str] = None, tag: List[str] = None, device_username: List[str] = None,
                    query: str = None, rows: int = None, start: int = None):
@@ -326,7 +326,7 @@ class Client(BaseClient):
         )
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def execute_an_action_on_the_device(self, device_id: list[int], action_type: str, options: dict) -> str:
+    def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict) -> str:
         suffix_url = f'appservices/v6/orgs/{self.organization_key}/device_actions'
         body = assign_params(
             action_type=action_type,

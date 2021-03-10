@@ -3289,6 +3289,7 @@
         "palo_alto_panorama_test_pb": "Issue 34371"
     },
     "skipped_integrations": {
+        "Carbon Black Defense v2": "Over the policies quota",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
