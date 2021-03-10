@@ -157,15 +157,6 @@ def test_main_no_fetched_incidents_found(mocker):
     res = main()
     assert (not res)
 
-
-# - Check if field does not exit
-# Check incident.commandline
-# Check nested fields
-# Check if not fetched incident is return
-# Check is no indicators is return
-# Check is field is NaN or empty so it will be remove
-
-
 def test_keep_high_level_field():
     incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
     res = ['xdralerts', 'commandline', 'CustomsFields']
