@@ -22,6 +22,7 @@ This script uses the following commands and scripts.
 | --- | --- |
 | days | The time range to return reports for (in days). The default is 30. |
 | limit | The maximum number of IP addressess to retrieve. The default is 50  |
+| confidence | The Minimum confidence required for the retrieved IPs. The default is 100.  |
 
 ## Outputs
 ---
