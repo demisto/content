@@ -70,8 +70,7 @@ class Client(BaseClient):
             return None
 
         return self._http_request(url_suffix=url_suffix, method=method, json_data=json_data, params=params,
-                                  timeout=self.request_timeout, resp_type='response',
-                                  ok_codes=(200, 201, 202, 204, 400, 401, 403, 404, 429, 500), proxies=handle_proxy())
+                                  timeout=self.request_timeout, resp_type='response')
 
 
 ''' HELPER/UTILITY FUNCTIONS '''
@@ -502,17 +501,18 @@ def main():
     Intercept and execute commands.
     """
 
+    params = demisto.params()
     # IdentityNow API Base URL (https://org.api.identitynow.com)
-    base_url = demisto.params().get('identitynow_url')
+    base_url = params.get('identitynow_url')
 
     # OAuth 2.0 Credentials
-    client_id = demisto.params().get('client_id')
-    client_secret = demisto.params().get('client_secret')
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
     grant_type = 'client_credentials'
 
     # Other configs
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     request_timeout = 10
 
     headers = {}
@@ -530,82 +530,84 @@ def main():
         max_results=MAX_INCIDENTS_TO_FETCH,
         request_timeout=request_timeout)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
+        args = demisto.args()
         results = None
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             results = test_connection(base_url, client_id, client_secret, grant_type)
 
-        elif demisto.command() == 'identitynow-search-identities':
-            query = demisto.args().get('query', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-search-identities':
+            query = args.get('query', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = search(client, 'identities', query, offset, limit)
             results = build_results('IdentityNow.Identity', 'id', response)
 
-        elif demisto.command() == 'identitynow-get-accounts':
-            id = demisto.args().get('id', None)
-            name = demisto.args().get('name', None)
-            native_identity = demisto.args().get('native_identity', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-get-accounts':
+            id = args.get('id', None)
+            name = args.get('name', None)
+            native_identity = args.get('native_identity', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = get_accounts(client, id, name, native_identity, offset, limit)
             results = build_results('IdentityNow.Account', 'id', response)
 
-        elif demisto.command() == 'identitynow-get-accountactivities':
-            id = demisto.args().get('id', None)
-            requested_for = demisto.args().get('requested_for', None)
-            requested_by = demisto.args().get('requested_by', None)
-            regarding_identity = demisto.args().get('regarding_identity', None)
-            type = demisto.args().get('type', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-get-accountactivities':
+            id = args.get('id', None)
+            requested_for = args.get('requested_for', None)
+            requested_by = args.get('requested_by', None)
+            regarding_identity = args.get('regarding_identity', None)
+            type = args.get('type', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = get_account_activities(client, id, requested_for, requested_by, regarding_identity, type, offset,
                                               limit)
             results = build_results('IdentityNow.AccountActivity', 'id', response)
 
-        elif demisto.command() == 'identitynow-search-accessprofiles':
-            query = demisto.args().get('query', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-search-accessprofiles':
+            query = args.get('query', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = search(client, 'accessprofiles', query, offset, limit)
             results = build_results('IdentityNow.AccessProfile', 'id', response)
 
-        elif demisto.command() == 'identitynow-search-roles':
-            query = demisto.args().get('query', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-search-roles':
+            query = args.get('query', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = search(client, 'roles', query, offset, limit)
             results = build_results('IdentityNow.Role', 'id', response)
 
-        elif demisto.command() == 'identitynow-search-entitlements':
-            query = demisto.args().get('query', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-search-entitlements':
+            query = args.get('query', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = search(client, 'entitlements', query, offset, limit)
             results = build_results('IdentityNow.Entitlement', 'id', response)
 
-        elif demisto.command() == 'identitynow-search-events':
-            query = demisto.args().get('query', None)
-            offset = int(demisto.args().get('offset', OFFSET_DEFAULT))
-            limit = int(demisto.args().get('limit', LIMIT_DEFAULT))
+        elif command == 'identitynow-search-events':
+            query = args.get('query', None)
+            offset = int(args.get('offset', OFFSET_DEFAULT))
+            limit = int(args.get('limit', LIMIT_DEFAULT))
             response = search(client, 'events', query, offset, limit)
             results = build_results('IdentityNow.Event', 'id', response)
 
-        elif demisto.command() == 'identitynow-request-grant':
-            requested_for = demisto.args().get('requested_for', None)
-            requested_item = demisto.args().get('requested_item', None)
-            requested_item_type = demisto.args().get('requested_item_type', None)
-            comment = demisto.args().get('comment', None)
+        elif command == 'identitynow-request-grant':
+            requested_for = args.get('requested_for', None)
+            requested_item = args.get('requested_item', None)
+            requested_item_type = args.get('requested_item_type', None)
+            comment = args.get('comment', None)
             results = access_request(client, "GRANT_ACCESS", requested_for, requested_item, requested_item_type,
                                      comment)
 
-        elif demisto.command() == 'identitynow-request-revoke':
-            requested_for = demisto.args().get('requested_for', None)
-            requested_item = demisto.args().get('requested_item', None)
-            requested_item_type = demisto.args().get('requested_item_type', None)
-            comment = demisto.args().get('comment', None)
+        elif command == 'identitynow-request-revoke':
+            requested_for = args.get('requested_for', None)
+            requested_item = args.get('requested_item', None)
+            requested_item_type = args.get('requested_item_type', None)
+            comment = args.get('comment', None)
             results = access_request(client, "REVOKE_ACCESS", requested_for, requested_item, requested_item_type,
                                      comment)
 
@@ -614,7 +616,7 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

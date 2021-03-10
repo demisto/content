@@ -41,7 +41,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: 3 days
+- additionalinfo: Number of day/days until all the events to be queryed
+  defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
