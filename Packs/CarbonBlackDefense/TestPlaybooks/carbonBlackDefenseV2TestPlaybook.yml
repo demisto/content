@@ -1,6 +1,6 @@
 id: carbonBlackDefenseV2TestPlaybook
 version: -1
-fromversion: 5.0.0
+fromversion: 5.5.0
 vcShouldKeepItemLegacyProdMachine: false
 name: carbonBlackDefenseV2TestPlaybook
 starttaskid: "0"
@@ -1342,7 +1342,7 @@ tasks:
       id: 5cd3c54e-b225-4764-8445-5d3f16a5c3b3
       version: -1
       name: Carbon Black Defense Find Events
-      playbookName: 5cd3c54e-b225-4764-8445-5d3f16a5c3b3
+      playbookName: Carbon Black Defense Find Events
       type: playbook
       iscommand: false
       brand: ""
@@ -1410,7 +1410,7 @@ tasks:
       id: dab05232-b891-405f-8eb7-b1291edf522c
       version: -1
       name: Carbon Black Defense Find Event Details
-      playbookName: dab05232-b891-405f-8eb7-b1291edf522c
+      playbookName: Carbon Black Defense Find Event Details
       type: playbook
       iscommand: false
       brand: ""
@@ -1438,7 +1438,7 @@ tasks:
       id: 8acb8dc0-371b-436f-8c71-3aaf5c7c9e30
       version: -1
       name: Carbon Black Defense Find Processes
-      playbookName: 8acb8dc0-371b-436f-8c71-3aaf5c7c9e30
+      playbookName: Carbon Black Defense Find Processes
       type: playbook
       iscommand: false
       brand: ""

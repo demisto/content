@@ -3210,7 +3210,7 @@
         {
             "integrations": "Carbon Black Defense v2",
             "playbookID": "carbonBlackDefenseV2TestPlaybook",
-            "fromversion": "5.0.0"
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {

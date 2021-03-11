@@ -2182,4 +2182,4 @@ script:
   type: python
 tests:
 - carbonBlackDefenseV2TestPlaybook
-fromversion: 5.0.0
+fromversion: 5.5.0

@@ -1,0 +1,218 @@
+id: 86a8d048-b902-41f4-8039-b9fcf20e3d54
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Carbon Black Defense Find Event Details
+description: Receives event ID's and returns details about the event
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b5619592-15dc-4bfa-88f4-5889c6ebb52f
+    type: start
+    task:
+      id: b5619592-15dc-4bfa-88f4-5889c6ebb52f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 94220dd6-89c3-409f-8af9-2f089e11e61b
+    type: regular
+    task:
+      id: 94220dd6-89c3-409f-8af9-2f089e11e61b
+      version: -1
+      name: cbd-find-events-details
+      description: Initiates a request to retrieve detail fields for enriched events.
+      script: '|||cbd-find-events-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      event_ids:
+        complex:
+          root: inputs.event_ids
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e1b79283-323c-4d28-86a6-aa39a4a9d236
+    type: regular
+    task:
+      id: e1b79283-323c-4d28-86a6-aa39a4a9d236
+      version: -1
+      name: cbd-find-events-details-results
+      description: Retrieves the status for an enriched events detail request for
+        a given job_id.
+      script: '|||cbd-find-events-details-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      job_id:
+        complex:
+          root: CarbonBlackDefense.EventDetails.Search
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 14588279-02fb-497c-810b-3b79b69f4ea9
+    type: title
+    task:
+      id: 14588279-02fb-497c-810b-3b79b69f4ea9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1fc7ec8f-1688-4104-8eb4-b5ab2faa6a3d
+    type: playbook
+    task:
+      id: 1fc7ec8f-1688-4104-8eb4-b5ab2faa6a3d
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CarbonBlackDefense.EventDetails.Search
+          accessor: job_id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: cbd-find-events-details-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CarbonBlackDefense.EventDetails.Results(val.completed !=  val.contacted)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: event_ids
+  value:
+    simple: 31b7d1137b6711eb8facebf4f00683df, 560a03037b6211ebbb20a5e827610140
+  required: false
+  description: |
+    A list of event ids to fetch. (comma separated)
+  playbookInputQuery: null
+outputs:
+- contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
+  description: The approximate unaggregated
+- contextPath: CarbonBlackDefense.EventsDetails.Results.completed
+  description: The completed results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
+  description: The contacted results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
+  description: The num aggregated.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
+  description: The num available.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
+  description: The num found.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results
+  description: The results of the job id.
