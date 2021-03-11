@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple, Callable, Union
 import urllib.parse
 import dateparser
 import httplib2
+import traceback
 from copy import deepcopy
 from google.auth import exceptions
 from google.oauth2 import service_account
@@ -29,7 +30,6 @@ SEVERITY_LIST = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]  # List of severity mentio
 ALLOWED_DATE_UNIT = ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]
 DATE_FORMAT = "%B %d, %Y at %I:%M:%S %p"
 ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-NEXT_PAGE_TOKEN: str = "\n**Next Page Token:** {}\n"
 MARKDOWN_LINK = "[{}]({})"
 TIMEOUT_TIME = 60  # in second
 
@@ -210,8 +210,10 @@ class BaseGoogleClient:
                                            cache_discovery=False)
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
-        except (httplib2.socks.HTTPError, IndexError):
+        except (httplib2.socks.HTTPError, IndexError) as e:
             # library not able to handle Proxy error and throws Index Error
+            demisto.debug(f"Failed to execute {demisto.command()} command. Error: {str(e)} , "
+                          f"traceback: {traceback.format_exc()}")
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except exceptions.RefreshError as error:
             error_message = ERROR_MESSAGES["INVALID_SERVICE_ACCOUNT"]
@@ -275,7 +277,9 @@ class BaseGoogleClient:
                 raise ValueError(status_code_message_map[status].format(reason))
             else:
                 raise ValueError(ERROR_MESSAGES["UNKNOWN_ERROR"].format(status, reason))
-        except httplib2.socks.HTTPError:
+        except httplib2.socks.HTTPError as e:
+            demisto.debug(f"Failed to execute {demisto.command()} command. Error: {str(e)} , "
+                          f"traceback: {traceback.format_exc()}")
             raise ValueError(ERROR_MESSAGES["PROXY_ERROR"])
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
@@ -469,9 +473,9 @@ def validate_get_int(max_results: Optional[str], message: str, limit: Union[int,
         try:
             max_results_int = int(max_results)
             if max_results_int <= 0:
-                raise ValueError
+                raise ValueError(message)
             if limit and max_results_int > int(limit):
-                raise ValueError
+                raise ValueError(message)
             return max_results_int
         except ValueError:
             raise ValueError(message)
@@ -595,9 +599,9 @@ def prepare_markdown_fields_for_fetch_incidents(fields: Dict[str, Any]) -> Dict[
     :param fields: fields received in response of incident.
     :returns: None
     """
-    security_marks = fields.get("finding", {}).get("securityMarks", {})
-    mfa_details = fields.get("finding", {}).get("sourceProperties", {}).get("MfaDetails", {})
-    security_marks_hr = tableToMarkdown("", security_marks.get("marks", {}))
+    security_marks = dict_safe_get(fields, ["finding", "securityMarks", "marks"], {})
+    mfa_details = dict_safe_get(fields, ["finding", "sourceProperties", "MfaDetails"], {})
+    security_marks_hr = tableToMarkdown("", security_marks)
     mfa_details_hr = tableToMarkdown("", mfa_details)
     return {"securityMarks": security_marks_hr, "MfaDetails": mfa_details_hr}
 
@@ -629,9 +633,7 @@ def create_filter_list_assets(asset_type: str, project: str, filter_string: str,
         type_list: list = asset_type.split(",")
         filter_string = add_filter("securityCenterProperties.resourceType", filter_string, type_list)
     if active_assets_only.lower() == "true":
-        if filter_string:
-            filter_string += ' AND '
-        filter_string += 'resourceProperties.lifecycleState="ACTIVE"'
+        filter_string = add_filter('resourceProperties.lifecycleState', filter_string, ['ACTIVE'])
     return filter_string
 
 
@@ -648,7 +650,7 @@ def prepare_human_readable_dict_for_list_asset(asset: Dict[str, Any]) -> Dict[st
         "Resource Type": asset.get("securityCenterProperties", {}).get("resourceType", ""),
         "Resource Owners": asset.get("securityCenterProperties", {}).get("resourceOwners", {}),
         "Project": asset.get("resourceProperties", {}).get("name", ""),
-        "Name": MARKDOWN_LINK.format(asset.get("name", ""), asset_url),
+        "Name": get_markdown_link(asset.get("name", ""), asset_url),
         COMMON_STRING["SECURITY_MARKS"]: asset.get("securityMarks", {}).get("marks", {})
     }
 
@@ -691,7 +693,6 @@ def prepare_outputs_for_list_assets(result) -> Tuple[Dict[str, Any], str]:
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-asset-list", "nextPageToken": next_page_token}
         ec_asset_dict.update({OUTPUT_PREFIX["TOKEN"]: token_ec})
-        readable_output += NEXT_PAGE_TOKEN.format(next_page_token)
 
     return remove_empty_elements(ec_asset_dict), readable_output
 
@@ -706,12 +707,12 @@ def flatten_keys_to_root(data_dict: Dict[str, Any], keys: List, update_dict: Dic
     :return: flatten dict for provided keys
     """
     for key in keys:
-        value = data_dict.pop(key, keys)
+        value = data_dict.pop(key, None)
         if value and isinstance(value, dict):
             data_dict.update(value)
         else:
             data_dict[key] = value
-        data_dict.update(update_dict)
+    data_dict.update(update_dict)
 
 
 def convert_string_to_date_format(date: str, date_format: str = DATE_FORMAT) -> Optional[str]:
@@ -720,7 +721,7 @@ def convert_string_to_date_format(date: str, date_format: str = DATE_FORMAT) -> 
 
     :param date: date string
     :param date_format: output date format
-    :return: human  readable date
+    :return: human readable date
     """
     date_obj = dateparser.parse(date)
 
@@ -753,7 +754,7 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
         ec_finding_list.append(finding)
         finding_url = GoogleNameParser.get_finding_url(finding.get("name", ""))
         hr_finding_list.append({
-            "Name": MARKDOWN_LINK.format(finding.get("name", ""), finding_url),
+            "Name": get_markdown_link(finding.get("name", ""), finding_url),
             "Category": finding.get("category", ""),
             COMMON_STRING["RESOURCE_NAME"]: finding.get("resourceName", ""),
             COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(finding.get("eventTime", "")),
@@ -774,7 +775,6 @@ def prepare_hr_and_ec_for_list_findings(result: Dict[str, Any]) -> Tuple[str, Di
     if next_page_token:
         token_ec = {"name": "google-cloud-scc-finding-list", "nextPageToken": next_page_token}
         ec_dict[OUTPUT_PREFIX["TOKEN"]] = token_ec
-        readable_output += NEXT_PAGE_TOKEN.format(next_page_token)
 
     return readable_output, remove_empty_elements(ec_dict)
 
@@ -818,7 +818,7 @@ def prepare_hr_and_ec_for_update_finding(result: Dict[str, Any]) -> Tuple[str, D
     finding_url = GoogleNameParser.get_finding_url(result.get("name", ""))
 
     hr_data = {
-        "Name": MARKDOWN_LINK.format(result.get("name", ""), finding_url),
+        "Name": get_markdown_link(result.get("name", ""), finding_url),
         "State": result.get("state", ""),
         "Severity": result.get("severity", ""),
         "Category": result.get("category", ""),
@@ -859,7 +859,7 @@ def split_and_escape(key: str, delimiter) -> List[str]:
 
     :param key: string which will be split
     :param delimiter: delimiter
-    :return:
+    :return: a list of the extract keys
     """
     regex = r"(?<!\\)" + re.escape(delimiter)
     split_keys = map(lambda x: x.replace(r"\{}".format(delimiter), delimiter), re.split(regex, key))
@@ -1013,6 +1013,7 @@ def asset_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
 
     # Creating filter
     filter_string = create_filter_list_assets(resource_type, project, filter_string, active_assets_only)
+    demisto.debug(f"running command using the following filter: {filter_string}")
 
     # Build a request
     parent = GoogleNameParser.get_organization_path()
@@ -1056,6 +1057,7 @@ def finding_list_command(client: GoogleSccClient, args: Dict) -> CommandResults:
 
     # Creating filter
     filter_string = create_filter_list_findings(category, filter_string, severity, state)
+    demisto.debug(f"running command using the following filter: {filter_string}")
 
     parent = GoogleNameParser.get_source_path(source_type)
     raw_response = client.get_findings(parent, compare_duration, field_mask, filter_string, order_by, page_size,

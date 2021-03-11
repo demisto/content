@@ -2,7 +2,7 @@ Security Command Center is a security and risk management platform for Google Cl
 This integration was integrated and tested with version v1 of GoogleCloudSCC.
 
 ## Detailed Description
-Security Command Center is a security and risk management platform for Google Cloud. This integration uses Pub/Sub to fetch the incidents. To set up initial parameters of Google SCC in Cortex XSOAR, please follow below instructions -
+This integration uses Pub/Sub to fetch the incidents. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions -
 
 ### Scope
 We need to provide the below mentioned OAuth scope to execute the commands: https://www.googleapis.com/auth/cloud-platform.

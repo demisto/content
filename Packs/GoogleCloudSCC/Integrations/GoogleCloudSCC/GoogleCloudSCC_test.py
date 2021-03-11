@@ -422,7 +422,7 @@ def test_create_filter_list_assets():
     assert output == 'ABC = XYZ AND (resourceProperties.name="A" OR resourceProperties.name="B" OR' \
                      ' resourceProperties.name="C") AND (securityCenterProperties.resourceType="X" OR ' \
                      'securityCenterProperties.resourceType="Y" OR securityCenterProperties.resourceType="Z") AND ' \
-                     'resourceProperties.lifecycleState="ACTIVE"'
+                     '(resourceProperties.lifecycleState="ACTIVE")'
 
     output = create_filter_list_assets("X, Y ,Z", "A, B, C", "ABC = XYZ", "")
     assert output == 'ABC = XYZ AND (resourceProperties.name="A" OR resourceProperties.name="B" OR' \
@@ -731,3 +731,26 @@ def test_validate_state_and_severity_list():
         validate_state_and_severity_list(["INVALID"], [])
     with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_SEVERITY_ERROR"]):
         validate_state_and_severity_list(["ACTIVE"], ["INVALID"])
+
+
+def test_flatten_keys_to_root_negative():
+    """
+    Scenario: Validates dictionary
+
+    Given:
+    - nested dict given
+
+    Then:
+    - Ensure proper dict should returned.
+    """
+    from GoogleCloudSCC import flatten_keys_to_root
+    input_dict = {
+        "A": {"AA": 1},
+        "B": ["C"]
+    }
+
+    flatten_keys_to_root(input_dict, ["C"], {})
+    assert input_dict == {"A": {"AA": 1}, "B": ["C"], "C": None}
+
+    flatten_keys_to_root(input_dict, ["A"], {})
+    assert input_dict == {"AA": 1, "B": ["C"], "C": None}
