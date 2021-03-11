@@ -290,26 +290,6 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "encryptedfileowner",
-                                "height": 53,
-                                "id": "52797410-e24a-11ea-9181-67efc6f97427",
-                                "index": 2,
-                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "approximatenumberofencryptedendpoints",
-                                "height": 53,
-                                "id": "b9a45c90-e5fb-11ea-966d-8987c9f60217",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "ransomwareencryptedfileowner",
                                 "height": 53,
@@ -388,17 +368,6 @@
                                 "height": 53,
                                 "id": "847c9da0-29b9-11eb-be0b-bd2aae6831f7",
                                 "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "ransomwareonionurl",
-                                "height": 53,
-                                "id": "7e301120-29b9-11eb-be0b-bd2aae6831f7",
-                                "index": 4,
-                                "listId": "sfmcsjvzpo-824b5140-d878-11e9-b030-ad5c55d12ecb",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
