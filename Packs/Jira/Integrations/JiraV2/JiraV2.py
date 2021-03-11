@@ -197,7 +197,7 @@ def get_custom_fields():
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
         if res.status_code == 200:
-            custom_fields_list = res.json().get('values', [])
+            custom_fields_list = res.json()
             custom_id_description_mapping = {field.get('id'): field.get('description') for field in custom_fields_list}
         else:
             demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
