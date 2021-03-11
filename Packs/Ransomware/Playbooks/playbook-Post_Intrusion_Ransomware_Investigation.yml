@@ -662,7 +662,6 @@ tasks:
       name: Done
       type: title
       version: -1
-      description: ''
     taskid: 71136de3-bdb6-4ed5-82d9-446ce52bc89f
     timertriggers: []
     type: title
