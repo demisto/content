@@ -1985,6 +1985,7 @@
         "start_time": 1613399051536,
         "magnitude": 1,
         "last_updated_time": 1613399051536,
+        "last_persisted_time": 1613399051536,
         "credibility": 2,
         "id": 16,
         "categories": [
@@ -2044,6 +2045,7 @@
         "start_time": 1613395296537,
         "magnitude": 1,
         "last_updated_time": 1613395306948,
+        "last_persisted_time": 1613399051536,
         "credibility": 2,
         "id": 15,
         "categories": [
@@ -2123,6 +2125,7 @@
       "start_time": 1613399051536,
       "magnitude": 1,
       "last_updated_time": 1613399051536,
+      "last_persisted_time": 1613399051536,
       "credibility": 2,
       "id": 16,
       "categories": [
@@ -2183,6 +2186,7 @@
       "start_time": 1613399051536,
       "magnitude": 1,
       "last_updated_time": 1613399051536,
+      "last_persisted_time": 1613399051536,
       "credibility": 2,
       "id": 16,
       "categories": [
@@ -2208,7 +2212,7 @@
         1
       ],
       "local_destination_count": 1,
-      "status": "OPEN",
+      "status": "CLOSED",
       "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
     },
     "response": {
@@ -2242,6 +2246,7 @@
       "start_time": 1613399051536,
       "magnitude": 1,
       "last_updated_time": 1613399051536,
+      "last_persisted_time": 1613399051536,
       "credibility": 2,
       "id": 16,
       "categories": [
@@ -2300,6 +2305,7 @@
       "start_time": 1613399051536,
       "magnitude": 1,
       "last_updated_time": 1613399051536,
+      "last_persisted_time": 1613399051536,
       "credibility": 2,
       "id": 16,
       "categories": [

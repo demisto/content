@@ -872,7 +872,7 @@ def test_get_modified_remote_data_command(mocker):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    expected = GetModifiedRemoteDataResponse(command_test_data['get_modified_remote_data']['outputs'])
+    expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
     assert expected.modified_incident_ids == result.modified_incident_ids
@@ -898,13 +898,13 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
      - Demisto arguments.
 
     When:
-     - Command 'get-modified-remote-data' is being called.
+     - Command 'get-get-remote-data' is being called.
 
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
     set_integration_context(dict())
-    enriched_response = command_test_data['offenses_list']['enrich_offenses_result']
+    enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
     result = get_remote_data_command(client, params, args)
@@ -912,19 +912,22 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     assert result.entries == expected.entries
 
 
-@pytest.mark.parametrize('params, offense, expected',
+@pytest.mark.parametrize('params, offense, enriched_offense, expected',
                          [
                              (dict(), command_test_data['get_remote_data']['response'],
+                              command_test_data['get_remote_data']['enrich_offenses_result'],
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
                                   [])),
 
                              (dict(), command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [])),
 
                              ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [{
@@ -936,7 +939,8 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
                          ])
-def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, expected: GetRemoteDataResponse):
+def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, enriched_offense,
+                                                expected: GetRemoteDataResponse):
     """
     Given:
      - QRadar client.
@@ -954,9 +958,8 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
      - Case c: Ensure that offense is returned, along with expected entries.
     """
     set_integration_context({'last_update': 1})
-    enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
     mocker.patch.object(client, 'offenses_list', return_value=offense)
-    mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
+    mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_offense)
     if 'close_incident' in params:
         mocker.patch.object(client, 'closing_reasons_list',
                             return_value=command_test_data['closing_reasons_list']['response'][0])
