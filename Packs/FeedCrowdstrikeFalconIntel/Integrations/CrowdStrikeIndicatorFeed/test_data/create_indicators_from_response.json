@@ -61,10 +61,6 @@
       "ipaddress": [],
       "domainname": [],
       "targets": [],
-      "threattypes": [
-        "Suspicious",
-        "Targeted"
-      ],
       "vulnerabilities": [],
       "maliciousconfidence": "medium",
       "updateddate": 1612244501,
@@ -132,10 +128,6 @@
       "ipaddress": [],
       "domainname": [],
       "targets": [],
-      "threattypes": [
-        "Criminal",
-        "Banking"
-      ],
       "vulnerabilities": [],
       "maliciousconfidence": "high",
       "updateddate": 1612070569,
