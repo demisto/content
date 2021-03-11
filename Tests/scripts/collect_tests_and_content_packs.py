@@ -304,6 +304,8 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
+        else:
+            logging.critical(f'Could not find integration "{integration}" in the id_set')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
