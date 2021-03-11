@@ -6,43 +6,40 @@ CrowdStrike Falcon Intel Indicator Feed
 2. Search for CrowdStrike Indicator Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-          | --- | --- | --- |
-   | Fetch indicators |  | False |
-   | Crowdstrike Base URL |  | True |
-   | Crowdstrike API client ID |  | True |
-   | Crowdstrike API client secret |  | True |
-   | Include deleted indicators |  | False |
-   | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
-   | Max. indicators per fetch |  | False |
-   | Malicious confidence | Malicious confidence level to filter by. | False |
-   | Filter | Advanced: FQL query. For more information visit CrowdStrike documentation. | False |
-   | Generic phrase match | Generic phrase match search across all indicators fields. | False |
-   | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-   | Source Reliability | Reliability of the source providing the intelligence data | True |
-   | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-   | Feed Fetch Interval |  | False |
-   | Tags | Supports CSV values. | False |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Fetch indicators |  | False |
+    | CrowdStrike Base URL |  | True |
+    | CrowdStrike API Client ID | For non 6.1 users username is CrowdStrike API Client ID, password is CrowdStrike API Client Secret. | True |
+    | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
+    | First fetch time | The time range to consider for the initial data fetch. Leave empty to fetch from the first indicator available. | False |
+    | Max. indicators per fetch | Max. indicators per fetch should be between 1 - 10000. | False |
+    | Malicious confidence | Malicious confidence level to filter by. | False |
+    | Include deleted indicators |  | False |
+    | Filter | Advanced: FQL query. For more information visit CrowdStrike documentation. | False |
+    | Generic phrase match | Generic phrase match search across all indicators fields. | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+    | Source Reliability | Reliability of the source providing the intelligence data | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Feed Fetch Interval |  | False |
+    | Tags | Supports CSV values. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
 successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### crowdstrike-indicators-list
-
 ***
 Gets indicators from Crowdstrike Falcon Intel Feed.
 
 #### Base Command
 
 `crowdstrike-indicators-list`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -73,11 +70,9 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. | 
 
 #### Command Example
-
 ```!crowdstrike-indicators-list limit=3```
 
 #### Context Example
-
 ```json
 {
   "CrowdStrikeFalconIntel": {
@@ -360,14 +355,12 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 >| IP | 1.2.3.4 | ip_address_1.2.3.4 |
 
 ### crowdstrike-reset-fetch-indicators
-
 ***
 WARNING: This command will reset your fetch history.
 
 #### Base Command
 
 `crowdstrike-reset-fetch-indicators`
-
 #### Input
 
 There are no input arguments for this command.
@@ -377,7 +370,6 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-
 ```!crowdstrike-reset-fetch-indicators```
 
 #### Human Readable Output
