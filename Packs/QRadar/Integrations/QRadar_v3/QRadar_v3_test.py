@@ -359,33 +359,35 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
     assert poll_offense_events_with_retry(client, search_id, 1, 1) == expected
 
 
-@pytest.mark.parametrize('search_exception, search_response',
-                         [(None,
+@pytest.mark.parametrize('search_exception, fetch_mode, query_expression, search_response',
+                         [(None, 'Fetch With All Events', command_test_data['all_events_query'],
                            command_test_data['search_create']['response']),
                           (DemistoException('error occurred'),
-                           None)])
-def test_create_search_with_retry(requests_mock, search_exception, search_response):
+                           'Fetch With All Events', command_test_data['all_events_query'],
+                           None),
+                          (None, 'Fetch Correlation Events Only', command_test_data['correlation_events_query'],
+                           command_test_data['search_create']['response']),
+                          (DemistoException('error occurred'),
+                           'Fetch Correlation Events Only', command_test_data['correlation_events_query'],
+                           None)
+                          ])
+def test_create_search_with_retry(requests_mock, search_exception, fetch_mode, query_expression, search_response):
     """
     Given:
      - Client to perform API calls.
      - Query for creating search in QRadar service.
     When:
-     - Case a: QRadar manages to create search.
-     - Case b: Error occurred in request to QRadar search creation.
+     - Case a: QRadar manages to create search, fetch_mode is all events.
+     - Case b: Error occurred in request to QRadar search creation, fetch_mode is all events.
+     - Case c: QRadar manages to create search, fetch_mode is correlation events only.
+     - Case d: Error occurred in request to QRadar search creation, fetch_mode is correlation events only.
 
     Then:
      - Case a: Ensure that QRadar service response is returned.
      - Case b: Ensure that None is returned.
+     - Case c: Ensure that QRadar service response is returned.
+     - Case d: Ensure that None is returned.
     """
-    query_expression = 'SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
-                       'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
-                       'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
-                       'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
-                       'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, ' \
-                       'severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
-                       'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
-                       'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE ' \
-                       'INOFFENSE(2)  limit 20 START 1605046453426 '
     if search_exception:
         requests_mock.post(
             f'{client.server}/ariel/searches?query_expression={query_expression}',
@@ -396,7 +398,12 @@ def test_create_search_with_retry(requests_mock, search_exception, search_respon
             f'{client.server}/ariel/searches?query_expression={query_expression}',
             json=search_response
         )
-    assert create_search_with_retry(client, query_expression, max_retries=1) == search_response
+    #     client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
+    #                              max_retries: int = EVENTS_FAILURE_LIMIT
+    assert create_search_with_retry(client, fetch_mode=fetch_mode,
+                                    offense=command_test_data['offenses_list']['response'][0],
+                                    event_columns=EVENT_COLUMNS_DEFAULT_VALUE,
+                                    events_limit=20) == search_response
 
 
 @pytest.mark.parametrize(
@@ -949,8 +956,9 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
                               GetRemoteDataResponse(
                                   dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
                                       command_test_data['search_results_get']['response']['events'])),
-                                  [{'Type': EntryType.NOTE, 'Contents': {'dbotIncidentClose': True,
-                                                                         'closeReason': 'From QRadar: False-Positive, Tuned'},
+                                  [{'Type': EntryType.NOTE,
+                                    'Contents': {'dbotIncidentClose': True,
+                                                 'closeReason': 'From QRadar: False-Positive, Tuned'},
                                     'ContentsFormat': EntryFormat.JSON}]))
                          ])
 def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, expected: GetRemoteDataResponse):
@@ -985,6 +993,6 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
         mocker.patch.object(QRadar_v3, 'enrich_offense_with_events',
                             return_value=dict(offense, events=sanitize_outputs(
                                 command_test_data['search_results_get']['response']['events'])))
-    result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate':})
+    result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries

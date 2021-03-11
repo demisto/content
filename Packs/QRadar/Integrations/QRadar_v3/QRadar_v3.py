@@ -2517,72 +2517,6 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     return fields
 
 
-def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
-    """
-    get-remote-data command: Returns an updated incident and entries
-
-    Args:
-        client (Client): QRadar client to perform the API calls.
-        params (Dict): Demisto params.
-        args (Dict):
-            id: Offense id to retrieve.
-            lastUpdate: When was the last time we data was retrieved in Epoch.
-
-    Returns:
-        GetRemoteDataResponse.
-    """
-    ctx = get_integration_context()
-    remote_args = GetRemoteDataArgs(args)
-    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
-    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
-    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
-    mirror_option = params.get('mirror_options')
-
-    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
-    offense_last_update = get_time_parameter(offense.get('last_updated_time'))
-
-    # versions below 6.1 compatibility
-    last_update = get_time_parameter(args.get('lastUpdate'))
-    if last_update and last_update > offense_last_update:
-        demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
-
-    demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
-    entries = []
-    if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
-        demisto.debug(f'Offense is closed: {offense}')
-        if closing_reason := offense.get('closing_reason_id', ''):
-            closing_reason = client.closing_reasons_list(closing_reason).get('text')
-
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': f'From QRadar: {closing_reason}'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
-
-    demisto.debug(f'Pull result is {offense}')
-    if mirror_option == 'Mirror Offense And Events':
-        search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
-        if not search_id:
-            offense['in_mirror_error'] = 'Failed to create search to enrich events'
-        else:
-
-        offenses_pending_search = ctx.get('offenses_pending_search', [])
-        if not offenses_pending_search:
-        search_status_response = client.search_status_get(search_id)
-        query_status = search_status_response.get('status')
-        # failures are relevant only when consecutive
-        num_of_failures = 0
-        if query_status in TERMINATING_SEARCH_STATUSES:
-
-
-        offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
-                                             events_columns=events_columns, events_limit=events_limit)
-    return GetRemoteDataResponse(offense, entries)
-
 # def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
 #     """
 #     get-remote-data command: Returns an updated incident and entries
@@ -2632,12 +2566,73 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 #     demisto.debug(f'Pull result is {offense}')
 #     if mirror_option == 'Mirror Offense And Events':
 #         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
-#         x = ctx.get('offenses_pending_search', [])
+#         if not search_id:
+#             offense['in_mirror_error'] = 'Failed to create search to enrich events'
+#         else:
+#
+#         offenses_pending_search = ctx.get('offenses_pending_search', [])
+#         if not offenses_pending_search:
+#         search_status_response = client.search_status_get(search_id)
+#         query_status = search_status_response.get('status')
+#         # failures are relevant only when consecutive
+#         num_of_failures = 0
+#         if query_status in TERMINATING_SEARCH_STATUSES:
 #
 #
 #         offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
 #                                              events_columns=events_columns, events_limit=events_limit)
 #     return GetRemoteDataResponse(offense, entries)
+
+def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
+    """
+    get-remote-data command: Returns an updated incident and entries
+
+    Args:
+        client (Client): QRadar client to perform the API calls.
+        params (Dict): Demisto params.
+        args (Dict):
+            id: Offense id to retrieve.
+            lastUpdate: When was the last time we data was retrieved in Epoch.
+
+    Returns:
+        GetRemoteDataResponse.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
+    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+    mirror_option = params.get('mirror_options')
+
+    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+    offense_last_update = get_time_parameter(offense.get('last_updated_time'))
+
+    # versions below 6.1 compatibility
+    last_update = get_time_parameter(args.get('lastUpdate'))
+    if last_update and last_update > offense_last_update:
+        demisto.debug('Nothing new in the ticket')
+        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
+
+    demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
+    entries = []
+    if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
+        demisto.debug(f'Offense is closed: {offense}')
+        if closing_reason := offense.get('closing_reason_id', ''):
+            closing_reason = client.closing_reasons_list(closing_reason).get('text')
+
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': f'From QRadar: {closing_reason}'
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
+
+    demisto.debug(f'Pull result is {offense}')
+    if mirror_option == 'Mirror Offense And Events':
+        offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
+                                             events_columns=events_columns, events_limit=events_limit)
+    return GetRemoteDataResponse(offense, entries)
 
 
 def get_modified_remote_data_command(client: Client, params: Dict[str, str],
