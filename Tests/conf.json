@@ -3204,6 +3204,10 @@
             "timeout": 250
         },
         {
+            "playbookID": "CreateCertificate-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "QRadar_v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0"
