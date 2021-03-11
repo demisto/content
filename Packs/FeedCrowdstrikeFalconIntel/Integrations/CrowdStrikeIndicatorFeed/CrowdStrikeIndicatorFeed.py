@@ -34,19 +34,25 @@ CROWDSTRIKE_TO_XSOAR_TYPES = {
 
 class Client(BaseClient):
 
-    def __init__(self, client_id, client_secret, base_url, verify=True, proxy=False):
+    def __init__(self, client_id, client_secret, base_url, include_deleted, type, limit, tlp_color=None,
+                 malicious_confidence=None, filter=None, generic_phrase=None, verify=True, proxy=False):
         self._client_id = client_id
         self._client_secret = client_secret
-        self._verify_certificate = verify
-        self._base_url = base_url
         super().__init__(
             base_url=base_url,
-            verify=self._verify_certificate,
+            verify=verify,
             ok_codes=tuple(),
             proxy=proxy
         )
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}
+        self.type = type
+        self.malicious_confidence = malicious_confidence
+        self.filter = filter
+        self.generic_phrase = generic_phrase
+        self.include_deleted = include_deleted
+        self.tlp_color = tlp_color
+        self.limit = limit
 
     def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
                      timeout=10, auth=None) -> dict:
@@ -71,14 +77,22 @@ class Client(BaseClient):
         token_res = self.http_request(
             method='POST',
             url_suffix='/oauth2/token',
-            data=body,
-            auth=(self._client_id, self._client_secret)
+            data=body
         )
         return token_res.get('access_token')
 
-    def get_indicators(self, limit: Optional[int], type: list = None, malicious_confidence='', filter='', q='',
-                       offset: Optional[int] = 0, include_deleted=False,
-                       fetch_command=False, tlp_color=None) -> List:
+    def get_indicators(self, params):
+        response = self.http_request(
+            method='GET',
+            params=params,
+            headers=self._headers,
+            url_suffix='intel/combined/indicators/v1'
+        )
+        return response
+
+    def fetch_indicators(self, limit: Optional[int], type: list = None, malicious_confidence='', filter='', q='',
+                         offset: Optional[int] = 0, include_deleted=False,
+                         fetch_command=False, tlp_color=None) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
@@ -90,10 +104,10 @@ class Client(BaseClient):
             offset: indicators offset
             include_deleted: whether include deleted indicators or not
             fetch_command: In order not to update last_run time if it is not fetch command
-            tlp_color:
+            tlp_color: traffic light protocol
 
         Returns:
-            parsed indicators
+            (list): parsed indicators
         """
         if type:
             type_fql = self.build_type_fql(type)
@@ -114,12 +128,7 @@ class Client(BaseClient):
                                filter=filter,
                                sort='last_updated|asc')
 
-        response = self.http_request(
-            method='GET',
-            params=params,
-            headers=self._headers,
-            url_suffix='intel/combined/indicators/v1'
-        )
+        response = self.get_indicators(params=params)
 
         timestamp = self.set_last_run()
 
@@ -171,11 +180,11 @@ class Client(BaseClient):
                 tlp_color: tlp color chosen by customer
 
             Returns:
-                list of indicators
+                (list): list of indicators
             """
 
-        parsed_indicators = []  # type: List
-        indicator = {}  # type: Dict
+        parsed_indicators: list = []
+        indicator: dict = {}
         for resource in raw_response['resources']:
             indicator = {
                 'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
@@ -210,17 +219,15 @@ class Client(BaseClient):
             types_list(list): indicator types that was chosen by user
 
         Returns:
-            fql query (str)
+            (str): FQL query containing the relevant indicator types we want to fetch from Crowdstrike
         """
 
         if 'ALL' in types_list:
             # Replaces "ALL" for all types supported on XSOAR.
-            crowdstrike_types = ['username', 'domain', 'email_address', 'hash_md5', 'hash_sha256', 'ip_address',
-                                 'registry', 'url']
-            crowdstrike_types = [f"type:'{type}'" for type in crowdstrike_types]
-
+            crowdstrike_types = [f"type:'{type}'" for type in CROWDSTRIKE_TO_XSOAR_TYPES.keys()]
         else:
-            crowdstrike_types = [f"type:'{XSOAR_TYPES_TO_CROWDSTRIKE.get(type.lower(), type)}'" for type in types_list]
+            crowdstrike_types = [f"type:'{XSOAR_TYPES_TO_CROWDSTRIKE.get(type.lower())}'" for type in types_list if
+                                 type.lower() in XSOAR_TYPES_TO_CROWDSTRIKE]
 
         result = ','.join(crowdstrike_types)
         return result
@@ -230,8 +237,11 @@ class Client(BaseClient):
         """
         Handle error response and display user specific error message based on status code.
 
-        :param res: response from API.
-        :return: raise DemistoException based on status code.
+        Args:
+            res: response from API.
+
+        Returns:
+            raise DemistoException based on status code.
         """
         errors = []
         try:
@@ -240,38 +250,37 @@ class Client(BaseClient):
         except Exception:  # ignoring json parsing errors
             pass
 
-        error_message = next((item for item in errors if item['code'] == res.status_code)).get('message')
+        # error_message = next((item for item in errors if item['code'] == res.status_code)).get('message')
+        errors_array = [item.get('message') for item in errors if item['code'] == res.status_code]
+        error_message = '\n'.join(errors_array)
+
         if error_message:
             raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {error_message}')
         else:
             raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {res.text}')
 
 
-def fetch_indicators(client: Client, tlp_color, include_deleted, type, malicious_confidence, filter, q, limit):
+def fetch_indicators_command(client: Client):
     """ fetch indicators from the Crowdstrike Intel
 
     Args:
         client: Client object
-        tlp_color (str): Traffic Light Protocol color.
-        include_deleted (bool): include deleted indicators. (send just as parameter)
-        type (list): type indicator.
-        malicious_confidence(str): medium, low, high
-        filter (str): indicators filter.
-        q (str): generic phrase match
-        limit (int): max num of indicators to fetch
 
     Returns:
         list of indicators(list)
     """
-    parsed_indicators = client.get_indicators(
-        type=type,
-        malicious_confidence=malicious_confidence,
-        filter=filter, q=q,
-        include_deleted=include_deleted,
+    parsed_indicators = client.fetch_indicators(
+        type=client.type,
+        malicious_confidence=client.malicious_confidence,
+        filter=client.filter, q=client.generic_phrase,
+        include_deleted=client.include_deleted,
         fetch_command=True,
-        limit=limit,
-        tlp_color=tlp_color
+        tlp_color=client.tlp_color,
+        limit=client.limit
     )
+    # we submit the indicators in batches
+    for b in batch(parsed_indicators, batch_size=2000):
+        demisto.createIndicators(b)
     return parsed_indicators
 
 
@@ -285,21 +294,17 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     Returns:
         readable_output, raw_response
     """
-    include_deleted = argToBoolean(args.get('include_deleted', False))
-    type_ = argToList(args.get('type'))
-    malicious_confidence = args.get('malicious_confidence')
-    filter = args.get('filter')
-    q = args.get('generic_phrase_match')
+
     offset = arg_to_number(args.get('offset', 0))
     limit = arg_to_number(args.get('limit', 50))
-
-    parsed_indicators = client.get_indicators(
-        type=type_,
-        malicious_confidence=malicious_confidence,
-        filter=filter, q=q,
+    parsed_indicators = client.fetch_indicators(
+        type=client.type,
+        malicious_confidence=client.malicious_confidence,
+        filter=client.filter, q=client.generic_phrase,
+        include_deleted=client.include_deleted,
+        tlp_color=client.tlp_color,
         limit=limit,
         offset=offset,
-        include_deleted=include_deleted,
         fetch_command=False
     )
     if outputs := copy.deepcopy(parsed_indicators):
@@ -324,7 +329,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
 def test_module(client: Client, args: dict) -> str:
     try:
-        client.get_indicators(limit=1, fetch_command=False)
+        client.fetch_indicators(limit=1, fetch_command=False)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
@@ -348,26 +353,33 @@ def main() -> None:
     client_secret = params.get('client_secret')
     proxy = params.get('proxy', False)
     verify_certificate = not demisto.params().get('insecure', False)
-    base_url = "https://api.crowdstrike.com/"
+    base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
     include_deleted = argToBoolean(params.get('include_deleted', False))
-    type = argToList(params.get('type'))
+    type = argToList(params.get('type'), 'ALL')
     malicious_confidence = params.get('malicious_confidence')
     filter = params.get('filter')
-    q = params.get('q')
+    generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 100
-    command = demisto.command()
     args = demisto.args()
 
-    demisto.info(f'Command being called is {demisto.command()}')
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        command = demisto.command()
+        demisto.info(f'Command being called is {demisto.command()}')
+
         client = Client(
             client_id=client_id,
             client_secret=client_secret,
             base_url=base_url,
             verify=verify_certificate,
-            proxy=proxy
+            proxy=proxy,
+            tlp_color=tlp_color,
+            include_deleted=include_deleted,
+            type=type,
+            malicious_confidence=malicious_confidence,
+            filter=filter,
+            generic_phrase=generic_phrase,
+            limit=max_fetch
         )
 
         if command == 'test-module':
@@ -376,18 +388,7 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators(
-                client=client,
-                tlp_color=tlp_color,
-                include_deleted=include_deleted,
-                type=type,
-                malicious_confidence=malicious_confidence,
-                filter=filter, q=q,
-                limit=max_fetch,
-            )
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+            fetch_indicators_command(client=client)
 
         elif command == 'crowdstrike-indicators-list':
             return_results(crowdstrike_indicators_list_command(client, args))

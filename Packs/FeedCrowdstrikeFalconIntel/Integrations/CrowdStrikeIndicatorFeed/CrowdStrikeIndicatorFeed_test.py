@@ -27,10 +27,9 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
-    client = Client(base_url='https://api.crowdstrike.com/', client_id='client_id', client_secret='client_secret')
+    client = Client(base_url='https://api.crowdstrike.com/', client_id='client_id', client_secret='client_secret',
+                    type='Domain', include_deleted='false', limit=2)
     args = {
-        'type': 'Domain',
-        'include_deleted': 'false',
         'limit': '2'
     }
     response = crowdstrike_indicators_list_command(client, args)
