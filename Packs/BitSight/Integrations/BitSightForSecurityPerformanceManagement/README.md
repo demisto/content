@@ -1,6 +1,4 @@
-BitSight for Security Performance Management (SPM) enables CISOs to use an external view of security performance to measure, monitor, manage, and report on their cybersecurity program performance over time, and to facilitate a universal understanding of cyber risk across their organization. This improved understanding enables security leaders to make more informed decisions about their cybersecurity program, including where to focus their limited resources in order to achieve the greatest impact, where to spend money, and how to manage their cyber risk more effectively. 
-The data-driven metrics within BitSight indicate if the cybersecurity program is performing up to the expectations set by internal goals and objectives, industry best practices, regulators, customers, and other internal or external stakeholders. The BitSight Security Rating, the industry’s original cybersecurity rating score, provides a trusted metric that reflects the organization’s cybersecurity program performance over time. By combining the insights gained from BitSight SPM with the BitSight Security Rating, security leaders provide a more complete view of their cybersecurity program performance over time and help to bring about a universal understanding of cyber risk to the Board of Directors and other stakeholders. 
-Bring BitSight findings event information into your security program and leverage Cortex XSOAR's incident management workflows for automation of managing security incidents. This visibility enables you to pinpoint and control the sources of infections in your company infrastructure, seamlessly going from awareness to rapid remediation. The findings information reveals associated IP addresses, destination ports, and more, to assist your company in connecting the security and IT teams to respond faster and more effectively to threats. 
+BitSight Integration to get company guid, deatils, findings and to create Incidents. 
 This integration was integrated and tested with version 01 of BitSight for Security Performance Management
 ## Configure BitSight for Security Performance Management on Cortex XSOAR
 
@@ -13,12 +11,13 @@ This integration was integrated and tested with version 01 of BitSight for Secur
     | Server URL (e.g. https://api.bitsighttech.com) |  | True |
     | API Key |  | True |
     | Company's GUID |  | False |
-    | First fetch time | Enter the  number in days  | False |
-    | Incident Daily Fetch time | Please provide Incident fetch time in day in 24 hours format \('HH:MM'\) | False |
+    | First fetch Days | Enter the  number in days. When the fetch incident run for first time, incident will be fetched for given number of days  | False |
+    | Incident Daily Fetch time | Please provide Incident fetch time in day in 24 hours format \('HH:MM'\). Fetch incident will run once in day if  execution time grater than given time here. | False |
+    | Max Fetch | Maximum Number of records to fetch | False |
     | Minimum Severity for Findings |  | False |
-    | Findings minimum asset category | By default value will be empty, records will be fetched without asset category filter | False |
-    | Findings Grade |  | False |
-    | Risk Vector (All has been selected by default) |  | False |
+    | Findings minimum asset category | Filter by the asset category \(critical, high, medium, low\) | False |
+    | Findings Grade | Filter the result by the value of grade. | False |
+    | Risk Vector ('All' has been selected by default) | This parameter comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values. List of values are Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -47,45 +46,45 @@ BitSight command - to get comany details based on guid.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| errorCode | string | Error code number when API fails | 
-| errorMessage | string | Error Message when API fails | 
-| guid | string | guid | 
-| customId | string | customId | 
-| name | string | name | 
-| description | string | description | 
-| ipv4Count | string | ipv4Count | 
-| peopleCount | string | peopleCount | 
-| shortName | string | shortName | 
-| industry | string | industry | 
-| industrySlug | string | industrySlug | 
-| subIndustry | string | subIndustry | 
-| subIndustrySlug | string | subIndustrySlug | 
-| homePage | string | homePage | 
-| primaryDomain | string | primaryDomain | 
-| type | string | type | 
-| displayURL | string | displayURL | 
-| ratingDetails | string | ratingDetails | 
-| ratings | string | ratings | 
-| searchCount | string | searchCount | 
-| subscriptionType | string | subscriptionType | 
-| sparkline | string | sparkline | 
-| subscriptionTypeKey | string | subscriptionTypeKey | 
-| subscriptionEndDate | string | subscriptionEndDate | 
-| bulkEmailSenderStatus | string | bulkEmailSenderStatus | 
-| serviceProvider | string | serviceProvider | 
-| customerMonitoringCount | string | customerMonitoringCount | 
-| availableUpgradeTypes | string | availableUpgradeTypes | 
-| hasCompanyTree | string | hasCompanyTree | 
-| hasPreferredContact | string | hasPreferredContact | 
-| isBundle | string | isBundle | 
-| ratingIndustryMedian | string | ratingIndustryMedian | 
-| primaryCompany | string | primaryCompany | 
-| permissions | string | permissions | 
-| isPrimary | string | isPrimary | 
-| securityGrade | string | securityGrade | 
-| inSpmPortfolio | string | inSpmPortfolio | 
-| isMycompMysubsBundle | string | isMycompMysubsBundle | 
-| companyFeatures | string | companyFeatures | 
+| BitSight.Company.errorCode | string | Error code number when API fails | 
+| BitSight.Company.errorMessage | string | Error Message when API fails | 
+| BitSight.Company.guid | string | guid | 
+| BitSight.Company.customId | string | customId | 
+| BitSight.Company.name | string | name | 
+| BitSight.Company.description | string | description | 
+| BitSight.Company.ipv4Count | string | ipv4Count | 
+| BitSight.Company.peopleCount | string | peopleCount | 
+| BitSight.Company.shortName | string | shortName | 
+| BitSight.Company.industry | string | industry | 
+| BitSight.Company.industrySlug | string | industrySlug | 
+| BitSight.Company.subIndustry | string | subIndustry | 
+| BitSight.Company.subIndustrySlug | string | subIndustrySlug | 
+| BitSight.Company.homePage | string | homePage | 
+| BitSight.Company.primaryDomain | string | primaryDomain | 
+| BitSight.Company.type | string | type | 
+| BitSight.Company.displayURL | string | displayURL | 
+| BitSight.Company.ratingDetails | string | ratingDetails | 
+| BitSight.Company.ratings | string | ratings | 
+| BitSight.Company.searchCount | string | searchCount | 
+| BitSight.Company.subscriptionType | string | subscriptionType | 
+| BitSight.Company.sparkline | string | sparkline | 
+| BitSight.Company.subscriptionTypeKey | string | subscriptionTypeKey | 
+| BitSight.Company.subscriptionEndDate | string | subscriptionEndDate | 
+| BitSight.Company.bulkEmailSenderStatus | string | bulkEmailSenderStatus | 
+| BitSight.Company.serviceProvider | string | serviceProvider | 
+| BitSight.Company.customerMonitoringCount | string | customerMonitoringCount | 
+| BitSight.Company.availableUpgradeTypes | string | availableUpgradeTypes | 
+| BitSight.Company.hasCompanyTree | string | hasCompanyTree | 
+| BitSight.Company.hasPreferredContact | string | hasPreferredContact | 
+| BitSight.Company.isBundle | string | isBundle | 
+| BitSight.Company.ratingIndustryMedian | string | ratingIndustryMedian | 
+| BitSight.Company.primaryCompany | string | primaryCompany | 
+| BitSight.Company.permissions | string | permissions | 
+| BitSight.Company.isPrimary | string | isPrimary | 
+| BitSight.Company.securityGrade | string | securityGrade | 
+| BitSight.Company.inSpmPortfolio | string | inSpmPortfolio | 
+| BitSight.Company.isMycompMysubsBundle | string | isMycompMysubsBundle | 
+| BitSight.Company.companyFeatures | string | companyFeatures | 
 
 
 #### Command Example
@@ -108,38 +107,38 @@ BitSight command to get company findings
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | guid | Guid of the company. | Required | 
-| first_seen | First seen date of the findings, Date format is YYYY-MM-DD. | Required | 
-| last_seen | Last seen date of the findings, Date format is YYYY-MM-DD. | Required | 
-| severity | Minimum Severity of the findings. | Optional | 
-| grade | Minimum Grade of the findings. | Optional | 
-| asset_category | Asset Category of the findings. | Optional | 
-| risk_vector_label | Risk category of the findings. | Optional | 
+| first_seen | First seen date of the findings, Date format is YYYY-MM-DD, Example: 2021-01-01. | Required | 
+| last_seen | Last seen date of the findings, Date format is YYYY-MM-DD, Example: 2021-01-01. | Required | 
+| severity | Minimum Severity of the findings. Possible values are: minor, moderate, material, severe. | Optional | 
+| grade | Grade of the findings. Possible values are: good, fair, warn, bad, neutral. | Optional | 
+| asset_category | Asset Category of the findings. Possible values are: low, medium, high, critical. | Optional | 
+| risk_vector_label | Risk category of the findings. Possible values are: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| errorCode | string | Error code number when API fails | 
-| errorMessage | String | Error Message when API fails | 
-| temporaryId | string | temporary Id | 
-| affectsRating | string | Whther rating is affected | 
-| assets | unknown | Information about assets | 
-| details | string | Details about findings | 
-| evidenceKey | string | evidence key | 
-| firstSeen | date | first seen date of the findings | 
-| lastSeen | date | last seen date of the findings | 
-| relatedFindings | string | related findings | 
-| riskCategory | string | risk category | 
-| riskVector | string | risk vector | 
-| riskVectorLabel | string | risk vector label | 
-| rolledupObservationId | string | rolledup observation id | 
-| severity | string | severity | 
-| severityCategory | string | severity category | 
-| tags | string | tags | 
-| duration | string | duration | 
-| comments | unknown | comments | 
-| remainingDecay | string | remaining decay | 
+| BitSight.Finding.errorCode | string | Error code number when API fails | 
+| BitSight.Finding.errorMessage | String | Error Message when API fails | 
+| BitSight.Finding.temporaryId | string | temporary Id | 
+| BitSight.Finding.affectsRating | string | Whther rating is affected | 
+| BitSight.Finding.assets | unknown | Information about assets | 
+| BitSight.Finding.details | string | Details about findings | 
+| BitSight.Finding.evidenceKey | string | evidence key | 
+| BitSight.Finding.firstSeen | date | first seen date of the findings | 
+| BitSight.Finding.lastSeen | date | last seen date of the findings | 
+| BitSight.Finding.relatedFindings | string | related findings | 
+| BitSight.Finding.riskCategory | string | risk category | 
+| BitSight.Finding.riskVector | string | risk vector | 
+| BitSight.Finding.riskVectorLabel | string | risk vector label | 
+| BitSight.Finding.rolledupObservationId | string | rolledup observation id | 
+| BitSight.Finding.severity | string | severity | 
+| BitSight.Finding.severityCategory | string | severity category | 
+| BitSight.Finding.tags | string | tags | 
+| BitSight.Finding.duration | string | duration | 
+| BitSight.Finding.comments | unknown | comments | 
+| BitSight.Finding.remainingDecay | string | remaining decay | 
 
 
 #### Command Example

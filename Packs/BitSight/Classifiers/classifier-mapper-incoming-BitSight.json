@@ -1,18 +1,250 @@
 {
-    "defaultIncidentType": "BitSight Findings",
-    "description": "",
+    "description": "Maps incoming BitSight Alert field",
     "feed": false,
-    "id": "1ff8aeac-d036-4bf4-8747-03e3c6826829",
-    "keyTypeMap": {},
-    "name": "BitSight - Classifier",
-    "propagationLabels": [
-        "all"
-    ],
-    "transformer": {
-        "complex": null,
-        "simple": ""
+    "id": "BitSight - Incoming Mapper",
+    "mapping": {
+        "BitSight Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Date": {
+                    "complex": {
+                        "accessor": "alert_date",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Alert Type": {
+                    "complex": {
+                        "accessor": "alert_type",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Company GUID": {
+                    "complex": {
+                        "accessor": "company_guid",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Company Name": {
+                    "complex": {
+                        "accessor": "company_name",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Company URL": {
+                    "complex": {
+                        "accessor": "company_url",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Folder GUID": {
+                    "complex": {
+                        "accessor": "folder_guid",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Folder Name": {
+                    "complex": {
+                        "accessor": "folder_name",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Start Date": {
+                    "complex": {
+                        "accessor": "start_date",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Trigger": {
+                    "complex": {
+                        "accessor": "trigger",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "[0]",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "BitSight Findings": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Affects Rating": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "affects_rating",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Assets": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Evidence Key": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "evidence_key",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Remaining Decay": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remaining_decay",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Risk Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Risk Vector": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_vector",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Risk Vector Label": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_vector_label",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Rolledup Observation Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "rolledup_observation_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Severity Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Start Date": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "first_seen",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Temporary Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "temporary_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "[0].category",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": null
+        }
     },
-    "type": "classification",
+    "name": "BitSight - Incoming Mapper",
+    "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
 }

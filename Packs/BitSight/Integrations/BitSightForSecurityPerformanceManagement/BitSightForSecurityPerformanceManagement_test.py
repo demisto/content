@@ -17,8 +17,7 @@ def test_get_companies_guid_command(mocker):
 
     _, outputs, _ = bitsight.get_companies_guid_command(client)
 
-    obj = '(val.id == obj.id && val.instanceName == obj.instanceName)'
-    assert outputs.get(obj)[0].get('guid') == '123'
+    assert outputs[0].get('guid') == '123'
 
     # Negative Scenario
     res.status_code = 400
@@ -26,8 +25,8 @@ def test_get_companies_guid_command(mocker):
 
     _, outputs, _ = bitsight.get_companies_guid_command(client)
 
-    assert outputs.get(obj)[0].get('errorCode') == 400
-    assert outputs.get(obj)[0].get('errorMessage') == {'error': 'Test Error Message'}
+    assert outputs[0].get('errorCode') == 400
+    assert outputs[0].get('errorMessage') == {'error': 'Test Error Message'}
 
 
 def test_get_company_details_command(mocker):
@@ -40,8 +39,7 @@ def test_get_company_details_command(mocker):
 
     _, outputs, _ = bitsight.get_company_details_command(client, inp_args)
 
-    obj = '(val.id == obj.id && val.instanceName == obj.instanceName)'
-    assert outputs.get(obj).get('name') == 'abc'
+    assert outputs.get('name') == 'abc'
 
     # Negative Scenario
     res.status_code = 400
@@ -49,8 +47,8 @@ def test_get_company_details_command(mocker):
 
     _, outputs, _ = bitsight.get_company_details_command(client, inp_args)
 
-    assert outputs.get(obj).get('errorCode') == 400
-    assert outputs.get(obj).get('errorMessage') == {'error': 'Test Error Message'}
+    assert outputs.get('errorCode') == 400
+    assert outputs.get('errorMessage') == {'error': 'Test Error Message'}
 
 
 def test_get_company_findings_command(mocker):
@@ -63,8 +61,7 @@ def test_get_company_findings_command(mocker):
 
     _, outputs, _ = bitsight.get_company_findings_command(client, inp_args)
 
-    obj = '(val.id == obj.id && val.instanceName == obj.instanceName)'
-    assert outputs.get(obj)[0].get('severity') == 'severe'
+    assert outputs[0].get('severity') == 'severe'
 
     # Negative Scenario
     res.status_code = 400
@@ -72,18 +69,18 @@ def test_get_company_findings_command(mocker):
 
     _, outputs, _ = bitsight.get_company_findings_command(client, inp_args)
 
-    assert outputs.get(obj)[0].get('errorCode') == 400
-    assert outputs.get(obj)[0].get('errorMessage') == {'error': 'Test Error Message'}
+    assert outputs[0].get('errorCode') == 400
+    assert outputs[0].get('errorMessage') == {'error': 'Test Error Message'}
 
 
 def test_fetch_incidents(mocker):
-    inp_args = {'guid': '123', 'findings_min_severity': 'severe', 'findings_grade': '2021-02-01',
+    inp_args = {'guid': '123', 'findings_min_severity': 'severe', 'findings_grade': 'WARN',
                 'findings_asset_category': 'high', 'risk_vector': 'breaches,dkim'}
     client = bitsight.Client(base_url='https://test.com')
     mocker.patch.object(demisto, 'params', return_value=inp_args)
 
     res.status_code = 200
-    res._content = b'{"results": [{"severity": "severe"}]}'
+    res._content = b'{"results": [{"severity": "severe", "first_seen": "2021-02-01", "temporary_id": "temp1"}]}'
     mocker.patch.object(requests, 'request', return_value=res)
 
     last_run, events = bitsight.fetch_incidents(client=client,
@@ -93,4 +90,5 @@ def test_fetch_incidents(mocker):
     curr_date = datetime.now().strftime('%Y-%m-%d')
 
     assert curr_date in last_run['time']
-    assert events == [{'name': 'BitSight', 'rawJSON': '{"severity": "severe"}'}]
+    assert events == [{'name': 'temp1', 'occurred': '2021-02-01T00:00:00Z',
+                       'rawJSON': '{"severity": "severe", "first_seen": "2021-02-01", "temporary_id": "temp1"}'}]

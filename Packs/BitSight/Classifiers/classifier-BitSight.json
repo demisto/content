@@ -2,7 +2,7 @@
     "defaultIncidentType": "BitSight Findings",
     "description": "",
     "feed": false,
-    "id": "1ff8aeac-d036-4bf4-8747-03e3c6826829",
+    "id": "BitSight - Classifier",
     "keyTypeMap": {},
     "name": "BitSight - Classifier",
     "propagationLabels": [
