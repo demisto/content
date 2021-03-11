@@ -2724,7 +2724,8 @@
         {
             "integrations": "EWSO365",
             "playbookID": "EWS_O365_send_mail_test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "QRadar_v2",
@@ -3278,7 +3279,6 @@
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Azure SecurityCenter - Test": "Issue 27391",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "Field polling test": "Issue 33951",
         "palo_alto_panorama_test_pb": "Issue 34371",
@@ -3451,9 +3451,7 @@
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
-        "Microsoft Graph User": "Test direct access to oproxy",
-        "Azure Security Center v2": "Test direct access to oproxy",
-        "Azure Compute v2": "Test direct access to oproxy",
+        "Microsoft Graph User": "using UUID generator to create a new user",
         "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
@@ -3479,7 +3477,6 @@
         "MongoDB Key Value Store": "Our instance not using SSL",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
-        "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [

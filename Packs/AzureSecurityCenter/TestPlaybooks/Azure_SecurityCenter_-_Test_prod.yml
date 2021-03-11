@@ -1,0 +1,79 @@
+id: Azure SecurityCenter - Test prod
+version: -1
+name: Azure SecurityCenter - Test prod
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad397173-1ad5-4596-9084-856186359e0f
+    type: start
+    task:
+      id: ad397173-1ad5-4596-9084-856186359e0f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 0f665347-0863-4117-acd9-4e5d9af0f5ec
+    type: regular
+    task:
+      id: 0f665347-0863-4117-acd9-4e5d9af0f5ec
+      version: -1
+      name: set playbook to Azure SecurityCenter - Test
+      description: set playbook for current incident to Azure SecurityCenter - Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Azure SecurityCenter - Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
