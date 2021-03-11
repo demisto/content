@@ -82,7 +82,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'false'
+  defaultValue: 'False'
   description: Aggregate duplicate incidents within diffrerent dates. If includeIndicatorsSimilarity
     is Truee then iaggreagateIncidentsDifferentDate will be False.
   isArray: false
@@ -175,6 +175,6 @@ type: python
 dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: true
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

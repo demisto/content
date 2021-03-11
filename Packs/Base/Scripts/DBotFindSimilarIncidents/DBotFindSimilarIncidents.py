@@ -809,7 +809,6 @@ def main():
     # Dumps all dict in the current incident
     incident_df = dumps_json_field_in_incident(incident)
 
-    incident_df = fill_nested_fields(incident_df, incident, similar_text_field, similar_categorical_field)
 
     # Model prediction
     model = Model(p_transformation=TRANSFORMATION)
@@ -838,7 +837,7 @@ def main():
 
     # Columns to show for outputs
     col = similar_incidents.columns.tolist()
-    col = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col if (
+    col = [x for x in FIRST_COLUMNS_INCIDENTS_DISPLAY if x in similar_incidents.columns] + [x for x in col if (
         x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     # Return summary outputs of the automation
