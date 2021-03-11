@@ -924,29 +924,7 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
                                       'closeReason': 'From QRadar: False-Positive, Tuned'
                                   },
                                   'ContentsFormat': EntryFormat.JSON
-                              }])),
-
-                             ({'mirror_options': 'Mirror Offense And Events'},
-                              command_test_data['get_remote_data']['response'],
-                              GetRemoteDataResponse(
-                                  dict(command_test_data['get_remote_data']['response'], events=sanitize_outputs(
-                                      command_test_data['search_results_get']['response']['events'])), [])),
-
-                             ({'mirror_options': 'Mirror Offense And Events'},
-                              command_test_data['get_remote_data']['closed'],
-                              GetRemoteDataResponse(
-                                  dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
-                                      command_test_data['search_results_get']['response']['events'])), [])),
-
-                             ({'mirror_options': 'Mirror Offense And Events', 'close_incident': True},
-                              command_test_data['get_remote_data']['closed'],
-                              GetRemoteDataResponse(
-                                  dict(command_test_data['get_remote_data']['closed'], events=sanitize_outputs(
-                                      command_test_data['search_results_get']['response']['events'])),
-                                  [{'Type': EntryType.NOTE,
-                                    'Contents': {'dbotIncidentClose': True,
-                                                 'closeReason': 'From QRadar: False-Positive, Tuned'},
-                                    'ContentsFormat': EntryFormat.JSON}]))
+                              }]))
                          ])
 def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, expected: GetRemoteDataResponse):
     """
@@ -959,27 +937,19 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
      - Case a: Offense updated, not closed, no events.
      - Case b: Offense updated, closed, no events, close_incident is false.
      - Case c: Offense updated, closed, no events, close_incident is true.
-     - Case d: Offense updated, not closed, events.
-     - Case e: Offense updated, closed, events, close_incident is false.
-     - Case f: Offense updated, closed, events, close_incident is true.
 
     Then:
      - Case a: Ensure that offense is returned as is.
      - Case b: Ensure that offense is returned as is.
      - Case c: Ensure that offense is returned, along with expected entries.
-     - Case d: Ensure that offense is returned with events.
-     - Case e: Ensure that offense is returned with events.
-     - Case f: Ensure that offense is returned with events, along with expected entries.
     """
     set_integration_context({'last_update': 1})
+    enriched_response = command_test_data['offenses_list']['enrich_offenses_result']
     mocker.patch.object(client, 'offenses_list', return_value=offense)
+    mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
     if 'close_incident' in params:
         mocker.patch.object(client, 'closing_reasons_list',
                             return_value=command_test_data['closing_reasons_list']['response'][0])
-    if 'mirror_options' in params:
-        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events',
-                            return_value=dict(offense, events=sanitize_outputs(
-                                command_test_data['search_results_get']['response']['events'])))
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
