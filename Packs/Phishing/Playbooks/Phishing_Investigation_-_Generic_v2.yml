@@ -2071,7 +2071,7 @@ inputs:
   description: Whether the authenticity of the email should be verified, using SPF, DKIM and DMARC.
 - key: OnCall
   value:
-    simple: 'false'
+    simple: 'False'
   required: false
   description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
