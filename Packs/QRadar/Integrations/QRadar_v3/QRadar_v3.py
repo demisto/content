@@ -57,8 +57,7 @@ TERMINATING_SEARCH_STATUSES = {'CANCELED', 'ERROR', 'COMPLETED'}
 DEFAULT_MIRRORING_DIRECTION = 'No Mirroring'
 MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'No Mirroring': None,
-    'Mirror Offense': 'In',
-    'Mirror Offense And Events': 'In'
+    'Mirror Offense': 'In'
 }
 EVENT_COLUMNS_DEFAULT_VALUE = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
