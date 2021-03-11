@@ -1412,31 +1412,34 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
-        is_reset_triggered(handle_reset=True)
-        ctx = get_integration_context()
-        print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
-        incidents, new_highest_id = get_incidents_long_running_execution(
-            client=client,
-            offenses_per_fetch=offenses_per_fetch,
-            user_query=user_query,
-            fetch_mode=fetch_mode,
-            events_columns=events_columns,
-            events_limit=events_limit,
-            ip_enrich=ip_enrich,
-            asset_enrich=asset_enrich,
-            last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
-            incident_type=incident_type,
-            mirror_direction=mirror_direction
-        )
-        # Reset was called during execution, skip creating incidents.
-        if not incidents and not new_highest_id:
-            continue
+        try:
+            is_reset_triggered(handle_reset=True)
+            ctx = get_integration_context()
+            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
+            incidents, new_highest_id = get_incidents_long_running_execution(
+                client=client,
+                offenses_per_fetch=offenses_per_fetch,
+                user_query=user_query,
+                fetch_mode=fetch_mode,
+                events_columns=events_columns,
+                events_limit=events_limit,
+                ip_enrich=ip_enrich,
+                asset_enrich=asset_enrich,
+                last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
+                incident_type=incident_type,
+                mirror_direction=mirror_direction
+            )
+            # Reset was called during execution, skip creating incidents.
+            if not incidents and not new_highest_id:
+                continue
 
-        incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
-        set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
-        demisto.createIncidents(incidents)
+            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample})
+            demisto.createIncidents(incidents)
 
-        time.sleep(FETCH_SLEEP)
+            time.sleep(FETCH_SLEEP)
+        except Exception as e:
+            demisto.error(str(e))
 
 
 def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
