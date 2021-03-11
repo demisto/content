@@ -1,2 +1,2 @@
-!crowdstrike-indicators-list type=IP include_deleted=true malicious_confidence=high limit=3
+!crowdstrike-indicators-list limit=3
 !crowdstrike-reset-fetch-indicators

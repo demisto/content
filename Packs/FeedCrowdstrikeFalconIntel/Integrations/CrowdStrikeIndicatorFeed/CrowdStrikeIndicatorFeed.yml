@@ -8,29 +8,20 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Crowdstrike Base URL
+- display: CrowdStrike Base URL
   name: base_url
   required: true
   type: 0
   defaultvalue: "https://api.crowdstrike.com/"
-- display: Crowdstrike API client ID
+- display: CrowdStrike API Client ID
   name: client_id
   required: true
   type: 0
-- display: Crowdstrike API client secret
+- display: CrowdStrike API Client Secret
   hidden: false
   name: client_secret
   required: true
   type: 4
-- defaultvalue: 'false'
-  display: Include deleted indicators
-  hidden: false
-  name: include_deleted
-  options:
-  - 'false'
-  - 'true'
-  required: false
-  type: 15
 - additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
     in XSOAR are: "Account", "Domain", "Email", "File md5",
     "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'
@@ -49,12 +40,18 @@ configuration:
   - URL
   required: false
   type: 16
+- display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first indicator available.
 - display: Max. indicators per fetch
   defaultvalue: 10000
   hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
+  additionalinfo: Max. indicators per fetch should be between 1 - 10000.
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   hidden: false
@@ -65,7 +62,11 @@ configuration:
   - low
   - unverified
   required: false
-  type: 15
+  type: 16
+- display: Include deleted indicators
+  name: include_deleted
+  required: false
+  type: 8
 - additionalinfo: "Advanced: FQL query. For more information visit CrowdStrike documentation."
   display: Filter
   hidden: false
@@ -80,7 +81,7 @@ configuration:
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Good
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:

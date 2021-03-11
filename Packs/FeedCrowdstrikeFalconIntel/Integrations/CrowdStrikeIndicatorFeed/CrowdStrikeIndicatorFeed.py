@@ -55,7 +55,7 @@ class Client(BaseClient):
         self.limit = limit
 
     def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
-                     timeout=10, auth=None) -> dict:
+                     timeout=120, auth=None) -> dict:
 
         return super()._http_request(
             method=method,
@@ -90,7 +90,7 @@ class Client(BaseClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], type: list = None, malicious_confidence='', filter='', q='',
+    def fetch_indicators(self, limit: Optional[int], type: list = None, malicious_confidence=None, filter='', q='',
                          offset: Optional[int] = 0, include_deleted=False,
                          fetch_command=False, tlp_color=None) -> list:
         """ Get indicators from CrowdStrike API
@@ -109,17 +109,18 @@ class Client(BaseClient):
         Returns:
             (list): parsed indicators
         """
+        filter = f'({filter})' if filter else ''
         if type:
             type_fql = self.build_type_fql(type)
-            filter = f'{type_fql}+{filter}' if filter else type_fql
+            filter = f'({type_fql})+{filter}' if filter else f'({type_fql})'
 
         if malicious_confidence:
-            malicious_confidence_fql = f"malicious_confidence:'{malicious_confidence}'"
-            filter = f"{filter}+{malicious_confidence_fql}" if filter else malicious_confidence_fql
+            malicious_confidence_fql = ','.join([f"malicious_confidence:'{item}'" for item in malicious_confidence])
+            filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
 
         if fetch_command:
             if last_run := self.get_last_run():
-                filter = f'{filter}+{last_run}' if filter else last_run
+                filter = f'{filter}+({last_run})' if filter else f'({last_run})'
 
         demisto.info(f' filter {filter}')
         params = assign_params(include_deleted=include_deleted,
@@ -330,7 +331,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
 def test_module(client: Client, args: dict) -> str:
     try:
-        client.fetch_indicators(limit=1, fetch_command=False)
+        client.fetch_indicators(limit=client.limit, fetch_command=False)
     except Exception:
         raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
                         "\nCheck your API key and your connection to CrowdStrike.")
@@ -358,10 +359,11 @@ def main() -> None:
     tlp_color = params.get('tlp_color')
     include_deleted = argToBoolean(params.get('include_deleted', False))
     type = argToList(params.get('type'), 'ALL')
-    malicious_confidence = params.get('malicious_confidence')
+    malicious_confidence = argToList(params.get('malicious_confidence'))
     filter = params.get('filter')
     generic_phrase = params.get('generic_phrase')
-    max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 100
+    max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
+    max_fetch = min(max_fetch, 10000)
     args = demisto.args()
 
     try:

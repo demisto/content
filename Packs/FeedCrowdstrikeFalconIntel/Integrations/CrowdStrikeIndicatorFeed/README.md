@@ -1,4 +1,5 @@
 CrowdStrike Falcon Intel Indicator Feed
+This integration was integrated and tested with version xx of CrowdStrike Indicator Feed
 ## Configure CrowdStrike Indicator Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,12 +9,13 @@ CrowdStrike Falcon Intel Indicator Feed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
+    | Crowdstrike Base URL |  | True |
     | Crowdstrike API client ID |  | True |
     | Crowdstrike API client secret |  | True |
     | Include deleted indicators |  | False |
     | Type | The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File md5", "File sha256", "IP", "Registry Key", and "URL". The default is "ALL". | False |
     | Max. indicators per fetch |  | False |
-    | Malicious confidence | Malicious confidence level of the indicator. | False |
+    | Malicious confidence | Malicious confidence level to filter by. | False |
     | Filter | Advanced: FQL query. For more information visit CrowdStrike documentation. | False |
     | Generic phrase match | Generic phrase match search across all indicators fields. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
@@ -43,11 +45,6 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
 | offset | The index of the first indicator to fetch. | Optional | 
-| include_deleted | Include deleted indicators. Possible values are: true, false. | Optional | 
-| type | Indicator type. Possible values are: ALL, Account, Domain, Email, File MD5, File SHA-256, IP, Registry Key, URL. Default is ALL. | Optional | 
-| malicious_confidence | Malicious confidence level of the indicator. Possible values are: high, medium, low, unverified. | Optional | 
-| filter | FQL query, indicators filter. | Optional | 
-| generic_phrase_match | Generic phrase match search across all indicators fields. | Optional | 
 
 
 #### Context Output
@@ -57,23 +54,24 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
 | CrowdStrikeFalconIntel.Indicators.id | String | Indicator ID. | 
 | CrowdStrikeFalconIntel.Indicators.value | String | Indicator value. | 
 | CrowdStrikeFalconIntel.Indicators.type | String | Indicator type. | 
-| CrowdStrikeFalconIntel.Indicators.deleted | Boolean | If the indicator deleted, deleted set true. | 
-| CrowdStrikeFalconIntel.Indicators.published_date | Date | Indicator published date. | 
-| CrowdStrikeFalconIntel.Indicators.last_updated | Date | Indicator last updated date. | 
-| CrowdStrikeFalconIntel.Indicators.reports | Unknown | Indicator reports. | 
-| CrowdStrikeFalconIntel.Indicators.actors | Unknown | Actors related to indicator. | 
-| CrowdStrikeFalconIntel.Indicators.malware_families | Unknown | Indicator malware families. | 
-| CrowdStrikeFalconIntel.Indicators.kill_chains | Unknown | Indicator kill chains. | 
-| CrowdStrikeFalconIntel.Indicators.malicious_confidence | String | Indicator malicious confidence. | 
-| CrowdStrikeFalconIntel.Indicators.labels | Unknown | Indicator labels. | 
-| CrowdStrikeFalconIntel.Indicators.targets | Unknown | Targets of indicator. | 
-| CrowdStrikeFalconIntel.Indicators.threat_types | Unknown | Indicator threat types. | 
-| CrowdStrikeFalconIntel.Indicators.vulnerabilities | Unknown | Indicator vulnerabilities. | 
+| CrowdStrikeFalconIntel.Indicators.fields.reports | Unknown | Indicator reports. | 
+| CrowdStrikeFalconIntel.Indicators.fields.actors | Unknown | Actors related to indicator. | 
+| CrowdStrikeFalconIntel.Indicators.fields.malwarefamily | Unknown | Indicator malware families. | 
+| CrowdStrikeFalconIntel.Indicators.fields.stixkillchainphases | Unknown | Indicator kill chains. | 
+| CrowdStrikeFalconIntel.Indicators.fields.maliciousconfidence | String | Indicator malicious confidence. | 
+| CrowdStrikeFalconIntel.Indicators.fields.tags | Unknown | Indicator labels. | 
+| CrowdStrikeFalconIntel.Indicators.fields.targets | Unknown | Targets of indicator. | 
+| CrowdStrikeFalconIntel.Indicators.fields.threattypes | Unknown | Indicator threat types. | 
+| CrowdStrikeFalconIntel.Indicators.fields.vulnerabilities | Unknown | Indicator vulnerabilities. | 
+| CrowdStrikeFalconIntel.Indicators.fields.ipaddress | Unknown | Indicator related ip address. | 
+| CrowdStrikeFalconIntel.Indicators.fields.domainname | Unknown | Indicator related domains. | 
+| CrowdStrikeFalconIntel.Indicators.fields.updateddate | Date | Indicator update date. | 
+| CrowdStrikeFalconIntel.Indicators.fields.creationdate | Unknown | Indicator creation date. | 
 | CrowdStrikeFalconIntel.Indicators.rawJSON | Unknown | Raw response. | 
 
 
 #### Command Example
-```!crowdstrike-indicators-list type=IP include_deleted=true malicious_confidence=high limit=3```
+```!crowdstrike-indicators-list limit=3```
 
 #### Context Example
 ```json
@@ -81,100 +79,260 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
     "CrowdStrikeFalconIntel": {
         "Indicators": [
             {
-                "actors": [],
-                "deleted": false,
-                "domain_types": [],
+                "fields": {
+                    "actor": [],
+                    "creationdate": 1600080520,
+                    "domainname": [],
+                    "ipaddress": [],
+                    "maliciousconfidence": "low",
+                    "malwarefamily": [
+                        "Remcos"
+                    ],
+                    "reports": [],
+                    "stixkillchainphases": [
+                        "C2"
+                    ],
+                    "tags": [
+                        "MaliciousConfidence/Low",
+                        "KillChain/C2",
+                        "ThreatType/Commodity",
+                        "ThreatType/Criminal",
+                        "ThreatType/CredentialHarvesting",
+                        "Malware/Remcos"
+                    ],
+                    "targets": [],
+                    "trafficlightprotocol": "AMBER",
+                    "updateddate": 1608207378,
+                    "vulnerabilities": []
+                },
                 "id": "ip_address_1.1.1.1",
-                "ip_address_types": [],
-                "kill_chains": [
-                    "C2"
-                ],
-                "labels": [
-                    "MaliciousConfidence/High",
-                    "KillChain/C2",
-                    "Malware/njRAT",
-                    "ThreatType/Commodity"
-                ],
-                "last_updated": "1970-01-19T14:43:36.000Z",
-                "malicious_confidence": "high",
-                "malware_families": [
-                    "njRAT"
-                ],
-                "published_date": "1970-01-18T06:26:28.000Z",
-                "reports": [],
-                "targets": [],
-                "threat_types": [
-                    "Commodity"
-                ],
+                "rawJSON": {
+                    "_marker": "1608207378159fc77935511a2f0c9541511bd936f8",
+                    "actors": [],
+                    "deleted": false,
+                    "domain_types": [],
+                    "id": "ip_address_1.1.1.1",
+                    "indicator": "1.1.1.1",
+                    "ip_address_types": [],
+                    "kill_chains": [
+                        "C2"
+                    ],
+                    "labels": [
+                        {
+                            "created_on": 1600080520,
+                            "last_valid_on": 1608207377,
+                            "name": "MaliciousConfidence/Low"
+                        },
+                        {
+                            "created_on": 1600080520,
+                            "last_valid_on": 1608207377,
+                            "name": "KillChain/C2"
+                        }
+                    ],
+                    "last_updated": 1608207378,
+                    "malicious_confidence": "low",
+                    "malware_families": [
+                        "Remcos"
+                    ],
+                    "published_date": 1600080520,
+                    "relations": [
+                        {
+                            "created_date": 1608207377,
+                            "id": "hash_sha256_9bb12d611cb19e84f2f22791cb86a43841e95020b1e113469e5cad95b97a8d42",
+                            "indicator": "9bb12d611cb19e84f2f22791cb86a43841e95020b1e113469e5cad95b97a8d42",
+                            "last_valid_date": 1608207377,
+                            "type": "hash_sha256"
+                        },
+                        {
+                            "created_date": 1608207377,
+                            "id": "hash_sha256_58a3e65de35d8da1f7955680e07a82ede43a1e677e0abc200923b484a7615494",
+                            "indicator": "58a3e65de35d8da1f7955680e07a82ede43a1e677e0abc200923b484a7615494",
+                            "last_valid_date": 1608207377,
+                            "type": "hash_sha256"
+                        }
+                    ],
+                    "reports": [],
+                    "targets": [],
+                    "threat_types": [
+                        "Commodity",
+                        "Criminal",
+                        "CredentialHarvesting"
+                    ],
+                    "type": "ip_address",
+                    "vulnerabilities": []
+                },
                 "type": "IP",
-                "value": "1.1.1.1",
-                "vulnerabilities": []
+                "value": "1.1.1.1"
             },
             {
-                "actors": [
-                    "PIRATEPANDA"
-                ],
-                "deleted": false,
-                "domain_types": [],
+                "fields": {
+                    "actor": [],
+                    "creationdate": 1608208087,
+                    "domainname": [],
+                    "ipaddress": [],
+                    "maliciousconfidence": "low",
+                    "malwarefamily": [
+                        "Remcos"
+                    ],
+                    "reports": [],
+                    "stixkillchainphases": [
+                        "C2"
+                    ],
+                    "tags": [
+                        "MaliciousConfidence/Low",
+                        "KillChain/C2",
+                        "Malware/Remcos",
+                        "ThreatType/Commodity",
+                        "ThreatType/Criminal",
+                        "ThreatType/CredentialHarvesting"
+                    ],
+                    "targets": [],
+                    "trafficlightprotocol": "AMBER",
+                    "updateddate": 1608208109,
+                    "vulnerabilities": []
+                },
                 "id": "ip_address_2.2.2.2",
-                "ip_address_types": [],
-                "kill_chains": [
-                    "C2"
-                ],
-                "labels": [
-                    "MaliciousConfidence/High",
-                    "KillChain/C2",
-                    "ThreatType/Targeted",
-                    "Actor/PIRATEPANDA",
-                    "CSD/CSA-201604",
-                    "Malware/PoisonIvy"
-                ],
-                "last_updated": "1970-01-19T14:44:04.000Z",
-                "malicious_confidence": "high",
-                "malware_families": [
-                    "PoisonIvy"
-                ],
-                "published_date": "1970-01-19T14:39:42.000Z",
-                "reports": [
-                    "CSA-201604"
-                ],
-                "targets": [],
-                "threat_types": [
-                    "Targeted"
-                ],
+                "rawJSON": {
+                    "_marker": "16082081092644654ac0f7738b7086d25532d38ec1",
+                    "actors": [],
+                    "deleted": false,
+                    "domain_types": [],
+                    "id": "ip_address_2.2.2.2",
+                    "indicator": "2.2.2.2",
+                    "ip_address_types": [],
+                    "kill_chains": [
+                        "C2"
+                    ],
+                    "labels": [
+                        {
+                            "created_on": 1608208087,
+                            "last_valid_on": 1608208108,
+                            "name": "MaliciousConfidence/Low"
+                        },
+                        {
+                            "created_on": 1608208087,
+                            "last_valid_on": 1608208108,
+                            "name": "KillChain/C2"
+                        }
+                    ],
+                    "last_updated": 1608208109,
+                    "malicious_confidence": "low",
+                    "malware_families": [
+                        "Remcos"
+                    ],
+                    "published_date": 1608208087,
+                    "relations": [
+                        {
+                            "created_date": 1608208090,
+                            "id": "hash_sha256_b90713f3b31f29ceb64355b3c016aa0a74e1ce90dca5570db04aff27e12b343c",
+                            "indicator": "b90713f3b31f29ceb64355b3c016aa0a74e1ce90dca5570db04aff27e12b343c",
+                            "last_valid_date": 1608208090,
+                            "type": "hash_sha256"
+                        },
+                        {
+                            "created_date": 1483468884,
+                            "id": "domain_holmann02.ddns.net",
+                            "indicator": "holmann02.ddns.net",
+                            "last_valid_date": 1483468884,
+                            "type": "domain"
+                        }
+                    ],
+                    "reports": [],
+                    "targets": [],
+                    "threat_types": [
+                        "Commodity",
+                        "Criminal",
+                        "CredentialHarvesting"
+                    ],
+                    "type": "ip_address",
+                    "vulnerabilities": []
+                },
                 "type": "IP",
-                "value": "2.2.2.2",
-                "vulnerabilities": []
+                "value": "1.2.3.4"
             },
             {
-                "actors": [],
-                "deleted": false,
-                "domain_types": [],
+                "fields": {
+                    "actor": [
+                        "MUMMYSPIDER"
+                    ],
+                    "creationdate": 1592473928,
+                    "domainname": [],
+                    "ipaddress": [],
+                    "maliciousconfidence": "low",
+                    "malwarefamily": [],
+                    "reports": [],
+                    "stixkillchainphases": [
+                        "C2"
+                    ],
+                    "tags": [
+                        "KillChain/C2",
+                        "MaliciousConfidence/Low",
+                        "Actor/MUMMYSPIDER"
+                    ],
+                    "targets": [],
+                    "trafficlightprotocol": "AMBER",
+                    "updateddate": 1608208626,
+                    "vulnerabilities": []
+                },
                 "id": "ip_address_1.2.3.4",
-                "ip_address_types": [],
-                "kill_chains": [
-                    "C2"
-                ],
-                "labels": [
-                    "KillChain/C2",
-                    "Malware/njRAT",
-                    "ThreatType/Commodity",
-                    "MaliciousConfidence/High"
-                ],
-                "last_updated": "1970-01-19T14:44:33.000Z",
-                "malicious_confidence": "high",
-                "malware_families": [
-                    "njRAT"
-                ],
-                "published_date": "1970-01-18T04:57:02.000Z",
-                "reports": [],
-                "targets": [],
-                "threat_types": [
-                    "Commodity"
-                ],
+                "rawJSON": {
+                    "_marker": "1608208626d02e40678e554f71fd6c3c33cc71c5c0",
+                    "actors": [
+                        "MUMMYSPIDER"
+                    ],
+                    "deleted": false,
+                    "domain_types": [],
+                    "id": "ip_address_1.2.3.4",
+                    "indicator": "1.2.3.4",
+                    "ip_address_types": [],
+                    "kill_chains": [
+                        "C2"
+                    ],
+                    "labels": [
+                        {
+                            "created_on": 1592473928,
+                            "last_valid_on": 1592473930,
+                            "name": "KillChain/C2"
+                        },
+                        {
+                            "created_on": 1592473928,
+                            "last_valid_on": 1592473930,
+                            "name": "MaliciousConfidence/Low"
+                        },
+                        {
+                            "created_on": 1592473930,
+                            "last_valid_on": 1592473930,
+                            "name": "Actor/MUMMYSPIDER"
+                        }
+                    ],
+                    "last_updated": 1608208626,
+                    "malicious_confidence": "low",
+                    "malware_families": [],
+                    "published_date": 1592473928,
+                    "relations": [
+                        {
+                            "created_date": 1597858281,
+                            "id": "url_http://37.210.166.214:80",
+                            "indicator": "http://37.210.166.214:80",
+                            "last_valid_date": 1597858281,
+                            "type": "url"
+                        },
+                        {
+                            "created_date": 1592473931,
+                            "id": "hash_md5_6d795170965336a9006f059dd444fc8f",
+                            "indicator": "6d795170965336a9006f059dd444fc8f",
+                            "last_valid_date": 1592473931,
+                            "type": "hash_md5"
+                        }
+                    ],
+                    "reports": [],
+                    "targets": [],
+                    "threat_types": [],
+                    "type": "ip_address",
+                    "vulnerabilities": []
+                },
                 "type": "IP",
-                "value": "1.2.3.4",
-                "vulnerabilities": []
+                "value": "1.2.3.4"
             }
         ]
     }
