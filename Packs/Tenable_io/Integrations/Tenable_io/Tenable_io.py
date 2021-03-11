@@ -373,11 +373,11 @@ def get_scans_command():
     scan_entries = map(get_scan_info, response['scans'])
     valid_scans = filter(lambda x: x is not None, scan_entries)
     invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
-    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan', replace_keys(valid_scans),
+    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)', replace_keys(valid_scans),
                                 GET_SCANS_HEADERS)]
     if invalid_scans:
         res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans',
-                                        'TenableIO.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS,
+                                        'TenableIO.Scan(val.Id && val.Id === obj.Id)', replace_keys(invalid_scans), GET_SCANS_HEADERS,
                                         remove_null=True))
     return res
 
@@ -394,7 +394,7 @@ def launch_scan_command():
         'status': 'pending'
     })
 
-    return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res),
+    return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan(val.Id && val.Id === obj.Id)', replace_keys(res),
                                 LAUNCH_SCAN_HEADERS)
 
 
@@ -406,7 +406,7 @@ def get_report_command():
         scan_details['info']['id'] = scan_id
         scan_details['info'] = replace_keys(scan_details['info'])
         results.append(
-            get_entry_for_object('Scan basic info', 'TenableIO.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
+            get_entry_for_object('Scan basic info', 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
 
     if 'vulnerabilities' not in scan_details:
         return "No vulnerabilities found."
@@ -491,7 +491,7 @@ def get_scan_status_command():
         'Id': scan_id,
         'Status': scan_details['info']['status']
     }
-    return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
+    return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_status)
 
 
 def is_valid_scan_id(scan_id):
@@ -525,7 +525,7 @@ def pause_scan_command():
                 "Status": "Pausing"
             }
             results.append(get_entry_for_object("The requested scan was paused successfully",
-                                                "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
+                                                'TenableIO.Scan(val.Id && val.Id === obj.Id)', replace_keys(resumed_scan), ["Id", "Status"]))
 
         else:
             results.append(
@@ -560,7 +560,7 @@ def resume_scan_command():
                 "Status": "Resuming"
             }
             results.append(get_entry_for_object("The requested scan was resumed successfully",
-                                                "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"]))
+                                                'TenableIO.Scan(val.Id && val.Id === obj.Id)', replace_keys(resumed_scan), ["Id", "Status"]))
 
         else:
             results.append(
