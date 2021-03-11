@@ -4280,8 +4280,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-    description: ''
       brand: ""
+      description: ''
       id: f10ea50f-2081-494b-8327-f11cb0315d7e
       iscommand: false
       name: Handle ransomware files
