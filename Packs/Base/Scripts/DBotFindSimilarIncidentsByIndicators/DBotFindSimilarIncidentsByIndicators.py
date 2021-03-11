@@ -319,7 +319,6 @@ def return_indicator_entry(incident_ids, indicators_types, indicators_list):
     indicators_df = pd.DataFrame(data=indicators)
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
         return indicators_df
     indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
     indicators_df['Involved Incidents Count'] = \
