@@ -2563,8 +2563,17 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     demisto.debug(f'Pull result is {offense}')
     if mirror_option == 'Mirror Offense And Events':
         search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
-        offenses_pending_search = ctx.get('offenses_pending_search', [])
+        if not search_id:
+            offense['in_mirror_error'] = 'Failed to create search to enrich events'
+        else:
 
+        offenses_pending_search = ctx.get('offenses_pending_search', [])
+        if not offenses_pending_search:
+        search_status_response = client.search_status_get(search_id)
+        query_status = search_status_response.get('status')
+        # failures are relevant only when consecutive
+        num_of_failures = 0
+        if query_status in TERMINATING_SEARCH_STATUSES:
 
 
         offense = enrich_offense_with_events(client=client, offense=offense, fetch_mode=fetch_mode,
