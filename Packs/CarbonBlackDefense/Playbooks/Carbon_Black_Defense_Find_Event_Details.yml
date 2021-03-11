@@ -1,7 +1,6 @@
-id: 86a8d048-b902-41f4-8039-b9fcf20e3d54
+id: Carbon Black Defense Find Event Details
 version: -1
 fromversion: 5.5.0
-vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black Defense Find Event Details
 description: Receives event ID's and returns details about the event
 starttaskid: "0"
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -111,6 +111,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -201,7 +202,7 @@ inputs:
   required: false
   description: |
     A list of event ids to fetch. (comma separated)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
   description: The approximate unaggregated
@@ -217,3 +218,5 @@ outputs:
   description: The num found.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.results
   description: The results of the job id.
+tests:
+- carbonBlackDefenseV2TestPlaybook

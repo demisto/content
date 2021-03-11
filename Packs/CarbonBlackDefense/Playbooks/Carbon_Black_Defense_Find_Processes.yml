@@ -1,7 +1,6 @@
-id: 83ade42d-5c7c-49b3-89e9-1c2b61e08e02
+id: Carbon Black Defense Find Processes
 version: -1
 fromversion: 5.5.0
-vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black Defense Find Processes
 description: Find processes using a search query (or device_id etc.) one of the parameters
   is required, returns a list of processes
@@ -17,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -243,6 +243,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -275,124 +276,124 @@ inputs:
   required: false
   description: |
     The Query in lucene syntax and/or including value searches query or some of the other must be included.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: alert_category
   value: {}
   required: false
   description: The A Carbon Black Cloud classification for events tagged to an alert
     indicating whether the event is a “threat” or “observed”.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: blocked_hash
   value: {}
   required: false
   description: SHA-256 hash(es) of the child process(es) binary; for any process(es)
     terminated by the sensor
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: device_external_ip
   value: {}
   required: false
   description: The IP address of the endpoint according to the Carbon Black Cloud;
     can differ from device_internal_ip due to network proxy or NAT; either IPv4 (dotted
     decimal notation) or IPv6 (proprietary format documented below).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: device_id
   value: {}
   required: false
   description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
     all Carbon Black Cloud environments.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: device_internal_ip
   value: {}
   required: false
   description: The IP address of the endpoint reported by the sensor; either IPv4
     (dotted decimal notation) or IPv6 (proprietary format, documented below).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: deivce_name
   value: {}
   required: false
   description: The Hostname of the endpoint recorded by the sensor when last initialized.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: device_os
   value: {}
   required: false
   description: The operating system of the endpoint.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: device_timestamp
   value: {}
   required: false
   description: The Sensor-reported timestamp of the batch of events in which this
     record was submitted to Carbon Black Cloud.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: event_type
   value: {}
   required: false
   description: The Type of enriched event observed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: parent_hash
   value: {}
   required: false
   description: |
     The MD5 and/or SHA-256 hash of the parent process binary.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: parent_name
   value: {}
   required: false
   description: The Filesystem path of the parent process binary.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: parent_reputation
   value: {}
   required: false
   description: |
     The Reputation of the parent process; applied by the Carbon Black Cloud when the event is initially processed.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_cmdline
   value: {}
   required: false
   description: |
     The Command line executed by the actor process.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_guid
   value: {}
   required: false
   description: |
     The Unique process identifier for the actor process.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_hash
   value: {}
   required: false
   description: The MD5 and/or SHA-256 hash of the actor process binary; order may
     vary when two hashes are reported.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_name
   value: {}
   required: false
   description: |
     The Filesystem path of the actor process binary.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_pid
   value: {}
   required: false
   description: |
     The Process identifier assigned by the operating system; can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_reputation
   value: {}
   required: false
   description: |
     The Reputation of the actor process; applied when event is processed by the Carbon Black Cloud.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_start_time
   value: {}
   required: false
   description: |
     The Sensor reported timestamp of when the process started; not available for processes running before the sensor starts.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_terminated
   value: {}
   required: false
   description: |
     “True” indicates the process has terminated; always “false” for enriched events (process termination not recorded).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: process_username
   value: {}
   required: false
@@ -400,31 +401,31 @@ inputs:
     The User context in which the actor process was executed.
     MacOS - all users for the PID for fork() and exec() transitions,
     Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: rows
   value: {}
   required: false
   description: |
     The Number of rows to request, can be paginated.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: sensor_action
   value: {}
   required: false
   description: |
     The action performed by the sensor on the process.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: start
   value: {}
   required: false
   description: |
     The first row to use for pagination.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: time_range
   value: {}
   required: false
   description: |
     The time window to restrict the search to match using device_timestamp as the reference. Window will take priority over start and end if provided.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
   description: The approximate unaggregated
@@ -442,3 +443,5 @@ outputs:
   description: The results of the job id.
 - contextPath: CarbonBlackDefense.Process.Search.job_id
   description: The job id os the processes search.
+tests:
+- carbonBlackDefenseV2TestPlaybook
