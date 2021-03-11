@@ -90,7 +90,7 @@ def test_cisco_stealthwatch_list_tenants_all_command(requests_mock):
     assert response.outputs_prefix == 'CiscoStealthwatch.Tenant'
     assert response.outputs_key_field == 'id'
     assert response.outputs[0].get('id') == 102
-    assert response.outputs[0].get('displayName') == 'qmasters'
+    assert response.outputs[0].get('displayName') == 'companyname'
 
 
 def test_cisco_stealthwatch_list_tenants_one_command(requests_mock):
@@ -105,7 +105,7 @@ def test_cisco_stealthwatch_list_tenants_one_command(requests_mock):
     assert response.outputs_prefix == 'CiscoStealthwatch.Tenant'
     assert response.outputs_key_field == 'id'
     assert response.outputs.get('id') == 102
-    assert response.outputs.get('displayName') == 'qmasters'
+    assert response.outputs.get('displayName') == 'companyname'
 
 
 def test_cisco_stealthwatch_get_tag_hourly_traffic_report_command(requests_mock):
