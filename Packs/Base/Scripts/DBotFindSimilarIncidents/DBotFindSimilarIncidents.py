@@ -23,11 +23,12 @@ MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check
 MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist"
 
 SIMILARITY_COLUNM_NAME = 'similarity incident'
-SIMILARITY_COLUNM_NAME_INDICATOR ='similarity indicators'
+SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
 ORDER_SCORE_WITH_INDICATORS = [SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
 ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
 FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name', SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
 REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id']
+FIELDS_NO_AGGREGATION = ['id', 'created', 'ID']
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -193,14 +194,14 @@ def normalize_identity(my_string):
         return ''
 
 
-def cdist_new(x, y):
+def euclidian_similarity_capped(x, y):
     """
     Return max between 1 and euclidian distance between X and y
     :param x: np.array n*m
     :param y: np.array 1*m
     :return: np.array of ditance 1*n
     """
-    return np.maximum(1 - cdist(x, y)[:, 0], 0)  # , metric='cosine'
+    return np.maximum(1 - cdist(x, y)[:, 0], 0)
 
 
 def identity(X, y):
@@ -283,13 +284,13 @@ TRANSFORMATION = {
     'commandline': {'transformer': Tfidf,
                     'normalize': normalize_command_line,
                     'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
-                    'scoring_function': cdist_new
+                    'scoring_function': euclidian_similarity_capped
                     },
 
     'url': {'transformer': Tfidf,
             'normalize': normalize_identity,
             'params': {'analyzer': 'char', 'max_features': 100, 'ngram_range': (1, 5)},
-            'scoring_function': cdist_new
+            'scoring_function': euclidian_similarity_capped
             },
     'potentialMatch': {'transformer': Identity,
                        'normalize': None,
@@ -298,8 +299,8 @@ TRANSFORMATION = {
                        },
     'json': {'transformer': Tfidf,
              'normalize': normalize_json,
-             'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
-             'scoring_function': cdist_new
+             'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},
+             'scoring_function': euclidian_similarity_capped
              }
 }
 
@@ -462,13 +463,15 @@ def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: f
     :return: Clean Dataframe
     """
     similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
-
+    similar_incidents['created'] = similar_incidents['created'].apply(lambda timestamp: timestamp[:10])
     if aggregate == 'True':
-        agg_fields = [x for x in similar_incidents.columns if x not in ['id', 'created']]
+        agg_fields = [x for x in similar_incidents.columns if x not in FIELDS_NO_AGGREGATION]
         similar_incidents = similar_incidents.groupby(agg_fields, as_index=False, dropna=False).agg(
             {
-                'created': lambda x: (min(x), max(x)) if len(x) > 1 else x,
-                'id': lambda x: ' , '.join(x)}
+                'created': lambda x: "%s -> %s" % (min(x), max(x)) if len(x) > 1 else x,
+                'id': lambda x: ' , '.join(x),
+                'ID': lambda x: ' , '.join(x),
+            }
         )
 
     if confidence:
@@ -782,8 +785,7 @@ def main():
         return
 
     # load the related incidents
-    populate_fields = display_fields + similar_text_field + similar_json_field + similar_categorical_field \
-        + exact_match_fields
+    populate_fields.remove('id')
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
                                                                        incident,
                                                                        from_date, to_date, query, limit)

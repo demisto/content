@@ -98,7 +98,8 @@ def test_main_regular(mocker):
     assert ('empty_current_incident_field' not in res.columns)
     assert (res.loc['3', 'Identical indicators'] == 'ind_2')
     assert (res.loc['2', 'Identical indicators'] == "")
-    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created', 'name', df=res)
+    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created',
+                                         'name', df=res)
     assert res.loc['3', 'similarity indicators'] == 0.4
     assert res.loc['2', 'similarity indicators'] == 0.0
 
@@ -128,7 +129,8 @@ def test_main_no_indicators_found(mocker):
     res = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res['Identical indicators'] == ["", "", ""]).all()
-    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created', 'name', df=res)
+    assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created',
+                                         'name', df=res)
     assert (res['similarity indicators'] == [0.0, 0.0, 0.0]).all()
 
 
