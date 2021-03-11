@@ -2579,12 +2579,10 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     Returns:
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
-    ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = get_integration_context().get(LAST_FETCH_KEY, 0)
     limit: int = arg_to_number(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))  # type: ignore
     range_ = f'items=0-{limit - 1}'
-
     last_update = get_time_parameter(remote_args.last_update, epoch_format=True)
 
     offenses = client.offenses_list(range_=range_,
@@ -2592,9 +2590,6 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                     sort='+last_persisted_time')
     new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
 
-    last_update = ctx.get('last_update') if not offenses else offenses[-1].get('last_persisted_time')
-    set_integration_context(
-        {'samples': ctx.get('samples', []), 'last_update': last_update, LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
