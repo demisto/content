@@ -380,7 +380,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The approval status of the incident created by the rule.
+      description: The approval status of the incident.
       isArray: false
       name: approval_status
       predefined:
@@ -391,7 +391,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of Incidents created by the rule.
+      description: Type of Incident.
       isArray: false
       name: change_type
       predefined:
@@ -402,20 +402,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comments for Incidents created by the rule.
+      description: Comments for Incident.
       isArray: false
       name: comment
       required: true
       secret: false
     - default: false
-      description: incident ID to approve.
+      description: Incident ID to approve.
       isArray: false
       name: incident_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The category of the incident created by the rule
+      description: The category of the incident.
       isArray: false
       name: disposition_category
       predefined:
@@ -473,7 +473,7 @@ script:
       description: |-
         The list of comma-separated attributes that you want to include in the response.
         By default, all attributes will be returned in the result.
-        i.e: attributes="attributes=Numbererfaces.hostname"
+        i.e: attributes="attributes=interfaces.hostname"
       isArray: false
       name: attributes
       required: false
