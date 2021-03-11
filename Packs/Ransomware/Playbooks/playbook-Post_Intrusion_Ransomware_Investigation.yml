@@ -632,6 +632,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 75d041fc-0e41-4748-8405-006285459e53
       iscommand: false
       name: Were binary files retrieved?
