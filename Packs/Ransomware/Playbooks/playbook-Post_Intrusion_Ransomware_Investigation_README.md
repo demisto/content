@@ -1,3 +1,5 @@
+Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
+
 Provides the first step in the investigation of ransomware attacks.
  The playbook requires the ransom note and an example of an encrypted file (<1MB) to try to identify the ransomware and find a recovery tool via the online database.
  You will be guided with further investigation steps throughout the playbook, some of the key features are:
@@ -10,10 +12,8 @@ Provides the first step in the investigation of ransomware attacks.
 
 Playbook settings and mapping:
  For the operation of the playbook, the following data should be mapped to the relevant incident fields:
- Username - Users (incident field)
- Hostname - Hosts (incident field)
-
-
+Username - Usernames (common incident field)
+Hostname - Hostnames (common incident field)
 
 
 
@@ -33,6 +33,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 * Rasterize
 * Active Directory Query v2
+* Cryptocurrency
 
 ### Scripts
 This playbook does not use any scripts.

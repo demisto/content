@@ -29,9 +29,14 @@
             "display_name": "Mail Sender (New)"
         },
         "rasterize": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Rasterize"
         },
+        "Cryptocurrency": {
+            "mandatory": true,
+            "display_name": "Cryptocurrency"
+        },
+
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"

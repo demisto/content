@@ -4,7 +4,7 @@ The main features of the semi-automated **Post Intrusion Ransomware Investigatio
 - Performs automated user and host data enrichment.
 - Performs automated endpoint isolation and user revocation.
 - Provides guidance to retrieve the necessary files to identify the ransomware strain.
-- Extracts indicators from the ransomware note, including cryptocurrency addresses and onion URLs.
+- Extracts indicators from the ransomware note, including cryptocurrency and onion addresses.
 - Provides guidance on additional recommended investigation steps such as endpoint forensics, searching for more infected endpoints, and investigating activities of the infected user.
 - Performs Active Directory forensics. 
 - Automatically blocks malicious indicators.
@@ -16,3 +16,5 @@ Integrations required for this pack.
 - Rasterize - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/rasterize)
 - Cryptocurrency - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/cryptocurrency)
 ![Playbook Image](https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Ransomware/doc_files/Post_Intrusion_Ransomware_Investigation.png)
+![Layout Image]()
+
