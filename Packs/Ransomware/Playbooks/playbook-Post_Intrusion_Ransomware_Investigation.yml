@@ -656,6 +656,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 71136de3-bdb6-4ed5-82d9-446ce52bc89f
       iscommand: false
       name: Done
@@ -732,6 +733,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 4250d6fa-6e87-49f4-8a22-b6f1aa88eb25
       iscommand: false
       name: Auto Remediation?
@@ -1091,6 +1093,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: bbc5aa42-ce7c-4f14-8612-171c91e74ce8
       iscommand: false
       name: Is Active Directory enabled?
@@ -1233,6 +1236,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 62f9e35a-6c75-4695-8c5e-b74541d7d039
       iscommand: false
       name: Was a Recovery tool found?
@@ -3305,6 +3309,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 5b2a96ee-e342-47af-8386-d488f87fdaa6
       iscommand: false
       name: Send ransomware notification?
@@ -4207,6 +4212,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 43f76b1a-a347-49ff-84b8-2839dfa3a08e
       iscommand: false
       name: Auto Remediation?
@@ -4274,6 +4280,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+    description: ''
       brand: ""
       id: f10ea50f-2081-494b-8327-f11cb0315d7e
       iscommand: false
