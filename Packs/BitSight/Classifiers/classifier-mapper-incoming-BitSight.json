@@ -3,101 +3,6 @@
     "feed": false,
     "id": "BitSight - Incoming Mapper",
     "mapping": {
-        "BitSight Alert": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Alert Date": {
-                    "complex": {
-                        "accessor": "alert_date",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Alert Type": {
-                    "complex": {
-                        "accessor": "alert_type",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Company GUID": {
-                    "complex": {
-                        "accessor": "company_guid",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Company Name": {
-                    "complex": {
-                        "accessor": "company_name",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Company URL": {
-                    "complex": {
-                        "accessor": "company_url",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Folder GUID": {
-                    "complex": {
-                        "accessor": "folder_guid",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Folder Name": {
-                    "complex": {
-                        "accessor": "folder_name",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Start Date": {
-                    "complex": {
-                        "accessor": "start_date",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Trigger": {
-                    "complex": {
-                        "accessor": "trigger",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "severity": {
-                    "complex": {
-                        "accessor": "severity",
-                        "filters": [],
-                        "root": "[0]",
-                        "transformers": []
-                    },
-                    "simple": ""
-                }
-            }
-        },
         "BitSight Findings": {
             "dontMapEventToLabels": false,
             "internalMapping": {
@@ -237,10 +142,6 @@
                     "simple": ""
                 }
             }
-        },
-        "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": false,
-            "internalMapping": null
         }
     },
     "name": "BitSight - Incoming Mapper",
