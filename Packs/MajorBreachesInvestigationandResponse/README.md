@@ -14,4 +14,4 @@ This pack contains the response playbooks for the following breaches:
 - Create a job that will run this playbook on a periodic basis.
 
 
-![HAFNIUM - Exchange 0-day exploits](https://raw.githubusercontent.com/demisto/content/5e260b4541666936a241432c2a163049d9ffcfec/Packs/MajorBreachesInvestigationandResponse/doc_files/HAFNIUM_-_Exchange_0-day_exploits_6.png)
+![HAFNIUM - Exchange 0-day exploits](https://raw.githubusercontent.com/demisto/content/b07dd84f97225d1a264bd910f60f2d1e9531cd33/Packs/MajorBreachesInvestigationandResponse/doc_files/HAFNIUM_-_Exchange_0-day_exploits_6.png)
