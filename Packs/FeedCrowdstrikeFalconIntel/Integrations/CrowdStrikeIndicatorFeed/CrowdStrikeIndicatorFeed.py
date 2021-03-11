@@ -3,6 +3,7 @@ import copy
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
 from datetime import datetime
@@ -33,21 +34,17 @@ CROWDSTRIKE_TO_XSOAR_TYPES = {
 }
 
 
-class Client(BaseClient):
+class Client(CrowdStrikeClient):
 
-    def __init__(self, client_id, client_secret, base_url, include_deleted, type, limit, tlp_color=None,
-                 malicious_confidence=None, filter=None, generic_phrase=None, verify=True, proxy=False,
+    def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None,
+                 malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
                  first_fetch=None):
-        self._client_id = client_id
-        self._client_secret = client_secret
-        super().__init__(
-            base_url=base_url,
-            verify=verify,
-            ok_codes=tuple(),
-            proxy=proxy
-        )
-        self._token = self._get_access_token()
-        self._headers = {'Authorization': 'Bearer ' + self._token}
+        params = assign_params(credentials=credentials,
+                               server_url=base_url,
+                               insecure=insecure,
+                               ok_codes=tuple(),
+                               proxy=proxy)
+        super().__init__(params)
         self.type = type
         self.malicious_confidence = malicious_confidence
         self.filter = filter
@@ -57,39 +54,12 @@ class Client(BaseClient):
         self.limit = limit
         self.first_fetch = first_fetch
 
-    def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
-                     timeout=120, auth=None) -> dict:
-
-        return super()._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            full_url=full_url,
-            headers=headers,
-            params=params,
-            data=data,
-            timeout=timeout,
-            auth=auth,
-            error_handler=self.handle_error_response
-        )
-
-    def _get_access_token(self):
-        body = {
-            'client_id': self._client_id,
-            'client_secret': self._client_secret
-        }
-        token_res = self.http_request(
-            method='POST',
-            url_suffix='/oauth2/token',
-            data=body
-        )
-        return token_res.get('access_token')
-
     def get_indicators(self, params):
-        response = self.http_request(
+        response = super().http_request(
             method='GET',
             params=params,
-            headers=self._headers,
             url_suffix='intel/combined/indicators/v1',
+            timeout=120
         )
         return response
 
@@ -198,7 +168,6 @@ class Client(BaseClient):
                            'domainname': resource.get('domain_types'),
                            'targets': resource.get('targets'),
                            'threattypes': [{'threatcategory': threat} for threat in resource.get('threat_types', [])],
-                           # 'threattypes': resource.get('threat_types'),
                            'vulnerabilities': resource.get('vulnerabilities'),
                            'confidence': resource.get('malicious_confidence'),
                            'updateddate': resource.get('last_updated'),
@@ -232,32 +201,6 @@ class Client(BaseClient):
 
         result = ','.join(crowdstrike_types)
         return result
-
-    @staticmethod
-    def handle_error_response(res) -> None:
-        """
-        Handle error response and display user specific error message based on status code.
-
-        Args:
-            res: response from API.
-
-        Returns:
-            raise DemistoException based on status code.
-        """
-        errors = []
-        try:
-            error_entry = res.json()
-            errors = error_entry['errors']
-        except Exception:  # ignoring json parsing errors
-            pass
-
-        errors_array = [item.get('message') for item in errors if item['code'] == res.status_code]
-        error_message = '\n'.join(errors_array)
-
-        if error_message:
-            raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {error_message}')
-        else:
-            raise DemistoException(f'Error in API call [{res.status_code}] - {res.reason}. {res.text}')
 
 
 def fetch_indicators_command(client: Client):
@@ -341,10 +284,8 @@ def main() -> None:
     params = demisto.params()
 
     credentials = params.get('credentials')
-    client_id = credentials.get('identifier')
-    client_secret = credentials.get('password')
     proxy = params.get('proxy', False)
-    verify_certificate = not demisto.params().get('insecure', False)
+    insecure = params.get('insecure', False)
     first_fetch = datetime.timestamp(dateparser.parse(params.get('first_fetch'))) if params.get('first_fetch') else None
     base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
@@ -363,10 +304,9 @@ def main() -> None:
         demisto.info(f'Command being called is {demisto.command()}')
 
         client = Client(
-            client_id=client_id,
-            client_secret=client_secret,
+            credentials=credentials,
             base_url=base_url,
-            verify=verify_certificate,
+            insecure=insecure,
             proxy=proxy,
             tlp_color=tlp_color,
             include_deleted=include_deleted,
