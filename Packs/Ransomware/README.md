@@ -16,5 +16,5 @@ Integrations required for this pack.
 - Rasterize - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/rasterize)
 - Cryptocurrency - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/cryptocurrency)
 ![Playbook Image](https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Ransomware/doc_files/Post_Intrusion_Ransomware_Investigation.png)
-![Layout Image]()
+![Layout Image](https://raw.githubusercontent.com/demisto/content/91d780c75620c8138c3b044417b4b7f8789f802b/Packs/Ransomware/doc_files/Post_Intrusion_Ransomware_Investigation_Layout.png)
 
