@@ -1,5 +1,6 @@
 id: 83ade42d-5c7c-49b3-89e9-1c2b61e08e02
 version: -1
+fromversion: 5.5.0
 vcShouldKeepItemLegacyProdMachine: false
 name: Carbon Black Defense Find Processes
 description: Find processes using a search query (or device_id etc.) one of the parameters
