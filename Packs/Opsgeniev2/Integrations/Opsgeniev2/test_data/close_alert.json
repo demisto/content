@@ -1,0 +1,11 @@
+{
+    "action": "Close",
+    "alertId": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+    "alias": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+    "integrationId": "26aaa576-0434-4b17-bc39-602a02fe417c",
+    "isSuccess": true,
+    "processedAt": "2021-02-11T00:04:01.223Z",
+    "requestId": "c16b2373-d42b-4d31-8b2a-519b09154e42",
+    "status": "Closed alert",
+    "success": true
+}

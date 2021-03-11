@@ -644,8 +644,10 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self.send_request('attachment', 'GET', params={
-            'sysparm_query': f'table_sys_id={ticket_id}^sys_created_on>{sys_created_on}'})
+        query = f'table_sys_id={ticket_id}'
+        if sys_created_on:
+            query += f'^sys_created_on>{sys_created_on}'
+        return self.send_request('attachment', 'GET', params={'sysparm_query': query})
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments

@@ -1836,6 +1836,53 @@ def test_run_script_command(requests_mock):
     }
 
 
+def test_run_script_command_empty_params(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, script UID and empty params
+    When
+        - Running run-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    script_uid = 'script_uid'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    parameters = ''
+    args = {
+        'script_uid': script_uid,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'parameters': parameters
+    }
+
+    response = run_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': script_uid,
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'parameters_values': parameters
+        }
+    }
+
+
 def test_run_snippet_code_script_command(requests_mock):
     """
     Given:
