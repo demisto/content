@@ -184,10 +184,11 @@ def get_custom_fields():
     :return: dict of custom fields: id as key and description as value.
     """
     custom_id_description_mapping = {}
+    HEADERS['Accept'] = "application/json"
     try:
         res = requests.request(
             method='GET',
-            url=BASE_URL + 'rest/api/latest/field/search?type=custom',
+            url=BASE_URL + 'rest/api/latest/field',
             headers=HEADERS,
             verify=USE_SSL,
             auth=get_auth(),
