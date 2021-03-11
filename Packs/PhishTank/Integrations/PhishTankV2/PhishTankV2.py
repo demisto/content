@@ -33,9 +33,13 @@ class Client(BaseClient):
            use_https (bool): Whether to use HTTPS URL or HTTP URL.
    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str):
+    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str):
         super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
+        if DBotScoreReliability.is_valid_type(reliability):
+            self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def get_http_request(self, url_suffix: str):
         result = self._http_request(
@@ -148,18 +152,18 @@ def create_verified_markdown(url_data: dict, url: str):
     return markdown
 
 
-def url_command(client: Client, url_list: list, reliability: DBotScoreReliability) -> List[CommandResults]:
+def url_command(client: Client, url_list: list) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for url in url_list:
         markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
         url_data_is_valid = url_data and "verified" in url_data.keys()
         if url_data_is_valid:
-            dbot = url_data_to_dbot_score(url_data, url, reliability)
+            dbot = url_data_to_dbot_score(url_data, url, client.reliability)
             markdown += create_verified_markdown(url_data, url)
         else:
             markdown += f'#### No matches for URL {url} \n'
-            dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
+            dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0, "", client.reliability)
         command_results.append(CommandResults(
             indicator=Common.URL(url, dbot),
             readable_output=markdown,
@@ -311,17 +315,12 @@ def main() -> None:
     fetch_interval_hours = params.get('fetchIntervalHours')
     reliability = params.get('integrationReliability')
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        return_error("PhishTankV2 error: Please provide a valid value for source reliability")
-
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
                      "interval (hours)")
 
     # initialize a client
-    client = Client(proxy, verify, fetch_interval_hours, use_https)
+    client = Client(proxy, verify, fetch_interval_hours, use_https, reliability)
 
     command = demisto.command()
     demisto.debug(f'PhishTankV2: command is {command}')
@@ -332,7 +331,7 @@ def main() -> None:
 
         elif command == 'url':
             url = argToList(demisto.args().get("url"))
-            return_results(url_command(client, url, reliability))
+            return_results(url_command(client, url))
 
         elif command == 'phishtank-reload':
             return_results(phishtank_reload_command(client))
