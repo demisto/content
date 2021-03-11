@@ -842,7 +842,7 @@ def alerts_search_command(client: Client, args: dict):
     process_sha256 = argToList(args.get('process_sha256'))
     reputation = argToList(args.get('reputation'))
     tag = argToList(args.get('tag'))
-    device_username = args.get('device_username')
+    device_username = argToList(args.get('device_username'))
     query = args.get('query')
     rows = args.get('rows')
     start = args.get('start')

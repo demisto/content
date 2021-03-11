@@ -365,11 +365,24 @@ script:
       name: os
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The status of the device. (PENDING, REGISTERED, DEREGISTERED, BYPASS
         ,ACTIVE, INACTIVE, ERROR, ALL, BYPASS_ON, LIVE, SENSOR_PENDING_UPDATE)
       isArray: false
       name: status
+      predefined:
+      - PENDING
+      - REGISTERED
+      - DEREGISTERED
+      - BYPASS
+      - ACTIVE
+      - INACTIVE
+      - ERROR
+      - ALL
+      - BYPASS_ON
+      - LIVE
+      - SENSOR_PENDING_UPDATE
       required: false
       secret: false
     - default: false
@@ -378,11 +391,17 @@ script:
       name: start_time
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The “Target value” configured in the policy assigned to the sensor.
         (LOW, MEDIUM, HIGH, MISSION_CRITICAL)
       isArray: false
       name: target_priority
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - MISSION_CRITICAL
       required: false
       secret: false
     - default: false
@@ -1875,8 +1894,8 @@ script:
       secret: false
     - default: false
       description: 'The time of the first event associated with the alert. The syntax
-        is  {"end": "<dateTime>", "range": "<string>", "start": "<dateTime>" }. For
-        example: {"end": "2000-01-20T10:40:00.00Z", "start": "2010-09-25T00:10:50.277Z"}'
+        is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For
+        example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}'
       isArray: false
       name: first_event_time
       required: false
