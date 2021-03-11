@@ -1,20 +1,11 @@
 commonfields:
   id: AsanaConnect
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AsanaConnect
 display: AsanaConnect
 category: Case Management
 description: This Integration uses Asana PATs to connect to projects tied to the Asana
   account.
-detaileddescription: |-
-  ### Community Contributed Integration
-  #### Integration Author: zh-lim
-  Support and maintenance for this integration are provided by the author. Please reach out on github. [https://github.com/zh-lim](https://github.com/zh-lim)
-  ***
-  ## AsanaConnect
-  - This section explains how to configure the instance of AsanaConnect in Cortex XSOAR.
-  - You can get your Personal Access Token from the Asana developer console [https://app.asana.com/0/developer-console](https://app.asana.com/0/developer-console)
 configuration:
 - display: Access Token
   name: accesstoken
@@ -47,3 +38,6 @@ script:
   dockerimage: devtesting/asana:1.0.0.1614532323
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
