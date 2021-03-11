@@ -642,7 +642,7 @@ script:
     - contextPath: Ticket.Transitions.transitions
       description: A list of all possible transitions
       type: Unknown
-  dockerimage: demisto/oauthlib:1.0.0.16907
+  dockerimage: demisto/oauthlib:1.0.0.15507
   feed: false
   isfetch: true
   longRunning: false
