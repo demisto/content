@@ -54,7 +54,7 @@ def test_get_scan_status(mocker, requests_mock):
     from Tenable_io import get_scan_status_command
     results = get_scan_status_command()
 
-    entry_context = results['EntryContext']['TenableIO.Scan(val.Id === obj.Id)']
+    entry_context = results['EntryContext']['TenableIO.Scan(val.Id && val.Id === obj.Id)']
 
     assert 'Scan status for 25' in results['HumanReadable']
     assert entry_context['Id'] == '25'
@@ -84,7 +84,7 @@ def test_pause_scan_command(mocker, requests_mock):
     from Tenable_io import pause_scan_command
 
     results = pause_scan_command()
-    entry_context = results[0]['EntryContext']['TenableIO.Scan']
+    entry_context = results[0]['EntryContext']['TenableIO.Scan(val.Id && val.Id === obj.Id)']
 
     assert 'scan was paused successfully' in results[0]['HumanReadable']
     assert entry_context['Id'] == '25'
@@ -98,7 +98,7 @@ def test_resume_scan_command(mocker, requests_mock):
     from Tenable_io import resume_scan_command
 
     results = resume_scan_command()
-    entry_context = results[0]['EntryContext']['TenableIO.Scan']
+    entry_context = results[0]['EntryContext']['TenableIO.Scan(val.Id && val.Id === obj.Id)']
 
     assert 'scan was resumed successfully' in results[0]['HumanReadable']
     assert entry_context['Id'] == '25'
