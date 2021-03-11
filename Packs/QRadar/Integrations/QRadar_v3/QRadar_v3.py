@@ -2535,7 +2535,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
 
     offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
-    offense_last_update = get_time_parameter(offense.get('last_updated_time'))
+    offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
@@ -2588,7 +2588,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time')
-    new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
+    new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
