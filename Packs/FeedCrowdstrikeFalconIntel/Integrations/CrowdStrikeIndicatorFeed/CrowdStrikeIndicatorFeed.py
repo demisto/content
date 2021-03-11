@@ -1,5 +1,4 @@
 import copy
-from http.client import IncompleteRead
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
