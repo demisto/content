@@ -756,7 +756,6 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
     if indicators_similarity_df.empty:
         indicators_similarity_df = pd.DataFrame(columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'type', 'id'])
     keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
-    demisto.results(indicators_similarity_df.columns)
     indicators_similarity_df.index = indicators_similarity_df.id
     similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
     values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': "", 'type': ""}
