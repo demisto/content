@@ -8,8 +8,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Text fields taken into account to compute similarity - Example: commandline,
-    URL.'
+  description: 'Incident''s text fields taken into account to compute similarity -
+    Example: commandline, URL.'
   isArray: false
   name: similarTextField
   predefined:
@@ -18,8 +18,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Categorical fields taken into account to compute similarity - Example:
-    IP'
+  description: 'Incident''s categorical fields taken into account to compute similarity
+    - Example: IP'
   isArray: false
   name: similarCategoricalField
   predefined:
@@ -28,7 +28,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Json fields taken into account to compute similarity - Example: CustomFields'
+  description: 'Incident''s json fields taken into account to compute similarity -
+    Example: CustomFields'
   isArray: false
   name: similarJsonField
   predefined:
@@ -47,7 +48,8 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Exact match fields. Help to make the query lighter
+  description: Incident fields that have to be equal to current incident fields. Help
+    to make the query ligher.
   isArray: false
   name: fieldExactMatch
   predefined:

@@ -12,8 +12,7 @@ from scipy.spatial.distance import cdist
 
 warnings.simplefilter("ignore")
 
-FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name', 'final_score', 'similarity indicators']
-REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id']
+
 MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected - " \
                          " 2) Selected field are empty for this incident - 3) Fields are misspelled"
 MESSAGE_NO_INCIDENT_FETCHED = "No incident found with these exact match for the given date"
@@ -22,8 +21,13 @@ MESSAGE_WARNING_TRUNCATED = "%s incidents fetched with exact match. Incident hav
                             "limit argument"
 MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check"
 MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist"
-ORDER_SCORE_WITH_INDICATORS = ['final_score', 'similarity indicators']
-ORDER_SCORE_NO_INDICATORS = ['final_score']
+
+SIMILARITY_COLUNM_NAME = 'similarity incident'
+SIMILARITY_COLUNM_NAME_INDICATOR ='similarity indicators'
+ORDER_SCORE_WITH_INDICATORS = [SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
+ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
+FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name', SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
+REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id']
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -86,21 +90,21 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List[str], *forbidden):
+def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List[str], *fieldsToRemove):
     """
 
     :param item: Dict of list of Dict
     :param regex_patterns: List of regex pattern to remove from the dict
-    :param forbidden: values to remove from the object
+    :param fieldsToRemove: values to remove from the object
     :return: Dict or List of Dict without unwanted values or regex pattern
     """
     if isinstance(item, list):
-        return [recursive_filter(entry, regex_patterns, *forbidden) for entry in item if entry not in forbidden]
+        return [recursive_filter(entry, regex_patterns, *fieldsToRemove) for entry in item if entry not in fieldsToRemove]
     if isinstance(item, dict):
         result = {}
         for key, value in item.items():
-            value = recursive_filter(value, regex_patterns, *forbidden)
-            if key not in forbidden and value not in forbidden and (not match_one_regex(value, regex_patterns)):
+            value = recursive_filter(value, regex_patterns, *fieldsToRemove)
+            if key not in fieldsToRemove and value not in fieldsToRemove and (not match_one_regex(value, regex_patterns)):
                 result[key] = value
         return result
     return item
@@ -430,7 +434,7 @@ class Model:
         """
         col = self.incidents_df.loc[:, ['similarity %s' % field for field in self.field_for_command_line
                                         + self.field_for_json]]
-        self.incidents_df['final_score'] = np.round(col.mean(axis=1), 2)
+        self.incidents_df[SIMILARITY_COLUNM_NAME] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
         self.compute_final_score()
@@ -439,13 +443,13 @@ class Model:
             + self.field_for_potential_exact_match + [
                 'similarity %s' % field for field in
                 self.field_for_command_line + self.field_for_json + self.field_for_potential_exact_match])
-        df_sorted = self.incidents_df[display_fields + ['final_score']]
+        df_sorted = self.incidents_df[display_fields + [SIMILARITY_COLUNM_NAME]]
         return df_sorted
 
 
-def organize_data(similar_incidents: pd.DataFrame, confidence: float, show_distance: bool, max_incidents: int,
-                  fields_used: List[str],
-                  aggregate, include_indicators_similarity: bool) -> pd.DataFrame:
+def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: float, show_distance: bool, max_incidents: int,
+                                  fields_used: List[str],
+                                  aggregate, include_indicators_similarity: bool) -> pd.DataFrame:
     """
     Organize data
     :param similar_incidents: DataFrame of incident
@@ -455,7 +459,7 @@ def organize_data(similar_incidents: pd.DataFrame, confidence: float, show_dista
     :param fields_used: field used to compute final score
     :param aggregate: if aggragate the data that are identical according to the field - False if used indicators
     :param include_indicators_similarity: if include_indicators_similarity
-    :return: Organized Dataframe
+    :return: Clean Dataframe
     """
     similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
 
@@ -468,7 +472,7 @@ def organize_data(similar_incidents: pd.DataFrame, confidence: float, show_dista
         )
 
     if confidence:
-        similar_incidents = similar_incidents[similar_incidents.final_score >= confidence]
+        similar_incidents = similar_incidents[similar_incidents[SIMILARITY_COLUNM_NAME] >= confidence]
     if show_distance == 'False':
         col_to_remove = ['similarity %s' % field for field in fields_used]
         similar_incidents.drop(col_to_remove, axis=1, inplace=True)
@@ -480,7 +484,7 @@ def organize_data(similar_incidents: pd.DataFrame, confidence: float, show_dista
     return similar_incidents.head(max_incidents)
 
 
-def get_incidents_to_predict(incident_id: str, populate_fields: List[str]):
+def get_incident_by_id(incident_id: str, populate_fields: List[str]):
     """
     Get incident acording to incident id
     :param incident_id:
@@ -545,6 +549,11 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
     return incidents, msg
 
 
+def extract_fields_from_args(arg):
+    fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
+    return list(dict.fromkeys(fields_list))
+
+
 def get_args():
     """
     Gets argument of this automation
@@ -558,24 +567,16 @@ def get_args():
         exact_match_fields = ['type']
     else:
         similar_text_field = demisto.args().get('similarTextField', '').split(',')
-        similar_text_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in similar_text_field if
-                              x]
-        similar_text_field = list(dict.fromkeys(similar_text_field))
+        similar_text_field = extract_fields_from_args(similar_text_field)
 
         similar_categorical_field = demisto.args().get('similarCategoricalField', '').split(',')
-        similar_categorical_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in
-                                     similar_categorical_field if x]
-        similar_categorical_field = list(dict.fromkeys(similar_categorical_field))
+        similar_categorical_field = extract_fields_from_args(similar_categorical_field)
 
         similar_json_field = demisto.args().get('similarJsonField', '').split(',')
-        similar_json_field = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in similar_json_field if
-                              x]
-        similar_json_field = list(dict.fromkeys(similar_json_field))
+        similar_json_field = extract_fields_from_args(similar_json_field)
 
         exact_match_fields = demisto.args().get('fieldExactMatch', '').split(',')
-        exact_match_fields = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in exact_match_fields if
-                              x]
-        exact_match_fields = list(dict.fromkeys(exact_match_fields))
+        exact_match_fields = extract_fields_from_args(exact_match_fields)
 
     display_fields = demisto.args().get('fieldsToDisplay', '').split(',')
     display_fields = [x.strip() for x in display_fields if x]
@@ -615,7 +616,7 @@ def load_current_incident(incident_id: str, populate_fields: List[str]):
         incident = {k: v for k, v in incident.items() if k in populate_fields}
         incident_id = incident['id']
     else:
-        incident = get_incidents_to_predict(incident_id, populate_fields)
+        incident = get_incident_by_id(incident_id, populate_fields)
         if not incident:
             return None, incident_id
     return incident, incident_id
@@ -711,7 +712,7 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     incident_json = current_incident.to_dict(orient='records')
     if show_actual_incident == 'True':
-        return_outputs(readable_output=tableToMarkdown("Actual incident", incident_json))
+        return_outputs(readable_output=tableToMarkdown("Current Incident", incident_json))
     return_outputs(readable_output=tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display),
                    outputs={'DBotFindSimilarIncidents': context})
 
@@ -753,11 +754,12 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
     indicators_similarity_json = get_similar_incidents_by_indicators(full_args_indicators_script)
     indicators_similarity_df = pd.DataFrame(indicators_similarity_json)
     if indicators_similarity_df.empty:
-        indicators_similarity_df = pd.DataFrame(columns=['similarity indicators', 'Identical indicators', 'type', 'id'])
+        indicators_similarity_df = pd.DataFrame(columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'type', 'id'])
     keep_columns = [x for x in indicators_similarity_df.columns if x not in similar_incidents]
+    demisto.results(indicators_similarity_df.columns)
     indicators_similarity_df.index = indicators_similarity_df.id
     similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
-    values = {'similarity indicators': 0, 'Identical indicators': "", 'type': ""}
+    values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': "", 'type': ""}
     similar_incidents = similar_incidents.fillna(value=values)
     return similar_incidents
 
@@ -826,8 +828,8 @@ def main():
         full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **demisto.args()}
         similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
 
-    similar_incidents = organize_data(similar_incidents, confidence, show_distance, max_incidents,
-                                      fields_used, aggregate, include_indicators_similarity)
+    similar_incidents = prepare_incidents_for_display(similar_incidents, confidence, show_distance, max_incidents,
+                                                      fields_used, aggregate, include_indicators_similarity)
 
     # Filter incident to investigate
     incident_filter = incident_df[[x for x in
