@@ -1,4 +1,6 @@
 import copy
+from http.client import IncompleteRead
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -88,7 +90,7 @@ class Client(BaseClient):
             method='GET',
             params=params,
             headers=self._headers,
-            url_suffix='intel/combined/indicators/v1'
+            url_suffix='intel/combined/indicators/v1',
         )
         return response
 
@@ -117,7 +119,7 @@ class Client(BaseClient):
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             elif self.first_fetch:
-                last_run = f'last_updated:>={self.first_fetch}'
+                last_run = f'last_updated:>={int(self.first_fetch)}'
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
 
         demisto.info(f' filter {filter}')
@@ -128,7 +130,6 @@ class Client(BaseClient):
                                sort='last_updated|asc')
 
         response = self.get_indicators(params=params)
-
         timestamp = self.set_last_run()
 
         # need to fetch all indicators after the limit
@@ -197,6 +198,7 @@ class Client(BaseClient):
                            'ipaddress': resource.get('ip_address_types'),
                            'domainname': resource.get('domain_types'),
                            'targets': resource.get('targets'),
+                           'threattypes': [{'threatcategory': threat} for threat in resource.get('threat_types', [])],
                            # 'threattypes': resource.get('threat_types'),
                            'vulnerabilities': resource.get('vulnerabilities'),
                            'confidence': resource.get('malicious_confidence'),
@@ -250,7 +252,6 @@ class Client(BaseClient):
         except Exception:  # ignoring json parsing errors
             pass
 
-        # error_message = next((item for item in errors if item['code'] == res.status_code)).get('message')
         errors_array = [item.get('message') for item in errors if item['code'] == res.status_code]
         error_message = '\n'.join(errors_array)
 
@@ -276,7 +277,7 @@ def fetch_indicators_command(client: Client):
     # we submit the indicators in batches
     for b in batch(parsed_indicators, batch_size=2000):
         demisto.createIndicators(b)
-    # return parsed_indicators
+    return parsed_indicators
 
 
 def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandResults:
