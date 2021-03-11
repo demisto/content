@@ -402,31 +402,31 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
 @pytest.mark.parametrize(
     'offense, fetch_mode, mock_search_response, poll_events_response, events_limit',
     [
-        # # success cases
-        # (command_test_data['offenses_list']['response'][0],
-        #  'correlations_events_only',
-        #  command_test_data['search_create']['response'],
-        #  sanitize_outputs(command_test_data['search_results_get']['response']['events']),
-        #  3
-        #  ),
-        # (command_test_data['offenses_list']['response'][0],
-        #  'correlations_events_only',
-        #  command_test_data['search_create']['response'],
-        #  sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
-        #  1
-        #  ),
-        # (command_test_data['offenses_list']['response'][0],
-        #  'all_events',
-        #  command_test_data['search_create']['response'],
-        #  sanitize_outputs(command_test_data['search_results_get']['response']['events']),
-        #  3
-        #  ),
-        # (command_test_data['offenses_list']['response'][0],
-        #  'all_events',
-        #  command_test_data['search_create']['response'],
-        #  sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
-        #  1
-        #  ),
+        # success cases
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'correlations_events_only',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         1
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+         3
+         ),
+        (command_test_data['offenses_list']['response'][0],
+         'all_events',
+         command_test_data['search_create']['response'],
+         sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]),
+         1
+         ),
 
         # failure cases
         (command_test_data['offenses_list']['response'][0],
