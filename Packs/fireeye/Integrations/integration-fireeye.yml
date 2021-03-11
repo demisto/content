@@ -362,6 +362,7 @@ script:
                 if (contentType && contentType.indexOf('application/xml') !== -1) {
                   status_result = JSON.parse(x2j(response.Body));
                 }
+                status_result['submission_Key'] = submissionKeyList[i];
                 result.push(status_result)
             }
             break;
