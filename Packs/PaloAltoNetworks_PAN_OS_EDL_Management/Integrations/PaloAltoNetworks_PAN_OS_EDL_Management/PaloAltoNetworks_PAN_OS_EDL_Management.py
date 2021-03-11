@@ -265,6 +265,7 @@ def edl_update_external_file_command():
 def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
     if not dict_of_lists:
+        demisto.debug(f'PAN-OS EDL Management integration context is empty.')
         dict_of_lists = {list_name: list_items}
         if verbose:
             md = tableToMarkdown('List items:', list_items, headers=[list_name])
