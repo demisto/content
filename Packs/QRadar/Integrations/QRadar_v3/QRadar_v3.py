@@ -2593,7 +2593,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     new_modified_records_ids = [offense.get('id') for offense in offenses if 'id' in offense]
 
     last_update = ctx.get('last_update') if not offenses else offenses[-1].get('last_persisted_time')
-    set_integration_context( {'samples': ctx.get('samples', []), 'last_update': last_update})
+    set_integration_context({'samples': ctx.get('samples', []), 'last_update': last_update})
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
