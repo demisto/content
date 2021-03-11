@@ -14,14 +14,11 @@ configuration:
   type: 0
   defaultvalue: "https://api.crowdstrike.com/"
 - display: CrowdStrike API Client ID
-  name: client_id
+  displaypassword: CrowdStrike API Client Secret
+  additionalinfo: 'For non 6.1 users username is CrowdStrike API Client ID, password is CrowdStrike API Client Secret.'
+  name: credentials
+  type: 9
   required: true
-  type: 0
-- display: CrowdStrike API Client Secret
-  hidden: false
-  name: client_secret
-  required: true
-  type: 4
 - additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
     in XSOAR are: "Account", "Domain", "Email", "File md5",
     "File sha256", "IP", "Registry Key", and "URL". The default is "ALL".'

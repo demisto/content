@@ -35,7 +35,8 @@ CROWDSTRIKE_TO_XSOAR_TYPES = {
 class Client(BaseClient):
 
     def __init__(self, client_id, client_secret, base_url, include_deleted, type, limit, tlp_color=None,
-                 malicious_confidence=None, filter=None, generic_phrase=None, verify=True, proxy=False):
+                 malicious_confidence=None, filter=None, generic_phrase=None, verify=True, proxy=False,
+                 first_fetch=None):
         self._client_id = client_id
         self._client_secret = client_secret
         super().__init__(
@@ -53,6 +54,7 @@ class Client(BaseClient):
         self.include_deleted = include_deleted
         self.tlp_color = tlp_color
         self.limit = limit
+        self.first_fetch = first_fetch
 
     def http_request(self, method, url_suffix=None, full_url=None, headers=None, params=None, data=None,
                      timeout=120, auth=None) -> dict:
@@ -90,42 +92,38 @@ class Client(BaseClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], type: list = None, malicious_confidence=None, filter='', q='',
-                         offset: Optional[int] = 0, include_deleted=False,
-                         fetch_command=False, tlp_color=None) -> list:
+    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
             limit(int): number of indicators to return
-            type: indicators type requested by customer
-            malicious_confidence: indicator malicious confidence requested by customer
-            filter: fql filter
-            q: generic phrase match
             offset: indicators offset
-            include_deleted: whether include deleted indicators or not
             fetch_command: In order not to update last_run time if it is not fetch command
-            tlp_color: traffic light protocol
 
         Returns:
             (list): parsed indicators
         """
-        filter = f'({filter})' if filter else ''
-        if type:
-            type_fql = self.build_type_fql(type)
+        filter = f'({self.filter})' if self.filter else ''
+        if self.type:
+            type_fql = self.build_type_fql(self.type)
             filter = f'({type_fql})+{filter}' if filter else f'({type_fql})'
 
-        if malicious_confidence:
-            malicious_confidence_fql = ','.join([f"malicious_confidence:'{item}'" for item in malicious_confidence])
+        if self.malicious_confidence:
+            malicious_confidence_fql = ','.join([f"malicious_confidence:'{item}'"
+                                                 for item in self.malicious_confidence])
             filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
 
         if fetch_command:
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
+            elif self.first_fetch:
+                last_run = f'last_updated:>={self.first_fetch}'
+                filter = f'{filter}+({last_run})' if filter else f'({last_run})'
 
         demisto.info(f' filter {filter}')
-        params = assign_params(include_deleted=include_deleted,
+        params = assign_params(include_deleted=self.include_deleted,
                                limit=limit,
-                               offset=offset, q=q,
+                               offset=offset, q=self.generic_phrase,
                                filter=filter,
                                sort='last_updated|asc')
 
@@ -145,7 +143,7 @@ class Client(BaseClient):
             demisto.setIntegrationContext({'last_modified_time': timestamp})
             demisto.info(f'set last_run: {timestamp}')
 
-        indicators = self.create_indicators_from_response(response, tlp_color)
+        indicators = self.create_indicators_from_response(response, self.tlp_color)
         return indicators
 
     @staticmethod
@@ -201,7 +199,7 @@ class Client(BaseClient):
                            'targets': resource.get('targets'),
                            # 'threattypes': resource.get('threat_types'),
                            'vulnerabilities': resource.get('vulnerabilities'),
-                           'maliciousconfidence': resource.get('malicious_confidence'),
+                           'confidence': resource.get('malicious_confidence'),
                            'updateddate': resource.get('last_updated'),
                            'creationdate': resource.get('published_date'),
                            'tags': [label.get('name') for label in resource.get('labels')]  # type: ignore
@@ -272,18 +270,13 @@ def fetch_indicators_command(client: Client):
         list of indicators(list)
     """
     parsed_indicators = client.fetch_indicators(
-        type=client.type,
-        malicious_confidence=client.malicious_confidence,
-        filter=client.filter, q=client.generic_phrase,
-        include_deleted=client.include_deleted,
         fetch_command=True,
-        tlp_color=client.tlp_color,
         limit=client.limit
     )
     # we submit the indicators in batches
     for b in batch(parsed_indicators, batch_size=2000):
         demisto.createIndicators(b)
-    return parsed_indicators
+    # return parsed_indicators
 
 
 def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandResults:
@@ -300,11 +293,6 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
     offset = arg_to_number(args.get('offset', 0))
     limit = arg_to_number(args.get('limit', 50))
     parsed_indicators = client.fetch_indicators(
-        type=client.type,
-        malicious_confidence=client.malicious_confidence,
-        filter=client.filter, q=client.generic_phrase,
-        include_deleted=client.include_deleted,
-        tlp_color=client.tlp_color,
         limit=limit,
         offset=offset,
         fetch_command=False
@@ -351,19 +339,23 @@ def reset_last_run():
 
 def main() -> None:
     params = demisto.params()
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+
+    credentials = params.get('credentials')
+    client_id = credentials.get('identifier')
+    client_secret = credentials.get('password')
     proxy = params.get('proxy', False)
     verify_certificate = not demisto.params().get('insecure', False)
+    first_fetch = datetime.timestamp(dateparser.parse(params.get('first_fetch'))) if params.get('first_fetch') else None
     base_url = params.get('base_url')
     tlp_color = params.get('tlp_color')
-    include_deleted = argToBoolean(params.get('include_deleted', False))
+    include_deleted = params.get('include_deleted', False)
     type = argToList(params.get('type'), 'ALL')
     malicious_confidence = argToList(params.get('malicious_confidence'))
     filter = params.get('filter')
     generic_phrase = params.get('generic_phrase')
     max_fetch = arg_to_number(params.get('max_indicator_to_fetch')) if params.get('max_indicator_to_fetch') else 10000
     max_fetch = min(max_fetch, 10000)
+
     args = demisto.args()
 
     try:
@@ -382,7 +374,8 @@ def main() -> None:
             malicious_confidence=malicious_confidence,
             filter=filter,
             generic_phrase=generic_phrase,
-            limit=max_fetch
+            limit=max_fetch,
+            first_fetch=first_fetch
         )
 
         if command == 'test-module':

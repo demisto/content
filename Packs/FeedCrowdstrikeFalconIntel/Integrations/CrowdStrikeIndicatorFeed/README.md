@@ -1,5 +1,4 @@
 CrowdStrike Falcon Intel Indicator Feed
-This integration was integrated and tested with version xx of CrowdStrike Indicator Feed
 ## Configure CrowdStrike Indicator Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -84,7 +83,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "creationdate": 1600080520,
                     "domainname": [],
                     "ipaddress": [],
-                    "maliciousconfidence": "low",
+                    "confidence": "low",
                     "malwarefamily": [
                         "Remcos"
                     ],
@@ -170,7 +169,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "creationdate": 1608208087,
                     "domainname": [],
                     "ipaddress": [],
-                    "maliciousconfidence": "low",
+                    "confidence": "low",
                     "malwarefamily": [
                         "Remcos"
                     ],
@@ -258,7 +257,7 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "creationdate": 1592473928,
                     "domainname": [],
                     "ipaddress": [],
-                    "maliciousconfidence": "low",
+                    "confidence": "low",
                     "malwarefamily": [],
                     "reports": [],
                     "stixkillchainphases": [
@@ -312,8 +311,8 @@ Gets indicators from Crowdstrike Falcon Intel Feed.
                     "relations": [
                         {
                             "created_date": 1597858281,
-                            "id": "url_http://37.210.166.214:80",
-                            "indicator": "http://37.210.166.214:80",
+                            "id": "url_http://1.1.1.1:80",
+                            "indicator": "http://1.1.1.1:80",
                             "last_valid_date": 1597858281,
                             "type": "url"
                         },

@@ -1,10 +1,10 @@
 {
- "id": "indicator_maliciousconfidence",
+ "id": "indicator_confidence",
  "version": -1,
  "modified": "2021-02-23T12:57:41.218043+02:00",
- "name": "Malicious Confidence",
+ "name": "Confidence",
  "ownerOnly": false,
- "cliName": "maliciousconfidence",
+ "cliName": "confidence",
  "type": "shortText",
  "closeForm": false,
  "editForm": true,
