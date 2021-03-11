@@ -6,30 +6,64 @@ args:
   name: incidentId
   required: false
   secret: false
-- default: false
-  description: 'Fields with short or long text that will be taken into account in
-    order to compute similarity - Example: commandline, URL...'
+- auto: PREDEFINED
+  default: false
+  description: 'Text fields taken into account to compute similarity - Example: commandline,
+    URL.'
   isArray: false
   name: similarTextField
+  predefined:
+  - comma separated list
   required: false
   secret: false
-- default: false
-  description: Fields for which exact match is not necessary but will boost the score.
+- auto: PREDEFINED
+  default: false
+  description: 'Categorical fields taken into account to compute similarity - Example:
+    IP'
   isArray: false
   name: similarCategoricalField
+  predefined:
+  - comma separated list
   required: false
   secret: false
-- default: false
-  description: Additional incident fields that will be displayed.
+- auto: PREDEFINED
+  default: false
+  description: 'Json fields taken into account to compute similarity - Example: CustomFields'
+  isArray: false
+  name: similarJsonField
+  predefined:
+  - comma separated list
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Additional incident fields to display but won't be taken into account
+    to compute similarity.
   isArray: false
   name: fieldsToDisplay
+  predefined:
+  - comma separated list
   required: false
   secret: false
-- default: false
-  description: Fields for which exact match is required - help to make the query to
-    Demisto lighter.
+- auto: PREDEFINED
+  default: false
+  description: Exact match fields. Help to make the query lighter
   isArray: false
   name: fieldExactMatch
+  predefined:
+  - comma separated list
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Use a predefined set of fields and CustomFields to compute similarity.
+    If yes it will ignore values in similarTextField, similarCategoricalField, similarJsonField
+  isArray: false
+  name: useAllFields
+  predefined:
+  - 'True'
+  - 'False'
   required: false
   secret: false
 - default: false
@@ -49,47 +83,10 @@ args:
   name: toDate
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: If displaying similarity score for each fields.
-  isArray: false
-  name: showSimilarity
-  predefined:
-  - 'True'
-  - 'False'
-  required: false
-  secret: false
 - default: false
-  defaultValue: '0.2'
-  description: Filter out incident with a lower score than confidence.
-  isArray: false
-  name: confidence
-  required: false
-  secret: false
-- default: false
-  defaultValue: '100'
-  description: Maximun number of incidents to display
-  isArray: false
-  name: maxIncidentsToDisplay
-  required: false
-  secret: false
-- default: false
-  description: argument for the query
+  description: argument for the query - Help to make the query lighter
   isArray: false
   name: query
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: Aggregate duplicate incidents within diffrerent dates. If includeIndicatorsSimilarity
-    is Truee then iaggreagateIncidentsDifferentDate will be False.
-  isArray: false
-  name: aggreagateIncidentsDifferentDate
-  predefined:
-  - 'True'
-  - 'False'
   required: false
   secret: false
 - default: false
@@ -99,53 +96,52 @@ args:
   name: limit
   required: false
   secret: false
-- default: false
-  description: 'Fields with json will be taken into account in order to compute similarity
-    - Example: CustomFields'
-  isArray: false
-  name: similarJsonField
-  required: false
-  secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Use a predefined set of fields and CustomFields.
+  description: Aggregate duplicate incidents within diffrerent dates. If includeIndicatorsSimilarity
+    is True then aggreagateIncidentsDifferentDate will be False.
   isArray: false
-  name: useAllFields
+  name: aggreagateIncidentsDifferentDate
   predefined:
   - 'True'
-  - ' False'
+  - 'False'
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Show the incident you are investigating.
+  description: If displaying similarity score for each incidentfields.
   isArray: false
-  name: showActualIncident
+  name: showIncidentSimilarityForAllFields
   predefined:
   - 'True'
   - 'False'
   required: false
   secret: false
 - default: false
-  description: Minimun number of indicators required related to the incident before
-    running the model.
+  defaultValue: '0.2'
+  description: Keep incidents with higher similarity score than MinimunIncidentSimilarity.
   isArray: false
-  name: minNumberOfIndicators
+  name: MinimunIncidentSimilarity
   required: false
   secret: false
 - default: false
-  description: Type of indicators we want to take into account  - If empty use all
-    indicators types.
+  defaultValue: '100'
+  description: Maximun number of incidents to display.
   isArray: false
-  name: indicatorsTypes
+  name: maxIncidentsToDisplay
   required: false
   secret: false
-- default: false
-  description: Help to filter out indicators that appear in many incidents.
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Show current incident.
   isArray: false
-  name: maxIncidentsInIndicatorsForWhiteList
+  name: showActualIncident
+  predefined:
+  - 'True'
+  - 'False'
   required: false
   secret: false
 - auto: PREDEFINED
@@ -160,8 +156,32 @@ args:
   - ' False'
   required: false
   secret: false
-comment: Find similar incidents based on incident's fields similarity and indicators
-  similarity.
+- default: false
+  description: Minimun number of indicators required related to the incident before
+    running the model. Relevant if includeIndicatorsSimilarity is True
+  isArray: false
+  name: minNumberOfIndicators
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Type of indicators we want to take into account  - If empty use all
+    indicators types. Relevant if includeIndicatorsSimilarity is True
+  isArray: false
+  name: indicatorsTypes
+  predefined:
+  - comma separated list
+  required: false
+  secret: false
+- default: false
+  description: Help to filter out indicators that appear in many incidents. Relevant
+    if includeIndicatorsSimilarity is True
+  isArray: false
+  name: maxIncidentsInIndicatorsForWhiteList
+  required: false
+  secret: false
+comment: Find past similar incidents based on incidents fields similarity, with an
+  option to display indicators similarity as well
 commonfields:
   id: DBotFindSimilarIncidents
   version: -1
