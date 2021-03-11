@@ -24,7 +24,8 @@ def test_ip_command_when_api_quota_reached(mocker):
     params = {
         'server': 'test',
         'proxy': True,
-        'disregard_quota': True
+        'disregard_quota': True,
+        'integrationReliability': DBotScoreReliability.C
     }
 
     api_quota_reached_request_response_with_dot_access = DotDict(api_quota_reached_request_response)

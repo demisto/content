@@ -92,12 +92,6 @@ CATEGORIES_ID = {
 }
 
 session = requests.session()
-reliability = demisto.params().get('integrationReliability')
-
-if DBotScoreReliability.is_valid_type(reliability):
-    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-else:
-    return_error("Please provide a valid value for the Source Reliability parameter.")
 
 ''' HELPER FUNCTIONS '''
 
@@ -155,8 +149,7 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
                 'Description': 'The address was reported as Malicious by AbuseIPDB.'
 
             }
-        dbot_scores.append(
-        {
+        dbot_scores.append({
             "Score": dbot_score,
             "Vendor": "AbuseIPDB",
             "Indicator": analysis.get("ipAddress"),
@@ -297,6 +290,13 @@ def get_categories_command():
 
 
 try:
+    reliability = demisto.params().get('integrationReliability')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("Please provide a valid value for the Source Reliability parameter.")
+
     if demisto.command() == 'test-module':
         # Tests connectivity and credentails on login
         test_module()
