@@ -94,11 +94,12 @@ def controlQRadarXSOAR(qradar_offenses, mismatched_incidents, matched_incidents)
 
     mach_incident_count = 'Count of matching events between QRadar and SOAR : ' + str(len(match_incidents_list))
     demisto.results(mach_incident_count)
-    mismatched_incident_count = "Number of incidents inconsistent between QRadar and XSOAR : " +  str(len(difference_incident))
+    mismatched_incident_count = "Number of incidents inconsistent between QRadar and XSOAR : " + str(len(difference_incident))
     demisto.results(mismatched_incident_count)
 
     if len(difference_incident) > 0:
-        mismatched_incident = "Incidents that are inconsistent between QRadar and XSOAR(XSOAR incident IDs) : " +  str(difference_incident)
+        mismatched_incident = "Incidents that are inconsistent between QRadar and XSOAR(XSOAR incident IDs) : " 
+        + str(difference_incident)
         demisto.results(mismatched_incident)
         return difference_incident
     else:
