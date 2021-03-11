@@ -44,7 +44,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     "types_list, expected",
     [
         (['ALL'], "type:'username',type:'domain',type:'email_address',type:'hash_md5',type:'hash_sha256',"
-                  "type:'ip_address',type:'registry',type:'url'"),
+                  "type:'registry',type:'url',type:'ip_address'"),
         (['Domain', 'Email', 'Registry Key'], "type:'domain',type:'email_address',type:'registry'")
     ]
 )

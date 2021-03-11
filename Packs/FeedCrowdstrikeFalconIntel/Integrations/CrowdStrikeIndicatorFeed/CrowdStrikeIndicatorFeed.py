@@ -185,6 +185,7 @@ class Client(BaseClient):
 
         parsed_indicators: list = []
         indicator: dict = {}
+
         for resource in raw_response['resources']:
             indicator = {
                 'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
@@ -197,7 +198,7 @@ class Client(BaseClient):
                            'ipaddress': resource.get('ip_address_types'),
                            'domainname': resource.get('domain_types'),
                            'targets': resource.get('targets'),
-                           'threattypes': resource.get('threat_types'),
+                           # 'threattypes': resource.get('threat_types'),
                            'vulnerabilities': resource.get('vulnerabilities'),
                            'maliciousconfidence': resource.get('malicious_confidence'),
                            'updateddate': resource.get('last_updated'),
