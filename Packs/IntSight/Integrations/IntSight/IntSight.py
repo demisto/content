@@ -838,44 +838,47 @@ def request_for_ioc_enrichment():
     """
     ioc_value = demisto.getArg('value')
     request_url = 'public/v1/iocs/enrich/{}'.format(ioc_value)
-    ENRICHMENT_REQUEST_TIMEOUT_IN_SECONDS = 60 * 5
-    start_time = time.time()
-    while True:
-        if time.time() - start_time > ENRICHMENT_REQUEST_TIMEOUT_IN_SECONDS:
-            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: Request timeout.')
-            break
-        response = http_request('GET', request_url, json_response=True)
-        status = response.get('Status')
-        if status == 'Done':
-            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
 
-            demisto.results(
-                {
-                    'Type': entryTypes['note'],
-                    'EntryContext': {
-                        'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
-                        'DBotScore': dbot_score,
-                        'Domain': domain,
-                        'IP': ip_info,
-                        'URL': url_info,
-                        'File': hash_info
+    response = http_request('GET', request_url, json_response=True)
+    status = response.get('Status')
+    if status == 'Done':
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+
+        demisto.results(
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {
+                    'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                    'DBotScore': dbot_score,
+                    'Domain': domain,
+                    'IP': ip_info,
+                    'URL': url_info,
+                    'File': hash_info
+                },
+                'Contents': response,
+                'HumanReadable': tableToMarkdown('IOC Enrichment', ioc_readable),
+                'ContentsFormat': formats['json']
+            }
+        )
+    elif status == 'Queued' or status == 'InProgress':
+        demisto.results(
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {
+                    'IntSights.Iocs(val.ID === obj.ID)': {
+                        'Value': demisto.get(ioc_data, 'Data.Value'),
+                        'Status': demisto.get(ioc_data, 'Status'),
                     },
-                    'Contents': response,
-                    'HumanReadable': tableToMarkdown('IOC Enrichment', ioc_readable),
-                    'ContentsFormat': formats['json']
-                }
-            )
-            break
-        elif status == 'Queued' or status == 'InProgress':
-            time.sleep(2)
-            continue
-        elif status == 'QuotaExceeded':
-            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: Quota exceded.')
-            break
-        else:
-            reason = response.get('FailedReason', '')
-            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: {}.'.format(reason))
-            break
+                },
+                'Contents': response,
+                'ContentsFormat': formats['json']
+            }
+        )
+    elif status == 'QuotaExceeded':
+        raise Exception('Could not get any results. Reason: Quota exceded.')
+    else:
+        reason = response.get('FailedReason', '')
+        raise Exception('Could not get any results. Reason: {}.'.format(reason))
 
 
 def translate_severity(sev):
