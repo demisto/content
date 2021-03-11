@@ -541,7 +541,7 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
         return None, msg
     if len(incidents) == limit:
         msg += "%s \n" % MESSAGE_WARNING_TRUNCATED % (str(len(incidents)), str(limit))
-        return None, msg
+        return incidents, msg
     return incidents, msg
 
 
@@ -775,7 +775,7 @@ def main():
 
     incident, incident_id = load_current_incident(incident_id, populate_high_level_fields)
     if not incident:
-        global_msg += "%s \n" % MESSAGE_NO_CURRENT_INCIDENT
+        global_msg += "%s \n" % MESSAGE_NO_CURRENT_INCIDENT %incident_id
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return
