@@ -262,8 +262,9 @@ def edl_update_external_file_command():
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
+def edl_update_internal_list(list_name: str, list_items: list, add: bool, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
+
     if not dict_of_lists:
         demisto.debug(f'PAN-OS EDL Management integration context is empty.')
         dict_of_lists = {list_name: list_items}
@@ -273,7 +274,8 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
             md = 'Instance context updated successfully.'
     else:
         if not dict_of_lists.get(list_name, None) and not add:
-            return_error('Cannot remove items from an empty list.')
+            raise Exception(f'Cannot remove items from an empty list: {list_name}.')
+
         if dict_of_lists.get(list_name, None):
             if add:
                 chosen_list = dict_of_lists.get(list_name)
@@ -281,21 +283,23 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
                     chosen_list = [chosen_list]
 
                 list_items = list(set(chosen_list + list_items))
-            else:
+            else:  # remove
                 list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
 
-        if len(list_items) == 0:  # delete list from instance context
+        if not add and len(list_items) == 0:
+            # delete list from instance context, can happen only upon remove of objects
             demisto.debug(f'PAN-OS EDL Management deleting {list_name} from the integration context.')
             dict_of_lists.pop(list_name, None)
             md = 'List is empty, deleted from instance context.'
         else:
+            # update list in instance context, can happen upon removal or addition of objects
             dict_of_lists.update({list_name: list_items})
             if verbose:
                 md = tableToMarkdown('List items:', list_items, headers=[list_name])
             else:
                 md = 'Instance context updated successfully.'
 
-    demisto.debug(f'PAN-OS EDL Management setting {list_name} with {len(list_items)} in the integration context.')
+    demisto.debug(f'PAN-OS EDL Management updating {list_name} with {len(list_items)} in the integration context.')
     demisto.setIntegrationContext(dict_of_lists)
 
     demisto.results({
@@ -312,7 +316,7 @@ def edl_update_internal_list_command():
     list_name = demisto.args().get('list_name')
     list_items = argToList(demisto.args().get('list_items'))
     if demisto.args().get('add_or_remove') not in ['add', 'remove']:
-        return_error('add_or_remove argument is not \'add\' neither \'remove\'.')
+        raise Exception('add_or_remove argument is not \'add\' neither \'remove\'.')
     add = demisto.args().get('add_or_remove') == 'add'
     verbose = demisto.args().get('verbose') == 'true'
 
