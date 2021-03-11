@@ -842,6 +842,18 @@ def test_module() -> str:
     if not user_data.get('active'):
         raise Exception(f'Test module for Jira failed for the configured parameters.'
                         f'please Validate that the user is active. Response: {str(user_data)}')
+    outgoing_mirror = demisto.params().get('outgoing_mirror')
+    if outgoing_mirror:
+        try:
+            custom_fields = get_custom_fields()
+            if custom_fields is None:
+                return_warning("Test module has finished successfully!."
+                               "Please Note: There was a problem getting the list of custom fields for mirror "
+                               "outgoing incidents.")
+        except Exception as e:
+            return_warning("Test module has finished successfully!."
+                           f" Please Note: There was a problem getting the list of custom fields for mirror outgoing "
+                           f"incidents.\n The error is:{e}.")
 
     return 'ok'
 
