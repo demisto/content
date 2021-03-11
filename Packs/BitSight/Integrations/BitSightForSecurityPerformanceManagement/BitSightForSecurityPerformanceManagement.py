@@ -155,15 +155,15 @@ def get_companies_guid_command(client):
         generic_iam_context = {
             'companyName': 'my_company',
             'shortName': 'my_company',
-            'guid': res_json['my_company']['guid']
+            'guid': res_json.get('my_company', {}).get('guid')
         }
         generic_iam_context_data_list.append(generic_iam_context)
         companies_list = res_json.get('companies', [])
         for company in companies_list:
             generic_iam_context = {
                 'companyName': company.get('name'),
-                'shortName': company['shortname'],
-                'guid': company['guid']
+                'shortName': company.get('shortname'),
+                'guid': company.get('guid')
             }
             generic_iam_context_data_list.append(generic_iam_context)
     else:

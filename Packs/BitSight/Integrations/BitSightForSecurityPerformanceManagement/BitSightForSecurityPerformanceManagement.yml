@@ -6,27 +6,8 @@ display: BitSight for Security Performance Management
 category: Utilities
 description: 'BitSight Integration to get company guid, deatils, findings and to create
   Incidents. '
-detaileddescription: "### Community Contributed Integration\nSupport and maintenance
-  for this integration are provided by the author.\n- **URL**: [https://api.bitsighttech.com/]\n***\n##
-  BitSight\n- This section explains how to configure the instance of BitSight  for
-  Security Performance Management in Cortex XSOAR\nAPI Key: You can use the API Key
-  Provided to you\nCompany's GUID: You can use the Guid of the company for which incidents
-  needs to be fetched, suppose if you are not aware of GUID. Please execute the command
-  'bitsight-get-companies-guid' it will list the companies and corresponding GUID.\nFirst
-  fetch Days: This integration will fetch incident once in a day, but when fetch incident
-  is  running for first time, it will take input from this parameter and fetch incidents
-  for given number of days.\nIncident Daily Fetch time: Parameter gives input to integration
-  at what time incidents needs to be fetched. We can specify here time in 24 hours
-  format ('HH:MM').\nMinimum Severity for Findings: Parameter helps to filter the
-  record based on minimum severity entered here. You can choose one of the severity
-  listed.\nFindings minimum asset category: Parameter helps to filter the record based
-  on minimum asset category entered here. You can choose one of the asset category
-  listed.\nFindings Grade: Parameter helps to filter the record based on Grade. You
-  can choose multiple grades listed.\nRisk Vector: Parameter  helps to filter the
-  record based on Risk Vector.  By default 'All' will be selected, if you need only
-  particular values you can unselect 'All' and select the required values Listed."
 configuration:
-- display: Server URL (e.g. https://api.bitsighttech.com)
+- display: Server URL (e.g. https://test.com)
   name: url
   type: 0
   required: true
@@ -38,7 +19,7 @@ configuration:
   name: guid
   type: 0
   required: false
-- display: First fetch Days
+- display: First fetch time in days
   name: first_fetch
   defaultvalue: "3"
   type: 0
@@ -51,7 +32,7 @@ configuration:
   type: 0
   required: false
   additionalinfo: Please provide Incident fetch time in day in 24 hours format ('HH:MM').
-    Fetch incident will run once in day if  execution time grater than given time
+    Fetch incident will run once a day if execution time greater than the given time
     here.
 - display: Max Fetch
   name: max_fetch
@@ -300,7 +281,9 @@ script:
       - warn
       - bad
       - neutral
-      description: Grade of the findings
+      description: Grade of the findings. This can be a comma-separated list. Select
+        the values from list of pre defined values good,fair,warn,bad,neutral.
+      isArray: true
     - name: asset_category
       auto: PREDEFINED
       predefined:
