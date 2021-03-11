@@ -251,6 +251,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '100'
+      description: The Minimum confidence required for the retrieved IPs.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
     deprecated: false
     description: Returns a list of the most reported IP addresses.
     execution: false
