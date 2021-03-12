@@ -9,13 +9,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5a8a5d68-7366-4752-83b7-6240bf9355a7
+    taskid: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
     type: start
     task:
-      id: 5a8a5d68-7366-4752-83b7-6240bf9355a7
+      id: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,12 +33,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 671a85e7-a1bc-4c97-85f1-f4f93dd44237
+    taskid: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
     type: regular
     task:
-      id: 671a85e7-a1bc-4c97-85f1-f4f93dd44237
+      id: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
       version: -1
       name: set remote file url and URLs
       description: Sets a value into the context with the given context key
@@ -71,15 +72,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e660d077-a2d1-44b4-8b1f-ffc579c96d80
+    taskid: 9e02dc83-f218-4063-8a29-7a5058a64d3d
     type: condition
     task:
-      id: e660d077-a2d1-44b4-8b1f-ffc579c96d80
+      id: 9e02dc83-f218-4063-8a29-7a5058a64d3d
       version: -1
       name: Check that the amount of reports == amount of inputs
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -129,15 +131,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
+    taskid: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
     type: title
     task:
-      id: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
+      id: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -154,12 +157,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4836a7a8-2df7-4d5f-82c8-3bbefbed0f09
+    taskid: 3a09a2e0-6167-4109-89da-59a9f57a8071
     type: regular
     task:
-      id: 4836a7a8-2df7-4d5f-82c8-3bbefbed0f09
+      id: 3a09a2e0-6167-4109-89da-59a9f57a8071
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -183,12 +188,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9fa68cca-1b07-47ba-8ac1-c04d6a2a12d3
+    taskid: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
     type: playbook
     task:
-      id: 9fa68cca-1b07-47ba-8ac1-c04d6a2a12d3
+      id: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
       version: -1
       name: Detonate URL - WildFire v2.1
       playbookName: Detonate URL - WildFire v2.1
@@ -211,12 +218,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 91c21fd5-0631-485d-86c9-80a232f04344
+    taskid: 4039ef04-960e-4817-8c81-f6438098c800
     type: regular
     task:
-      id: 91c21fd5-0631-485d-86c9-80a232f04344
+      id: 4039ef04-960e-4817-8c81-f6438098c800
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -247,6 +256,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
