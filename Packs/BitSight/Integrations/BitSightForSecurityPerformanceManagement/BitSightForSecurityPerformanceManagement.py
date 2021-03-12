@@ -19,29 +19,16 @@ class Client(BaseClient):
     Should do requests and return data
     """
 
-    def http_request(self, method, url_suffix, params=None, data=None):
-        full_url = self._base_url + url_suffix
-
-        res = requests.request(
-            method,
-            full_url,
-            verify=self._verify,
-            params=params,
-            json=data,
-            auth=self._auth
-        )
-        return res
-
     def get_companies_guid(self):
         uri = 'v1/companies'
-        return self.http_request(
+        return self._http_request(
             method='GET',
             url_suffix=uri
         )
 
     def get_company_detail(self, guid):
         uri = f'v1/companies/{encode_string_results(guid)}'
-        return self.http_request(
+        return self._http_request(
             method='GET',
             url_suffix=uri
         )
@@ -66,7 +53,7 @@ class Client(BaseClient):
         if risk_vector:
             params['risk_vector'] = risk_vector
 
-        return self.http_request(
+        return self._http_request(
             method='GET',
             url_suffix=uri,
             params=params
@@ -117,7 +104,7 @@ def fetch_incidents(client, last_run, params):
             for entry in report_entries:
                 # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
                 event = {
-                    "name": entry.get('temporary_id'),
+                    "name": "BitSight Findings-" + entry.get('temporary_id'),
                     'occurred': entry.get('first_seen') + 'T00:00:00Z',
                     "rawJSON": json.dumps(entry)}
                 events.append(event)
@@ -148,29 +135,20 @@ def test_module(client):
 
 def get_companies_guid_command(client):
     generic_iam_context_data_list = []
-    res = client.get_companies_guid()
+    res_json = client.get_companies_guid()
 
-    if res.status_code == 200:
-        res_json = res.json()
+    generic_iam_context = {
+        'companyName': 'my_company',
+        'shortName': 'my_company',
+        'guid': res_json.get('my_company', {}).get('guid')
+    }
+    generic_iam_context_data_list.append(generic_iam_context)
+    companies_list = res_json.get('companies', [])
+    for company in companies_list:
         generic_iam_context = {
-            'companyName': 'my_company',
-            'shortName': 'my_company',
-            'guid': res_json.get('my_company', {}).get('guid')
-        }
-        generic_iam_context_data_list.append(generic_iam_context)
-        companies_list = res_json.get('companies', [])
-        for company in companies_list:
-            generic_iam_context = {
-                'companyName': company.get('name'),
-                'shortName': company.get('shortname'),
-                'guid': company.get('guid')
-            }
-            generic_iam_context_data_list.append(generic_iam_context)
-    else:
-        res_json = res.json()
-        generic_iam_context = {
-            'errorCode': res.status_code,
-            'errorMessage': res_json
+            'companyName': company.get('name'),
+            'shortName': company.get('shortname'),
+            'guid': company.get('guid')
         }
         generic_iam_context_data_list.append(generic_iam_context)
 
@@ -185,99 +163,89 @@ def get_companies_guid_command(client):
 
 def get_company_details_command(client, args):
     guid = args.get('guid')
-    res = client.get_company_detail(guid)
+    res_json = client.get_company_detail(guid)
 
-    if res.status_code == 200:
-        res_json = res.json()
-        generic_iam_context = {
-            'guid': res_json.get('guid'),
-            'customId': res_json.get('custom_id'),
-            'name': res_json.get('name'),
-            'description': res_json.get('description'),
-            'ipv4Count': res_json.get('ipv4_count'),
-            'peopleCount': res_json.get('people_count'),
-            'shortName': res_json.get('shortname'),
-            'industry': res_json.get('industry'),
-            'industrySlug': res_json.get('industry_slug'),
-            'subIndustry': res_json.get('sub_industry'),
-            'subIndustrySlug': res_json.get('sub_industry_slug'),
-            'homePage': res_json.get('homepage'),
-            'primaryDomain': res_json.get('primary_domain'),
-            'type': res_json.get('type'),
-            'displayURL': res_json.get('display_url'),
-            'ratingDetails': res_json.get('rating_details'),
-            'ratings': res_json.get('ratings'),
-            'searchCount': res_json.get('search_count'),
-            'subscriptionType': res_json.get('subscription_type'),
-            'sparkline': res_json.get('sparkline'),
-            'subscriptionTypeKey': res_json.get('subscription_type_key'),
-            'subscriptionEndDate': res_json.get('subscription_end_date'),
-            'bulkEmailSenderStatus': res_json.get('bulk_email_sender_status'),
-            'serviceProvider': res_json.get('service_provider'),
-            'customerMonitoringCount': res_json.get('customer_monitoring_count'),
-            'availableUpgradeTypes': res_json.get('available_upgrade_types'),
-            'hasCompanyTree': res_json.get('has_company_tree'),
-            'hasPreferredContact': res_json.get('has_preferred_contact'),
-            'isBundle': res_json.get('is_bundle'),
-            'ratingIndustryMedian': res_json.get('rating_industry_median'),
-            'primaryCompany': res_json.get('primary_company'),
-            'permissions': res_json.get('permissions'),
-            'isPrimary': res_json.get('is_primary'),
-            'securityGrade': res_json.get('security_grade'),
-            'inSpmPortfolio': res_json.get('in_spm_portfolio'),
-            'isMycompMysubsBundle': res_json.get('is_mycomp_mysubs_bundle'),
-            'companyFeatures': res_json.get('company_features')
+    generic_iam_context = {
+        'guid': res_json.get('guid'),
+        'customId': res_json.get('custom_id'),
+        'name': res_json.get('name'),
+        'description': res_json.get('description'),
+        'ipv4Count': res_json.get('ipv4_count'),
+        'peopleCount': res_json.get('people_count'),
+        'shortName': res_json.get('shortname'),
+        'industry': res_json.get('industry'),
+        'industrySlug': res_json.get('industry_slug'),
+        'subIndustry': res_json.get('sub_industry'),
+        'subIndustrySlug': res_json.get('sub_industry_slug'),
+        'homePage': res_json.get('homepage'),
+        'primaryDomain': res_json.get('primary_domain'),
+        'type': res_json.get('type'),
+        'displayURL': res_json.get('display_url'),
+        'ratingDetails': res_json.get('rating_details'),
+        'ratings': res_json.get('ratings'),
+        'searchCount': res_json.get('search_count'),
+        'subscriptionType': res_json.get('subscription_type'),
+        'sparkline': res_json.get('sparkline'),
+        'subscriptionTypeKey': res_json.get('subscription_type_key'),
+        'subscriptionEndDate': res_json.get('subscription_end_date'),
+        'bulkEmailSenderStatus': res_json.get('bulk_email_sender_status'),
+        'serviceProvider': res_json.get('service_provider'),
+        'customerMonitoringCount': res_json.get('customer_monitoring_count'),
+        'availableUpgradeTypes': res_json.get('available_upgrade_types'),
+        'hasCompanyTree': res_json.get('has_company_tree'),
+        'hasPreferredContact': res_json.get('has_preferred_contact'),
+        'isBundle': res_json.get('is_bundle'),
+        'ratingIndustryMedian': res_json.get('rating_industry_median'),
+        'primaryCompany': res_json.get('primary_company'),
+        'permissions': res_json.get('permissions'),
+        'isPrimary': res_json.get('is_primary'),
+        'securityGrade': res_json.get('security_grade'),
+        'inSpmPortfolio': res_json.get('in_spm_portfolio'),
+        'isMycompMysubsBundle': res_json.get('is_mycomp_mysubs_bundle'),
+        'companyFeatures': res_json.get('company_features')
+    }
+    company_info = {
+        'guid': res_json.get('guid'),
+        'customId': res_json.get('custom_id'),
+        'name': res_json.get('name'),
+        'description': res_json.get('description'),
+        'ipv4Count': res_json.get('ipv4_count'),
+        'peopleCount': res_json.get('people_count'),
+        'shortName': res_json.get('shortname'),
+        'industry': res_json.get('industry'),
+        'industrySlug': res_json.get('industry_slug'),
+        'subIndustry': res_json.get('sub_industry'),
+        'subIndustrySlug': res_json.get('sub_industry_slug'),
+        'homePage': res_json.get('homepage'),
+        'primaryDomain': res_json.get('primary_domain'),
+        'type': res_json.get('type'),
+        'displayURL': res_json.get('display_url')
+    }
+    ratings = []
+    for rating in res_json.get('ratings', []):
+        rating_dict = {
+            'rating': rating.get('rating'),
+            'rating_date': rating.get('rating_date'),
+            'range': rating.get('range')
         }
-        company_info = {
-            'guid': res_json.get('guid'),
-            'customId': res_json.get('custom_id'),
-            'name': res_json.get('name'),
-            'description': res_json.get('description'),
-            'ipv4Count': res_json.get('ipv4_count'),
-            'peopleCount': res_json.get('people_count'),
-            'shortName': res_json.get('shortname'),
-            'industry': res_json.get('industry'),
-            'industrySlug': res_json.get('industry_slug'),
-            'subIndustry': res_json.get('sub_industry'),
-            'subIndustrySlug': res_json.get('sub_industry_slug'),
-            'homePage': res_json.get('homepage'),
-            'primaryDomain': res_json.get('primary_domain'),
-            'type': res_json.get('type'),
-            'displayURL': res_json.get('display_url')
-        }
-        ratings = []
-        for rating in res_json.get('ratings', []):
-            rating_dict = {
-                'rating': rating.get('rating'),
-                'rating_date': rating.get('rating_date'),
-                'range': rating.get('range')
-            }
-            ratings.append(rating_dict)
+        ratings.append(rating_dict)
 
-        rating_details = []
-        for rating_detail_key in res_json.get('rating_details', {}):
-            rating_detail = res_json.get('rating_details', {}).get(rating_detail_key, {})
-            rating_detail_dict = {
-                'name': rating_detail.get('name'),
-                'rating': rating_detail.get('rating'),
-                'percentile': rating_detail.get('percentile'),
-                'display_url': rating_detail.get('display_url')
-            }
-            rating_details.append(rating_detail_dict)
-
-        readable = {
-            'Company Info': company_info,
-            'Ratings': ratings,
-            'Rating Details': rating_details
+    rating_details = []
+    for rating_detail_key in res_json.get('rating_details', {}):
+        rating_detail = res_json.get('rating_details', {}).get(rating_detail_key, {})
+        rating_detail_dict = {
+            'name': rating_detail.get('name'),
+            'rating': rating_detail.get('rating'),
+            'percentile': rating_detail.get('percentile'),
+            'display_url': rating_detail.get('display_url')
         }
+        rating_details.append(rating_detail_dict)
 
-    else:
-        res_json = res.json()
-        readable = {}
-        generic_iam_context = {
-            'errorCode': res.status_code,
-            'errorMessage': res_json
-        }
+    readable = {
+        'Company Info': company_info,
+        'Ratings': ratings,
+        'Rating Details': rating_details
+    }
 
     readable_output = tableToMarkdown(name='Get Company Details:',
                                       t=readable,
@@ -384,62 +352,60 @@ def get_company_findings_command(client, args, first_seen=None, fetch_incidents=
     if asset_category:
         asset_category_eq = asset_category_mapping[asset_category]
 
-    res = client.get_company_findings(guid, first_seen, last_seen, severity_gte, grade, asset_category_eq,
-                                      risk_vector)
+    res_json = client.get_company_findings(guid, first_seen, last_seen, severity_gte, grade, asset_category_eq,
+                                           risk_vector)
 
     if not fetch_incidents:
         generic_iam_context_data_list = []
-        if res.status_code == 200:
-            res_json = res.json()
+        readable_list = []
+        results = res_json.get('results')
+        if results:
+            for result in results:
+                generic_iam_context = {
+                    'temporaryId': result.get('temporary_id'),
+                    'affectsRating': result.get('affects_rating'),
+                    'assets': result.get('assets'),
+                    'details': result.get('details'),
+                    'evidenceKey': result.get('evidence_key'),
+                    'firstSeen': result.get('first_seen'),
+                    'lastSeen': result.get('last_seen'),
+                    'relatedFindings': result.get('related_findings'),
+                    'riskCategory': result.get('risk_category'),
+                    'riskVector': result.get('risk_vector'),
+                    'riskVectorLabel': result.get('risk_vector_label'),
+                    'rolledupObservationId': result.get('rolledup_observation_id'),
+                    'severity': result.get('severity'),
+                    'severityCategory': result.get('severity_category'),
+                    'tags': result.get('tags'),
+                    'duration': result.get('duration'),
+                    'comments': result.get('comments'),
+                    'remainingDecay': result.get('remaining_decay')
+                }
 
-            results = res_json.get('results')
-            if results:
-                for result in results:
-                    generic_iam_context = {
-                        'temporaryId': result.get('temporary_id'),
-                        'affectsRating': result.get('affects_rating'),
-                        'assets': result.get('assets'),
-                        'details': result.get('details'),
-                        'evidenceKey': result.get('evidence_key'),
-                        'firstSeen': result.get('first_seen'),
-                        'lastSeen': result.get('last_seen'),
-                        'relatedFindings': result.get('related_findings'),
-                        'riskCategory': result.get('risk_category'),
-                        'riskVector': result.get('risk_vector'),
-                        'riskVectorLabel': result.get('risk_vector_label'),
-                        'rolledupObservationId': result.get('rolledup_observation_id'),
-                        'severity': result.get('severity'),
-                        'severityCategory': result.get('severity_category'),
-                        'tags': result.get('tags'),
-                        'duration': result.get('duration'),
-                        'comments': result.get('comments'),
-                        'remainingDecay': result.get('remaining_decay'),
-                    }
-
-                    generic_iam_context_data_list.append(generic_iam_context)
-            else:
-                generic_iam_context_data_list.append({})
-
+                generic_iam_context_data_list.append(generic_iam_context)
+                readable = {
+                    'Evidence Key': result.get('evidence_key'),
+                    'Risk Vector Label': result.get('risk_vector_label'),
+                    'First Seen': result.get('first_seen'),
+                    'Last Seen': result.get('last_seen'),
+                    'ID': result.get('temporary_id'),
+                    'Risk Category': result.get('risk_category'),
+                    'Severity': result.get('severity_category'),
+                }
+                readable_list.append(readable)
         else:
-            res_json = res.json()
-            generic_iam_context = {
-                'errorCode': res.status_code,
-                'errorMessage': res_json
-            }
-            generic_iam_context_data_list.append(generic_iam_context)
+            generic_iam_context_data_list.append({})
+            readable_list.append({})
 
         readable_output = tableToMarkdown(name='Get Company findings:',
-                                          t=generic_iam_context_data_list,
-                                          headers=["errorCode", "errorMessage", "temporaryId", "affectsRating",
-                                                   "assets", "details", "evidenceKey", "firstSeen", "lastSeen",
-                                                   "relatedFindings", "riskCategory", "riskVector", "riskVectorLabel",
-                                                   "rolledupObservationId", "severity", "severityCategory", "tags",
-                                                   "duration", "comments", "remainingDecay"],
+                                          t=readable_list,
+                                          headers=["Evidence Key", "Risk Vector Label", "First Seen", "Last Seen",
+                                                   "ID", "Risk Category", "Severity"],
                                           removeNull=True
                                           )
         return readable_output, generic_iam_context_data_list, res_json
     else:
-        return res.json()
+        return res_json
 
 
 def main():
