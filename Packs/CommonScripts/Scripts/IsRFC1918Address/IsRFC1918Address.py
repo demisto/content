@@ -6,8 +6,9 @@ from netaddr import IPAddress, IPNetwork
 
 def main():
     args = demisto.args()
-
-    ip_address = args.get('value', 'left')
+    ip_address = args.get('value')
+    if not ip_address:
+        ip_address = args.get('left')
     cidr_range_list = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
 
     for cidr in cidr_range_list:
