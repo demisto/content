@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 
 from netaddr import IPAddress, IPNetwork
 
