@@ -8,52 +8,42 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Incident''s text fields taken into account to compute similarity -
+  description: 'Comma separated list of incident text fields taken into account to compute similarity -
     Example: commandline, URL.'
   isArray: false
   name: similarTextField
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Incident''s categorical fields taken into account to compute similarity
+  description: 'Comma separated list of incident categorical fields taken into account to compute similarity
     - Example: IP'
   isArray: false
   name: similarCategoricalField
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Incident''s json fields taken into account to compute similarity -
+  description: 'Comma separated list of incident json fields taken into account to compute similarity -
     Example: CustomFields'
   isArray: false
   name: similarJsonField
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Additional incident fields to display but won't be taken into account
-    to compute similarity.
+  description: "Comma separated list of additional incident fields to display but will no be taken into account
+    to compute similarity."
   isArray: false
   name: fieldsToDisplay
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Incident fields that have to be equal to current incident fields. Help
-    to make the query ligher.
+  description: "Comma separated list of incident fields that have to be equal to current incident fields. Help
+    to make the query ligher."
   isArray: false
   name: fieldExactMatch
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - auto: PREDEFINED
@@ -167,12 +157,10 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Type of indicators we want to take into account  - If empty use all
+  description: Comma separated list of indicator type we want to take into account  - If empty use all
     indicators types. Relevant if includeIndicatorsSimilarity is True
   isArray: false
   name: indicatorsTypes
-  predefined:
-  - comma separated list
   required: false
   secret: false
 - default: false
