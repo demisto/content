@@ -56,5 +56,5 @@ def test_fetch_incidents(mocker):
     curr_date = datetime.now().strftime('%Y-%m-%d')
 
     assert curr_date in last_run['time']
-    assert events == [{'name': 'BitSight Findings-temp1', 'occurred': '2021-02-01T00:00:00Z',
+    assert events == [{'name': 'BitSight Finding - temp1', 'occurred': '2021-02-01T00:00:00Z',
                        'rawJSON': '{"severity": "severe", "first_seen": "2021-02-01", "temporary_id": "temp1"}'}]

@@ -104,7 +104,7 @@ def fetch_incidents(client, last_run, params):
             for entry in report_entries:
                 # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
                 event = {
-                    "name": "BitSight Findings-" + entry.get('temporary_id'),
+                    "name": "BitSight Finding - " + entry.get('temporary_id'),
                     'occurred': entry.get('first_seen') + 'T00:00:00Z',
                     "rawJSON": json.dumps(entry)}
                 events.append(event)
