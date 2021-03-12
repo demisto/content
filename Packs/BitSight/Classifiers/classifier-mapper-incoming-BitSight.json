@@ -87,15 +87,6 @@
                     },
                     "simple": ""
                 },
-                "Start Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "first_seen",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
                 "Tags": {
                     "complex": {
                         "accessor": "",
