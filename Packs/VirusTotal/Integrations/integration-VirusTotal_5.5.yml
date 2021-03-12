@@ -29,6 +29,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Separator to split API Keys. If given, each API Key is used in round-robin
+    fashion.
+  name: APIKeySeparator
+  defaultvalue: ","
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: "true"
@@ -163,11 +169,28 @@ script:
         scans_table = positives_scans_table.concat(negative_scans_table);
         return scans_table;
     }
+    function nextAPIKey() {
+        if (!params.APIKeySeparator) {
+            return params.APIKey;
+        }
+        var index = 0;
+        var context = getIntegrationContext();
+        if (context.APIKEY_INDEX !== undefined && context.APIKEY_INDEX !== null) {
+            index = parseInt(context.APIKEY_INDEX) + 1;
+        }
+        var keys = params.APIKey.split(params.APIKeySeparator);
+        if (index >= keys.length) {
+            index = 0;
+        }
+        context.APIKEY_INDEX = index;
+        setIntegrationContext(context);
+        return keys[index];
+    }
     function doReq(method, path, parameters) {
         if (!parameters) {
             parameters = {};
         }
-        parameters.apikey = params.APIKey;
+        parameters.apikey = nextAPIKey();
         var result = http(
             serverUrl + path + (method === 'GET' ? encodeToURLQuery(parameters) : ''),
             {
@@ -891,7 +914,7 @@ script:
                 fileName = undefined;
             }
         }
-        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.APIKey},
+        var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: nextAPIKey()},
             params.insecure, params.proxy, undefined, 'file', fileName);
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + url + ', request status code: ' + result.StatusCode;
@@ -983,16 +1006,22 @@ script:
         };
     }
     function test() {
-        // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
-        try
-        {
-            doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
-        } catch(err)
-        {
-            if (err == "No content received. Possible API rate limit reached."){
-                return true;
+        var count = 1;
+        if (params.APIKeySeparator) {
+            // Try to test with all the api keys
+            count = params.APIKey.split(params.APIKeySeparator).length;
+        }
+        for(var i = 0 ; i < count ; ++i) {
+            // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
+            try
+            {
+                doFile('7657fcb7d772448a6d8504e4b20168b8'); // Check sample file - it will throw an error if not successful
+            } catch(err)
+            {
+                if (err != "No content received. Possible API rate limit reached."){
+                    return String(err);
+                }
             }
-            return String(err);
         }
         return true;
     }
