@@ -8,11 +8,11 @@ This integration was integrated and tested with version 01 of BitSight for Secur
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://api.bitsighttech.com) |  | True |
+    | Server URL (e.g. https://test.com) |  | True |
     | API Key |  | True |
     | Company's GUID |  | False |
-    | First fetch Days | Enter the  number in days. When the fetch incident run for first time, incident will be fetched for given number of days  | False |
-    | Incident Daily Fetch time | Please provide Incident fetch time in day in 24 hours format \('HH:MM'\). Fetch incident will run once in day if  execution time grater than given time here. | False |
+    | First fetch time in days | Enter the  number in days. When the fetch incident run for first time, incident will be fetched for given number of days  | False |
+    | Incident Daily Fetch time | Please provide Incident fetch time in day in 24 hours format \('HH:MM'\). Fetch incident will run once a day if execution time greater than the given time here. | False |
     | Max Fetch | Maximum Number of records to fetch | False |
     | Minimum Severity for Findings |  | False |
     | Findings minimum asset category | Filter by the asset category \(critical, high, medium, low\) | False |
@@ -88,10 +88,13 @@ BitSight command - to get comany details based on guid.
 
 
 #### Command Example
-``` ```
+```!bitsight-get-company-details guid=a940bb61-33c4-42c9-9231-c8194c305db3 using=BitSight```
 
 #### Human Readable Output
-
+>### Get Company Details:
+>|Company Info|Ratings|Rating Details|
+>|---|---|---|
+>| guid: a940bb61-33c4-42c9-9231-c8194c305db3<br>customId: null<br>name: Saperix, Inc.<br>description: Saperix Technologies LLC develops risk analysis software solutions.<br>ipv4Count: 5273<br>peopleCount: 13000<br>shortName: Saperix<br>industry: Technology<br>industrySlug: technology<br>subIndustry: Computer & Network Security<br>subIndustrySlug: computer_network_security<br>homePage: http://www.saperix.com<br>primaryDomain: saperix.com<br>type: CURATED<br>displayURL: https://service.bitsighttech.com/app/company/a940bb61-33c4-42c9-9231-c8194c305db3/overview/ | {'rating': 470, 'rating_date': '2021-03-10', 'range': 'Basic'},<br>{'rating': 470, 'rating_date': '2021-03-09', 'range': 'Basic'} | {'name': 'Botnet Infections', 'rating': 560, 'percentile': 12, 'display_url': 'https://service.bitsighttech.com/app/company/a940bb61-33c4-42c9-9231-c8194c305db3/compromised-systems/?filter=Botnet%20Infections'},<br>{'name': 'Spam Propagation', 'rating': 820, 'percentile': 100, 'display_url': 'https://service.bitsighttech.com/app/company/a940bb61-33c4-42c9-9231-c8194c305db3/compromised-systems/?filter=Spam%20Propagation'} |
 
 
 ### bitsight-get-company-findings
@@ -110,7 +113,7 @@ BitSight command to get company findings
 | first_seen | First seen date of the findings, Date format is YYYY-MM-DD, Example: 2021-01-01. | Required | 
 | last_seen | Last seen date of the findings, Date format is YYYY-MM-DD, Example: 2021-01-01. | Required | 
 | severity | Minimum Severity of the findings. Possible values are: minor, moderate, material, severe. | Optional | 
-| grade | Grade of the findings. Possible values are: good, fair, warn, bad, neutral. | Optional | 
+| grade | Grade of the findings. This can be a comma-separated list. Select the values from list of pre defined values good,fair,warn,bad,neutral. Possible values are: good, fair, warn, bad, neutral. | Optional | 
 | asset_category | Asset Category of the findings. Possible values are: low, medium, high, critical. | Optional | 
 | risk_vector_label | Risk category of the findings. Possible values are: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations, Unsolicited Communications. | Optional | 
 
@@ -142,10 +145,14 @@ BitSight command to get company findings
 
 
 #### Command Example
-``` ```
+```!bitsight-get-company-findings guid=a940bb61-33c4-42c9-9231-c8194c305db3 first_seen=2021-01-01 last_seen=2021-02-01 using=BitSight```
 
 #### Human Readable Output
-
+>### Get Company findings:
+>|Evidence Key|Risk Vector Label|First Seen|Last Seen|ID|Risk Category|Severity|
+>|---|---|---|---|---|---|---|
+>| 0.0.0.0:0000 | Open Ports | 2021-01-22 | 2021-02-01 | A9Jq47BBje2f19df227feb3be6ab37828ab067b7bf | Diligence | moderate |
+>| 0.0.0.0:000 | SSL Configurations | 2021-01-13 | 2021-02-01 | A9Jq47BBje34441279a956ad9c6e81d830718556c4 | Diligence | severe |
 
 
 ### bitsight-get-companies-guid
@@ -174,8 +181,11 @@ BitSight command to get list of companies and GUID
 
 
 #### Command Example
-``` ```
+```!bitsight-get-companies-guid using=BitSight```
 
 #### Human Readable Output
-
-
+>### Get Companies GUID:
+>|companyName|shortName|guid|
+>|---|---|---|
+>| my_company | my_company | a940bb61-33c4-42c9-9231-c8194c305db3 |
+>| Saperix, Inc. | Saperix | a940bb61-33c4-42c9-9231-c8194c305db3 |
