@@ -1,5 +1,5 @@
 {
-  "defaultIncidentType": "Hive",
+  "defaultIncidentType": "TheHive",
   "feed": false,
   "id": "Hive - Classifier",
   "keyTypeMap": {
