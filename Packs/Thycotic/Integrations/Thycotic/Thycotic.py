@@ -209,29 +209,18 @@ class Client(BaseClient):
     def userDelete(self, id: str) -> str:
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
 
-    def getCredentials(self) -> list:
-        credentials = []
+    def getCredentials(self) -> str:
+        credentials = {}
+        secretID = self.searchSecretIdByName(self._credential_objects)
 
-        if self._is_fetch_credential and (len(self._credential_objects) != 0):
-            listArgs = (str(self._credential_objects)).split(",")
-            for key in listArgs:
-                object = {'name': key}
-                secretID = self.searchSecretIdByName(key)[0]
-                object['user'] = self.getUsernameById(secretID)
-                object['password'] = self.getPasswordById(secretID)
-                credentials.append(object)
+        if len(secretID) == 1:
+            credentials['name'] = self._credential_objects
+            credentials['user'] = self.getUsernameById(secretID[0])
+            credentials['password'] = self.getPasswordById(secretID[0])
+        else:
+            return ""
 
-        return credentials
-
-
-def test_module(client) -> str:
-    if client._is_fetch_credential and len(client._credential_objects) == 0:
-        return "Failed parameter on list secret name."
-
-    if client._token == '':
-        return "Failed to get authorization token. Check you credential and access to Secret Server.'"
-
-    return "ok"
+        return json.dumps(credentials)
 
 
 def secret_password_get_command(client, secret_id: str = ''):
@@ -465,8 +454,26 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newPassword: 
     )
 
 
+def test_module(client) -> str:
+    if client._is_fetch_credential:
+        if len(client._credential_objects) == 0:
+            return "Enter secret name."
+
+        if client.getCredentials() == "":
+            return "Failed search secret name for sync"
+
+    if client._token == '':
+        return "Failed to get authorization token. Check you credential and access to Secret Server.'"
+
+    return "ok"
+
+
 def fetch_credentials(client):
-    credentials = client.getCredentials()
+    credentials = []
+    jsonCredential = client.getCredentials()
+    if jsonCredential != "":
+        credentials.append(json.loads(jsonCredential))
+
     demisto.credentials(credentials)
 
 

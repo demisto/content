@@ -26,12 +26,13 @@ configuration:
   name: isFetchCredentials
   required: false
   type: 8
-- display: A list secret names to retrieve and sync (separated by commas). Note the
-    sync, will function only if the synchronization check box is selected.
+- display: |-
+    Secret name to retrieve and sync.
+     Note the sync, will function only if the synchronization check box is selected.
   hidden: false
   name: credentialobjects
   required: false
-  type: 12
+  type: 0
 description: Secret Server is the only fully featured Privileged Account Management
   (PAM) solution available both on premise and in the cloud. It empowers security
   and IT ops teams to secure and manage all types of privileged accounts and offers
@@ -1094,7 +1095,7 @@ script:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret  object
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: false
   longRunning: false
@@ -1103,4 +1104,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
