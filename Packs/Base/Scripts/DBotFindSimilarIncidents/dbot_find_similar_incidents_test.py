@@ -1,16 +1,18 @@
 # from CommonServerPython import *
 # import pytest
-from DBotFindSimilarIncidents import Tfidf, normalize_command_line, cdist_new, Identity, normalize_identity, \
+from DBotFindSimilarIncidents import Tfidf, normalize_command_line, Identity, normalize_identity, \
     normalize_json, identity, main, demisto, keep_high_level_field, preprocess_incidents_field, PREFIXES_TO_REMOVE, \
-    check_list_of_dict, REGEX_IP, match_one_regex, SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME
+    check_list_of_dict, REGEX_IP, match_one_regex, SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, \
+    euclidian_similarity_capped, find_incorrect_fields, MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD
 import json
 import numpy as np
+import pandas as pd
 
-CURRENT_INCIDENT = [
+CURRENT_INCIDENT_NOT_EMPTY = [
     {'id': '123', 'commandline': 'powershell IP=1.1.1.1', 'CustomFields': {"nested_field": 'value_nested_field'},
      'empty_current_incident_field': None, 'empty_fetched_incident_field': 'empty_fetched_incident_field_1'}]
 
-FETCHED_INCIDENT = [
+FETCHED_INCIDENT_NOT_EMPTY = [
     {'id': '1', 'created': "2021-01-30", 'commandline': 'powershell IP=1.1.1.1',
      'CustomFields': {"nested_field": 'value_nested_field_1'},
      'empty_current_incident_field': 'empty_current_incident_field_1', 'empty_fetched_incident_field': None,
@@ -25,24 +27,28 @@ FETCHED_INCIDENT = [
      "name": "incident_name_3"}
 ]
 
-SIMILAR_INDICATORS = [
+FETCHED_INCIDENT_EMPTY = []
+
+SIMILAR_INDICATORS_NOT_EMPTY = [
     {"ID": "inc_1", "Identical indicators": "ind_1, ind_2", "created": "2021-01-30", "id": "1",
      "name": "incident_name_1", "similarity indicators": 0.2},
     {"ID": "inc_3", "Identical indicators": "ind_2", "created": "2021-01-30", "id": "3", "name": "incident_name_3",
      "similarity indicators": 0.4},
 ]
 
+SIMILAR_INDICATORS_EMPTY = []
+
 TRANSFORMATION = {
     'commandline': {'transformer': Tfidf,
                     'normalize': normalize_command_line,
                     'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
-                    'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+                    'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
                     },
 
     'url': {'transformer': Tfidf,
             'normalize': normalize_identity,
             'params': {'analyzer': 'char', 'max_features': 100, 'ngram_range': (1, 5)},
-            'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+            'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
             },
     'potentialMatch': {'transformer': Identity,
                        'normalize': None,
@@ -52,12 +58,13 @@ TRANSFORMATION = {
     'json': {'transformer': Tfidf,
              'normalize': normalize_json,
              'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
-             'scoring': {'scoring_function': cdist_new, 'min': 0.5}
+             'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
              }
 }
 
 
 def executeCommand(command, args):
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     if command == 'DBotFindSimilarIncidentsByIndicators':
         return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note'}]
     if command == 'GetIncidentsByQuery':
@@ -75,6 +82,10 @@ def check_exist_dataframe_columns(*fields, df):
 
 
 def test_main_regular(mocker):
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
+    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -105,8 +116,15 @@ def test_main_regular(mocker):
 
 
 def test_main_no_indicators_found(mocker):
-    global SIMILAR_INDICATORS
-    SIMILAR_INDICATORS = []
+    """
+    Test if no indicators found
+    :param mocker:
+    :return:
+    """
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
+    SIMILAR_INDICATORS = SIMILAR_INDICATORS_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -135,8 +153,15 @@ def test_main_no_indicators_found(mocker):
 
 
 def test_main_no_fetched_incidents_found(mocker):
-    global SIMILAR_INDICATORS, FETCHED_INCIDENT
-    FETCHED_INCIDENT = []
+    """
+    Test output if no related incidents found - Should return None and MESSAGE_NO_INCIDENT_FETCHED
+    :param mocker:
+    :return:
+    """
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_EMPTY
+    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
+    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
     mocker.patch.object(demisto, 'args',
                         return_value={
                             'incidentId': 12345,
@@ -157,7 +182,8 @@ def test_main_no_fetched_incidents_found(mocker):
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     res = main()
-    assert (not res)
+    assert (not res[0])
+    assert MESSAGE_NO_INCIDENT_FETCHED in res[1]
 
 
 def test_keep_high_level_field():
@@ -176,10 +202,6 @@ def test_check_list_of_dict():
     assert check_list_of_dict({'test': 'value_test'}) is False
 
 
-def test_recursive_filter():
-    pass
-
-
 def test_match_one_regex():
     assert match_one_regex('123.123.123.123', [REGEX_IP]) is True
     assert match_one_regex('123.123.123', [REGEX_IP]) is False
@@ -192,9 +214,60 @@ def test_normalize_command_line():
     assert normalize_command_line('powershell "remove_quotes"') == 'powershell remove_quotes'
 
 
-def test_cdist_new():
+def test_euclidian_similarity_capped():
     x = np.array([[1, 1, 1], [2, 2, 2]])
     y = np.array([[2.1, 2.1, 2.1]])
-    distance = cdist_new(x, y)
+    distance = euclidian_similarity_capped(x, y)
     assert distance[0] == 0
     assert distance[1] > 0
+
+
+def test_find_incorrect_fields():
+    wrong_field_1 = 'wrong_field_1'
+    wrong_field_2 = 'wrong_field_2'
+    correct_field_1 = 'empty_fetched_incident_field'
+    current_incident_df = pd.DataFrame(CURRENT_INCIDENT)
+    global_msg, incorrect_fields = find_incorrect_fields([correct_field_1, wrong_field_1, wrong_field_2],
+                                                         current_incident_df, '')
+    assert incorrect_fields == ['wrong_field_1', 'wrong_field_2']
+    assert wrong_field_1 in global_msg
+    assert wrong_field_2 in global_msg
+    assert correct_field_1 not in global_msg
+
+
+def test_no_correct_field(mocker):
+    """
+    Test if only incorrect fields  -  Should return None and MESSAGE_INCORRECT_FIELD message for wrong fields
+    :param mocker:
+    :return:
+    """
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
+    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    wrong_field_1 = 'wrong_field_1'
+    wrong_field_2 = 'wrong_field_2'
+    wrong_field_3 = 'wrong_field_3'
+    wrong_field_4 = 'wrong_field_4'
+    mocker.patch.object(demisto, 'args',
+                        return_value={
+                            'incidentId': 12345,
+                            'similarTextField': wrong_field_1,
+                            'similarCategoricalField': wrong_field_2,
+                            'similarJsonField': wrong_field_3,
+                            'limit': 10000,
+                            'fieldExactMatch': '',
+                            'fieldsToDisplay': wrong_field_4,
+                            'showIncidentSimilarityForAllFields': True,
+                            'MinimunIncidentSimilarity': 0.2,
+                            'maxIncidentsToDisplay': 100,
+                            'query': '',
+                            'aggreagateIncidentsDifferentDate': 'True',
+                            'includeIndicatorsSimilarity': 'True'
+                        })
+    mocker.patch.object(demisto, 'dt', return_value=None)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    df, msg = main()
+    assert (not df)
+    assert MESSAGE_INCORRECT_FIELD.replace("%s", "") in msg
+    assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])

@@ -15,12 +15,13 @@ warnings.simplefilter("ignore")
 
 MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected - " \
                          " 2) Selected field are empty for this incident - 3) Fields are misspelled"
-MESSAGE_NO_INCIDENT_FETCHED = "No incident found with these exact match for the given date"
+MESSAGE_NO_INCIDENT_FETCHED = "No incidents found with these exact match for the given date"
 MESSAGE_WARNING_TRUNCATED = "%s incidents fetched with exact match. Incident have been truncated due to query " \
                             "limit of %s. You will miss some incidents. Try to add exact matchs or increase " \
                             "limit argument"
 MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check"
-MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist"
+MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist in the current incident"
+MESSAGE_INCORRECT_FIELD = "%s might not be corect spelling. Please correct or ignore this message"
 
 SIMILARITY_COLUNM_NAME = 'similarity incident'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
@@ -730,7 +731,7 @@ def find_incorrect_fields(populate_fields: List[str], incidents_df: pd.DataFrame
     """
     incorrect_fields = [i for i in populate_fields if i not in incidents_df.columns.tolist()]
     if incorrect_fields:
-        global_msg += "%s \n" % "%s might not be corect spelling. Please correct or ignore this message" % ' , '.join(
+        global_msg += "%s \n" % MESSAGE_INCORRECT_FIELD % ' , '.join(
             incorrect_fields)
     return global_msg, incorrect_fields
 
@@ -782,7 +783,7 @@ def main():
         global_msg += "%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
-        return
+        return None, global_msg
 
     # load the related incidents
     populate_fields.remove('id')
@@ -793,7 +794,7 @@ def main():
         global_msg += "%s \n" % msg
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
-        return
+        return None, global_msg
     number_incident_fetched = len(incidents)
 
     incidents_df = pd.DataFrame(incidents)
@@ -822,7 +823,7 @@ def main():
         global_msg += "%s \n" % MESSAGE_NO_FIELDS_USED
         return_outputs_summary(confidence, number_incident_fetched, 0, fields_used, global_msg)
         return_outputs_similar_incidents_empty()
-        return
+        return None, global_msg
 
     # Get similarity based on indicators
     if include_indicators_similarity == "True":
