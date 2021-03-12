@@ -299,6 +299,11 @@ def edl_update_internal_list(list_name: str, list_items: list, add: bool, verbos
             else:
                 md = 'Instance context updated successfully.'
 
+    ### to be removed ###
+    if not dict_of_lists:
+        demisto.debug(f'PAN-OS EDL Management updating an empty object to the integration context.')
+    ### to be removed ###
+
     demisto.debug(f'PAN-OS EDL Management updating {list_name} with {len(list_items)} in the integration context.')
     demisto.setIntegrationContext(dict_of_lists)
 
