@@ -1,7 +1,7 @@
 {
   "associatedToAll": false,
   "associatedTypes": [
-    "Hive"
+    "TheHive"
   ],
   "caseInsensitive": true,
   "cliName": "thehiveobservables",
