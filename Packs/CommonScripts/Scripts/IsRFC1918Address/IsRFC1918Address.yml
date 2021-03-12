@@ -11,7 +11,7 @@ comment: A filter that determines whether an IPv4 address is in the private RFC-
 enabled: true
 args:
 - name: value
-  required: true
+  required: false
   default: true
   description: The IPv4 address to check.
 - name: left
