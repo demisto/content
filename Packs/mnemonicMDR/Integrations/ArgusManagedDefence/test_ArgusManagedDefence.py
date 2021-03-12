@@ -163,8 +163,20 @@ def test_fetch_incidents(requests_mock):
 
     with open("argus_json/argus_case_search.json") as json_file:
         data = json.load(json_file)
+    with open("argus_json/argus_case_attachments.json") as attachments_file:
+        attachments = json.load(attachments_file)
+    with open("argus_json/argus_case_attachment.json", "rb") as attachment_file:
+        attachment = attachment_file.read()
+
     method_url = "/cases/v2/case/search"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
+
+    method_url = f"/cases/v2/case/{0}/attachments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=attachments)
+
+    method_url = f"/cases/v2/case/{0}/attachments/{'3fa85f64-5717-4562-b3fc-2c963f66afa6'}/download"
+    requests_mock.get(f"{BASE_URL}{method_url}", content=attachment)
+
     last_run = {"start_time": 1603372183576}
     next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
@@ -186,6 +198,125 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
     next_run, incidents = fetch_incidents({}, "-1 day")
     assert len(incidents) == 1
     assert next_run.get("start_time") == str(timestamp + 1)
+
+
+def test_get_remote_data_command(requests_mock):
+    from ArgusManagedDefence import get_remote_data_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        metadata = json.load(json_file)
+    with open("argus_json/argus_case_attachments.json") as json_file:
+        attachments = json.load(json_file)
+    with open("argus_json/argus_case_comments.json") as json_file:
+        comments = json.load(json_file)
+
+    method_urls = {
+        f"/cases/v2/case/{CASE_ID}": metadata,
+        f"/cases/v2/case/{CASE_ID}/attachments": attachments,
+        f"/cases/v2/case/{CASE_ID}/comments": comments,
+    }
+    for method_url, data in method_urls.items():
+        requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+
+    last_update = "2020-01-01 12:00:00"
+    metadata["data"]["lastUpdatedTime"] = "2020-01-01 12:05:00"
+    args = {
+        "id": CASE_ID,
+        "lastUpdate": last_update,
+    }
+    xsoar_mirroring = {
+        "dbotMirrorId": str(0),
+        "dbotMirrorInstance": "",
+        "dbotMirrorDirection": None,
+        "dbotMirrorTags": ["argus_mirror"],
+    }
+    result = get_remote_data_command(args)
+    assert metadata.get("data").items() <= result.mirrored_object.items()
+    assert "xsoar_mirroring" in result.mirrored_object.keys()
+    assert (
+        xsoar_mirroring.items() == result.mirrored_object.get("xsoar_mirroring").items()
+    )
+    assert {"severity": 1} in result.entries
+    assert {"arguscasestatus": "pendingCustomer"} in result.entries
+
+
+def test_get_remote_data_command_no_updates(requests_mock):
+    from ArgusManagedDefence import get_remote_data_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        metadata = json.load(json_file)
+    with open("argus_json/argus_case_attachments.json") as json_file:
+        attachments = json.load(json_file)
+    with open("argus_json/argus_case_comments.json") as json_file:
+        comments = json.load(json_file)
+
+    method_urls = {
+        f"/cases/v2/case/{CASE_ID}": metadata,
+        f"/cases/v2/case/{CASE_ID}/attachments": attachments,
+        f"/cases/v2/case/{CASE_ID}/comments": comments,
+    }
+    for method_url, data in method_urls.items():
+        requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+
+    last_update = "2020-01-01 12:00:00"
+    metadata["data"]["lastUpdatedTime"] = "2020-01-01 11:00:00"
+    args = {
+        "id": CASE_ID,
+        "lastUpdate": last_update,
+    }
+    result = get_remote_data_command(args)
+    assert not result.mirrored_object
+    assert not result.entries
+
+
+def test_update_remote_system_command(requests_mock):
+    from ArgusManagedDefence import update_remote_system_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
+    data["data"]["id"] = CASE_ID
+    method_url = f"/cases/v2/case/{CASE_ID}"
+    requests_mock.put(f"{BASE_URL}{method_url}", json=data)
+    with open("argus_json/argus_case_comment.json") as json_file:
+        comment = json.load(json_file)
+    method_url = f"/cases/v2/case/{CASE_ID}/comments"
+    requests_mock.post(f"{BASE_URL}{method_url}", json=comment)
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments"
+    requests_mock.post(f"{BASE_URL}{method_url}")
+    method_url = f"/cases/v2/case/{CASE_ID}/close"
+    requests_mock.put(f"{BASE_URL}{method_url}", json=data)
+    args = {
+        "data": data,
+        "entries": [
+            {
+                "type:": 1,  # Note
+                "user": "user",
+                "created": "2020-01-01 00:00:00",
+                "contents": "comment"
+            }
+        ],
+        "remoteId": str(CASE_ID),
+        "status": 2,  # Done
+        "delta": {
+            "severity": 2
+        },
+        "incidentChanged": True
+    }
+    assert update_remote_system_command(args) == str(CASE_ID)
+
+
+def test_update_remote_system_command_no_change(requests_mock):
+    from ArgusManagedDefence import update_remote_system_command
+
+    args = {
+        "data": {},
+        "entries": [],
+        "remoteId": str(CASE_ID),
+        "status": "",
+        "delta": {},
+        "incidentChanged": False
+    }
+    assert update_remote_system_command(args) == str(CASE_ID)
 
 
 def test_add_case_tag_command(requests_mock):
@@ -551,3 +682,53 @@ def test_list_nids_events(requests_mock):
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = list_nids_events_command({})
     assert result.raw_response == data
+
+
+def test_print_case_comments_command(requests_mock):
+    from ArgusManagedDefence import print_case_comments_command
+
+    with open("argus_json/argus_case_comments.json") as json_file:
+        data = json.load(json_file)
+    method_url = f"/cases/v2/case/{CASE_ID}/comments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    args = {"case_id": CASE_ID}
+    result = print_case_comments_command(args)
+    for comment in result:
+        assert comment.get("ContentsFormat") == "html"
+        assert comment.get("Type") == 1  # Note
+        assert comment.get("Contents")
+        assert comment.get("Note") is True
+
+
+def test_print_case_metadata_by_id_command(requests_mock):
+    from ArgusManagedDefence import print_case_metadata_by_id_command
+
+    with open("argus_json/argus_case_metadata.json") as json_file:
+        data = json.load(json_file)
+    method_url = f"/cases/v2/case/{CASE_ID}"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    args = {"case_id": CASE_ID}
+    result = print_case_metadata_by_id_command(args)
+    assert result.get("ContentsFormat") == "html"
+    assert result.get("Type") == 1
+    assert result.get("Contents")
+
+
+def test_download_case_attachments_command(requests_mock):
+    from ArgusManagedDefence import download_case_attachments_command
+
+    with open("argus_json/argus_case_attachments.json") as json_file:
+        data = json.load(json_file)
+    data["data"][0]["name"] = "filename"
+    attachment_id = data["data"][0]["id"]
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=data)
+    with open("argus_json/argus_case_attachments.json", "rb") as file:
+        bin_data = file.read()
+    method_url = f"/cases/v2/case/{CASE_ID}/attachments/{attachment_id}/download"
+    requests_mock.get(f"{BASE_URL}{method_url}", content=bin_data)
+    args = {"case_id": CASE_ID}
+    result = download_case_attachments_command(args)
+    for file in result:
+        assert file.get("File") == "filename"
+        assert file.get("Type") == 3  # File

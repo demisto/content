@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import time
@@ -107,16 +108,19 @@ def main():
     args = arg_parser.parse_args()
 
     github_token = args.github_token
-    commit_sha1 = os.environ.get('CIRCLE_SHA1')
-    branch_name = os.environ.get('CIRCLE_BRANCH')
 
-    if branch_has_private_build_infra_change(commit_sha1):
+    # get branch name
+    branches = tools.run_command("git branch")
+    branch_name_regex = re.search(r"\* (.*)", branches)
+    branch_name = branch_name_regex.group(1)
+
+    if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
 
         # trigger private build
         payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                   'client_payload': {'commit_sha1': commit_sha1, 'is_infra_build': 'True'}}
+                   'client_payload': {'commit_sha1': branch_name, 'is_infra_build': 'True'}}
 
         res = requests.post(TRIGGER_BUILD_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
