@@ -1,8 +1,8 @@
-from requests_oauthlib import OAuth1
-from dateparser import parse
+import demistomock as demisto  # noqa: F401
 import pytz
-
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from requests_oauthlib import OAuth1
 
 # Disable insecure warnings
 # validate
@@ -186,21 +186,6 @@ def expand_urls(data, depth=0):
             else:
                 if isinstance(value, dict):
                     return expand_urls(value, depth + 1)
-
-
-def search_user(query: str, max_results: str = '50'):
-    """
-        Search for user by name or email address.
-    Args:
-        query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
-        max_results (str): The maximum number of items to return. default by the server: 50
-
-    Returns:
-        List of users.
-    """
-    url = f"rest/api/latest/users/search?query={query}&maxResults={max_results}"
-    res = jira_req('GET', url, resp_type='json')
-    return res
 
 
 def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
@@ -464,14 +449,8 @@ def get_issue_fields(issue_creating=False, **issue_args):
         issue['fields']['duedate'] = duedate
 
     if issue_args.get('assignee'):
-        if not issue['fields'].get('assignee'):
-            issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['name'] = issue_args['assignee']
-
-    if issue_args.get('assignee_id'):
-        if not issue['fields'].get('assignee'):
-            issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['accountId'] = issue_args['assignee_id']
+        assignee = issue_args.get("assignee")
+        issue["fields"]["assignee"] = {"accountId": get_user_id(assignee)}
 
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
@@ -769,6 +748,42 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
 
     return GetRemoteDataResponse(incident_update, [])
+
+
+def search_user(query_string="", max_results=50, start_at=0):
+    """Search for users matching query_string
+    """
+    url = f"rest/api/latest/user/search?query={query_string}&maxResults={max_results}&startAt={start_at}"
+
+    return jira_req('GET', url, resp_type='json')
+
+
+def get_user_id(name_or_email: str = "") -> str:
+    """Get Jira accountId from displayName or emailAddress
+    """
+    jira_account_id = ""
+
+    if not name_or_email:
+        return jira_account_id
+
+    name_or_email = name_or_email.lower()
+    chunk_size = 100
+    start_at = 0
+    while jira_account_id == "":
+        user_chunk = search_user(name_or_email, max_results=chunk_size, start_at=start_at)
+        for user in user_chunk:
+            jira_display_name = user.get("displayName", "").lower()
+            jira_email_address = user.get("emailAddress", "").lower()
+            if name_or_email == jira_display_name or name_or_email == jira_email_address:
+                jira_account_id = user.get("accountId")
+                break
+
+        if len(user_chunk) < chunk_size:
+            break
+
+        start_at += chunk_size
+
+    return jira_account_id
 
 
 def main():
