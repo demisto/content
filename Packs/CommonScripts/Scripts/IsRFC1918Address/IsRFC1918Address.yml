@@ -22,5 +22,5 @@ runonce: false
 dockerimage: demisto/netutils:1.0.0.14492
 runas: DBotWeakRole
 tests:
-- No test - unit test
+- IsRFC1918-Test
 fromversion: 5.0.0
