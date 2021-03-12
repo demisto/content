@@ -88,7 +88,7 @@ tasks:
         complex:
           root: IP.Address
           filters:
-          - - operator: 0f8cdc66-448d-41cf-8586-2b0a0560364f
+          - - operator: IsRFC1918Address
               left:
                 value:
                   simple: IP.Address
