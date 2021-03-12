@@ -44,19 +44,8 @@ args:
   isArray: false
   name: showActualIncident
   predefined:
-    - 'True'
-    - ' False'
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'False'
-  description: 'Print additional content for debugging '
-  isArray: false
-  name: debug
-  predefined:
-    - 'True'
-    - ' False'
+  - 'True'
+  - ' False'
   required: false
   secret: false
 - default: false
@@ -89,5 +78,5 @@ dockerimage: demisto/ml:1.0.0.16162
 runas: DBotWeakRole
 runonce: false
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 5.0.0

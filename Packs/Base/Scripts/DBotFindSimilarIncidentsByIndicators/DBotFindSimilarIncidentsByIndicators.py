@@ -24,7 +24,6 @@ FIELDS_TO_REMOVE_TO_DISPLAY = ['id']
 INCIDENT_FIELDS_TO_USE = ['indicators']
 FIELD_INDICATOR_TYPE = 'indicator_type'
 
-
 def normalize(x: List[str]) -> str:
     """
     Normalize function for indicators
@@ -284,7 +283,6 @@ def return_outputs_custom(readable_output, outputs=None):
     }
     demisto.results(return_entry)
 
-
 def return_no_mututal_indicators_found_entry():
     hr = '### Mutual Indicators' + '\n'
     hr += 'No mutual indicators were found.'
@@ -421,14 +419,13 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
 
 
 def load_indicators_for_current_incident(incident_id: str, indicators_types: List[str], min_nb_of_indicators: int,
-                                         max_indicators_for_white_list: int, debug: bool):
+                                         max_indicators_for_white_list: int):
     """
     Take
     :param incident_id: ID of current incident
     :param indicators_types: list of indicators type accepted
     :param limit_nb_of_indicators: Min number of indicators in the current incident
     :param max_indicators: Max incidents in indicators for white list
-    :param debug: Boolean if want to print additional comment
     :return: return [*indicators] and dictionnary {key: indicators} and if early_stop
     """
     indicators = get_all_indicators_for_incident(incident_id)
@@ -445,9 +442,6 @@ def load_indicators_for_current_incident(incident_id: str, indicators_types: Lis
         return_no_mututal_indicators_found_entry()
         return_no_similar_incident_found_entry()
         return [], {}, True
-    if debug == 'True':
-        demisto.results("Indicators found for the incident")
-        demisto.results(json.dumps([x.get('id') for x in indicators]))
     return indicators, indicators_map, False
 
 
@@ -515,7 +509,6 @@ def main():
         indicators_types = indicators_types.split(',')
         indicators_types = [x.strip() for x in indicators_types if x]
     show_actual_incident = demisto.args().get('showActualIncident')
-    debug = demisto.args().get('debug')
     max_incidents_to_display = int(demisto.args()['maxIncidentsToDisplay'])
     fields_incident_to_display = demisto.args()['fieldsIncidentToDisplay'].split(',')
     fields_incident_to_display = [x.strip() for x in fields_incident_to_display if x]
@@ -530,7 +523,7 @@ def main():
     # load the related indicators to the incidents
     indicators, indicators_map, early_exit = load_indicators_for_current_incident(incident_id, indicators_types,
                                                                                   min_nb_of_indicators,
-                                                                                  max_indicators_for_white_list, debug)
+                                                                                  max_indicators_for_white_list)
     if early_exit:
         return
 
@@ -550,13 +543,6 @@ def main():
     # Current incident
     indicators_for_incident = [' '.join(set([x.get('id') for x in indicators]))]  # type: ignore
     current_incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
-
-    if debug == 'True':
-        incidents_df_debug = incidents_df.reset_index()
-        return_outputs(
-            readable_output=tableToMarkdown("Incident dataframe before prediction",
-                                            incidents_df_debug.to_dict(orient='records'),
-                                            list(incidents_df_debug.columns)))
 
     # Prediction
     model = Model(p_transformation=TRANSFORMATION)
