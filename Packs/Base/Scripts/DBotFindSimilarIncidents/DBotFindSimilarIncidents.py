@@ -38,8 +38,9 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
                                       'maxIncidentsToDisplay': '3000'
                                       }
 
-REGEX_DATE_PATTERN = ["^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z", "(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"]
-REGEX_IP = r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
+                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+REGEX_IP = re.compile(r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])')
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 
 
@@ -124,9 +125,9 @@ def match_one_regex(string, patterns):
     if len(patterns) == 0:
         return False
     if len(patterns) == 1:
-        return bool(re.match(patterns[0], string))
+        return bool(patterns[0].match(string))
     else:
-        return match_one_regex(string, patterns[1:]) or bool(re.match(patterns[0], string))
+        return match_one_regex(string, patterns[1:]) or bool(patterns[0].match(string))
 
 
 def normalize_json(obj):
@@ -160,7 +161,7 @@ def normalize_command_line(command: str) -> str:
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
-        my_string = re.sub(REGEX_IP, 'IP', my_string)
+        my_string = REGEX_IP.sub('IP', my_string)
         my_string = my_string.strip()
         return my_string
     else:
