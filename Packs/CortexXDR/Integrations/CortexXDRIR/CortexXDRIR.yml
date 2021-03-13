@@ -2070,6 +2070,15 @@ script:
       name: mac_file_paths
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of file paths in any platform. Can be used
+        instead of the mac/windows/linux file paths. The order of the files path list
+        must be parellel to the endpoints list order, therefore, the first file path
+        in the list is related to the first endpoint and so on.
+      isArray: true
+      name: generic_file_path
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20
       files, from no more than 10 endpoints. At least one endpoint ID and one file

@@ -1527,6 +1527,7 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.  | Optional | 
 
 
 #### Context Output
@@ -1536,8 +1537,9 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of the action to retrieve files from selected endpoints. | 
 
 
-#### Command Example
+#### Command Examples
 ```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
 
 #### Context Example
 ```
