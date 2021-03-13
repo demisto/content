@@ -469,10 +469,21 @@ def test_tbl_to_md_clickable_url(data, expected_table):
     assert table == expected_table
 
 
+def test_tbl_keep_headers_list():
+    headers = ['header_1', 'header_2']
+    data = {
+        'header_1': 'foo'
+    }
+    table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+    assert 'header_2' not in table
+    assert headers == ['header_1', 'header_2']
+
+
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
     table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
     assert table == expected_data
+
 
 def test_flatten_cell():
     # sanity
