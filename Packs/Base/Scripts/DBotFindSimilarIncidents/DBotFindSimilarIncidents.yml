@@ -8,40 +8,40 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Comma separated list of incident text fields taken into account to compute similarity -
-    Example: commandline, URL.'
+  description: 'Comma separated list of incident text fields taken into account to
+    compute similarity - Example: commandline, URL.'
   isArray: false
   name: similarTextField
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Comma separated list of incident categorical fields taken into account to compute similarity
-    - Example: IP'
+  description: 'Comma separated list of incident categorical fields taken into account
+    to compute similarity - Example: IP'
   isArray: false
   name: similarCategoricalField
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Comma separated list of incident json fields taken into account to compute similarity -
-    Example: CustomFields'
+  description: 'Comma separated list of incident json fields taken into account to
+    compute similarity - Example: CustomFields'
   isArray: false
   name: similarJsonField
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: "Comma separated list of additional incident fields to display but will no be taken into account
-    to compute similarity."
+  description: Comma separated list of additional incident fields to display but will
+    no be taken into account to compute similarity.
   isArray: false
   name: fieldsToDisplay
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: "Comma separated list of incident fields that have to be equal to current incident fields. Help
-    to make the query ligher."
+  description: Comma separated list of incident fields that have to be equal to current
+    incident fields. Help to make the query ligher.
   isArray: false
   name: fieldExactMatch
   required: false
@@ -91,8 +91,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Aggregate duplicate incidents within diffrerent dates. If includeIndicatorsSimilarity
-    is True then aggreagateIncidentsDifferentDate will be False.
+  description: Aggregate duplicate incidents within diffrerent dates.
   isArray: false
   name: aggreagateIncidentsDifferentDate
   predefined:
@@ -157,8 +156,9 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Comma separated list of indicator type we want to take into account  - If empty use all
-    indicators types. Relevant if includeIndicatorsSimilarity is True
+  description: Comma separated list of indicator type we want to take into account  -
+    If empty use all indicators types. Relevant if includeIndicatorsSimilarity is
+    True
   isArray: false
   name: indicatorsTypes
   required: false

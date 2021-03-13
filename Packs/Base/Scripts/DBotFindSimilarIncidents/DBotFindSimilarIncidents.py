@@ -13,18 +13,18 @@ from scipy.spatial.distance import cdist
 warnings.simplefilter("ignore")
 
 
-MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected - " \
+MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected - " \
                          " 2) Selected field are empty for this incident - 3) Fields are misspelled"
 
-MESSAGE_NO_INCIDENT_FETCHED = "0 incidents found with these exact match for the given dates"
+MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents found with these exact match for the given dates"
 
-MESSAGE_WARNING_TRUNCATED = "Incidents fetched have been truncated to %s, please either add incident fields in " \
+MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
                             "fieldExactMatch, enlarge the time period or change the current limit argument " \
                             "to more than %s"
 
-MESSAGE_NO_CURRENT_INCIDENT = "Incident %s does not exist"
-MESSAGE_NO_FIELD = "%s field(s) does not exist in the current incident"
-MESSAGE_INCORRECT_FIELD = "%s field(s) don't/doesn't exist within the fetched incidents"
+MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist"
+MESSAGE_NO_FIELD = "- %s field(s) does not exist in the current incident"
+MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents"
 
 SIMILARITY_COLUNM_NAME = 'similarity incident'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
@@ -33,6 +33,7 @@ ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
 FIRST_COLUMNS_INCIDENTS_DISPLAY = ['ID', 'created', 'name', SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
 REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id']
 FIELDS_NO_AGGREGATION = ['id', 'created', 'ID']
+COLUMN_TIME = 'created'
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
@@ -81,7 +82,7 @@ def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]
     return incidents_field
 
 
-def check_list_of_dict(obj) -> bool:
+def check_list_of_dict(obj) -> bool:  # type: ignore
     """
     If object is list of dict
     :param obj: any object
@@ -90,7 +91,7 @@ def check_list_of_dict(obj) -> bool:
     return bool(obj) and all(isinstance(elem, dict) for elem in obj)  # type: ignore
 
 
-def remove_duplicates(seq):
+def remove_duplicates(seq: List[str]) -> List[str]:
     seen = set()  # type: ignore
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
@@ -116,7 +117,7 @@ def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *field
     return item
 
 
-def match_one_regex(string, patterns):
+def match_one_regex(string: str, patterns) -> bool:  # type: ignore
     """
     If string matches one or more from patterns
     :param string: string
@@ -133,7 +134,7 @@ def match_one_regex(string, patterns):
         return match_one_regex(string, patterns[1:]) or bool(patterns[0].match(string))
 
 
-def normalize_json(obj):
+def normalize_json(obj) -> str:  # type: ignore
     """
     Normalize json from removing unwantd regex pattern or stop word
     :param obj:Dumps of a json or dict
@@ -171,7 +172,7 @@ def normalize_command_line(command: str) -> str:
         return ''
 
 
-def fill_nested_fields(incidents_df, incidents, *list_of_field_list):
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> pd.DataFrame:
     for field_type in list_of_field_list:
         for field in field_type:
             if '.' in field:
@@ -187,7 +188,7 @@ def fill_nested_fields(incidents_df, incidents, *list_of_field_list):
     return incidents_df
 
 
-def normalize_identity(my_string):
+def normalize_identity(my_string: str) -> str:
     """
     Return identity if string
     :param my_string: string
@@ -199,7 +200,7 @@ def normalize_identity(my_string):
         return ''
 
 
-def euclidian_similarity_capped(x, y):
+def euclidian_similarity_capped(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     Return max between 1 and euclidian distance between X and y
     :param x: np.array n*m
@@ -209,7 +210,7 @@ def euclidian_similarity_capped(x, y):
     return np.maximum(1 - cdist(x, y)[:, 0], 0)
 
 
-def identity(X, y):
+def identity(X: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     Return np.nan if value is different and 1 if value is the same
     :param X: np.array
@@ -455,7 +456,7 @@ class Model:
 
 def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: float, show_distance: bool, max_incidents: int,
                                   fields_used: List[str],
-                                  aggregate, include_indicators_similarity: bool) -> pd.DataFrame:
+                                  aggregate: str, include_indicators_similarity: bool) -> pd.DataFrame:
     """
     Organize data
     :param similar_incidents: DataFrame of incident
@@ -467,8 +468,10 @@ def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: f
     :param include_indicators_similarity: if include_indicators_similarity
     :return: Clean Dataframe
     """
-    similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
-    similar_incidents['created'] = similar_incidents['created'].apply(lambda timestamp: timestamp[:10])
+    if 'id' in similar_incidents.columns.tolist():
+        similar_incidents['ID'] = similar_incidents['id'].apply(lambda _id: "[%s](#/Details/%s)" % (_id, _id))
+    if COLUMN_TIME in similar_incidents.columns:
+        similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda timestamp: timestamp[:10])
     if aggregate == 'True':
         agg_fields = [x for x in similar_incidents.columns if x not in FIELDS_NO_AGGREGATION]
         similar_incidents = similar_incidents.groupby(agg_fields, as_index=False, dropna=False).agg(
@@ -557,12 +560,12 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
     return incidents, msg
 
 
-def extract_fields_from_args(arg):
+def extract_fields_from_args(arg: List[str]) -> List[str]:
     fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
     return list(dict.fromkeys(fields_list))
 
 
-def get_args():
+def get_args():  # type: ignore
     """
     Gets argument of this automation
     :return: Argument of this automation
@@ -602,8 +605,6 @@ def get_args():
     show_actual_incident = demisto.args().get('showActualIncident')
     incident_id = demisto.args().get('incidentId')
     include_indicators_similarity = demisto.args().get('includeIndicatorsSimilarity')
-    if include_indicators_similarity == 'True':
-        aggregate = 'False'
 
     return similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, \
         from_date, to_date, show_similarity, confidence, max_incidents, query, aggregate, limit, \
@@ -680,7 +681,7 @@ def return_outputs_summary(confidence: float, number_incident_fetched: int, numb
         'Confidence': str(confidence),
         'Incident fetched with exact match': number_incident_fetched,
         'Number of similar incident found ': number_incidents_found,
-        'Fields used for similarity (not empty)': ', '.join(fields_used),
+        'Valid fields used for similarity': ', '.join(fields_used),
         'Additional message': global_msg
     }
     return_outputs(readable_output=tableToMarkdown("Summary", summary))
@@ -771,6 +772,27 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
     return similar_incidents
 
 
+def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str], similar_text_field: List[str],
+                             similar_json_field: List[str], similar_categorical_field: List[str],
+                             exact_match_fields: List[str]) -> pd.DataFrame:
+    """
+    Prepare current incident for vizualisation
+    :param incident_df: incident_df
+    :param display_fields: display_fields
+    :param similar_text_field: similar_text_field
+    :param similar_json_field: similar_json_field
+    :param similar_categorical_field: similar_categorical_field
+    :param exact_match_fields: exact_match_fields
+    :return:
+    """
+    incident_filter = incident_df[[x for x in
+                                   display_fields + similar_text_field + similar_json_field + similar_categorical_field
+                                   + exact_match_fields if x in incident_df.columns]]
+    if COLUMN_TIME in incident_filter.columns.tolist():
+        incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda timestamp: timestamp[:10])
+    return incident_filter
+
+
 def main():
     similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, from_date, \
         to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, \
@@ -840,9 +862,8 @@ def main():
                                                       fields_used, aggregate, include_indicators_similarity)
 
     # Filter incident to investigate
-    incident_filter = incident_df[[x for x in
-                                   display_fields + similar_text_field + similar_json_field + similar_categorical_field
-                                   + exact_match_fields if x in incident_df.columns]]
+    incident_filter = prepare_current_incident(incident_df, display_fields, similar_text_field, similar_json_field,
+                                               similar_categorical_field, exact_match_fields)
 
     # Columns to show for outputs
     col = similar_incidents.columns.tolist()

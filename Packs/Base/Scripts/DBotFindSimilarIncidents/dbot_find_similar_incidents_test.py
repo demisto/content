@@ -113,7 +113,7 @@ def test_main_regular(mocker):
                             'MinimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
@@ -152,7 +152,7 @@ def test_main_no_indicators_found(mocker):
                             'MinimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
@@ -189,7 +189,7 @@ def test_main_no_fetched_incidents_found(mocker):
                             'MinimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
@@ -199,7 +199,7 @@ def test_main_no_fetched_incidents_found(mocker):
     assert MESSAGE_NO_INCIDENT_FETCHED in res[1]
 
 
-def test_find_incorrect_fields():
+def test_main_some_incorrect_fields():
     wrong_field_1 = 'wrong_field_1'
     wrong_field_2 = 'wrong_field_2'
     correct_field_1 = 'empty_fetched_incident_field'
@@ -212,7 +212,7 @@ def test_find_incorrect_fields():
     assert correct_field_1 not in global_msg
 
 
-def test_no_correct_field(mocker):
+def test_main_all_incorrect_field(mocker):
     """
     Test if only incorrect fields  -  Should return None and MESSAGE_INCORRECT_FIELD message for wrong fields
     :param mocker:
@@ -239,18 +239,18 @@ def test_no_correct_field(mocker):
                             'MinimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     df, msg = main()
     assert (not df)
-    assert MESSAGE_INCORRECT_FIELD.replace("%s", "") in msg
+    assert MESSAGE_INCORRECT_FIELD % ' , '.join([wrong_field_1, wrong_field_3, wrong_field_2, wrong_field_4]) in msg
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
 
 
-def test_incident_truncated(mocker):
+def test_main_incident_truncated(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
     :param mocker:
@@ -277,7 +277,7 @@ def test_incident_truncated(mocker):
                             'MinimunIncidentSimilarity': 0.2,
                             'maxIncidentsToDisplay': 100,
                             'query': '',
-                            'aggreagateIncidentsDifferentDate': 'True',
+                            'aggreagateIncidentsDifferentDate': 'False',
                             'includeIndicatorsSimilarity': 'True'
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
