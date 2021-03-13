@@ -262,7 +262,7 @@ script:
            httpParams.Password = params.credentials.password;
         }
         full_url = server + url + (method === 'GET' && method ? encodeToURLQuery(args) : '')
-        console.log(full_url);
+        logDebug('Using the following url: ' + full_url);
         httpParams.Headers = headers;
         var res = http(
                 full_url,
