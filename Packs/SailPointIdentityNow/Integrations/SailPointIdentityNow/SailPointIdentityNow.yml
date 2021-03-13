@@ -13,7 +13,7 @@ configuration:
   hidden: false
   name: client_id
   required: true
-  type: 4
+  type: 0
 - additionalinfo: Client Secret for OAuth 2.0
   display: Client Secret (for OAuth 2.0)
   hidden: false
@@ -39,12 +39,6 @@ configuration:
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
-  type: 0
-- additionalinfo: Number of day/days until all the events to be queryed
-  defaultvalue: 3 days
-  display: First fetch time
-  name: first_fetch
   required: false
   type: 0
 description: The SailPoint Identity Security platform can be configured either on-prem/single
@@ -158,7 +152,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Account Id of the user/identity.
+      description: Account Id of the user/identity(uuid).
       isArray: false
       name: id
       required: false
@@ -240,28 +234,28 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Account activity Id.
+      description: Account activity Id (uuid).
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: The identity that the activity was requested for (me indicates
+      description: The identity (uuid) that the activity was requested for (me indicates
         current user).
       isArray: false
       name: requested_for
       required: false
       secret: false
     - default: false
-      description: The identity that requested the activity (me indicates current
+      description: The identity (uuid) that requested the activity (me indicates current
         user).
       isArray: false
       name: requested_by
       required: false
       secret: false
     - default: false
-      description: The specified identity will be either requester or target of account
-        activity (me indicates current user).
+      description: The specified identity (uuid) will be either requester or target
+        of account activity (me indicates current user).
       isArray: false
       name: regarding_identity
       required: false
@@ -629,20 +623,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Identity Id for whom the access request is being made.
+      description: Identity Id (uuid) for whom the access request is being made.
       isArray: false
       name: requested_for
       required: true
       secret: false
     - default: false
-      description: Id of the object(access profile or role).
+      description: Id (uuid) of the object (access profile or role).
       isArray: false
       name: requested_item
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of object(ACCESS_PROFILE or ROLE).
+      description: Type of object (ACCESS_PROFILE or ROLE).
       isArray: false
       name: requested_item_type
       predefined:
@@ -663,20 +657,20 @@ script:
     name: identitynow-request-grant
   - arguments:
     - default: false
-      description: Identity Id for whom the access request is being made.
+      description: Identity Id (uuid) for whom the access request is being made.
       isArray: false
       name: requested_for
       required: true
       secret: false
     - default: false
-      description: Id of the object(access profile or role).
+      description: Id (uuid) of the object(access profile or role).
       isArray: false
       name: requested_item
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of object(ACCESS_PROFILE or ROLE).
+      description: Type of object (ACCESS_PROFILE or ROLE).
       isArray: false
       name: requested_item_type
       predefined:
@@ -697,7 +691,7 @@ script:
     name: identitynow-request-revoke
   dockerimage: demisto/python3:3.9.2.17246
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
