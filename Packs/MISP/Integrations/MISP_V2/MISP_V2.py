@@ -35,7 +35,7 @@ proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
-MAX_ATTRIBUTES = demisto.params().get('attributes_limit', 1000)
+MAX_ATTRIBUTES = int(demisto.params().get('attributes_limit', 1000))
 
 """
 dict format :
@@ -242,6 +242,10 @@ def remove_unselected_context_keys(context_data):
                 del attribute[key]
 
 
+def limit_attributes_in_events(events):
+    return [limit_attributes_count(event) for event in events]
+
+
 def limit_attributes_count(event):
     if 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
         attributes = event['Attribute']
@@ -254,7 +258,8 @@ def limit_attributes_count(event):
                      f'Event ID:{event_id}, event UUID:{event_uuid}, Attributes in event:{attributes_num}')
         sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
         #dropping oldest attributes
-        event['Attributes'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
+        event['Attribute'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
+        return event
 
 def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
@@ -345,6 +350,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
             events[i]['Tag'] = [
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
+    events = limit_attributes_in_events(events)
     events = replace_keys(events)  # type: ignore
     arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
