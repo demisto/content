@@ -422,7 +422,9 @@ def invite_users_to_conversation(conversation_id: str, users_to_invite: list):
             send_slack_request_sync(CHANNEL_CLIENT, 'conversations.invite', body=body)
         except SlackApiError as e:
             message = str(e)
-            if message.find('cant_invite_self') == -1:
+            if "already_in_channel" in message:
+                continue
+            elif message.find('cant_invite_self') == -1:
                 raise
 
 
