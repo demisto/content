@@ -171,7 +171,7 @@ def test_data_filtering(mocker):
 def test_limit_data(mocker):
     mock_misp(mocker)
     mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
-    mocker.patch('MAX_ATTRIBUTES', 3)
+    mocker.patch('MISP_V2.MAX_ATTRIBUTES', 3)
 
     from test_data import test_constants
     from MISP_V2 import build_context
