@@ -15,13 +15,16 @@ warnings.simplefilter("ignore")
 
 MESSAGE_NO_FIELDS_USED = "No field are used to find similarity. Possible reasons: 1) No field selected - " \
                          " 2) Selected field are empty for this incident - 3) Fields are misspelled"
-MESSAGE_NO_INCIDENT_FETCHED = "No incidents found with these exact match for the given date"
-MESSAGE_WARNING_TRUNCATED = "%s incidents fetched with exact match. Incident have been truncated due to query " \
-                            "limit of %s. You will miss some incidents. Try to add exact matchs or increase " \
-                            "limit argument"
-MESSAGE_NO_CURRENT_INCIDENT = "Incident with id:%s does not exists. Please check"
-MESSAGE_NO_FIELD = "Field %s might be mispelled or does not exist in the current incident"
-MESSAGE_INCORRECT_FIELD = "%s might not be corect spelling. Please correct or ignore this message"
+
+MESSAGE_NO_INCIDENT_FETCHED = "0 incidents found with these exact match for the given dates"
+
+MESSAGE_WARNING_TRUNCATED = "Incidents fetched have been truncated to %s, please either add incident fields in " \
+                            "fieldExactMatch, enlarge the time period or change the current limit argument " \
+                            "to more than %s"
+
+MESSAGE_NO_CURRENT_INCIDENT = "Incident %s does not exist"
+MESSAGE_NO_FIELD = "%s field(s) does not exist in the current incident"
+MESSAGE_INCORRECT_FIELD = "%s field(s) don't/doesn't exist within the fetched incidents"
 
 SIMILARITY_COLUNM_NAME = 'similarity incident'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
@@ -93,7 +96,7 @@ def remove_duplicates(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List[str], *fieldsToRemove):
+def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *fieldsToRemove):
     """
 
     :param item: Dict of list of Dict
@@ -791,6 +794,8 @@ def main():
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
                                                                        incident,
                                                                        from_date, to_date, query, limit)
+    global_msg += "%s \n" % msg
+
     if not incidents:
         global_msg += "%s \n" % msg
         return_outputs_summary(confidence, 0, 0, [], global_msg)
@@ -851,7 +856,7 @@ def main():
     # Create context and outputs
     context = create_context_for_incidents(similar_incidents)
     return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, col, context)
-    return similar_incidents[col]
+    return similar_incidents[col], global_msg
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -1,9 +1,10 @@
 # from CommonServerPython import *
 # import pytest
-from DBotFindSimilarIncidents import Tfidf, normalize_command_line, Identity, normalize_identity, \
-    normalize_json, identity, main, demisto, keep_high_level_field, preprocess_incidents_field, PREFIXES_TO_REMOVE, \
-    check_list_of_dict, REGEX_IP, match_one_regex, SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, \
-    euclidian_similarity_capped, find_incorrect_fields, MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD
+from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
+    preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
+    SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
+    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED
+
 import json
 import numpy as np
 import pandas as pd
@@ -38,30 +39,6 @@ SIMILAR_INDICATORS_NOT_EMPTY = [
 
 SIMILAR_INDICATORS_EMPTY = []
 
-TRANSFORMATION = {
-    'commandline': {'transformer': Tfidf,
-                    'normalize': normalize_command_line,
-                    'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
-                    'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
-                    },
-
-    'url': {'transformer': Tfidf,
-            'normalize': normalize_identity,
-            'params': {'analyzer': 'char', 'max_features': 100, 'ngram_range': (1, 5)},
-            'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
-            },
-    'potentialMatch': {'transformer': Identity,
-                       'normalize': None,
-                       'params': {},
-                       'scoring': {'scoring_function': identity, 'min': 0.5}
-                       },
-    'json': {'transformer': Tfidf,
-             'normalize': normalize_json,
-             'params': {'analyzer': 'word', 'max_features': 5000, 'ngram_range': (1, 5)},  # , 'max_df': 0.2
-             'scoring': {'scoring_function': euclidian_similarity_capped, 'min': 0.5}
-             }
-}
-
 
 def executeCommand(command, args):
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
@@ -79,6 +56,42 @@ def check_exist_dataframe_columns(*fields, df):
         if field not in df.columns.tolist():
             return False
     return True
+
+
+def test_keep_high_level_field():
+    incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
+    res = ['xdralerts', 'commandline', 'CustomsFields']
+    assert keep_high_level_field(incidents_field) == res
+
+
+def test_preprocess_incidents_field():
+    assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
+    assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
+
+
+def test_check_list_of_dict():
+    assert check_list_of_dict([{'test': 'value_test'}, {'test1': 'value_test1'}]) is True
+    assert check_list_of_dict({'test': 'value_test'}) is False
+
+
+def test_match_one_regex():
+    assert match_one_regex('123.123.123.123', [REGEX_IP]) is True
+    assert match_one_regex('123.123.123', [REGEX_IP]) is False
+    assert match_one_regex('abc', [REGEX_IP]) is False
+    assert match_one_regex(1, [REGEX_IP]) is False
+
+
+def test_normalize_command_line():
+    assert normalize_command_line('cmd -k IP=1.1.1.1 [1.1.1.1]') == 'cmd -k ip = IP IP'
+    assert normalize_command_line('powershell "remove_quotes"') == 'powershell remove_quotes'
+
+
+def test_euclidian_similarity_capped():
+    x = np.array([[1, 1, 1], [2, 2, 2]])
+    y = np.array([[2.1, 2.1, 2.1]])
+    distance = euclidian_similarity_capped(x, y)
+    assert distance[0] == 0
+    assert distance[1] > 0
 
 
 def test_main_regular(mocker):
@@ -105,7 +118,7 @@ def test_main_regular(mocker):
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    res = main()
+    res, msg = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res.loc['3', 'Identical indicators'] == 'ind_2')
     assert (res.loc['2', 'Identical indicators'] == "")
@@ -144,7 +157,7 @@ def test_main_no_indicators_found(mocker):
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    res = main()
+    res, msg = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res['Identical indicators'] == ["", "", ""]).all()
     assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, 'ID', 'created',
@@ -184,42 +197,6 @@ def test_main_no_fetched_incidents_found(mocker):
     res = main()
     assert (not res[0])
     assert MESSAGE_NO_INCIDENT_FETCHED in res[1]
-
-
-def test_keep_high_level_field():
-    incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
-    res = ['xdralerts', 'commandline', 'CustomsFields']
-    assert keep_high_level_field(incidents_field) == res
-
-
-def test_preprocess_incidents_field():
-    assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
-    assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
-
-
-def test_check_list_of_dict():
-    assert check_list_of_dict([{'test': 'value_test'}, {'test1': 'value_test1'}]) is True
-    assert check_list_of_dict({'test': 'value_test'}) is False
-
-
-def test_match_one_regex():
-    assert match_one_regex('123.123.123.123', [REGEX_IP]) is True
-    assert match_one_regex('123.123.123', [REGEX_IP]) is False
-    assert match_one_regex('abc', [REGEX_IP]) is False
-    assert match_one_regex(1, [REGEX_IP]) is False
-
-
-def test_normalize_command_line():
-    assert normalize_command_line('cmd -k IP=1.1.1.1 [1.1.1.1]') == 'cmd -k ip = IP IP'
-    assert normalize_command_line('powershell "remove_quotes"') == 'powershell remove_quotes'
-
-
-def test_euclidian_similarity_capped():
-    x = np.array([[1, 1, 1], [2, 2, 2]])
-    y = np.array([[2.1, 2.1, 2.1]])
-    distance = euclidian_similarity_capped(x, y)
-    assert distance[0] == 0
-    assert distance[1] > 0
 
 
 def test_find_incorrect_fields():
@@ -271,3 +248,41 @@ def test_no_correct_field(mocker):
     assert (not df)
     assert MESSAGE_INCORRECT_FIELD.replace("%s", "") in msg
     assert all(field in msg for field in [wrong_field_1, wrong_field_2, wrong_field_3, wrong_field_4])
+
+
+def test_incident_truncated(mocker):
+    """
+    Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
+    :param mocker:
+    :return:
+    """
+    global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
+    SIMILAR_INDICATORS = SIMILAR_INDICATORS_NOT_EMPTY
+    correct_field_1 = 'commandline'
+    wrong_field_2 = 'wrong_field_2'
+    wrong_field_3 = 'wrong_field_3'
+    wrong_field_4 = 'wrong_field_4'
+    mocker.patch.object(demisto, 'args',
+                        return_value={
+                            'incidentId': 12345,
+                            'similarTextField': correct_field_1,
+                            'similarCategoricalField': wrong_field_2,
+                            'similarJsonField': wrong_field_3,
+                            'limit': 3,
+                            'fieldExactMatch': '',
+                            'fieldsToDisplay': wrong_field_4,
+                            'showIncidentSimilarityForAllFields': True,
+                            'MinimunIncidentSimilarity': 0.2,
+                            'maxIncidentsToDisplay': 100,
+                            'query': '',
+                            'aggreagateIncidentsDifferentDate': 'True',
+                            'includeIndicatorsSimilarity': 'True'
+                        })
+    mocker.patch.object(demisto, 'dt', return_value=None)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    df, msg = main()
+    limit = demisto.args()['limit']
+    assert not df.empty
+    assert MESSAGE_WARNING_TRUNCATED % (limit, limit) in msg
