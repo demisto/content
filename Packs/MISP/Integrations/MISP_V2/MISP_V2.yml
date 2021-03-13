@@ -42,6 +42,14 @@ configuration:
   - Value
   required: false
   type: 16
+- additionalinfo: Atribute number per event in the context will be limited by this
+    parameter in order to keep incident or indicator context from being overwhelmed.
+  defaultvalue: '1000'
+  display: Maximum attributes in event
+  hidden: false
+  name: attributes_limit
+  required: true
+  type: 0
 description: Malware information sharing platform and threat sharing.
 display: MISP v2
 name: MISP V2

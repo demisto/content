@@ -35,6 +35,7 @@ proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
+MAX_ATTRIBUTES = demisto.params().get('attributes_limit', 1000)
 
 """
 dict format :
@@ -241,15 +242,31 @@ def remove_unselected_context_keys(context_data):
                 del attribute[key]
 
 
+def limit_attributes_count(event):
+    if 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
+        attributes = event['Attribute']
+        attributes_num = len(attributes)
+        event_id = event.get('id', '')
+        event_uuid = event.get('uuid')
+        demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
+                     f'to keep context from being overwhelmed, '
+                     f'this limit can be changed in the integration configuration. '
+                     f'Event ID:{event_id}, event UUID:{event_uuid}, Attributes in event:{attributes_num}')
+        sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
+        #dropping oldest attributes
+        event['Attributes'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
+
 def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
 
     # each related event has it's own attributes
     for event in context_data:
-        # Remove attributes om event
+        # Limit amount of attributes in event
+        limit_attributes_count(event)
+        # Remove filtered fields in event
         remove_unselected_context_keys(event)
-        # Remove attributes in Objects
+        # Remove filtered fields in object
         for obj in event['Object']:
             remove_unselected_context_keys(obj)
 
