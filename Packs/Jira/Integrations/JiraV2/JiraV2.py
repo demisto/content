@@ -1076,18 +1076,27 @@ def update_remote_system_command(args):
         return remote_id
 
 
-def get_modified_remote_data_command(args):
-    remote_args = GetModifiedRemoteDataArgs(args)
-    modified_issues_ids = []
+def get_user_info_data():
+    """
+    This function returns details for the current user in order to get timezone.
+    :return: API response
+    """
     HEADERS['Accept'] = "application/json"
-    try:
-        res = requests.request(
+    return requests.request(
             method='GET',
             url=BASE_URL + 'rest/api/latest/myself',
             headers=HEADERS,
             verify=USE_SSL,
             auth=get_auth(),
         )
+
+
+def get_modified_remote_data_command(args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    modified_issues_ids = []
+    HEADERS['Accept'] = "application/json"
+    try:
+        res = get_user_info_data()
     except Exception as e:
         demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. failed because: {e}')
     else:

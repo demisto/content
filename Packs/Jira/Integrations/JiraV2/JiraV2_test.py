@@ -738,3 +738,25 @@ def test_list_transitions_command(mocker):
     assert res.outputs == {'ticketId': '123', 'transitions': ['To Do']}
 
 
+def test_get_modified_data_commad(mocker):
+    from JiraV2 import get_modified_remote_data_command, get_user_info_data, issue_query_command
+
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('JiraV2.json', return_value={'timeZone': 'Asia/Jerusalem'})
+    # res = type('res', (object,), {'status_code': 200, 'json()': {'timeZone': 'Asia/Jerusalem'}})
+
+    class res:
+        def __init__(self):
+            self.status_code = 200
+        def json(self):
+            return {'timeZone': 'Asia/Jerusalem'}
+    response = res()
+    response.json()
+    mocker.patch('JiraV2.get_user_info_data', return_value=response)
+    mocker.patch('JiraV2.issue_query_command', return_value=(None, None, {'issues': [{'id': '123'}]}))
+
+    modified_ids = get_modified_remote_data_command({'lastUpdate': '0'})
+    assert modified_ids.modified_incident_ids == ['123']
+
+
