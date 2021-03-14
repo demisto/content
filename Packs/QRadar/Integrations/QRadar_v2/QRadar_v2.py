@@ -2322,7 +2322,7 @@ def main():
         elif command == "get-mapping-fields":
             demisto.results(get_mapping_fields(client))
     except Exception as e:
-        error = f"Error has occurred in the QRadar Integration: {str(e)}, \n {traceback.format_exc()}"
+        error = f"Error has occurred in the QRadar Integration: {str(e)}\n{traceback.format_exc()}"
         return_error(error)
 
 
