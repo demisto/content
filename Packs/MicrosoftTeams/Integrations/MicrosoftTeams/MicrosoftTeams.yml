@@ -294,13 +294,13 @@ script:
     name: microsoft-teams-create-channel
   - arguments:
     - default: false
-      description: The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00".
+      description: The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00".
+      description: The meeting end timein ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
       isArray: false
       name: end_time
       required: false
@@ -312,7 +312,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The user that created the meeting.
+      description: Display name/mail/UPN of user that created the meeting, e.g, Adam Smith.
       isArray: false
       name: member
       required: true
@@ -324,7 +324,7 @@ script:
     outputs:
     - contextPath: MicrosoftTeams.CreateMeeting.creationDateTime
       description: Meeting creation time
-      type: String
+      type: Date
     - contextPath: MicrosoftTeams.CreateMeeting.threadId
       description: Meeting thread ID
       type: String
@@ -337,10 +337,10 @@ script:
     - contextPath: MicrosoftTeams.CreateMeeting.joinWebUrl
       description: The URL to join the meeting
       type: String
-    - contextPath: MicrosoftTeams.CreateMeeting.participants
+    - contextPath: MicrosoftTeams.CreateMeeting.participantId
       description: The meeting participants
       type: String
-    - contextPath: MicrosoftTeams.CreateMeeting.displayName
+    - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
       description: The display name of the participants
       type: String
   dockerimage: demisto/teams:1.0.0.13080

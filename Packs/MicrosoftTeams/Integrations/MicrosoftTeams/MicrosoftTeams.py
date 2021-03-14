@@ -875,7 +875,7 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     :param subject: The meeting's subject
     :param start_date_time: The meeting's start time
     :param end_date_time: The meeting's end time
-    :return: ID of created meeting
+    :return: Dict with info about the created meeting.
     """
     url: str = f'{GRAPH_BASE_URL}/v1.0/users/{user_id}/onlineMeetings'
     request_json: dict = {
@@ -940,9 +940,9 @@ def create_meeting_command():
 
 def get_participant_info(participants: dict) -> Tuple[str, str]:
     """
-    Retrieves the participant id and name
+    Retrieves the participant ID and name
     :param participants: The participants in the Team meeting
-    :return: he participant id and name
+    :return: The participant ID and name
     """
     participant_id = ''
     participant_display_name = ''

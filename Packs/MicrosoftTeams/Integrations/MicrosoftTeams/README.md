@@ -133,6 +133,7 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
   - Group.ReadWrite.All
   - Calls.Initiate.All
   - Calls.InitiateGroupCall.All
+  - OnlineMeetings.ReadWrite.All
 
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
@@ -417,7 +418,7 @@ Creates a Teams meeting.
 `OnlineMeetings.ReadWrite.All*`
 Besides setting up this permission, in order to create a meeting the Azure admin needs to configure application access policy
 and grant users permissions to create meetings.
-The script *GrantAccessPolicy* was created to support the needed commands,
+The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands,
 For more information:
 [Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
 
@@ -425,10 +426,11 @@ For more information:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
-| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
 | subject | The meeting subject. | Required | 
 | member | The user that created the meeting. | Required | 
+| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
+| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
+
 
 
 #### Context Output
@@ -440,8 +442,8 @@ For more information:
 | MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID | 
 | MicrosoftTeams.CreateMeeting.id | String | Meeting ID | 
 | MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting | 
-| MicrosoftTeams.CreateMeeting.participants | String | The meeting participants | 
-| MicrosoftTeams.CreateMeeting.displayName | String | The display name of the participants | 
+| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID | 
+| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant | 
 
 
 #### Command Example
