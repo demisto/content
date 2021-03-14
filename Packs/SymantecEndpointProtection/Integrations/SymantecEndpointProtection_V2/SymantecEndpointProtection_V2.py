@@ -447,10 +447,16 @@ def get_groups_info(token, columns):
 
 
 def get_command_status(token, command_id):
+    demisto.debug("Start get_command_status")
+
+    demisto.debug("get_command_status - command_id: {0}".format(command_id))
     command_status_json = get_command_status_details(token, command_id)
+    demisto.debug("get_command_status - command_status_json: {0}".format(command_status_json))
+
     cmd_status_detail = demisto.get(json.loads(command_status_json),
                                     'Envelope.Body.getCommandStatusDetailsResponse.'
                                     'CommandStatusDetailResult.cmdStatusDetail')
+    demisto.debug("get_command_status - cmd_status_detail: {0}".format(cmd_status_detail))
     cmd_status_detail.pop('hardwareKey', None)
     state_id = cmd_status_detail.get('stateId')
     is_done = False
@@ -624,8 +630,15 @@ def groups_info_command(token):
 
 
 def command_status(token):
+    demisto.debug("Start command_status")
+
     command_id = demisto.getArg('commandId')
+    demisto.debug("command_status - command_id: {0}".format(command_id))
+
     cmd_status_detail, message = get_command_status(token, command_id)
+    demisto.debug("command_status - cmd_status_detail: {0}".format(cmd_status_detail))
+    demisto.debug("command_status - message: {0}".format(message))
+
     md = '### Command ID: {0}\n'.format(command_id)
     md += '### State ID: {0}\n'.format(cmd_status_detail.get('stateId'))
     md += '### ' + message
@@ -724,7 +737,12 @@ def endpoint_quarantine_command(token):
 def scan_endpoint_command(token):
     endpoint = demisto.getArg('endpoint')
     scan_type = demisto.getArg('scanType')
+    demisto.debug("scan_endpoint_command - endpoint: {0}".format(endpoint))
+    demisto.debug("scan_endpoint_command - scan_type: {0}".format(scan_type))
+
     command_id = scan_endpoint(token, endpoint, scan_type)
+    demisto.debug("scan_endpoint_command - command_id: {0}".format(command_id))
+
     message = '### Initiated scan on endpoint: {0} with type: {1}. Command ID: {2}.'.format(endpoint,
                                                                                             scan_type, command_id)
     context = {
