@@ -17,7 +17,7 @@ from typing import Any, Dict
 
 
 # TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
+def basescript_dummy_v2(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
     :type dummy: ``str``
@@ -34,14 +34,14 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
 
 # TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+def basescript_dummy_command_v2(args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', 'example dummy')
     if not dummy:
         raise ValueError('dummy not specified')
 
     # Call the standalone function and get the raw response
-    result = basescript_dummy(dummy)
+    result = basescript_dummy_v2(dummy)
 
     return CommandResults(
         outputs_prefix='BaseScript',
@@ -59,7 +59,7 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 def main():
     try:
         # TODO: replace the invoked command function with yours
-        return_results(basescript_dummy_command(demisto.args()))
+        return_results(basescript_dummy_command_v2(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
