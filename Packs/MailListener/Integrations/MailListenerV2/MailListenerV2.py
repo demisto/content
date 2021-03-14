@@ -259,7 +259,7 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (time_to_fetch_from and time_to_fetch_from < email_message_object.date) and \
+        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
