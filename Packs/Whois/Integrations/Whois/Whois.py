@@ -8354,7 +8354,7 @@ def create_outputs(whois_result, domain, reliability, query=None):
     dbot_score = Common.DBotScore(indicator=domain, indicator_type='domain', integration_name='Whois', score=0,
                                   reliability=reliability)
 
-    return md, standard_ec, dbot_score
+    return md, standard_ec, dbot_score.to_context()
 
 
 '''COMMANDS'''
