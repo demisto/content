@@ -1,7 +1,6 @@
 commonfields:
   id: AsanaConnect
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AsanaConnect
 display: AsanaConnect
 category: Case Management
