@@ -54,7 +54,7 @@ def main():
         return_results(yamlload(demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute BaseScript. Error: {str(e)}")
+        return_error(f"Failed to execute ParseYAML script. Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
