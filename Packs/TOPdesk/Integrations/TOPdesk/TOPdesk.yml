@@ -2140,8 +2140,8 @@ script:
       required: false
       secret: false
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - description: Entry type by name. Can only be set by operators. XSOAR is
         set by default for mirroring.
       isArray: false
@@ -2807,8 +2807,8 @@ script:
       required: false
       secret: false
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - description: Entry type by name. Can only be set by operators. XSOAR is
         set by default for mirroring.
       isArray: false
@@ -5865,8 +5865,8 @@ script:
       required: false
       secret: false
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - description: The description of the uploaded file.
       isArray: false
       name: file_description
@@ -5906,7 +5906,7 @@ script:
     - contextPath: TOPdesk.Attachment.Person
       description: ''
       type: Unknown
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -1,6 +1,5 @@
 import pytest
 import demistomock as demisto
-import dateparser
 import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
@@ -79,9 +78,7 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     requests_mock.get(
@@ -143,9 +140,7 @@ def test_large_output_list_command(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
@@ -244,9 +239,7 @@ def test_incident_do_commands(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     mock_topdesk_node = util_load_json(mock_response_file)
@@ -305,9 +298,7 @@ def test_attachment_upload_command(mocker,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
 
@@ -386,9 +377,7 @@ def test_caller_lookup_incident_touch_commands(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     client_func = client.update_incident
@@ -451,9 +440,7 @@ def test_non_registered_caller_incident_touch_commands(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     client_func = client.update_incident
@@ -567,9 +554,7 @@ def test_list_command_with_args(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     requests_mock.get(
@@ -616,9 +601,7 @@ def test_get_incidents_with_pagination(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     for request in command_api_request:
@@ -711,9 +694,7 @@ def test_old_new_query(requests_mock,
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=new_query
     )
     requests_mock.get(command_api_request, json=[{}])
@@ -737,9 +718,7 @@ def test_unsupported_old_query_param(command_args):
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=False
     )
     with pytest.raises(KeyError, match="is not supported with old query setting."):
@@ -751,7 +730,7 @@ def test_unsupported_old_query_param(command_args):
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36Z',
         'will_be_fetched': True
-    }], '2020-01-11T06:32:36.303+0000', '2020-02-10T06:32:36Z'),
+    }], '2020-01-11T06:32:36.303000+0000', '2020-02-10T06:32:36.000000+0000'),
     ([{  # Last fetch is after one incident creation and before other.
         'number': 'TEST-1',
         'creationDate': '2020-01-10T06:32:36Z',
@@ -760,12 +739,12 @@ def test_unsupported_old_query_param(command_args):
         'number': 'TEST-2',
         'creationDate': '2020-03-10T06:32:36Z',
         'will_be_fetched': True
-    }], '2020-02-11T06:32:36.303+0000', '2020-03-10T06:32:36Z'),
+    }], '2020-02-11T06:32:36.303000+0000', '2020-03-10T06:32:36.000000+0000'),
     ([{  # Last fetch is at incident creation
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'will_be_fetched': False
-    }], '2020-02-10T06:32:36.303+0000', '2020-02-10T06:32:36.303+0000'),
+    }], '2020-02-10T06:32:36.303000+0000', '2020-02-10T06:32:36.303000+0000'),
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """Unit test
@@ -781,9 +760,7 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
-        headers={
-            'Authentication': 'Basic some_encoded_credentials'
-        },
+        auth=('some_username', 'some_password'),
         new_query=True
     )
     mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
@@ -806,7 +783,7 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
         'https://test.com/api/v1/incidents', json=mock_topdesk_response)
 
     last_run = {
-        'last_fetch': dateparser.parse(last_fetch_time)
+        'last_fetch': last_fetch_time
     }
     last_fetch, incidents = fetch_incidents(client=client,
                                             last_run=last_run,
@@ -818,4 +795,4 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
         assert incident['details'] == expected_incident['details']
         assert incident['occurred'] == expected_incident['occurred']
         assert incident['rawJSON'] == expected_incident['rawJSON']
-    assert last_fetch == {'last_fetch': dateparser.parse(updated_fetch_time)}
+    assert last_fetch == {'last_fetch': updated_fetch_time}

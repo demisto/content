@@ -12,7 +12,6 @@ import traceback
 import dateparser
 
 from typing import Any, Dict, List, Optional, Callable, Tuple, Union
-from base64 import b64encode
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,6 +21,7 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'TOPdesk'
 XSOAR_ENTRY_TYPE = 'Automation'  # XSOAR
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT_FULL = "%Y-%m-%dT%H:%M:%S.%f%z"
 MAX_API_PAGE_SIZE = 10000
 
 ''' CLIENT CLASS '''
@@ -30,8 +30,8 @@ MAX_API_PAGE_SIZE = 10000
 class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
-    def __init__(self, base_url, verify, headers, new_query):
-        super().__init__(base_url=base_url, verify=verify, headers=headers)
+    def __init__(self, base_url, verify, auth, new_query):
+        super().__init__(base_url=base_url, verify=verify, auth=auth)
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         self.new_query = new_query
 
@@ -360,7 +360,7 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
     if len(incidents) == 0:
         return CommandResults(readable_output='No incidents found')
 
-    headers = ['id', 'number', 'request', 'line', 'actions', 'caller name', 'status', 'operator', 'priority']
+    headers = ['Id', 'Number', 'Request', 'Line', 'Actions', 'CallerName', 'Status', 'Operator', 'Priority']
 
     readable_incidents = []
     for incident in incidents:
@@ -686,13 +686,10 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     headers = ['Id', 'FileName', 'DownloadUrl', 'Size', 'Description',
                'InvisibleForCaller', 'EntryDate', 'Operator']
-    half_camelized_headers = [half_camelize(header, ' ') for header in headers]
-    readable_attachment: List[Dict[str, Any]] = [{}]
-    for header, half_camelized_header in zip(headers, half_camelized_headers):
-        readable_attachment[0][header] = response.get(half_camelized_header, None)
+    capitalized_output = capitalize_for_outputs([response])
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} attachment of incident {args.get('number', None)}",
-                                      readable_attachment,
+                                      capitalized_output,
                                       headers=headers,
                                       removeNull=True)
 
@@ -700,7 +697,7 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_NAME}.Attachment',
         outputs_key_field='Id',
-        outputs=capitalize_for_outputs([response]),
+        outputs=capitalized_output,
         raw_response=response
     )
 
@@ -714,13 +711,15 @@ def fetch_incidents(client: Client,
     """Fetches incidents from TOPdesk."""
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_fetch_datetime = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch', None)
 
-    if not last_fetch_datetime:
+    if not last_fetch:
         if first_fetch_datetime:
             last_fetch_datetime = first_fetch_datetime
         else:
             raise Exception("Could not find last fetch time.")
+    else:
+        last_fetch_datetime = dateparser.parse(last_fetch)
 
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
@@ -760,10 +759,11 @@ def fetch_incidents(client: Client,
                 'rawJSON': json.dumps(topdesk_incident),
                 'labels': labels
             })
+
         if latest_created_time.timestamp() < incident_created_time.timestamp():
             latest_created_time = incident_created_time
 
-    return {'last_fetch': latest_created_time}, incidents
+    return {'last_fetch': latest_created_time.strftime(DATE_FORMAT_FULL)}, incidents
 
 
 def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params: Dict[str, Any]) -> str:
@@ -798,16 +798,10 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        encoded_credentials = b64encode(bytes(f"{demisto.params().get('username')}:{demisto.params().get('password')}",
-                                              encoding='ascii')).decode('ascii')
-
-        headers = {
-            'Authorization': f'Basic {encoded_credentials}'
-        }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
+            auth=(demisto.params().get('username'), demisto.params().get('password')),
             new_query=demisto_params['new_query'])
 
         if demisto.command() == 'test-module':
