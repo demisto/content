@@ -39,8 +39,8 @@ RATE_SUBCONTEXT_NAME = 'Rate'
 # CONSTANTS
 DEFAULT_DNSDB_SERVER = 'https://api.dnsdb.info'
 TIMEOUT = 60
-SWCLIENT = "demisto-integration"
-VERSION = "v2.0"
+SWCLIENT = "demisto"
+VERSION = "v2.1.2"
 PATH_PREFIX = 'dnsdb/v2'
 IDN_REGEX = re.compile(r'(?:^|(?<=[\s=.:@]))xn--[a-z0-9\-]+\.')
 FALSE_REGEX = re.compile(r'^(?i:f(alse)?)$')

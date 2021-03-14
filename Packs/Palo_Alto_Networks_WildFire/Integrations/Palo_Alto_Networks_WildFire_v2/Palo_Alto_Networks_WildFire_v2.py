@@ -26,7 +26,8 @@ URL_DICT = {
     'upload_url': '/submit/link',
     'upload_file_url': '/submit/url',
     'report': '/get/report',
-    'sample': '/get/sample'
+    'sample': '/get/sample',
+    'webartifacts': '/get/webartifacts',
 }
 
 ERROR_DICT = {
@@ -110,7 +111,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if result.text.find("Forbidden. (403)") != -1:
         raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
-    if result.headers['Content-Type'] == 'application/octet-stream':
+    if ('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
+            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked'):
         return result
 
     if resp_type == 'json':
@@ -455,6 +457,7 @@ def wildfire_get_verdicts(file_path):
     return result, verdicts_data
 
 
+@logger
 def wildfire_get_verdicts_command():
     if ('EntryID' in demisto.args() and 'hash_list' in demisto.args()) or (
             'EntryID' not in demisto.args() and 'hash_list' not in demisto.args()):
@@ -489,6 +492,39 @@ def wildfire_get_verdicts_command():
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': entry_context
         })
+
+
+@logger
+def wildfire_get_webartifacts(url: str, types: str) -> dict:
+    get_webartifacts_uri = f'{URL}{URL_DICT["webartifacts"]}'
+    params = {
+        'apikey': TOKEN,
+        'url': url,
+    }
+    if types:
+        params['types'] = types
+
+    result = http_request(
+        get_webartifacts_uri,
+        'POST',
+        headers=DEFAULT_HEADERS,
+        params=params
+    )
+    return result
+
+
+@logger
+def wildfire_get_url_webartifacts_command():
+    urls = argToList(demisto.args().get('url'))
+    types = demisto.args().get('types', '')
+
+    for url in urls:
+        try:
+            result = wildfire_get_webartifacts(url, types)
+            file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
+            demisto.results(file_entry)
+        except NotFoundError:
+            return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
@@ -749,7 +785,7 @@ def wildfire_get_report_command():
     for element in inputs:
         if url_report:
             url, report = wildfire_get_url_report(element)
-            headers = ['sha256', 'type', 'verdict']
+            headers = ['sha256', 'type', 'verdict', 'iocs']
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
                                              removeNull=True)
             entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
@@ -845,6 +881,9 @@ def main():
 
         elif command == 'wildfire-get-verdicts':
             wildfire_get_verdicts_command()
+
+        elif command == 'wildfire-get-url-webartifacts':
+            wildfire_get_url_webartifacts_command()
 
     except Exception as err:
         return_error(str(err))
