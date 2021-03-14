@@ -144,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1,
-          "y": 355
+          "x": -9,
+          "y": 370
         }
       }
     note: false
@@ -183,14 +183,14 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 96e50a4f-9369-4549-885e-7a53814d1548
+    taskid: 03fe6fe7-8aa7-4329-8c0b-6cf3847128d7
     type: playbook
     task:
-      id: 96e50a4f-9369-4549-885e-7a53814d1548
+      id: 03fe6fe7-8aa7-4329-8c0b-6cf3847128d7
       version: -1
       name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       description: |-
-        This playbook retrieves a file from endpoints by path using VMware Carbon Black EDR (Live Response API).
+        This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
         Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
       playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
         API
@@ -223,16 +223,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 705,
-        "width": 859,
-        "x": 1,
+        "width": 869,
+        "x": -9,
         "y": 50
       }
     }
@@ -263,7 +264,8 @@ inputs:
 - key: Agent_ID
   value: {}
   required: false
-  description: The ID of the agent in the relevant integration (such as EDR).
+  description: The ID of the agent, or of the endpoint, in the relevant integration
+    (such as EDR).
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
@@ -300,23 +302,25 @@ outputs:
   description: File SSDeep.
   type: string
 tests:
-- Account Enrichment - Generic v2.1 - Test
 - Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
 - Test Convert file hash to corresponding hashes
-- Dedup - Generic v2 - Test
-- Detonate File - Generic Test
-- Detonate File - No Files test
 - Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
+- Detonate File - Generic Test
+- test-domain-indicator
+- Account Enrichment - Generic v2.1 - Test
+- Dedup - Generic v2 - Test
+- Generic Polling Test
+- URL Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
 - Endpoint Enrichment - Generic v2.1 - Test
+- Wait Until Datetime - Test
+- Detonate File - No Files test
+- Domain Enrichment - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Retrieve File from Endpoint - Generic V2 Test
 - Extract Indicators From File - Generic v2 - Test
 - Field polling test
+- Email Address Enrichment - Generic v2.1 - Test
 - File Enrichment - Generic v2 - Test
 - IP Enrichment - Generic v2 - Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
 fromversion: 5.0.0
