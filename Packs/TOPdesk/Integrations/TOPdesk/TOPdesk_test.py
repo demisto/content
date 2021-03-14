@@ -14,6 +14,24 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+@pytest.mark.parametrize('outputs, expected_capitalized_output', [
+    ([{"hiThere": "hi"}], [{"HiThere": "hi"}]),
+    ([{"hi": "hi"}], [{"Hi": "hi"}]),
+    ([{"hiThere": {"wellHello": "hi"}}], [{"HiThere": {"WellHello": "hi"}}]),
+    ([{"hiThere": {"wellHello": {"hiyaThere": "hi"}}}], [{"HiThere": {"WellHello": {"HiyaThere": "hi"}}}]),
+])
+def test_capitalize_outputs(outputs, expected_capitalized_output):
+    """Unit test
+    Given
+        - output of API command
+    When
+        - returning output to XSOAR
+    Then
+        - validate the output is capitalized.
+    """
+    assert capitalize_for_outputs(outputs) == expected_capitalized_output
+
+
 @pytest.mark.parametrize('command, command_api_url, mock_response, expected_results', [
     (entry_types_command,
      'https://test.com/api/v1/incidents/entry_types',

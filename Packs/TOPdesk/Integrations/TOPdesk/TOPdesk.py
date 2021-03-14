@@ -739,25 +739,11 @@ def fetch_incidents(client: Client,
         else:
             incident_created_time = last_fetch_datetime
         if int(last_fetch_datetime.timestamp()) < int(incident_created_time.timestamp()):
-            labels: List[Dict[str, Any]] = []
-            for topdesk_incident_field, topdesk_incident_value in topdesk_incident.items():
-                if isinstance(topdesk_incident_value, str):
-                    labels.append({
-                        'type': topdesk_incident_field,
-                        'value': topdesk_incident_value
-                    })
-                else:
-                    labels.append({
-                        'type': topdesk_incident_field,
-                        'value': json.dumps(topdesk_incident_value)
-                    })
-
             incidents.append({
                 'name': f"TOPdesk incident {topdesk_incident['number']}",
                 'details': json.dumps(topdesk_incident),
                 'occurred': incident_created_time.strftime(DATE_FORMAT),
-                'rawJSON': json.dumps(topdesk_incident),
-                'labels': labels
+                'rawJSON': json.dumps(topdesk_incident)
             })
 
         if latest_created_time.timestamp() < incident_created_time.timestamp():
