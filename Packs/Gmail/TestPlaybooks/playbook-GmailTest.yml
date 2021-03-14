@@ -1657,7 +1657,7 @@ tasks:
       version: -1
       name: send-mail
       description: Send an email
-      script: '|||send-mail'
+      script: 'Gmail|||send-mail'
       type: regular
       iscommand: true
       brand: ""
