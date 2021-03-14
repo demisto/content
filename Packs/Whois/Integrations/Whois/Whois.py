@@ -8384,7 +8384,7 @@ def domain_command():
 
 def ip_command(ips):
     try:
-        # from urllib2 import request
+        from urllib2 import build_opener, ProxyHandler
         from ipwhois import IPWhois
     except ImportError as e:
         return_error("The Docker needs to be updated to use an IP command")
@@ -8392,7 +8392,9 @@ def ip_command(ips):
     results = []
     for ip in argToList(ips):
         if demisto.params().get('proxy'):
-            opener = request.build_opener(handle_proxy('system_http'))
+            proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
+            handler = ProxyHandler(proxies)
+            opener = build_opener(handler)
             ip_obj = IPWhois(ip, proxy_opener=opener)
         else:
             ip_obj = IPWhois(ip)
@@ -8471,12 +8473,12 @@ def setup_proxy():
     }
     proxy_url = demisto.params().get('proxy_url')
     def_scheme = 'socks5h'
-    if proxy_url == 'system_http':
-        system_proxy = handle_proxy('proxy_url')
+    if proxy_url == 'system_http' or not proxy_url and demisto.params().get('proxy'):
+        system_proxy = handle_proxy('proxy')
         # use system proxy. Prefer https and fallback to http
         proxy_url = system_proxy.get('https') if system_proxy.get('https') else system_proxy.get('http')
         def_scheme = 'http'
-    if not proxy_url:
+    if not proxy_url and not demisto.params().get('proxy'):
         return
     scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
     host, port = (host, None) if ':' not in host else host.split(':')
