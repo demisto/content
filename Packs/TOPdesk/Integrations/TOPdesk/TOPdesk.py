@@ -8,7 +8,6 @@ import os
 import math
 import shutil
 import urllib3
-import basicauth
 import traceback
 import dateparser
 
@@ -267,8 +266,8 @@ def capitalize_for_outputs(outputs: List[Dict[str, Any]]) -> List[Dict[str, Any]
                     elif isinstance(sub_value, dict):
                         capitalized_output[capitalize(field)][capitalize(sub_field)] = {}
                         for sub_sub_field, sub_sub_value in sub_value.items():
-                            capitalized_output[capitalize(field)][capitalize(sub_field)]\
-                                [capitalize(sub_sub_field)] = sub_sub_value  # Support up to dict[x: dict[y: dict]]
+                            capitalized_output[capitalize(field)][capitalize(sub_field)][capitalize(sub_sub_field)] = \
+                                sub_sub_value  # Support up to dict[x: dict[y: dict]]
         capitalized_outputs.append(capitalized_output)
 
     return capitalized_outputs
@@ -370,9 +369,10 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
             'Number': incident.get('number', None),
             'Request': incident.get('request', None),
             'Line': incident.get('status', None),
-            'CallerName': incident.get('caller').get('dynamicName', None) if incident.get('caller') else None,
-            'Status': incident.get('processingStatus').get('name', None) if incident.get('processingStatus') else None,
-            'Operator': incident.get('operator').get('name', None) if incident.get('operator') else None,
+            'CallerName': incident.get('caller', {}).get('dynamicName', None) if incident.get('caller') else None,
+            'Status':
+                incident.get('processingStatus', {}).get('name', None) if incident.get('processingStatus') else None,
+            'Operator': incident.get('operator', {}).get('name', None) if incident.get('operator') else None,
             'Priority': incident.get('priority', None)
         }
 
@@ -659,9 +659,9 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
 def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Upload attachment to certain incident in TOPdesk"""
     file_entry = args.get('file')
-    file_name = demisto.dt(demisto.context(), "File(val.EntryID=='" + file_entry + "').Name")
+    file_name = demisto.dt(demisto.context(), f"File(val.EntryID=='{file_entry}').Name")
     if not file_name:  # in case of info file
-        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_entry + "').Name")
+        file_name = demisto.dt(demisto.context(), f"InfoFile(val.EntryID=='{file_entry}').Name")
 
     if not file_name:
         raise ValueError(f"Could not fine file in entry with entry_id: {file_entry}")
@@ -676,8 +676,8 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.attachment_upload(incident_id=args.get('id', None),
                                         incident_number=args.get('number', None),
-                                        file_entry=file_entry,
-                                        file_name=file_name,
+                                        file_entry=str(file_entry),
+                                        file_name=str(file_name),
                                         invisible_for_caller=invisible_for_caller,
                                         file_description=args.get('file_description', None))
 
@@ -798,11 +798,11 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        encoded_credentials = basicauth.encode(username=demisto.params().get('username'),
-                                               password=demisto.params().get('password'))
+        encoded_credentials = b64encode(bytes(f"{demisto.params().get('username')}:{demisto.params().get('password')}",
+                                              encoding='ascii')).decode('ascii')
 
         headers = {
-            'Authorization': encoded_credentials
+            'Authorization': f'Basic {encoded_credentials}'
         }
         client = Client(
             base_url=base_url,
