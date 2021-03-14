@@ -197,7 +197,7 @@ def standardize_recipients_column(df, column):
     if column not in df.columns:
         df[column] = [[] for _ in range(len(df))]
         return df
-    df[column] = df[column].apply(lambda x: [x] if not isinstance(x, list) else x)
+    df[column] = df[column].apply(argToList)
     df[column] = df[column].apply(lambda x: [value.strip() for value in x if isinstance(value, str)])
     df[column] = df[column].apply(lambda x: [value for value in x if '@' in value])
     return df
