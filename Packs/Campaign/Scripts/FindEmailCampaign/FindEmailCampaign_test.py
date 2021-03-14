@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import tldextract
 from email.utils import parseaddr
+from nltk import sent_tokenize, word_tokenize
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
