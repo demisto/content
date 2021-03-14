@@ -973,7 +973,7 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list):
+    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list) -> Dict[str, list]:
         if not windows and not linux and not macos:
             raise ValueError('You should enter at least one path.')
 
@@ -989,7 +989,7 @@ class Client(BaseClient):
 
     def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list)\
             -> Dict[str, Any]:
-        # there are 2 options, either the paths are given with separation to a specific os ire without
+        # there are 2 options, either the paths are given with separation to a specific os or without
         # it using generic_file_path
         if file_path_list:
             files = self.generate_files_dict(
@@ -1025,12 +1025,12 @@ class Client(BaseClient):
             raise ValueError("The endpoint_ids list must be in the same length as the generic_file_path")
 
         for endpoint_id, file_path in zip(endpoint_id_list, file_path_list):
-            endpoint = self.get_endpoints(endpoint_id_list=[endpoint_id])
+            endpoints = self.get_endpoints(endpoint_id_list=[endpoint_id])
 
-            if len(endpoint) == 0:
+            if len(endpoints) == 0 or not isinstance(endpoints, list):
                 raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
 
-            endpoint = endpoint[0]
+            endpoint = endpoints[0]
             endpoint_os_type = endpoint.get('os_type')
 
             if 'windows' in endpoint_os_type.lower():
