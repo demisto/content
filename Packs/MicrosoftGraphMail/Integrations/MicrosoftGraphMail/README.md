@@ -90,7 +90,7 @@ Gets the properties of returned emails.
 | MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
 | MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. | 
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
-| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
+| MSGraphMail.ReplyTo.Address | String | The demisemail address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results.|
 
