@@ -274,7 +274,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_alert(self, alert_id: str) -> Dict[str, Any]:
+    def get_alert_v3(self, alert_id: str) -> Dict[str, Any]:
         """Gets a specific HelloWorld alert by id
 
         :type alert_id: ``str``
@@ -292,7 +292,7 @@ class Client(BaseClient):
             }
         )
 
-    def say_hello(self, name: str) -> str:
+    def say_hello_v2(self, name: str) -> str:
         """Returns 'Hello {name}'
 
         :type name: ``str``
