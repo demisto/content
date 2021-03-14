@@ -3566,7 +3566,7 @@
             },
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 30,
-                "memory_threshold": 150
+                "memory_threshold": 155
             }
         }
     }
