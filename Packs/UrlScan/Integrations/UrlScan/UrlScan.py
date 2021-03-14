@@ -26,8 +26,14 @@ BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
 USE_SSL = not demisto.params().get('insecure', False)
+reliability = demisto.params().get('integrationReliability')
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
+
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
 '''HELPER FUNCTIONS'''
 
@@ -284,6 +290,7 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
+        dbot_score['Reliability'] = reliability
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
