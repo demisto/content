@@ -256,7 +256,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
     # removing backslashes from filename as the API does not like it
     # if given filename such as dir\file.xlsx - the sample will end with the name file.xlsx
     filename = demisto.getFilePath(file_entry)['name']
-    if type(filename) == unicode:  # py2 way of checking if a var is of type unicode
+    if isinstance(filename, unicode):  # py2 way of checking if a var is of type unicode
         filename = filename.encode('ascii', 'ignore')
     filename.replace('\\', '/')
 
