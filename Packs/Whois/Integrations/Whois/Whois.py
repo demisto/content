@@ -8382,7 +8382,7 @@ def whois_command(reliability):
     query = demisto.args().get('query')
     domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, query, reliability)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -8444,7 +8444,7 @@ def main():
     org_socket = socket.socket
     command = demisto.command()
 
-    reliability = demisto.params().get('integrationReliability', 'C - Fairly reliable')
+    reliability = demisto.params().get('integrationReliability', 'B - Usually reliable')
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
