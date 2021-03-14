@@ -33,7 +33,7 @@ BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
 if DBotScoreReliability.is_valid_type(reliability):
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
 else:
-    raise Exception("Please provide a valid value for the Source Reliability parameter.")
+    Exception("Please provide a valid value for the Source Reliability parameter.")
 
 '''HELPER FUNCTIONS'''
 
