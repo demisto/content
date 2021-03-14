@@ -8,6 +8,7 @@ import os
 import math
 import shutil
 import urllib3
+import basicauth
 import traceback
 import dateparser
 
@@ -51,21 +52,27 @@ class Client(BaseClient):
         if start:
             url_suffix = f"{url_suffix}?start={start}"
             inline_parameters = True
+
         if page_size:
             if inline_parameters:
                 url_suffix = f"{url_suffix}&page_size={page_size}"
             else:
                 url_suffix = f"{url_suffix}?page_size={page_size}"
                 inline_parameters = True
+
         if query:
             if list_type != "incidents" or self.new_query:
                 query = f"query={query}"
+
             if inline_parameters:
                 url_suffix = f"{url_suffix}&{query}"
+
             else:
                 url_suffix = f"{url_suffix}?{query}"
+
         if modification_date_start:
             request_params["modification_date_start"] = modification_date_start
+
         if modification_date_end:
             request_params["modification_date_end"] = modification_date_end
 
@@ -110,6 +117,7 @@ class Client(BaseClient):
 
         if not args.get("id", None) and not args.get("number", None):
             raise ValueError('Either id or number must be specified to update incident.')
+
         if args.get("id", None):
             endpoint = f"/incidents/id/{args['id']}"
         else:
@@ -123,17 +131,17 @@ class Client(BaseClient):
             json_data=request_params
         )
 
-    def incident_do(self, action: str,
-                    incident_id: Optional[str],
-                    incident_number: Optional[str],
+    def incident_do(self, action: str, incident_id: Optional[str], incident_number: Optional[str],
                     reason_id: Optional[str]) -> Dict[str, Any]:
         """Preform action on TOPdesk incident with specified reason_id if needed."""
         allowed_actions = ["escalate", "deescalate", "archive", "unarchive"]
         request_params: Dict[str, Any] = {}
         if action not in allowed_actions:
             raise ValueError(f'Endpoint {action} not in allowed endpoint list: {allowed_actions}')
+
         if not incident_id and not incident_number:
             raise ValueError('Either id or number must be specified to update incident.')
+
         if incident_id:
             endpoint = f"/incidents/id/{incident_id}"
         else:
@@ -148,23 +156,19 @@ class Client(BaseClient):
             json_data=request_params
         )
 
-    def attachment_upload(self,
-                          incident_id: Optional[str],
-                          incident_number: Optional[str],
-                          file_entry: str,
-                          file_name: str,
-                          invisible_for_caller: Optional[bool],
-                          file_description: Optional[str]):
+    def attachment_upload(self, incident_id: Optional[str], incident_number: Optional[str], file_entry: str,
+                          file_name: str, invisible_for_caller: bool, file_description: Optional[str]):
         """Upload an attachment from file_entry to TOPdesk incident."""
         if not incident_id and not incident_number:
             raise ValueError('Either id or number must be specified to update incident.')
+
         if incident_id:
             endpoint = f"/incidents/id/{incident_id}"
         else:
             endpoint = f"/incidents/number/{incident_number}"
+
         request_params: Dict[str, Any] = {}
-        if isinstance(invisible_for_caller, bool):
-            request_params["invisibleForCaller"] = invisible_for_caller
+        request_params["invisibleForCaller"] = invisible_for_caller
         if file_description:
             request_params["description"] = file_description
 
@@ -188,10 +192,12 @@ class Client(BaseClient):
                 query = f"{query}&"
             else:
                 query = ''
+
             if self.new_query:
                 query = f"{query}{filter_name}=={filter_arg}"
             else:
                 query = f"{query}{filter_name}={filter_arg}"
+
         return query
 
 
@@ -215,11 +221,13 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
             if args.get(optional_param, None):
                 if optional_param == "description":
                     request_params["briefDescription"] = args.get(optional_param, None)
+
                 elif optional_param == "caller":
                     if args.get("registered_caller", False):
                         request_params["callerLookup"] = {"id": args[optional_param]}
                     else:
                         request_params["caller"] = {"dynamicName": args[optional_param]}
+
                 elif optional_param in optional_named_params:
                     request_params[half_camelize(optional_param)] = {"name": args[optional_param]}
                 else:
@@ -227,6 +235,7 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
 
     if args.get("additional_params", None):
         request_params.update(args["additional_params"])
+
     return request_params
 
 
@@ -238,35 +247,53 @@ def half_camelize(s: str, delimiter: str = '_') -> str:
     return f"{components[0]}{''.join(x.title() for x in components[1:])}"
 
 
-def command_with_all_fields_readable_list(results: List[Dict[str, Any]],
-                                          result_name: str,
-                                          output_prefix: str,
+def capitalize(word: str):
+    return word[:1].upper() + word[1:]
+
+
+def capitalize_for_outputs(outputs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Capitalize for XSOAR outputs"""
+    capitalized_outputs: List[Dict[str, Any]] = []
+    for output in outputs:
+        capitalized_output: Dict[str, Any] = {}
+        for field, value in output.items():
+            if isinstance(value, str) or isinstance(value, bool):
+                capitalized_output[capitalize(field)] = value
+            elif isinstance(value, dict):
+                capitalized_output[capitalize(field)] = {}
+                for sub_field, sub_value in value.items():
+                    if isinstance(sub_value, str) or isinstance(value, bool):
+                        capitalized_output[capitalize(field)][capitalize(sub_field)] = sub_value
+                    elif isinstance(sub_value, dict):
+                        capitalized_output[capitalize(field)][capitalize(sub_field)] = {}
+                        for sub_sub_field, sub_sub_value in sub_value.items():
+                            capitalized_output[capitalize(field)][capitalize(sub_field)]\
+                                [capitalize(sub_sub_field)] = sub_sub_value  # Support up to dict[x: dict[y: dict]]
+        capitalized_outputs.append(capitalized_output)
+
+    return capitalized_outputs
+
+
+def command_with_all_fields_readable_list(results: List[Dict[str, Any]], result_name: str, output_prefix: str,
                                           outputs_key_field: str = 'id') -> CommandResults:
     """Get entry types list from TOPdesk."""
 
     if len(results) == 0:
         return CommandResults(readable_output=f'No {result_name} found')
 
-    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', results, removeNull=True)
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', capitalize_for_outputs(results),
+                                      removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_NAME}.{output_prefix}',
         outputs_key_field=outputs_key_field,
-        outputs=results
+        outputs=capitalize_for_outputs(results),
+        raw_response=results
     )
 
 
-def replace_none(value: Any, replacement: Any) -> Any:
-    if value:
-        return value
-    return replacement
-
-
-def get_incidents_with_pagination(client: Client,
-                                  max_fetch: int,
-                                  query: str,
-                                  modification_date_start: str,
+def get_incidents_with_pagination(client: Client, max_fetch: int, query: str, modification_date_start: str,
                                   modification_date_end: str) -> List[Dict[str, Any]]:
     incidents = []
     max_incidents = int(max_fetch)
@@ -275,6 +302,7 @@ def get_incidents_with_pagination(client: Client,
         page_size = max_incidents
     else:
         page_size = MAX_API_PAGE_SIZE
+
     start = 0
     for index in range(number_of_requests):
         incidents += client.get_list_with_query(list_type="incidents",
@@ -287,21 +315,13 @@ def get_incidents_with_pagination(client: Client,
     return incidents
 
 
-def get_incidents_list(client: Client,
-                       incident_number: str = None,
-                       incident_id: str = None,
-                       modification_date_start: str = None,
-                       modification_date_end: str = None,
-                       query: str = None,
-                       page_size: int = None,
-                       start: int = None,
+def get_incidents_list(client: Client, modification_date_start: str = None, modification_date_end: str = None,
                        args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
     """Get list of incidents from TOPdesk."""
-    if incident_id or incident_number:
-        if incident_id:
-            incidents = [client.get_single_endpoint(f"/incidents/id/{incident_id}")]
-        else:
-            incidents = [client.get_single_endpoint(f"/incidents/number/{incident_number}")]
+    if args.get('incident_id', None):
+        incidents = [client.get_single_endpoint(f"/incidents/id/{args.get('incident_id')}")]
+    elif args.get('incident_number', None):
+        incidents = [client.get_single_endpoint(f"/incidents/number/{args.get('incident_number')}")]
     else:
         allowed_statuses = [None, 'firstLine', 'secondLine', 'partial']
         if args.get('status', None) not in allowed_statuses:
@@ -317,6 +337,7 @@ def get_incidents_list(client: Client,
                                                 "entry_type": "entryType"}
             old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
 
+            query = args.get('query', None)
             for filter_arg in filter_arguments.keys():
                 if not client.new_query:
                     if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
@@ -326,8 +347,8 @@ def get_incidents_list(client: Client,
                                                    filter_name=filter_arguments.get(filter_arg, None),
                                                    filter_arg=args.get(filter_arg, None))
             incidents = client.get_list_with_query(list_type="incidents",
-                                                   start=start,
-                                                   page_size=page_size,
+                                                   start=args.get('start', None),
+                                                   page_size=args.get('page_size', None),
                                                    query=query,
                                                    modification_date_start=modification_date_start,
                                                    modification_date_end=modification_date_end)
@@ -345,14 +366,14 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
     readable_incidents = []
     for incident in incidents:
         readable_incident = {
-            'id': incident.get('id', None),
-            'number': incident.get('number', None),
-            'request': incident.get('request', None),
-            'line': incident.get('status', None),
-            'caller name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
-            'status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
-            'operator': replace_none(incident.get('operator', {}), {}).get('name', None),
-            'priority': incident.get('priority', None)
+            'Id': incident.get('id', None),
+            'Number': incident.get('number', None),
+            'Request': incident.get('request', None),
+            'Line': incident.get('status', None),
+            'CallerName': incident.get('caller').get('dynamicName', None) if incident.get('caller') else None,
+            'Status': incident.get('processingStatus').get('name', None) if incident.get('processingStatus') else None,
+            'Operator': incident.get('operator').get('name', None) if incident.get('operator') else None,
+            'Priority': incident.get('priority', None)
         }
 
         readable_incidents.append(readable_incident)
@@ -363,9 +384,10 @@ def incidents_to_command_results(incidents: List[Dict[str, Any]]) -> CommandResu
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.incident',
-        outputs_key_field='id',
-        outputs=incidents
+        outputs_prefix=f'{INTEGRATION_NAME}.Incident',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs(incidents),
+        raw_response=incidents
     )
 
 
@@ -393,23 +415,24 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if len(persons) == 0:
         return CommandResults(readable_output='No persons found')
 
-    headers = ['id', 'name', 'telephone', 'job title', 'department', 'city',
-               'branch name', 'room']
+    headers = ['Id', 'Name', 'Telephone', 'JobTitle', 'Department', 'City',
+               'BranchName', 'Room']
 
     readable_persons = []
     for person in persons:
         readable_person = {
-            'id': person.get('id', None),
-            'name': person.get('dynamicName', None),
-            'telephone': person.get('phoneNumber', None),
-            'job title': person.get('jobTitle', None),
-            'department': person.get('department', None),
-            'city': person.get('city', None),
-            'branch name': replace_none(person.get('branch', {}), {}).get('name', None),
-            'room': None
+            'Id': person.get('id', None),
+            'Name': person.get('dynamicName', None),
+            'Telephone': person.get('phoneNumber', None),
+            'JobTitle': person.get('jobTitle', None),
+            'Department': person.get('department', None),
+            'City': person.get('city', None),
+            'BranchName': person.get('branch', {}).get('name', None) if person.get('branch') else None,
+            'Room': None
         }
         if person.get('location', None):
-            readable_person['room'] = person.get('location', None).get('room', None)
+            readable_person['Room'] = person.get('location', None).get('room', None)
+
         readable_persons.append(readable_person)
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} persons',
@@ -419,9 +442,10 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.person',
-        outputs_key_field='id',
-        outputs=persons
+        outputs_prefix=f'{INTEGRATION_NAME}.Person',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs(persons),
+        raw_response=persons
     )
 
 
@@ -435,20 +459,20 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if len(operators) == 0:
         return CommandResults(readable_output='No operators found')
 
-    headers = ['id', 'name', 'telephone', 'job title', 'department',
-               'city', 'branch name', 'login name']
+    headers = ['Id', 'Name', 'Telephone', 'JobTitle', 'Department',
+               'City', 'BranchName', 'LoginName']
 
     readable_operators = []
     for operator in operators:
         readable_operators.append({
-            'id': operator.get('id', None),
-            'name': operator.get('dynamicName', None),
-            'telephone': operator.get('phoneNumber', None),
-            'job title': operator.get('jobTitle', None),
-            'department': operator.get('department', None),
-            'city': operator.get('city', None),
-            'branch name': replace_none(operator.get('branch', {}), {}).get('name', None),
-            'login name': operator.get('tasLoginName', None),
+            'Id': operator.get('id', None),
+            'Name': operator.get('dynamicName', None),
+            'Telephone': operator.get('phoneNumber', None),
+            'JobTitle': operator.get('jobTitle', None),
+            'Department': operator.get('department', None),
+            'City': operator.get('city', None),
+            'BranchName': operator.get('branch', {}).get('name', None) if operator.get('branch') else None,
+            'LoginName': operator.get('tasLoginName', None),
         })
 
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators',
@@ -458,9 +482,10 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.operator',
-        outputs_key_field='id',
-        outputs=operators
+        outputs_prefix=f'{INTEGRATION_NAME}.Operator',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs(operators),
+        raw_response=operators
     )
 
 
@@ -469,8 +494,8 @@ def entry_types_command(client: Client) -> CommandResults:
     entry_types = client.get_list('/incidents/entry_types')
     return command_with_all_fields_readable_list(results=entry_types,
                                                  result_name='entry types',
-                                                 output_prefix='entryType',
-                                                 outputs_key_field='id')
+                                                 output_prefix='EntryType',
+                                                 outputs_key_field='Id')
 
 
 def call_types_command(client: Client) -> CommandResults:
@@ -478,8 +503,8 @@ def call_types_command(client: Client) -> CommandResults:
     call_types = client.get_list("/incidents/call_types")
     return command_with_all_fields_readable_list(results=call_types,
                                                  result_name='call types',
-                                                 output_prefix='callType',
-                                                 outputs_key_field='id')
+                                                 output_prefix='CallType',
+                                                 outputs_key_field='Id')
 
 
 def categories_command(client: Client) -> CommandResults:
@@ -487,8 +512,8 @@ def categories_command(client: Client) -> CommandResults:
     categories = client.get_list("/incidents/categories")
     return command_with_all_fields_readable_list(results=categories,
                                                  result_name='categories',
-                                                 output_prefix='category',
-                                                 outputs_key_field='id')
+                                                 output_prefix='Category',
+                                                 outputs_key_field='Id')
 
 
 def escalation_reasons_command(client: Client) -> CommandResults:
@@ -496,8 +521,8 @@ def escalation_reasons_command(client: Client) -> CommandResults:
     escalation_reasons = client.get_list("/incidents/escalation-reasons")
     return command_with_all_fields_readable_list(results=escalation_reasons,
                                                  result_name='escalation reasons',
-                                                 output_prefix='escalation_reason',
-                                                 outputs_key_field='id')
+                                                 output_prefix='EscalationReason',
+                                                 outputs_key_field='Id')
 
 
 def deescalation_reasons_command(client: Client) -> CommandResults:
@@ -505,8 +530,8 @@ def deescalation_reasons_command(client: Client) -> CommandResults:
     deescalation_reasons = client.get_list("/incidents/deescalation-reasons")
     return command_with_all_fields_readable_list(results=deescalation_reasons,
                                                  result_name='deescalation reasons',
-                                                 output_prefix='deescalation_reason',
-                                                 outputs_key_field='id')
+                                                 output_prefix='DeescalationReason',
+                                                 outputs_key_field='Id')
 
 
 def archiving_reasons_command(client: Client) -> CommandResults:
@@ -514,8 +539,8 @@ def archiving_reasons_command(client: Client) -> CommandResults:
     archiving_reasons = client.get_list("/archiving-reasons")
     return command_with_all_fields_readable_list(results=archiving_reasons,
                                                  result_name='archiving reasons',
-                                                 output_prefix='archive_reason',
-                                                 outputs_key_field='id')
+                                                 output_prefix='ArchiveReason',
+                                                 outputs_key_field='Id')
 
 
 def subcategories_command(client: Client) -> CommandResults:
@@ -527,17 +552,17 @@ def subcategories_command(client: Client) -> CommandResults:
 
     subcategories_with_categories = []
     for subcategory in subcategories:
-        subcategory_with_category = {"id": subcategory.get("id", None),
-                                     "name": subcategory.get("name", None),
-                                     "category id": None,
-                                     "category name": None}
+        subcategory_with_category = {"Id": subcategory.get("id", None),
+                                     "Name": subcategory.get("name", None),
+                                     "CategoryId": None,
+                                     "CategoryName": None}
         if subcategory.get("category", None):
-            subcategory_with_category["category id"] = subcategory.get("category", None).get("id", None)
-            subcategory_with_category["category name"] = subcategory.get("category", None).get("name", None)
+            subcategory_with_category["CategoryId"] = subcategory.get("category", None).get("id", None)
+            subcategory_with_category["CategoryName"] = subcategory.get("category", None).get("name", None)
 
         subcategories_with_categories.append(subcategory_with_category)
 
-    headers = ['id', 'name', 'category id', 'category name']
+    headers = ['Id', 'Name', 'CategoryId', 'CategoryName']
     readable_output = tableToMarkdown(f'{INTEGRATION_NAME} subcategories',
                                       subcategories_with_categories,
                                       headers=headers,
@@ -545,9 +570,10 @@ def subcategories_command(client: Client) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.subcategories',
-        outputs_key_field='id',
-        outputs=subcategories
+        outputs_prefix=f'{INTEGRATION_NAME}.Subcategories',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs(subcategories),
+        raw_response=subcategories
     )
 
 
@@ -561,17 +587,17 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if len(branches) == 0:
         return CommandResults(readable_output='No branches found')
 
-    headers = ['id', 'status', 'name', 'phone', 'website', 'address']
+    headers = ['Id', 'Status', 'Name', 'Phone', 'Website', 'Address']
 
     readable_branches = []
     for branch in branches:
         readable_branch = {
-            'id': branch.get('id', None),
-            'status': branch.get('status', None),
-            'name': branch.get('name', None),
-            'phone': branch.get('phone', None),
-            'website': branch.get('website', None),
-            'address': branch.get('address', {}).get('addressMemo', None)
+            'Id': branch.get('id', None),
+            'Status': branch.get('status', None),
+            'Name': branch.get('name', None),
+            'Phone': branch.get('phone', None),
+            'Website': branch.get('website', None),
+            'Address': branch.get('address', {}).get('addressMemo', None)
         }
         readable_branches.append(readable_branch)
 
@@ -582,23 +608,17 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.branch',
-        outputs_key_field='id',
-        outputs=branches
+        outputs_prefix=f'{INTEGRATION_NAME}.Branch',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs(branches),
+        raw_response=branches
     )
 
 
 def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
     """Parse arguments and return incidents list as CommandResults."""
     try:
-        command_results = incidents_to_command_results(get_incidents_list(client=client,
-                                                                          incident_number=args.get('incident_number',
-                                                                                                   None),
-                                                                          incident_id=args.get('incident_id', None),
-                                                                          query=args.get('query', None),
-                                                                          page_size=args.get('page_size', None),
-                                                                          start=args.get('start', None),
-                                                                          args=args))
+        command_results = incidents_to_command_results(get_incidents_list(client=client, args=args))
         return command_results
     except Exception as e:
         if 'Error parsing query' in str(e):
@@ -610,6 +630,7 @@ def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[Co
 def incident_touch_command(args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
     """Try setting caller as a reqistered caller.
     If caller is not registered, set the caller argument as caller name.
+    A registered caller is one that has a TOPdesk account that can e linked to the call.
     This function implements incident_create and incident_update commands.
     """
     try:
@@ -637,24 +658,21 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
 
 def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Upload attachment to certain incident in TOPdesk"""
-    file_entry = args.get('file', None)
-    if not file_entry:
-        raise Exception("Found no file entry.")
-
+    file_entry = args.get('file')
     file_name = demisto.dt(demisto.context(), "File(val.EntryID=='" + file_entry + "').Name")
     if not file_name:  # in case of info file
         file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_entry + "').Name")
+
     if not file_name:
         raise ValueError(f"Could not fine file in entry with entry_id: {file_entry}")
-    file_name = file_name[0] if isinstance(file_name, list) else file_name  # If few files
 
-    invisible_for_caller_str = args.get('invisible_for_caller', None)
-    invisible_for_caller = None
-    if invisible_for_caller_str:
-        if invisible_for_caller_str.lower() in ['true', 't', 'yes', 'y', '1']:
-            invisible_for_caller = True
+    if isinstance(file_name, list):  # If few files
+        if args.get('file_name', None) and args.get('file_name') in file_name:
+            file_name = args.get('file_name')
         else:
-            invisible_for_caller = False
+            file_name = file_name[0]
+
+    invisible_for_caller = bool(args.get('invisible_for_caller', False))
 
     response = client.attachment_upload(incident_id=args.get('id', None),
                                         incident_number=args.get('number', None),
@@ -666,8 +684,8 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
     if not response.get("downloadUrl", None):
         raise Exception(f"Failed uploading file: {response}")
 
-    headers = ['id', 'file name', 'download url', 'size', 'description',
-               'invisible for caller', 'entry date', 'operator']
+    headers = ['Id', 'FileName', 'DownloadUrl', 'Size', 'Description',
+               'InvisibleForCaller', 'EntryDate', 'Operator']
     half_camelized_headers = [half_camelize(header, ' ') for header in headers]
     readable_attachment: List[Dict[str, Any]] = [{}]
     for header, half_camelized_header in zip(headers, half_camelized_headers):
@@ -680,9 +698,10 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_NAME}.attachment',
-        outputs_key_field='id',
-        outputs=response
+        outputs_prefix=f'{INTEGRATION_NAME}.Attachment',
+        outputs_key_field='Id',
+        outputs=capitalize_for_outputs([response]),
+        raw_response=response
     )
 
 
@@ -695,15 +714,13 @@ def fetch_incidents(client: Client,
     """Fetches incidents from TOPdesk."""
 
     first_fetch_datetime = dateparser.parse(demisto_params.get('first_fetch', '3 days'))
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch_datetime = last_run.get('last_fetch', None)
 
-    if not last_fetch:
+    if not last_fetch_datetime:
         if first_fetch_datetime:
             last_fetch_datetime = first_fetch_datetime
         else:
             raise Exception("Could not find last fetch time.")
-    else:
-        last_fetch_datetime = dateparser.parse(last_fetch)
 
     latest_created_time = last_fetch_datetime
     incidents: List[Dict[str, Any]] = []
@@ -746,7 +763,7 @@ def fetch_incidents(client: Client,
         if latest_created_time.timestamp() < incident_created_time.timestamp():
             latest_created_time = incident_created_time
 
-    return {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}, incidents
+    return {'last_fetch': latest_created_time}, incidents
 
 
 def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params: Dict[str, Any]) -> str:
@@ -781,11 +798,11 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        encoded_credentials = b64encode(bytes(f"{demisto.params().get('username')}:{demisto.params().get('password')}",
-                                              encoding='ascii')).decode('ascii')
+        encoded_credentials = basicauth.encode(username=demisto.params().get('username'),
+                                               password=demisto.params().get('password'))
 
         headers = {
-            'Authorization': f'Basic {encoded_credentials}'
+            'Authorization': encoded_credentials
         }
         client = Client(
             base_url=base_url,

@@ -1,6 +1,6 @@
 {
     "name": "TOPdesk",
-    "description": "TOPdesk\u2019s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform",
+    "description": "TOPdesk Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

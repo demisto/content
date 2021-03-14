@@ -1,12 +1,13 @@
 import pytest
 import demistomock as demisto
+import dateparser
 import json
 import io
 from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, XSOAR_ENTRY_TYPE, \
     fetch_incidents, entry_types_command, call_types_command, categories_command, subcategories_command, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
     get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command, \
-    escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command
+    escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command, capitalize_for_outputs
 
 
 def util_load_json(path):
@@ -19,51 +20,51 @@ def util_load_json(path):
      'https://test.com/api/v1/incidents/entry_types',
      [{"id": "1st-id", "name": "entry-type-1"}, {"id": "2st-id", "name": "entry-type-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.entryType',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.EntryType',
+         'outputs_key_field': 'Id'
      }),
     (call_types_command,
      'https://test.com/api/v1/incidents/call_types',
      [{"id": "1st-id", "name": "call-type-1"}, {"id": "2st-id", "name": "call-type-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.callType',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.CallType',
+         'outputs_key_field': 'Id'
      }),
     (categories_command,
      'https://test.com/api/v1/incidents/categories',
      [{"id": "1st-id", "name": "category-1"}, {"id": "2st-id", "name": "category-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.category',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Category',
+         'outputs_key_field': 'Id'
      }),
     (subcategories_command,
      'https://test.com/api/v1/incidents/subcategories',
      [{"id": "1st-id-sub", "name": "subcategory-1", "category": {"id": "1st-id", "name": "category-1"}},
       {"id": "2st-id-sub", "name": "subcategory-2", "category": {"id": "2st-id", "name": "category-2"}}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.subcategories',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Subcategories',
+         'outputs_key_field': 'Id'
      }),
     (escalation_reasons_command,
      'https://test.com/api/v1/incidents/escalation-reasons',
      [{"id": "1st-id", "name": "escalation-name-1"}, {"id": "2st-id", "name": "escalation-name-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.escalation_reason',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.EscalationReason',
+         'outputs_key_field': 'Id'
      }),
     (deescalation_reasons_command,
      'https://test.com/api/v1/incidents/deescalation-reasons',
      [{"id": "1st-id", "name": "deescalation-name-1"}, {"id": "2st-id", "name": "deescalation-name-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.deescalation_reason',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.DeescalationReason',
+         'outputs_key_field': 'Id'
      }),
     (archiving_reasons_command,
      'https://test.com/api/v1/archiving-reasons',
      [{"id": "1st-id", "name": "archiving-reason-1"}, {"id": "2st-id", "name": "archiving-reason-2"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.archive_reason',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.ArchiveReason',
+         'outputs_key_field': 'Id'
      })
 ])
 def test_list_command(requests_mock, command, command_api_url, mock_response, expected_results):
@@ -88,7 +89,7 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
     command_results = command(client)
     assert command_results.outputs_prefix == expected_results['outputs_prefix']
     assert command_results.outputs_key_field == expected_results['outputs_key_field']
-    assert command_results.outputs == mock_response
+    assert command_results.outputs == capitalize_for_outputs(mock_response)
 
 
 @pytest.mark.parametrize('command, command_api_url, mock_response_file, override_nodes, expected_results', [
@@ -97,32 +98,32 @@ def test_list_command(requests_mock, command, command_api_url, mock_response, ex
      'test_data/topdesk_person.json',
      [{'id': '1st-person-id'}, {'id': '2nd-person-id'}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.person',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Person',
+         'outputs_key_field': 'Id'
      }),
     (list_operators_command,
      'https://test.com/api/v1/operators',
      'test_data/topdesk_operator.json',
      [{'id': '1st-operator-id'}, {'id': '2nd-operator-id'}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.operator',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Operator',
+         'outputs_key_field': 'Id'
      }),
     (branches_command,
      'https://test.com/api/v1/branches',
      'test_data/topdesk_branch.json',
      [{"id": "1st-branch-id"}, {"id": "2nd-branch-id"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.branch',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Branch',
+         'outputs_key_field': 'Id'
      }),
     (get_incidents_list_command,
      'https://test.com/api/v1/incidents',
      'test_data/topdesk_incident.json',
      [{"id": "1st-incident-id"}, {"id": "2nd-incident-id"}],
      {
-         'outputs_prefix': f'{INTEGRATION_NAME}.incident',
-         'outputs_key_field': 'id'
+         'outputs_prefix': f'{INTEGRATION_NAME}.Incident',
+         'outputs_key_field': 'Id'
      })
 ])
 def test_large_output_list_command(requests_mock,
@@ -159,7 +160,7 @@ def test_large_output_list_command(requests_mock,
     command_results = command(client, {})
     assert command_results.outputs_prefix == expected_results['outputs_prefix']
     assert command_results.outputs_key_field == expected_results['outputs_key_field']
-    assert command_results.outputs == mock_topdesk_response
+    assert command_results.outputs == capitalize_for_outputs(mock_topdesk_response)
 
 
 @pytest.mark.parametrize('action, command_args, command_api_url, mock_response_file, override_node', [
@@ -267,9 +268,9 @@ def test_incident_do_commands(requests_mock,
     else:
         assert requests_mock.last_request.json() == {}
 
-    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
-    assert command_results.outputs_key_field == 'id'
-    assert command_results.outputs == [response_incident]
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.Incident'
+    assert command_results.outputs_key_field == 'Id'
+    assert command_results.outputs == capitalize_for_outputs([response_incident])
 
 
 @pytest.mark.parametrize('command_args, command_api_url, command_api_body', [
@@ -324,9 +325,9 @@ def test_attachment_upload_command(mocker,
 
     assert requests_mock.called
     assert b'mock text file for attachment up' in requests_mock.last_request._request.body
-    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.attachment'
-    assert command_results.outputs_key_field == 'id'
-    assert command_results.outputs == response_attachment
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.Attachment'
+    assert command_results.outputs_key_field == 'Id'
+    assert command_results.outputs == capitalize_for_outputs([response_attachment])
 
 
 @pytest.mark.parametrize('create_func, command_args, command_api_url, mock_response_file,'
@@ -408,9 +409,9 @@ def test_caller_lookup_incident_touch_commands(requests_mock,
                                              action=action)
     assert requests_mock.call_count == 1
     assert requests_mock.last_request.json() == expected_last_request_body
-    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
-    assert command_results.outputs_key_field == 'id'
-    assert command_results.outputs == [response_incident]
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.Incident'
+    assert command_results.outputs_key_field == 'Id'
+    assert command_results.outputs == capitalize_for_outputs([response_incident])
 
 
 @pytest.mark.parametrize('create_func, command_args, command_api_url, mock_response_file,'
@@ -479,9 +480,9 @@ def test_non_registered_caller_incident_touch_commands(requests_mock,
                                              action=action)
     assert requests_mock.call_count == 2
     assert requests_mock.last_request.json() == expected_last_request_body
-    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.incident'
-    assert command_results.outputs_key_field == 'id'
-    assert command_results.outputs == [response_incident]
+    assert command_results.outputs_prefix == f'{INTEGRATION_NAME}.Incident'
+    assert command_results.outputs_key_field == 'Id'
+    assert command_results.outputs == capitalize_for_outputs([response_incident])
 
 
 @pytest.mark.parametrize('command, command_args, command_api_request', [
@@ -764,7 +765,7 @@ def test_unsupported_old_query_param(command_args):
         'number': 'TEST-1',
         'creationDate': '2020-02-10T06:32:36.303+0000',
         'will_be_fetched': False
-    }], '2020-02-10T06:32:36Z', '2020-02-10T06:32:36Z'),
+    }], '2020-02-10T06:32:36.303+0000', '2020-02-10T06:32:36.303+0000'),
 ])
 def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_time, updated_fetch_time):
     """Unit test
@@ -805,7 +806,7 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
         'https://test.com/api/v1/incidents', json=mock_topdesk_response)
 
     last_run = {
-        'last_fetch': last_fetch_time
+        'last_fetch': dateparser.parse(last_fetch_time)
     }
     last_fetch, incidents = fetch_incidents(client=client,
                                             last_run=last_run,
@@ -817,4 +818,4 @@ def test_fetch_incidents(requests_mock, topdesk_incidents_override, last_fetch_t
         assert incident['details'] == expected_incident['details']
         assert incident['occurred'] == expected_incident['occurred']
         assert incident['rawJSON'] == expected_incident['rawJSON']
-    assert last_fetch == {'last_fetch': updated_fetch_time}
+    assert last_fetch == {'last_fetch': dateparser.parse(updated_fetch_time)}
