@@ -916,7 +916,7 @@ def create_meeting_command():
     message_id = ''
     if chat_info := meeting_data.get('chatInfo', {}):
         thread_id = chat_info.get('threadId', '')
-        message_id = chat_info.get('threadId', '')
+        message_id = chat_info.get('messageId', '')
 
     participant_id, participant_display_name = get_participant_info(meeting_data.get('participants', {}))
 
