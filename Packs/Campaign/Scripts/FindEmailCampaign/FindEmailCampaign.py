@@ -108,7 +108,7 @@ def extract_domain_from_recipients(row):
     for address in row['recipients']:
         try:
             domain = extract_domain(address)
-        except:
+        except Exception:
             domain = ''
         domains_list.append(domain)
     return domains_list

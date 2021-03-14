@@ -92,6 +92,7 @@ def test_return_campaign_details_entry(mocker):
         assert original_incident['fromdomain'] == context_incident['emailfromdomain']
         assert extract_domain(original_incident['emailto']) in context_incident['recipientsdomain']
 
+
 def test_return_campaign_details_entry_comma_seperated_recipients(mocker):
     global RESULTS
     RESULTS = []
