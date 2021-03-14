@@ -642,20 +642,24 @@ script:
     - contextPath: Ticket.Transitions.transitions
       description: A list of all possible transitions
       type: Unknown
+  - deprecated: false
+    description: available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update.it's here for debugging purposes.
+    execution: false
+    name: get-modified-remote-data
   dockerimage: demisto/oauthlib:1.0.0.15507
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
 tests:
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
 fromversion: 5.0.0
-

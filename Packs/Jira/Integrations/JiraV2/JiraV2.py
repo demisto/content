@@ -1076,6 +1076,39 @@ def update_remote_system_command(args):
         return remote_id
 
 
+def get_modified_remote_data_command(args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    modified_issues_ids = []
+    HEADERS['Accept'] = "application/json"
+    try:
+        res = requests.request(
+            method='GET',
+            url=BASE_URL + 'rest/api/latest/myself',
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except Exception as e:
+        demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. failed because: {e}')
+    else:
+        if res.status_code == 200:
+            timezone_name = res.json().get('timeZone')
+            if not timezone_name:
+                demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected resonse: {res.json()}')
+            last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
+                .strftime('%Y-%m-%d %H:%M')
+            demisto.info(f'Performing get-modified-remote-data command. Last update is: {last_update}')  # TODO: change to debug
+            _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=50)
+            modified_issues = context.get('issues', [])
+            modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
+            demisto.info(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR: {modified_issues_ids}')  # TODO: change to debug
+        else:
+            demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data. status code: {res.status_code}.'
+                          f' reason: {res.reason}')
+    finally:
+        return GetModifiedRemoteDataResponse(modified_issues_ids)
+
+
 def get_remote_data_command(args) -> GetRemoteDataResponse:
     """ Mirror-in data to incident from Jira into demisto 'jira issue' incident.
 
@@ -1229,6 +1262,8 @@ def main():
 
         elif demisto.command() == 'jira-list-transitions-command':
             return_results(list_transitions_command(demisto.args()))
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(demisto.args()))
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
