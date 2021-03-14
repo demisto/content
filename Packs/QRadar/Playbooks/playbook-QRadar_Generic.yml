@@ -1707,8 +1707,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
       - "13"
+      - "8"
     separatecontext: false
     view: |-
       {
