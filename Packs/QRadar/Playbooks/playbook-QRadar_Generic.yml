@@ -23,13 +23,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 210,
-          "y": -590
+          "y": -780
         }
       }
     note: false
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 3570
+          "x": 210,
+          "y": 3390
         }
       }
     note: false
@@ -252,8 +252,8 @@ tasks:
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       version: -1
       name: Extract indicators from incident
-      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for
-        each indicator type.
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -311,35 +311,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: dfb3f612-e38a-43c1-8214-310a8e18524e
-    type: playbook
-    task:
-      id: dfb3f612-e38a-43c1-8214-310a8e18524e
-      version: -1
-      name: Calculate Severity - Generic v2
-      playbookName: Calculate Severity - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
     taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
@@ -357,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": 3740
+          "y": 3540
         }
       }
     note: false
@@ -380,7 +351,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "8"
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -523,7 +494,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "11"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -562,7 +533,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "26"
+      - "8"
       "yes":
       - "31"
     separatecontext: false
@@ -701,7 +672,8 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: 'Provide data to adjust the rule in order to avoid similar false positives in the future.'
+      description: 'Provide data to adjust the rule in order to avoid similar false
+        positives in the future.'
     nexttasks:
       '#none#':
       - "18"
@@ -875,7 +847,9 @@ tasks:
       id: 8873fc30-eabd-4137-8f78-8ba80684a2a0
       version: -1
       name: Determine incident severity according to offense info
-      description: Sets the incident severity according to the FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense field and the scale for the severity translation.
+      description: Sets the incident severity according to the FieldToSetSeverityFrom
+        and ScaleToSetSeverityFrom playbook inputs, which specify the relevant offense
+        field and the scale for the severity translation.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1261,38 +1235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": -460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: 05246256-ea2e-4f15-81c6-7044ca128111
-    type: condition
-    task:
-      id: 05246256-ea2e-4f15-81c6-7044ca128111
-      version: -1
-      name: Close investigation?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "12"
-      "yes":
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 210,
-          "y": 3395
+          "x": -150,
+          "y": -480
         }
       }
     note: false
@@ -1778,6 +1722,76 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "32":
+    id: "32"
+    taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+    type: playbook
+    task:
+      id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+      version: -1
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 9a80f6b4-18be-413a-8397-794a919efa0b
+    type: condition
+    task:
+      id: 9a80f6b4-18be-413a-8397-794a919efa0b
+      version: -1
+      name: Use custom severity?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      use custom:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: use custom
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: inputs.UseCustomSeveritySettings
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1786,10 +1800,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4395,
-        "width": 1330,
+        "height": 4385,
+        "width": 1360,
         "x": -220,
-        "y": -590
+        "y": -780
       }
     }
   }
@@ -1798,14 +1812,15 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Determines whether to enrich all indicators in the incident. Default is True.
+  description: Determines whether to enrich all indicators in the incident. Default
+    is True.
   playbookInputQuery:
 - key: OnCall
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the user that is currently on shift. Default is False. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only the user that is currently on shift. Default
+    is False. Requires Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 - key: SocEmailAddress
   value: {}
@@ -1828,13 +1843,24 @@ inputs:
     simple: "true"
   required: false
   description: Determines whether to use the Calculate Severity playbook to calculate
-    the incident severity. Default is True. If the playbook isn't used, the severity is determined by the QRadar magnitude value.
+    the incident severity. Default is True. If the playbook isn't used, the severity
+    is determined by the QRadar magnitude value.
   playbookInputQuery:
 - key: SiemAdminMailSubject
   value:
     simple: 'Adjustment/Exclusion for offense '
   required: false
   description: The subject of the email to send to the SIEM admin.
+  playbookInputQuery:
+- key: UseCustomSeveritySettings
+  value:
+    simple: "false"
+  required: false
+  description: Determines whether to use the default mapping as provided in the QRadar
+    generic mapper to set the XSOAR incident severity or set the severity using the
+    FieldToSetSeverityFrom and ScaleToSetSeverityFrom playbook inputs. Default value
+    is false and will use the values from mapping. Any other value will be Considered
+    as true and will use the playbooks inputs.
   playbookInputQuery:
 - key: FieldToSetSeverityFrom
   value:
@@ -1849,11 +1875,14 @@ inputs:
   value:
     simple: 1,1,1,2,2,2,2,3,3,3
   required: false
-  description: The range of values of FieldToSetSeverityFrom is 1-10.\
-    \\nThe XSOAR incident severity field values range is 0-4:\n0 - Informational\n1 - Low\n2 - Medium\n3 - High\n\
-    4 - Critical\n A scale is required to translate the value of FieldToSetSeverityFrom to a valid incident severity value. 
-    \nThe default scale is 1,1,1,2,2,2,2,3,3,3 \n The meaning of the default scale is that values 1-3 of FieldToSetSeverityFrom will be translated to low severity (positions 1-3 in the scale), values 4\
-    \-7 will be translated to medium severity (positions 4-7 in the scale) and values 8-10 will be translated to high severity (positions 8-10 in the scale).
+  description: "The range of values of FieldToSetSeverityFrom is 1-10. The XSOAR incident\
+    \ severity field values range is 0-4 where\n0 - Informational\n1 - Low\n2 - Medium\n\
+    3 - High\n4 - Critical\n\nA scale is required to translate the value of FieldToSetSeverityFrom\
+    \ to a valid incident severity value. The default scale is 1,1,1,2,2,2,2,3,3,3\
+    \ \nThe meaning of the default scale is that values 1-3 of FieldToSetSeverityFrom\
+    \ will be translated to low severity (positions 1-3 in the scale), values 4-7\
+    \ will be translated to medium severity (positions 4-7 in the scale) and values\
+    \ 8-10 will be translated to high severity (positions 8-10 in the scale)."
   playbookInputQuery:
 outputs: []
 tests:
