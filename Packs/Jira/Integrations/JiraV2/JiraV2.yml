@@ -121,8 +121,7 @@ script:
     arguments:
     - name: attribute
       required: true
-      description: The user's attribute value. Can be Username or Email address.
-      Note - when using OAuth 1.0 only username works.
+      description: The user's attribute value. Can be Username or Email address. Note - when using OAuth 1.0 only username works.
     - name: max_results
       defaultValue: 50
       description: The maximum number of users to pull when searching for a matching user (default is 50). The maximum
