@@ -1626,7 +1626,7 @@ class Pack(object):
             integration_path_basename in unified_integrations
         ])
 
-    def upload_integration_images(self, storage_bucket, diff_files_list):
+    def upload_integration_images(self, storage_bucket, diff_files_list=None, detect_changes=False):
         """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
@@ -1634,6 +1634,7 @@ class Pack(object):
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             diff_files_list (list): The list of all modified/added files found in the diff
+            detect_changes (bool): Whether to detect changes or upload all images in any case.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1646,14 +1647,15 @@ class Pack(object):
         unified_integrations = []
 
         try:
-            # detect added/modified integration images
-            for file in diff_files_list:
-                if self.is_integration_image(file.a_path):
-                    # the integration dir name will show up in the unified integration file path in content_packs.zip
-                    integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
-                elif self.is_unified_integration(file.a_path):
-                    # if the file found in the diff is a unified integration we upload its image
-                    unified_integrations.append(os.path.basename(file.a_path))
+            if detect_changes:
+                # detect added/modified integration images
+                for file in diff_files_list:
+                    if self.is_integration_image(file.a_path):
+                        # integration dir name will show up in the unified integration file path in content_packs.zip
+                        integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
+                    elif self.is_unified_integration(file.a_path):
+                        # if the file found in the diff is a unified integration we upload its image
+                        unified_integrations.append(os.path.basename(file.a_path))
 
             pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
@@ -1671,7 +1673,8 @@ class Pack(object):
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
 
-                if self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
+                if not detect_changes or \
+                        self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
                     # upload the image if needed
                     logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
                                  f"from pack: {self._pack_name}")
@@ -1751,7 +1754,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, diff_files_list):
+    def upload_author_image(self, storage_bucket, diff_files_list=None, detect_changes=False):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
@@ -1760,6 +1763,7 @@ class Pack(object):
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             diff_files_list (list): The list of all modified/added files found in the diff
+            detect_changes (bool): Whether to detect changes or upload the author image in any case.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1773,12 +1777,11 @@ class Pack(object):
             author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                # detect added/modified author image
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
-                if any(self.is_author_image(file.a_path) for file in diff_files_list):
+                if not detect_changes or any(self.is_author_image(file.a_path) for file in diff_files_list):
                     # upload the image if needed
                     with open(author_image_path, "rb") as author_image_file:
                         pack_author_image_blob.upload_from_file(author_image_file)
