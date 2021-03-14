@@ -40,6 +40,7 @@ Run the `splunk-reset-enriching-fetch-mechanism` command and the mechanism will 
 
 ### Incident Mirroring
 **NOTE: This feature is available from Cortex XSOAR version 6.0.0**
+**NOTE: This feature is supported by Splunk Enterprise Security only**
 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk Notables.
 To setup the mirroring follow these instructions:
