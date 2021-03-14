@@ -104,7 +104,7 @@ def test_main_regular(mocker):
                             'incidentId': 12345,
                             'similarTextField': 'incident.commandline, commandline, command, '
                                                 'empty_current_incident_field, empty_fetched_incident_field',
-                            'similarCategoricalField': 'signature, filehash',
+                            'similarCategoricalField': 'signature, filehash, incident.commandline',
                             'similarJsonField': 'CustomFields',
                             'limit': 10000,
                             'fieldExactMatch': '',

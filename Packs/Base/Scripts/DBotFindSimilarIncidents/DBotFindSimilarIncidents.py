@@ -211,7 +211,7 @@ def euclidian_similarity_capped(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return np.maximum(1 - cdist(x, y)[:, 0], 0)
 
 
-def identity(X: np.ndarray, y: np.ndarray) -> np.ndarray:
+def identity(X, y):  # type: ignore
     """
     Return np.nan if value is different and 1 if value is the same
     :param X: np.array
@@ -293,12 +293,6 @@ TRANSFORMATION = {
                     'params': {'analyzer': 'char', 'max_features': 2000, 'ngram_range': (1, 5)},
                     'scoring_function': euclidian_similarity_capped
                     },
-
-    'url': {'transformer': Tfidf,
-            'normalize': normalize_identity,
-            'params': {'analyzer': 'char', 'max_features': 100, 'ngram_range': (1, 5)},
-            'scoring_function': euclidian_similarity_capped
-            },
     'potentialMatch': {'transformer': Identity,
                        'normalize': None,
                        'params': {},
