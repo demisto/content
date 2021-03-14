@@ -50,7 +50,7 @@ class Email(object):
         labels = [{'type': 'Email/headers', 'value': json.dumps(self.headers)},
                   {'type': 'Email/from', 'value': self.from_},
                   {'type': 'Email/format', 'value': self.format},
-                  {'type': 'Email/text', 'value': self.text},
+                  {'type': 'Email/text', 'value': self.text.strip()},
                   {'type': 'Email/subject', 'value': self.subject},
                   ]
         labels.extend([
@@ -61,7 +61,7 @@ class Email(object):
         labels.extend([{'type': 'Email/cc', 'value': cc_mail} for cc_mail in self.cc])
         labels.extend([{'type': 'Email/bcc', 'value': bcc_mail} for bcc_mail in self.bcc])
         if self.html:
-            labels.append({'type': 'Email/html', 'value': self.html})
+            labels.append({'type': 'Email/html', 'value': self.html.strip()})
         if self.attachments:
             labels.append({'type': 'Email/attachments',
                            'value': ','.join([attachment['filename'] for attachment in self.attachments])})
