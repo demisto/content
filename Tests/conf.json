@@ -93,8 +93,8 @@
             "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
             "timeout": 700,
-            "pid_threshold": 29,
-            "memory_threshold": 149
+            "pid_threshold": 35,
+            "memory_threshold": 200
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
