@@ -73,65 +73,12 @@ Returns notable users in a period of time.
 ```!exabeam-get-notable-users limit=3 time_period="1 year"```
 
 #### Human Readable Output
-<h3>Exabeam Notable Users:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>UserName</strong></th>
-      <th><strong>UserFullName</strong></th>
-      <th><strong>Title</strong></th>
-      <th><strong>Department</strong></th>
-      <th><strong>Labels</strong></th>
-      <th><strong>NotableSessionIds</strong></th>
-      <th><strong>EmployeeType</strong></th>
-      <th><strong>FirstSeen</strong></th>
-      <th><strong>LastSeen</strong></th>
-      <th><strong>LastActivity</strong></th>
-      <th><strong>Location</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> username </td>
-      <td> fullname </td>
-      <td> Network Engineer </td>
-      <td> IT </td>
-      <td> privileged_user </td>
-      <td> session_id </td>
-      <td> employee </td>
-      <td> 2018-08-01T11:50:16 </td>
-      <td> 2018-09-09T16:36:13 </td>
-      <td> Account is active </td>
-      <td> Atlanta </td>
-    </tr>
-    <tr>
-      <td> username </td>
-      <td> fullname </td>
-      <td> Human Resources Coordinator </td>
-      <td> HR </td>
-      <td>  </td>
-      <td> session_id </td>
-      <td> employee </td>
-      <td> 2018-07-03T14:26:26 </td>
-      <td> 2018-09-30T16:27:01 </td>
-      <td> Account is active </td>
-      <td> Chicago </td>
-    </tr>
-    <tr>
-      <td> username </td>
-      <td> fullname </td>
-      <td> Sales Representative </td>
-      <td> Sales </td>
-      <td> privileged_user </td>
-      <td> session_id </td>
-      <td> employee </td>
-      <td> 2018-08-10T15:55:25 </td>
-      <td> 2018-09-30T16:27:01 </td>
-      <td> Account is active </td>
-      <td> Atlanta </td>
-    </tr>
-  </tbody>
-</table>
+### Exabeam Notable Users:
+|UserName|UserFullName|Title|Department|Labels|NotableSessionIds|EmployeeType|FirstSeen|LastSeen|LastActivity|Location|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|username|fullname|Network Engineer|IT|privileged_user|session_id|employee|2018-08-01T11:50:16|2018-09-09T16:36:13|Account is active|Atlanta|
+|username|fullname|Human Resources Coordinator|HR||session_id|employee|2018-07-03T14:26:26|2018-09-30T16:27:01|Account is active|Chicago|
+|username|fullname|Sales Representative|Sales|privileged_user|session_id|employee|2018-08-10T15:55:25|2018-09-30T16:27:01|Account is active|Atlanta|
 
 
 ### exabeam-get-watchlists
@@ -159,38 +106,13 @@ There are no input arguments for this command.
 ```!exabeam-get-watchlists```
 
 #### Human Readable Output
-<h3>Exabeam Watchlists:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>WatchlistID</strong></th>
-      <th><strong>Title</strong></th>
-      <th><strong>Category</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> 5c869ab0315c745d905a26d9 </td>
-      <td> Executive Users </td>
-      <td> UserLabels </td>
-    </tr>
-    <tr>
-      <td> 5c869ab0315c745d905a26da </td>
-      <td> Service Accounts </td>
-      <td> UserLabels </td>
-    </tr>
-    <tr>
-      <td> 5dbaba2dd4e62a0009dd7ae4 </td>
-      <td> user watchlist </td>
-      <td> Users </td>
-    </tr>
-    <tr>
-      <td> 5d8751723b72ea000830066a </td>
-      <td> VP Operations </td>
-      <td> PeerGroups </td>
-    </tr>
-  </tbody>
-</table>
+### Exabeam Watchlists:
+|WatchlistID|Title|Category|
+|--- |--- |--- |
+|5c869ab0315c745d905a26d9|Executive Users|UserLabels|
+|5c869ab0315c745d905a26da|Service Accounts|UserLabels|
+|5dbaba2dd4e62a0009dd7ae4|user watchlist|Users|
+|5d8751723b72ea000830066a|VP Operations|PeerGroups|
 
 
 ### exabeam-get-peer-groups
@@ -216,37 +138,16 @@ There are no input arguments for this command.
 ```!exabeam-get-peer-groups```
 
 #### Human Readable Output
-<h3>Exabeam Peer Groups:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> Marketing </td>
-    </tr>
-    <tr>
-      <td> usa </td>
-    </tr>
-    <tr>
-      <td> 101 </td>
-    </tr>
-    <tr>
-      <td> Program Manager </td>
-    </tr>
-    <tr>
-      <td> Channel Administrator </td>
-    </tr>
-    <tr>
-      <td> Chief Marketing Officer </td>
-    </tr>
-    <tr>
-      <td> Chief Strategy Officer </td>
-    </tr>
-  </tbody>
-</table>
+### Exabeam Peer Groups:
+|Name|
+|--- |
+|Marketing|
+|usa|
+|101|
+|Program Manager|
+|Channel Administrator|
+|Chief Marketing Officer|
+|Chief Strategy Officer|
 
 
 ### exabeam-get-user-info
@@ -287,41 +188,10 @@ Returns user information data for the username.
 ```!exabeam-get-user-info username={username}```
 
 #### Human Readable Output
-<h3>User {username} information:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Username</strong></th>
-      <th><strong>RiskScore</strong></th>
-      <th><strong>AverageRiskScore</strong></th>
-      <th><strong>LastSessionID</strong></th>
-      <th><strong>FirstSeen</strong></th>
-      <th><strong>LastSeen</strong></th>
-      <th><strong>LastActivityType</strong></th>
-      <th><strong>AccountNames</strong></th>
-      <th><strong>PeerGroupFieldName</strong></th>
-      <th><strong>PeerGroupFieldValue</strong></th>
-      <th><strong>PeerGroupDisplayName</strong></th>
-      <th><strong>PeerGroupType</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> {username} </td>
-      <td> 163 </td>
-      <td> 102.53 </td>
-      <td> {session_id} </td>
-      <td> 2018-08-01T11:50:16 </td>
-      <td> 2018-09-09T16:36:13 </td>
-      <td> Account is active </td>
-      <td> {account_name} </td>
-      <td> Peer Groups </td>
-      <td> root </td>
-      <td> root </td>
-      <td> Group </td>
-    </tr>
-  </tbody>
-</table>
+### User {username} information:
+|Username|RiskScore|AverageRiskScore|LastSessionID|FirstSeen|LastSeen|LastActivityType|AccountNames|PeerGroupFieldName|PeerGroupFieldValue|PeerGroupDisplayName|PeerGroupType|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|{username}|163|102.53|{session_id}|2018-08-01T11:50:16|2018-09-09T16:36:13|Account is active|{account_name}|Peer Groups|root|root|Group|
 
 
 ### exabeam-get-user-labels
@@ -347,22 +217,11 @@ There are no input arguments for this command.
 ```!exabeam-get-user-labels```
 
 #### Human Readable Output
-<h3>Exabeam User Labels:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Label</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> privileged_user </td>
-    </tr>
-    <tr>
-      <td> service_account </td>
-    </tr>
-  </tbody>
-</table>
+### Exabeam User Labels:
+|Label|
+|--- |
+|privileged_user|
+|service_account|
 
 
 ### exabeam-get-user-sessions
@@ -400,40 +259,11 @@ Returns sessions for the given username and time range.
 ```!exabeam-get-user-sessions username={username} start_time=2018-08-01T11:50:16```
 
 #### Human Readable Output
-<h3>User {username} sessions information:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>SessionID</strong></th>
-      <th><strong>RiskScore</strong></th>
-      <th><strong>InitialRiskScore</strong></th>
-      <th><strong>StartTime</strong></th>
-      <th><strong>EndTime</strong></th>
-      <th><strong>LoginHost</strong></th>
-      <th><strong>Label</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> session_id </td>
-      <td> 0 </td>
-      <td> 0 </td>
-      <td> 2018-08-01T14:05:46 </td>
-      <td> 2018-08-01T20:00:17 </td>
-      <td> login_host </td>
-      <td>  </td>
-    </tr>
-    <tr>
-      <td> session_id </td>
-      <td> 0 </td>
-      <td> 0 </td>
-      <td> 2018-08-01T23:17:00 </td>
-      <td> 2018-08-02T02:37:51 </td>
-      <td> login_host </td>
-      <td> vpn-in </td>
-    </tr>
-  </tbody>
-</table>
+### User {username} sessions information:
+|SessionID|RiskScore|InitialRiskScore|StartTime|EndTime|LoginHost|Label|
+|--- |--- |--- |--- |--- |--- |--- |
+|session_id|0|0|2018-08-01T14:05:46|2018-08-01T20:00:17|login_host||
+|session_id|0|0|2018-08-01T23:17:00|2018-08-02T02:37:51|login_host|vpn-in|
 
 
 ### exabeam-delete-watchlist
@@ -492,27 +322,10 @@ Returns asset data.
 ```!exabeam-get-asset-data asset_name={host_name}```
 
 #### Human Readable Output
-<h3>Exabeam Asset Data:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>AssetType</strong></th>
-      <th><strong>FirstSeen</strong></th>
-      <th><strong>HostName</strong></th>
-      <th><strong>IPAddress</strong></th>
-      <th><strong>LastSeen</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> Windows </td>
-      <td> 2018-07-03T14:21:00 </td>
-      <td> host_name </td>
-      <td> ip_address </td>
-      <td> 2018-09-30T16:23:17 </td>
-    </tr>
-  </tbody>
-</table>
+### Exabeam Asset Data:
+|AssetType|FirstSeen|HostName|IPAddress|LastSeen|
+|--- |--- |--- |--- |--- |
+|Windows|2018-07-03T14:21:00|host_name|ip_address|2018-09-30T16:23:17|
 
 
 ### exabeam-get-session-info-by-id
@@ -871,7 +684,7 @@ Searches for rules by a keyword.
 ### Rule Search Results
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
+| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations &lt; percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
 
 ### exabeam-get-rule-string
 ***
@@ -903,7 +716,7 @@ Gets a rule's information as a string.
 ### Rule AM-GOU-A String
 |Rule Id|Rule String|
 |---|---|
-| AM-GOU-A | AM-GOU-A {<br/>  RuleName = "Abnormal account OU addition to this group"<br/>  RuleDescription = "OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system."<br/>  ReasonTemplate = "Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}"<br/>  AggregateReasonTemplate = "Abnormal account OU addition to this group: {default\|featureValue\|histogram}"<br/>  RuleType = "session"<br/>  RuleCategory = "Account Creation and Management"<br/>  ClassifyIf = "count(account_ou,'member-added')=1"<br/>  RuleEventTypes = ["member-added"]<br/>  Disabled = "FALSE"<br/>  Model = "AM-GOU"<br/>  FactFeatureName = "account_ou"<br/>  Score = "7"<br/>  HistShapeScoring {<br/>    Enabled = true<br/>  }<br/>  PercentileThreshold = "0.1"<br/>  RuleExpression = "confidence_factor>=0.8 && num_observations>0 && num_observations<percentile_threshold_count"<br/>  DependencyExpression = "NA"<br/>  RuleLabels {<br/>    mitre = ["T1078"]<br/>  }<br/>} |
+| AM-GOU-A | AM-GOU-A {<br/>  RuleName = "Abnormal account OU addition to this group"<br/>  RuleDescription = "OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system."<br/>  ReasonTemplate = "Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}"<br/>  AggregateReasonTemplate = "Abnormal account OU addition to this group: {default\|featureValue\|histogram}"<br/>  RuleType = "session"<br/>  RuleCategory = "Account Creation and Management"<br/>  ClassifyIf = "count(account_ou,'member-added')=1"<br/>  RuleEventTypes = ["member-added"]<br/>  Disabled = "FALSE"<br/>  Model = "AM-GOU"<br/>  FactFeatureName = "account_ou"<br/>  Score = "7"<br/>  HistShapeScoring {<br/>    Enabled = true<br/>  }<br/>  PercentileThreshold = "0.1"<br/>  RuleExpression = "confidence_factor>=0.8 && num_observations>0 && num_observations &lt;percentile_threshold_count"<br/>  DependencyExpression = "NA"<br/>  RuleLabels {<br/>    mitre = ["T1078"]<br/>  }<br/>} |
 
 
 ### exabeam-fetch-rules
@@ -959,7 +772,7 @@ Gets all rules.
 ### Rule Search Results
 |Can Simple Edit|Category Display Name|Category Id|Disabled|Effective|Rule Def|Rule Id|State|
 |---|---|---|---|---|---|---|---|
-| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations < percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
+| false | Account Creation and Management | Account Creation and Management | false | true | ruleId: AM-GOU-A<br/>ruleName: Abnormal account OU addition to this group<br/>ruleDescription: OU means Organizational Unit - a container within a Microsoft Active Directory domain which can hold users, groups, and computers. Account management events are notable because they can provide a path for an attacker to move laterally through a system.<br/>reasonTemplate: Abnormal account OU {default\|event.account_ou} addition to group {default\|event.group_name}<br/>aggregateReasonTemplate: Abnormal account OU addition to this group: {default\|featureValue\|histogram}<br/>ruleType: session<br/>classifyIf: (count(account_ou, 'member-added') = 1)<br/>ruleEventTypes: member-added<br/>disabled: false<br/>modelName: AM-GOU<br/>factFeatureName: account_ou<br/>hasDynamicScore: false<br/>score: 7.0<br/>percentileThreshold: 0.1<br/>ruleExpression: ((confidence_factor >= 0.8) && ((num_observations > 0) && (num_observations &lt; percentile_threshold_count)))<br/>dependencyExpression: NA<br/>ruleCategory: Account Creation and Management<br/>ruleLabels:  | AM-GOU-A | ModifiedExabeam |
 
 
 ### exabeam-get-rules-model-definition
